@@ -2,6 +2,6 @@
 
 ->         /govuk-frontend          govuk.Routes
 ->         /hmrc-frontend           hmrcfrontend.Routes
-GET        /hello-world             uk.gov.hmrc.penaltiesappealsfrontend.controllers.HelloWorldController.helloWorld
-GET        /language/:lang          uk.gov.hmrc.penaltiesappealsfrontend.controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET        /hello-world             controllers.HelloWorldController.helloWorld
+GET        /language/:lang          controllers.LanguageSwitchController.switchToLanguage(lang: String)
 GET        /assets/*file            controllers.Assets.versioned(path = "/public", file: Asset)
