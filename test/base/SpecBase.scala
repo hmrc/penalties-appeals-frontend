@@ -17,14 +17,13 @@
 package base
 
 import config.AppConfig
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 
-trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
+trait SpecBase extends WordSpec with Matchers with GuiceOneAppPerSuite {
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
   lazy val injector = app.injector

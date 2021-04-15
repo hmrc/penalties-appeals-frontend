@@ -13,11 +13,15 @@ object AppDependencies {
   )
 
   val test = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-27"   % "4.2.0"  % Test,
-    "org.scalatest"           %% "scalatest"                % "3.2.5"  % Test,
-    "org.jsoup"               %  "jsoup"                    % "1.13.1" % Test,
-    "com.typesafe.play"       %% "play-test"                % PlayVersion.current  % Test,
-    "com.vladsch.flexmark"    %  "flexmark-all"             % "0.36.8" % "test, it",
-    "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"  % "test, it"
+    "uk.gov.hmrc"             %% "bootstrap-test-play-27"   % "4.2.0"            % "test, it",
+    "org.scalatest"           %% "scalatest"                % "3.0.8"            % "test, it",
+    "org.jsoup"               %  "jsoup"                    % "1.13.1"           % "test, it",
+    "com.typesafe.play"       %% "play-test"                % PlayVersion.current  % "test, it",
+    "org.mockito"             %  "mockito-all"              % "1.10.19"          % "test, it",
+    "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"            % "test, it",
+    "uk.gov.hmrc"             %% "hmrctest"                 % "3.10.0-play-26"   % "test, it",
+    "com.vladsch.flexmark"     %  "flexmark-all"              % "0.36.8"           % "test, it",
+    "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.27.2"           % "it",
+    "uk.gov.hmrc"             %% "service-integration-test" % "1.1.0-play-27"    % "test, it"
   )
 }
