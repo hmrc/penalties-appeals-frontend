@@ -60,7 +60,7 @@ trait IntegrationSpecCommonBase extends UnitSpec with GuiceOneServerPerSuite wit
 
   lazy val ws = app.injector.instanceOf[WSClient]
 
-  def buildClientForRequestToApp(baseUrl: String = "/penalties-frontend", uri: String): WSRequest = {
+  def buildClientForRequestToApp(baseUrl: String = "/penalties-appeals-frontend", uri: String): WSRequest = {
     ws.url(s"http://localhost:$port$baseUrl$uri").withFollowRedirects(false)
   }
 
