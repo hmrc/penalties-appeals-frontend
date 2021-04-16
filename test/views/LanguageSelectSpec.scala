@@ -30,7 +30,7 @@ class LanguageSelectSpec extends SpecBase {
       val englishLangToggle = bodyAsHtml.select(".hmrc-language-select__list-item > span")
       val welshLangToggle = bodyAsHtml.select(".hmrc-language-select__list-item > a")
       englishLangToggle.text() shouldBe "English"
-      welshLangToggle.attr("href") shouldBe "/penalties-appeals-frontend/language/cy"
+      welshLangToggle.attr("href") shouldBe "/penalties-appeals/language/cy"
       result.contentType shouldBe "text/html"
     }
   }
