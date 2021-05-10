@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package config
+package services
 
-import base.SpecBase
-import views.html.ErrorTemplate
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 
-class ErrorHandlerSpec extends SpecBase {
-  val errorTemplate: ErrorTemplate = injector.instanceOf[ErrorTemplate]
+import javax.inject.{Inject, Singleton}
 
-  "standardErrorTemplate" should {
-    "return HTML for the standard error template" in {
-      lazy val expectedResult = errorTemplate.apply("Error!", "Something went wrong!", "We are unable to process this request.")
-      lazy val actualResult = errorHandler.standardErrorTemplate("Error!", "Something went wrong!", "We are unable to process this request.")
-      actualResult shouldBe expectedResult
-    }
-  }
-}
+@Singleton
+class AuthService @Inject()(val authConnector: AuthConnector) extends AuthorisedFunctions

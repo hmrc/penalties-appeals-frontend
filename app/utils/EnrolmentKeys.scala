@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package config
+package utils
 
-import base.SpecBase
-import views.html.ErrorTemplate
+object EnrolmentKeys {
+  val mtdVATEnrolmentKey: String = "HMRC-MTD-VAT"
+  val vrnId: String = "VRN"
+  val agentAffinityGroup: String = "Agent"
+  val activated = "Activated"
 
-class ErrorHandlerSpec extends SpecBase {
-  val errorTemplate: ErrorTemplate = injector.instanceOf[ErrorTemplate]
-
-  "standardErrorTemplate" should {
-    "return HTML for the standard error template" in {
-      lazy val expectedResult = errorTemplate.apply("Error!", "Something went wrong!", "We are unable to process this request.")
-      lazy val actualResult = errorHandler.standardErrorTemplate("Error!", "Something went wrong!", "We are unable to process this request.")
-      actualResult shouldBe expectedResult
-    }
-  }
+  def constructMTDVATEnrolmentKey(vrn: String): String = s"$mtdVATEnrolmentKey~$vrnId~$vrn"
 }

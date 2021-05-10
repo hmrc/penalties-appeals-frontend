@@ -32,11 +32,11 @@ class HelloWorldPageSpec extends SpecBase {
     }
 
     "have some placeholder text" in {
-      bodyAsHtml.select("p").text() shouldBe messages("service.text")
+      bodyAsHtml.select("p.govuk-body").text() shouldBe messages("service.text")
     }
 
     "have the correct page title" in {
-      bodyAsHtml.title shouldBe messages("service.name")
+      bodyAsHtml.title.contains(messages("service.name")) shouldBe true
     }
   }
 }

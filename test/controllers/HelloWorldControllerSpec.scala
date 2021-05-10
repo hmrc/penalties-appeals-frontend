@@ -17,25 +17,46 @@
 package controllers
 
 import base.SpecBase
+import org.mockito.Matchers
+import org.mockito.Mockito.{reset, when}
 import play.api.http.Status
 import play.api.test.Helpers._
+import testUtils.AuthTestModels
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.HelloWorldPage
+
+import scala.concurrent.Future
 
 class HelloWorldControllerSpec extends SpecBase {
 
   val helloWorldPage: HelloWorldPage = injector.instanceOf[HelloWorldPage]
 
-  private val controller = new HelloWorldController(appConfig, stubMessagesControllerComponents(), helloWorldPage)
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+
+    reset(mockAuthConnector)
+    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
+      Matchers.any(), Matchers.any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+      Matchers.any(), Matchers.any())
+    ).thenReturn(authResult)
+
+    object Controller extends HelloWorldController(
+      appConfig,
+      helloWorldPage
+    )(stubMessagesControllerComponents(), authPredicate)
+  }
+
+
 
   "GET /" should {
-    "return 200" in {
-      val result = controller.helloWorld(fakeRequest)
+    "return 200" in new Setup(AuthTestModels.successfulAuthResult) {
+      val result = Controller.helloWorld(fakeRequest)
       status(result) shouldBe Status.OK
     }
 
-    "return HTML" in {
-      val result = controller.helloWorld(fakeRequest)
+    "return HTML" in new Setup(AuthTestModels.successfulAuthResult) {
+      val result = Controller.helloWorld(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result)     shouldBe Some("utf-8")
     }

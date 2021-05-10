@@ -1,0 +1,73 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
+@import views.html.layouts.GovUkPageLayout
+
+@this(
+        govukLayout: GovUkPageLayout,
+        head: Head,
+        hmrcTimeoutDialog: HmrcTimeoutDialog,
+        header: components.Header,
+        phaseBanner: components.phaseBanner,
+        govukBackLink: GovukBackLink,
+        hmrcStandardFooter: HmrcStandardFooter,
+        languageSelect: views.html.LanguageSelect
+)
+@(pageTitle: String,
+        scriptsBlock: Option[Html] = None,
+        isPageFullWidth: Boolean = true
+)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@beforeContentBlock = {
+@phaseBanner("beta")
+@if(appConfig.welshLanguageSupportEnabled) {@languageSelect()}
+
+@govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
+}
+
+@headBlock = {
+@head(
+    Some(hmrcTimeoutDialog(TimeoutDialog(
+        timeout = Some(appConfig.timeoutPeriod),
+        countdown = Some(appConfig.timeoutCountdown),
+        signOutUrl = Some(routes.SignOutController.signOut().url),
+        keepAliveUrl = Some("#"),
+        signOutButtonText = Some(messages("base.signOut"))
+    )))
+)
+
+}
+
+@scripts = {
+@if(scriptsBlock.isEmpty) {
+    <script src="@controllers.routes.Assets.versioned("javascripts/backLink.js")"></script>
+} else {
+    @scriptsBlock.get
+}
+}
+
+@govukLayout(
+    pageTitle = Some(messages("common.pageTitle", pageTitle, "Appeal a VAT penalty")),
+    headBlock = Some(headBlock),
+    headerBlock = Some(header()),
+    scriptsBlock = Some(scripts),
+    beforeContentBlock = Some(beforeContentBlock),
+    footerBlock = Some(hmrcStandardFooter()),
+    isFullWidth = isPageFullWidth
+)(contentBlock)

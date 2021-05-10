@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-package config
+package controllers
 
 import base.SpecBase
-import views.html.ErrorTemplate
+import play.api.http.Status
+import play.api.mvc.Result
+import play.api.test.Helpers._
+import testUtils.AuthMocks
 
-class ErrorHandlerSpec extends SpecBase {
-  val errorTemplate: ErrorTemplate = injector.instanceOf[ErrorTemplate]
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  "standardErrorTemplate" should {
-    "return HTML for the standard error template" in {
-      lazy val expectedResult = errorTemplate.apply("Error!", "Something went wrong!", "We are unable to process this request.")
-      lazy val actualResult = errorHandler.standardErrorTemplate("Error!", "Something went wrong!", "We are unable to process this request.")
-      actualResult shouldBe expectedResult
+class SignOutControllerSpec extends SpecBase with AuthMocks {
+  val controller = new SignOutController(
+    mcc
+  )
+
+  lazy val result: Future[Result] = {
+    mockOrganisationAuthorised()
+    controller.signOut()(fakeRequest)
+  }
+
+  "GET /sign-out" should {
+    "redirect to the sign out url" in {
+      status(result) shouldBe Status.SEE_OTHER
+      redirectLocation(result).get shouldBe appConfig.signOutUrl
     }
   }
 }
