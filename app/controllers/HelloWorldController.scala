@@ -17,10 +17,11 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import config.AppConfig
+import controllers.predicates.AuthPredicate
+import play.api.i18n.I18nSupport
 import views.html.HelloWorldPage
 
 import scala.concurrent.Future
@@ -28,13 +29,12 @@ import scala.concurrent.Future
 @Singleton
 class HelloWorldController @Inject()(
   appConfig: AppConfig,
-  mcc: MessagesControllerComponents,
-  helloWorldPage: HelloWorldPage)
-    extends FrontendController(mcc) {
+  helloWorldPage: HelloWorldPage)(implicit mcc: MessagesControllerComponents, authorise: AuthPredicate)
+    extends FrontendController(mcc) with I18nSupport {
 
   implicit val config: AppConfig = appConfig
 
-  val helloWorld: Action[AnyContent] = Action.async { implicit request =>
+  val helloWorld: Action[AnyContent] = authorise.async { implicit request =>
     Future.successful(Ok(helloWorldPage()))
   }
 

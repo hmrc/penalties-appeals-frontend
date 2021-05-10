@@ -16,12 +16,19 @@
 
 package base
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
+import controllers.predicates.AuthPredicate
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.AnyContent
+import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
+import org.scalatestplus.mockito.MockitoSugar.mock
+import services.AuthService
+import uk.gov.hmrc.auth.core.AuthConnector
+import views.html.errors.Unauthorised
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SpecBase extends WordSpec with Matchers with GuiceOneAppPerSuite {
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
@@ -33,4 +40,24 @@ trait SpecBase extends WordSpec with Matchers with GuiceOneAppPerSuite {
   implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
 
   implicit val messages: Messages = messagesApi.preferred(fakeRequest)
+
+  val mcc: MessagesControllerComponents = injector.instanceOf[MessagesControllerComponents]
+
+  lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
+
+  val unauthorised: Unauthorised = injector.instanceOf[Unauthorised]
+
+  val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+  val mockAuthService: AuthService = new AuthService(mockAuthConnector)
+
+  val vrn: String = "123456789"
+
+  lazy val authPredicate: AuthPredicate = new AuthPredicate(
+    messagesApi,
+    mcc,
+    mockAuthService,
+    errorHandler,
+    unauthorised
+  )
 }

@@ -14,13 +14,17 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@this(govukPhaseBanner: GovukPhaseBanner)
 
-@this(layout: Layout)
+@(phase: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
-
-@layout(pageTitle = messages("service.name")) {
-    <h1 class="govuk-heading-xl">@messages("service.name")</h1>
-    <p class="govuk-body">@{messages("service.text")}</p>
+@feedbackBanner = {
+@messages("feedback.before")
+    <a class='govuk-link' href='@{appConfig.feedbackUrl}'>@messages("feedback.link")</a>
+@messages("feedback.after")
 }
+
+@govukPhaseBanner(PhaseBanner(
+    tag = Some(Tag(content = Text(phase))),
+    content = HtmlContent(feedbackBanner)
+))
