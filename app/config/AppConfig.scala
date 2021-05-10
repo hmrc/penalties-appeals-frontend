@@ -34,8 +34,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val signInContinueBaseUrl: String = config.get[String]("signIn.continueBaseUrl")
 
-  //TODO: Change this to concrete implementation when added
-  lazy val signInContinueUrl: String = SafeRedirectUrl(signInContinueBaseUrl + controllers.routes.HelloWorldController.helloWorld().url).encodedUrl
+  lazy val signInContinueUrl: String = SafeRedirectUrl(signInContinueBaseUrl + controllers.routes.AppealStartController.onPageLoad().url).encodedUrl
 
   lazy val signOutUrl: String = config.get[String]("signOut.url") + signInContinueUrl
 
