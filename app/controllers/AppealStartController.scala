@@ -17,10 +17,12 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.AuthPredicate
+import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import play.api.Logger.logger
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.SessionKeys
 import views.html.AppealStartPage
 
 import javax.inject.Inject
@@ -28,9 +30,14 @@ import scala.concurrent.Future
 
 class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit mcc: MessagesControllerComponents,
                                                                         appConfig: AppConfig,
-                                                                        authorise: AuthPredicate) extends FrontendController(mcc) with I18nSupport {
-  //TODO: need to validate the JSON body passed and check if the penalty exists
-  def onPageLoad(): Action[AnyContent] = authorise.async { implicit request => {
+                                                                        authorise: AuthPredicate,
+                                                                        dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired).async { implicit request => {
+      logger.debug(s"[AppealStartController][onPageLoad] - Session keys received: \n" +
+        s"Appeal Type = ${request.session.get(SessionKeys.appealType)}, \n" +
+        s"Penalty ID = ${request.session.get(SessionKeys.penaltyId)}, \n" +
+        s"Start date of period = ${request.session.get(SessionKeys.startDateOfPeriod)}, \n" +
+        s"End date of period = ${request.session.get(SessionKeys.endDateOfPeriod)}")
       Future.successful(Ok(appealStartPage()))
     }
   }
