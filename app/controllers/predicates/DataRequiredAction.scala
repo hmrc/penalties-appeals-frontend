@@ -34,7 +34,7 @@ class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val 
       request.session.get(SessionKeys.endDateOfPeriod)) match {
       case (Some(_), Some(_), Some(_), Some(_)) =>
         Future.successful(Right(request))
-      case (None, None, None, None) =>
+      case _ =>
         Future.successful(Left(errorHandler.showInternalServerError(request)))
     }
   }

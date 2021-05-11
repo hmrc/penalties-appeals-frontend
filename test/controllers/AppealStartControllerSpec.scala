@@ -45,7 +45,7 @@ class AppealStartControllerSpec extends SpecBase with MockitoSugar {
 
   object Controller extends AppealStartController(
     page
-  )(stubMessagesControllerComponents(), implicitly, authPredicate)
+  )(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction)
 
   "IndexController" should {
 
@@ -54,10 +54,13 @@ class AppealStartControllerSpec extends SpecBase with MockitoSugar {
       "the user is authorised" must {
 
         "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-
-          val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
-
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequestWithCorrectKeys)
           status(result) shouldBe OK
+        }
+
+        "user does not have the correct session keys to start an appeal" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
 

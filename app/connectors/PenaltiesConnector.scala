@@ -32,7 +32,12 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
   def getAppealsDataForPenalty(penaltyId: String, enrolmentKey: String)
                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getAppealsDataForPenalty] -"
-    httpClient.GET(appConfig.appealDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))).map {
+    httpClient.GET[HttpResponse](
+      appConfig.appealDataForPenaltyAndEnrolmentKey(
+        penaltyId,
+        EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey)
+      )
+    ).map {
       response => response.status match {
         case OK => {
           logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with ID: $penaltyId and enrolment key $enrolmentKey")
@@ -46,6 +51,11 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
           logger.warn(s"$startOfLogMsg Returned unknown response ${response.status} with body: ${response.body}")
           None
         }
+      }
+    }.recover {
+      case e => {
+        logger.warn(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
+        None
       }
     }
   }

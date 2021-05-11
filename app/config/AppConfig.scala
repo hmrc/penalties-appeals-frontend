@@ -34,7 +34,9 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val penaltiesServiceBaseUrl: String = servicesConfig.baseUrl("penalties")
 
-  val appealDataForPenaltyAndEnrolmentKey = (penaltyId: String, enrolmentKey: String) => s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+  def appealDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String): String = {
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+  }
 
   lazy val signInContinueBaseUrl: String = config.get[String]("signIn.continueBaseUrl")
 

@@ -17,7 +17,7 @@
 package base
 
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.AuthPredicate
+import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.{Matchers, WordSpec}
@@ -29,6 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.twirl.api.Html
 import services.AuthService
 import uk.gov.hmrc.auth.core.AuthConnector
+import utils.SessionKeys
 import views.html.errors.Unauthorised
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -52,9 +53,15 @@ trait SpecBase extends WordSpec with Matchers with GuiceOneAppPerSuite {
 
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
+  lazy val dataRequiredAction = injector.instanceOf[DataRequiredActionImpl]
+
   val mockAuthService: AuthService = new AuthService(mockAuthConnector)
 
   val vrn: String = "123456789"
+
+  val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
+    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500Z"),
+      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500Z"))
 
   lazy val authPredicate: AuthPredicate = new AuthPredicate(
     messagesApi,
