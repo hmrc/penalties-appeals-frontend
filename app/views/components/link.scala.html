@@ -14,13 +14,17 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@this()
 
-@this(layout: Layout)
+@(
+        link: String,
+        messageKey: String,
+        id: Option[String] = None,
+        isExternal: Boolean = false,
+        button: Boolean = false,
+        classes: String = "govuk-link",
+        hiddenContent: Option[String] = None
+)(implicit messages: Messages)
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
-
-@layout(pageTitle = messages("service.name")) {
-    <h1 class="govuk-heading-xl">@messages("service.name")</h1>
-    <p class="govuk-body">@{messages("service.text")}</p>
-}
+<a href="@link" class="@classes" @id.map(x => s"id=$x") @if(isExternal){target="_blank"}@if(button){role="button" data-module="govuk-button"}>
+    @messages(messageKey)@if(isExternal)(" " + messages("site.opensInNewTab"))@hiddenContent.map{content=> <span class="govuk-visually-hidden"> @content</span>}</a>

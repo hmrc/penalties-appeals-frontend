@@ -18,20 +18,21 @@ package controllers
 
 import base.SpecBase
 import org.mockito.Matchers
-import org.mockito.Mockito.{reset, when}
-import play.api.http.Status
+import org.mockito.Mockito._
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import views.html.HelloWorldPage
+import views.html.AppealStartPage
 
 import scala.concurrent.Future
 
-class HelloWorldControllerSpec extends SpecBase {
+class AppealStartControllerSpec extends SpecBase with MockitoSugar {
 
-  val helloWorldPage: HelloWorldPage = injector.instanceOf[HelloWorldPage]
+  val page: AppealStartPage = injector.instanceOf[AppealStartPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
@@ -40,25 +41,38 @@ class HelloWorldControllerSpec extends SpecBase {
       Matchers.any(), Matchers.any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       Matchers.any(), Matchers.any())
     ).thenReturn(authResult)
-
-    object Controller extends HelloWorldController(
-      appConfig,
-      helloWorldPage
-    )(stubMessagesControllerComponents(), authPredicate)
   }
 
+  object Controller extends AppealStartController(
+    page
+  )(stubMessagesControllerComponents(), implicitly, authPredicate)
 
+  "IndexController" should {
 
-  "GET /" should {
-    "return 200" in new Setup(AuthTestModels.successfulAuthResult) {
-      val result = Controller.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
+    "onPageLoad" when {
 
-    "return HTML" in new Setup(AuthTestModels.successfulAuthResult) {
-      val result = Controller.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result)     shouldBe Some("utf-8")
+      "the user is authorised" must {
+
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
+
+          status(result) shouldBe OK
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
     }
   }
 }
