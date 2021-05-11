@@ -16,17 +16,23 @@
 
 package models
 
+import play.api.libs.json._
 
-import play.api.libs.json.{Format, Json}
+object PenaltyTypeEnum extends Enumeration {
+  val Late_Submission = Value
+  val Late_Payment = Value
 
-import java.time.LocalDateTime
+  implicit val format: Format[PenaltyTypeEnum.Value] = new Format[PenaltyTypeEnum.Value] {
+    override def writes(o: PenaltyTypeEnum.Value): JsValue = {
+      JsString(o.toString.toUpperCase)
+    }
 
-case class AppealData(
-                       `type`: PenaltyTypeEnum.Value,
-                        startDate: LocalDateTime,
-                        endDate: LocalDateTime
-                     )
-
-object AppealData {
-  implicit val format: Format[AppealData] = Json.format[AppealData]
+    override def reads(json: JsValue): JsResult[PenaltyTypeEnum.Value] = {
+      json.as[String] match {
+        case "LATE_SUBMISSION" => JsSuccess(Late_Submission)
+        case "LATE_PAYMENT" => JsSuccess(Late_Payment)
+        case e => JsError(s"$e not recognised")
+      }
+    }
+  }
 }

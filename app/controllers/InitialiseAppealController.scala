@@ -54,7 +54,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
       s" and replacing with new keys")
     Redirect(urlToRedirectTo)
       .addingToSession((SessionKeys.penaltyId, penaltyId))
-      .addingToSession((SessionKeys.appealType, appealModel.`type`))
+      .addingToSession((SessionKeys.appealType, appealModel.`type`.toString))
       .addingToSession((SessionKeys.startDateOfPeriod, appealModel.startDate.toString))
       .addingToSession((SessionKeys.endDateOfPeriod, appealModel.endDate.toString))
   }
