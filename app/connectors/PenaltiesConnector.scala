@@ -54,7 +54,7 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
       }
     }.recover {
       case e => {
-        logger.warn(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
+        logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
         None
       }
     }
