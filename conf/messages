@@ -36,3 +36,12 @@ appealStart.p5 = In some cases, we might also ask you to upload evidence to supp
 appealStart.p6 = We only need the information we ask for. You do not need to provide additional details unless we ask you for them.
 
 common.continue = Continue
+
+# Penalty Information
+# ----------------------------------------------------------
+penaltyInformation.headerText = {0}: {1} to {2}
+
+# Penalty Type
+# ----------------------------------------------------------
+penaltyType.lateSubmission = Late submission penalty
+penaltyType.latePayment = Late payment penalty
