@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.PenaltiesConnector
-import models.User
+import models.{ReasonableExcuse, User}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -71,6 +71,95 @@ class AppealServiceSpec extends SpecBase {
 
       val result = service.validatePenaltyIdForEnrolmentKey("1234")(new User[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
+    }
+  }
+
+  "getReasonableExcuseListAndParse" should {
+    s"call the connector and parse the result to $Some $Seq $ReasonableExcuse" in new Setup {
+      val jsonRepresentingSeqOfReasonableExcuses: JsValue = Json.parse(
+        """
+          |{
+          |  "excuses": [
+          |    {
+          |      "type": "bereavement",
+          |      "descriptionKey": "reasonableExcuses.bereavementReason"
+          |    },
+          |    {
+          |      "type": "crime",
+          |      "descriptionKey": "reasonableExcuses.crimeReason"
+          |    },
+          |    {
+          |      "type": "fireOrFlood",
+          |      "descriptionKey": "reasonableExcuses.fireOrFloodReason"
+          |    }
+          |  ]
+          |}
+          |""".stripMargin
+      )
+      when(mockPenaltiesConnector.getListOfReasonableExcuses()(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(
+          Some(jsonRepresentingSeqOfReasonableExcuses)
+        ))
+
+      val result = await(service.getReasonableExcuseListAndParse())
+      result.isDefined shouldBe true
+      result.get shouldBe Seq(
+        ReasonableExcuse(
+          `type` = "bereavement",
+          descriptionKey = "reasonableExcuses.bereavementReason",
+          isOtherOption = false
+        ),
+        ReasonableExcuse(
+          `type` = "crime",
+          descriptionKey = "reasonableExcuses.crimeReason",
+          isOtherOption = false
+        ),
+        ReasonableExcuse(
+          `type` = "fireOrFlood",
+          descriptionKey = "reasonableExcuses.fireOrFloodReason",
+          isOtherOption = false
+        )
+      )
+    }
+
+    s"call the connector and return $None" when {
+      "the connector call succeeds but invalid json is returned and therefore can not be parsed" in new Setup {
+        val jsonRepresentingInvalidSeqOfReasonableExcuses: JsValue = Json.parse(
+          """
+            |{
+            |  "excusesssss": [
+            |    {
+            |      "type": "bereavement",
+            |      "descriptionKey": "reasonableExcuses.bereavementReason"
+            |    },
+            |    {
+            |      "type": "crime",
+            |      "descriptionKey": "reasonableExcuses.crimeReason"
+            |    },
+            |    {
+            |      "type": "fireOrFlood",
+            |      "descriptionKey": "reasonableExcuses.fireOrFloodReason"
+            |    }
+            |  ]
+            |}
+            |""".stripMargin
+        )
+        when(mockPenaltiesConnector.getListOfReasonableExcuses()(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(
+            Some(jsonRepresentingInvalidSeqOfReasonableExcuses)
+          ))
+
+        val result = await(service.getReasonableExcuseListAndParse())
+        result.isDefined shouldBe false
+      }
+
+      "the connector call fails" in new Setup {
+        when(mockPenaltiesConnector.getListOfReasonableExcuses()(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+
+        val result = await(service.getReasonableExcuseListAndParse())
+        result.isDefined shouldBe false
+      }
     }
   }
 }

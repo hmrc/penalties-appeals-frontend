@@ -32,14 +32,12 @@ trait IntegrationSpecCommonBase extends UnitSpec with GuiceOneServerPerSuite wit
 
   override def afterEach(): Unit = {
     resetAll()
-    stop()
     super.afterEach()
     SharedMetricRegistries.clear()
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    start()
     AuthStub.authorised()
     SharedMetricRegistries.clear()
   }

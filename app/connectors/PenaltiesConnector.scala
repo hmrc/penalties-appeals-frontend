@@ -21,7 +21,7 @@ import models.AppealData
 import play.api.Logger.logger
 import play.api.http.Status._
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}
 import utils.EnrolmentKeys
 
 import javax.inject.Inject
@@ -53,6 +53,28 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
         }
       }
     }.recover {
+      case e => {
+        logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
+        None
+      }
+    }
+  }
+
+  def getListOfReasonableExcuses()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
+    val startOfLogMsg: String = "[PenaltiesConnector][getListOfReasonableExcuses] -"
+    httpClient.GET[HttpResponse](
+      appConfig.reasonableExcuseFetchUrl
+    ).map (
+      response => Some(response.json)
+    ).recover {
+      case notFoundException: NotFoundException => {
+        logger.error(s"$startOfLogMsg Returned 404 from penalties. With message: ${notFoundException.getMessage}")
+        None
+      }
+      case internalServerException: InternalServerException => {
+        logger.error(s"$startOfLogMsg Returned 500 from penalties. With message: ${internalServerException.getMessage}")
+        None
+      }
       case e => {
         logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
         None

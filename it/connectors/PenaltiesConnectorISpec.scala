@@ -28,6 +28,7 @@ import scala.concurrent.ExecutionContext
 
 class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
   val penaltiesConnector: PenaltiesConnector = injector.instanceOf[PenaltiesConnector]
+
   "getAppealsDataForPenalty" should {
     s"return $Some and the $JsValue returned by the call when the call is successful" in {
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
@@ -56,6 +57,54 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
       "the call fails completely with no response" in {
         failedCall("1234", "HMRC-MTD-VAT~VRN~123456789")
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
+        result.isDefined shouldBe false
+      }
+    }
+  }
+
+  "getListOfReasonableExcuses" should {
+    s"return $Some and the $JsValue returned by the call when the call is successful" in {
+      successfulFetchReasonableExcuseResponse
+      val sampleJsonToPassBack: JsValue = Json.obj(
+        "excuses" -> Json.arr(
+          Json.obj(
+            "type" -> "type1",
+            "descriptionKey" -> "key1",
+          ),
+          Json.obj(
+            "type" -> "type2",
+            "descriptionKey" -> "key2"
+          )
+        )
+      )
+      val result = await(penaltiesConnector.getListOfReasonableExcuses()(HeaderCarrier(), ExecutionContext.Implicits.global))
+      result.isDefined shouldBe true
+      result.get shouldBe sampleJsonToPassBack
+    }
+
+    s"return $None" when {
+      "the call returns 404" in {
+        failedFetchReasonableExcuseListResponse(status = Status.NOT_FOUND)
+        val result = await(penaltiesConnector.getListOfReasonableExcuses()(HeaderCarrier(), ExecutionContext.Implicits.global))
+        result.isDefined shouldBe false
+      }
+
+      "the call returns 500" in {
+        failedFetchReasonableExcuseListResponse(status = Status.INTERNAL_SERVER_ERROR)
+        val result = await(penaltiesConnector.getListOfReasonableExcuses()(HeaderCarrier(), ExecutionContext.Implicits.global))
+        result.isDefined shouldBe false
+      }
+
+
+      "the call returns some unknown response" in {
+        failedFetchReasonableExcuseListResponse(status = Status.IM_A_TEAPOT)
+        val result = await(penaltiesConnector.getListOfReasonableExcuses()(HeaderCarrier(), ExecutionContext.Implicits.global))
+        result.isDefined shouldBe false
+      }
+
+      "the call fails completely with no response" in {
+        failedCallForFetchingReasonableExcuse
         val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
         result.isDefined shouldBe false
       }

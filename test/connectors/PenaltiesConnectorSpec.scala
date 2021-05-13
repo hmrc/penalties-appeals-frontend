@@ -43,6 +43,42 @@ class PenaltiesConnectorSpec extends SpecBase {
       |}
       |""".stripMargin)
 
+  val reasonableExcusesAsJson: JsValue = Json.parse(
+    """
+      |{
+      |  "excuses": [
+      |    {
+      |      "type": "bereavement",
+      |      "descriptionKey": "reasonableExcuses.bereavementReason"
+      |    },
+      |    {
+      |      "type": "crime",
+      |      "descriptionKey": "reasonableExcuses.crimeReason"
+      |    },
+      |    {
+      |      "type": "fireOrFlood",
+      |      "descriptionKey": "reasonableExcuses.fireOrFloodReason"
+      |    },
+      |    {
+      |      "type": "health",
+      |      "descriptionKey": "reasonableExcuses.healthReason"
+      |    },
+      |    {
+      |      "type": "lossOfStaff",
+      |      "descriptionKey": "reasonableExcuses.lossOfStaffReason"
+      |    },
+      |    {
+      |      "type": "technicalIssues",
+      |      "descriptionKey": "reasonableExcuses.technicalIssuesReason"
+      |    },
+      |    {
+      |      "type": "other",
+      |      "descriptionKey": "reasonableExcuses.otherReason"
+      |    }
+      |  ]
+      |}
+      |""".stripMargin)
+
   class Setup {
     reset(mockHttpClient)
     reset(mockAppConfig)
@@ -80,6 +116,45 @@ class PenaltiesConnectorSpec extends SpecBase {
         .thenReturn("http://url/url")
 
       val result = await(connector.getAppealsDataForPenalty("12345", "123456789"))
+      result.isDefined shouldBe false
+    }
+  }
+
+  "getListOfReasonableExcuses" should {
+    "return OK and a response JSON" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(Status.OK, reasonableExcusesAsJson.toString())))
+      when(mockAppConfig.reasonableExcuseFetchUrl)
+        .thenReturn("http://url/url")
+      val result = await(connector.getListOfReasonableExcuses())
+      result.isDefined shouldBe true
+      result.get shouldBe reasonableExcusesAsJson
+    }
+
+    s"return $None when a 404 is returned from the call" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
+      when(mockAppConfig.reasonableExcuseFetchUrl)
+        .thenReturn("http://url/url")
+      val result = await(connector.getListOfReasonableExcuses())
+      result.isDefined shouldBe false
+    }
+
+    s"return $None when a 500 is returned from the call" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(Status.INTERNAL_SERVER_ERROR, "")))
+      when(mockAppConfig.reasonableExcuseFetchUrl)
+        .thenReturn("http://url/url")
+      val result = await(connector.getListOfReasonableExcuses())
+      result.isDefined shouldBe false
+    }
+
+    s"return $None when an unknown response  is returned from the call" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(Status.IM_A_TEAPOT, "")))
+      when(mockAppConfig.reasonableExcuseFetchUrl)
+        .thenReturn("http://url/url")
+      val result = await(connector.getListOfReasonableExcuses())
       result.isDefined shouldBe false
     }
   }
