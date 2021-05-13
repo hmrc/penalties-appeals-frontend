@@ -27,6 +27,7 @@ import java.time.LocalDateTime
 
 object PenaltiesStub {
   private val appealUri = "/penalties/appeals-data/late-submissions"
+  private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
 
   def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String): StubMapping = {
     stubFor(get(urlEqualTo(s"$appealUri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
@@ -44,6 +45,29 @@ object PenaltiesStub {
     )
   }
 
+  def successfulFetchReasonableExcuseResponse: StubMapping = {
+    stubFor(get(urlEqualTo(fetchReasonableExcuseUri))
+      .willReturn(
+        aResponse()
+          .withStatus(Status.OK)
+          .withBody(
+            Json.obj(
+              "excuses" -> Json.arr(
+                Json.obj(
+                  "type" -> "type1",
+                  "descriptionKey" -> "key1"
+                ),
+                Json.obj(
+                  "type" -> "type2",
+                  "descriptionKey" -> "key2"
+                )
+              )
+            ).toString()
+          )
+      )
+    )
+  }
+
   def failedGetAppealDataResponse(penaltyId: String, enrolmentKey: String, status: Int = Status.INTERNAL_SERVER_ERROR): StubMapping = {
     stubFor(get(urlEqualTo(appealUri + s"?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
       .willReturn(
@@ -53,8 +77,26 @@ object PenaltiesStub {
     )
   }
 
+  def failedFetchReasonableExcuseListResponse(status: Int = Status.INTERNAL_SERVER_ERROR): StubMapping = {
+    stubFor(get(urlEqualTo(fetchReasonableExcuseUri))
+      .willReturn(
+        aResponse()
+          .withStatus(status)
+      )
+    )
+  }
+
   def failedCall(penaltyId: String, enrolmentKey: String): StubMapping = {
     stubFor(get(urlEqualTo(appealUri + s"?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
+      .willReturn(
+        aResponse()
+          .withFault(Fault.CONNECTION_RESET_BY_PEER)
+      )
+    )
+  }
+
+  def failedCallForFetchingReasonableExcuse: StubMapping = {
+    stubFor(get(urlEqualTo(fetchReasonableExcuseUri))
       .willReturn(
         aResponse()
           .withFault(Fault.CONNECTION_RESET_BY_PEER)

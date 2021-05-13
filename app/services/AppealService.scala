@@ -17,9 +17,9 @@
 package services
 
 import connectors.PenaltiesConnector
-import models.{AppealData, User}
+import models.{AppealData, ReasonableExcuse, User}
 import play.api.Logger.logger
-import play.api.libs.json.Json
+import play.api.libs.json.{JsResult, JsValue, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -40,6 +40,25 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector) {
               None
             },
             parsedModel => Some(parsedModel)
+          )
+        }
+      )
+    }
+  }
+
+  def getReasonableExcuseListAndParse()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[ReasonableExcuse]]] = {
+    penaltiesConnector.getListOfReasonableExcuses().map {
+      _.fold[Option[Seq[ReasonableExcuse]]](
+        None
+      )(
+        jsValue => {
+          val resultOfParsing: JsResult[Seq[ReasonableExcuse]] = Json.fromJson[Seq[ReasonableExcuse]](jsValue)(ReasonableExcuse.seqReads)
+          resultOfParsing.fold(
+            failure => {
+              logger.error(s"[AppealService][getReasonableExcuseListAndParse] - Failed to parse to model with error(s): $failure")
+              None
+            },
+            seqOfReasonableExcuses => Some(seqOfReasonableExcuses)
           )
         }
       )
