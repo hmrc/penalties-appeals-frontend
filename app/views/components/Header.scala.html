@@ -22,7 +22,6 @@
 @(showSignOut: Boolean = true)(implicit messages: Messages)
 
 @hmrcHeader(Header(
-    //TODO: change these when there is concrete implementation
     homepageUrl = controllers.routes.AppealStartController.onPageLoad().url,
     serviceUrl = controllers.routes.AppealStartController.onPageLoad().url,
     serviceName = Some(messages("service.name")),
