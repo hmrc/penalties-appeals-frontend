@@ -46,4 +46,23 @@ class PenaltyTypeEnumSpec extends WordSpec with Matchers {
     val result = Json.fromJson(JsString("invalid"))(PenaltyTypeEnum.format)
     result.isError shouldBe true
   }
+
+  "withNameOpt" should {
+    s"return $Some ${PenaltyTypeEnum.Late_Submission} when the string matches the enum value" in {
+      val result = PenaltyTypeEnum.withNameOpt("Late_Submission")
+      result.isDefined shouldBe true
+      result.get shouldBe PenaltyTypeEnum.Late_Submission
+    }
+
+    s"return $Some ${PenaltyTypeEnum.Late_Payment} when the string matches the enum value" in {
+      val result = PenaltyTypeEnum.withNameOpt("Late_Payment")
+      result.isDefined shouldBe true
+      result.get shouldBe PenaltyTypeEnum.Late_Payment
+    }
+
+    s"return $None when the string does not match any enum value" in {
+      val result = PenaltyTypeEnum.withNameOpt("invalid")
+      result.isDefined shouldBe false
+    }
+  }
 }

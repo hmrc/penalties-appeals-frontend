@@ -14,6 +14,11 @@
  * limitations under the License.
  *@
 
+@import utils.SessionKeys
+@import viewtils.{ImplicitDateFormatter, PenaltyTypeHelper}
+
+@import java.time.LocalDateTime
+
 @this(
         govukTemplate: GovukTemplate,
         govukHeader: GovukHeader,
@@ -29,7 +34,8 @@
         footerItems: Seq[FooterItem] = Seq.empty,
         bodyEndBlock: Option[Html] = None,
         scriptsBlock: Option[Html] = None,
-        isFullWidth: Boolean = false
+        isFullWidth: Boolean = false,
+        showPenaltyInformation: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @headerDefault = {
@@ -62,6 +68,17 @@
                 "govuk-grid-column-two-thirds"
             }
         }'>
+        @* .isDefined check to prevent not showing any view incl. errors when the session may not have the correct keys *@
+        @if(showPenaltyInformation && PenaltyTypeHelper.getKeysFromSession().isDefined) {
+            <span class="govuk-caption-l">
+            @{messages("penaltyInformation.headerText",
+                PenaltyTypeHelper.getKeysFromSession().get.head,
+                PenaltyTypeHelper.getKeysFromSession().get(1),
+                PenaltyTypeHelper.getKeysFromSession().get.last
+            )
+            }
+            </span>
+        }
         @contentBlock
         </div>
     </div>
