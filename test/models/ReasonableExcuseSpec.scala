@@ -18,7 +18,6 @@ package models
 
 import base.SpecBase
 import forms.ReasonableExcuseForm
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem

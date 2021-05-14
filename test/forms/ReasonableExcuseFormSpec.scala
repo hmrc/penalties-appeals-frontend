@@ -16,7 +16,6 @@
 
 package forms
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.data.FormError
 
 class ReasonableExcuseFormSpec extends FormBehaviours {

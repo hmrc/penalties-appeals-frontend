@@ -75,6 +75,10 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           Json.obj(
             "type" -> "type2",
             "descriptionKey" -> "key2"
+          ),
+          Json.obj(
+            "type" -> "other",
+            "descriptionKey" -> "key3"
           )
         )
       )
