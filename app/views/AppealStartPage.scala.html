@@ -45,6 +45,5 @@
     <p class="govuk-body">@messages("appealStart.p5")</p>
     <p class="govuk-body">@messages("appealStart.p6")</p>
 
-    @* TODO: Change to next page link *@
-    @link("", "common.continue", button = true, classes = "govuk-button")
+    @link(routes.ReasonableExcuseController.onPageLoad().url, "common.continue", button = true, classes = "govuk-button")
 }

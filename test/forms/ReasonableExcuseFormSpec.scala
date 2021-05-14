@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package base
+package forms
 
-class BaseSelectors {
-  val title = "title"
+import org.scalatest.{Matchers, WordSpec}
+import play.api.data.FormError
 
-  val h1 = "#main-content h1"
-  val h2 = "#main-content h2"
+class ReasonableExcuseFormSpec extends FormBehaviours {
+  val seqOfReasonableExcuses = Seq(
+    "reasonableExcuse1",
+    "reasonableExcuse2",
+    "reasonableExcuse3",
+    "reasonableExcuse4",
+    "reasonableExcuse5",
+    "reasonableExcuse6",
+    "reasonableExcuse7"
+  )
 
-  val pElementIndex = (index: Int) => s"#main-content p.govuk-body:nth-child($index)"
+  val form = ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses)
 
-  val externalGuidanceLink = "#external-guidance-link"
-
-  val labelForRadioButton = (index: Int) => if(index == 1) "label[for=value]" else s"label[for=value-$index]"
-
-  val breakerElement = ".govuk-radios__divider"
-
-  val listIndexWithElementIndex = (ulIndex: Int, liIndex: Int) => s"#main-content ul:nth-child($ulIndex) li:nth-child($liIndex)"
-
-  val button = "#main-content .govuk-button"
-
+  //TODO: error key probably needs changing
+  behave like mandatoryField(form, "value", FormError("value", "error.required"))
 }
