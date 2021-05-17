@@ -27,8 +27,8 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.AppealService
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.ReasonableExcuseSelectionPage
 
@@ -208,6 +208,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
           )
         ))
         status(result) shouldBe BAD_REQUEST
+        contentAsString(result) should include("There is a problem")
+        contentAsString(result) should include("Select the reason for missing the VAT deadline")
       }
     }
 
