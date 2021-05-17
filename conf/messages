@@ -65,3 +65,7 @@ reasonableExcuses.error.required = Select the reason for missing the VAT deadlin
 
 
 site.opensInNewTab = (opens in a new tab)
+
+# Errors
+# ----------------------------------------------------------
+error.prefix = Error:
