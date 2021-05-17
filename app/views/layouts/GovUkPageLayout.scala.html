@@ -22,7 +22,8 @@
 @this(
         govukTemplate: GovukTemplate,
         govukHeader: GovukHeader,
-        govukFooter: GovukFooter
+        govukFooter: GovukFooter,
+        errorSummary: components.errorSummary
 )
 
 @(
@@ -35,7 +36,9 @@
         bodyEndBlock: Option[Html] = None,
         scriptsBlock: Option[Html] = None,
         isFullWidth: Boolean = false,
-        showPenaltyInformation: Boolean = true
+        showPenaltyInformation: Boolean = true,
+        formHasErrors: Boolean = false,
+        errors: Seq[FormError] = Seq.empty
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @headerDefault = {
@@ -46,6 +49,14 @@
         serviceUrl = Some(messages("service.homePageUrl")),
         containerClasses = Some("govuk-width-container")))
 }
+}
+
+@title = @{
+ if(formHasErrors && pageTitle.isDefined) {
+        Some(messages("error.prefix") + " " + pageTitle.get)
+    } else {
+        pageTitle
+    }
 }
 
 @footerDefault = {
@@ -68,7 +79,11 @@
                 "govuk-grid-column-two-thirds"
             }
         }'>
-        @* .isDefined check to prevent not showing any view incl. errors when the session may not have the correct keys *@
+
+        @if(formHasErrors) {
+            @errorSummary(errors)
+        }
+
         @if(showPenaltyInformation && PenaltyTypeHelper.getKeysFromSession().isDefined) {
             <span class="govuk-caption-l">
             @{messages("penaltyInformation.headerText",
@@ -85,7 +100,7 @@
 }
 
 @govukTemplate(
-    pageTitle = pageTitle,
+    pageTitle = title,
     headBlock = headBlock,
     headerBlock = headerDefault,
     beforeContentBlock = beforeContentBlock,

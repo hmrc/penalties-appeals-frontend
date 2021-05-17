@@ -33,7 +33,9 @@
     pageTitle: String,
     scriptsBlock: Option[Html] = None,
     isPageFullWidth: Boolean = true,
-    showPenaltyInformation: Boolean = true
+    showPenaltyInformation: Boolean = true,
+    formHasErrors: Boolean = false,
+    formErrors: Seq[FormError] = Seq.empty
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
@@ -72,5 +74,7 @@
     beforeContentBlock = Some(beforeContentBlock),
     footerBlock = Some(hmrcStandardFooter()),
     isFullWidth = isPageFullWidth,
-    showPenaltyInformation = showPenaltyInformation
+    showPenaltyInformation = showPenaltyInformation,
+    formHasErrors = formHasErrors,
+    errors = formErrors
 )(contentBlock)
