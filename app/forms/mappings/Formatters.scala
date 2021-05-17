@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package forms
+package forms.mappings
 
 import play.api.data.FormError
+import play.api.data.format.Formatter
 
-class ReasonableExcuseFormSpec extends FormBehaviours {
-  val seqOfReasonableExcuses = Seq(
-    "reasonableExcuse1",
-    "reasonableExcuse2",
-    "reasonableExcuse3",
-    "reasonableExcuse4",
-    "reasonableExcuse5",
-    "reasonableExcuse6",
-    "reasonableExcuse7"
-  )
+trait Formatters {
 
-  val form = ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses)
+  private[mappings] def stringFormatter(errorKey: String): Formatter[String] = new Formatter[String] {
 
-  behave like mandatoryField(form, "value", FormError("value", "reasonableExcuses.error.required"))
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
+      data.get(key) match {
+        case None => Left(Seq(FormError(key, errorKey)))
+        case Some(x) if x.trim.length == 0 => Left(Seq(FormError(key, errorKey)))
+        case Some(s) => Right(s.trim)
+      }
+
+    override def unbind(key: String, value: String): Map[String, String] =
+      Map(key -> value.trim)
+  }
 }

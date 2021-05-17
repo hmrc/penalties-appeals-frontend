@@ -68,6 +68,7 @@ class ReasonableExcuseController @Inject()(
           val formProvider: Form[String] = ReasonableExcuseForm.reasonableExcuseForm(reasonableExcuses.map(_.`type`))
           formProvider.bindFromRequest.fold(
             formWithErrors => {
+              logger.debug(s"[ReasonableExcuseController][onSubmit] form errors ${formWithErrors.errors.head.message}")
               BadRequest(reasonableExcuseSelectionPage(formWithErrors,
                 ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses)))
             },

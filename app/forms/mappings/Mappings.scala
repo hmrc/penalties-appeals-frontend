@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package forms.mappings
 
-import play.api.data.FormError
+import play.api.data.FieldMapping
+import play.api.data.Forms.of
 
-class ReasonableExcuseFormSpec extends FormBehaviours {
-  val seqOfReasonableExcuses = Seq(
-    "reasonableExcuse1",
-    "reasonableExcuse2",
-    "reasonableExcuse3",
-    "reasonableExcuse4",
-    "reasonableExcuse5",
-    "reasonableExcuse6",
-    "reasonableExcuse7"
-  )
+trait Mappings extends Formatters {
 
-  val form = ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses)
-
-  behave like mandatoryField(form, "value", FormError("value", "reasonableExcuses.error.required"))
+  protected def text(errorKey: String = "error.required"): FieldMapping[String] =
+    of(stringFormatter(errorKey))
 }

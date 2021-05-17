@@ -16,14 +16,14 @@
 
 package forms
 
+import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms._
 
-object ReasonableExcuseForm {
+object ReasonableExcuseForm extends Mappings {
   val reasonableExcuseForm = (possibleExcuseValues: Seq[String]) => Form[String](
     single(
-      //TODO: need to be able to pass in custom message key here for error
-      "value" -> nonEmptyText.verifying(value => possibleExcuseValues.contains(value) && value.nonEmpty)
+      "value" -> text("reasonableExcuses.error.required").verifying(value => possibleExcuseValues.contains(value))
     )
   )
 }
