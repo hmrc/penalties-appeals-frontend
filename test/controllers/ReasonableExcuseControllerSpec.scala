@@ -190,6 +190,25 @@ class ReasonableExcuseControllerSpec extends SpecBase {
         ))
         status(result) shouldBe BAD_REQUEST
       }
+
+      "the validation is performed against an empty value - value is an empty string" in
+        new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockAppealService.getReasonableExcuseListAndParse()(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(
+            Some(seqOfReasonableExcuses)
+          ))
+
+        val result = controller.onSubmit()(fakeRequestWithCorrectKeys.withJsonBody(
+          Json.parse(
+            """
+              |{
+              |   "value": ""
+              |}
+              |""".stripMargin
+          )
+        ))
+        status(result) shouldBe BAD_REQUEST
+      }
     }
 
     "return 500" when {
