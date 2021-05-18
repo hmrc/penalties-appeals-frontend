@@ -5,6 +5,8 @@ common.pageTitle = {0} - {1} - GOV.UK
 
 app.common.back = Back
 
+error.summary.title = There is a problem
+
 # BETA Banner
 # ----------------------------------------------------------
 feedback.before = This is a new service - your
@@ -59,6 +61,11 @@ reasonableExcuses.technicalIssuesReason = Technology issues
 reasonableExcuses.otherReason = The reason does not fit into any of the other categories
 reasonableExcuses.breakerText = or
 reasonableExcuses.externalGuidanceLinkText = Read more about reasonable excuses
+reasonableExcuses.error.required = Select the reason for missing the VAT deadline
 
 
 site.opensInNewTab = (opens in a new tab)
+
+# Errors
+# ----------------------------------------------------------
+error.prefix = Error:

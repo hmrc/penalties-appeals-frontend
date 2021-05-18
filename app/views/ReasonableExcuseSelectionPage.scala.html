@@ -21,15 +21,16 @@
         formHelper: FormWithCSRF,
         govukButton: GovukButton,
         radios: components.radios,
-        link: components.link)
+        link: components.link
+)
 
 @(form: Form[_], radioOptions: Seq[RadioItem])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("reasonableExcuses.title"),
-    isPageFullWidth = false) {
+    isPageFullWidth = false,
+    formHasErrors = form.errors.nonEmpty,
+    formErrors = form.errors) {
     @formHelper(action = controllers.routes.ReasonableExcuseController.onSubmit()) {
-
-        @* TODO: Error summary here *@
 
         @radios(
             form = form,
