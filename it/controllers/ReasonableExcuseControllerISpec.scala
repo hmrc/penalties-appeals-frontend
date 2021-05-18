@@ -20,6 +20,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import stubs.AuthStub
 import stubs.PenaltiesStub._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
