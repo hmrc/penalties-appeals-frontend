@@ -18,7 +18,7 @@ package services
 
 import connectors.PenaltiesConnector
 import models.{AppealData, ReasonableExcuse, User}
-import play.api.Logger.logger
+import utils.Logger.logger
 import play.api.libs.json.{JsResult, JsValue, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 

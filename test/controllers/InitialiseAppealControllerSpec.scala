@@ -20,7 +20,6 @@ import base.SpecBase
 import models.{AppealData, PenaltyTypeEnum}
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.Helpers._
 import services.AppealService
 import testUtils.AuthTestModels
@@ -32,7 +31,7 @@ import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class InitialiseAppealControllerSpec extends SpecBase {
-  val mockAppealsService = mock[AppealService]
+  val mockAppealsService = mock(classOf[AppealService])
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAppealsService)
     reset(mockAuthConnector)

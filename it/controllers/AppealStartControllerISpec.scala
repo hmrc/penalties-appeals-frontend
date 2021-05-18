@@ -16,11 +16,10 @@
 
 package controllers
 
-import org.scalatest.concurrent.ScalaFutures.whenReady
 import play.api.http.Status
-import play.api.libs.ws.DefaultWSCookie
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 

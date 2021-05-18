@@ -18,7 +18,7 @@ package controllers.predicates
 
 import config.{AppConfig, ErrorHandler}
 import models.User
-import play.api.Logger.logger
+import utils.Logger.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{ActionBuilder, ActionFunction, Request, _}
 import services.AuthService

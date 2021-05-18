@@ -16,15 +16,6 @@
 
 package utils
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-
-class EnrolmentKeysSpec extends AnyWordSpec with Matchers {
-  "constructMTDVATEnrolmentKey" should {
-    "construct a valid enrolment key with the provided VRN" in {
-      val vrnToPassIn: String = "123456789"
-      val result = EnrolmentKeys.constructMTDVATEnrolmentKey(vrnToPassIn)
-      result shouldBe "HMRC-MTD-VAT~VRN~123456789"
-    }
-  }
+object Logger {
+  val logger: play.api.Logger = play.api.Logger("penaltiesAppealsFrontendLogger")
 }
