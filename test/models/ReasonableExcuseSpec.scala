@@ -16,10 +16,89 @@
 
 package models
 
-import org.scalatest.{Matchers, WordSpec}
+import base.SpecBase
+import forms.ReasonableExcuseForm
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-class ReasonableExcuseSpec extends WordSpec with Matchers {
+class ReasonableExcuseSpec extends SpecBase {
+  val seqOfReasonableExcuses: Seq[ReasonableExcuse] = Seq(
+    ReasonableExcuse(
+      `type` = "bereavement",
+      descriptionKey = "reasonableExcuses.bereavementReason",
+      isOtherOption = false
+    ),
+    ReasonableExcuse(
+      `type` = "crime",
+      descriptionKey = "reasonableExcuses.crimeReason",
+      isOtherOption = false
+    ),
+    ReasonableExcuse(
+      `type` = "fireOrFlood",
+      descriptionKey = "reasonableExcuses.fireOrFloodReason",
+      isOtherOption = false
+    ),
+    ReasonableExcuse(
+      `type` = "health",
+      descriptionKey = "reasonableExcuses.healthReason",
+      isOtherOption = false
+    ),
+    ReasonableExcuse(
+      `type` = "lossOfStaff",
+      descriptionKey = "reasonableExcuses.lossOfStaffReason",
+      isOtherOption = false
+    ),
+    ReasonableExcuse(
+      `type` = "technicalIssues",
+      descriptionKey = "reasonableExcuses.technicalIssuesReason",
+      isOtherOption = false
+    ),
+    ReasonableExcuse(
+      `type` = "other",
+      descriptionKey = "reasonableExcuses.otherReason",
+      isOtherOption = true
+    )
+  )
+
+  val seqOfRadioOptions = Seq(
+    RadioItem(
+      value = Some("bereavement"),
+      content = Text(messages("reasonableExcuses.bereavementReason")),
+      checked = false
+    ),
+    RadioItem(
+      value = Some("crime"),
+      content = Text(messages("reasonableExcuses.crimeReason")),
+      checked = false
+    ),
+    RadioItem(
+      value = Some("fireOrFlood"),
+      content = Text(messages("reasonableExcuses.fireOrFloodReason")),
+      checked = false
+    ),
+    RadioItem(
+      value = Some("health"),
+      content = Text(messages("reasonableExcuses.healthReason")),
+      checked = false
+    ),
+    RadioItem(
+      value = Some("lossOfStaff"),
+      content = Text(messages("reasonableExcuses.lossOfStaffReason")),
+      checked = false
+    ),
+    RadioItem(
+      value = Some("technicalIssues"),
+      content = Text(messages("reasonableExcuses.technicalIssuesReason")),
+      checked = false
+    ),
+    RadioItem(
+      value = Some("other"),
+      content = Text(messages("reasonableExcuses.otherReason")),
+      checked = false
+    )
+  )
+
   "singularReads" should {
     s"be able to read one $ReasonableExcuse" in {
       val jsonRepresentingOneReasonableExcuse: JsValue = Json.parse(
@@ -231,6 +310,41 @@ class ReasonableExcuseSpec extends WordSpec with Matchers {
       )
       val result = Json.fromJson[Seq[ReasonableExcuse]](jsonRepresentingInvalidSeqOfReasonableExcuses)(ReasonableExcuse.seqReads)
       result.isSuccess shouldBe false
+    }
+  }
+
+  "options" should {
+    "return a Seq of RadioItems that will be passed to the view - no pre-selection" in {
+      val result = ReasonableExcuse.options(ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`)),
+        seqOfReasonableExcuses)
+
+      result shouldBe seqOfRadioOptions
+    }
+
+    "return a Seq of RadioItems that will be passed to the view - pre-selection: bereavement" in {
+      val result = ReasonableExcuse.options(ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`)).fill("bereavement"),
+        seqOfReasonableExcuses)
+      val expectedResult = seqOfRadioOptions.drop(1).+:(RadioItem(
+        value = Some("bereavement"),
+        content = Text(messages("reasonableExcuses.bereavementReason")),
+        checked = true
+      ))
+
+      result shouldBe expectedResult
+    }
+  }
+
+  "optionsWithDivider" should {
+    "insert a divider before the 'Other' option" in {
+      val result = ReasonableExcuse.optionsWithDivider(
+        ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`)),
+        "reasonableExcuses.breakerText",
+        seqOfReasonableExcuses)
+      val divider = RadioItem(
+        divider = Some(messages("reasonableExcuses.breakerText"))
+      )
+
+      result shouldBe seqOfRadioOptions.dropRight(1) ++ Seq(divider) ++ Seq(seqOfRadioOptions.last)
     }
   }
 }

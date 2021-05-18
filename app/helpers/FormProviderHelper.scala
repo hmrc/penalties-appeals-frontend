@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package base
+package helpers
 
-class BaseSelectors {
-  val title = "title"
+import play.api.data.Form
+import play.api.mvc.Request
+import utils.SessionKeys
 
-  val h1 = "#main-content h1"
-  val h2 = "#main-content h2"
-
-  val pElementIndex = (index: Int) => s"#main-content p.govuk-body:nth-child($index)"
-
-  val externalGuidanceLink = "#external-guidance-link"
-
-  val labelForRadioButton = (index: Int) => if(index == 1) "label[for=value]" else s"label[for=value-$index]"
-
-  val breakerElement = ".govuk-radios__divider"
-
-  val listIndexWithElementIndex = (ulIndex: Int, liIndex: Int) => s"#main-content ul:nth-child($ulIndex) li:nth-child($liIndex)"
-
-  val button = "#main-content .govuk-button"
-
+object FormProviderHelper {
+  def getSessionKeyAndAttemptToFillAnswerAsString(formProvider: Form[String], sessionKeyToQuery: String)(implicit request: Request[_]): Form[String] = {
+    if (request.session.get(sessionKeyToQuery).isDefined) {
+      formProvider.fill(request.session.get(sessionKeyToQuery).get)
+    } else {
+      formProvider
+    }
+  }
 }

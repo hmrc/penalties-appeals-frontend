@@ -57,7 +57,8 @@ trait IntegrationSpecCommonBase extends UnitSpec with GuiceOneServerPerSuite wit
 
   val configForApp: Map[String, Any] = Map(
     "microservice.services.auth.port" -> stubPort,
-    "microservice.services.penalties.port" -> stubPort
+    "microservice.services.penalties.port" -> stubPort,
+    "auditing.enabled" -> false
   )
 
   override lazy val app = new GuiceApplicationBuilder()

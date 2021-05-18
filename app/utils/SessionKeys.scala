@@ -21,4 +21,5 @@ object SessionKeys {
   val startDateOfPeriod: String = "periodStart"
   val endDateOfPeriod: String = "periodEnd"
   val penaltyId: String = "penaltyId"
+  val reasonableExcuse: String = "reasonableExcuse"
 }

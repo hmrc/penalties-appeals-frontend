@@ -45,3 +45,20 @@ penaltyInformation.headerText = {0}: {1} to {2}
 # ----------------------------------------------------------
 penaltyType.lateSubmission = Late submission penalty
 penaltyType.latePayment = Late payment penalty
+
+# Reasonable excuse
+# ----------------------------------------------------------
+reasonableExcuses.title = What was the reason for missing the VAT deadline?
+reasonableExcuses.heading = What was the reason for missing the VAT deadline?
+reasonableExcuses.bereavementReason = Bereavement (someone died)
+reasonableExcuses.crimeReason = Crime
+reasonableExcuses.fireOrFloodReason = Fire or flood
+reasonableExcuses.healthReason = Health
+reasonableExcuses.lossOfStaffReason = Loss of staff essential to the VAT process
+reasonableExcuses.technicalIssuesReason = Technology issues
+reasonableExcuses.otherReason = The reason does not fit into any of the other categories
+reasonableExcuses.breakerText = or
+reasonableExcuses.externalGuidanceLinkText = Read more about reasonable excuses
+
+
+site.opensInNewTab = (opens in a new tab)

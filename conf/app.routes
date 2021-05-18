@@ -1,9 +1,11 @@
 # microservice specific routes
 
-->         /govuk-frontend              govuk.Routes
-->         /hmrc-frontend               hmrcfrontend.Routes
-GET        /appeal-start                controllers.AppealStartController.onPageLoad()
-GET        /initialise-appeal           controllers.InitialiseAppealController.onPageLoad(penaltyId: String)
-GET        /sign-out                    controllers.SignOutController.signOut
-GET        /language/:lang              controllers.LanguageSwitchController.switchToLanguage(lang: String)
-GET        /assets/*file                 controllers.Assets.versioned(path = "/public", file: Asset)
+->         /govuk-frontend                  govuk.Routes
+->         /hmrc-frontend                   hmrcfrontend.Routes
+GET        /appeal-start                    controllers.AppealStartController.onPageLoad()
+GET        /reason-for-missing-deadline     controllers.ReasonableExcuseController.onPageLoad()
+POST       /reason-for-missing-deadline     controllers.ReasonableExcuseController.onSubmit()
+GET        /initialise-appeal               controllers.InitialiseAppealController.onPageLoad(penaltyId: String)
+GET        /sign-out                        controllers.SignOutController.signOut
+GET        /language/:lang                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET        /assets/*file                     controllers.Assets.versioned(path = "/public", file: Asset)

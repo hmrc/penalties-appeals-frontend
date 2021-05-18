@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package base
+package forms
 
-class BaseSelectors {
-  val title = "title"
+import play.api.data.Form
+import play.api.data.Forms._
 
-  val h1 = "#main-content h1"
-  val h2 = "#main-content h2"
-
-  val pElementIndex = (index: Int) => s"#main-content p.govuk-body:nth-child($index)"
-
-  val externalGuidanceLink = "#external-guidance-link"
-
-  val labelForRadioButton = (index: Int) => if(index == 1) "label[for=value]" else s"label[for=value-$index]"
-
-  val breakerElement = ".govuk-radios__divider"
-
-  val listIndexWithElementIndex = (ulIndex: Int, liIndex: Int) => s"#main-content ul:nth-child($ulIndex) li:nth-child($liIndex)"
-
-  val button = "#main-content .govuk-button"
-
+object ReasonableExcuseForm {
+  val reasonableExcuseForm = (possibleExcuseValues: Seq[String]) => Form[String](
+    single(
+      //TODO: need to be able to pass in custom message key here for error
+      "value" -> nonEmptyText.verifying(value => possibleExcuseValues.contains(value) && value.nonEmpty)
+    )
+  )
 }
