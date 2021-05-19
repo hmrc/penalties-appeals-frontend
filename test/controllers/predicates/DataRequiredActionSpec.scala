@@ -17,8 +17,8 @@
 package controllers.predicates
 
 import base.SpecBase
-import controllers.Assets.Ok
 import play.api.http.Status
+import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
 import play.api.test.Helpers._
 import utils.SessionKeys

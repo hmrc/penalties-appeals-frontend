@@ -52,6 +52,8 @@
 
     <logger name="application" level="DEBUG"/>
 
+    <logger name="penaltiesAppealsFrontendLogger" level="DEBUG"/>
+
     <logger name="connector" level="DEBUG">
         <appender-ref ref="STDOUT"/>
     </logger>

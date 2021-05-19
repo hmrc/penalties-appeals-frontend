@@ -21,13 +21,13 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.ReasonableExcuseForm
 import helpers.FormProviderHelper
 import models.ReasonableExcuse
-import play.api.Logger.logger
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.AppealService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 import utils.SessionKeys
 import views.html.ReasonableExcuseSelectionPage
 

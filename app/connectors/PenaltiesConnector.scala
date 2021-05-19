@@ -17,8 +17,7 @@
 package connectors
 
 import config.AppConfig
-import models.AppealData
-import play.api.Logger.logger
+import utils.Logger.logger
 import play.api.http.Status._
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}

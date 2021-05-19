@@ -21,7 +21,6 @@ import connectors.PenaltiesConnector
 import models.{ReasonableExcuse, User}
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers._
@@ -30,7 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealServiceSpec extends SpecBase {
-  val mockPenaltiesConnector: PenaltiesConnector = mock[PenaltiesConnector]
+  val mockPenaltiesConnector: PenaltiesConnector = mock(classOf[PenaltiesConnector])
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 

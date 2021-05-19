@@ -21,11 +21,10 @@ import play.api.mvc.{Action, AnyContent}
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import testUtils.AuthMocks
-import uk.gov.hmrc.play.test.LogCapturing
 
 import scala.concurrent.Future
 
-class AuthPredicateSpec extends AuthMocks with LogCapturing {
+class AuthPredicateSpec extends AuthMocks {
   def target: Action[AnyContent] = mockAuthPredicate.async {
     _ => Future.successful(Ok("test"))
   }

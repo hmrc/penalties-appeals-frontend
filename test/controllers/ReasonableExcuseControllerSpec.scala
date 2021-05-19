@@ -21,7 +21,6 @@ import models.ReasonableExcuse
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -35,7 +34,7 @@ import views.html.ReasonableExcuseSelectionPage
 import scala.concurrent.Future
 
 class ReasonableExcuseControllerSpec extends SpecBase {
-  val mockAppealService: AppealService = mock[AppealService]
+  val mockAppealService: AppealService = mock(classOf[AppealService])
   val reasonableExcusePage: ReasonableExcuseSelectionPage = injector.instanceOf[ReasonableExcuseSelectionPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {

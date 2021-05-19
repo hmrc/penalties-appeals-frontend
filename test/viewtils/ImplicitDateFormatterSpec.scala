@@ -16,11 +16,12 @@
 
 package viewtils
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import java.time.{LocalDate, LocalDateTime}
 
-class ImplicitDateFormatterSpec extends WordSpec with Matchers {
+class ImplicitDateFormatterSpec extends AnyWordSpec with Matchers {
   "dateToString" should {
     "convert a LocalDate to a string - with the correct format" in {
       val sampleLocalDate: LocalDate = LocalDate.of(2020, 1, 1)
