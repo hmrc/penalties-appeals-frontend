@@ -61,7 +61,7 @@ trait SpecBase extends WordSpec with Matchers with GuiceOneAppPerSuite {
 
   val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
     .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"))
+      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"))
 
   lazy val authPredicate: AuthPredicate = new AuthPredicate(
     messagesApi,

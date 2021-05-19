@@ -38,7 +38,8 @@ object PenaltiesStub {
             Json.obj(
               "type" -> PenaltyTypeEnum.Late_Submission,
               "startDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
-              "endDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString
+              "endDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
+              "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString
             ).toString()
           )
       )

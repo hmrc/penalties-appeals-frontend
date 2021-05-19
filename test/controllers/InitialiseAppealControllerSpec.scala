@@ -59,7 +59,8 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val appealDataToReturn: AppealData = AppealData(
         `type` = PenaltyTypeEnum.Late_Submission,
         startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
-        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0)
+        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
+        dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0)
       )
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
@@ -70,6 +71,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
     }
   }
 }

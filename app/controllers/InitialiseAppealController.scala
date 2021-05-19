@@ -57,5 +57,6 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
       .addingToSession((SessionKeys.appealType, appealModel.`type`.toString))
       .addingToSession((SessionKeys.startDateOfPeriod, appealModel.startDate.toString))
       .addingToSession((SessionKeys.endDateOfPeriod, appealModel.endDate.toString))
+      .addingToSession((SessionKeys.dueDateOfPeriod, appealModel.dueDate.toString))
   }
 }

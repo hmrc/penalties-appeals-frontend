@@ -27,14 +27,16 @@ class AppealDataSpec extends WordSpec with Matchers {
       |{
       | "type": "LATE_SUBMISSION",
       | "startDate": "2020-01-01T12:00:00",
-      | "endDate": "2020-01-01T13:00:00"
+      | "endDate": "2020-01-01T13:00:00",
+      | "dueDate": "2020-02-07T13:00:00"
       |}
       |""".stripMargin)
 
   val expectedModel = AppealData(
     `type` = PenaltyTypeEnum.Late_Submission,
     startDate = LocalDateTime.of(2020, 1, 1, 12, 0, 0),
-    endDate = LocalDateTime.of(2020, 1, 1, 13, 0, 0)
+    endDate = LocalDateTime.of(2020, 1, 1, 13, 0, 0),
+    dueDate = LocalDateTime.of(2020, 2, 7, 13, 0, 0)
   )
 
   "AppealData" should {

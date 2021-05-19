@@ -31,8 +31,9 @@ class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val 
     (request.session.get(SessionKeys.penaltyId),
       request.session.get(SessionKeys.appealType),
       request.session.get(SessionKeys.startDateOfPeriod),
-      request.session.get(SessionKeys.endDateOfPeriod)) match {
-      case (Some(_), Some(_), Some(_), Some(_)) =>
+      request.session.get(SessionKeys.endDateOfPeriod),
+      request.session.get(SessionKeys.dueDateOfPeriod)) match {
+      case (Some(_), Some(_), Some(_), Some(_), Some(_)) =>
         Future.successful(Right(request))
       case _ =>
         Future.successful(Left(errorHandler.showInternalServerError(request)))
