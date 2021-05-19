@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package forms
+package messages
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms._
+object HonestyDeclarationMessages {
+  val title = "Honesty declaration - Appeal a VAT penalty - GOV.UK"
 
-object ReasonableExcuseForm extends Mappings {
-  val reasonableExcuseForm = (possibleExcuseValues: Seq[String]) => Form[String](
-    single(
-      "value" -> text("reasonableExcuses.error.required").verifying("reasonableExcuses.error.required", value => possibleExcuseValues.contains(value))
-    )
-  )
+  val h1 = "Honesty declaration"
+
+  val p1 = "I confirm that:"
+
+  val li1 = (reasonText: String, dueDate: String) => s"because $reasonText, I was unable to submit the VAT Return due on $dueDate"
+
+  val li2 = "no one else was available to make the submission for me"
+
+  val li3 = "I will provide honest and accurate information in this appeal"
+
+  val acceptAndContinueButton = "Accept and continue"
 }

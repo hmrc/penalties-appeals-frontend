@@ -74,8 +74,7 @@ class ReasonableExcuseController @Inject()(
             },
             selection => {
               logger.debug(s"[ReasonableExcuseController][onSubmit] User selected $selection option - adding '$selection' to session.")
-              //TODO: change to next page in journey
-              Redirect("")
+              Redirect(controllers.routes.HonestyDeclarationController.onPageLoad())
                 .addingToSession(SessionKeys.reasonableExcuse -> selection)
             }
           )
