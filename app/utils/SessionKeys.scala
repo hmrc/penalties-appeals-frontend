@@ -20,6 +20,7 @@ object SessionKeys {
   val appealType: String = "appealType"
   val startDateOfPeriod: String = "periodStart"
   val endDateOfPeriod: String = "periodEnd"
+  val dueDateOfPeriod: String = "periodDueDate"
   val penaltyId: String = "penaltyId"
   val reasonableExcuse: String = "reasonableExcuse"
 }

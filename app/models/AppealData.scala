@@ -24,7 +24,8 @@ import java.time.LocalDateTime
 case class AppealData(
                        `type`: PenaltyTypeEnum.Value,
                         startDate: LocalDateTime,
-                        endDate: LocalDateTime
+                        endDate: LocalDateTime,
+                        dueDate: LocalDateTime
                      )
 
 object AppealData {
