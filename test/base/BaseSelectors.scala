@@ -34,4 +34,8 @@ class BaseSelectors {
 
   val button = "#main-content .govuk-button"
 
+  val hintText = "#main-content .govuk-hint"
+
+  val dateEntry = (index: Int) => s"#date > div:nth-child($index) > div > label"
+
 }

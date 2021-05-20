@@ -140,7 +140,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/reason-for-missing-deadline").get())
+      val request = await(buildClientForRequestToApp(uri = "/reason-for-missing-deadline").post(""))
       request.status shouldBe Status.SEE_OTHER
     }
   }
