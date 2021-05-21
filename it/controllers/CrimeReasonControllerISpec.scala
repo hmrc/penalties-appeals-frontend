@@ -194,4 +194,119 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
       request.status shouldBe Status.SEE_OTHER
     }
   }
+
+  "GET /has-this-crime-been-reported" should {
+    "return 200 (OK) when the user is authorised" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-this-crime-been-reported").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
+      )
+      val request = await(controller.onPageLoadForHasCrimeBeenReported()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.OK
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-this-crime-been-reported")
+      val request = await(controller.onPageLoadForHasCrimeBeenReported()(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-this-crime-been-reported").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onPageLoadForHasCrimeBeenReported()(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/has-this-crime-been-reported").get())
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
+  "POST /has-this-crime-been-reported" should {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "value": "yes"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe ""
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
+    }
+
+    "return 400 (BAD_REQUEST)" when {
+      "the value is invalid" in {
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
+        ).withJsonBody(
+          Json.parse(
+            """
+              |{
+              | "value": "fake_value"
+              |}
+              |""".stripMargin)
+        )
+        val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "no body is submitted" in {
+        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
+        )
+        val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeysAndNoBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported")
+      val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/when-did-the-crime-happen").post(""))
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
 }
