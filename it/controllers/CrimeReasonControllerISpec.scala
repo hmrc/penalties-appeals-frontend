@@ -34,7 +34,8 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
       )
       val request = await(controller.onPageLoadForWhenCrimeHappened()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
@@ -69,7 +70,8 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
       ).withJsonBody(
         Json.parse(
           """
@@ -92,7 +94,8 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.penaltyId, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
         ).withJsonBody(
           Json.parse(
             """
@@ -112,7 +115,8 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.penaltyId, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
         )
         val request = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -123,7 +127,8 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.penaltyId, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
         )
 
         val noDayJsonBody: JsValue = Json.parse(
@@ -176,7 +181,8 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
       )
       val request = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
