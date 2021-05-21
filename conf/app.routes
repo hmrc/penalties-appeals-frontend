@@ -22,3 +22,5 @@ GET        /assets/*file                     controllers.Assets.versioned(path =
 # Crime Reasonable Excuse Journey
 GET        /when-did-the-crime-happen       controllers.CrimeReasonController.onPageLoadForWhenCrimeHappened()
 POST       /when-did-the-crime-happen       controllers.CrimeReasonController.onSubmitForWhenCrimeHappened()
+GET        /has-this-crime-been-reported    controllers.CrimeReasonController.onPageLoadForHasCrimeBeenReported()
+POST       /has-this-crime-been-reported    controllers.CrimeReasonController.onSubmitForHasCrimeBeenReported()

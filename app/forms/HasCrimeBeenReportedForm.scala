@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package utils
+package forms
 
-object SessionKeys {
-  val appealType: String = "appealType"
-  val startDateOfPeriod: String = "periodStart"
-  val endDateOfPeriod: String = "periodEnd"
-  val dueDateOfPeriod: String = "periodDueDate"
-  val penaltyId: String = "penaltyId"
-  val reasonableExcuse: String = "reasonableExcuse"
-  val dateOfCrime: String = "dateOfCrime"
-  val hasConfirmedDeclaration: String = "hasConfirmedDeclaration"
-  val hasCrimeBeenReportedToPolice = "hasCrimeBeenReportedToPolice"
+import forms.mappings.Mappings
+import play.api.data.Form
+import play.api.data.Forms.single
+
+object HasCrimeBeenReportedForm extends Mappings {
+  final val options = Seq("yes", "no", "unknown")
+  val hasCrimeBeenReportedForm = Form[String](
+    single(
+      "value" -> text("crimeReason.hasBeenReported.required")
+        .verifying("crimeReason.hasBeenReported.required", value => options.contains(value))
+    )
+  )
 }

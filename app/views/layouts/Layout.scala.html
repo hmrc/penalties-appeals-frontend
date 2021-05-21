@@ -35,8 +35,7 @@
     isPageFullWidth: Boolean = true,
     showPenaltyInformation: Boolean = true,
     formHasErrors: Boolean = false,
-    formErrors: Seq[FormError] = Seq.empty
-)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+    formErrors: Seq[FormError] = Seq.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
     @phaseBanner("beta")
