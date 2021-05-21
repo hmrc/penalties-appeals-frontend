@@ -16,10 +16,11 @@
 
 package forms
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.{Form, FormError}
 
-trait FormBehaviours extends WordSpec with Matchers {
+trait FormBehaviours extends AnyWordSpec with Matchers {
   val emptyForm: Map[String, String] = Map.empty
 
   def mandatoryField(form: Form[_],
