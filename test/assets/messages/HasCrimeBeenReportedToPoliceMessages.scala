@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package utils
+package messages
 
-object SessionKeys {
-  val appealType: String = "appealType"
-  val startDateOfPeriod: String = "periodStart"
-  val endDateOfPeriod: String = "periodEnd"
-  val dueDateOfPeriod: String = "periodDueDate"
-  val penaltyId: String = "penaltyId"
-  val reasonableExcuse: String = "reasonableExcuse"
-  val dateOfCrime: String = "dateOfCrime"
-  val hasConfirmedDeclaration: String = "hasConfirmedDeclaration"
-  val hasCrimeBeenReportedToPolice = "hasCrimeBeenReportedToPolice"
+object HasCrimeBeenReportedToPoliceMessages {
+
+  val title = "Has this crime been reported to the police? - Appeal a VAT penalty - GOV.UK"
+
+  val h1 = "Has this crime been reported to the police?"
+
+  val yesOption = "Yes"
+
+  val noOption = "No"
+
+  val unknownOption = "I do not know"
+
+  val continueButton = "Continue"
+
 }

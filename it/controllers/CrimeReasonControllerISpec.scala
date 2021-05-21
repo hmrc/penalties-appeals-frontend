@@ -84,7 +84,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe ""
+      request.header.headers("Location") shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.dateOfCrime).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 

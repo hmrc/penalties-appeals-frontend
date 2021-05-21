@@ -102,6 +102,15 @@ crimeReason.error.required = The date of the crime must include a {0}
 crimeReason.error.invalid = The date of the crime must be a real date
 crimeReason.error.notInFuture = The date of the crime must be today or in the past
 
+# Has the crime been reported page
+# ----------------------------------------------------------
+crimeReason.hasBeenReported.title = Has this crime been reported to the police?
+crimeReason.hasBeenReported.heading = Has this crime been reported to the police?
+crimeReason.hasBeenReported.yes = Yes
+crimeReason.hasBeenReported.no = No
+crimeReason.hasBeenReported.unknown = I do not know
+crimeReason.hasBeenReported.required = Tell us if the police have been told about the crime
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day

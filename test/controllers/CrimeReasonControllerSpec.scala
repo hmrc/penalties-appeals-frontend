@@ -28,13 +28,14 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.crime.WhenDidCrimeHappenPage
+import views.html.reasonableExcuseJourneys.crime.{HasCrimeBeenReportedToPolicePage, WhenDidCrimeHappenPage}
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
 class CrimeReasonControllerSpec extends SpecBase {
-  val page: WhenDidCrimeHappenPage = injector.instanceOf[WhenDidCrimeHappenPage]
+  val whenDidCrimeHappenPage: WhenDidCrimeHappenPage = injector.instanceOf[WhenDidCrimeHappenPage]
+  val hasCrimeBeenReportedPage: HasCrimeBeenReportedToPolicePage = injector.instanceOf[HasCrimeBeenReportedToPolicePage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
@@ -43,11 +44,13 @@ class CrimeReasonControllerSpec extends SpecBase {
       Matchers.any(), Matchers.any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       Matchers.any(), Matchers.any())
     ).thenReturn(authResult)
-  }
 
-  object Controller extends CrimeReasonController(
-    page
-  )(authPredicate, dataRequiredAction, implicitly, stubMessagesControllerComponents())
+    val controller: CrimeReasonController = new CrimeReasonController(
+      whenDidCrimeHappenPage,
+      hasCrimeBeenReportedPage,
+    )(authPredicate, dataRequiredAction, appConfig, mcc)
+  }
+  
 
   "CrimeReasonController" should {
     "onPageLoadForWhenCrimeHappened" when {
@@ -55,12 +58,12 @@ class CrimeReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
 
         "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = Controller.onPageLoadForWhenCrimeHappened()(fakeRequestWithCorrectKeys)
+          val result: Future[Result] = controller.onPageLoadForWhenCrimeHappened()(fakeRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
 
         "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = Controller.onPageLoadForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withSession(SessionKeys.dateOfCrime -> "2021-01-01"))
+          val result = controller.onPageLoadForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withSession(SessionKeys.dateOfCrime -> "2021-01-01"))
           status(result) shouldBe OK
           val documentParsed = Jsoup.parse(contentAsString(result))
           documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
@@ -69,7 +72,7 @@ class CrimeReasonControllerSpec extends SpecBase {
         }
 
         "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = Controller.onPageLoadForWhenCrimeHappened()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoadForWhenCrimeHappened()(fakeRequest)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
@@ -77,12 +80,12 @@ class CrimeReasonControllerSpec extends SpecBase {
       "the user is unauthorised" when {
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = Controller.onPageLoadForWhenCrimeHappened()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoadForWhenCrimeHappened()(fakeRequest)
           status(result) shouldBe FORBIDDEN
         }
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = Controller.onPageLoadForWhenCrimeHappened()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoadForWhenCrimeHappened()(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }
@@ -91,7 +94,7 @@ class CrimeReasonControllerSpec extends SpecBase {
     "onSubmitForWhenCrimeHappened" should {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = Controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(
+          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(
             Json.parse(
               """
                 |{
@@ -107,7 +110,7 @@ class CrimeReasonControllerSpec extends SpecBase {
         "return 400 (BAD_REQUEST)" when {
 
           "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = Controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -120,7 +123,7 @@ class CrimeReasonControllerSpec extends SpecBase {
           }
 
           "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = Controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -133,7 +136,7 @@ class CrimeReasonControllerSpec extends SpecBase {
           }
 
           "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = Controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -150,12 +153,128 @@ class CrimeReasonControllerSpec extends SpecBase {
       "the user is unauthorised" when {
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = Controller.onSubmitForWhenCrimeHappened()(fakeRequest)
+          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened()(fakeRequest)
           status(result) shouldBe FORBIDDEN
         }
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = Controller.onSubmitForWhenCrimeHappened()(fakeRequest)
+          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onPageLoadForHasCrimeBeenReported" when {
+
+      "the user is authorised" must {
+
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForHasCrimeBeenReported()(fakeRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+
+        "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onPageLoadForHasCrimeBeenReported()(fakeRequestWithCorrectKeys.withSession(SessionKeys.hasCrimeBeenReportedToPolice -> "unknown"))
+          status(result) shouldBe OK
+          val documentParsed = Jsoup.parse(contentAsString(result))
+          documentParsed.select("#value-3").get(0).hasAttr("checked") shouldBe true
+        }
+
+        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForHasCrimeBeenReported()(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForHasCrimeBeenReported()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForHasCrimeBeenReported()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForHasCrimeBeenReported" should {
+
+      "user submits the form" when {
+        "the validation is performed against possible values - redirect on success and set the session key value" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "yes"
+                  |}
+                  |""".stripMargin
+              )
+            ))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe ""
+            await(result).session.get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
+          }
+
+        "the validation is performed against possible values - value does not appear in options list" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "this_is_fake"
+                  |}
+                  |""".stripMargin
+              )
+            ))
+            status(result) shouldBe BAD_REQUEST
+          }
+
+        "the validation is performed against an empty value - value is an empty string" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": ""
+                  |}
+                  |""".stripMargin
+              )
+            ))
+            status(result) shouldBe BAD_REQUEST
+            contentAsString(result) should include("There is a problem")
+            contentAsString(result) should include("Tell us if the police have been told about the crime")
+          }
+      }
+
+      "return 500" when {
+        "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onSubmitForHasCrimeBeenReported()(fakeRequest.withJsonBody(
+            Json.parse(
+              """
+                |{
+                |   "value": "no"
+                |}
+                |""".stripMargin
+            )
+          ))
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported()(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }
