@@ -95,7 +95,7 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
     fields.count(_._2.isDefined) match {
       case 3 =>
         val lengthErrors = fields.collect {
-          case (id, value) if id.contains("year") && value.exists(_.length > yearLengthMax) => id
+          case (id, value) if id.contains("year") && value.exists(_.length != yearLengthMax) => id
           case (id, value) if !id.contains("year") && value.exists(_.length > dayMonthLengthMax) => id
         }
         if (lengthErrors.nonEmpty) {

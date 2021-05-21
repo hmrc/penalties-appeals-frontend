@@ -38,8 +38,7 @@
         isFullWidth: Boolean = false,
         showPenaltyInformation: Boolean = true,
         formHasErrors: Boolean = false,
-        errors: Seq[FormError] = Seq.empty,
-        customErrKeyMsg: Option[String] = None
+        errors: Seq[FormError] = Seq.empty
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @headerDefault = {
@@ -82,7 +81,7 @@
         }'>
 
         @if(formHasErrors) {
-            @errorSummary(errors, customErrKeyMsg)
+            @errorSummary(errors)
         }
 
         @if(showPenaltyInformation && PenaltyTypeHelper.getKeysFromSession().isDefined) {

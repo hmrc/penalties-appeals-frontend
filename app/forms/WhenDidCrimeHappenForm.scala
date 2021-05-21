@@ -25,7 +25,6 @@ import java.time.LocalDate
 
 object WhenDidCrimeHappenForm extends Mappings {
   def whenCrimeHappenedForm()(implicit messages: Messages): Form[LocalDate] = {
-    val dateOfNow: LocalDate = LocalDate.now()
     Form(
       "date" -> localDate(
       invalidKey = "crimeReason.error.invalid",
