@@ -16,14 +16,10 @@
 
 package forms
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.FormError
 
-object ReasonableExcuseForm extends Mappings {
-  val reasonableExcuseForm = (possibleExcuseValues: Seq[String]) => Form[String](
-    single(
-      "value" -> text("reasonableExcuses.error.required").verifying("reasonableExcuses.error.required", value => possibleExcuseValues.contains(value))
-    )
-  )
+class HonestyDeclarationFormSpec extends FormBehaviours {
+  val form = HonestyDeclarationForm.honestyDeclarationForm
+
+  behave like mandatoryField(form, "value", FormError("value", "error.clickAcceptAndContinue"))
 }

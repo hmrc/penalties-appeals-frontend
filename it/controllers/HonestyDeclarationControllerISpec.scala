@@ -18,49 +18,42 @@ package controllers
 
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContent, RequestHeader}
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
-import stubs.PenaltiesStub._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[ReasonableExcuseController]
+class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
+  val controller = injector.instanceOf[HonestyDeclarationController]
 
-  "GET /reason-for-missing-deadline" should {
-    "return 200 (OK) when the user is authorised and the reasonable excuses can be fetched" in {
-      successfulFetchReasonableExcuseResponse
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/reason-for-missing-deadline").withSession(
+  "GET /honesty-declaration" should {
+    "return 200 (OK) when the user is authorised and has the correct keys" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.reasonableExcuse, "crime")
       )
       val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/reason-for-missing-deadline")
-      val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the list can not be retrieved from the backend" in {
-      failedFetchReasonableExcuseListResponse()
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/reason-for-missing-deadline")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration")
       val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/reason-for-missing-deadline").withSession(
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
       )
       val request = await(controller.onPageLoad()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -68,41 +61,42 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/reason-for-missing-deadline").get())
+      val request = await(buildClientForRequestToApp(uri = "/honesty-declaration").get())
       request.status shouldBe Status.SEE_OTHER
     }
   }
 
-  "POST /reason-for-missing-deadline" should {
+  "POST /honesty-declaration" should {
     "return 303 (SEE OTHER) when the user POSTs valid data - and the calls succeed - adding the key to the session" in {
-      successfulFetchReasonableExcuseResponse
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/reason-for-missing-deadline").withSession(
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.reasonableExcuse, "crime")
       ).withJsonBody(Json.parse(
         """
           |{
-          | "value": "type1"
+          | "value": "true"
           |}
           |""".stripMargin))
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.HonestyDeclarationController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeys).get(SessionKeys.reasonableExcuse).get shouldBe "type1"
+      //TODO: change to when crime happened page
+      request.header.headers("Location") shouldBe ""
+      request.session(fakeRequestWithCorrectKeys).get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
     }
 
     "return 400 (BAD REQUEST) when the user POSTs invalid data" in {
-      successfulFetchReasonableExcuseResponse
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/reason-for-missing-deadline").withSession(
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.reasonableExcuse, "crime")
       ).withJsonBody(Json.parse(
         """
           |{
@@ -115,24 +109,18 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/reason-for-missing-deadline")
-      val request = await(controller.onSubmit()(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the list can not be retrieved from the backend" in {
-      failedFetchReasonableExcuseListResponse()
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/reason-for-missing-deadline")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration")
       val request = await(controller.onSubmit()(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/reason-for-missing-deadline").withSession(
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
       )
       val request = await(controller.onSubmit()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -140,8 +128,9 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/reason-for-missing-deadline").get())
+      val request = await(buildClientForRequestToApp(uri = "/honesty-declaration").get())
       request.status shouldBe Status.SEE_OTHER
     }
   }
+
 }

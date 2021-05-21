@@ -1,7 +1,12 @@
 service.name = Appeal a VAT penalty
 service.homePageUrl = /penalties-appeals
 service.text = Sample text
+
+# Common
+# ----------------------------------------------------------
 common.pageTitle = {0} - {1} - GOV.UK
+common.continue = Continue
+common.acceptAndContinue = Accept and continue
 
 app.common.back = Back
 
@@ -37,7 +42,7 @@ appealStart.li.2.2 = the dates the reason related to
 appealStart.p5 = In some cases, we might also ask you to upload evidence to support the appeal.
 appealStart.p6 = We only need the information we ask for. You do not need to provide additional details unless we ask you for them.
 
-common.continue = Continue
+
 
 # Penalty Information
 # ----------------------------------------------------------
@@ -63,9 +68,25 @@ reasonableExcuses.breakerText = or
 reasonableExcuses.externalGuidanceLinkText = Read more about reasonable excuses
 reasonableExcuses.error.required = Select the reason for missing the VAT deadline
 
-
-site.opensInNewTab = (opens in a new tab)
+# Honesty declaration
+# ----------------------------------------------------------
+honestyDeclaration.title = Honesty declaration
+honestyDeclaration.heading = Honesty declaration
+honestyDeclaration.p1 = I confirm that:
+honestyDeclaration.li.1 = because {0}, I was unable to submit the VAT Return due on {1}
+honestyDeclaration.li.2 = no one else was available to make the submission for me
+honestyDeclaration.li.3 = I will provide honest and accurate information in this appeal
+honestyDeclaration.crime = I was affected by a crime
+honestyDeclaration.bereavement = I was affected by someone’s death
+honestyDeclaration.fireOrFlood = of a fire or flood
+honestyDeclaration.health = of a health issue
+honestyDeclaration.technicalIssues = of technology issues
 
 # Errors
 # ----------------------------------------------------------
 error.prefix = Error:
+# Not sure if this is as per design
+error.clickAcceptAndContinue = Please click ’Accept and continue’
+
+
+site.opensInNewTab = (opens in a new tab)

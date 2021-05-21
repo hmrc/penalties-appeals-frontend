@@ -18,12 +18,12 @@ package forms
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.{nonEmptyText, single}
 
-object ReasonableExcuseForm extends Mappings {
-  val reasonableExcuseForm = (possibleExcuseValues: Seq[String]) => Form[String](
+object HonestyDeclarationForm extends Mappings {
+  val honestyDeclarationForm = Form[String](
     single(
-      "value" -> text("reasonableExcuses.error.required").verifying("reasonableExcuses.error.required", value => possibleExcuseValues.contains(value))
+      "value" -> text("error.clickAcceptAndContinue").verifying("error.clickAcceptAndContinue", _ == "true")
     )
   )
 }

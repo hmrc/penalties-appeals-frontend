@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package forms
+package helpers
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms._
+import base.SpecBase
 
-object ReasonableExcuseForm extends Mappings {
-  val reasonableExcuseForm = (possibleExcuseValues: Seq[String]) => Form[String](
-    single(
-      "value" -> text("reasonableExcuses.error.required").verifying("reasonableExcuses.error.required", value => possibleExcuseValues.contains(value))
-    )
-  )
+class HonestyDeclarationHelperSpec extends SpecBase {
+  "getReasonText" should {
+
+    def reasonTest(reasonableExcuse: String, expectedText: String): Unit = {
+      s"the reason is '$reasonableExcuse' - text should be $expectedText" in {
+        val result = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
+        result shouldBe expectedText
+      }
+    }
+
+    "return the correct message" when {
+      reasonTest("crime", "I was affected by a crime")
+    }
+  }
 }

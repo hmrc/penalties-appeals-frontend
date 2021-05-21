@@ -166,8 +166,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
           )
         ))
         status(result) shouldBe SEE_OTHER
-        //TODO: change to the next page
-        redirectLocation(result).get shouldBe ""
+        redirectLocation(result).get shouldBe controllers.routes.HonestyDeclarationController.onPageLoad().url
         await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "bereavement"
       }
 
