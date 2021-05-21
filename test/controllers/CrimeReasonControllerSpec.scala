@@ -231,6 +231,8 @@ class CrimeReasonControllerSpec extends SpecBase {
               )
             ))
             status(result) shouldBe BAD_REQUEST
+            contentAsString(result) should include("There is a problem")
+            contentAsString(result) should include("Tell us if the police have been told about the crime")
           }
 
         "the validation is performed against an empty value - value is an empty string" in
