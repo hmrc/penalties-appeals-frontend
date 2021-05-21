@@ -19,6 +19,8 @@ package forms.mappings
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
+import scala.util.control.Exception.nonFatalCatch
+
 trait Formatters {
 
   private[mappings] def stringFormatter(errorKey: String): Formatter[String] = new Formatter[String] {
@@ -33,4 +35,28 @@ trait Formatters {
     override def unbind(key: String, value: String): Map[String, String] =
       Map(key -> value.trim)
   }
+
+  private[mappings] def intFormatter(requiredKey: String, wholeNumberKey: String, nonNumericKey: String, args: Seq[String] = Seq.empty): Formatter[Int] =
+    new Formatter[Int] {
+
+      val decimalRegexp = """^-?(\d*\.\d*)$"""
+
+      private val baseFormatter = stringFormatter(requiredKey)
+
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Int] =
+        baseFormatter
+          .bind(key, data)
+          .right.map(_.replace(",", ""))
+          .right.flatMap {
+          case s if s.matches(decimalRegexp) =>
+            Left(Seq(FormError(key, wholeNumberKey, args)))
+          case s =>
+            nonFatalCatch
+              .either(s.toInt)
+              .left.map(_ => Seq(FormError(key, nonNumericKey, args)))
+        }
+
+      override def unbind(key: String, value: Int): Map[String, String] =
+        baseFormatter.unbind(key, value.toString)
+    }
 }

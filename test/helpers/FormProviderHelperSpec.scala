@@ -21,6 +21,8 @@ import play.api.data.Form
 import play.api.data.Forms._
 import utils.SessionKeys
 
+import java.time.LocalDate
+
 class FormProviderHelperSpec extends SpecBase {
 
   "getSessionKeyAndAttemptToFillAnswerAsString" should {
@@ -36,6 +38,25 @@ class FormProviderHelperSpec extends SpecBase {
     "keep the existing (empty) form when the key in the session" in {
       val mockForm: Form[String] = Form(single("value" -> nonEmptyText))
       val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(mockForm, SessionKeys.reasonableExcuse)(fakeRequest.withSession(
+        "this-is-a-key" -> "this-is-a-value"
+      ))
+      result shouldBe mockForm
+    }
+  }
+
+  "getSessionKeyAndAttemptToFillAnswerAsDate" should {
+    "fill the form with the data stored in the session - if it exists" in {
+      val mockForm: Form[LocalDate] = Form(single("value" -> localDate))
+      val expectedResult = mockForm.fill(LocalDate.parse("2021-01-01"))
+      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.dateOfCrime)(fakeRequest.withSession(
+        SessionKeys.dateOfCrime -> "2021-01-01"
+      ))
+      result shouldBe expectedResult
+    }
+
+    "keep the existing (empty) form when the key in the session" in {
+      val mockForm: Form[LocalDate] = Form(single("value" -> localDate))
+      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.reasonableExcuse)(fakeRequest.withSession(
         "this-is-a-key" -> "this-is-a-value"
       ))
       result shouldBe mockForm

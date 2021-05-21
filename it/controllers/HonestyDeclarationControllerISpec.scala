@@ -84,8 +84,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
-      //TODO: change to when crime happened page
-      request.header.headers("Location") shouldBe ""
+      request.header.headers("Location") shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened().url
       request.session(fakeRequestWithCorrectKeys).get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
     }
 

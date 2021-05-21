@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package utils
+package messages
 
-object SessionKeys {
-  val appealType: String = "appealType"
-  val startDateOfPeriod: String = "periodStart"
-  val endDateOfPeriod: String = "periodEnd"
-  val dueDateOfPeriod: String = "periodDueDate"
-  val penaltyId: String = "penaltyId"
-  val reasonableExcuse: String = "reasonableExcuse"
-  val dateOfCrime: String = "dateOfCrime"
-  val hasConfirmedDeclaration: String = "hasConfirmedDeclaration"
+object WhenDidCrimeHappenMessages {
+  val title = "When did the crime happen? - Appeal a VAT penalty - GOV.UK"
+
+  val heading = "When did the crime happen?"
+
+  val hintText = "For example, 12 3 2018"
+
+  val dayEntry = "Day"
+
+  val monthEntry = "Month"
+
+  val yearEntry = "Year"
+
+  val continueButton = "Continue"
 }

@@ -18,9 +18,22 @@ package forms.mappings
 
 import play.api.data.FieldMapping
 import play.api.data.Forms.of
+import play.api.i18n.Messages
+
+import java.time.LocalDate
 
 trait Mappings extends Formatters {
 
   protected def text(errorKey: String = "error.required"): FieldMapping[String] =
     of(stringFormatter(errorKey))
+
+  protected def localDate(
+                           invalidKey: String,
+                           allRequiredKey: String,
+                           twoRequiredKey: String,
+                           requiredKey: String,
+                           fieldLengthKey: String = "error.date.length",
+                           futureKey: Option[String] = None,
+                           args: Seq[String] = Seq.empty)(implicit messages: Messages): FieldMapping[LocalDate] =
+    of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey, requiredKey, fieldLengthKey, futureKey, args))
 }

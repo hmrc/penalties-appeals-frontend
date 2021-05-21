@@ -20,10 +20,21 @@ import play.api.data.Form
 import play.api.mvc.Request
 import utils.SessionKeys
 
+import java.time.LocalDate
+
 object FormProviderHelper {
   def getSessionKeyAndAttemptToFillAnswerAsString(formProvider: Form[String], sessionKeyToQuery: String)(implicit request: Request[_]): Form[String] = {
     if (request.session.get(sessionKeyToQuery).isDefined) {
       formProvider.fill(request.session.get(sessionKeyToQuery).get)
+    } else {
+      formProvider
+    }
+  }
+
+  def getSessionKeyAndAttemptToFillAnswerAsDate(formProvider: Form[LocalDate], sessionKeyToQuery: String)(implicit request: Request[_]): Form[LocalDate] = {
+    if (request.session.get(sessionKeyToQuery).isDefined) {
+      val parsedDate: LocalDate = LocalDate.parse(request.session.get(sessionKeyToQuery).get)
+      formProvider.fill(parsedDate)
     } else {
       formProvider
     }

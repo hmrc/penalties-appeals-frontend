@@ -90,3 +90,20 @@ error.clickAcceptAndContinue = Please click ’Accept and continue’
 
 
 site.opensInNewTab = (opens in a new tab)
+
+# When did the crime happen page
+# ----------------------------------------------------------
+crimeReason.title = When did the crime happen?
+crimeReason.heading = When did the crime happen?
+crimeReason.hintText = For example, 12 3 2018
+crimeReason.error.required.all = Enter the date of the crime
+crimeReason.error.required.two = The date of the crime must include a {0} and a {1}
+crimeReason.error.required = The date of the crime must include a {0}
+crimeReason.error.invalid = The date of the crime must be a real date
+crimeReason.error.notInFuture = The date of the crime must be today or in the past
+
+# Date input fields
+# ----------------------------------------------------------
+date.day = Day
+date.month = Month
+date.year = Year
