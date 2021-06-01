@@ -41,6 +41,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       })(
         reasonableExcuse => {
           if(SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for reasonable excuse: $reasonableExcuse")
             val answersFromSession = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse)
             Ok(checkYourAnswersPage(answersFromSession))
           } else {

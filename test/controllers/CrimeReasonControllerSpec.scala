@@ -215,7 +215,7 @@ class CrimeReasonControllerSpec extends SpecBase {
               )
             ))
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe ""
+            redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
             await(result).session.get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
           }
 

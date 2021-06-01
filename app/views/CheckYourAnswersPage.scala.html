@@ -27,7 +27,7 @@
 @layout(pageTitle = messages("checkYourAnswers.title"),
     isPageFullWidth = false) {
     <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
-    <h2 class="govuk-heading-m">@messages("checkYourAnswers.yourDetails.h2")</h2>
+    <h2 class="govuk-heading-m" id="your-details">@messages("checkYourAnswers.yourDetails.h2")</h2>
 
     <dl class="govuk-summary-list">
         @contentToDisplayInSummaryList.map { keyValue =>
@@ -45,7 +45,7 @@
         }
     </dl>
 
-    <h2 class="govuk-heading-m">@messages("checkYourAnswers.declaration.h2")</h2>
+    <h2 class="govuk-heading-m" id="declaration">@messages("checkYourAnswers.declaration.h2")</h2>
     <p class="govuk-body govuk-!-padding-bottom-2">
         @messages("checkYourAnswers.declaration.p1")
         <br>
