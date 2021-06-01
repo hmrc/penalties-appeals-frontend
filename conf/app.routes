@@ -24,3 +24,7 @@ GET        /when-did-the-crime-happen       controllers.CrimeReasonController.on
 POST       /when-did-the-crime-happen       controllers.CrimeReasonController.onSubmitForWhenCrimeHappened()
 GET        /has-this-crime-been-reported    controllers.CrimeReasonController.onPageLoadForHasCrimeBeenReported()
 POST       /has-this-crime-been-reported    controllers.CrimeReasonController.onSubmitForHasCrimeBeenReported()
+
+# Check Your Answers page
+GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
+POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()
