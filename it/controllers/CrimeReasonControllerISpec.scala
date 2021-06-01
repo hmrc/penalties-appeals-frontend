@@ -249,7 +249,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe ""
+      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
     }
 

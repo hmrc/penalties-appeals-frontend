@@ -42,7 +42,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       SessionKeys.dateOfCrime -> "2022-01-01"
     )
 
-  val fakeRequestForCrimeJourneyNoReasonablExcuse = fakeRequestWithCorrectKeys
+  val fakeRequestForCrimeJourneyNoReasonableExcuse = fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> "true",
@@ -68,7 +68,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     page,
     errorHandler
   )(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction)
-  
+
   "onPageLoad" should {
     "the user is authorised" must {
 
@@ -79,7 +79,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       "return ISE" when {
         "the user has not selected a reasonable excuse" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourneyNoReasonablExcuse)
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourneyNoReasonableExcuse)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
