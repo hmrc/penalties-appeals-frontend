@@ -22,13 +22,13 @@
         govukButton: GovukButton,
         dateInput: components.inputDate)
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("crimeReason.title"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
-    @formHelper(action = controllers.routes.CrimeReasonController.onSubmitForWhenCrimeHappened()) {
+    @formHelper(action = postAction) {
 
         @dateInput(
             form = form,

@@ -19,6 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidCrimeHappenForm
 import messages.WhenDidCrimeHappenMessages._
+import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -30,7 +31,8 @@ class WhenDidCrimeHappenPageSpec extends SpecBase with ViewBehaviours {
     val whenDidCrimeHappenPage: WhenDidCrimeHappenPage = injector.instanceOf[WhenDidCrimeHappenPage]
     object Selectors extends BaseSelectors
 
-    def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidCrimeHappenPage.apply(form)
+    def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidCrimeHappenPage.apply(form,
+      controllers.routes.CrimeReasonController.onSubmitForWhenCrimeHappened(NormalMode))
 
     val formProvider = WhenDidCrimeHappenForm.whenCrimeHappenedForm()
 

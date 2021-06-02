@@ -18,6 +18,7 @@ package base
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
+import navigation.Navigation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito.mock
@@ -39,6 +40,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
   lazy val injector = app.injector
+
+  val mainNavigator: Navigation = app.injector.instanceOf[Navigation]
 
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
