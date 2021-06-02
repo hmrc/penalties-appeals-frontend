@@ -16,6 +16,7 @@
 
 package helpers
 
+import models.CheckMode
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import utils.SessionKeys
@@ -38,9 +39,15 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
                                                                                   messages: Messages): Seq[(String, String, String)] = {
     reasonableExcuse match {
       case "crime" => Seq(
-          (messages("checkYourAnswers.reasonableExcuse"), messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"), "#"),
-          (messages("checkYourAnswers.crime.whenDidTheCrimeHappen"), dateToString(LocalDate.parse(request.session.get(SessionKeys.dateOfCrime).get)), "#"),
-          (messages("checkYourAnswers.crime.hasCrimeBeenReported"), messages(s"checkYourAnswers.crime.${request.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get}"), "#")
+          (messages("checkYourAnswers.reasonableExcuse"),
+            messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+            controllers.routes.ReasonableExcuseController.onPageLoad().url),
+          (messages("checkYourAnswers.crime.whenDidTheCrimeHappen"),
+            dateToString(LocalDate.parse(request.session.get(SessionKeys.dateOfCrime).get)),
+            controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url),
+          (messages("checkYourAnswers.crime.hasCrimeBeenReported"),
+            messages(s"checkYourAnswers.crime.${request.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get}"),
+            controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url)
         )
       }
   }

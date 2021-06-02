@@ -20,6 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.HonestyDeclarationForm._
 import helpers.HonestyDeclarationHelper
+import models.NormalMode
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -91,7 +92,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
 
   def getNextURLBasedOnReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): String = {
     reasonableExcuse match {
-      case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened().url
+      case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
     }
   }
 }

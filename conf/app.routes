@@ -20,10 +20,14 @@ GET        /language/:lang                  controllers.LanguageSwitchController
 GET        /assets/*file                     controllers.Assets.versioned(path = "/public", file: Asset)
 
 # Crime Reasonable Excuse Journey
-GET        /when-did-the-crime-happen       controllers.CrimeReasonController.onPageLoadForWhenCrimeHappened()
-POST       /when-did-the-crime-happen       controllers.CrimeReasonController.onSubmitForWhenCrimeHappened()
-GET        /has-this-crime-been-reported    controllers.CrimeReasonController.onPageLoadForHasCrimeBeenReported()
-POST       /has-this-crime-been-reported    controllers.CrimeReasonController.onSubmitForHasCrimeBeenReported()
+GET        /when-did-the-crime-happen              controllers.CrimeReasonController.onPageLoadForWhenCrimeHappened(mode: Mode = NormalMode)
+GET        /when-did-the-crime-happen/change       controllers.CrimeReasonController.onPageLoadForWhenCrimeHappened(mode: Mode = CheckMode)
+POST       /when-did-the-crime-happen              controllers.CrimeReasonController.onSubmitForWhenCrimeHappened(mode: Mode = NormalMode)
+POST       /when-did-the-crime-happen/change       controllers.CrimeReasonController.onSubmitForWhenCrimeHappened(mode: Mode = CheckMode)
+GET        /has-this-crime-been-reported           controllers.CrimeReasonController.onPageLoadForHasCrimeBeenReported(mode: Mode = NormalMode)
+GET        /has-this-crime-been-reported/change    controllers.CrimeReasonController.onPageLoadForHasCrimeBeenReported(mode: Mode = CheckMode)
+POST       /has-this-crime-been-reported           controllers.CrimeReasonController.onSubmitForHasCrimeBeenReported(mode: Mode = NormalMode)
+POST       /has-this-crime-been-reported/change    controllers.CrimeReasonController.onSubmitForHasCrimeBeenReported(mode: Mode = CheckMode)
 
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
