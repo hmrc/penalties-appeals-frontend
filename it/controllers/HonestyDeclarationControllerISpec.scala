@@ -16,6 +16,7 @@
 
 package controllers
 
+import models.NormalMode
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
@@ -84,7 +85,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened().url
+      request.header.headers("Location") shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
       request.session(fakeRequestWithCorrectKeys).get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
     }
 
