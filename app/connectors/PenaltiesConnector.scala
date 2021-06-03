@@ -17,6 +17,7 @@
 package connectors
 
 import config.AppConfig
+import models.appeals.AppealSubmission
 import utils.Logger.logger
 import play.api.http.Status._
 import play.api.libs.json.JsValue
@@ -79,5 +80,10 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
         None
       }
     }
+  }
+
+  def submitAppeal(appealSubmission: AppealSubmission)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
+    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl,
+      appealSubmission)(AppealSubmission.writes, implicitly, implicitly, implicitly)
   }
 }

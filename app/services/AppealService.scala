@@ -17,17 +17,19 @@
 package services
 
 import connectors.PenaltiesConnector
-import models.{AppealData, ReasonableExcuse, User}
+import models.appeals.AppealSubmission
+import models.{AppealData, ReasonableExcuse, UserRequest}
+import play.api.http.Status._
 import utils.Logger.logger
 import play.api.libs.json.{JsResult, JsValue, Json}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealService @Inject()(penaltiesConnector: PenaltiesConnector) {
 
-  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String)(implicit user: User[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn).map {
       _.fold[Option[AppealData]](
         None
@@ -62,6 +64,27 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector) {
           )
         }
       )
+    }
+  }
+
+  def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
+    val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse)
+    penaltiesConnector.submitAppeal(modelFromRequest).map {
+      response => response.status match {
+        case OK => {
+          logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
+          true
+        }
+        case _ => {
+          logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
+          false
+        }
+      }
+    } recover {
+      case e => {
+        logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
+        false
+      }
     }
   }
 }

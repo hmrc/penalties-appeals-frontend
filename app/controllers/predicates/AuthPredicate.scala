@@ -17,7 +17,7 @@
 package controllers.predicates
 
 import config.{AppConfig, ErrorHandler}
-import models.User
+import models.UserRequest
 import utils.Logger.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{ActionBuilder, ActionFunction, Request, _}
@@ -40,12 +40,12 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
                              (implicit val appConfig: AppConfig,
                               implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with
   I18nSupport with
-  ActionBuilder[User, AnyContent] with
-  ActionFunction[Request, User] {
+  ActionBuilder[UserRequest, AnyContent] with
+  ActionFunction[Request, UserRequest] {
 
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
 
-  override def invokeBlock[A](request: Request[A], block: User[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
     implicit val req: Request[A] = request
     val logMsgStart: String = "[AuthPredicate][invokeBlock]"
     authService.authorised().retrieve(Retrievals.affinityGroup and Retrievals.allEnrolments) {
@@ -77,11 +77,11 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
     }
   }
 
-  private[predicates] def checkVatEnrolment[A](allEnrolments: Enrolments, block: User[A] => Future[Result])(implicit request: Request[A]) = {
+  private[predicates] def checkVatEnrolment[A](allEnrolments: Enrolments, block: UserRequest[A] => Future[Result])(implicit request: Request[A]) = {
     val logMsgStart: String = "[AuthPredicate][checkVatEnrolment]"
-    val extractedMTDVATEnrolment: Option[String] = User.extractFirstMTDVatEnrolment(allEnrolments)
+    val extractedMTDVATEnrolment: Option[String] = UserRequest.extractFirstMTDVatEnrolment(allEnrolments)
     if(extractedMTDVATEnrolment.isDefined) {
-      val user: User[A] = User(extractedMTDVATEnrolment.get)
+      val user: UserRequest[A] = UserRequest(extractedMTDVATEnrolment.get)
       block(user)
     } else {
       logger.debug(s"$logMsgStart - User does not have an activated HMRC-MTD-VAT enrolment. User had these enrolments: ${allEnrolments.enrolments}")

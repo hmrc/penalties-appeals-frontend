@@ -21,18 +21,22 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.SessionAnswersHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.CheckYourAnswersPage
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswersPage,
+                                           appealService: AppealService,
                                            errorHandler: ErrorHandler)(implicit mcc: MessagesControllerComponents,
-                                                                             appConfig: AppConfig,
-                                                                             authorise: AuthPredicate,
-                                                                             dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+                                                                       ec: ExecutionContext,
+                                                                       appConfig: AppConfig,
+                                                                       authorise: AuthPredicate,
+                                                                       dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
   def onPageLoad: Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
@@ -40,7 +44,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         errorHandler.showInternalServerError
       })(
         reasonableExcuse => {
-          if(SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
+          if (SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
             logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for reasonable excuse: $reasonableExcuse")
             val answersFromSession = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse)
             Ok(checkYourAnswersPage(answersFromSession))
@@ -54,10 +58,28 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      //TODO: change to confirmation page once appeal has been submitted successfully
-      Redirect("")
+      request.session.get(SessionKeys.reasonableExcuse).fold({
+        logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
+        Future(errorHandler.showInternalServerError)
+      })(
+        reasonableExcuse => {
+          if (SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] All keys are present for reasonable excuse: $reasonableExcuse")
+            appealService.submitAppeal(reasonableExcuse).map {
+              case true => {
+                //TODO: change to confirmation page once appeal has been submitted successfully
+                Redirect("")
+              }
+              case false => errorHandler.showInternalServerError
+            }
+          } else {
+            logger.error(s"[CheckYourAnswersController][onSubmit] User did not have all answers for reasonable excuse: $reasonableExcuse")
+            Future(errorHandler.showInternalServerError)
+          }
+        }
+      )
     }
   }
 }
