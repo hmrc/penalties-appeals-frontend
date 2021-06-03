@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.PenaltiesConnector
-import models.{ReasonableExcuse, User}
+import models.{ReasonableExcuse, UserRequest}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.libs.json.{JsValue, Json}
@@ -53,7 +53,7 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new User[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -61,7 +61,7 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new User[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -69,7 +69,7 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(appealDataAsJson)))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new User[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
   }

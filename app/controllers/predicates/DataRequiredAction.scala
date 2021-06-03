@@ -17,17 +17,18 @@
 package controllers.predicates
 
 import config.ErrorHandler
+import models.UserRequest
 import play.api.mvc.{ActionRefiner, Request, Result}
 import utils.SessionKeys
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-trait DataRequiredAction extends ActionRefiner[Request, Request]
+trait  DataRequiredAction extends ActionRefiner[UserRequest, UserRequest]
 
 class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
 
-  override protected def refine[A](request: Request[A]): Future[Either[Result, Request[A]]] = {
+  override protected def refine[A](request: UserRequest[A]): Future[Either[Result, UserRequest[A]]] = {
     (request.session.get(SessionKeys.penaltyId),
       request.session.get(SessionKeys.appealType),
       request.session.get(SessionKeys.startDateOfPeriod),
