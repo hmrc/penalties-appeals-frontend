@@ -20,7 +20,7 @@ import play.api.http.Status
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
+import stubs.{AuthStub, PenaltiesStub}
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
@@ -78,6 +78,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
   "POST /check-your-answers" should {
     "redirect the user to the confirmation page on success" in {
+      PenaltiesStub.successfulAppealSubmission
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -92,6 +93,23 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe ""
+    }
+
+    "show an ISE when the appeal fails" in {
+      PenaltiesStub.failedAppealSubmission
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfCrime -> "2022-01-01"
+      )
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
