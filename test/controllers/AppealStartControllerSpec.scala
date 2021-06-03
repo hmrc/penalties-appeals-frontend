@@ -53,7 +53,7 @@ class AppealStartControllerSpec extends SpecBase {
       "the user is authorised" must {
 
         "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = Controller.onPageLoad()(fakeRequestWithCorrectKeys)
+          val result: Future[Result] = Controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
 
