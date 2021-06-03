@@ -17,6 +17,7 @@
 package controllers.predicates
 
 import base.SpecBase
+import models.UserRequest
 import play.api.http.Status
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
@@ -30,13 +31,13 @@ class DataRequiredActionSpec extends SpecBase {
 
   val testAction: Request[_] => Future[Result] = _ => Future.successful(Ok(""))
 
-  class Harness(requiredAction: DataRequiredAction, request: Request[_] = fakeRequest) {
+  class Harness(requiredAction: DataRequiredAction, request: UserRequest[_] = UserRequest("123456789", true, None)(fakeRequest)) {
     def onPageLoad(): Future[Result] = requiredAction.invokeBlock(request, testAction)
   }
 
   "refine" should {
     s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when all of the data is missing as part of the session" in {
-      val requestWithNoSessionKeys = fakeRequest
+      val requestWithNoSessionKeys = UserRequest("123456789")(fakeRequest)
       val fakeController = new Harness(
         requiredAction = new DataRequiredActionImpl(
           errorHandler
@@ -48,8 +49,8 @@ class DataRequiredActionSpec extends SpecBase {
     }
 
     s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when some of the data is missing as part of the session" in {
-      val requestWithPartSessionKeys = fakeRequest
-        .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "this is an appeal"), (SessionKeys.startDateOfPeriod, "date"))
+      val requestWithPartSessionKeys = UserRequest("123456789")(fakeRequest
+        .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "this is an appeal"), (SessionKeys.startDateOfPeriod, "date")))
       val fakeController = new Harness(
         requiredAction = new DataRequiredActionImpl(
           errorHandler
@@ -65,7 +66,7 @@ class DataRequiredActionSpec extends SpecBase {
         requiredAction = new DataRequiredActionImpl(
           errorHandler
         ),
-        request = fakeRequestWithCorrectKeys)
+        request = userRequestWithCorrectKeys)
 
       val result = await(fakeController.onPageLoad())
       result.header.status shouldBe OK

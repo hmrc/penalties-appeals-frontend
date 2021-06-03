@@ -18,6 +18,7 @@ package connectors
 
 import base.SpecBase
 import config.AppConfig
+import models.appeals.{AppealSubmission, CrimeAppealInformation}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -155,6 +156,38 @@ class PenaltiesConnectorSpec extends SpecBase {
         .thenReturn("http://url/url")
       val result = await(connector.getListOfReasonableExcuses())
       result.isDefined shouldBe false
+    }
+  }
+
+  "submitAppeal" should {
+    "return the HTTP response back to the caller" in new Setup {
+      when(mockHttpClient.POST[AppealSubmission, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(),
+        Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
+      when(mockAppConfig.submitAppealUrl)
+        .thenReturn("http://url/url")
+      val appealSubmissionModel = AppealSubmission(
+        submittedBy = "client", penaltyId = "1234", reasonableExcuse = "crime", honestyDeclaration = true, appealInformation = CrimeAppealInformation(
+          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None
+        )
+      )
+      val result = await(connector.submitAppeal(appealSubmissionModel))
+      result.status shouldBe OK
+    }
+
+    "return an exception when something unexpected goes wrong" in new Setup {
+      when(mockHttpClient.POST[AppealSubmission, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(),
+        Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.failed(new Exception("something went wrong.")))
+      when(mockAppConfig.submitAppealUrl)
+        .thenReturn("http://url/url")
+      val appealSubmissionModel = AppealSubmission(
+        submittedBy = "client", penaltyId = "1234", reasonableExcuse = "crime", honestyDeclaration = true, appealInformation = CrimeAppealInformation(
+          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None
+        )
+      )
+      val result = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel)))
+      result.getMessage shouldBe "something went wrong."
     }
   }
 }
