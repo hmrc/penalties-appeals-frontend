@@ -26,4 +26,16 @@ object SessionKeys {
   val dateOfCrime: String = "dateOfCrime"
   val hasConfirmedDeclaration: String = "hasConfirmedDeclaration"
   val hasCrimeBeenReportedToPolice = "hasCrimeBeenReportedToPolice"
+
+  val allKeys: Seq[String] = Seq(
+    appealType,
+    startDateOfPeriod,
+    endDateOfPeriod,
+    dueDateOfPeriod,
+    penaltyId,
+    reasonableExcuse,
+    dateOfCrime,
+    hasConfirmedDeclaration,
+    hasCrimeBeenReportedToPolice
+  )
 }
