@@ -28,13 +28,14 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
-import views.html.CheckYourAnswersPage
+import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   val page: CheckYourAnswersPage = injector.instanceOf[CheckYourAnswersPage]
+  val confirmationPage: AppealConfirmationPage = injector.instanceOf[AppealConfirmationPage]
   val mockAppealService: AppealService = mock(classOf[AppealService])
 
   val fakeRequestForCrimeJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
@@ -72,6 +73,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   object Controller extends CheckYourAnswersController(
     page,
     mockAppealService,
+    confirmationPage,
     errorHandler
   )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction)
 
@@ -122,8 +124,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           .thenReturn(Future.successful(true))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
         status(result) shouldBe SEE_OTHER
-        //TODO: change to confirmation success page
-        redirectLocation(result).get shouldBe ""
+        redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
       }
 
       "redirect the user to an ISE" when {
@@ -144,6 +145,29 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourneyWithoutSomeAnswers)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
+      }
+    }
+
+    "the user is unauthorised" when {
+
+      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+        val result: Future[Result] = Controller.onSubmit()(fakeRequest)
+        status(result) shouldBe FORBIDDEN
+      }
+
+      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+        val result: Future[Result] = Controller.onSubmit()(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
+
+  "onPageLoadForConfirmation" should {
+    "the user is authorised" when {
+      "show the confirmation page and remove all custom session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequestForCrimeJourney)
+        await(result).header.status shouldBe OK
+        SessionKeys.allKeys.toSet.subsetOf(await(result).session.data.values.toSet) shouldBe false
       }
     }
 

@@ -52,14 +52,14 @@
 
     <ul class="govuk-list">
         <li>
-            <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}">Return to your VAT penalties</a>
+            <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">@messages("appealConfirmation.returnToPenalties")</a>
         </li>
         <li>
-            <a class="govuk-link" href="@{appConfig.vatOverviewUrl}">View your VAT account</a>
+            <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="view-vat-account-link">@messages("appealConfirmation.returnToVatVc")</a>
         </li>
     </ul>
 
-    <p class="govuk-!-padding-top-4 govuk-body">
+    <p class="govuk-!-padding-top-4 govuk-body" id="feedback-link">
         <a href="@{appConfig.feedbackUrl}" class="govuk-link">
             @messages("appealConfirmation.feedbackLink.1")
         </a>

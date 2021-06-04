@@ -85,7 +85,7 @@
         }
 
         @if(showPenaltyInformation && PenaltyTypeHelper.getKeysFromSession().isDefined) {
-            <span class="govuk-caption-l">
+            <span class="govuk-caption-l" id="penalty-information">
             @{messages("penaltyInformation.headerText",
                 PenaltyTypeHelper.getKeysFromSession().get.head,
                 PenaltyTypeHelper.getKeysFromSession().get(1),

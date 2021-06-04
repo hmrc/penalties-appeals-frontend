@@ -92,7 +92,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe ""
+      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
 
     "show an ISE when the appeal fails" in {
@@ -110,6 +110,32 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/check-your-answers").post("{}"))
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
+  "GET /appeal-confirmation" should {
+    "redirect the user to the confirmation page on success" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfCrime -> "2022-01-01"
+      )
+      val request = await(controller.onPageLoadForConfirmation()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.OK
+      SessionKeys.allKeys.toSet.subsetOf(request.session(fakeRequestWithCorrectKeys).data.values.toSet) shouldBe false
+
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
