@@ -29,7 +29,6 @@ import utils.Logger.logger
 import utils.SessionKeys
 import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
 import viewtils.ImplicitDateFormatter
-import play.api.data.FormBinding.Implicits.formBinding
 
 import java.time.LocalDateTime
 import javax.inject.Inject
