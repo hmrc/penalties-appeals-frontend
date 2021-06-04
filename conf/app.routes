@@ -32,3 +32,4 @@ POST       /has-this-crime-been-reported/change    controllers.CrimeReasonContro
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()
+GET        /appeal-confirmation              controllers.CheckYourAnswersController.onPageLoadForConfirmation()
