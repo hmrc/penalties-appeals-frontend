@@ -16,11 +16,14 @@
 
 package models.appeals
 
+import base.SpecBase
+import models.UserRequest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
+import utils.SessionKeys
 
-class AppealSubmissionSpec extends AnyWordSpec with Matchers {
+class AppealSubmissionSpec extends SpecBase {
   val crimeAppealJson: JsValue = Json.parse(
     """
       |{
@@ -80,6 +83,64 @@ class AppealSubmissionSpec extends AnyWordSpec with Matchers {
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe crimeAppealInformationJson
+      }
+    }
+  }
+
+  "constructModelBasedOnReasonableExcuse" should {
+    "show submitted by agent - when the user is an agent" in {
+      val fakeAgentRequestForCrimeJourney = UserRequest("123456789", arn = Some("AGENT1"))(fakeRequestWithCorrectKeys.withSession(
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfCrime -> "2022-01-01")
+      )
+
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime")(fakeAgentRequestForCrimeJourney)
+      result.reasonableExcuse shouldBe "crime"
+      result.penaltyId shouldBe "123"
+      result.submittedBy shouldBe "agent"
+      result.honestyDeclaration shouldBe true
+      result.appealInformation shouldBe CrimeAppealInformation(
+        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None
+      )
+    }
+
+    "show submitted by client - when the user is a client" in {
+      val fakeRequestForCrimeJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfCrime -> "2022-01-01")
+      )
+
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime")(fakeRequestForCrimeJourney)
+      result.reasonableExcuse shouldBe "crime"
+      result.penaltyId shouldBe "123"
+      result.submittedBy shouldBe "client"
+      result.honestyDeclaration shouldBe true
+      result.appealInformation shouldBe CrimeAppealInformation(
+        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None
+      )
+    }
+
+    "for crime" must {
+      "change reported issue to false - when the answer for has crime been reported to police is NOT yes" in {
+        val fakeRequestForCrimeJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "crime",
+          SessionKeys.hasCrimeBeenReportedToPolice -> "unknown",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.dateOfCrime -> "2022-01-01")
+        )
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime")(fakeRequestForCrimeJourney)
+        result.reasonableExcuse shouldBe "crime"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "client"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe CrimeAppealInformation(
+          `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = false, statement = None
+        )
       }
     }
   }

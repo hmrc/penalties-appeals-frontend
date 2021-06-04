@@ -82,6 +82,14 @@ object PenaltiesStub {
       ))
   }
 
+  def failedAppealSubmissionWithFault: StubMapping = {
+    stubFor(post(urlEqualTo(submitAppealUri))
+      .willReturn(
+        aResponse()
+          .withFault(Fault.CONNECTION_RESET_BY_PEER)
+      ))
+  }
+
   def failedAppealSubmission: StubMapping = {
     stubFor(post(urlEqualTo(submitAppealUri))
       .willReturn(
