@@ -35,13 +35,14 @@
     isPageFullWidth: Boolean = true,
     showPenaltyInformation: Boolean = true,
     formHasErrors: Boolean = false,
+    backLinkEnabled: Boolean = true,
     formErrors: Seq[FormError] = Seq.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
     @phaseBanner("beta")
     @if(appConfig.welshLanguageSupportEnabled) {@languageSelect()}
 
-    @govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
+    @if(backLinkEnabled) {@govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))}
 }
 
 @headBlock = {
