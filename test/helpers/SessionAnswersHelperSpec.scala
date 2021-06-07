@@ -17,6 +17,7 @@
 package helpers
 
 import base.SpecBase
+import models.{CheckMode, NormalMode}
 import utils.SessionKeys
 
 class SessionAnswersHelperSpec extends SpecBase {
@@ -61,13 +62,13 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Crime"
-        result(0)._3 shouldBe "#"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the crime happen?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe "#"
+        result(1)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url
         result(2)._1 shouldBe "Has this crime been reported to the police?"
         result(2)._2 shouldBe "Yes"
-        result(2)._3 shouldBe "#"
+        result(2)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url
       }
     }
   }

@@ -58,7 +58,7 @@ class HonestyDeclarationControllerSpec extends SpecBase {
 
     "return 500" when {
       "the user hasn't selected an option on the reasonable excuse page" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        val result = controller.onPageLoad()(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
@@ -85,7 +85,7 @@ class HonestyDeclarationControllerSpec extends SpecBase {
   "onSubmit" should {
     "return 303" when {
       "the reasonable excuse has been selected and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onSubmit()(fakeRequestWithCorrectKeys
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession((SessionKeys.reasonableExcuse, "crime"))
           .withJsonBody(
             Json.parse(
@@ -94,7 +94,7 @@ class HonestyDeclarationControllerSpec extends SpecBase {
                 | "value": "true"
                 |}
                 |""".stripMargin)
-          ))
+          )))
 
         status(result) shouldBe SEE_OTHER
         await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
@@ -104,13 +104,13 @@ class HonestyDeclarationControllerSpec extends SpecBase {
 
     "return 400" when {
       "the user has posted an empty body" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onSubmit()(fakeRequestWithCorrectKeys
-          .withSession((SessionKeys.reasonableExcuse, "crime")))
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession((SessionKeys.reasonableExcuse, "crime"))))
         status(result) shouldBe BAD_REQUEST
       }
 
       "the user has changed the hidden value" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onSubmit()(fakeRequestWithCorrectKeys
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession((SessionKeys.reasonableExcuse, "crime"))
           .withJsonBody(
           Json.parse(
@@ -119,14 +119,14 @@ class HonestyDeclarationControllerSpec extends SpecBase {
               | "value": "royale_with_cheese"
               |}
               |""".stripMargin)
-        ))
+        )))
         status(result) shouldBe BAD_REQUEST
       }
     }
 
     "return 500" when {
       "the user hasn't selected an option on the reasonable excuse page" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onSubmit()(fakeRequestWithCorrectKeys)
+        val result = controller.onSubmit()(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 

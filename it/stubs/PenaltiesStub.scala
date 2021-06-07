@@ -16,7 +16,7 @@
 
 package stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, stubFor, urlEqualTo, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, stubFor, urlEqualTo, urlMatching}
 import com.github.tomakehurst.wiremock.http.Fault
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.PenaltyTypeEnum
@@ -28,6 +28,7 @@ import java.time.LocalDateTime
 object PenaltiesStub {
   private val appealUri = "/penalties/appeals-data/late-submissions"
   private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
+  private val submitAppealUri = "/penalties/appeals/submit-appeal"
 
   def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String): StubMapping = {
     stubFor(get(urlEqualTo(s"$appealUri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
@@ -71,6 +72,30 @@ object PenaltiesStub {
           )
       )
     )
+  }
+
+  def successfulAppealSubmission: StubMapping = {
+    stubFor(post(urlEqualTo(submitAppealUri))
+      .willReturn(
+        aResponse()
+          .withStatus(Status.OK)
+      ))
+  }
+
+  def failedAppealSubmissionWithFault: StubMapping = {
+    stubFor(post(urlEqualTo(submitAppealUri))
+      .willReturn(
+        aResponse()
+          .withFault(Fault.CONNECTION_RESET_BY_PEER)
+      ))
+  }
+
+  def failedAppealSubmission: StubMapping = {
+    stubFor(post(urlEqualTo(submitAppealUri))
+      .willReturn(
+        aResponse()
+          .withStatus(Status.INTERNAL_SERVER_ERROR)
+      ))
   }
 
   def failedGetAppealDataResponse(penaltyId: String, enrolmentKey: String, status: Int = Status.INTERNAL_SERVER_ERROR): StubMapping = {

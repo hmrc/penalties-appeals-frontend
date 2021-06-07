@@ -20,9 +20,13 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.{HasCrimeBeenReportedForm, ReasonableExcuseForm, WhenDidCrimeHappenForm}
 import helpers.FormProviderHelper
+import models.Mode
+import models.pages._
+import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request}
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
@@ -34,58 +38,63 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappenPage,
-                                      hasCrimeBeenReportedPage: HasCrimeBeenReportedToPolicePage)
+                                      hasCrimeBeenReportedPage: HasCrimeBeenReportedToPolicePage,
+                                      navigation: Navigation)
                                      (implicit authorise: AuthPredicate,
                                       dataRequired: DataRequiredAction,
                                       appConfig: AppConfig,
                                       mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
-  def onPageLoadForWhenCrimeHappened(): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoadForWhenCrimeHappened(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val formProvider: Form[LocalDate] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
         WhenDidCrimeHappenForm.whenCrimeHappenedForm(),
         SessionKeys.dateOfCrime
       )
-      Ok(whenDidCrimeHappenPage(formProvider))
+      val postAction = controllers.routes.CrimeReasonController.onSubmitForWhenCrimeHappened(mode)
+      Ok(whenDidCrimeHappenPage(formProvider, postAction))
     }
   }
 
-  def onSubmitForWhenCrimeHappened(): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onSubmitForWhenCrimeHappened(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
+      val postAction = controllers.routes.CrimeReasonController.onSubmitForWhenCrimeHappened(mode)
       WhenDidCrimeHappenForm.whenCrimeHappenedForm.bindFromRequest().fold(
         formWithErrors => {
-          BadRequest(whenDidCrimeHappenPage(formWithErrors))
+          BadRequest(whenDidCrimeHappenPage(formWithErrors, postAction))
         },
         dateOfCrime => {
           logger.debug(s"[CrimeReasonController][onSubmitForWhenCrimeHappened] - Adding '$dateOfCrime' to session under key: ${SessionKeys.dateOfCrime}")
-          Redirect(routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported())
+          Redirect(navigation.nextPage(WhenDidCrimeHappenPage, mode))
             .addingToSession((SessionKeys.dateOfCrime, dateOfCrime.toString))
         }
       )
     }
   }
 
-  def onPageLoadForHasCrimeBeenReported(): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoadForHasCrimeBeenReported(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         HasCrimeBeenReportedForm.hasCrimeBeenReportedForm,
         SessionKeys.hasCrimeBeenReportedToPolice
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(formProvider)
-      Ok(hasCrimeBeenReportedPage(formProvider, radioOptionsToRender))
+      val postAction = controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(mode)
+      Ok(hasCrimeBeenReportedPage(formProvider, radioOptionsToRender, postAction))
     }
   }
 
-  def onSubmitForHasCrimeBeenReported(): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onSubmitForHasCrimeBeenReported(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       HasCrimeBeenReportedForm.hasCrimeBeenReportedForm.bindFromRequest.fold(
         formHasErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(formHasErrors)
-          BadRequest(hasCrimeBeenReportedPage(formHasErrors, radioOptionsToRender))
+          val postAction = controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(mode)
+          BadRequest(hasCrimeBeenReportedPage(formHasErrors, radioOptionsToRender, postAction))
         },
         reportedAnswer => {
           logger.debug(s"[CrimeReasonController][onSubmitForHasCrimeBeenReported] - Adding '$reportedAnswer' to session under key: ${SessionKeys.hasCrimeBeenReportedToPolice}")
-          Redirect(controllers.routes.CheckYourAnswersController.onPageLoad())
+          Redirect(navigation.nextPage(HasCrimeBeenReportedPage, mode))
             .addingToSession((SessionKeys.hasCrimeBeenReportedToPolice, reportedAnswer))
         }
       )

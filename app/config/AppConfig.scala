@@ -38,6 +38,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
   }
 
+  lazy val submitAppealUrl: String = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl")
+
   lazy val reasonableExcuseFetchUrl: String = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.fetchUrl")
 
   lazy val signInContinueBaseUrl: String = config.get[String]("signIn.continueBaseUrl")
@@ -50,6 +52,10 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val timeoutCountdown: Int = config.get[Int]("timeout.countDown")
 
-  lazy val feedbackUrl: String = config.get[String]("feedback.url")
+  lazy val penaltiesFrontendUrl: String = config.get[String]("urls.penalties-frontend")
+
+  lazy val vatOverviewUrl: String = config.get[String]("urls.vatOverview")
+
+  lazy val feedbackUrl: String = config.get[String]("urls.feedbackUrl")
 
 }

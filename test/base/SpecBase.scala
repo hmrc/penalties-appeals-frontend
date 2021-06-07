@@ -18,6 +18,8 @@ package base
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
+import models.UserRequest
+import navigation.Navigation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito.mock
@@ -40,6 +42,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   lazy val injector = app.injector
 
+  val mainNavigator: Navigation = app.injector.instanceOf[Navigation]
+
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
@@ -60,13 +64,19 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val vrn: String = "123456789"
 
+  def fakeRequestConverter(fakeRequest: FakeRequest[AnyContent] = fakeRequestWithCorrectKeys): UserRequest[AnyContent] = {
+    UserRequest(vrn)(fakeRequest)
+  }
+
   val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
     .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
       (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"))
 
-  val fakeRequestWithCorrectKeysAndReasonableExcuseSet = (reasonableExcuse: String) => fakeRequest
+  val userRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestWithCorrectKeys)
+
+  val fakeRequestWithCorrectKeysAndReasonableExcuseSet = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
     .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.reasonableExcuse, reasonableExcuse))
+      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.reasonableExcuse, reasonableExcuse)))
 
   lazy val authPredicate: AuthPredicate = new AuthPredicate(
     messagesApi,

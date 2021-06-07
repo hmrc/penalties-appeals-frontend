@@ -133,5 +133,22 @@ checkYourAnswers.crime.reasonableExcuse = Crime
 checkYourAnswers.crime.hasCrimeBeenReported = Has this crime been reported to the police?
 checkYourAnswers.crime.yes = Yes
 checkYourAnswers.crime.no = No
-checkYourAnswers.crime.unknown = I don’t know
+checkYourAnswers.crime.unknown = I do not know
 checkYourAnswers.change.text = Change
+
+# Appeal Confirmation page
+# ----------------------------------------------------------
+
+appealConfirmation.title = You have asked us to review a penalty
+appealConfirmation.heading = You have asked us to review a penalty
+appealConfirmation.typeAndPeriod = {0}: {1} to {2}
+appealConfirmation.whatHappensNext = What happens next
+appealConfirmation.p1 = We’ll make a decision about your appeal based on what you have told us.
+appealConfirmation.p2 = We aim to make all appeal decisions within 45 days.
+appealConfirmation.p3 = You’ll receive a letter telling you the outcome of this appeal and the reasons for our decision.
+appealConfirmation.p4 = If you have a confirmed email address on your VAT account, we’ll also send you a secure message.
+
+appealConfirmation.returnToPenalties = Return to your VAT penalties
+appealConfirmation.returnToVatVc = View your VAT account
+appealConfirmation.feedbackLink.1 = What did you think of this service?
+appealConfirmation.feedbackLink.2 = (takes 30 seconds)

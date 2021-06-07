@@ -16,6 +16,7 @@
 
 package controllers
 
+import models.NormalMode
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
@@ -37,13 +38,13 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
       )
-      val request = await(controller.onPageLoadForWhenCrimeHappened()(fakeRequestWithCorrectKeys))
+      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-crime-happen")
-      val request = await(controller.onPageLoadForWhenCrimeHappened()(fakeRequestWithNoKeys))
+      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -53,7 +54,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
       )
-      val request = await(controller.onPageLoadForWhenCrimeHappened()(fakeRequestWithIncompleteKeys))
+      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -82,9 +83,9 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
             |}
             |""".stripMargin)
       )
-      val request = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeysAndCorrectBody))
+      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported().url
+      request.header.headers("Location") shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.dateOfCrime).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 
@@ -106,7 +107,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
               |}
               |""".stripMargin)
         )
-        val request = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeysAndInvalidBody))
+        val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
@@ -118,7 +119,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
         )
-        val request = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeysAndNoBody))
+        val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
@@ -160,20 +161,20 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
             |}
             |""".stripMargin
         )
-        val requestNoDay = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+        val requestNoDay = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
         requestNoDay.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoMonth = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+        val requestNoMonth = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
         requestNoMonth.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoYear = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+        val requestNoYear = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
         requestNoYear.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen")
-      val request = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithNoKeys))
+      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -184,7 +185,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
       )
-      val request = await(controller.onSubmitForWhenCrimeHappened()(fakeRequestWithIncompleteKeys))
+      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -204,13 +205,13 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
       )
-      val request = await(controller.onPageLoadForHasCrimeBeenReported()(fakeRequestWithCorrectKeys))
+      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-this-crime-been-reported")
-      val request = await(controller.onPageLoadForHasCrimeBeenReported()(fakeRequestWithNoKeys))
+      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -220,7 +221,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
       )
-      val request = await(controller.onPageLoadForHasCrimeBeenReported()(fakeRequestWithIncompleteKeys))
+      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -247,7 +248,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
             |}
             |""".stripMargin)
       )
-      val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeysAndCorrectBody))
+      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
@@ -269,7 +270,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
               |}
               |""".stripMargin)
         )
-        val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeysAndInvalidBody))
+        val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
@@ -281,14 +282,14 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00")
         )
-        val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithCorrectKeysAndNoBody))
+        val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported")
-      val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithNoKeys))
+      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -299,7 +300,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
       )
-      val request = await(controller.onSubmitForHasCrimeBeenReported()(fakeRequestWithIncompleteKeys))
+      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 

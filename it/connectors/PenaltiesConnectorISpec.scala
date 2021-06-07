@@ -17,6 +17,7 @@
 package connectors
 
 import models.PenaltyTypeEnum
+import models.appeals.{AppealSubmission, CrimeAppealInformation}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import stubs.PenaltiesStub._
@@ -28,6 +29,8 @@ import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext
 
 class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
   val penaltiesConnector: PenaltiesConnector = injector.instanceOf[PenaltiesConnector]
 
   "getAppealsDataForPenalty" should {
@@ -114,6 +117,26 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
         result.isDefined shouldBe false
       }
+    }
+  }
+
+  "submitAppeal" should {
+    "return the response of the call" in {
+      successfulAppealSubmission
+      val model = AppealSubmission(
+        submittedBy = "client",
+        penaltyId = "1234",
+        reasonableExcuse = "crime",
+        honestyDeclaration = true,
+        appealInformation = CrimeAppealInformation(
+          `type` = "crime",
+          dateOfEvent = "2021-04-23T18:25:43.511Z",
+          reportedIssue = true,
+          statement = None
+        )
+      )
+      val result = await(penaltiesConnector.submitAppeal(model))
+      result.status shouldBe OK
     }
   }
 }

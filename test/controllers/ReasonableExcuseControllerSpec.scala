@@ -80,7 +80,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        val result = controller.onPageLoad()(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
@@ -91,7 +91,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
               Some(seqOfReasonableExcuses)
             ))
 
-          val result = controller.onPageLoad()(fakeRequestWithCorrectKeys.withSession(SessionKeys.reasonableExcuse -> "bereavement"))
+          val result = controller.onPageLoad()(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.reasonableExcuse -> "bereavement")))
           status(result) shouldBe OK
           val documentParsed = Jsoup.parse(contentAsString(result))
           documentParsed.select("#value").hasAttr("checked") shouldBe true
@@ -110,7 +110,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             None
           ))
 
-        val result = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        val result = controller.onPageLoad()(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -156,7 +156,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result = controller.onSubmit()(fakeRequestWithCorrectKeys.withJsonBody(
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
           Json.parse(
             """
               |{
@@ -164,7 +164,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
               |}
               |""".stripMargin
           )
-        ))
+        )))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.HonestyDeclarationController.onPageLoad().url
         await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "bereavement"
@@ -177,7 +177,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result = controller.onSubmit()(fakeRequestWithCorrectKeys.withJsonBody(
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
           Json.parse(
             """
               |{
@@ -185,7 +185,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
               |}
               |""".stripMargin
           )
-        ))
+        )))
         status(result) shouldBe BAD_REQUEST
       }
 
@@ -196,7 +196,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result = controller.onSubmit()(fakeRequestWithCorrectKeys.withJsonBody(
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
           Json.parse(
             """
               |{
@@ -204,7 +204,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
               |}
               |""".stripMargin
           )
-        ))
+        )))
         status(result) shouldBe BAD_REQUEST
         contentAsString(result) should include("There is a problem")
         contentAsString(result) should include("Select the reason for missing the VAT deadline")
@@ -231,7 +231,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             None
           ))
 
-        val result = controller.onSubmit()(fakeRequestWithCorrectKeys.withJsonBody(
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
           Json.parse(
             """
               |{
@@ -239,7 +239,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
               |}
               |""".stripMargin
           )
-        ))
+        )))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
