@@ -133,7 +133,7 @@ checkYourAnswers.crime.reasonableExcuse = Crime
 checkYourAnswers.crime.hasCrimeBeenReported = Has this crime been reported to the police?
 checkYourAnswers.crime.yes = Yes
 checkYourAnswers.crime.no = No
-checkYourAnswers.crime.unknown = I don’t know
+checkYourAnswers.crime.unknown = I do not know
 checkYourAnswers.change.text = Change
 
 # Appeal Confirmation page
