@@ -7,6 +7,7 @@ service.text = Sample text
 common.pageTitle = {0} - {1} - GOV.UK
 common.continue = Continue
 common.acceptAndContinue = Accept and continue
+common.acceptAndSend = Accept and send
 
 app.common.back = Back
 
@@ -116,3 +117,21 @@ crimeReason.hasBeenReported.required = Tell us if the police have been told abou
 date.day = Day
 date.month = Month
 date.year = Year
+
+# Check your answers page
+# ----------------------------------------------------------
+
+checkYourAnswers.title = Check your answers
+checkYourAnswers.heading = Check your answers
+checkYourAnswers.yourDetails.h2 = Your details
+checkYourAnswers.declaration.h2 = Declaration
+checkYourAnswers.declaration.p1 = By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge.
+checkYourAnswers.declaration.p2 = A false declaration can result in prosecution.
+checkYourAnswers.reasonableExcuse = Reason for missing the VAT deadline
+checkYourAnswers.crime.whenDidTheCrimeHappen = When did the crime happen?
+checkYourAnswers.crime.reasonableExcuse = Crime
+checkYourAnswers.crime.hasCrimeBeenReported = Has this crime been reported to the police?
+checkYourAnswers.crime.yes = Yes
+checkYourAnswers.crime.no = No
+checkYourAnswers.crime.unknown = I don’t know
+checkYourAnswers.change.text = Change

@@ -85,8 +85,7 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
         },
         reportedAnswer => {
           logger.debug(s"[CrimeReasonController][onSubmitForHasCrimeBeenReported] - Adding '$reportedAnswer' to session under key: ${SessionKeys.hasCrimeBeenReportedToPolice}")
-          //TODO: add redirect URL to next page in journey
-          Redirect("")
+          Redirect(controllers.routes.CheckYourAnswersController.onPageLoad())
             .addingToSession((SessionKeys.hasCrimeBeenReportedToPolice, reportedAnswer))
         }
       )
