@@ -22,7 +22,6 @@ import utils.SessionKeys
 
 sealed trait AppealInformation {
   val `type`: String
-  val dateOfEvent: String
   val statement: Option[String]
 }
 

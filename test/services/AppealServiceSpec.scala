@@ -47,7 +47,8 @@ class AppealServiceSpec extends SpecBase {
       | "type": "LATE_SUBMISSION",
       | "startDate": "2020-01-01T12:00:00",
       | "endDate": "2020-01-01T13:00:00",
-      | "dueDate": "2020-02-07T13:00:00"
+      | "dueDate": "2020-02-07T13:00:00",
+      | "dateCommunicationSent": "2020-02-08T13:00:00"
       |}
       |""".stripMargin)
 
