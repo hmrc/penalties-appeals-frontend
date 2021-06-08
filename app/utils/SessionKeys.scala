@@ -39,7 +39,7 @@ object SessionKeys {
     dateOfCrime,
     hasConfirmedDeclaration,
     hasCrimeBeenReportedToPolice,
-    dateCommunicationSent,
-    lateAppealReason
+    lateAppealReason,
+    dateCommunicationSent
   )
 }
