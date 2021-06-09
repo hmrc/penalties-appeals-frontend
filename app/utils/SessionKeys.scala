@@ -27,6 +27,7 @@ object SessionKeys {
   val dateOfCrime: String = "dateOfCrime"
   val hasConfirmedDeclaration: String = "hasConfirmedDeclaration"
   val hasCrimeBeenReportedToPolice = "hasCrimeBeenReportedToPolice"
+  val lateAppealReason = "lateAppealReason"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -38,6 +39,7 @@ object SessionKeys {
     dateOfCrime,
     hasConfirmedDeclaration,
     hasCrimeBeenReportedToPolice,
-    dateCommunicationSent
+    dateCommunicationSent,
+    lateAppealReason
   )
 }
