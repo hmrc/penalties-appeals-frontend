@@ -44,6 +44,25 @@ class FormProviderHelperSpec extends SpecBase {
     }
   }
 
+  "getSessionKeyAndAttemptToFillAnswerAsOptionString" should {
+    "fill the form with the data stored in the session - if it exists" in {
+      val mockForm: Form[Option[String]] = Form(optional(single("value" -> text)))
+      val expectedResult = mockForm.fill(Some("Lorem ipsum"))
+      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsOptionString(mockForm, SessionKeys.lateAppealReason)(fakeRequest.withSession(
+        SessionKeys.lateAppealReason -> "Lorem ipsum"
+      ))
+      result shouldBe expectedResult
+    }
+
+    "keep the existing (empty) form when the key in the session" in {
+      val mockForm: Form[Option[String]] = Form(optional(single("value" -> text)))
+      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsOptionString(mockForm, SessionKeys.lateAppealReason)(fakeRequest.withSession(
+        "this-is-a-key" -> "this-is-a-value"
+      ))
+      result shouldBe mockForm
+    }
+  }
+
   "getSessionKeyAndAttemptToFillAnswerAsDate" should {
     "fill the form with the data stored in the session - if it exists" in {
       val mockForm: Form[LocalDate] = Form(single("value" -> localDate))

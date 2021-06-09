@@ -1,0 +1,39 @@
+@*
+* Copyright 2021 HM Revenue & Customs
+*
+*@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(govukTextarea: GovukTextarea)
+
+@(
+        form: Form[_],
+        id: String,
+        label: String,
+        isPageHeading: Boolean          = false,
+        isHidden: Boolean               = false,
+        headingMessagesArg: Seq[String] = Seq(),
+        rows: Int                       = 5,
+        hint: Option[Html]              = None,
+        classes: Option[String]         = None
+)(implicit messages: Messages)
+
+@govukTextarea(
+    Textarea(
+        id = id,
+        name = id,
+        rows = rows,
+        value = form(id).value,
+        classes = classes.fold("")(x => x),
+        label = Label(
+            classes,
+            content = Text(messages(label, headingMessagesArg:_*)),
+            isPageHeading = isPageHeading,
+            classes = if(isPageHeading) "govuk-label--xl" else if(!isHidden) "govuk-label" else "govuk-visually-hidden"),
+        hint = hint.map(
+            hintHtml => Hint(content = HtmlContent(hintHtml))),
+        errorMessage = form(id).error.map(
+            err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+    )
+)

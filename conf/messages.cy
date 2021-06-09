@@ -152,3 +152,10 @@ appealConfirmation.returnToPenalties = Return to your VAT penalties
 appealConfirmation.returnToVatVc = View your VAT account
 appealConfirmation.feedbackLink.1 = What did you think of this service?
 appealConfirmation.feedbackLink.2 = (takes 30 seconds)
+
+# Making a late appeal page
+# ----------------------------------------------------------
+makingALateAppeal.title = Making a late appeal
+makingALateAppeal.heading = Making a late appeal
+makingALateAppeal.h2 = Tell us why you did not appeal sooner
+makingALateAppeal.p1 = You usually need to appeal within 30 days of being told about a penalty. If you do not appeal within 30 days, we’ll use information you provide here to decide whether we can consider your late appeal.
