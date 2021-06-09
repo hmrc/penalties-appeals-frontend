@@ -36,6 +36,17 @@ class NavigationSpec extends SpecBase {
       s"called with $HasCrimeBeenReportedPage" in new Setup {
         val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late AND appeal has not been entered" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "crime")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
       }
 
       s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late but late appeal reason has been entered (empty or non-empty value)" in new Setup {
