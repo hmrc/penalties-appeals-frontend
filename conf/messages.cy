@@ -112,6 +112,17 @@ crimeReason.hasBeenReported.no = No
 crimeReason.hasBeenReported.unknown = I do not know
 crimeReason.hasBeenReported.required = Tell us if the police have been told about the crime
 
+# When did the fire or flood happen page
+# ----------------------------------------------------------
+fireOrFloodReason.title = When did the fire or flood happen?
+fireOrFloodReason.heading = When did the fire or flood happen?
+fireOrFloodReason.hintText = For example, 12 3 2018
+fireOrFloodReason.error.required.all = Enter the date of the fire or flood
+fireOrFloodReason.error.required.two = The date of the fire or flood must include a {0} and a {1}
+fireOrFloodReason.error.required = The date of the fire or flood must include a {0}
+fireOrFloodReason.error.invalid = The date of the fire or flood must be a real date
+fireOrFloodReason.error.notInFuture = The date of the fire or flood must be today or in the past
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day

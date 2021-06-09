@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package utils
+package messages
 
-object ReasonableExcuses {
-  val crime = "crime"
-  val fireOrFlood = "fireOrFlood"
+object WhenDidFireOrFloodHappenMessages {
+
+  val title = "When did the fire or flood happen? - Appeal a VAT penalty - GOV.UK"
+
+  val heading = "When did the fire or flood happen?"
+
+  val hintText = "For example, 12 3 2018"
+
+  val dayEntry = "Day"
+
+  val monthEntry = "Month"
+
+  val yearEntry = "Year"
+
+  val continueButton = "Continue"
 }
