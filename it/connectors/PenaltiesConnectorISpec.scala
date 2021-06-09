@@ -40,7 +40,8 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         "type" -> PenaltyTypeEnum.Late_Submission,
         "startDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
         "endDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
-        "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString
+        "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString,
+        "dateCommunicationSent" -> LocalDateTime.of(2020, 2, 8, 12, 0, 0).toString
       )
       val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
       result.isDefined shouldBe true

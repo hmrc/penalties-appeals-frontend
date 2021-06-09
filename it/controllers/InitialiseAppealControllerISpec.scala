@@ -37,6 +37,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
     }
 
     "render an ISE when the appeal data can not be retrieved" in {

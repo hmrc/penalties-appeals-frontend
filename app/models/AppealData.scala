@@ -25,7 +25,8 @@ case class AppealData(
                        `type`: PenaltyTypeEnum.Value,
                         startDate: LocalDateTime,
                         endDate: LocalDateTime,
-                        dueDate: LocalDateTime
+                        dueDate: LocalDateTime,
+                        dateCommunicationSent: LocalDateTime
                      )
 
 object AppealData {
