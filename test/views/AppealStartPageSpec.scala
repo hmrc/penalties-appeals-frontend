@@ -28,27 +28,55 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     val appealStartPage: AppealStartPage = injector.instanceOf[AppealStartPage]
     object Selectors extends BaseSelectors
 
-    def applyView(): HtmlFormat.Appendable = appealStartPage.apply()
+    s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false)
 
-    implicit val doc: Document = asDocument(applyView())
+      implicit val doc: Document = asDocument(applyView())
 
-    val expectedContent = Seq(
-      Selectors.title -> title,
-      Selectors.h1 -> h1,
-      Selectors.pElementIndex(2) -> p1,
-      Selectors.listIndexWithElementIndex(3, 1) -> li1,
-      Selectors.listIndexWithElementIndex(3, 2) -> li2,
-      Selectors.pElementIndex(4) -> p2,
-      Selectors.pElementIndex(5) -> p3,
-      Selectors.h2 -> h2,
-      Selectors.pElementIndex(7) -> p4,
-      Selectors.listIndexWithElementIndex(8, 1) -> li3,
-      Selectors.listIndexWithElementIndex(8, 2) -> li4,
-      Selectors.pElementIndex(9) -> p5,
-      Selectors.pElementIndex(10) -> p6,
-      Selectors.button -> button
-    )
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(2) -> p1,
+        Selectors.listIndexWithElementIndex(3, 1) -> li1,
+        Selectors.listIndexWithElementIndex(3, 2) -> li2,
+        Selectors.pElementIndex(4) -> p2,
+        Selectors.pElementIndex(5) -> p3,
+        Selectors.h2 -> h2,
+        Selectors.pElementIndex(7) -> p4,
+        Selectors.listIndexWithElementIndex(8, 1) -> li3,
+        Selectors.listIndexWithElementIndex(8, 2) -> li4,
+        Selectors.pElementIndex(9) -> p5,
+        Selectors.pElementIndex(10) -> p6,
+        Selectors.button -> button
+      )
 
-    behave like pageWithExpectedMessages(expectedContent)
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    s"it has been more than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(2) -> p1,
+        Selectors.listIndexWithElementIndex(3, 1) -> li1,
+        Selectors.listIndexWithElementIndex(3, 2) -> li2,
+        Selectors.pElementIndex(4) -> p2,
+        Selectors.pElementIndex(5) -> p3,
+        Selectors.h2 -> h2,
+        Selectors.pElementIndex(7) -> p4,
+        Selectors.listIndexWithElementIndex(8, 1) -> li3,
+        Selectors.listIndexWithElementIndex(8, 2) -> li4,
+        Selectors.listIndexWithElementIndex(8, 3) -> li5,
+        Selectors.pElementIndex(9) -> p5,
+        Selectors.pElementIndex(10) -> p6,
+        Selectors.button -> button
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
   }
 }

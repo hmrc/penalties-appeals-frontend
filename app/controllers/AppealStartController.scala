@@ -16,6 +16,9 @@
 
 package controllers
 
+import java.time.format.DateTimeFormatter
+import java.time.{Duration, LocalDateTime}
+
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import utils.Logger.logger
@@ -24,8 +27,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
 import views.html.AppealStartPage
-
 import javax.inject.Inject
+
 import scala.concurrent.Future
 
 class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit mcc: MessagesControllerComponents,
@@ -38,8 +41,12 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
         s"Penalty ID = ${request.session.get(SessionKeys.penaltyId)}, \n" +
         s"Start date of period = ${request.session.get(SessionKeys.startDateOfPeriod)}, \n" +
         s"End date of period = ${request.session.get(SessionKeys.endDateOfPeriod)}, \n" +
-        s"Due date of period = ${request.session.get(SessionKeys.dueDateOfPeriod)}")
-      Future.successful(Ok(appealStartPage()))
+        s"Due date of period = ${request.session.get(SessionKeys.dueDateOfPeriod)}, \n" +
+        s"Date communication sent of period = ${request.session.get(SessionKeys.dateCommunicationSent)}, \n")
+      val dateCommunicationSentParsed = LocalDateTime.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
+      Future.successful(Ok(appealStartPage(
+        dateCommunicationSentParsed.isBefore(LocalDateTime.now().minusDays(appConfig.daysRequiredForLateAppeal))
+      )))
     }
   }
 }

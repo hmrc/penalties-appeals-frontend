@@ -20,7 +20,14 @@
         bullets: components.bullets,
         link: components.link)
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(isLate: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@baseBulletPoints = @{
+    Seq(
+        Html(messages("appealStart.li.2.1")),
+        Html(messages("appealStart.li.2.2"))
+    )
+}
 
 @layout(pageTitle = messages("appealStart.title"),
         isPageFullWidth = false) {
@@ -37,10 +44,13 @@
     <h2 class="govuk-heading-m govuk-!-margin-bottom-2">@messages("appealStart.h2")</h2>
     <p class="govuk-body">@messages("appealStart.p4")</p>
     @bullets(
-        Seq(
-            Html(messages("appealStart.li.2.1")),
-            Html(messages("appealStart.li.2.2"))
-        )
+        if(isLate) {
+            baseBulletPoints.:+(
+            Html(messages("appealStart.li.2.3"))
+            )
+        } else {
+            baseBulletPoints
+        }
     )
     <p class="govuk-body">@messages("appealStart.p5")</p>
     <p class="govuk-body">@messages("appealStart.p6")</p>

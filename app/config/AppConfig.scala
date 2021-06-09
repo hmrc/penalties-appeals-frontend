@@ -58,4 +58,5 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val feedbackUrl: String = config.get[String]("urls.feedbackUrl")
 
+  lazy val daysRequiredForLateAppeal: Int = config.get[Int]("constants.daysRequiredForLateAppeal")
 }
