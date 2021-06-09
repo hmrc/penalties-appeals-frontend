@@ -17,6 +17,8 @@
 package controllers
 
 import base.SpecBase
+import models.NormalMode
+import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
@@ -48,6 +50,13 @@ class MakingALateAppealControllerSpec extends SpecBase {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
         val result = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         status(result) shouldBe OK
+      }
+
+      "return OK and correct view (pre-populated textbox when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = controller.onPageLoad()(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.lateAppealReason -> "This is a reason.")))
+        status(result) shouldBe OK
+        val documentParsed = Jsoup.parse(contentAsString(result))
+        documentParsed.select("#late-appeal-text").first().text() shouldBe "This is a reason."
       }
     }
 

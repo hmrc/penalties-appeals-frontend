@@ -19,6 +19,7 @@ package controllers
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.MakingALateAppealForm
+import helpers.FormProviderHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -35,7 +36,10 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
                                             dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
-    implicit request => Ok(makingALateAppealPage(MakingALateAppealForm.makingALateAppealForm))
+    implicit request => {
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsOptionString(MakingALateAppealForm.makingALateAppealForm, SessionKeys.lateAppealReason)
+      Ok(makingALateAppealPage(formProvider))
+    }
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
