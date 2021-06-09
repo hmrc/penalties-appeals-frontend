@@ -70,6 +70,31 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._2 shouldBe "Yes"
         result(2)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url
       }
+
+      "return all keys and the 'Why you did not appeal sooner' text" in {
+        val fakeRequestWithAllCrimeKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "crime",
+            SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.dateOfCrime -> "2022-01-01",
+            SessionKeys.lateAppealReason -> "Lorem ipsum"
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Crime"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did the crime happen?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url
+        result(2)._1 shouldBe "Has this crime been reported to the police?"
+        result(2)._2 shouldBe "Yes"
+        result(2)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url
+        result(3)._1 shouldBe "Why you did not appeal sooner"
+        result(3)._2 shouldBe "Lorem ipsum"
+        result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
     }
   }
 }
