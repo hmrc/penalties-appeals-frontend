@@ -135,6 +135,7 @@ checkYourAnswers.crime.yes = Yes
 checkYourAnswers.crime.no = No
 checkYourAnswers.crime.unknown = I do not know
 checkYourAnswers.change.text = Change
+checkYourAnswers.whyYouDidNotAppealSooner = Why you did not appeal sooner
 
 # Appeal Confirmation page
 # ----------------------------------------------------------
