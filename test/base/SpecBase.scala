@@ -18,6 +18,7 @@ package base
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
+import helpers.DateTimeHelper
 import models.UserRequest
 import navigation.Navigation
 import org.jsoup.Jsoup
@@ -42,7 +43,9 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   lazy val injector = app.injector
 
-  val mainNavigator: Navigation = app.injector.instanceOf[Navigation]
+  val mockDateTimeHelper: DateTimeHelper = mock(classOf[DateTimeHelper])
+
+  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper)
 
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 

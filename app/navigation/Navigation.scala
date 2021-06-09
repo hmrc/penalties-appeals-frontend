@@ -21,29 +21,48 @@ import models.pages.Page
 import models.pages._
 import play.api.mvc.Call
 import controllers.routes
+import helpers.DateTimeHelper
+import utils.Logger.logger
+import utils.SessionKeys
 
+import java.time.LocalDateTime
 import javax.inject.Inject
 
-class Navigation @Inject()() {
-  lazy val checkingRoutes: Map[Page, Option[String] => Call] = Map(
-    HasCrimeBeenReportedPage -> (_ => routes.CheckYourAnswersController.onPageLoad()),
-    WhenDidCrimeHappenPage -> (_ => routes.CheckYourAnswersController.onPageLoad())
+class Navigation @Inject()(dateTimeHelper: DateTimeHelper) {
+  lazy val checkingRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
+    HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request)),
+    WhenDidCrimeHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request))
   )
 
-  lazy val normalRoutes: Map[Page, Option[String] => Call] = Map(
-    HasCrimeBeenReportedPage -> (_ => routes.CheckYourAnswersController.onPageLoad()),
-    WhenDidCrimeHappenPage -> (_ => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode))
+  lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
+    HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request)),
+    WhenDidCrimeHappenPage -> ((_, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode))
   )
 
-  def nextPage(page: Page, mode: Mode, answer: Option[String] = None): Call = {
+  def nextPage(page: Page, mode: Mode, answer: Option[String] = None)(implicit userRequest: UserRequest[_]): Call = {
     mode match {
       case CheckMode => {
         //Added answer here so that we can add custom routing to pages that require extra data when answers change
-        checkingRoutes(page)(answer)
+        checkingRoutes(page)(answer, userRequest)
       }
       case NormalMode => {
-        normalRoutes(page)(answer)
+        normalRoutes(page)(answer, userRequest)
       }
+    }
+  }
+
+  def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_]): Call = {
+    val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+    //TODO: may need to call config to get the days
+    val daysResultingInLateAppeal: Int = 30
+    val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
+    if(dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal)) && userRequest.session.get(SessionKeys.lateAppealReason).isEmpty) {
+      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
+        s"Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
+      controllers.routes.MakingALateAppealController.onPageLoad()
+    } else {
+      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to CYA page")
+      controllers.routes.CheckYourAnswersController.onPageLoad()
     }
   }
 }

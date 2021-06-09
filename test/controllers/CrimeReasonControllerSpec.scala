@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.crime.{HasCrimeBeenReportedToPolicePage, WhenDidCrimeHappenPage}
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class CrimeReasonControllerSpec extends SpecBase {
@@ -51,6 +51,8 @@ class CrimeReasonControllerSpec extends SpecBase {
       hasCrimeBeenReportedPage,
       mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
+
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }
   
 
@@ -235,6 +237,25 @@ class CrimeReasonControllerSpec extends SpecBase {
             )))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+            await(result).session.get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
+          }
+
+        "the validation is performed against possible values - redirect on success and set the session key value " +
+          "- going to late appeal when appeal > 30 days late" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+            val result = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "yes"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
             await(result).session.get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
           }
 
