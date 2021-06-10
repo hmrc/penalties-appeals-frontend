@@ -19,32 +19,118 @@ package navigation
 import base.SpecBase
 import models.{CheckMode, NormalMode}
 import models.pages._
+import org.mockito.Mockito._
+import utils.SessionKeys
+
+import java.time.LocalDateTime
 
 class NavigationSpec extends SpecBase {
-  val navigation = injector.instanceOf[Navigation]
+
+  class Setup {
+    reset(mockDateTimeHelper)
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+  }
 
   "nextPage" should {
     "in CheckMode" when {
-      s"called with $HasCrimeBeenReportedPage" in {
-        val result = navigation.nextPage(HasCrimeBeenReportedPage, CheckMode, None)
+      s"called with $HasCrimeBeenReportedPage" in new Setup {
+        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
-      s"called with $WhenDidCrimeHappenPage" in {
-        val result = navigation.nextPage(WhenDidCrimeHappenPage, CheckMode, None)
+      s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late but late appeal reason has been entered (empty or non-empty value)" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        .withSession(
+          (SessionKeys.lateAppealReason -> "This is a reason."),
+          (SessionKeys.appealType -> "crime")
+        )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late AND appeal has not been entered" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "crime")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $WhenDidCrimeHappenPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidCrimeHappenPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
     }
 
     "in NormalMode" when {
-      s"called with $HasCrimeBeenReportedPage" in {
-        val result = navigation.nextPage(HasCrimeBeenReportedPage, NormalMode, None)
+      s"called with $HasCrimeBeenReportedPage" in new Setup {
+        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
-      s"called with $WhenDidCrimeHappenPage" in {
-        val result = navigation.nextPage(WhenDidCrimeHappenPage, NormalMode, None)
+      s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $WhenDidCrimeHappenPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidCrimeHappenPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
         result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode).url
+      }
+    }
+  }
+
+  "routeToMakingALateAppealOrCYAPage" should {
+    "route to CYA page" when {
+      "the appeal is late but the reason has already been given and we are in CheckMode" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+
+        val result = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.lateAppealReason -> "This is a reason."),
+            (SessionKeys.appealType -> "crime")
+          )), CheckMode)
+
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      "the appeal is not late" in new Setup {
+        val result = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "crime")
+          )), NormalMode)
+
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
+
+    "route to late appeal reason page" when {
+      "the appeal is late and there is no existing reason as to why" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+
+        val result = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "crime")
+          )), NormalMode)
+
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+
+      "the appeal is late but the reason has already been given and we are in NormalMode" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+
+        val result = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.lateAppealReason -> "This is a reason."),
+            (SessionKeys.appealType -> "crime")
+          )), NormalMode)
+
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
     }
   }

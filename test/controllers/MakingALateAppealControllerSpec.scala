@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import models.NormalMode
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}

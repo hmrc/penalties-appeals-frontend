@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: CrimeReasonController = injector.instanceOf[CrimeReasonController]
@@ -239,14 +239,14 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /has-this-crime-been-reported" should {
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
+    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(1).toString)
       ).withJsonBody(
         Json.parse(
           """
@@ -260,6 +260,55 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
       request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
     }
+
+    "return 303 (SEE_OTHER) to CYA page (when appeal IS late AND reason has already been pre-filled) " +
+      " add the session key to the session when the body is correct" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.lateAppealReason, "Great reason"),
+        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(1).toString)
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "value": "yes"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
+    }
+
+
+    "return 303 (SEE_OTHER) to CYA page (when appeal IS late AND NO reason already provided)" +
+      " and add the session key to the session when the body is correct" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(31).toString)
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "value": "yes"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
+    }
+
 
     "return 400 (BAD_REQUEST)" when {
       "the value is invalid" in {
