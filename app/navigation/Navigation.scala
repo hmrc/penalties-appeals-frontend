@@ -16,6 +16,7 @@
 
 package navigation
 
+import config.AppConfig
 import models.{CheckMode, Mode, NormalMode, UserRequest}
 import models.pages.Page
 import models.pages._
@@ -28,14 +29,15 @@ import utils.SessionKeys
 import java.time.LocalDateTime
 import javax.inject.Inject
 
-class Navigation @Inject()(dateTimeHelper: DateTimeHelper) {
+class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
+                           appConfig: AppConfig) {
   lazy val checkingRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
-    HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request)),
-    WhenDidCrimeHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request))
+    HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidCrimeHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
-    HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request)),
+    HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidCrimeHappenPage -> ((_, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode))
   )
 
@@ -51,12 +53,13 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper) {
     }
   }
 
-  def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_]): Call = {
+  def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_], mode: Mode): Call = {
     val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
     //TODO: may need to call config to get the days
-    val daysResultingInLateAppeal: Int = 30
+    val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
-    if(dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal)) && userRequest.session.get(SessionKeys.lateAppealReason).isEmpty) {
+    if(dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
+      && (userRequest.session.get(SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)) {
       logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
         s"Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
       controllers.routes.MakingALateAppealController.onPageLoad()
