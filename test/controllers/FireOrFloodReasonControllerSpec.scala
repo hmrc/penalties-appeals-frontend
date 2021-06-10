@@ -16,16 +16,17 @@
 
 package controllers
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 import base.SpecBase
 import models.{CheckMode, NormalMode}
+import navigation.Navigation
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
-import play.api.test.Helpers._
 import play.api.mvc.Result
+import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
@@ -48,6 +49,8 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
       fireOrFloodPage,
       mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
+
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }
 
   "FireOrFloodReasonController" should {
@@ -94,7 +97,6 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
 
     "onSubmit" when {
       "the user is authorised" must {
-
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
@@ -106,6 +108,7 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
                 | "date.year": 2021
                 |}
                 |""".stripMargin))))
+          println(s"[Somewhere in the spec]: Result = $result")
           status(result) shouldBe SEE_OTHER
           await(result).session.get(SessionKeys.dateOfFireOrFlood).get shouldBe LocalDate.of(2021, 2, 1).toString
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
