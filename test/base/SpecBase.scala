@@ -45,7 +45,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val mockDateTimeHelper: DateTimeHelper = mock(classOf[DateTimeHelper])
 
-  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper)
+  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)
 
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 

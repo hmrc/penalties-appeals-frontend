@@ -45,7 +45,7 @@ class NavigationSpec extends SpecBase {
           (SessionKeys.lateAppealReason -> "This is a reason."),
           (SessionKeys.appealType -> "crime")
         )))
-        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
 
@@ -87,14 +87,14 @@ class NavigationSpec extends SpecBase {
 
   "routeToMakingALateAppealOrCYAPage" should {
     "route to CYA page" when {
-      "the appeal is late but the reason has already been given" in new Setup {
+      "the appeal is late but the reason has already been given and we are in CheckMode" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
 
         val result = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
             (SessionKeys.lateAppealReason -> "This is a reason."),
             (SessionKeys.appealType -> "crime")
-          )))
+          )), CheckMode)
 
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
@@ -103,7 +103,7 @@ class NavigationSpec extends SpecBase {
         val result = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
             (SessionKeys.appealType -> "crime")
-          )))
+          )), NormalMode)
 
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
@@ -116,7 +116,19 @@ class NavigationSpec extends SpecBase {
         val result = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
             (SessionKeys.appealType -> "crime")
-          )))
+          )), NormalMode)
+
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+
+      "the appeal is late but the reason has already been given and we are in NormalMode" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+
+        val result = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.lateAppealReason -> "This is a reason."),
+            (SessionKeys.appealType -> "crime")
+          )), NormalMode)
 
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
