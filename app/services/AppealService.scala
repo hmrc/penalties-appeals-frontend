@@ -16,18 +16,22 @@
 
 package services
 
+import config.AppConfig
 import connectors.PenaltiesConnector
+import helpers.DateTimeHelper
 import models.appeals.AppealSubmission
 import models.{AppealData, ReasonableExcuse, UserRequest}
 import play.api.http.Status._
 import utils.Logger.logger
-import play.api.libs.json.{JsResult, JsValue, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import play.api.libs.json.{JsResult, Json}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.SessionKeys
 
+import java.time.LocalDateTime
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AppealService @Inject()(penaltiesConnector: PenaltiesConnector) {
+class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig: AppConfig, dateTimeHelper: DateTimeHelper) {
 
   def validatePenaltyIdForEnrolmentKey[A](penaltyId: String)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn).map {
@@ -68,7 +72,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector) {
   }
 
   def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
-    val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse)
+    val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+    val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
+    val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
+    val isLateApeal = dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
+
+    val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateApeal)
     penaltiesConnector.submitAppeal(modelFromRequest).map {
       response => response.status match {
         case OK => {

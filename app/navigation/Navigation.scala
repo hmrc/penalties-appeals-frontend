@@ -55,7 +55,6 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_], mode: Mode): Call = {
     val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-    //TODO: may need to call config to get the days
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
     if(dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))

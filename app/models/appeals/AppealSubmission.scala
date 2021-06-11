@@ -20,16 +20,20 @@ import models.UserRequest
 import play.api.libs.json._
 import utils.SessionKeys
 
+import java.time.LocalDateTime
+
 sealed trait AppealInformation {
   val `type`: String
   val statement: Option[String]
+  val lateAppeal: Boolean
 }
 
 case class CrimeAppealInformation(
                                    `type`: String,
                                    dateOfEvent: String,
                                    reportedIssue: Boolean,
-                                   statement: Option[String]
+                                   statement: Option[String],
+                                   lateAppeal: Boolean
                                  ) extends AppealInformation
 
 object CrimeAppealInformation {
@@ -39,7 +43,8 @@ object CrimeAppealInformation {
     Json.obj(
       "type" -> crimeAppealInformation.`type`,
       "dateOfEvent" -> crimeAppealInformation.dateOfEvent,
-      "reportedIssue" -> crimeAppealInformation.reportedIssue
+      "reportedIssue" -> crimeAppealInformation.reportedIssue,
+      "lateAppeal" -> crimeAppealInformation.lateAppeal
     ).deepMerge(
       crimeAppealInformation.statement.fold(
         Json.obj()
@@ -67,12 +72,12 @@ object AppealSubmission {
     }
   }
 
-  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String)
+  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean)
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
       case "crime" => {
         AppealSubmission(
-          submittedBy = if(userRequest.isAgent) "agent" else "client",
+          submittedBy = if (userRequest.isAgent) "agent" else "client",
           penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -80,8 +85,8 @@ object AppealSubmission {
             `type` = "crime",
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfCrime).get,
             reportedIssue = userRequest.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
-            statement = None //TODO: may need to add this in later
-          )
+            statement = None,
+            lateAppeal = isLateAppeal)
         )
       }
     }
