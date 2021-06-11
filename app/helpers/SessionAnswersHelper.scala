@@ -37,7 +37,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
 
   def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String)(implicit request: Request[_],
                                                                                   messages: Messages): Seq[(String, String, String)] = {
-    reasonableExcuse match {
+    val reasonableExcuseContent = reasonableExcuse match {
       case "crime" => Seq(
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
@@ -50,5 +50,17 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url)
         )
       }
+
+    request.session.get(SessionKeys.lateAppealReason).fold(
+      reasonableExcuseContent
+    )(
+      reason => {
+        reasonableExcuseContent :+ (
+          (messages("checkYourAnswers.whyYouDidNotAppealSooner"),
+            reason,
+            controllers.routes.MakingALateAppealController.onPageLoad().url)
+        )
+      }
+    )
   }
 }

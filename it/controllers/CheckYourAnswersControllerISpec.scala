@@ -16,6 +16,7 @@
 
 package controllers
 
+import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
@@ -42,6 +43,27 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
+    }
+
+    "return 200 (OK) when the user is authorised and has the correct keys in session for crime - for a late appeal" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.lateAppealReason -> "Lorem ipsum"
+      )
+      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+      await(request).header.status shouldBe Status.OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Why you did not appeal sooner"
+      parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 
     "return 500 (ISE) when the user hasn't selected a reasonable excuse option" in {
