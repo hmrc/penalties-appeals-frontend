@@ -20,3 +20,4 @@ trait Page
 
 case object HasCrimeBeenReportedPage extends Page
 case object WhenDidCrimeHappenPage extends Page
+case object WhenDidFireOrFloodHappenPage extends Page

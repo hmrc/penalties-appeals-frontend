@@ -93,6 +93,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
   def getNextURLBasedOnReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): String = {
     reasonableExcuse match {
       case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
+      case ReasonableExcuses.fireOrFlood => controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url
     }
   }
 }

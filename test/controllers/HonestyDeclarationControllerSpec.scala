@@ -84,7 +84,7 @@ class HonestyDeclarationControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "return 303" when {
-      "the reasonable excuse has been selected and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
+      "the reasonable excuse selected is 'crime' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
         val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession((SessionKeys.reasonableExcuse, "crime"))
           .withJsonBody(
@@ -99,6 +99,24 @@ class HonestyDeclarationControllerSpec extends SpecBase {
         status(result) shouldBe SEE_OTHER
         await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
         await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
+      }
+
+      "the reasonable excuse selected is 'fireOrFlood' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession((SessionKeys.reasonableExcuse, "fireOrFlood"))
+          .withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "value": "true"
+                |}
+                |""".stripMargin)
+          )))
+
+        status(result) shouldBe SEE_OTHER
+        await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
+        await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
+        await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "fireOrFlood"
       }
     }
 
