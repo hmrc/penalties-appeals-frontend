@@ -44,7 +44,8 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
       Seq(
         ("Key", "Value", "href#"),
         ("Key 2", "Value 2", "href2#"),
-        ("Key 3", "Value 3", "href2#")
+        ("Key 3", "Value 3", "href2#"),
+        ("Key 4", "", "href2#")
       )
     )
 
@@ -63,6 +64,9 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
       Selectors.descriptionListDtKey(3) -> "Key 3",
       Selectors.descriptionListDdValue(3) -> "Value 3",
       Selectors.descriptionListDdAction(3) -> "Change",
+      Selectors.descriptionListDtKey(4) -> "Key 4",
+      Selectors.descriptionListDdValue(4) -> "Not Provided",
+      Selectors.descriptionListDdAction(4) -> "Change",
       Selectors.declarationH2 -> h2Declaration,
       Selectors.declarationText -> pDeclaration,
       Selectors.button -> button

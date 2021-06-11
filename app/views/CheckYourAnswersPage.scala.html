@@ -36,7 +36,11 @@
                         @keyValue._1
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @keyValue._2
+                        @if(keyValue._2.isEmpty) {
+                            @messages("checkYourAnswers.notProvided")
+                        }else{
+                            @keyValue._2
+                        }
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         <a class="govuk-link" href="@keyValue._3">@messages("checkYourAnswers.change.text")</a>
