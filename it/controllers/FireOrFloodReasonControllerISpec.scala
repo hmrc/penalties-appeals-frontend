@@ -88,7 +88,7 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmit(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.dateOfFireOrFlood).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 

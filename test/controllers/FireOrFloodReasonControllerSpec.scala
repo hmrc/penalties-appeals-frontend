@@ -108,7 +108,6 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
                 | "date.year": 2021
                 |}
                 |""".stripMargin))))
-          println(s"[Somewhere in the spec]: Result = $result")
           status(result) shouldBe SEE_OTHER
           await(result).session.get(SessionKeys.dateOfFireOrFlood).get shouldBe LocalDate.of(2021, 2, 1).toString
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
