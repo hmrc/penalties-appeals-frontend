@@ -75,9 +75,9 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig:
     val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
-    val isLateApeal = dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
+    val isLateAppeal = dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
 
-    val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateApeal)
+    val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal)
     penaltiesConnector.submitAppeal(modelFromRequest).map {
       response => response.status match {
         case OK => {
