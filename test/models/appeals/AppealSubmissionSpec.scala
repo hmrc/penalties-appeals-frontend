@@ -79,7 +79,8 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           reportedIssue = true,
           statement = None,
-          lateAppeal = false
+          lateAppeal = false,
+          lateAppealReason = None
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe crimeAppealInformationJson
@@ -102,7 +103,7 @@ class AppealSubmissionSpec extends SpecBase {
       result.submittedBy shouldBe "agent"
       result.honestyDeclaration shouldBe true
       result.appealInformation shouldBe CrimeAppealInformation(
-        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = false
+        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None
       )
     }
 
@@ -111,7 +112,8 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.reasonableExcuse -> "crime",
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfCrime -> "2022-01-01")
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.lateAppealReason -> "Some Reason")
       )
 
       val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", true)(fakeRequestForCrimeJourney)
@@ -120,7 +122,7 @@ class AppealSubmissionSpec extends SpecBase {
       result.submittedBy shouldBe "client"
       result.honestyDeclaration shouldBe true
       result.appealInformation shouldBe CrimeAppealInformation(
-        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = true
+        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = true, lateAppealReason = Some("Some Reason")
       )
     }
 
@@ -139,7 +141,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe CrimeAppealInformation(
-          `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = false, statement = None, lateAppeal = false
+          `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = false, statement = None, lateAppeal = false, lateAppealReason = None
         )
       }
     }
@@ -159,7 +161,8 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             reportedIssue = true,
             statement = None,
-            lateAppeal = false
+            lateAppeal = false,
+            lateAppealReason = None
           )
         )
         val jsonRepresentingModel: JsValue = Json.obj(
@@ -189,14 +192,16 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           reportedIssue = true,
           statement = None,
-          lateAppeal = true
+          lateAppeal = true,
+          lateAppealReason = Some("Reason")
         )
         val result = Json.toJson(model)(CrimeAppealInformation.crimeAppealWrites)
         result shouldBe Json.obj(
           "type" -> "crime",
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "reportedIssue" -> true,
-          "lateAppeal" -> true
+          "lateAppeal" -> true,
+          "lateAppealReason" -> "Reason"
         )
       }
     }

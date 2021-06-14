@@ -134,7 +134,8 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           reportedIssue = true,
           statement = None,
-          lateAppeal = false
+          lateAppeal = false,
+          lateAppealReason = None
         )
       )
       val result = await(penaltiesConnector.submitAppeal(model))

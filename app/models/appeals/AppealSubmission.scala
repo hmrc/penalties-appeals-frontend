@@ -20,8 +20,6 @@ import models.UserRequest
 import play.api.libs.json._
 import utils.SessionKeys
 
-import java.time.LocalDateTime
-
 sealed trait AppealInformation {
   val `type`: String
   val statement: Option[String]
@@ -33,7 +31,8 @@ case class CrimeAppealInformation(
                                    dateOfEvent: String,
                                    reportedIssue: Boolean,
                                    statement: Option[String],
-                                   lateAppeal: Boolean
+                                   lateAppeal: Boolean,
+                                   lateAppealReason: Option[String]
                                  ) extends AppealInformation
 
 object CrimeAppealInformation {
@@ -50,6 +49,12 @@ object CrimeAppealInformation {
         Json.obj()
       )(
         statement => Json.obj("statement" -> statement)
+      )
+    ).deepMerge(
+      crimeAppealInformation.lateAppealReason.fold(
+        Json.obj()
+      )(
+        lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
       )
     )
   }
@@ -86,7 +91,12 @@ object AppealSubmission {
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfCrime).get,
             reportedIssue = userRequest.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
             statement = None,
-            lateAppeal = isLateAppeal)
+            lateAppeal = isLateAppeal,
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
+              case "" => None
+              case reason => Some(reason)
+            }
+          )
         )
       }
     }
