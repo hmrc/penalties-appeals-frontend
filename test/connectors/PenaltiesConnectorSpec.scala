@@ -39,7 +39,8 @@ class PenaltiesConnectorSpec extends SpecBase {
       |{
       | "type": "LATE_SUBMISSION",
       | "startDate": "2020-01-01T12:00:00",
-      | "endDate": "2020-01-01T13:00:00"
+      | "endDate": "2020-01-01T13:00:00",
+      | "lateAppeal": "false"
       |}
       |""".stripMargin)
 
@@ -87,6 +88,7 @@ class PenaltiesConnectorSpec extends SpecBase {
       mockAppConfig
     )
   }
+
   "getAppealsDataForPenalty" should {
     s"return $Some $JsValue when the connector call succeeds" in new Setup {
       when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -168,7 +170,7 @@ class PenaltiesConnectorSpec extends SpecBase {
         .thenReturn("http://url/url")
       val appealSubmissionModel = AppealSubmission(
         submittedBy = "client", penaltyId = "1234", reasonableExcuse = "crime", honestyDeclaration = true, appealInformation = CrimeAppealInformation(
-          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None
+          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None
         )
       )
       val result = await(connector.submitAppeal(appealSubmissionModel))
@@ -183,7 +185,7 @@ class PenaltiesConnectorSpec extends SpecBase {
         .thenReturn("http://url/url")
       val appealSubmissionModel = AppealSubmission(
         submittedBy = "client", penaltyId = "1234", reasonableExcuse = "crime", honestyDeclaration = true, appealInformation = CrimeAppealInformation(
-          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None
+          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None
         )
       )
       val result = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel)))

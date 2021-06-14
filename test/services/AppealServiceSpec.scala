@@ -27,6 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.SessionKeys
 
+import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealServiceSpec extends SpecBase {
@@ -53,8 +54,10 @@ class AppealServiceSpec extends SpecBase {
       |""".stripMargin)
 
   class Setup {
-    reset(mockPenaltiesConnector)
-    val service: AppealService = new AppealService(mockPenaltiesConnector)
+    reset(mockPenaltiesConnector, mockDateTimeHelper)
+    val service: AppealService = new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper)
+
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }
 
   "validatePenaltyIdForEnrolmentKey" should {
