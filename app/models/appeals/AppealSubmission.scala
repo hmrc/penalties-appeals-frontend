@@ -92,6 +92,38 @@ object FireOrFloodAppealInformation {
   }
 }
 
+case class LossOfStaffAppealInformation(
+                                   `type`: String,
+                                   dateOfEvent: String,
+                                   statement: Option[String],
+                                   lateAppeal: Boolean,
+                                   lateAppealReason: Option[String]
+                                 ) extends AppealInformation
+
+object LossOfStaffAppealInformation {
+  implicit val lossOfStaffAppealInformationFormatter: OFormat[CrimeAppealInformation] = Json.format[CrimeAppealInformation]
+
+  val lossOfStaffAppealWrites: Writes[LossOfStaffAppealInformation] = (lossOfStaffAppealInformation: LossOfStaffAppealInformation) => {
+    Json.obj(
+      "type" -> lossOfStaffAppealInformation.`type`,
+      "dateOfEvent" -> lossOfStaffAppealInformation.dateOfEvent,
+      "lateAppeal" -> lossOfStaffAppealInformation.lateAppeal
+    ).deepMerge(
+      lossOfStaffAppealInformation.statement.fold(
+        Json.obj()
+      )(
+        statement => Json.obj("statement" -> statement)
+      )
+    ).deepMerge(
+      lossOfStaffAppealInformation.lateAppealReason.fold(
+        Json.obj()
+      )(
+        lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
+      )
+    )
+  }
+}
+
 case class AppealSubmission(
                              submittedBy: String,
                              penaltyId: String,
@@ -108,6 +140,9 @@ object AppealSubmission {
       }
       case "fireOrFlood" => {
         Json.toJson(payload.asInstanceOf[FireOrFloodAppealInformation])(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
+      }
+      case "lossOfStaff" => {
+        Json.toJson(payload.asInstanceOf[LossOfStaffAppealInformation])(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
       }
     }
   }
@@ -143,6 +178,25 @@ object AppealSubmission {
           appealInformation = FireOrFloodAppealInformation(
             `type` = "fireOrFlood",
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfFireOrFlood).get,
+            statement = None,
+            lateAppeal = isLateAppeal,
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
+              case "" => None
+              case reason => Some(reason)
+            }
+          )
+        )
+      }
+
+      case "lossOfStaff" => {
+        AppealSubmission(
+          submittedBy = if (userRequest.isAgent) "agent" else "client",
+          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          appealInformation = LossOfStaffAppealInformation(
+            `type` = "lossOfStaff",
+            dateOfEvent = userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get,
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
