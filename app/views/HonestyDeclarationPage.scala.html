@@ -21,7 +21,7 @@
         govukButton: GovukButton,
         formHelper: FormWithCSRF)
 
-@(form: Form[_], reasonText: String, friendlyDate: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], reasonText: String, friendlyDate: String, extraBullets: Seq[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("honestyDeclaration.title"),
     isPageFullWidth = false,
@@ -34,6 +34,11 @@
         <li>
         @messages("honestyDeclaration.li.1", reasonText, friendlyDate)
         </li>
+        @extraBullets.map { bullet =>
+            <li>
+                @messages(bullet)
+            </li>
+        }
         <li>
         @messages("honestyDeclaration.li.2")
         </li>

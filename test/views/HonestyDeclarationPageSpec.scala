@@ -30,7 +30,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
     val appealStartPage: HonestyDeclarationPage = injector.instanceOf[HonestyDeclarationPage]
     object Selectors extends BaseSelectors
 
-    def applyView(form: Form[_], reasonText: String, date: String): HtmlFormat.Appendable = appealStartPage.apply(form, reasonText, date)
+    def applyView(form: Form[_], reasonText: String, date: String, extraBullets: Seq[String] = Seq.empty): HtmlFormat.Appendable = appealStartPage.apply(form, reasonText, date, extraBullets)
 
     implicit val doc: Document = asDocument(applyView(honestyDeclarationForm, "of reason", "1 January 2022"))
 
@@ -52,6 +52,19 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
         val expectedContent = Seq(
           Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.crime"), "1 January 2022")
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)
+      }
+
+      "the option selected is 'loss of staff'" must {
+        implicit val doc: Document = asDocument(applyView(honestyDeclarationForm, messages("honestyDeclaration.lossOfStaff"),
+          "1 January 2022",
+          Seq("honestyDeclaration.li.extra.lossOfStaff")))
+
+        val expectedContent = Seq(
+          Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
+          Selectors.listIndexWithElementIndex(3, 2) -> extraLiForLossOfStaff
         )
 
         behave like pageWithExpectedMessages(expectedContent)

@@ -22,4 +22,11 @@ object HonestyDeclarationHelper {
   def getReasonText(reasonableExcuse: String)(implicit messages: Messages): String = {
     messages(s"honestyDeclaration.$reasonableExcuse")
   }
+
+  def getExtraText(reasonableExcuse: String): Seq[String] = {
+    reasonableExcuse match {
+      case "lossOfStaff" => Seq("honestyDeclaration.li.extra.lossOfStaff")
+      case _ => Seq()
+    }
+  }
 }
