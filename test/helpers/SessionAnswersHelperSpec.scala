@@ -36,13 +36,36 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return false - when not all keys are present" in {
-        val fakeRequestWithAllCrimeKeysPresent = fakeRequest
+        val fakeRequestWithSomeCrimeKeysPresent = fakeRequest
           .withSession(
             SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.dateOfCrime -> "2022-01-01"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithAllCrimeKeysPresent)
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithSomeCrimeKeysPresent)
+        result shouldBe false
+      }
+    }
+
+    "for loss of staff" must {
+      "return true - when all keys present" in {
+        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "lossOfStaff",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent)
+        result shouldBe true
+      }
+
+      "return false - when not all keys are present" in {
+        val fakeRequestWithSomeLossOfStaffKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "lossOfStaff",
+            SessionKeys.hasConfirmedDeclaration -> "true"
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithSomeLossOfStaffKeysPresent)
         result shouldBe false
       }
     }
