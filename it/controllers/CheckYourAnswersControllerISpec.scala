@@ -41,8 +41,32 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.dateOfCrime -> "2022-01-01"
       )
-      val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
-      request.header.status shouldBe Status.OK
+      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+      await(request).header.status shouldBe Status.OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "When did the crime happen?"
+      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "1 January 2022"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Has this crime been reported to the police?"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "Yes"
+    }
+
+    "return 200 (OK) when the user is authorised and has the correct keys in session for loss of staff" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "lossOfStaff",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+      )
+      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+      await(request).header.status shouldBe Status.OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "When did the person become unavailable?"
+      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "1 January 2022"
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood" in {
@@ -93,6 +117,26 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "fireOrFlood",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+        SessionKeys.lateAppealReason -> "Lorem ipsum"
+      )
+      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+      await(request).header.status shouldBe Status.OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Why you did not appeal sooner"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
+    }
+
+    "return 200 (OK) when the user is authorised and has the correct keys in session for loss of staff - for a late appeal" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "lossOfStaff",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
         SessionKeys.lateAppealReason -> "Lorem ipsum"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)

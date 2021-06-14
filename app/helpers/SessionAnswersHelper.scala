@@ -27,6 +27,7 @@ import java.time.LocalDate
 object SessionAnswersHelper extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
     "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
+    "lossOfStaff" -> Seq(SessionKeys.whenPersonLeftTheBusiness, SessionKeys.reasonableExcuse, SessionKeys.hasConfirmedDeclaration),
     "fireOrFlood" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.dateOfFireOrFlood, SessionKeys.hasConfirmedDeclaration)
   )
 
@@ -57,6 +58,15 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
         (messages("checkYourAnswers.fireOrFlood.whenDidTheFireOrFloodHappen"),
           dateToString(LocalDate.parse(request.session.get(SessionKeys.dateOfFireOrFlood).get)),
           controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url)
+      )
+
+      case "lossOfStaff" => Seq(
+        (messages("checkYourAnswers.reasonableExcuse"),
+          messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+          controllers.routes.ReasonableExcuseController.onPageLoad().url),
+        (messages("checkYourAnswers.lossOfStaff.whenPersonBecameUnavailable"),
+          dateToString(LocalDate.parse(request.session.get(SessionKeys.whenPersonLeftTheBusiness).get)),
+          controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url)
       )
       }
 
