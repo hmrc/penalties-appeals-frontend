@@ -19,4 +19,5 @@ package utils
 object ReasonableExcuses {
   val crime = "crime"
   val fireOrFlood = "fireOrFlood"
+  val lossOfStaff = "lossOfStaff"
 }

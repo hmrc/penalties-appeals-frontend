@@ -27,7 +27,7 @@ import views.html.HonestyDeclarationPage
 
 class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
   "HonestyDeclarationPage" should {
-    val appealStartPage: HonestyDeclarationPage = injector.instanceOf[HonestyDeclarationPage]
+    val honestyDeclarationPage: HonestyDeclarationPage = injector.instanceOf[HonestyDeclarationPage]
     object Selectors extends BaseSelectors
 
     def applyView(form: Form[_], reasonText: String, date: String, extraBullets: Seq[String] = Seq.empty): HtmlFormat.Appendable = appealStartPage.apply(form, reasonText, date, extraBullets)

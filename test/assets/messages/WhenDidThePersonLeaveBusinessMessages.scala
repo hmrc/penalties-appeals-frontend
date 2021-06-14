@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-package models.pages
+package messages
 
-trait Page
+object WhenDidThePersonLeaveBusinessMessages {
 
-case object HasCrimeBeenReportedPage extends Page
-case object WhenDidCrimeHappenPage extends Page
-case object WhenDidFireOrFloodHappenPage extends Page
-case object WhenDidPersonLeaveTheBusinessPage extends Page
+  val title = "When did the person leave the business? - Appeal a VAT penalty - GOV.UK"
+
+  val heading = "When did the person leave the business?"
+
+  val hintText = "This means someone essential to the tax process leaving at short notice, whether they planned to return or not. For example, 12 3 2018"
+
+  val dayEntry = "Day"
+
+  val monthEntry = "Month"
+
+  val yearEntry = "Year"
+
+  val continueButton = "Continue"
+}

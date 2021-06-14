@@ -39,9 +39,19 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
 
-      s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late AND appeal has not been entered" in new Setup {
+      s"called with $WhenDidCrimeHappenPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidCrimeHappenPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $WhenDidPersonLeaveTheBusinessPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidCrimeHappenPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("lossOfStaff"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late AND late appeal reason hasn't been entered" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
-        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
             (SessionKeys.appealType -> "crime")
           )))
@@ -49,26 +59,30 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
 
-      s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late but late appeal reason has been entered (empty or non-empty value)" in new Setup {
+      s"called with $WhenDidPersonLeaveTheBusinessPage when the appeal > 30 days late AND late appeal reason hasn't been entered" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
-        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
-        .withSession(
-          (SessionKeys.lateAppealReason -> "This is a reason."),
-          (SessionKeys.appealType -> "crime")
-        )))
+        val result = mainNavigator.nextPage(WhenDidPersonLeaveTheBusinessPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "lossOfStaff")
+          )))
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
-      }
-
-      s"called with $WhenDidCrimeHappenPage" in new Setup {
-        val result = mainNavigator.nextPage(WhenDidCrimeHappenPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
-        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
     }
 
     "in NormalMode" when {
       s"called with $HasCrimeBeenReportedPage" in new Setup {
         val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $WhenDidCrimeHappenPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidCrimeHappenPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
+        result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode).url
+      }
+
+      s"called with $WhenDidPersonLeaveTheBusinessPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidPersonLeaveTheBusinessPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("lossOfStaff"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
@@ -79,9 +93,24 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
 
-      s"called with $WhenDidCrimeHappenPage" in new Setup {
-        val result = mainNavigator.nextPage(WhenDidCrimeHappenPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
-        result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode).url
+      s"called with $WhenDidPersonLeaveTheBusinessPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidPersonLeaveTheBusinessPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "lossOfStaff")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $WhenDidCrimeHappenPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "lossOfStaff")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
       }
     }
   }

@@ -126,6 +126,17 @@ fireOrFloodReason.error.required = The date of the fire or flood must include a 
 fireOrFloodReason.error.invalid = The date of the fire or flood must be a real date
 fireOrFloodReason.error.notInFuture = The date of the fire or flood must be today or in the past
 
+# When did the person leave the business page
+# ----------------------------------------------------------
+lossOfStaffReason.title = When did the person leave the business?
+lossOfStaffReason.heading = When did the person leave the business?
+lossOfStaffReason.hintText = This means someone essential to the tax process leaving at short notice, whether they planned to return or not.<br><br>For example, 12 3 2018
+lossOfStaffReason.error.required.all = Tell us the last date the person carried out work for the business
+lossOfStaffReason.error.required.two = The date the person left must include a {0} and a {1}
+lossOfStaffReason.error.required = The date the person left must include a {0}
+lossOfStaffReason.error.invalid = The date the person left must be a real date
+lossOfStaffReason.error.notInFuture = The date the person left must be today or in the past
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day
