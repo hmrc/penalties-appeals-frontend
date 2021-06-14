@@ -46,7 +46,8 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
           (reasonableExcuse, dueDate) => {
             val friendlyDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(dueDate))
             val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
-            Ok(honestDeclarationPage(honestyDeclarationForm, reasonText, friendlyDate))
+            val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
+            Ok(honestDeclarationPage(honestyDeclarationForm, reasonText, friendlyDate, extraBullets))
           }
         }
       )
@@ -62,7 +63,8 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
               logger.debug(s"[HonestyDeclarationController][onSubmit] - Form had errors: ${formWithErrors.errors}")
               val friendlyDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(dueDate))
               val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
-              BadRequest(honestDeclarationPage(formWithErrors, reasonText, friendlyDate))
+              val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
+              BadRequest(honestDeclarationPage(formWithErrors, reasonText, friendlyDate, extraBullets))
             },
             _ => {
               logger.debug(s"[HonestyDeclarationController][onSubmit] - Adding 'true' to session for key: ${SessionKeys.hasConfirmedDeclaration}")

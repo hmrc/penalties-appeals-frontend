@@ -32,4 +32,18 @@ class HonestyDeclarationHelperSpec extends SpecBase {
       reasonTest("crime", "I was affected by a crime")
     }
   }
+
+  "getExtraText" should {
+    "return the correct message key(s) for 'loss of staff'" in {
+      val expectedMsgKey: String = "honestyDeclaration.li.extra.lossOfStaff"
+      val actualMsgKey: Seq[String] = HonestyDeclarationHelper.getExtraText("lossOfStaff")
+      actualMsgKey.size shouldBe 1
+      actualMsgKey.head shouldBe expectedMsgKey
+    }
+
+    "return an empty Seq when the reasonable excuse is not included in the match statements" in {
+      val actualMsgKey: Seq[String] = HonestyDeclarationHelper.getExtraText("health")
+      actualMsgKey.isEmpty shouldBe true
+    }
+  }
 }
