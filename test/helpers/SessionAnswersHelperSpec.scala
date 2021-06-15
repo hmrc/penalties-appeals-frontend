@@ -36,13 +36,36 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return false - when not all keys are present" in {
-        val fakeRequestWithAllCrimeKeysPresent = fakeRequest
+        val fakeRequestWithSomeCrimeKeysPresent = fakeRequest
           .withSession(
             SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.dateOfCrime -> "2022-01-01"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithAllCrimeKeysPresent)
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithSomeCrimeKeysPresent)
+        result shouldBe false
+      }
+    }
+
+    "for loss of staff" must {
+      "return true - when all keys present" in {
+        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "lossOfStaff",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent)
+        result shouldBe true
+      }
+
+      "return false - when not all keys are present" in {
+        val fakeRequestWithSomeLossOfStaffKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "lossOfStaff",
+            SessionKeys.hasConfirmedDeclaration -> "true"
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithSomeLossOfStaffKeysPresent)
         result shouldBe false
       }
     }
@@ -152,6 +175,46 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._1 shouldBe "When did the fire or flood happen?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
+        result(2)._1 shouldBe "Why you did not appeal sooner"
+        result(2)._2 shouldBe "Lorem ipsum"
+        result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+    }
+
+    "for loss of staff" must {
+      "return all the keys from the session ready to be passed to the view" in {
+        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "lossOfStaff",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Loss of staff essential to the VAT process"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did the person become unavailable?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url
+      }
+
+      "return all keys and the 'Why you did not appeal sooner' text" in {
+        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "lossOfStaff",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
+            SessionKeys.lateAppealReason -> "Lorem ipsum"
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Loss of staff essential to the VAT process"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did the person become unavailable?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url
         result(2)._1 shouldBe "Why you did not appeal sooner"
         result(2)._2 shouldBe "Lorem ipsum"
         result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
