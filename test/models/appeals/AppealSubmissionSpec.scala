@@ -71,6 +71,16 @@ class AppealSubmissionSpec extends SpecBase {
       |""".stripMargin
   )
 
+  val fireOrFloodAppealInformationJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "fireOrFlood",
+      |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "lateAppeal": false
+      |}
+      |""".stripMargin
+  )
+
   "parseAppealInformationToJson" should {
     "for crime" must {
       "parse the appeal information model into a JsObject" in {
@@ -84,6 +94,20 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe crimeAppealInformationJson
+      }
+    }
+
+    "for fire or flood" must {
+      "parse the appeal information model into a JsObject" in {
+        val model = FireOrFloodAppealInformation(
+          `type` = "fireOrFlood",
+          dateOfEvent = "2021-04-23T18:25:43.511Z",
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
+        )
+        val result = AppealSubmission.parseAppealInformationToJson(model)
+        result shouldBe fireOrFloodAppealInformationJson
       }
     }
   }
@@ -145,6 +169,24 @@ class AppealSubmissionSpec extends SpecBase {
         )
       }
     }
+
+    "for fire or flood" must {
+      "construct a FireOrFlood model when passed the fire or flood reasonable excuse" in {
+        val fakeRequestForFireOrFloodJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "fireOrFlood",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.dateOfFireOrFlood -> "2022-01-01")
+        )
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", false)(fakeRequestForFireOrFloodJourney)
+        result.reasonableExcuse shouldBe "fireOrFlood"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "client"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe FireOrFloodAppealInformation(
+          `type` = "fireOrFlood", dateOfEvent = "2022-01-01", statement = None, lateAppeal = false, lateAppealReason = None
+        )
+      }
+    }
   }
 
 
@@ -182,6 +224,39 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe jsonRepresentingModel
       }
     }
+
+    "for fire or flood" must {
+      "write the model to JSON" in {
+        val modelToConvertToJson: AppealSubmission = AppealSubmission(
+          submittedBy = "client",
+          penaltyId = "1234",
+          reasonableExcuse = "fireOrFlood",
+          honestyDeclaration = true,
+          appealInformation = FireOrFloodAppealInformation(
+            `type` = "fireOrFlood",
+            dateOfEvent = "2021-04-23T18:25:43.511Z",
+            statement = None,
+            lateAppeal = false,
+            lateAppealReason = None
+          )
+        )
+
+        val jsonRepresentingModel: JsValue = Json.obj(
+          "submittedBy" -> "client",
+          "penaltyId" -> "1234",
+          "reasonableExcuse" -> "fireOrFlood",
+          "honestyDeclaration" -> true,
+          "appealInformation" -> Json.obj(
+            "type" -> "fireOrFlood",
+            "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "lateAppeal" -> false
+          )
+        )
+
+        val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
+        result shouldBe jsonRepresentingModel
+      }
+    }
   }
 
   "CrimeAppealInformation" should {
@@ -200,6 +275,25 @@ class AppealSubmissionSpec extends SpecBase {
           "type" -> "crime",
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "reportedIssue" -> true,
+          "lateAppeal" -> true,
+          "lateAppealReason" -> "Reason"
+        )
+      }
+    }
+
+    "fireOrFloodAppealWrites" must {
+      "write the appeal model to Json" in {
+        val model = FireOrFloodAppealInformation(
+          `type` = "fireOrFlood",
+          dateOfEvent = "2021-04-23T18:25:43.511Z",
+          statement = None,
+          lateAppeal = true,
+          lateAppealReason = Some("Reason")
+        )
+        val result = Json.toJson(model)(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
+        result shouldBe Json.obj(
+          "type" -> "fireOrFlood",
+          "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason"
         )
