@@ -31,7 +31,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
   val appealService: AppealService = injector.instanceOf[AppealService]
 
   "submitAppeal" should {
-    "return true when the connector call succeeds" in {
+    "return true when the connector call succeeds for crime" in {
       successfulAppealSubmission
       val userRequest = UserRequest("")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
@@ -46,6 +46,23 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateOfCrime -> "2022-01-01"
       ))
       val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+      result shouldBe true
+    }
+
+    "return true when the connector call succeeds for loss of staff" in {
+      successfulAppealSubmission
+      val userRequest = UserRequest("")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "lossOfStaff",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+      ))
+      val result = await(appealService.submitAppeal("lossOfStaff")(userRequest, implicitly, implicitly))
       result shouldBe true
     }
 
