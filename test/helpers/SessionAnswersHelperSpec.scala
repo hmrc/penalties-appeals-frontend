@@ -46,6 +46,29 @@ class SessionAnswersHelperSpec extends SpecBase {
         result shouldBe false
       }
     }
+
+    "for fire or flood" must {
+      "return true - when all keys present" in {
+        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "fireOrFlood",
+            SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent)
+        result shouldBe true
+      }
+
+      "return false - when not all keys are present" in {
+        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent)
+        result shouldBe false
+      }
+    }
   }
 
   "getContentForReasonableExcuseCheckYourAnswersPage" should {
@@ -94,6 +117,44 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(3)._1 shouldBe "Why you did not appeal sooner"
         result(3)._2 shouldBe "Lorem ipsum"
         result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+    }
+
+    "for fire or flood" must {
+      "return all the keys from the session ready to be passed to the view" in {
+        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "fireOrFlood",
+            SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+          )
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Fire or flood"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did the fire or flood happen?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
+      }
+
+      "return all keys and the 'Why you did not appeal sooner' text" in {
+        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "fireOrFlood",
+            SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.lateAppealReason -> "Lorem ipsum"
+          )
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Fire or flood"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did the fire or flood happen?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
+        result(2)._1 shouldBe "Why you did not appeal sooner"
+        result(2)._2 shouldBe "Lorem ipsum"
+        result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
     }
   }

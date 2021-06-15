@@ -26,7 +26,8 @@ import java.time.LocalDate
 
 object SessionAnswersHelper extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
-    "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration)
+    "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
+    "fireOrFlood" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.dateOfFireOrFlood, SessionKeys.hasConfirmedDeclaration)
   )
 
   def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): Boolean = {
@@ -49,6 +50,14 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             messages(s"checkYourAnswers.crime.${request.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get}"),
             controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url)
         )
+      case "fireOrFlood" => Seq(
+        (messages("checkYourAnswers.reasonableExcuse"),
+          messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+          controllers.routes.ReasonableExcuseController.onPageLoad().url),
+        (messages("checkYourAnswers.fireOrFlood.whenDidTheFireOrFloodHappen"),
+          messages(LocalDate.parse(request.session.get(SessionKeys.dateOfFireOrFlood).get)),
+          controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url)
+      )
       }
 
     request.session.get(SessionKeys.lateAppealReason).fold(

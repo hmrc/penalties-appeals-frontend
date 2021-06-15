@@ -159,6 +159,8 @@ checkYourAnswers.crime.no = No
 checkYourAnswers.crime.unknown = I do not know
 checkYourAnswers.change.text = Change
 checkYourAnswers.whyYouDidNotAppealSooner = Why you did not appeal sooner
+checkYourAnswers.fireOrFlood.whenDidTheFireOrFloodHappen = When did the fire or flood happen?
+checkYourAnswers.fireOrFlood.reasonableExcuse = Fire or flood
 
 # Appeal Confirmation page
 # ----------------------------------------------------------

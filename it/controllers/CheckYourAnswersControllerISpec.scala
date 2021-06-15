@@ -45,6 +45,22 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.OK
     }
 
+    "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "fireOrFlood",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfFireOrFlood -> "2022-01-01"
+      )
+      val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.OK
+    }
+
     "return 200 (OK) when the user is authorised and has the correct keys in session for crime - for a late appeal" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
@@ -64,6 +80,26 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       val parsedBody = Jsoup.parse(contentAsString(request))
       parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Why you did not appeal sooner"
       parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
+    }
+
+    "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood - for a late appeal" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "fireOrFlood",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+        SessionKeys.lateAppealReason -> "Lorem ipsum"
+      )
+      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+      await(request).header.status shouldBe Status.OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Why you did not appeal sooner"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 
     "return 500 (ISE) when the user hasn't selected a reasonable excuse option" in {
@@ -102,7 +138,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /check-your-answers" should {
-    "redirect the user to the confirmation page on success" in {
+    "redirect the user to the confirmation page on success for crime" in {
       PenaltiesStub.successfulAppealSubmission
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
@@ -115,6 +151,24 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.dateOfCrime -> "2022-01-01"
+      )
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+    }
+
+    "redirect the user to the confirmation page on success for fire or flood" in {
+      PenaltiesStub.successfulAppealSubmission
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "fireOrFlood",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfFireOrFlood -> "2022-01-01"
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
