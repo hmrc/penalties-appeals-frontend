@@ -75,7 +75,8 @@ class AppealSubmissionSpec extends SpecBase {
     """
       |{
       |   "type": "fireOrFlood",
-      |   "dateOfEvent": "2021-04-23T18:25:43.511Z"
+      |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "lateAppeal": false
       |}
       |""".stripMargin
   )
@@ -101,7 +102,9 @@ class AppealSubmissionSpec extends SpecBase {
         val model = FireOrFloodAppealInformation(
           `type` = "fireOrFlood",
           dateOfEvent = "2021-04-23T18:25:43.511Z",
-          statement = None
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe fireOrFloodAppealInformationJson
@@ -174,13 +177,13 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.dateOfFireOrFlood -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood")(fakeRequestForFireOrFloodJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", false)(fakeRequestForFireOrFloodJourney)
         result.reasonableExcuse shouldBe "fireOrFlood"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe FireOrFloodAppealInformation(
-          `type` = "fireOrFlood", dateOfEvent = "2022-01-01", statement = None
+          `type` = "fireOrFlood", dateOfEvent = "2022-01-01", statement = None, lateAppeal = false, lateAppealReason = None
         )
       }
     }
@@ -232,7 +235,9 @@ class AppealSubmissionSpec extends SpecBase {
           appealInformation = FireOrFloodAppealInformation(
             `type` = "fireOrFlood",
             dateOfEvent = "2021-04-23T18:25:43.511Z",
-            statement = None
+            statement = None,
+            lateAppeal = false,
+            lateAppealReason = None
           )
         )
 
@@ -244,6 +249,7 @@ class AppealSubmissionSpec extends SpecBase {
           "appealInformation" -> Json.obj(
             "type" -> "fireOrFlood",
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "lateAppeal" -> false
           )
         )
 
@@ -280,12 +286,16 @@ class AppealSubmissionSpec extends SpecBase {
         val model = FireOrFloodAppealInformation(
           `type` = "fireOrFlood",
           dateOfEvent = "2021-04-23T18:25:43.511Z",
-          statement = None
+          statement = None,
+          lateAppeal = true,
+          lateAppealReason = Some("Reason")
         )
         val result = Json.toJson(model)(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
         result shouldBe Json.obj(
           "type" -> "fireOrFlood",
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> true,
+          "lateAppealReason" -> "Reason"
         )
       }
     }
