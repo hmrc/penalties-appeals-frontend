@@ -96,6 +96,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
     reasonableExcuse match {
       case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
       case ReasonableExcuses.fireOrFlood => controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url
+      case ReasonableExcuses.lossOfStaff => controllers.routes.LossOfStaffReasonController.onPageLoad(NormalMode).url
     }
   }
 }

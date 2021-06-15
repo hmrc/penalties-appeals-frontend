@@ -40,6 +40,7 @@ appealStart.h2 = Before you start
 appealStart.p4 = You need:
 appealStart.li.2.1 = a reason why the VAT Return was late (HMRC calls this a ’reasonable excuse’)
 appealStart.li.2.2 = the dates the reason related to
+appealStart.li.2.3 = details of why you did not appeal sooner
 appealStart.p5 = In some cases, we might also ask you to upload evidence to support the appeal.
 appealStart.p6 = We only need the information we ask for. You do not need to provide additional details unless we ask you for them.
 
@@ -122,6 +123,17 @@ fireOrFloodReason.error.required.two = The date of the fire or flood must includ
 fireOrFloodReason.error.required = The date of the fire or flood must include a {0}
 fireOrFloodReason.error.invalid = The date of the fire or flood must be a real date
 fireOrFloodReason.error.notInFuture = The date of the fire or flood must be today or in the past
+
+# When did the person leave the business page
+# ----------------------------------------------------------
+lossOfStaffReason.title = When did the person leave the business?
+lossOfStaffReason.heading = When did the person leave the business?
+lossOfStaffReason.hintText = This means someone essential to the tax process leaving at short notice, whether they planned to return or not.<br><br>For example, 12 3 2018
+lossOfStaffReason.error.required.all = Tell us the last date the person carried out work for the business
+lossOfStaffReason.error.required.two = The date the person left must include a {0} and a {1}
+lossOfStaffReason.error.required = The date the person left must include a {0}
+lossOfStaffReason.error.invalid = The date the person left must be a real date
+lossOfStaffReason.error.notInFuture = The date the person left must be today or in the past
 
 # Date input fields
 # ----------------------------------------------------------

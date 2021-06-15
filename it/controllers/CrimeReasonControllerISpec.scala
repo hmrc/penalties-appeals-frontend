@@ -261,33 +261,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
     }
 
-    "return 303 (SEE_OTHER) to CYA page (when appeal IS late AND reason has already been pre-filled) " +
-      " add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
-        (SessionKeys.penaltyId, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.lateAppealReason, "Great reason"),
-        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(1).toString)
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "yes"
-            |}
-            |""".stripMargin)
-      )
-      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
-    }
-
-
-    "return 303 (SEE_OTHER) to CYA page (when appeal IS late AND NO reason already provided)" +
-      " and add the session key to the session when the body is correct" in {
+    "return 303 (SEE_OTHER) to CYA page when appeal IS late and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),

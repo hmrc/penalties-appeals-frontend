@@ -66,7 +66,7 @@ class CrimeReasonControllerSpec extends SpecBase {
           status(result) shouldBe OK
         }
 
-        "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
           val result = controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.dateOfCrime -> "2021-01-01")))
           status(result) shouldBe OK
           val documentParsed = Jsoup.parse(contentAsString(result))

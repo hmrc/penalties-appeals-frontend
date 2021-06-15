@@ -35,6 +35,12 @@ GET        /when-did-the-fire-or-flood-happen/change        controllers.FireOrFl
 POST       /when-did-the-fire-or-flood-happen               controllers.FireOrFloodReasonController.onSubmit(mode: Mode = NormalMode)
 POST       /when-did-the-fire-or-flood-happen/change        controllers.FireOrFloodReasonController.onSubmit(mode: Mode = CheckMode)
 
+# Loss of Staff Reasonable Excuse Journey
+GET        /when-did-the-person-leave                     controllers.LossOfStaffReasonController.onPageLoad(mode: Mode = NormalMode)
+GET        /when-did-the-person-leave/change              controllers.LossOfStaffReasonController.onPageLoad(mode: Mode = CheckMode)
+POST       /when-did-the-person-leave                     controllers.LossOfStaffReasonController.onSubmit(mode: Mode = NormalMode)
+POST       /when-did-the-person-leave/change              controllers.LossOfStaffReasonController.onSubmit(mode: Mode = CheckMode)
+
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()
