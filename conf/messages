@@ -160,6 +160,7 @@ checkYourAnswers.crime.yes = Yes
 checkYourAnswers.crime.no = No
 checkYourAnswers.crime.unknown = I do not know
 checkYourAnswers.change.text = Change
+checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
 checkYourAnswers.whyYouDidNotAppealSooner = Why you did not appeal sooner
 
 # Appeal Confirmation page

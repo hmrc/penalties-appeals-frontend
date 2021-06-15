@@ -16,7 +16,8 @@
         headingMessagesArg: Seq[String] = Seq(),
         rows: Int                       = 5,
         hint: Option[Html]              = None,
-        classes: Option[String]         = None
+        classes: Option[String]         = None,
+        describedBy: Option[String]     = None
 )(implicit messages: Messages)
 
 @govukTextarea(
@@ -34,6 +35,7 @@
         hint = hint.map(
             hintHtml => Hint(content = HtmlContent(hintHtml))),
         errorMessage = form(id).error.map(
-            err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+            err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
+        describedBy = describedBy
     )
 )
