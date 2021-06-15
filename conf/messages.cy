@@ -78,11 +78,13 @@ honestyDeclaration.p1 = I confirm that:
 honestyDeclaration.li.1 = because {0}, I was unable to submit the VAT Return due on {1}
 honestyDeclaration.li.2 = no one else was available to make the submission for me
 honestyDeclaration.li.3 = I will provide honest and accurate information in this appeal
+honestyDeclaration.li.extra.lossOfStaff = the staff member didn’t return or get replaced before the due date
 honestyDeclaration.crime = I was affected by a crime
 honestyDeclaration.bereavement = I was affected by someone’s death
 honestyDeclaration.fireOrFlood = of a fire or flood
 honestyDeclaration.health = of a health issue
 honestyDeclaration.technicalIssues = of technology issues
+honestyDeclaration.lossOfStaff = of loss of staff essential to the VAT process
 
 # Errors
 # ----------------------------------------------------------
@@ -158,6 +160,7 @@ checkYourAnswers.crime.yes = Yes
 checkYourAnswers.crime.no = No
 checkYourAnswers.crime.unknown = I do not know
 checkYourAnswers.change.text = Change
+checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
 checkYourAnswers.whyYouDidNotAppealSooner = Why you did not appeal sooner
 checkYourAnswers.fireOrFlood.whenDidTheFireOrFloodHappen = When did the fire or flood happen?
 checkYourAnswers.fireOrFlood.reasonableExcuse = Fire or flood
