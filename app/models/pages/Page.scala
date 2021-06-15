@@ -22,3 +22,4 @@ case object HasCrimeBeenReportedPage extends Page
 case object WhenDidCrimeHappenPage extends Page
 case object WhenDidFireOrFloodHappenPage extends Page
 case object WhenDidPersonLeaveTheBusinessPage extends Page
+case object WhenDidTechnologyIssuesBeginPage extends Page

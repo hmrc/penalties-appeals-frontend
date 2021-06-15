@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package utils
+package messages
 
-object ReasonableExcuses {
-  val crime = "crime"
-  val fireOrFlood = "fireOrFlood"
-  val lossOfStaff = "lossOfStaff"
-  val technicalIssues = "technicalIssues"
+object WhenDidTechnologyIssuesBeginMessages {
+  val title = "When did the technology issues begin? - Appeal a VAT penalty - GOV.UK"
+
+  val heading = "When did the technology issues begin?"
+
+  val hintText = "For example, 12 3 2018"
+
+  val dayEntry = "Day"
+
+  val monthEntry = "Month"
+
+  val yearEntry = "Year"
+
+  val continueButton = "Continue"
 }

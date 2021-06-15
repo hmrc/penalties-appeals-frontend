@@ -49,6 +49,11 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
+      s"called with $WhenDidTechnologyIssuesBeginPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidTechnologyIssuesBeginPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
       s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late AND late appeal reason hasn't been entered" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
         val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
@@ -85,6 +90,12 @@ class NavigationSpec extends SpecBase {
         val result = mainNavigator.nextPage(WhenDidPersonLeaveTheBusinessPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("lossOfStaff"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+
+      //TODO: implement when the 'When did the technology issues end' page is implemented
+//      s"called with $WhenDidTechnologyIssuesBeginPage" in new Setup {
+//        val result = mainNavigator.nextPage(WhenDidTechnologyIssuesBeginPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("lossOfStaff"))
+//        result.url shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded().url
+//      }
 
       s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
