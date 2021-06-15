@@ -55,7 +55,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
           messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
           controllers.routes.ReasonableExcuseController.onPageLoad().url),
         (messages("checkYourAnswers.fireOrFlood.whenDidTheFireOrFloodHappen"),
-          messages(LocalDate.parse(request.session.get(SessionKeys.dateOfFireOrFlood).get)),
+          LocalDate.parse(request.session.get(SessionKeys.dateOfFireOrFlood).get),
           controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url)
       )
       }

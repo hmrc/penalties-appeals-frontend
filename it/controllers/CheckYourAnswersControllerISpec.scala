@@ -159,7 +159,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for fire or flood" in {
       PenaltiesStub.successfulAppealSubmission
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
