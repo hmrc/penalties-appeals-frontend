@@ -33,15 +33,10 @@
 
     @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
 
-        <h2 class="govuk-label-wrapper govuk-heading-m">
-            <label class="govuk-label govuk-label--m" for="late-appeal-text">
-                @messages("makingALateAppeal.h2")
-            </label>
-        </h2>
-
-        <p class="govuk-hint" id="late-appeal-text-hint">@messages("makingALateAppeal.p1")</p>
-
-        @textArea(form, "late-appeal-text", "", describedBy = Some("late-appeal-text-hint"))
+        @textArea(form, "late-appeal-text", messages("makingALateAppeal.h2"),
+            describedBy = Some("late-appeal-text-hint"),
+            hint = Some(Html(messages("makingALateAppeal.p1"))),
+            labelClasses = Some("govuk-label govuk-label--m"))
 
         @govukButton(Button(content = Text(messages("common.continue"))))
     }

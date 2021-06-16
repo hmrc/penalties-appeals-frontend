@@ -28,8 +28,9 @@ import views.html.MakingALateAppealPage
 class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
   "MakingALateAppealPage" should {
     val makingALateAppealPage: MakingALateAppealPage = injector.instanceOf[MakingALateAppealPage]
-    object Selectors extends BaseSelectors
-
+    object Selectors extends BaseSelectors {
+      val label = ".govuk-label--m"
+    }
     def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form)
 
     val formProvider = MakingALateAppealForm.makingALateAppealForm
@@ -38,7 +39,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> heading,
-      Selectors.h2 -> h2,
+      Selectors.label -> label,
       Selectors.hintText -> hintText,
       Selectors.button -> continueBtn
     )

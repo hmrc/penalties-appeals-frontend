@@ -17,7 +17,8 @@
         rows: Int                       = 5,
         hint: Option[Html]              = None,
         classes: Option[String]         = None,
-        describedBy: Option[String]     = None
+        describedBy: Option[String]     = None,
+        labelClasses: Option[String]    = None
 )(implicit messages: Messages)
 
 @govukTextarea(
@@ -31,7 +32,7 @@
             classes,
             content = Text(messages(label, headingMessagesArg:_*)),
             isPageHeading = isPageHeading,
-            classes = if(isPageHeading) "govuk-label--xl" else if(!isHidden) "govuk-label" else "govuk-visually-hidden"),
+            classes = if(labelClasses.isDefined) labelClasses.get else if(isPageHeading) "govuk-label--xl" else if(!isHidden) "govuk-label" else "govuk-visually-hidden"),
         hint = hint.map(
             hintHtml => Hint(content = HtmlContent(hintHtml))),
         errorMessage = form(id).error.map(
