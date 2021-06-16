@@ -89,7 +89,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
       request.session(fakeRequestWithCorrectKeys).get(SessionKeys.lateAppealReason).get shouldBe "This is a great reason."
     }
 
-    "return 303 (SEE OTHER) when the user POSTs EMPTY data -  adding the key to the session" in {
+    "return 400 (BAD REQUEST ) when the user POSTs EMPTY data" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/making-a-late-appeal").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
@@ -106,9 +106,8 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
           |""".stripMargin))
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeys).get(SessionKeys.lateAppealReason).get shouldBe ""
+      request.header.status shouldBe Status.BAD_REQUEST
+      request.session(fakeRequestWithCorrectKeys).get(SessionKeys.lateAppealReason) shouldBe None
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
