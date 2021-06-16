@@ -34,6 +34,7 @@ trait Mappings extends Formatters {
                            requiredKey: String,
                            fieldLengthKey: String = "error.date.length",
                            futureKey: Option[String] = None,
+                           dateNotEqualOrAfterKeyAndCompareDate: Option[(String, LocalDate)] = None,
                            args: Seq[String] = Seq.empty)(implicit messages: Messages): FieldMapping[LocalDate] =
-    of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey, requiredKey, fieldLengthKey, futureKey, args))
+    of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey, requiredKey, fieldLengthKey, futureKey, dateNotEqualOrAfterKeyAndCompareDate, args))
 }

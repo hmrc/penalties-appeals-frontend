@@ -41,6 +41,16 @@ GET        /when-did-the-person-leave/change              controllers.LossOfStaf
 POST       /when-did-the-person-leave                     controllers.LossOfStaffReasonController.onSubmit(mode: Mode = NormalMode)
 POST       /when-did-the-person-leave/change              controllers.LossOfStaffReasonController.onSubmit(mode: Mode = CheckMode)
 
+# Technical Issues Reasonable Excuse Journey
+GET        /when-did-the-technology-issues-begin                     controllers.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(mode: Mode = NormalMode)
+GET        /when-did-the-technology-issues-begin/change              controllers.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(mode: Mode = CheckMode)
+POST       /when-did-the-technology-issues-begin                     controllers.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(mode: Mode = NormalMode)
+POST       /when-did-the-technology-issues-begin/change              controllers.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(mode: Mode = CheckMode)
+GET        /when-did-the-technology-issues-end                       controllers.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(mode: Mode = NormalMode)
+GET        /when-did-the-technology-issues-end/change                controllers.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(mode: Mode = CheckMode)
+POST       /when-did-the-technology-issues-end                       controllers.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesEnded(mode: Mode = NormalMode)
+POST       /when-did-the-technology-issues-end/change                controllers.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesEnded(mode: Mode = CheckMode)
+
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()

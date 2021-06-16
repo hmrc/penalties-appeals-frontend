@@ -137,6 +137,31 @@ lossOfStaffReason.error.required = The date the person left must include a {0}
 lossOfStaffReason.error.invalid = The date the person left must be a real date
 lossOfStaffReason.error.notInFuture = The date the person left must be today or in the past
 
+# When did the technology issues begin page
+# ----------------------------------------------------------
+technicalIssues.begin.title = When did the technology issues begin?
+technicalIssues.begin.heading = When did the technology issues begin?
+technicalIssues.begin.hintText = For example, 12 3 2018
+# Need to confirm that these errors are correct
+technicalIssues.begin.error.required.all = Tell us when the technology issues began
+technicalIssues.begin.error.required.two = The date the technology issues began must include a {0} and a {1}
+technicalIssues.begin.error.required = The date the technology issues began must include a {0}
+technicalIssues.begin.error.invalid = The date the technology issues began must be a real date
+technicalIssues.begin.error.notInFuture = The date the technology issues began must be today or in the past
+
+# When did the technology issues end page
+# ----------------------------------------------------------
+technicalIssues.end.title = When did the technology issues end?
+technicalIssues.end.heading = When did the technology issues end?
+technicalIssues.end.hintText = For example, 12 3 2018
+# Need to confirm that these errors are correct
+technicalIssues.end.error.required.all = Tell us when the technology issues ended
+technicalIssues.end.error.required.two = The date the technology issues ended must include a {0} and a {1}
+technicalIssues.end.error.required = The date the technology issues ended must include a {0}
+technicalIssues.end.error.invalid = The date the technology issues ended must be a real date
+technicalIssues.end.error.notInFuture = The date the technology issues ended must be today or in the past
+technicalIssues.end.error.endDateLessThanStartDate = The date the technology issues ended must be the same or after they began
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day
