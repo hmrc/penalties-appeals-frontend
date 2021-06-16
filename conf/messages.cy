@@ -213,5 +213,5 @@ appealConfirmation.feedbackLink.2 = (takes 30 seconds)
 # ----------------------------------------------------------
 makingALateAppeal.title = Making a late appeal
 makingALateAppeal.heading = Making a late appeal
-makingALateAppeal.h2 = Tell us why you did not appeal sooner
 makingALateAppeal.p1 = You usually need to appeal within 30 days of being told about a penalty. If you do not appeal within 30 days, we’ll use information you provide here to decide whether we can consider your late appeal.
+makingALateAppeal.error.required = You must provide some information about why you did not appeal sooner

@@ -18,13 +18,13 @@ package forms
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.Forms.{optional, single}
+import play.api.data.Forms.single
 
 
 object MakingALateAppealForm extends Mappings {
-  val makingALateAppealForm = Form[Option[String]](
+  def makingALateAppealForm() = Form[String](
     single(
-      "late-appeal-text" -> optional(text())
+      "late-appeal-text" -> text(errorKey = "makingALateAppeal.error.required")
     )
   )
 }

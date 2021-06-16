@@ -21,8 +21,6 @@ object MakingALateAppealMessages {
 
   val heading = "Making a late appeal"
 
-  val h2 = "Tell us why you did not appeal sooner"
-
   val hintText = "You usually need to appeal within 30 days of being told about a penalty. If you do not appeal within 30 days, we’ll " +
     "use information you provide here to decide whether we can consider your late appeal."
 
