@@ -99,8 +99,7 @@ class MakingALateAppealControllerSpec extends SpecBase {
         await(result).session.get(SessionKeys.lateAppealReason).get shouldBe "Royale with cheese"
       }
 
-      "redirect the user to the CYA page when an appeal reason has NOT been entered " +
-        "- adding the key to the session with an empty value" in new Setup(AuthTestModels.successfulAuthResult) {
+      "return a 400 (BAD REQUEST) and show page with error when an appeal reason has NOT been entered " in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = controller.onSubmit()(fakeRequestWithCorrectKeys
           .withSession((SessionKeys.reasonableExcuse, "crime"))
           .withJsonBody(
@@ -111,10 +110,9 @@ class MakingALateAppealControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin)
           ))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        await(result).session.get(SessionKeys.lateAppealReason).get shouldBe ""
-      }
+        status(result) shouldBe BAD_REQUEST
+        contentAsString(result) should include("There is a problem")
+        contentAsString(result) should include("Explain why you did not appeal sooner")      }
     }
 
     "the user is unauthorised" when {
