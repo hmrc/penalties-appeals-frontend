@@ -23,7 +23,6 @@ import helpers.FormProviderHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.Logger.logger
 import utils.SessionKeys
 import views.html.MakingALateAppealPage
 
@@ -37,17 +36,20 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsOptionString(MakingALateAppealForm.makingALateAppealForm, SessionKeys.lateAppealReason)
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(MakingALateAppealForm.makingALateAppealForm, SessionKeys.lateAppealReason)
       Ok(makingALateAppealPage(formProvider))
     }
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      val optLateAppealReason = MakingALateAppealForm.makingALateAppealForm.bindFromRequest().get
-      logger.debug(s"[MakingALateAppealController][onPageSubmit] Received reason: $optLateAppealReason")
-        Redirect(routes.CheckYourAnswersController.onPageLoad())
-          .addingToSession(SessionKeys.lateAppealReason -> optLateAppealReason.fold("")(identity))
+      MakingALateAppealForm.makingALateAppealForm().bindFromRequest().fold(
+        formWithErrors => BadRequest(makingALateAppealPage(formWithErrors)),
+        lateAppealReason => {
+          Redirect(routes.CheckYourAnswersController.onPageLoad())
+            .addingToSession(SessionKeys.lateAppealReason -> lateAppealReason.toString)
+        }
+      )
     }
   }
 }
