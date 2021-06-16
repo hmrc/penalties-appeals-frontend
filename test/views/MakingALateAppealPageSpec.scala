@@ -39,7 +39,6 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> heading,
-      Selectors.label -> label,
       Selectors.hintText -> hintText,
       Selectors.button -> continueBtn
     )

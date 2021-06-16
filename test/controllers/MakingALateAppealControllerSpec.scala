@@ -112,7 +112,7 @@ class MakingALateAppealControllerSpec extends SpecBase {
           ))
         status(result) shouldBe BAD_REQUEST
         contentAsString(result) should include("There is a problem")
-        contentAsString(result) should include("Explain why you did not appeal sooner")      }
+        contentAsString(result) should include("You must provide some information about why you did not appeal sooner")      }
     }
 
     "the user is unauthorised" when {

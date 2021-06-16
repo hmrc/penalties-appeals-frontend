@@ -29,15 +29,12 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
 
-    <h1 class="govuk-heading-l">@messages("makingALateAppeal.heading")</h1>
-
     @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
 
-        @textArea(form, "late-appeal-text", messages("makingALateAppeal.h2"),
+        @textArea(form, "late-appeal-text", messages("makingALateAppeal.heading"),
+            isPageHeading = true,
             describedBy = Some("late-appeal-text-hint"),
-            hint = Some(Html(messages("makingALateAppeal.p1"))),
-            labelClasses = Some("govuk-label govuk-label--m"))
-
+            hint = Some(Html(messages("makingALateAppeal.p1"))))
         @govukButton(Button(content = Text(messages("common.continue"))))
     }
 }
