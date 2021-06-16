@@ -178,19 +178,22 @@ checkYourAnswers.declaration.h2 = Declaration
 checkYourAnswers.declaration.p1 = By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge.
 checkYourAnswers.declaration.p2 = A false declaration can result in prosecution.
 checkYourAnswers.reasonableExcuse = Reason for missing the VAT deadline
+checkYourAnswers.change.text = Change
+checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
+checkYourAnswers.whyYouDidNotAppealSooner = Why you did not appeal sooner
+checkYourAnswers.fireOrFlood.whenDidTheFireOrFloodHappen = When did the fire or flood happen?
+checkYourAnswers.fireOrFlood.reasonableExcuse = Fire or flood
+checkYourAnswers.lossOfStaff.reasonableExcuse = Loss of staff essential to the VAT process
+checkYourAnswers.lossOfStaff.whenPersonBecameUnavailable = When did the person become unavailable?
 checkYourAnswers.crime.whenDidTheCrimeHappen = When did the crime happen?
 checkYourAnswers.crime.reasonableExcuse = Crime
 checkYourAnswers.crime.hasCrimeBeenReported = Has this crime been reported to the police?
 checkYourAnswers.crime.yes = Yes
 checkYourAnswers.crime.no = No
 checkYourAnswers.crime.unknown = I do not know
-checkYourAnswers.lossOfStaff.reasonableExcuse = Loss of staff essential to the VAT process
-checkYourAnswers.lossOfStaff.whenPersonBecameUnavailable = When did the person become unavailable?
-checkYourAnswers.change.text = Change
-checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
-checkYourAnswers.whyYouDidNotAppealSooner = Why you did not appeal sooner
-checkYourAnswers.fireOrFlood.whenDidTheFireOrFloodHappen = When did the fire or flood happen?
-checkYourAnswers.fireOrFlood.reasonableExcuse = Fire or flood
+checkYourAnswers.technicalIssues.whenDidTechIssuesBegin = When did the technology issues begin?
+checkYourAnswers.technicalIssues.whenDidTechIssuesEnd = When did the technology issues end?
+checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
 
 # Appeal Confirmation page
 # ----------------------------------------------------------

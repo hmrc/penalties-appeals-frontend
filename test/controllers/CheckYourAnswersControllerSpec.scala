@@ -51,6 +51,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01")
   )
 
+  val fakeRequestForTechnicalIssuesJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+    SessionKeys.reasonableExcuse -> "technicalIssues",
+    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+    SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
+  )
+
   val fakeRequestForCrimeJourneyNoReasonableExcuse = fakeRequestConverter(fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
@@ -93,6 +100,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       "return OK and correct view - when all answers exist for loss of staff" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForLossOfStaffJourney)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - when all answers exist for technical issues" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoad()(fakeRequestForTechnicalIssuesJourney)
         status(result) shouldBe OK
       }
 
