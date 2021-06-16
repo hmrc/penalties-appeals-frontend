@@ -280,6 +280,25 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
 
+    "redirect the user to the confirmation page on success for technical issues" in {
+      PenaltiesStub.successfulAppealSubmission
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "technicalIssues",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+        SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+      )
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+    }
+
     "show an ISE when the appeal fails" in {
       PenaltiesStub.failedAppealSubmission
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(

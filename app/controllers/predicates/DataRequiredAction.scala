@@ -24,7 +24,7 @@ import utils.SessionKeys
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-trait  DataRequiredAction extends ActionRefiner[UserRequest, UserRequest]
+trait DataRequiredAction extends ActionRefiner[UserRequest, UserRequest]
 
 class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
 

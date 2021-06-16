@@ -69,6 +69,30 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
         behave like pageWithExpectedMessages(expectedContent)
       }
+
+      "the option selected is 'fire or flood'" must {
+        implicit val doc: Document = asDocument(applyView(honestyDeclarationForm, messages("honestyDeclaration.fireOrFlood"),
+          "1 January 2022",
+          Seq()))
+
+        val expectedContent = Seq(
+          Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.fireOrFlood"), "1 January 2022")
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)
+      }
+
+      "the option selected is 'technical issues'" must {
+        implicit val doc: Document = asDocument(applyView(honestyDeclarationForm, messages("honestyDeclaration.technicalIssues"),
+          "1 January 2022",
+          Seq()))
+
+        val expectedContent = Seq(
+          Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.technicalIssues"), "1 January 2022")
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)
+      }
     }
   }
 }

@@ -44,6 +44,17 @@ class AppealSubmissionSpec extends SpecBase {
       |""".stripMargin
   )
 
+  val technicalIssuesAppealInformationJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "technicalIssues",
+      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
+      |   "lateAppeal": false
+      |}
+      |""".stripMargin
+  )
+
   val fireOrFloodAppealInformationJson: JsValue = Json.parse(
     """
       |{
@@ -95,6 +106,21 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe lossOfStaffAppealInformationJson
+      }
+    }
+
+    "for technical issues" must {
+      "parse the appeal information model into a JsObject" in {
+        val model = TechnicalIssuesAppealInformation(
+          `type` = "technicalIssues",
+          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          endDateOfEvent = "2021-04-24T18:25:43.511Z",
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
+        )
+        val result = AppealSubmission.parseAppealInformationToJson(model)
+        result shouldBe technicalIssuesAppealInformationJson
       }
     }
   }
@@ -210,6 +236,44 @@ class AppealSubmissionSpec extends SpecBase {
         )
       }
     }
+
+    "for technical issues" must {
+      "have the startDateOfEvent and endDate of event" in {
+        val fakeRequestForTechnicalIssuesJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+          SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
+        )
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false)(fakeRequestForTechnicalIssuesJourney)
+        result.reasonableExcuse shouldBe "technicalIssues"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "client"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe TechnicalIssuesAppealInformation(
+          `type` = "technicalIssues", startDateOfEvent = "2022-01-01", endDateOfEvent = "2022-01-02", statement = None, lateAppeal = false, lateAppealReason = None
+        )
+      }
+
+      "specify its for an agent when ARN is in session" in {
+        val fakeRequestForTechnicalIssuesJourney = UserRequest("123456789", arn = Some("AGENT1"))(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+          SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
+        )
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false)(fakeRequestForTechnicalIssuesJourney)
+        result.reasonableExcuse shouldBe "technicalIssues"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "agent"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe TechnicalIssuesAppealInformation(
+          `type` = "technicalIssues", startDateOfEvent = "2022-01-01", endDateOfEvent = "2022-01-02", statement = None, lateAppeal = false, lateAppealReason = None
+        )
+      }
+    }
   }
 
 
@@ -282,7 +346,7 @@ class AppealSubmissionSpec extends SpecBase {
     }
 
     "for loss of staff" must {
-      "write the model to JSON for client" in {
+      "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
           penaltyId = "1234",
@@ -304,6 +368,41 @@ class AppealSubmissionSpec extends SpecBase {
           "appealInformation" -> Json.obj(
             "type" -> "lossOfStaff",
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "lateAppeal" -> false
+          )
+        )
+
+        val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
+        result shouldBe jsonRepresentingModel
+      }
+    }
+
+    "for technical issues" must {
+      "write the model to JSON" in {
+        val modelToConvertToJson: AppealSubmission = AppealSubmission(
+          submittedBy = "client",
+          penaltyId = "1234",
+          reasonableExcuse = "technicalIssues",
+          honestyDeclaration = true,
+          appealInformation = TechnicalIssuesAppealInformation(
+            `type` = "technicalIssues",
+            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            endDateOfEvent = "2021-04-24T18:25:43.511Z",
+            statement = None,
+            lateAppeal = false,
+            lateAppealReason = None
+          )
+        )
+
+        val jsonRepresentingModel: JsValue = Json.obj(
+          "submittedBy" -> "client",
+          "penaltyId" -> "1234",
+          "reasonableExcuse" -> "technicalIssues",
+          "honestyDeclaration" -> true,
+          "appealInformation" -> Json.obj(
+            "type" -> "technicalIssues",
+            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
             "lateAppeal" -> false
           )
         )
@@ -370,6 +469,29 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe Json.obj(
           "type" -> "lossOfStaff",
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> true,
+          "lateAppealReason" -> "Reason"
+        )
+      }
+    }
+  }
+
+  "TechnicalIssuesAppealInformation" should {
+    "technicalIssuesAppealWrites" must {
+      "write the appeal model to JSON" in {
+        val model = TechnicalIssuesAppealInformation(
+          `type` = "technicalIssues",
+          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          endDateOfEvent = "2021-04-24T18:25:43.511Z",
+          statement = None,
+          lateAppeal = true,
+          lateAppealReason = Some("Reason")
+        )
+        val result = Json.toJson(model)(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
+        result shouldBe Json.obj(
+          "type" -> "technicalIssues",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason"
         )

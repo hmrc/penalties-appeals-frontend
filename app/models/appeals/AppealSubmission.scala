@@ -101,7 +101,7 @@ case class LossOfStaffAppealInformation(
                                  ) extends AppealInformation
 
 object LossOfStaffAppealInformation {
-  implicit val lossOfStaffAppealInformationFormatter: OFormat[CrimeAppealInformation] = Json.format[CrimeAppealInformation]
+  implicit val lossOfStaffAppealInformationFormatter: OFormat[LossOfStaffAppealInformation] = Json.format[LossOfStaffAppealInformation]
 
   val lossOfStaffAppealWrites: Writes[LossOfStaffAppealInformation] = (lossOfStaffAppealInformation: LossOfStaffAppealInformation) => {
     Json.obj(
@@ -116,6 +116,40 @@ object LossOfStaffAppealInformation {
       )
     ).deepMerge(
       lossOfStaffAppealInformation.lateAppealReason.fold(
+        Json.obj()
+      )(
+        lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
+      )
+    )
+  }
+}
+
+case class TechnicalIssuesAppealInformation(
+                                         `type`: String,
+                                         startDateOfEvent: String,
+                                         endDateOfEvent: String,
+                                         statement: Option[String],
+                                         lateAppeal: Boolean,
+                                         lateAppealReason: Option[String]
+                                       ) extends AppealInformation
+
+object TechnicalIssuesAppealInformation {
+  implicit val technicalIssuesAppealInformationFormatter: OFormat[TechnicalIssuesAppealInformation] = Json.format[TechnicalIssuesAppealInformation]
+
+  val technicalIssuesAppealWrites: Writes[TechnicalIssuesAppealInformation] = (technicalIssuesAppealInformation: TechnicalIssuesAppealInformation) => {
+    Json.obj(
+      "type" -> technicalIssuesAppealInformation.`type`,
+      "startDateOfEvent" -> technicalIssuesAppealInformation.startDateOfEvent,
+      "endDateOfEvent" -> technicalIssuesAppealInformation.endDateOfEvent,
+      "lateAppeal" -> technicalIssuesAppealInformation.lateAppeal
+    ).deepMerge(
+      technicalIssuesAppealInformation.statement.fold(
+        Json.obj()
+      )(
+        statement => Json.obj("statement" -> statement)
+      )
+    ).deepMerge(
+      technicalIssuesAppealInformation.lateAppealReason.fold(
         Json.obj()
       )(
         lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
@@ -144,9 +178,13 @@ object AppealSubmission {
       case "lossOfStaff" => {
         Json.toJson(payload.asInstanceOf[LossOfStaffAppealInformation])(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
       }
+      case "technicalIssues" => {
+        Json.toJson(payload.asInstanceOf[TechnicalIssuesAppealInformation])(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
+      }
     }
   }
 
+  //scalastyle:off
   def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean)
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
@@ -197,6 +235,26 @@ object AppealSubmission {
           appealInformation = LossOfStaffAppealInformation(
             `type` = "lossOfStaff",
             dateOfEvent = userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get,
+            statement = None,
+            lateAppeal = isLateAppeal,
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
+              case "" => None
+              case reason => Some(reason)
+            }
+          )
+        )
+      }
+
+      case "technicalIssues" => {
+        AppealSubmission(
+          submittedBy = if (userRequest.isAgent) "agent" else "client",
+          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          appealInformation = TechnicalIssuesAppealInformation(
+            `type` = "technicalIssues",
+            startDateOfEvent = userRequest.session.get(SessionKeys.whenDidTechnologyIssuesBegin).get,
+            endDateOfEvent = userRequest.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get,
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
