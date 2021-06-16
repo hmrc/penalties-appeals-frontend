@@ -30,7 +30,7 @@ import views.html.reasonableExcuseJourneys.lossOfStaff.WhenDidThePersonLeaveBusi
 import java.time.LocalDate
 
 class WhenDidThePersonLeaveBusinessPageSpec extends SpecBase with ViewBehaviours {
-  "HonestyDeclarationPage" should {
+  "WhenDidThePersonLeaveBusinessPage" should {
     val whenDidThePersonLeaveBusinessPage: WhenDidThePersonLeaveBusinessPage = injector.instanceOf[WhenDidThePersonLeaveBusinessPage]
     val whenDidThePersonLeaveBusinessForm: Form[LocalDate] = WhenDidPersonLeaveTheBusinessForm.whenDidPersonLeaveTheBusinessForm()
     val postAction: Call = controllers.routes.LossOfStaffReasonController.onPageLoad(NormalMode)

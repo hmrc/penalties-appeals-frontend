@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package models.pages
+package messages
 
-trait Page
+object WhenDidTechnologyIssuesEndMessages {
+  val title = "When did the technology issues end? - Appeal a VAT penalty - GOV.UK"
 
-case object HasCrimeBeenReportedPage extends Page
-case object WhenDidCrimeHappenPage extends Page
-case object WhenDidFireOrFloodHappenPage extends Page
-case object WhenDidPersonLeaveTheBusinessPage extends Page
-case object WhenDidTechnologyIssuesBeginPage extends Page
-case object WhenDidTechnologyIssuesEndPage extends Page
+  val heading = "When did the technology issues end?"
+
+  val hintText = "For example, 12 3 2018"
+
+  val dayEntry = "Day"
+
+  val monthEntry = "Month"
+
+  val yearEntry = "Year"
+
+  val continueButton = "Continue"
+}

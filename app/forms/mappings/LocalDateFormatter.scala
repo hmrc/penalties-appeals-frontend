@@ -31,6 +31,7 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
                                            requiredKey: String,
                                            fieldLengthKey: String,
                                            futureKey: Option[String] = None,
+                                           dateNotEqualOrAfterKeyAndCompareDate: Option[(String, LocalDate)] = None,
                                            args: Seq[String] = Seq.empty)
                                           (implicit messages: Messages) extends Formatter[LocalDate] with Formatters with Constraints {
 
@@ -66,7 +67,9 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
     parseResult.fold(Left(_),
       date => {
           if(futureKey.isDefined) {
-            if (date.isEqual(LocalDate.now()) || date.isBefore(LocalDate.now())) {
+            if(dateNotEqualOrAfterKeyAndCompareDate.isDefined && dateNotEqualOrAfterKeyAndCompareDate.get._2.isAfter(date)) {
+              Left(Seq(FormError(s"$key.day", dateNotEqualOrAfterKeyAndCompareDate.get._1, Seq("day", "month", "year"))))
+            } else if (date.isEqual(LocalDate.now()) || date.isBefore(LocalDate.now())) {
               Right(date)
             } else {
               Left(Seq(FormError(s"$key.day", futureKey.get, Seq("day", "month", "year"))))

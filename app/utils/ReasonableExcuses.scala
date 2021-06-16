@@ -20,4 +20,5 @@ object ReasonableExcuses {
   val crime = "crime"
   val fireOrFlood = "fireOrFlood"
   val lossOfStaff = "lossOfStaff"
+  val technicalIssues = "technicalIssues"
 }
