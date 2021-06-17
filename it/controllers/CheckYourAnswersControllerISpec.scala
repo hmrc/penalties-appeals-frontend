@@ -299,6 +299,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
 
+    //TODO: implement when CYA page has been populated
 //    "redirect the user to the confirmation page on success for health" when {
 //      "there is no hospital stay" in {
 //        PenaltiesStub.successfulAppealSubmission

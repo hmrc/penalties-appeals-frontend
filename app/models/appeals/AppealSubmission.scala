@@ -206,7 +206,7 @@ object HealthAppealInformation {
         }
         case _ => {
           Json.obj(
-            "dateOfEvent" -> healthAppealInformation.dateOfEvent.get,
+            "dateOfEvent" -> healthAppealInformation.dateOfEvent.get
           )
         }
       }
