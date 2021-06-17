@@ -369,8 +369,8 @@ class AppealSubmissionSpec extends SpecBase {
         val fakeRequestForHealthJourney = UserRequest("123456789", arn = Some("AGENT1"))(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.wasHospitalStayRequired -> "true",
-          SessionKeys.isHealthEventOngoing -> "false",
+          SessionKeys.wasHospitalStayRequired -> "yes",
+          SessionKeys.isHealthEventOngoing -> "no",
           SessionKeys.whenHealthIssueStarted -> "2022-01-01",
           SessionKeys.whenHealthIssueEnded -> "2022-01-31"
         ))
@@ -397,8 +397,8 @@ class AppealSubmissionSpec extends SpecBase {
         val fakeRequestForHealthJourney = UserRequest("123456789", arn = None)(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.wasHospitalStayRequired -> "true",
-          SessionKeys.isHealthEventOngoing -> "true",
+          SessionKeys.wasHospitalStayRequired -> "yes",
+          SessionKeys.isHealthEventOngoing -> "yes",
           SessionKeys.whenHealthIssueStarted -> "2022-01-01"
         ))
 
@@ -424,7 +424,7 @@ class AppealSubmissionSpec extends SpecBase {
         val fakeRequestForHealthJourney = UserRequest("123456789", arn = None)(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.wasHospitalStayRequired -> "false",
+          SessionKeys.wasHospitalStayRequired -> "no",
           SessionKeys.whenHealthIssueHappened -> "2022-01-01"
         ))
 

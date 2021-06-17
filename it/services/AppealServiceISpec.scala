@@ -96,7 +96,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.wasHospitalStayRequired -> "false",
+          SessionKeys.wasHospitalStayRequired -> "no",
           SessionKeys.whenHealthIssueHappened -> "2021-01-01T12:00:00"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
@@ -114,8 +114,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.wasHospitalStayRequired -> "true",
-          SessionKeys.isHealthEventOngoing -> "true",
+          SessionKeys.wasHospitalStayRequired -> "yes",
+          SessionKeys.isHealthEventOngoing -> "yes",
           SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
@@ -133,8 +133,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.wasHospitalStayRequired -> "true",
-          SessionKeys.isHealthEventOngoing -> "false",
+          SessionKeys.wasHospitalStayRequired -> "yes",
+          SessionKeys.isHealthEventOngoing -> "no",
           SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00",
           SessionKeys.whenHealthIssueEnded -> "2021-01-02T12:00:00"
         ))

@@ -332,11 +332,11 @@ object AppealSubmission {
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
           appealInformation = HealthAppealInformation(
             `type` = "health",
-            hospitalStayInvolved = userRequest.session.get(SessionKeys.wasHospitalStayRequired).get == "true",
+            hospitalStayInvolved = userRequest.session.get(SessionKeys.wasHospitalStayRequired).get == "yes",
             dateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueHappened),
             startDateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueStarted),
             endDateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueEnded),
-            eventOngoing = userRequest.session.get(SessionKeys.isHealthEventOngoing).getOrElse("false") == "true",
+            eventOngoing = userRequest.session.get(SessionKeys.isHealthEventOngoing).getOrElse("no") == "yes",
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
