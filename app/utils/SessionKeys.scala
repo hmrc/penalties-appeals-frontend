@@ -32,6 +32,8 @@ object SessionKeys {
   val whenPersonLeftTheBusiness = "whenPersonLeftTheBusiness"
   val whenDidTechnologyIssuesBegin = "whenDidTechnologyIssuesBegin"
   val whenDidTechnologyIssuesEnd = "whenDidTechnologyIssuesEnd"
+  val wasHospitalStayRequired = "wasHospitalStayRequired"
+  val whenHealthIssueHappened = "whenHealthIssueHappened"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -41,12 +43,15 @@ object SessionKeys {
     penaltyId,
     reasonableExcuse,
     dateOfCrime,
+    dateOfFireOrFlood,
     hasConfirmedDeclaration,
     hasCrimeBeenReportedToPolice,
     lateAppealReason,
     dateCommunicationSent,
     whenPersonLeftTheBusiness,
     whenDidTechnologyIssuesBegin,
-    whenDidTechnologyIssuesEnd
+    whenDidTechnologyIssuesEnd,
+    wasHospitalStayRequired,
+    whenHealthIssueHappened
   )
 }

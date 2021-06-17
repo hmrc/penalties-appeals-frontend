@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package models.pages
+package forms
 
-trait Page
+import forms.mappings.Mappings
+import play.api.data.Form
+import play.api.data.Forms.single
 
-case object HasCrimeBeenReportedPage extends Page
-case object WhenDidCrimeHappenPage extends Page
-case object WhenDidFireOrFloodHappenPage extends Page
-case object WhenDidPersonLeaveTheBusinessPage extends Page
-case object WhenDidTechnologyIssuesBeginPage extends Page
-case object WhenDidTechnologyIssuesEndPage extends Page
-case object WasHospitalStayRequiredPage extends Page
-case object WhenDidHealthIssueHappenPage extends Page
+object WasHospitalStayRequiredForm extends Mappings {
+  final val options = Seq("yes", "no")
+  val wasHospitalStayRequiredForm = Form[String](
+    single(
+      "value"-> text("healthReason.wasHospitalStayRequired.error.required")
+        .verifying("healthReason.wasHospitalStayRequired.error.required", value => options.contains(value))
+    )
+  )
+
+}

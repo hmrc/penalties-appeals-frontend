@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package models.pages
+package messages
 
-trait Page
+object WasHospitalStayRequiredMessages {
 
-case object HasCrimeBeenReportedPage extends Page
-case object WhenDidCrimeHappenPage extends Page
-case object WhenDidFireOrFloodHappenPage extends Page
-case object WhenDidPersonLeaveTheBusinessPage extends Page
-case object WhenDidTechnologyIssuesBeginPage extends Page
-case object WhenDidTechnologyIssuesEndPage extends Page
-case object WasHospitalStayRequiredPage extends Page
-case object WhenDidHealthIssueHappenPage extends Page
+  val title = "Did this health issue include an unexpected hospital stay? - Appeal a VAT penalty - GOV.UK"
+  val h1 = "Did this health issue include an unexpected hospital stay?"
+  val yesOption = "Yes"
+  val noOption = "No"
+  val continueButton = "Continue"
+
+}

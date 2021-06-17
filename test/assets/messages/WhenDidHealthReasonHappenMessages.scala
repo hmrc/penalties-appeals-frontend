@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package models.pages
+package messages
 
-trait Page
+object WhenDidHealthReasonHappenMessages {
 
-case object HasCrimeBeenReportedPage extends Page
-case object WhenDidCrimeHappenPage extends Page
-case object WhenDidFireOrFloodHappenPage extends Page
-case object WhenDidPersonLeaveTheBusinessPage extends Page
-case object WhenDidTechnologyIssuesBeginPage extends Page
-case object WhenDidTechnologyIssuesEndPage extends Page
-case object WasHospitalStayRequiredPage extends Page
-case object WhenDidHealthIssueHappenPage extends Page
+  val title = "When did you become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
+  val heading = "When did you become unable to manage the VAT account?"
+  val hintText = "Tell us the date when the health issue started to affect your ability to complete this submission. For example, 12 3 2018"
+  val dayEntry = "Day"
+  val monthEntry = "Month"
+  val yearEntry = "Year"
+  val continueButton = "Continue"
+
+}

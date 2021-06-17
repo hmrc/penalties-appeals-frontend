@@ -162,6 +162,25 @@ technicalIssues.end.error.invalid = The date the technology issues ended must be
 technicalIssues.end.error.notInFuture = The date the technology issues ended must be today or in the past
 technicalIssues.end.error.endDateLessThanStartDate = The date the technology issues ended must be the same or after they began
 
+# Was hospital stay required page
+# ----------------------------------------------------------
+healthReason.wasHospitalStayRequired.title = Did this health issue include an unexpected hospital stay?
+healthReason.wasHospitalStayRequired.heading = Did this health issue include an unexpected hospital stay?
+healthReason.wasHospitalStayRequired.yes = Yes
+healthReason.wasHospitalStayRequired.no = No
+healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital unexpectedly
+
+# When did the health issue happen page
+# ----------------------------------------------------------
+healthReason.title = When did you become unable to manage the VAT account?
+healthReason.heading = When did you become unable to manage the VAT account?
+healthReason.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>For example, 12 3 2018
+healthReason.error.required.all = Enter the start date of the hospital stay
+healthReason.error.required.two = The date the hospital stay started must include a {0} and a {1}
+healthReason.error.required = The date the hospital stay started must include a {0}
+healthReason.error.invalid = The date the hospital stay started must be a real date
+healthReason.error.notInFuture = The date the hospital stay started must be today or in the past
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day

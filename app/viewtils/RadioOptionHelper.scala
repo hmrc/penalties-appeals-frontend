@@ -41,4 +41,19 @@ object RadioOptionHelper {
       )
     )
   }
+
+  def radioOptionsForWasHospitalStayRequiredPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+    Seq(
+      RadioItem(
+        value = Some("yes"),
+        content = Text(messages("healthReason.wasHospitalStayRequired.yes")),
+        checked = form("value").value.contains("yes")
+      ),
+      RadioItem(
+        value = Some("no"),
+        content = Text(messages("healthReason.wasHospitalStayRequired.no")),
+        checked = form("value").value.contains("no")
+      )
+    )
+  }
 }
