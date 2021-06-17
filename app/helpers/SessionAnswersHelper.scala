@@ -16,7 +16,7 @@
 
 package helpers
 
-import models.CheckMode
+import models.{CheckMode, UserRequest}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import utils.SessionKeys
@@ -29,13 +29,44 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
     "lossOfStaff" -> Seq(SessionKeys.whenPersonLeftTheBusiness, SessionKeys.reasonableExcuse, SessionKeys.hasConfirmedDeclaration),
     "fireOrFlood" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.dateOfFireOrFlood, SessionKeys.hasConfirmedDeclaration),
-    "technicalIssues" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidTechnologyIssuesBegin, SessionKeys.whenDidTechnologyIssuesEnd)
+    "technicalIssues" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidTechnologyIssuesBegin, SessionKeys.whenDidTechnologyIssuesEnd),
+    "healthIssueHospitalStayOngoing" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.isHealthEventOngoing, SessionKeys.wasHospitalStayRequired),
+    "healthIssueHospitalStayEnded" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.whenHealthIssueEnded, SessionKeys.isHealthEventOngoing, SessionKeys.wasHospitalStayRequired),
+    "healthIssueNoHospitalStay" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.wasHospitalStayRequired, SessionKeys.whenHealthIssueHappened)
   )
 
   def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): Boolean = {
-    val answersRequired = answersRequiredForReasonableExcuseJourney(reasonableExcuse).toSet
     val keysInSession = request.session.data.keys.toSet
-    answersRequired.subsetOf(keysInSession)
+    reasonableExcuse match {
+      case "health" => {
+        (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.isHealthEventOngoing)) match {
+          //No hospital stay
+          case (Some("no"), _) => {
+            val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueNoHospitalStay").toSet
+            answersRequired.subsetOf(keysInSession)
+          }
+          //Hospital stay ongoing
+          case (Some("yes"), Some("yes")) => {
+            val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueHospitalStayOngoing").toSet
+            answersRequired.subsetOf(keysInSession)
+          }
+
+          //Hospital stay ended
+          case (Some("yes"), Some("no")) => {
+            val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueHospitalStayEnded").toSet
+            answersRequired.subsetOf(keysInSession)
+          }
+
+          //Wrong configuration of health answers
+          case _ => false
+        }
+      }
+      case _ => {
+        val answersRequired = answersRequiredForReasonableExcuseJourney(reasonableExcuse).toSet
+        answersRequired.subsetOf(keysInSession)
+      }
+    }
+
   }
 
   //scalastyle:off
@@ -83,6 +114,8 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
           dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get)),
         controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url)
       )
+
+      case "health" => getHealthReasonAnswers
     }
 
     request.session.get(SessionKeys.lateAppealReason).fold(
@@ -96,5 +129,37 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
           )
       }
     )
+  }
+
+  def getHealthReasonAnswers()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
+    (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.isHealthEventOngoing)) match {
+      //No hospital stay
+      case (Some("no"), _) => {
+        Seq(
+          (messages("checkYourAnswers.reasonableExcuse"),
+            messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+            controllers.routes.ReasonableExcuseController.onPageLoad().url),
+          (messages("checkYourAnswers.health.unexpectedHospitalStay"),
+            messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
+            //TODO: change to was there an unexpected hospital stay page when implemented
+            controllers.routes.ReasonableExcuseController.onPageLoad().url),
+          (messages("checkYourAnswers.health.unableToManageAccount"),
+            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueHappened).get)),
+            //TODO: change to when unable to manage account page when implemented
+            controllers.routes.ReasonableExcuseController.onPageLoad().url)
+        )
+      }
+      //Hospital stay ongoing
+      case (Some("yes"), Some("yes")) => {
+        //TODO: implement
+        Seq()
+      }
+
+      //Hospital stay ended
+      case (Some("yes"), Some("no")) => {
+        //TODO: implement
+        Seq()
+      }
+    }
   }
 }
