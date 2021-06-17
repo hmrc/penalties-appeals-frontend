@@ -154,6 +154,23 @@ class HonestyDeclarationControllerSpec extends SpecBase {
         await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
         await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "technicalIssues"
       }
+
+      "the reasonable excuse selected is 'health' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
+        .withSession((SessionKeys.reasonableExcuse, "health"))
+        .withJsonBody(
+          Json.parse(
+          """
+            |{
+            | "value": "true"
+            |}
+            |""".stripMargin)
+        )))
+        status(result) shouldBe SEE_OTHER
+        await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
+        await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
+        await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "health"
+      }
     }
 
     "return 400" when {

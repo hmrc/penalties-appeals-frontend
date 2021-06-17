@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package models.pages
+package forms
 
-trait Page
+import play.api.data.FormError
 
-case object HasCrimeBeenReportedPage extends Page
-case object WhenDidCrimeHappenPage extends Page
-case object WhenDidFireOrFloodHappenPage extends Page
-case object WhenDidPersonLeaveTheBusinessPage extends Page
-case object WhenDidTechnologyIssuesBeginPage extends Page
-case object WhenDidTechnologyIssuesEndPage extends Page
-case object WasHospitalStayRequiredPage extends Page
-case object WhenDidHealthIssueHappenPage extends Page
+class WasHospitalStayRequiredFormSpec extends FormBehaviours {
+  val form = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm
+
+  behave like mandatoryField(form, "value", FormError("value", "healthReason.wasHospitalStayRequired.error.required"))
+
+  "the value entered does not exist in the possible, valid values" in {
+    val result = form.bind(Map("value" -> "random-value")).apply("value")
+    result.errors.headOption shouldBe Some(FormError("value", "healthReason.wasHospitalStayRequired.error.required"))
+  }
+}

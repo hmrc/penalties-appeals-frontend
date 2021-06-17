@@ -51,6 +51,17 @@ GET        /when-did-the-technology-issues-end/change                controllers
 POST       /when-did-the-technology-issues-end                       controllers.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesEnded(mode: Mode = NormalMode)
 POST       /when-did-the-technology-issues-end/change                controllers.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesEnded(mode: Mode = CheckMode)
 
+# Health Reasonable Excuse Journey
+GET        /was-a-hospital-stay-required                   controllers.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode: Mode = NormalMode)
+GET        /was-a-hospital-stay-required/change            controllers.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode: Mode = CheckMode)
+POST       /was-a-hospital-stay-required                  controllers.HealthReasonController.onSubmitForWasHospitalStayRequired(mode: Mode = NormalMode)
+POST       /was-a-hospital-stay-required/change            controllers.HealthReasonController.onSubmitForWasHospitalStayRequired(mode: Mode = CheckMode)
+GET        /when-did-health-issue-happen                   controllers.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode: Mode = NormalMode)
+GET        /when-did-health-issue-happen/change            controllers.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode: Mode = CheckMode)
+POST       /when-did-health-issue-happen                   controllers.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode: Mode = NormalMode)
+POST       /when-did-health-issue-happen/change            controllers.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode: Mode = CheckMode)
+
+
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()
