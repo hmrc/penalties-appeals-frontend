@@ -92,6 +92,31 @@ class SessionAnswersHelperSpec extends SpecBase {
         result shouldBe false
       }
     }
+
+    "for technical issues" must {
+      "return true - when all keys present" in {
+        val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "technicalIssues",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent)
+        result shouldBe true
+      }
+
+      "return false - when not all keys are present" in {
+        val fakeRequestWithSomeTechnicalIssuesKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(fakeRequestWithSomeTechnicalIssuesKeysPresent)
+        result shouldBe false
+      }
+    }
   }
 
   "getContentForReasonableExcuseCheckYourAnswersPage" should {
@@ -218,6 +243,54 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._1 shouldBe "Why you did not appeal sooner"
         result(2)._2 shouldBe "Lorem ipsum"
         result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+    }
+
+    "for technical issues" must {
+      "return all the keys from the session ready to be passed to the view" in {
+        val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "technicalIssues",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Technology issues"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did the technology issues begin?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url
+        result(2)._1 shouldBe "When did the technology issues end?"
+        result(2)._2 shouldBe "2 January 2022"
+        result(2)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
+      }
+
+      "return all keys and the 'Why you did not appeal sooner' text" in {
+        val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "technicalIssues",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+            SessionKeys.lateAppealReason -> "Lorem ipsum"
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Technology issues"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did the technology issues begin?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url
+        result(2)._1 shouldBe "When did the technology issues end?"
+        result(2)._2 shouldBe "2 January 2022"
+        result(2)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
+        result(3)._1 shouldBe "Why you did not appeal sooner"
+        result(3)._2 shouldBe "Lorem ipsum"
+        result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
     }
   }
