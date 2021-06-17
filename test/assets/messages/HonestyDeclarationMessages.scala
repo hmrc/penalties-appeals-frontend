@@ -29,7 +29,7 @@ object HonestyDeclarationMessages {
 
   val li3 = "I will provide honest and accurate information in this appeal"
 
-  val extraLiForLossOfStaff = "the staff member didn’t return or get replaced before the due date"
+  val extraLiForLossOfStaff = "the staff member did not return or get replaced before the due date"
 
   val acceptAndContinueButton = "Accept and continue"
 }
