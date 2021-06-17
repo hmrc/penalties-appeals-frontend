@@ -16,8 +16,8 @@
 
 package stubs
 
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, stubFor, urlMatching}
 import play.api.http.Status
 import play.api.libs.json.Json
 import utils.EnrolmentKeys

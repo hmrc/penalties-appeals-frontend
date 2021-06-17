@@ -66,6 +66,24 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe true
     }
 
+    "return true when the connector call succeeds for technical issues" in {
+      successfulAppealSubmission
+      val userRequest = UserRequest("")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "technicalIssues",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+        SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+      ))
+      val result = await(appealService.submitAppeal("technicalIssues")(userRequest, implicitly, implicitly))
+      result shouldBe true
+    }
+
     "return false" when {
       "the connector returns a fault" in {
         failedAppealSubmissionWithFault

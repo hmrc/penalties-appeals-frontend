@@ -16,11 +16,10 @@
 
 package controllers
 
-import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, _}
-import utils.{IntegrationSpecCommonBase, SessionKeys}
 import stubs.PenaltiesStub._
+import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
   val controller = injector.instanceOf[InitialiseAppealController]
