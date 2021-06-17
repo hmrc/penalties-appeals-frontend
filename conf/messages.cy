@@ -168,18 +168,18 @@ healthReason.wasHospitalStayRequired.title = Did this health issue include an un
 healthReason.wasHospitalStayRequired.heading = Did this health issue include an unexpected hospital stay?
 healthReason.wasHospitalStayRequired.yes = Yes
 healthReason.wasHospitalStayRequired.no = No
-healthReason.wasHospitalStayRequired.error.required = Tell us if the health issue included a hospital stay
+healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital unexpectedly
 
 # When did the health issue happen page
 # ----------------------------------------------------------
 healthReason.title = When did you become unable to manage the VAT account?
 healthReason.heading = When did you become unable to manage the VAT account?
 healthReason.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>For example, 12 3 2018
-healthReason.error.required.all = Enter the date of the crime
-healthReason.error.required.two = The date of the crime must include a {0} and a {1}
-healthReason.error.required = The date of the crime must include a {0}
-healthReason.error.invalid = The date of the crime must be a real date
-healthReason.error.notInFuture = The date of the crime must be today or in the past
+healthReason.error.required.all = Enter the start date of the hospital stay
+healthReason.error.required.two = The date the hospital stay started must include a {0} and a {1}
+healthReason.error.required = The date the hospital stay started must include a {0}
+healthReason.error.invalid = The date the hospital stay started must be a real date
+healthReason.error.notInFuture = The date the hospital stay started must be today or in the past
 
 # Date input fields
 # ----------------------------------------------------------

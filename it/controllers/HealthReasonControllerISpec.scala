@@ -236,7 +236,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenHealthIssueHappened).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 
-    "return 303 (SEE_OTHER) to CYA page when appeal IS late and add the session key to the session when the body is correct" in {
+    "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),

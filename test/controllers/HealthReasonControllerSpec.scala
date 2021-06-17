@@ -64,7 +64,7 @@ class HealthReasonControllerSpec extends SpecBase {
           status(result) shouldBe OK
         }
 
-        "return OK and correct view (pre-populated date when present in session) - when answer is no" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return OK and correct view (pre-populated option when present in session) - when answer is no" in new Setup(AuthTestModels.successfulAuthResult) {
           val result = controller.onPageLoadForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
             .withSession(SessionKeys.wasHospitalStayRequired -> "no")))
           status(result) shouldBe OK
@@ -144,7 +144,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
             status(result) shouldBe BAD_REQUEST
             contentAsString(result) should include("There is a problem")
-            contentAsString(result) should include("Tell us if the health issue included a hospital stay")
+            contentAsString(result) should include("Tell us if you or someone else was admitted to hospital unexpectedly")
           }
 
         "the validation is performed against an empty value - value is an empty string" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -159,7 +159,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
             status(result) shouldBe BAD_REQUEST
             contentAsString(result) should include("There is a problem")
-            contentAsString(result) should include("Tell us if the health issue included a hospital stay")
+            contentAsString(result) should include("Tell us if you or someone else was admitted to hospital unexpectedly")
           }
       }
 
