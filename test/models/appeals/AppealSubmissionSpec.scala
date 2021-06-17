@@ -102,6 +102,43 @@ class AppealSubmissionSpec extends SpecBase {
       |""".stripMargin
   )
 
+  val healthAppealInformationHospitalStayNotOngoingJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "health",
+      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
+      |   "eventOngoing": false,
+      |   "hospitalStayInvolved": true,
+      |   "lateAppeal": false
+      |}
+      |""".stripMargin
+  )
+
+  val healthAppealInformationHospitalStayOngoingJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "health",
+      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "eventOngoing": true,
+      |   "hospitalStayInvolved": true,
+      |   "lateAppeal": false
+      |}
+      |""".stripMargin
+  )
+
+  val healthAppealInformationNoHospitalStayJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "health",
+      |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "hospitalStayInvolved": false,
+      |   "eventOngoing": false,
+      |   "lateAppeal": false
+      |}
+      |""".stripMargin
+  )
+
   "parseAppealInformationToJson" should {
     "for crime" must {
       "parse the appeal information model into a JsObject" in {
