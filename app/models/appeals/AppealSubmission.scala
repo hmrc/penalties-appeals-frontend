@@ -158,6 +158,62 @@ object TechnicalIssuesAppealInformation {
   }
 }
 
+case class HealthAppealInformation(
+                                         `type`: String,
+                                         hospitalStayInvolved: Boolean,
+                                         dateOfEvent: Option[String],
+                                         startDateOfEvent: Option[String],
+                                         endDateOfEvent: Option[String],
+                                         eventOngoing: Boolean,
+                                         statement: Option[String],
+                                         lateAppeal: Boolean,
+                                         lateAppealReason: Option[String]
+                                       ) extends AppealInformation
+
+object HealthAppealInformation {
+  implicit val healthAppealInformationFormatter: OFormat[HealthAppealInformation] = Json.format[HealthAppealInformation]
+
+  val healthAppealWrites: Writes[HealthAppealInformation] = (healthAppealInformation: HealthAppealInformation) => {
+    Json.obj(
+      "type" -> healthAppealInformation.`type`,
+      "hospitalStayInvolved" -> healthAppealInformation.hospitalStayInvolved,
+      "eventOngoing" -> healthAppealInformation.eventOngoing,
+      "lateAppeal" -> healthAppealInformation.lateAppeal
+    ).deepMerge(
+      healthAppealInformation.statement.fold(
+        Json.obj()
+      )(
+        statement => Json.obj("statement" -> statement)
+      )
+    ).deepMerge(
+      healthAppealInformation.lateAppealReason.fold(
+        Json.obj()
+      )(
+        lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
+      )
+    ).deepMerge(
+      (healthAppealInformation.hospitalStayInvolved, healthAppealInformation.eventOngoing) match {
+        case (true, true) => {
+          Json.obj(
+            "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get
+          )
+        }
+        case (true, false) => {
+          Json.obj(
+            "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get,
+            "endDateOfEvent" -> healthAppealInformation.endDateOfEvent.get
+          )
+        }
+        case _ => {
+          Json.obj(
+            "dateOfEvent" -> healthAppealInformation.dateOfEvent.get,
+          )
+        }
+      }
+    )
+  }
+}
+
 case class AppealSubmission(
                              submittedBy: String,
                              penaltyId: String,
@@ -180,6 +236,9 @@ object AppealSubmission {
       }
       case "technicalIssues" => {
         Json.toJson(payload.asInstanceOf[TechnicalIssuesAppealInformation])(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
+      }
+      case "health" => {
+        Json.toJson(payload.asInstanceOf[HealthAppealInformation])(HealthAppealInformation.healthAppealWrites)
       }
     }
   }
@@ -255,6 +314,29 @@ object AppealSubmission {
             `type` = "technicalIssues",
             startDateOfEvent = userRequest.session.get(SessionKeys.whenDidTechnologyIssuesBegin).get,
             endDateOfEvent = userRequest.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get,
+            statement = None,
+            lateAppeal = isLateAppeal,
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
+              case "" => None
+              case reason => Some(reason)
+            }
+          )
+        )
+      }
+
+      case "health" => {
+        AppealSubmission(
+          submittedBy = if (userRequest.isAgent) "agent" else "client",
+          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          appealInformation = HealthAppealInformation(
+            `type` = "health",
+            hospitalStayInvolved = userRequest.session.get(SessionKeys.wasHospitalStayRequired).get == "true",
+            dateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueHappened),
+            startDateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueStarted),
+            endDateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueEnded),
+            eventOngoing = userRequest.session.get(SessionKeys.isHealthEventOngoing).getOrElse("false") == "true",
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {

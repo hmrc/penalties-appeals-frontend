@@ -65,6 +65,43 @@ class AppealSubmissionSpec extends SpecBase {
       |""".stripMargin
   )
 
+  val healthAppealInformationHospitalStayNotOngoingJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "health",
+      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
+      |   "eventOngoing": false,
+      |   "hospitalStayInvolved": true,
+      |   "lateAppeal": false
+      |}
+      |""".stripMargin
+  )
+
+  val healthAppealInformationHospitalStayOngoingJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "health",
+      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "eventOngoing": true,
+      |   "hospitalStayInvolved": true,
+      |   "lateAppeal": false
+      |}
+      |""".stripMargin
+  )
+
+  val healthAppealInformationNoHospitalStayJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "health",
+      |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "hospitalStayInvolved": false,
+      |   "eventOngoing": false,
+      |   "lateAppeal": false
+      |}
+      |""".stripMargin
+  )
+
   "parseAppealInformationToJson" should {
     "for crime" must {
       "parse the appeal information model into a JsObject" in {
@@ -121,6 +158,58 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe technicalIssuesAppealInformationJson
+      }
+    }
+
+    "for health" must {
+      "parse the appeal information model into a JsObject (when a startDateOfEvent and endDateOfEvent is present NOT dateOfEvent)" in {
+        val model = HealthAppealInformation(
+          `type` = "health",
+          startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+          endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
+          dateOfEvent = None,
+          eventOngoing = false,
+          hospitalStayInvolved = true,
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
+        )
+        val result = AppealSubmission.parseAppealInformationToJson(model)
+        result shouldBe healthAppealInformationHospitalStayNotOngoingJson
+      }
+
+      "parse the appeal information model into a JsObject (when a startDateOfEvent is present NOT dateOfEvent AND endDateOfEvent i.e. " +
+        "event ongoing hospital stay)" in {
+        val model = HealthAppealInformation(
+          `type` = "health",
+          startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+          endDateOfEvent = None,
+          dateOfEvent = None,
+          eventOngoing = true,
+          hospitalStayInvolved = true,
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
+        )
+        val result = AppealSubmission.parseAppealInformationToJson(model)
+        result shouldBe healthAppealInformationHospitalStayOngoingJson
+      }
+
+      "parse the appeal information model into a JsObject (when a dateOfEvent is present NOT startDateOfEvent AND endDateOfEvent i.e. " +
+        "no hospital stay)" in {
+        val model = HealthAppealInformation(
+          `type` = "health",
+          startDateOfEvent = None,
+          endDateOfEvent = None,
+          dateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+          eventOngoing = false,
+          hospitalStayInvolved = false,
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
+        )
+        val result = AppealSubmission.parseAppealInformationToJson(model)
+        result shouldBe healthAppealInformationNoHospitalStayJson
       }
     }
   }
@@ -274,6 +363,89 @@ class AppealSubmissionSpec extends SpecBase {
         )
       }
     }
+
+    "for health" must {
+      "show the startDate and endDate of the hospital stay when eventOngoing = false and hospitalStayInvolved = true" in {
+        val fakeRequestForHealthJourney = UserRequest("123456789", arn = Some("AGENT1"))(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "health",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.wasHospitalStayRequired -> "true",
+          SessionKeys.isHealthEventOngoing -> "false",
+          SessionKeys.whenHealthIssueStarted -> "2022-01-01",
+          SessionKeys.whenHealthIssueEnded -> "2022-01-31"
+        ))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false)(fakeRequestForHealthJourney)
+        result.reasonableExcuse shouldBe "health"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "agent"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe HealthAppealInformation(
+          `type` = "health",
+          hospitalStayInvolved = true,
+          dateOfEvent = None,
+          startDateOfEvent = Some("2022-01-01"),
+          endDateOfEvent = Some("2022-01-31"),
+          eventOngoing = false,
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
+        )
+      }
+
+      "show only the start date when eventOngoing = true and hospitalStayInvolved = true" in {
+        val fakeRequestForHealthJourney = UserRequest("123456789", arn = None)(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "health",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.wasHospitalStayRequired -> "true",
+          SessionKeys.isHealthEventOngoing -> "true",
+          SessionKeys.whenHealthIssueStarted -> "2022-01-01"
+        ))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false)(fakeRequestForHealthJourney)
+        result.reasonableExcuse shouldBe "health"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "client"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe HealthAppealInformation(
+          `type` = "health",
+          hospitalStayInvolved = true,
+          dateOfEvent = None,
+          startDateOfEvent = Some("2022-01-01"),
+          endDateOfEvent = None,
+          eventOngoing = true,
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
+        )
+      }
+
+      "show the dateOfEvent only when no hospital stay was involved (hospitalStayInvolved = false)" in {
+        val fakeRequestForHealthJourney = UserRequest("123456789", arn = None)(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "health",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.wasHospitalStayRequired -> "false",
+          SessionKeys.whenHealthIssueHappened -> "2022-01-01"
+        ))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false)(fakeRequestForHealthJourney)
+        result.reasonableExcuse shouldBe "health"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "client"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe HealthAppealInformation(
+          `type` = "health",
+          hospitalStayInvolved = false,
+          dateOfEvent = Some("2022-01-01"),
+          startDateOfEvent = None,
+          endDateOfEvent = None,
+          eventOngoing = false,
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None
+        )
+      }
+    }
   }
 
 
@@ -411,6 +583,120 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe jsonRepresentingModel
       }
     }
+
+    "for health" must {
+      "write the appeal to JSON" when {
+        "there has been a hospital stay - and is no longer ongoing (both start and end date) - write the appeal model to JSON" in {
+          val modelToConvertToJson = AppealSubmission(
+            submittedBy = "client",
+            penaltyId = "1234",
+            reasonableExcuse = "health",
+            honestyDeclaration = true,
+            appealInformation = HealthAppealInformation(
+              `type` = "health",
+              startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+              endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
+              eventOngoing = false,
+              hospitalStayInvolved = true,
+              dateOfEvent = None,
+              statement = None,
+              lateAppeal = true,
+              lateAppealReason = Some("Reason")
+            )
+          )
+          val jsonRepresentingModel: JsValue = Json.obj(
+            "submittedBy" -> "client",
+            "penaltyId" -> "1234",
+            "reasonableExcuse" -> "health",
+            "honestyDeclaration" -> true,
+            "appealInformation" -> Json.obj(
+              "type" -> "health",
+              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+              "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
+              "eventOngoing" -> false,
+              "hospitalStayInvolved" -> true,
+              "lateAppeal" -> true,
+              "lateAppealReason" -> "Reason"
+            )
+          )
+          val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
+          result shouldBe jsonRepresentingModel
+        }
+
+        "there has been a hospital stay AND it is ongoing (no end date) - write the appeal model to JSON" in {
+          val modelToConvertToJson = AppealSubmission(
+            submittedBy = "client",
+            penaltyId = "1234",
+            reasonableExcuse = "health",
+            honestyDeclaration = true,
+            appealInformation = HealthAppealInformation(
+              `type` = "health",
+              startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+              endDateOfEvent = None,
+              eventOngoing = true,
+              hospitalStayInvolved = true,
+              dateOfEvent = None,
+              statement = None,
+              lateAppeal = true,
+              lateAppealReason = Some("Reason")
+            )
+          )
+          val jsonRepresentingModel: JsValue = Json.obj(
+            "submittedBy" -> "client",
+            "penaltyId" -> "1234",
+            "reasonableExcuse" -> "health",
+            "honestyDeclaration" -> true,
+            "appealInformation" -> Json.obj(
+              "type" -> "health",
+              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+              "eventOngoing" -> true,
+              "hospitalStayInvolved" -> true,
+              "lateAppeal" -> true,
+              "lateAppealReason" -> "Reason"
+            )
+          )
+          val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
+          result shouldBe jsonRepresentingModel
+        }
+
+        "there has been NO hospital stay (dateOfEvent present, eventOngoing = false, hospitalStayInvolved = false) " +
+          "write the appeal model to JSON" in {
+          val modelToConvertToJson = AppealSubmission(
+            submittedBy = "client",
+            penaltyId = "1234",
+            reasonableExcuse = "health",
+            honestyDeclaration = true,
+            appealInformation = HealthAppealInformation(
+              `type` = "health",
+              startDateOfEvent = None,
+              endDateOfEvent = None,
+              eventOngoing = false,
+              hospitalStayInvolved = false,
+              dateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+              statement = None,
+              lateAppeal = true,
+              lateAppealReason = Some("Reason")
+            )
+          )
+          val jsonRepresentingModel: JsValue = Json.obj(
+            "submittedBy" -> "client",
+            "penaltyId" -> "1234",
+            "reasonableExcuse" -> "health",
+            "honestyDeclaration" -> true,
+            "appealInformation" -> Json.obj(
+              "type" -> "health",
+              "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
+              "eventOngoing" -> false,
+              "hospitalStayInvolved" -> false,
+              "lateAppeal" -> true,
+              "lateAppealReason" -> "Reason"
+            )
+          )
+          val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
+          result shouldBe jsonRepresentingModel
+        }
+      }
+    }
   }
 
   "CrimeAppealInformation" should {
@@ -495,6 +781,83 @@ class AppealSubmissionSpec extends SpecBase {
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason"
         )
+      }
+    }
+  }
+
+  "HealthAppealInformation" should {
+    "healthAppealWrites" must {
+      "write the appeal to JSON" when {
+        "there has been a hospital stay - and is no longer ongoing (both start and end date) - write the appeal model to JSON" in {
+          val model = HealthAppealInformation(
+            `type` = "health",
+            startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+            endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
+            eventOngoing = false,
+            hospitalStayInvolved = true,
+            dateOfEvent = None,
+            statement = None,
+            lateAppeal = true,
+            lateAppealReason = Some("Reason")
+          )
+          val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
+          result shouldBe Json.obj(
+            "type" -> "health",
+            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
+            "eventOngoing" -> false,
+            "hospitalStayInvolved" -> true,
+            "lateAppeal" -> true,
+            "lateAppealReason" -> "Reason"
+          )
+        }
+
+        "there has been a hospital stay AND it is ongoing (no end date) - write the appeal model to JSON" in {
+          val model = HealthAppealInformation(
+            `type` = "health",
+            startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+            endDateOfEvent = None,
+            eventOngoing = true,
+            hospitalStayInvolved = true,
+            dateOfEvent = None,
+            statement = None,
+            lateAppeal = true,
+            lateAppealReason = Some("Reason")
+          )
+          val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
+          result shouldBe Json.obj(
+            "type" -> "health",
+            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "eventOngoing" -> true,
+            "hospitalStayInvolved" -> true,
+            "lateAppeal" -> true,
+            "lateAppealReason" -> "Reason"
+          )
+        }
+
+        "there has been NO hospital stay (dateOfEvent present, eventOngoing = false, hospitalStayInvolved = false) " +
+          "write the appeal model to JSON" in {
+          val model = HealthAppealInformation(
+            `type` = "health",
+            startDateOfEvent = None,
+            endDateOfEvent = None,
+            eventOngoing = false,
+            hospitalStayInvolved = false,
+            dateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+            statement = None,
+            lateAppeal = true,
+            lateAppealReason = Some("Reason")
+          )
+          val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
+          result shouldBe Json.obj(
+            "type" -> "health",
+            "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "eventOngoing" -> false,
+            "hospitalStayInvolved" -> false,
+            "lateAppeal" -> true,
+            "lateAppealReason" -> "Reason"
+          )
+        }
       }
     }
   }

@@ -299,6 +299,69 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
 
+//    "redirect the user to the confirmation page on success for health" when {
+//      "there is no hospital stay" in {
+//        PenaltiesStub.successfulAppealSubmission
+//        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
+//          SessionKeys.penaltyId -> "1234",
+//          SessionKeys.appealType -> "Late_Submission",
+//          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+//          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+//          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+//          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+//          SessionKeys.reasonableExcuse -> "health",
+//          SessionKeys.hasConfirmedDeclaration -> "true",
+//          SessionKeys.wasHospitalStayRequired -> "false",
+//          SessionKeys.whenHealthIssueHappened -> "2021-01-01T12:00:00"
+//        )
+//        val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+//        request.header.status shouldBe Status.SEE_OTHER
+//        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+//      }
+//
+//      "there is a ongoing hospital stay" in {
+//        PenaltiesStub.successfulAppealSubmission
+//        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
+//          SessionKeys.penaltyId -> "1234",
+//          SessionKeys.appealType -> "Late_Submission",
+//          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+//          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+//          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+//          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+//          SessionKeys.reasonableExcuse -> "health",
+//          SessionKeys.hasConfirmedDeclaration -> "true",
+//          SessionKeys.wasHospitalStayRequired -> "true",
+//          SessionKeys.isHealthEventOngoing -> "true",
+//          SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00"
+//        )
+//        val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+//        request.header.status shouldBe Status.SEE_OTHER
+//        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+//      }
+//
+//      "there has been a hospital stay that has ended" in {
+//        PenaltiesStub.successfulAppealSubmission
+//        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
+//          SessionKeys.penaltyId -> "1234",
+//          SessionKeys.appealType -> "Late_Submission",
+//          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+//          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+//          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+//          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+//          SessionKeys.reasonableExcuse -> "health",
+//          SessionKeys.hasConfirmedDeclaration -> "true",
+//          SessionKeys.wasHospitalStayRequired -> "true",
+//          SessionKeys.isHealthEventOngoing -> "false",
+//          SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00",
+//          SessionKeys.whenHealthIssueEnded -> "2021-01-02T12:00:00"
+//        )
+//        val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+//        request.header.status shouldBe Status.SEE_OTHER
+//        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+//      }
+//
+//    }
+
     "show an ISE when the appeal fails" in {
       PenaltiesStub.failedAppealSubmission
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(

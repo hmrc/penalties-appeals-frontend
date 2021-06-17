@@ -34,6 +34,10 @@ object SessionKeys {
   val whenDidTechnologyIssuesEnd = "whenDidTechnologyIssuesEnd"
   val wasHospitalStayRequired = "wasHospitalStayRequired"
   val whenHealthIssueHappened = "whenHealthIssueHappened"
+  //TODO: use when implementing 'yes' journey for hospital stay
+  val whenHealthIssueStarted = "whenHealthIssueStarted"
+  val whenHealthIssueEnded = "whenHealthIssueEnded"
+  val isHealthEventOngoing = "isHealthEventOngoing"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -52,6 +56,9 @@ object SessionKeys {
     whenDidTechnologyIssuesBegin,
     whenDidTechnologyIssuesEnd,
     wasHospitalStayRequired,
-    whenHealthIssueHappened
+    whenHealthIssueHappened,
+    whenHealthIssueStarted,
+    whenHealthIssueEnded,
+    isHealthEventOngoing
   )
 }
