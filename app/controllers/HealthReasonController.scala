@@ -24,6 +24,7 @@ import forms.{WasHospitalStayRequiredForm, WhenDidHealthIssueHappenForm}
 import javax.inject.Inject
 import helpers.FormProviderHelper
 import models.Mode
+import models.pages._
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -60,9 +61,9 @@ class HealthReasonController @Inject()(navigation: Navigation,
         val postAction = controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(mode)
         BadRequest(wasHospitalStayRequiredPage(formWithErrors, radioOptionsToRender, postAction))
       },
-      //TODO - update redirect when routing added in PRM-329
       wasStayRequiredAnswer => {
-        Redirect("#").addingToSession((SessionKeys.wasHospitalStayRequired, wasStayRequiredAnswer))
+        Redirect(navigation.nextPage(WasHospitalStayRequiredPage, mode, Some(wasStayRequiredAnswer)))
+          .addingToSession((SessionKeys.wasHospitalStayRequired, wasStayRequiredAnswer))
       }
     )
   }
@@ -83,8 +84,8 @@ class HealthReasonController @Inject()(navigation: Navigation,
         BadRequest(whenDidHealthReasonHappenPage(formWithErrors, postAction))
       },
       whenHealthIssueHappened => {
-        //TODO - update redirect when routing added in PRM-329
-        Redirect("#").addingToSession((SessionKeys.whenHealthIssueHappened, whenHealthIssueHappened.toString))
+        Redirect(navigation.nextPage(WhenDidHealthIssueHappenPage, mode))
+          .addingToSession((SessionKeys.whenHealthIssueHappened, whenHealthIssueHappened.toString))
       }
     )
   }

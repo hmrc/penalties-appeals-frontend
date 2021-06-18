@@ -85,12 +85,11 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      //TODO - change to when did health issue happen page when navigation added in PRM-329
-      request.header.headers("Location") shouldBe "#"
+      request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.wasHospitalStayRequired).get shouldBe "no"
     }
 
-    //TODO - placeholder for when hospotal stay pages added - may need some tweaking
+    //TODO - placeholder for when hospital stay pages added - may need some tweaking
 //    "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers yes" in {
 //      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/was-a-hospital-stay-required").withSession(
 //        (SessionKeys.penaltyId, "1234"),
@@ -231,8 +230,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      // TODO - change to CYA page when navigation added in PRM-329
-      request.header.headers("Location") shouldBe "#"
+      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenHealthIssueHappened).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 
@@ -256,8 +254,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      // TODO - change to late appeal page when navigation added in PRM-329
-      request.header.headers("Location") shouldBe "#"
+      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenHealthIssueHappened).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 

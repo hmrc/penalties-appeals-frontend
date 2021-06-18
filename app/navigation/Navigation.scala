@@ -18,16 +18,16 @@ package navigation
 
 import config.AppConfig
 import models.{CheckMode, Mode, NormalMode, UserRequest, pages}
-import models.pages.Page
-import models.pages._
+import models.pages.{Page, WasHospitalStayRequiredPage, _}
 import play.api.mvc.Call
 import controllers.routes
 import helpers.DateTimeHelper
 import utils.Logger.logger
 import utils.SessionKeys
-
 import java.time.LocalDateTime
+
 import javax.inject.Inject
+import play.api.mvc.Results.BadRequest
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
                            appConfig: AppConfig) {
@@ -37,7 +37,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidFireOrFloodHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidPersonLeaveTheBusinessPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode)),
-    WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
+    WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WasHospitalStayRequiredPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
@@ -46,7 +48,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidFireOrFloodHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidPersonLeaveTheBusinessPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)),
-    WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
+    WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WasHospitalStayRequiredPage -> ((answer, _: UserRequest[_]) => routingForHospitalStay(NormalMode, answer)),
+    WhenDidHealthIssueHappenPage-> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None)(implicit userRequest: UserRequest[_]): Call = {
@@ -61,11 +65,23 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
+  def routingForHospitalStay(mode: Mode, answer: Option[String]): Call = {
+    answer match {
+      case Some(ans) if ans.equalsIgnoreCase("no") => routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
+      // TODO - change when hospital stay was required journey is added, currently reloads page
+      case Some(ans) if ans.equalsIgnoreCase("yes")=> routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
+      case _ => {
+        logger.debug("[Navigation][routingForHospitalStay]: unable to get answer - reloading 'WasHospitalStayRequiredPage'")
+        routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
+      }
+    }
+  }
+
   def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_], mode: Mode): Call = {
     val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
-    if(dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
+    if (dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
       && (userRequest.session.get(SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)) {
       logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
         s"Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
