@@ -117,6 +117,111 @@ class SessionAnswersHelperSpec extends SpecBase {
         result shouldBe false
       }
     }
+
+    "for health" must {
+      "return true" when {
+        "the keys are present for no hospital stay journey" in {
+          val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "no",
+              SessionKeys.whenHealthIssueHappened -> "2022-01-01"
+            )
+          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllNonHospitalStayKeysPresent)
+          result shouldBe true
+        }
+
+        "the keys are present for ongoing hospital stay journey" in {
+          val fakeRequestWithAllOngoingHospitalStayKeysPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "yes",
+              SessionKeys.isHealthEventOngoing -> "yes",
+              SessionKeys.whenHealthIssueStarted -> "2022-01-01"
+            )
+          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllOngoingHospitalStayKeysPresent)
+          result shouldBe true
+        }
+
+        "the keys are present for an ended hospital stay" in {
+          val fakeRequestWithAllEndedHospitalStayKeysPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "yes",
+              SessionKeys.isHealthEventOngoing -> "no",
+              SessionKeys.whenHealthIssueStarted -> "2022-01-01",
+              SessionKeys.whenHealthIssueEnded -> "2022-01-02"
+            )
+          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllEndedHospitalStayKeysPresent)
+          result shouldBe true
+        }
+      }
+
+      "return false" when {
+        "there was a hospital stay but there event ongoing question hasn't been answered" in {
+          val fakeRequestWithNoEventOngoingKeyPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "yes",
+              SessionKeys.whenHealthIssueStarted -> "2022-01-01"
+            )
+          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          result shouldBe false
+        }
+
+        "the hospital stay question hasn't been answered" in {
+          val fakeRequestWithNoEventOngoingKeyPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.isHealthEventOngoing -> "yes",
+              SessionKeys.whenHealthIssueStarted -> "2022-01-01"
+            )
+          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          result shouldBe false
+        }
+
+        "there is an ongoing hospital stay but no startDate has been provided" in {
+          val fakeRequestWithNoEventOngoingKeyPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "yes",
+              SessionKeys.isHealthEventOngoing -> "yes"
+            )
+          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          result shouldBe false
+        }
+
+        "there is a hospital stay that has ended but no end date has been provided" in {
+          val fakeRequestWithNoEventOngoingKeyPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "yes",
+              SessionKeys.isHealthEventOngoing -> "no",
+              SessionKeys.whenHealthIssueStarted -> "2022-01-01"
+            )
+          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          result shouldBe false
+        }
+
+        "not all keys are present" in {
+          val fakeRequestWithSomeHealthKeysPresent = fakeRequest
+            .withSession(
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+              SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+            )
+          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithSomeHealthKeysPresent)
+          result shouldBe false
+        }
+      }
+    }
   }
 
   "getContentForReasonableExcuseCheckYourAnswersPage" should {
@@ -291,6 +396,87 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(3)._1 shouldBe "Why you did not appeal sooner"
         result(3)._2 shouldBe "Lorem ipsum"
         result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+    }
+
+    "for health" must {
+      "for no hospital stay" should {
+        "return all the keys from the session ready to be passed to the view" in {
+          val fakeRequestWithNoHospitalStayKeysPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "no",
+              SessionKeys.whenHealthIssueHappened -> "2022-01-01"
+            )
+
+          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
+          result(0)._1 shouldBe "Reason for missing the VAT deadline"
+          result(0)._2 shouldBe "Health"
+          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
+          result(1)._2 shouldBe "No"
+          //TODO: change to correct page
+          result(1)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
+          result(2)._2 shouldBe "1 January 2022"
+          //TODO: change to correct page
+          result(2)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        }
+
+        "return all keys and the 'Why you did not appeal sooner' text" in {
+          val fakeRequestWithNoHospitalStayKeysPresent = fakeRequest
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "no",
+              SessionKeys.whenHealthIssueHappened -> "2022-01-01",
+              SessionKeys.lateAppealReason -> "Lorem ipsum"
+            )
+
+          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
+          result(0)._1 shouldBe "Reason for missing the VAT deadline"
+          result(0)._2 shouldBe "Health"
+          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
+          result(1)._2 shouldBe "No"
+          //TODO: change to correct page
+          result(1)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
+          result(2)._2 shouldBe "1 January 2022"
+          //TODO: change to correct page
+          result(2)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(3)._1 shouldBe "Why you did not appeal sooner"
+          result(3)._2 shouldBe "Lorem ipsum"
+          result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        }
+      }
+    }
+  }
+
+  "getHealthReasonAnswers" must {
+    "when there is no hospital stay" should {
+      "return a Seq[String, String, String] of answers" in {
+        val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.wasHospitalStayRequired -> "no",
+            SessionKeys.whenHealthIssueHappened -> "2022-01-01"
+        )
+
+        val result = SessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Health"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
+        result(1)._2 shouldBe "No"
+        //TODO: change to correct page
+        result(1)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(2)._2 shouldBe "1 January 2022"
+        //TODO: change to correct page
+        result(2)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
       }
     }
   }

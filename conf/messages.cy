@@ -213,6 +213,10 @@ checkYourAnswers.crime.unknown = I do not know
 checkYourAnswers.technicalIssues.whenDidTechIssuesBegin = When did the technology issues begin?
 checkYourAnswers.technicalIssues.whenDidTechIssuesEnd = When did the technology issues end?
 checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
+checkYourAnswers.health.reasonableExcuse = Health
+checkYourAnswers.health.unexpectedHospitalStay = Did this health issue include an unexpected hospital stay?
+checkYourAnswers.health.unableToManageAccount = When did you become unable to manage the VAT account?
+# Need to implement other messages for hospital stay
 
 # Appeal Confirmation page
 # ----------------------------------------------------------

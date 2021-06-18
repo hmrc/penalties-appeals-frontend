@@ -58,6 +58,30 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
   )
 
+  val fakeRequestForHealthNoHospitalStayJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+    SessionKeys.reasonableExcuse -> "health",
+    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.wasHospitalStayRequired -> "no",
+    SessionKeys.whenHealthIssueHappened -> "2022-01-02")
+  )
+
+  val fakeRequestForHealthOngoingHospitalStayJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+    SessionKeys.reasonableExcuse -> "health",
+    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.wasHospitalStayRequired -> "yes",
+    SessionKeys.isHealthEventOngoing -> "yes",
+    SessionKeys.whenHealthIssueStarted -> "2022-01-02")
+  )
+
+  val fakeRequestForHealthEndedHospitalStayJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+    SessionKeys.reasonableExcuse -> "health",
+    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.wasHospitalStayRequired -> "yes",
+    SessionKeys.isHealthEventOngoing -> "no",
+    SessionKeys.whenHealthIssueStarted -> "2022-01-02",
+    SessionKeys.whenHealthIssueEnded -> "2022-01-03")
+  )
+
   val fakeRequestForCrimeJourneyNoReasonableExcuse = fakeRequestConverter(fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
@@ -105,6 +129,21 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       "return OK and correct view - when all answers exist for technical issues" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForTechnicalIssuesJourney)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - when all answers exist for health - no hospital stay" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoad()(fakeRequestForHealthNoHospitalStayJourney)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - when all answers exist for health - ongoing hospital stay" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoad()(fakeRequestForHealthOngoingHospitalStayJourney)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - when all answers exist for health - ended hospital stay" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoad()(fakeRequestForHealthEndedHospitalStayJourney)
         status(result) shouldBe OK
       }
 

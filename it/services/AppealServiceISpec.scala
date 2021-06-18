@@ -84,6 +84,65 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe true
     }
 
+    "return true for hospital stay" when {
+      "there is no hospital stay" in {
+        successfulAppealSubmission
+        val userRequest = UserRequest("")(FakeRequest("POST", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Submission",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "health",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.wasHospitalStayRequired -> "no",
+          SessionKeys.whenHealthIssueHappened -> "2021-01-01T12:00:00"
+        ))
+        val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
+        result shouldBe true
+      }
+
+      "there is a ongoing hospital stay" in {
+        successfulAppealSubmission
+        val userRequest = UserRequest("")(FakeRequest("POST", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Submission",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "health",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.wasHospitalStayRequired -> "yes",
+          SessionKeys.isHealthEventOngoing -> "yes",
+          SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00"
+        ))
+        val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
+        result shouldBe true
+      }
+
+      "there has been a hospital stay that has ended" in {
+        successfulAppealSubmission
+        val userRequest = UserRequest("")(FakeRequest("POST", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Submission",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "health",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.wasHospitalStayRequired -> "yes",
+          SessionKeys.isHealthEventOngoing -> "no",
+          SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00",
+          SessionKeys.whenHealthIssueEnded -> "2021-01-02T12:00:00"
+        ))
+        val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
+        result shouldBe true
+      }
+    }
+
     "return false" when {
       "the connector returns a fault" in {
         failedAppealSubmissionWithFault
