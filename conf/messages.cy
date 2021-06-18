@@ -172,14 +172,14 @@ healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone 
 
 # When did the health issue happen page
 # ----------------------------------------------------------
-healthReason.title = When did you become unable to manage the VAT account?
-healthReason.heading = When did you become unable to manage the VAT account?
-healthReason.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>For example, 12 3 2018
-healthReason.error.required.all = Enter the start date of the hospital stay
-healthReason.error.required.two = The date the hospital stay started must include a {0} and a {1}
-healthReason.error.required = The date the hospital stay started must include a {0}
-healthReason.error.invalid = The date the hospital stay started must be a real date
-healthReason.error.notInFuture = The date the hospital stay started must be today or in the past
+healthReason.whenHealthIssueHappened.title = When did you become unable to manage the VAT account?
+healthReason.whenHealthIssueHappened.heading = When did you become unable to manage the VAT account?
+healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>For example, 12 3 2018
+healthReason.whenHealthIssueHappened.error.required.all = Tell us when you became unable to manage the VAT account
+healthReason.whenHealthIssueHappened.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
+healthReason.whenHealthIssueHappened.error.required = The date you became unable to manage VAT must include a {0}
+healthReason.whenHealthIssueHappened.error.invalid = The date you became unable to manage VAT must be a real date
+healthReason.whenHealthIssueHappened.error.notInFuture = The date you became unable to manage VAT must be today or in the past
 
 # Date input fields
 # ----------------------------------------------------------
@@ -216,6 +216,8 @@ checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
 checkYourAnswers.health.reasonableExcuse = Health
 checkYourAnswers.health.unexpectedHospitalStay = Did this health issue include an unexpected hospital stay?
 checkYourAnswers.health.unableToManageAccount = When did you become unable to manage the VAT account?
+checkYourAnswers.health.yes = Yes
+checkYourAnswers.health.no = No
 # Need to implement other messages for hospital stay
 
 # Appeal Confirmation page
