@@ -34,6 +34,7 @@
         @textArea(form, "late-appeal-text", messages("makingALateAppeal.heading"),
             isPageHeading = true,
             describedBy = Some("late-appeal-text-hint"),
+            labelClasses = Some("govuk-label--l"),
             hint = Some(Html(messages("makingALateAppeal.p1"))))
         @govukButton(Button(content = Text(messages("common.continue"))))
     }
