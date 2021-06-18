@@ -24,6 +24,7 @@
         head: Head,
         hmrcTimeoutDialog: HmrcTimeoutDialog,
         header: components.Header,
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
         phaseBanner: components.phaseBanner,
         govukBackLink: GovukBackLink,
         hmrcStandardFooter: HmrcStandardFooter,
@@ -46,15 +47,16 @@
 }
 
 @headBlock = {
-@head(
-    Some(hmrcTimeoutDialog(TimeoutDialog(
-        timeout = Some(appConfig.timeoutPeriod),
-        countdown = Some(appConfig.timeoutCountdown),
-        signOutUrl = Some(routes.SignOutController.signOut().url),
-        keepAliveUrl = Some("#"),
-        signOutButtonText = Some(messages("base.signOut"))
-    )))
-)
+    @head(
+        Some(hmrcTimeoutDialog(TimeoutDialog(
+            timeout = Some(appConfig.timeoutPeriod),
+            countdown = Some(appConfig.timeoutCountdown),
+            signOutUrl = Some(routes.SignOutController.signOut().url),
+            keepAliveUrl = Some("#"),
+            signOutButtonText = Some(messages("base.signOut"))
+        )))
+    )
+    @hmrcTrackingConsentSnippet()
 
 }
 
