@@ -107,13 +107,11 @@ class HealthReasonControllerSpec extends SpecBase {
               )
             )))
             status(result) shouldBe SEE_OTHER
-            //TODO - change to when did health issue happen page when navigation added in PRM-329
-            redirectLocation(result).get shouldBe "#"
+            redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
             await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "no"
           }
 
-        // change this to redirect to when hospital stay began when added in as part of another story
-
+        //TODO - placeholder for when hospital stay pages added - may need some tweaking
 //        "the validation is performed against possible values " +
 //          "- redirect when hospital stay began page and set the session key value" in new Setup(AuthTestModels.successfulAuthResult) {
 //            val result = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
@@ -127,7 +125,6 @@ class HealthReasonControllerSpec extends SpecBase {
 //                )
 //              )))
 //            status(result) shouldBe SEE_OTHER
-//            //TODO - change to when hospital stay began page
 //            redirectLocation(result).get shouldBe "#"
 //            await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "yes"
 //          }
@@ -244,8 +241,7 @@ class HealthReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          //TODO - change to CYA page when navigation added in PRM-329
-          redirectLocation(result).get shouldBe "#"
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
           await(result).session.get(SessionKeys.whenHealthIssueHappened).get shouldBe LocalDate.of(2021, 2, 1).toString
         }
 
@@ -264,8 +260,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )
           )))
           status(result) shouldBe SEE_OTHER
-          //TODO - change to late appeal page when navigation added in PRM-329
-          redirectLocation(result).get shouldBe "#"
+          redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
           await(result).session.get(SessionKeys.whenHealthIssueHappened).get shouldBe LocalDate.of(2021, 2, 1).toString
         }
       }

@@ -16,13 +16,13 @@
 
 package navigation
 
+import java.time.LocalDateTime
+
 import base.SpecBase
-import models.{CheckMode, NormalMode}
 import models.pages._
+import models.{CheckMode, NormalMode}
 import org.mockito.Mockito._
 import utils.SessionKeys
-
-import java.time.LocalDateTime
 
 class NavigationSpec extends SpecBase {
 
@@ -61,6 +61,30 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
+      s"called with $WhenDidFireOrFloodHappenPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidFireOrFloodHappenPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("fireOrFlood"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $WasHospitalStayRequiredPage" in new Setup {
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, CheckMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
+      }
+
+      s"called with $WasHospitalStayRequiredPage and answer for 'WhenDidHealthIssueHappenPage' is set" in new Setup{
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, CheckMode, Some("no"))(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.whenHealthIssueHappened -> "2020-01-01")
+          )))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+
+      s"called with $WhenDidHealthIssueHappenPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidHealthIssueHappenPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
       s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late AND late appeal reason hasn't been entered" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
         val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
@@ -76,6 +100,26 @@ class NavigationSpec extends SpecBase {
         val result = mainNavigator.nextPage(WhenDidPersonLeaveTheBusinessPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
             (SessionKeys.appealType -> "lossOfStaff")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $WhenDidFireOrFloodHappenPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidFireOrFloodHappenPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "fireOrFlood")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $WhenDidHealthIssueHappenPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidHealthIssueHappenPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "health")
           )))
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
@@ -108,6 +152,21 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
+      s"called with $WhenDidFireOrFloodHappenPage" in new Setup{
+        val result = mainNavigator.nextPage(WhenDidFireOrFloodHappenPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("fireOrFlood"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $WasHospitalStayRequiredPage" in new Setup {
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
+      }
+
+      s"called with $WhenDidHealthIssueHappenPage" in new Setup {
+       val result = mainNavigator.nextPage(WhenDidHealthIssueHappenPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
       s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
         val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
@@ -134,6 +193,59 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
+
+      s"called with $WhenDidFireOrFloodHappenPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidFireOrFloodHappenPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        .withSession(
+          (SessionKeys.appealType -> "fireOrFlood")
+        )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $WhenDidHealthIssueHappenPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidHealthIssueHappenPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "health")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+    }
+  }
+
+  "routingForHospitalStay" should {
+    "redirect to the appropriate page in normal mode" when {
+      "user answers no " in new Setup {
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, NormalMode, Some("no"))(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("health")
+        )
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
+        reset(mockDateTimeHelper)
+      }
+
+      // TODO - update when hospital stay was required journey is added, currently reloads the page
+      "user answers yes" in new Setup {
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, NormalMode, Some("yes"))(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("health")
+        )
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
+        reset(mockDateTimeHelper)
+      }
+    }
+
+    "redirect to the CYA page in check mode" when {
+      "user answers no and the question on the next page has already been answered" in new Setup{
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, CheckMode, Some("no"))(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.whenHealthIssueHappened -> "2020-01-01")
+          )))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
     }
   }
 
