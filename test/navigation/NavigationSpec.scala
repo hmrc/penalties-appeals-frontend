@@ -67,9 +67,18 @@ class NavigationSpec extends SpecBase {
       }
 
       s"called with $WasHospitalStayRequiredPage" in new Setup {
-        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
-        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, CheckMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
       }
+
+      s"called with $WasHospitalStayRequiredPage and answer for 'WhenDidHealthIssueHappenPage' is set" in new Setup{
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, CheckMode, Some("no"))(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.whenHealthIssueHappened -> "2020-01-01")
+          )))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
 
       s"called with $WhenDidHealthIssueHappenPage" in new Setup {
         val result = mainNavigator.nextPage(WhenDidHealthIssueHappenPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
@@ -225,6 +234,18 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
         reset(mockDateTimeHelper)
       }
+    }
+
+    "redirect to the CYA page in check mode" when {
+      "user answers no and the question on the next page has already been answered" in new Setup{
+        val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, CheckMode, Some("no"))(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.whenHealthIssueHappened -> "2020-01-01")
+          )))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
     }
   }
 
