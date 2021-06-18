@@ -44,7 +44,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.error.notInFuture", Seq("day", "month", "year"))
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.notInFuture", Seq("day", "month", "year"))
       }
 
       "the date is not valid" in {
@@ -56,7 +56,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.error.invalid", Seq())
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.invalid", Seq())
       }
 
       "the date contains strings instead of numbers" in {
@@ -68,7 +68,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.error.invalid", Seq("day", "month", "year"))
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.invalid", Seq("day", "month", "year"))
       }
 
       "the date contains negative numbers" in {
@@ -80,7 +80,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.error.invalid", Seq())
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.invalid", Seq())
       }
 
       "the date has no day" in {
@@ -92,7 +92,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.error.required", Seq("day"))
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.required", Seq("day"))
       }
 
       "the date has no month" in {
@@ -104,7 +104,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.month", "healthReason.error.required", Seq("month"))
+        result.errors.head shouldBe FormError("date.month", "healthReason.whenHealthIssueHappened.error.required", Seq("month"))
       }
 
       "the date has no year" in {
@@ -116,7 +116,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.year", "healthReason.error.required", Seq("year"))
+        result.errors.head shouldBe FormError("date.year", "healthReason.whenHealthIssueHappened.error.required", Seq("year"))
       }
 
       "the date has a day but no month and year" in {
@@ -128,7 +128,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.month", "healthReason.error.required.two", Seq("month", "year"))
+        result.errors.head shouldBe FormError("date.month", "healthReason.whenHealthIssueHappened.error.required.two", Seq("month", "year"))
       }
 
       "the date has a month but no day and year" in {
@@ -140,7 +140,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.error.required.two", Seq("day", "year"))
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.required.two", Seq("day", "year"))
       }
 
       "the date has a year but no day and month" in {
@@ -152,7 +152,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.error.required.two", Seq("day", "month"))
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.required.two", Seq("day", "month"))
       }
 
       "the date has no values" in {
@@ -164,7 +164,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.error.required.all", Seq("day", "month", "year"))
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.required.all", Seq("day", "month", "year"))
       }
     }
   }
