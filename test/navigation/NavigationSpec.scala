@@ -68,7 +68,7 @@ class NavigationSpec extends SpecBase {
 
       s"called with $WasHospitalStayRequiredPage" in new Setup {
         val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
-        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
       }
 
       s"called with $WhenDidHealthIssueHappenPage" in new Setup {

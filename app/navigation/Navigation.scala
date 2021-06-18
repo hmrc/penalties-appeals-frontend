@@ -38,7 +38,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidPersonLeaveTheBusinessPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode)),
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WasHospitalStayRequiredPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(NormalMode, answer, request)),
     WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
@@ -49,7 +49,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidPersonLeaveTheBusinessPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)),
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WasHospitalStayRequiredPage -> ((answer, _: UserRequest[_]) => routingForHospitalStay(NormalMode, answer)),
+    WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(NormalMode, answer, request)),
     WhenDidHealthIssueHappenPage-> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
   )
 
@@ -65,11 +65,14 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForHospitalStay(mode: Mode, answer: Option[String]): Call = {
-    answer match {
-      case Some(ans) if ans.equalsIgnoreCase("no") => routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
+  def routingForHospitalStay(mode: Mode, answer: Option[String], request: UserRequest[_]): Call = {
+    (mode, answer) match {
+      case (CheckMode, Some(ans)) if ans.equalsIgnoreCase("no") && request.session.get(SessionKeys.whenHealthIssueHappened).isDefined => {
+        routes.CheckYourAnswersController.onPageLoad()
+      }
+      case (_, Some(ans)) if ans.equalsIgnoreCase("no") => routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
       // TODO - change when hospital stay was required journey is added, currently reloads page
-      case Some(ans) if ans.equalsIgnoreCase("yes")=> routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
+      case (_, Some(ans)) if ans.equalsIgnoreCase("yes")=> routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
       case _ => {
         logger.debug("[Navigation][routingForHospitalStay]: unable to get answer - reloading 'WasHospitalStayRequiredPage'")
         routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
