@@ -141,12 +141,10 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             controllers.routes.ReasonableExcuseController.onPageLoad().url),
           (messages("checkYourAnswers.health.unexpectedHospitalStay"),
             messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
-            //TODO: change to was there an unexpected hospital stay page when implemented
-            controllers.routes.ReasonableExcuseController.onPageLoad().url),
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url),
           (messages("checkYourAnswers.health.unableToManageAccount"),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueHappened).get)),
-            //TODO: change to when unable to manage account page when implemented
-            controllers.routes.ReasonableExcuseController.onPageLoad().url)
+            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url)
         )
       }
       //Hospital stay ongoing

@@ -416,12 +416,10 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
           result(1)._2 shouldBe "No"
-          //TODO: change to correct page
-          result(1)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
           result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
           result(2)._2 shouldBe "1 January 2022"
-          //TODO: change to correct page
-          result(2)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
         }
 
         "return all keys and the 'Why you did not appeal sooner' text" in {
@@ -440,12 +438,10 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
           result(1)._2 shouldBe "No"
-          //TODO: change to correct page
-          result(1)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
           result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
           result(2)._2 shouldBe "1 January 2022"
-          //TODO: change to correct page
-          result(2)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
           result(3)._1 shouldBe "Why you did not appeal sooner"
           result(3)._2 shouldBe "Lorem ipsum"
           result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
@@ -471,12 +467,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
         result(1)._2 shouldBe "No"
-        //TODO: change to correct page
-        result(1)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
         result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
         result(2)._2 shouldBe "1 January 2022"
-        //TODO: change to correct page
-        result(2)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
       }
     }
   }
