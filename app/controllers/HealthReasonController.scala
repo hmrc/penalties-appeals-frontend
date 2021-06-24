@@ -20,12 +20,12 @@ import java.time.LocalDate
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.{WasHospitalStayRequiredForm, WhenDidHealthIssueHappenForm, WhenDidHospitalStayBeginForm}
-
+import forms.{HasHospitalStayEndedForm, WasHospitalStayRequiredForm, WhenDidHealthIssueHappenForm, WhenDidHospitalStayBeginForm}
 import javax.inject.Inject
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.{WhenDidHospitalStayBeginPage, _}
+import models.appeals.HospitalStayEndInput
+import models.pages._
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -33,13 +33,15 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage,WhenDidHospitalStayBeginPage}
-import viewtils.RadioOptionHelper
+import views.html.reasonableExcuseJourneys.health._
+import viewtils.{ConditionalRadioHelper, RadioOptionHelper}
 
 class HealthReasonController @Inject()(navigation: Navigation,
                                        wasHospitalStayRequiredPage: WasHospitalStayRequiredPage,
                                        whenDidHealthReasonHappenPage: WhenDidHealthReasonHappenPage,
                                        whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginPage)
+                                       conditionalRadioHelper: ConditionalRadioHelper,
+                                       hasTheHospitalStayEnded: HasTheHospitalStayEndedPage)
                                       (implicit authorise: AuthPredicate,
                                        dataRequired: DataRequiredAction,
                                        appConfig: AppConfig,
@@ -51,7 +53,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
       WasHospitalStayRequiredForm.wasHospitalStayRequiredForm,
       SessionKeys.wasHospitalStayRequired
     )
-    val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForWasHospitalStayRequiredPage(formProvider)
+    val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
     val postAction = controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(mode)
     Ok(wasHospitalStayRequiredPage(formProvider, radioOptionsToRender, postAction))
   }
@@ -59,7 +61,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
   def onSubmitForWasHospitalStayRequired(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     WasHospitalStayRequiredForm.wasHospitalStayRequiredForm.bindFromRequest.fold(
       formWithErrors => {
-        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForWasHospitalStayRequiredPage(formWithErrors)
+        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
         val postAction = controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(mode)
         BadRequest(wasHospitalStayRequiredPage(formWithErrors, radioOptionsToRender, postAction))
       },
@@ -115,5 +117,19 @@ class HealthReasonController @Inject()(navigation: Navigation,
         }
       )
     }
+  }
+
+  def onPageLoadForHasHospitalStayEnded(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
+    val formProvider: Form[HospitalStayEndInput] = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(
+      HasHospitalStayEndedForm.hasHospitalStayEndedForm(),
+      (SessionKeys.isHealthEventOngoing, SessionKeys.whenHealthIssueEnded)
+    )
+    val radioOptionsToRender = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded.yes")
+    val postAction = controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(mode)
+    Ok(hasTheHospitalStayEnded(formProvider, radioOptionsToRender, postAction))
+  }
+
+  def onSubmitForHasHospitalStayEnded(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
+    Ok("something")
   }
 }

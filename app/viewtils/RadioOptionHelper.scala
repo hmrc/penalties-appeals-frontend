@@ -16,12 +16,14 @@
 
 package viewtils
 
+import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+import utils.ViewUtils
 
-object RadioOptionHelper {
+object RadioOptionHelper extends ViewUtils {
   def radioOptionsForHasCrimeBeenReportedPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
     Seq(
       RadioItem(
@@ -42,18 +44,38 @@ object RadioOptionHelper {
     )
   }
 
-  def radioOptionsForWasHospitalStayRequiredPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+  def yesNoRadioOptions(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
     Seq(
       RadioItem(
         value = Some("yes"),
-        content = Text(messages("healthReason.wasHospitalStayRequired.yes")),
+        content = Text(messages("common.radioOption.yes")),
         checked = form("value").value.contains("yes")
       ),
       RadioItem(
         value = Some("no"),
-        content = Text(messages("healthReason.wasHospitalStayRequired.no")),
+        content = Text(messages("common.radioOption.no")),
         checked = form("value").value.contains("no")
       )
     )
   }
+}
+
+class ConditionalRadioHelper @Inject()(dateInput: views.html.components.inputDate) extends ViewUtils {
+
+  def conditionalYesNoOptions(form: Form[_], messagePrefix: String)(implicit messages: Messages): Seq[RadioItem] = {
+    Seq(
+      RadioItem(
+        value = Some("yes"),
+        content = Text(messages("common.radioOption.yes")),
+        checked = form("hasStayEnded").value.contains("yes"),
+        conditionalHtml = Some(html(stringAsHtml("some text"))
+      )),
+      RadioItem(
+        value = Some("no"),
+        content = Text(messages("common.radioOption.no")),
+        checked = form("hasStayEnded").value.contains("no"),
+      )
+    )
+  }
+
 }

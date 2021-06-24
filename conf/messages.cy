@@ -222,6 +222,20 @@ otherReason.uploadEvidence.p2 =  Evidence might include any documents or letters
 otherReason.uploadEvidence.p3 = We will still review your appeal if you do not upload evidence.
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
 
+# Has the hospital stay ended page
+# ----------------------------------------------------------
+healthReason.hasTheHospitalStayEnded.title = Has the hospital stay ended?
+healthReason.hasTheHospitalStayEnded.heading = Has the hospital stay ended?
+healthReason.hasTheHospitalStayEnded.yes.heading = When did it end?
+healthReason.hasTheHospitalStayEnded.yes.hint = When did it end?
+healthReason.hasTheHospitalStayEnded.error.required = Tell us if the hospital stay has now ended
+healthReason.hasTheHospitalStayEnded.date.error.required.all = Tell us when the hospital stay ended
+healthReason.hasTheHospitalStayEnded.date.error.required.two = The date the hospital stay ended must include a {0} and a {1}
+healthReason.hasTheHospitalStayEnded.date.error.required = The date the hospital stay ended must include a {0}
+healthReason.hasTheHospitalStayEnded.date.error.invalid = The date the hospital stay ended must be a real date
+healthReason.hasTheHospitalStayEnded.date.error.notInFuture = The date the hospital stay ended must be today or in the past
+healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The date the hospital stay ended must be the same or after they began
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day
