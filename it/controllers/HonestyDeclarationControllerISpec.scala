@@ -73,7 +73,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() shouldBe "I was unable to submit the VAT Return due on 01 Jan 2020"
+      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith "I was unable to submit the VAT Return due on "
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
