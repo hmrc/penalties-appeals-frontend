@@ -32,7 +32,10 @@
     <p class="govuk-body">@messages("honestyDeclaration.p1")</p>
     <ul class="govuk-list govuk-list--bullet">
         <li>
-        @messages("honestyDeclaration.li.1", reasonText, friendlyDate)
+        @if(!reasonText.equals("")){
+            @messages("honestyDeclaration.li.1.1", reasonText)
+        }
+        @messages("honestyDeclaration.li.1.2", friendlyDate)
         </li>
         @extraBullets.map { bullet =>
             <li>

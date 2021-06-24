@@ -75,7 +75,8 @@ reasonableExcuses.error.required = Select the reason for missing the VAT deadlin
 honestyDeclaration.title = Honesty declaration
 honestyDeclaration.heading = Honesty declaration
 honestyDeclaration.p1 = I confirm that:
-honestyDeclaration.li.1 = because {0}, I was unable to submit the VAT Return due on {1}
+honestyDeclaration.li.1.1 = because {0},
+honestyDeclaration.li.1.2 =  I was unable to submit the VAT Return due on {0}
 honestyDeclaration.li.2 = no one else was available to make the submission for me
 honestyDeclaration.li.3 = I will provide honest and accurate information in this appeal
 honestyDeclaration.li.extra.lossOfStaff = the staff member did not return or get replaced before the due date
@@ -85,6 +86,7 @@ honestyDeclaration.fireOrFlood = of a fire or flood
 honestyDeclaration.health = of a health issue
 honestyDeclaration.technicalIssues = of technology issues
 honestyDeclaration.lossOfStaff = of loss of staff essential to the VAT process
+honestyDeclaration.other =
 
 # Errors
 # ----------------------------------------------------------
