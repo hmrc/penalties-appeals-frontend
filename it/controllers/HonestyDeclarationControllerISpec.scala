@@ -60,6 +60,22 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() shouldBe "the staff member did not return or get replaced before the due date"
     }
 
+    "return 200 (OK) when the user is authorised and has the correct keys - and no custom no extraText when reasonable excuse is 'other'" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+        (SessionKeys.reasonableExcuse, "other")
+      )
+      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+      await(request).header.status shouldBe Status.OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith ("I was unable to submit the VAT Return due on ")
+    }
+
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration")
       val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
