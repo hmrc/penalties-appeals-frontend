@@ -17,7 +17,8 @@
             form = form,
             legend = messages("healthReason.hasTheHospitalStayEnded.heading"),
             items = radioOptions,
-            legendAsHeading = true
+            legendAsHeading = true,
+            formFieldId = "hasStayEnded"
         )
 
         @govukButton(Button(content = Text(messages("common.continue"))))

@@ -6,7 +6,9 @@
         legendClasses: Option[String] = Some("govuk-visually-hidden"),
         id: String = "date",
         hintText: Option[String] = None,
-        legendAsPageHeading: Boolean = false)(implicit messages: Messages)
+        legendAsPageHeading: Boolean = false,
+        isConditional: Boolean = false,
+)(implicit messages: Messages)
 
 @idOfError = @{
     form.errors.headOption.fold(
@@ -14,6 +16,21 @@
     )(
         _.key
     )
+}
+@conditionalIdOfError = @{
+    if(form("stayEndDate").hasErrors) {
+        Some("stayEndDate")
+    }else{
+        Some(id)
+    }
+}
+
+@errors = {
+    if(!isConditional){
+        idOfError
+    }else{
+        conditionalIdOfError
+    }
 }
 @govukDateInput(DateInput(
     fieldset = Some(Fieldset(
@@ -50,5 +67,11 @@
         )
     ),
     hint = hintText.map(hint => Hint(content = HtmlContent(messages(hint)))),
-    errorMessage = form(idOfError).error.fold(form.errors.find(_.key.isEmpty))(err => Some(err)).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+    errorMessage =
+            if(!isConditional){
+                form(idOfError).error.fold(form.errors.find(_.key.isEmpty))(err => Some(err)).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+            } else {
+                form("stayEndDate").error.fold(form.errors.find(_.key.isEmpty))(err => Some(err)).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+            }
+
 ))

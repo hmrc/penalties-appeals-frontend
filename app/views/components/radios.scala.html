@@ -22,12 +22,13 @@
         legendAsHeading: Boolean = true,
         hint: Option[Html] = None,
         classes: String = "govuk-fieldset__legend--xl",
-        inline: Boolean = false
+        inline: Boolean = false,
+        formFieldId: String = "value"
 )(implicit messages: Messages)
 
 @govukRadios(Radios(
     classes = s"${if(inline){"govuk-radios--inline"} else ""}",
-    name = "value",
+    name = formFieldId,
     fieldset = Some(Fieldset(
         legend = Some(Legend(
             content = Text(messages(legend)),
@@ -39,5 +40,5 @@
         content = HtmlContent(hint)
     )},
     items = items,
-    errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+    errorMessage = form(formFieldId).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
 ))

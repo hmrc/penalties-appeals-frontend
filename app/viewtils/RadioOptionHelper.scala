@@ -21,9 +21,10 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+import uk.gov.hmrc.govukfrontend.views.viewmodels.dateinput.DateInput
 import utils.ViewUtils
 
-object RadioOptionHelper extends ViewUtils {
+object RadioOptionHelper {
   def radioOptionsForHasCrimeBeenReportedPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
     Seq(
       RadioItem(
@@ -68,8 +69,14 @@ class ConditionalRadioHelper @Inject()(dateInput: views.html.components.inputDat
         value = Some("yes"),
         content = Text(messages("common.radioOption.yes")),
         checked = form("hasStayEnded").value.contains("yes"),
-        conditionalHtml = Some(html(stringAsHtml("some text"))
-      )),
+        conditionalHtml = Some(html(dateInput(
+          form = form,
+          legendContent = messages(s"$messagePrefix.yes.heading"),
+          legendClasses = Some("govuk-fieldset__legend govuk-label"),
+          id = "stayEndDate",
+          hintText = Some(messages(s"$messagePrefix.yes.hint"))
+        )))
+      ),
       RadioItem(
         value = Some("no"),
         content = Text(messages("common.radioOption.no")),
