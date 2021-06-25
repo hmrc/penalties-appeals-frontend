@@ -7,7 +7,7 @@
         id: String = "date",
         hintText: Option[String] = None,
         legendAsPageHeading: Boolean = false,
-        isConditional: Boolean = false,
+        isConditional: Boolean = false
 )(implicit messages: Messages)
 
 @idOfError = @{
@@ -16,21 +16,6 @@
     )(
         _.key
     )
-}
-@conditionalIdOfError = @{
-    if(form("stayEndDate").hasErrors) {
-        Some("stayEndDate")
-    }else{
-        Some(id)
-    }
-}
-
-@errors = {
-    if(!isConditional){
-        idOfError
-    }else{
-        conditionalIdOfError
-    }
 }
 @govukDateInput(DateInput(
     fieldset = Some(Fieldset(
