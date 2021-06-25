@@ -30,7 +30,7 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage}
+import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
 
 import scala.concurrent.Future
 
@@ -38,6 +38,7 @@ class HealthReasonControllerSpec extends SpecBase {
 
   val hospitalStayPage = injector.instanceOf[WasHospitalStayRequiredPage]
   val whenHealthIssueHappenedPage = injector.instanceOf[WhenDidHealthReasonHappenPage]
+  val whenDidHospitalStayBeginPage = injector.instanceOf[WhenDidHospitalStayBeginPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -111,23 +112,22 @@ class HealthReasonControllerSpec extends SpecBase {
             await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "no"
           }
 
-        //TODO - placeholder for when hospital stay pages added - may need some tweaking
-//        "the validation is performed against possible values " +
-//          "- redirect when hospital stay began page and set the session key value" in new Setup(AuthTestModels.successfulAuthResult) {
-//            val result = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
-//              .withJsonBody(
-//                Json.parse(
-//                  """
-//                    |{
-//                    |   "value": "yes"
-//                    |}
-//                    |""".stripMargin
-//                )
-//              )))
-//            status(result) shouldBe SEE_OTHER
-//            redirectLocation(result).get shouldBe "#"
-//            await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "yes"
-//          }
+        "the validation is performed against possible values " +
+          "- redirects to when hospital stay begin page and set the session key value" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+            .withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "yes"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.HospitalStayBeginController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
+          await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "yes"
+        }
 
         "the validation is performed against possible values - value does not appear in options list" in new Setup(AuthTestModels.successfulAuthResult) {
             val result = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(

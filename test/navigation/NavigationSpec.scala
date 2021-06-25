@@ -225,13 +225,11 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
         reset(mockDateTimeHelper)
       }
-
-      // TODO - update when hospital stay was required journey is added, currently reloads the page
       "user answers yes" in new Setup {
         val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, NormalMode, Some("yes"))(
           fakeRequestWithCorrectKeysAndReasonableExcuseSet("health")
         )
-        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
+        result.url shouldBe controllers.routes.HospitalStayBeginController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
         reset(mockDateTimeHelper)
       }
     }
