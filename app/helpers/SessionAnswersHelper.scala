@@ -32,7 +32,8 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     "technicalIssues" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidTechnologyIssuesBegin, SessionKeys.whenDidTechnologyIssuesEnd),
     "healthIssueHospitalStayOngoing" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.isHealthEventOngoing, SessionKeys.wasHospitalStayRequired),
     "healthIssueHospitalStayEnded" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.whenHealthIssueEnded, SessionKeys.isHealthEventOngoing, SessionKeys.wasHospitalStayRequired),
-    "healthIssueNoHospitalStay" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.wasHospitalStayRequired, SessionKeys.whenHealthIssueHappened)
+    "healthIssueNoHospitalStay" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.wasHospitalStayRequired, SessionKeys.whenHealthIssueHappened),
+    "other" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whyReturnSubmittedLate, SessionKeys.whenDidBecomeUnable)
   )
 
   def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): Boolean = {
@@ -116,6 +117,31 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
       )
 
       case "health" => getHealthReasonAnswers
+
+      case "other" => {
+        val base = Seq(
+          (messages("checkYourAnswers.reasonableExcuse"),
+            messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+            controllers.routes.ReasonableExcuseController.onPageLoad().url),
+          (messages("checkYourAnswers.other.unableToManageAccount"),
+            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidBecomeUnable).get)),
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
+          (messages("checkYourAnswers.other.statementOfLateness"),
+            request.session.get(SessionKeys.whyReturnSubmittedLate).get,
+            //TODO: change with Chris' controller
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
+        )
+
+        request.session.get(SessionKeys.evidenceFileName).fold(base)(fileName => {
+          base :+
+            (
+              messages("checkYourAnswers.other.fileEvidence"),
+              fileName,
+              //TODO: change with Andrew's controller
+              controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+            )
+        })
+      }
     }
 
     request.session.get(SessionKeys.lateAppealReason).fold(

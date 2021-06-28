@@ -249,6 +249,12 @@ checkYourAnswers.health.yes = Yes
 checkYourAnswers.health.no = No
 # Need to implement other messages for hospital stay
 
+checkYourAnswers.other.reasonableExcuse = The reason does not fit into any of the other categories
+checkYourAnswers.other.unableToManageAccount = When did you become unable to manage the VAT account?
+checkYourAnswers.other.statementOfLateness = Why was the return submitted late?
+checkYourAnswers.other.fileEvidence = Evidence to support this appeal
+
+
 # Appeal Confirmation page
 # ----------------------------------------------------------
 

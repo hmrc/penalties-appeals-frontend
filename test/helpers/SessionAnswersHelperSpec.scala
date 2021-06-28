@@ -222,6 +222,31 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
       }
     }
+
+    "for other" must {
+      "return true - when all keys present" in {
+        val fakeRequestWithAllOtherReasonKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithAllOtherReasonKeysPresent)
+        result shouldBe true
+      }
+
+      "return false - when not all keys are present" in {
+        val fakeRequestWithSomeOtherReasonKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01"
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithSomeOtherReasonKeysPresent)
+        result shouldBe false
+      }
+    }
   }
 
   "getContentForReasonableExcuseCheckYourAnswersPage" should {
@@ -448,6 +473,8 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
       }
     }
+
+    //TODO: start here adding content for 'Other' reason
   }
 
   "getHealthReasonAnswers" must {
