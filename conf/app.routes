@@ -62,6 +62,12 @@ POST       /when-did-health-issue-happen                   controllers.HealthRea
 POST       /when-did-health-issue-happen/change            controllers.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode: Mode = CheckMode)
 
 
+# Other Reasonable Excuse Journey
+GET        /when-inability-to-manage-account-happened              controllers.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode: Mode = NormalMode)
+GET        /when-inability-to-manage-account-happened/change       controllers.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode: Mode = CheckMode)
+POST       /when-inability-to-manage-account-happened              controllers.OtherReasonController.onSubmitForWhenDidBecomeUnable(mode: Mode = NormalMode)
+POST       /when-inability-to-manage-account-happened/change       controllers.OtherReasonController.onSubmitForWhenDidBecomeUnable(mode: Mode = CheckMode)
+
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()

@@ -183,6 +183,17 @@ healthReason.whenHealthIssueHappened.error.required = The date you became unable
 healthReason.whenHealthIssueHappened.error.invalid = The date you became unable to manage VAT must be a real date
 healthReason.whenHealthIssueHappened.error.notInFuture = The date you became unable to manage VAT must be today or in the past
 
+# When did you become unable page
+# ----------------------------------------------------------
+otherReason.whenDidBecomeUnable.title = When did you become unable to manage the VAT account?
+otherReason.whenDidBecomeUnable.heading = When did you become unable to manage the VAT account?
+otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>For example, 12 3 2018
+otherReason.whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
+otherReason.whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
+otherReason.whenDidBecomeUnable.error.required = The date you became unable to manage VAT must include a {0}
+otherReason.whenDidBecomeUnable.error.invalid = The date you became unable to manage VAT must be a real date
+otherReason.whenDidBecomeUnable.error.notInFuture = The date you became unable to manage VAT must be today or in the past
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day
