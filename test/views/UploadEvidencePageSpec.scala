@@ -1,0 +1,54 @@
+/*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package views
+
+import base.{BaseSelectors, SpecBase}
+import forms.UploadEvidenceForm
+import messages.UploadEvidenceMessages._
+import models.NormalMode
+import org.jsoup.nodes.Document
+import play.api.data.Form
+import play.twirl.api.HtmlFormat
+import views.behaviours.ViewBehaviours
+import views.html.reasonableExcuseJourneys.other.UploadEvidencePage
+
+class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
+
+  "UploadEvidencePage" should {
+    val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
+    object Selectors extends BaseSelectors {
+      val label = ".govuk-label"
+    }
+    val formProvider = UploadEvidenceForm.uploadEvidenceForm
+
+    def applyView(form: Form[_]): HtmlFormat.Appendable = uploadEvidencePage.apply(form, controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode))
+
+    implicit val doc: Document = asDocument(applyView(formProvider))
+
+    val expectedContent = Seq(
+      Selectors.title -> title,
+      Selectors.h1 -> h1,
+      Selectors.pElementIndex(2) -> p1,
+      Selectors.pElementIndex(3) -> p2,
+      Selectors.pElementIndex(4) -> p3,
+      Selectors.label -> uploadLabel,
+      Selectors.button -> continueButton
+    )
+
+    behave like pageWithExpectedMessages(expectedContent)
+  }
+}
