@@ -8,6 +8,8 @@ common.pageTitle = {0} - {1} - GOV.UK
 common.continue = Continue
 common.acceptAndContinue = Accept and continue
 common.acceptAndSend = Accept and send
+common.radioOption.yes = Yes
+common.radioOption.no = No
 
 app.common.back = Back
 
@@ -168,8 +170,8 @@ technicalIssues.end.error.endDateLessThanStartDate = The date the technology iss
 # ----------------------------------------------------------
 healthReason.wasHospitalStayRequired.title = Did this health issue include an unexpected hospital stay?
 healthReason.wasHospitalStayRequired.heading = Did this health issue include an unexpected hospital stay?
-healthReason.wasHospitalStayRequired.yes = Yes
-healthReason.wasHospitalStayRequired.no = No
+healthReason.wasHospitalStayRequired.yes = yes
+healthReason.wasHospitalStayRequired.no = no
 healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital unexpectedly
 
 # When did the health issue happen page
@@ -234,7 +236,6 @@ healthReason.hasTheHospitalStayEnded.date.error.required.two = The date the hosp
 healthReason.hasTheHospitalStayEnded.date.error.required = The date the hospital stay ended must include a {0}
 healthReason.hasTheHospitalStayEnded.date.error.invalid = The date the hospital stay ended must be a real date
 healthReason.hasTheHospitalStayEnded.date.error.notInFuture = The date the hospital stay ended must be today or in the past
-healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The date the hospital stay ended must be the same or after they began
 
 # Date input fields
 # ----------------------------------------------------------

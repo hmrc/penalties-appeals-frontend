@@ -50,6 +50,8 @@
         )
     ),
     hint = hintText.map(hint => Hint(content = HtmlContent(messages(hint)))),
-    errorMessage = form(idOfError).error.fold(form.errors.find(_.key.isEmpty))(err => Some(err)).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+    errorMessage = {
+        if(idOfError.contains(id)) form(idOfError).error.fold(form.errors.find(_.key.isEmpty))(err => Some(err)).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))) else None
+    }
 
 ))
