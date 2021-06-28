@@ -101,13 +101,13 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         Json.parse(
           """
             |{
-            | "value": "yse"
+            | "value": "yes"
             |}
             |""".stripMargin)
       )
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
+      request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.wasHospitalStayRequired).get shouldBe "yes"
     }
 
