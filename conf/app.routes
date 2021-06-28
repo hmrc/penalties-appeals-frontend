@@ -60,10 +60,10 @@ GET        /when-did-health-issue-happen                   controllers.HealthRea
 GET        /when-did-health-issue-happen/change            controllers.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode: Mode = CheckMode)
 POST       /when-did-health-issue-happen                   controllers.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode: Mode = NormalMode)
 POST       /when-did-health-issue-happen/change            controllers.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode: Mode = CheckMode)
-GET        /when-did-hospital-stay-begin                   controllers.HospitalStayBeginController.onPageLoadForWhenDidHospitalStayBegin(mode: Mode = NormalMode)
-GET        /when-did-hospital-stay-begin/change            controllers.HospitalStayBeginController.onPageLoadForWhenDidHospitalStayBegin(mode: Mode = CheckMode)
-POST       /when-did-hospital-stay-begin                   controllers.HospitalStayBeginController.onSubmitForWhenDidHospitalStayBegin(mode: Mode = NormalMode)
-POST       /when-did-hospital-stay-begin/change            controllers.HospitalStayBeginController.onSubmitForWhenDidHospitalStayBegin(mode: Mode = CheckMode)
+GET        /when-did-hospital-stay-begin                   controllers.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(mode: Mode = NormalMode)
+GET        /when-did-hospital-stay-begin/change            controllers.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(mode: Mode = CheckMode)
+POST       /when-did-hospital-stay-begin                   controllers.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode: Mode = NormalMode)
+POST       /when-did-hospital-stay-begin/change            controllers.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode: Mode = CheckMode)
 
 
 # Other Reasonable Excuse Journey

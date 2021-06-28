@@ -183,6 +183,18 @@ healthReason.whenHealthIssueHappened.error.required = The date you became unable
 healthReason.whenHealthIssueHappened.error.invalid = The date you became unable to manage VAT must be a real date
 healthReason.whenHealthIssueHappened.error.notInFuture = The date you became unable to manage VAT must be today or in the past
 
+# When did the hospital stay begin page
+# ----------------------------------------------------------
+healthReason.whenDidHospitalStayBegin.title = When did the hospital stay begin?
+healthReason.whenDidHospitalStayBegin.heading = When did the hospital stay begin?
+healthReason.whenDidHospitalStayBegin.hintText = For example, 12 3 2018
+healthReason.whenDidHospitalStayBegin.error.required.all = Enter the start date of the hospital stay
+healthReason.whenDidHospitalStayBegin.error.required.two = The date the hospital stay started must include a {0} and a {1}
+healthReason.whenDidHospitalStayBegin.error.required = The date the hospital stay started must include a {0}
+healthReason.whenDidHospitalStayBegin.error.invalid = The date the hospital stay started must be a real date
+healthReason.whenDidHospitalStayBegin.error.notInFuture = The date the hospital stay started must be today or in the past
+
+
 # When did you become unable page
 # ----------------------------------------------------------
 otherReason.whenDidBecomeUnable.title = When did you become unable to manage the VAT account?

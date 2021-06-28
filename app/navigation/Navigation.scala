@@ -52,7 +52,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(NormalMode, answer, request)),
     WhenDidHealthIssueHappenPage-> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhenDidHospitalStayBeginPage-> ((_, _) => routes.HospitalStayBeginController.onPageLoadForWhenDidHospitalStayBegin(NormalMode))
+    WhenDidHospitalStayBeginPage-> ((_, _) => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode))
     // TODO - Add when hospital stay end journey is added, currently reloads hospital begin page
   )
 
@@ -74,7 +74,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
         routes.CheckYourAnswersController.onPageLoad()
       }
       case (_, Some(ans)) if ans.equalsIgnoreCase("no") => routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
-      case (_, Some(ans)) if ans.equalsIgnoreCase("yes")=> routes.HospitalStayBeginController.onPageLoadForWhenDidHospitalStayBegin(mode)
+      case (_, Some(ans)) if ans.equalsIgnoreCase("yes")=> routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(mode)
       case _ => {
         logger.debug("[Navigation][routingForHospitalStay]: unable to get answer - reloading 'WasHospitalStayRequiredPage'")
         routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)

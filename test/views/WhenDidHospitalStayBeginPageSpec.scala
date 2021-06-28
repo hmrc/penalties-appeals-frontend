@@ -31,7 +31,7 @@ class WhenDidHospitalStayBeginPageSpec extends SpecBase with ViewBehaviours{
 
   object Selectors extends BaseSelectors
   def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidHospitalStayBeginPage.apply(form,
-    controllers.routes.HospitalStayBeginController.onSubmitForWhenDidHospitalStayBegin(NormalMode))
+    controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(NormalMode))
 
   val formProvider = WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm()
 
