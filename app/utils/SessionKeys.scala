@@ -61,7 +61,6 @@ object SessionKeys {
     whenHealthIssueHappened,
     whenHealthIssueStarted,
     whenHealthIssueEnded,
-    whyReturnSubmittedLate,
     whenDidBecomeUnable,
     whyReturnSubmittedLate,
     evidenceFileName,
