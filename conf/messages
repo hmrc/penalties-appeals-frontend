@@ -185,12 +185,12 @@ healthReason.whenHealthIssueHappened.error.notInFuture = The date you became una
 # ----------------------------------------------------------
 healthReason.whenDidHospitalStayBegin.title = When did the hospital stay begin?
 healthReason.whenDidHospitalStayBegin.heading = When did the hospital stay begin?
-healthReason.whenDidHospitalStayBegin.hintText = Tell us the date when the hospital stay began. For example, 12 3 2018
-healthReason.whenDidHospitalStayBegin.error.required.all = Tell us when your hospital stay began
-healthReason.whenDidHospitalStayBegin.error.required.two = The date your hospital stay begin must include a {0} and a {1}
-healthReason.whenDidHospitalStayBegin.error.required = The date your hospital stay begin must include a {0}
-healthReason.whenDidHospitalStayBegin.error.invalid = The date your hospital stay begin must be a real date
-healthReason.whenDidHospitalStayBegin.error.notInFuture = The date your hospital stay begin must be today or in the past
+healthReason.whenDidHospitalStayBegin.hintText = For example, 12 3 2018
+healthReason.whenDidHospitalStayBegin.error.required.all = Enter the start date of the hospital stay
+healthReason.whenDidHospitalStayBegin.error.required.two = The date the hospital stay started must include a {0} and a {1}
+healthReason.whenDidHospitalStayBegin.error.required = The date the hospital stay started must include a {0}
+healthReason.whenDidHospitalStayBegin.error.invalid = The date the hospital stay started must be a real date
+healthReason.whenDidHospitalStayBegin.error.notInFuture = The date the hospital stay started must be today or in the past
 
 
 # Date input fields

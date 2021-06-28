@@ -229,7 +229,7 @@ class NavigationSpec extends SpecBase {
         val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, NormalMode, Some("yes"))(
           fakeRequestWithCorrectKeysAndReasonableExcuseSet("health")
         )
-        result.url shouldBe controllers.routes.HospitalStayBeginController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
         reset(mockDateTimeHelper)
       }
     }

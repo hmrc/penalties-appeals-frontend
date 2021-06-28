@@ -89,28 +89,27 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.wasHospitalStayRequired).get shouldBe "no"
     }
 
-    //TODO - placeholder for when hospital stay pages added - may need some tweaking
-//    "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers yes" in {
-//      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/was-a-hospital-stay-required").withSession(
-//        (SessionKeys.penaltyId, "1234"),
-//        (SessionKeys.appealType, "Late_Submission"),
-//        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-//        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-//        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-//        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
-//      ).withJsonBody(
-//        Json.parse(
-//          """
-//            |{
-//            | "value": "yse"
-//            |}
-//            |""".stripMargin)
-//      )
-//      val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
-//      request.header.status shouldBe Status.SEE_OTHER
-//      request.header.headers("Location") shouldBe "#"
-//      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.wasHospitalStayRequired).get shouldBe "yes"
-//    }
+    "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers yes" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/was-a-hospital-stay-required").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "value": "yse"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.wasHospitalStayRequired).get shouldBe "yes"
+    }
 
     "return 400 (BAD_REQUEST)" when {
       "the value is invalid" in {

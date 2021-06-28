@@ -20,7 +20,7 @@ object WhenDidHospitalStayBeginMessages {
 
     val title = "When did the hospital stay begin? - Appeal a VAT penalty - GOV.UK"
     val heading = "When did the hospital stay begin?"
-    val hintText = "Tell us the date when the hospital stay began. For example, 12 3 2018"
+    val hintText = "For example, 12 3 2018"
     val dayEntry = "Day"
     val monthEntry = "Month"
     val yearEntry = "Year"

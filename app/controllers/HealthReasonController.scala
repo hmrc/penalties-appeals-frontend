@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.{WasHospitalStayRequiredForm, WhenDidHealthIssueHappenForm}
+import forms.{WasHospitalStayRequiredForm, WhenDidHospitalStayBeginForm, WhenDidHealthIssueHappenForm}
 import javax.inject.Inject
 import helpers.FormProviderHelper
 import models.Mode
@@ -32,12 +32,13 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage}
+import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
 import viewtils.RadioOptionHelper
 
 class HealthReasonController @Inject()(navigation: Navigation,
                                        wasHospitalStayRequiredPage: WasHospitalStayRequiredPage,
-                                       whenDidHealthReasonHappenPage: WhenDidHealthReasonHappenPage)
+                                       whenDidHealthReasonHappenPage: WhenDidHealthReasonHappenPage,
+                                       whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginPage)
                                       (implicit authorise: AuthPredicate,
                                        dataRequired: DataRequiredAction,
                                        appConfig: AppConfig,
@@ -88,5 +89,29 @@ class HealthReasonController @Inject()(navigation: Navigation,
           .addingToSession((SessionKeys.whenHealthIssueHappened, whenHealthIssueHappened.toString))
       }
     )
+  }
+
+  def onPageLoadForWhenDidHospitalStayBegin(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
+    val formProvider: Form[LocalDate] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
+      WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm(),
+      SessionKeys.whenHealthIssueStarted
+    )
+    val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode)
+    Ok(whenDidHospitalStayBeginPage(formProvider, postAction))
+  }
+
+  def onSubmitForWhenDidHospitalStayBegin(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm.bindFromRequest().fold(
+        formWithErrors => {
+          val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode)
+          BadRequest(whenDidHospitalStayBeginPage(formWithErrors, postAction))
+        },
+        whenHospitalStayBegin => {
+          Redirect(navigation.nextPage(WhenDidHospitalStayBeginPage, mode))
+            .addingToSession((SessionKeys.whenHealthIssueStarted, whenHospitalStayBegin.toString))
+        }
+      )
+    }
   }
 }
