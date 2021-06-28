@@ -484,10 +484,7 @@ class HealthReasonControllerSpec extends SpecBase {
             Json.parse(
               """
                 |{
-                | "hasStayEnded": "no",
-                | "stayEndDate.day": "",
-                | "stayEndDate.month": "",
-                | "stayEndDate.year": ""
+                | "hasStayEnded": "no"
                 |}
                 |""".stripMargin
             )

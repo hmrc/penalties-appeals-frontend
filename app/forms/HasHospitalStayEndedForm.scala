@@ -25,7 +25,7 @@ import uk.gov.voa.play.form.ConditionalMappings
 
 object HasHospitalStayEndedForm extends Mappings {
   final val options = Seq("yes", "no")
-  //TODO - include start date as param to pass into localdates'futureKey' field [see technology reason end date form]
+
   def hasHospitalStayEndedForm()(implicit messages: Messages): Form[HospitalStayEndInput] = {
     Form(mapping(
       "hasStayEnded" -> text("healthReason.hasTheHospitalStayEnded.error.required")

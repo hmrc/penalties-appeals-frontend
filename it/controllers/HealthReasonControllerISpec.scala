@@ -370,4 +370,199 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
     }
   }
 
+  "GET /has-the-hospital-stay-ended" should {
+    "return 200 (OK) when the user is authorised" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+      )
+      val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.OK
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended")
+      val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "POST /has-the-hospital-stay-ended" should {
+    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session keys to the session when the body is correct" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(1).toString)
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "hasStayEnded": "yes",
+            | "stayEndDate.day": "08",
+            | "stayEndDate.month": "02",
+            | "stayEndDate.year": "2021"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      //TODO: implement in PRM-310
+//      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.parse("2021-02-08").toString
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasHealthEventEnded).get shouldBe "yes"
+    }
+
+    "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(31).toString)
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "hasStayEnded": "no"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      //TODO: implement in PRM-310
+//      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasHealthEventEnded).get shouldBe "no"
+    }
+
+    "return 400 (BAD_REQUEST)" when {
+      "the date submitted is in the future" in {
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        ).withJsonBody(
+          Json.parse(
+            """
+              |{
+              | "stayEndDate.day": "08",
+              | "stayEndDate.month": "02",
+              | "stayEndDate.year": "2025"
+              |}
+              |""".stripMargin)
+        )
+        val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "no body is submitted" in {
+        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        )
+        val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+        request.header.status shouldBe BAD_REQUEST
+      }
+
+      "the date submitted is missing a field" in {
+
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        )
+
+        val noDayJsonBody: JsValue = Json.parse(
+          """
+            |{
+            | "stayEndDate.day": "",
+            | "stayEndDate.month": "02",
+            | "stayEndDate.year": "2025"
+            |}
+            |""".stripMargin
+        )
+
+        val noMonthJsonBody: JsValue = Json.parse(
+          """
+            |{
+            | "stayEndDate.day": "02",
+            | "stayEndDate.month": "",
+            | "stayEndDate.year": "2025"
+            |}
+            |""".stripMargin
+        )
+
+        val noYearJsonBody: JsValue = Json.parse(
+          """
+            |{
+            | "stayEndDate.day": "02",
+            | "stayEndDate.month": "02",
+            | "stayEndDate.year": ""
+            |}
+            |""".stripMargin
+        )
+
+        val requestNoDay = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+        requestNoDay.header.status shouldBe Status.BAD_REQUEST
+
+        val requestNoMonth = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+        requestNoMonth.header.status shouldBe Status.BAD_REQUEST
+
+        val requestNoYear = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+        requestNoYear.header.status shouldBe Status.BAD_REQUEST
+
+      }
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended")
+      val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/has-the-hospital-stay-ended").post(""))
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
 }

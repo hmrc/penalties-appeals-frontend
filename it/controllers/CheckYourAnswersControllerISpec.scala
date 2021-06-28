@@ -441,7 +441,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.wasHospitalStayRequired -> "yes",
-          SessionKeys.hasHealthEventEnded -> "no",
+          SessionKeys.hasHealthEventEnded -> "yes",
           SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00",
           SessionKeys.whenHealthIssueEnded -> "2021-01-02T12:00:00"
         )

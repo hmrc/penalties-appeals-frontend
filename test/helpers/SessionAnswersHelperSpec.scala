@@ -138,7 +138,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.reasonableExcuse -> "health",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.hasHealthEventEnded -> "yes",
+              SessionKeys.hasHealthEventEnded -> "no",
               SessionKeys.whenHealthIssueStarted -> "2022-01-01"
             )
           val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllOngoingHospitalStayKeysPresent)
@@ -151,7 +151,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.reasonableExcuse -> "health",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.hasHealthEventEnded -> "no",
+              SessionKeys.hasHealthEventEnded -> "yes",
               SessionKeys.whenHealthIssueStarted -> "2022-01-01",
               SessionKeys.whenHealthIssueEnded -> "2022-01-02"
             )
@@ -191,7 +191,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.reasonableExcuse -> "health",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.hasHealthEventEnded -> "yes"
+              SessionKeys.hasHealthEventEnded -> "no"
             )
           val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
           result shouldBe false
@@ -203,7 +203,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.reasonableExcuse -> "health",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.hasHealthEventEnded -> "no",
+              SessionKeys.hasHealthEventEnded -> "yes",
               SessionKeys.whenHealthIssueStarted -> "2022-01-01"
             )
           val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
