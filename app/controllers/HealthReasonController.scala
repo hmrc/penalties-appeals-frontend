@@ -124,7 +124,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
   def onPageLoadForHasHospitalStayEnded(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     val formProvider: Form[HospitalStayEndInput] = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(
       HasHospitalStayEndedForm.hasHospitalStayEndedForm(),
-      (SessionKeys.isHealthEventOngoing, SessionKeys.whenHealthIssueEnded)
+      (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded)
     )
     val radioOptionsToRender = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded")
     val postAction = controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(mode)
@@ -141,20 +141,20 @@ class HealthReasonController @Inject()(navigation: Navigation,
       formAnswers => {
         //TODO - update redirect routes when navigation added in PRM-310
         (formAnswers.hasStayEnded, formAnswers.stayEndDate) match {
-          case (_,endDate) if endDate.isDefined => {
+          case (hasStayEnded, endDate) if endDate.isDefined && hasStayEnded.contains("yes") => {
             logger.debug(s"[HealthReasonController][onSubmitForHasHospitalStayEnded] - Adding answers to session:\n" +
-              s"- '${formAnswers.hasStayEnded}' under key: ${SessionKeys.isHealthEventOngoing}\n" +
+              s"- '${formAnswers.hasStayEnded}' under key: ${SessionKeys.hasHealthEventEnded}\n" +
               s"- '${formAnswers.stayEndDate.get}' under key: ${SessionKeys.whenHealthIssueEnded}")
             Redirect("#")
               .addingToSession(
-                (SessionKeys.isHealthEventOngoing, formAnswers.hasStayEnded),
+                (SessionKeys.hasHealthEventEnded, formAnswers.hasStayEnded),
                 (SessionKeys.whenHealthIssueEnded, formAnswers.stayEndDate.get.toString)
               )
           }
-          case (hasStayEnded, endDate) if hasStayEnded.contains("no") && !endDate.isDefined => {
+          case (hasStayEnded, endDate) if hasStayEnded.contains("no") && endDate.isEmpty => {
             logger.debug(s"[HealthReasonController][onSubmitForHasHospitalStayEnded]" +
-              s" - Adding answer '${formAnswers.hasStayEnded}' to session under key ${SessionKeys.isHealthEventOngoing}")
-            Redirect("#").addingToSession((SessionKeys.isHealthEventOngoing, formAnswers.hasStayEnded))
+              s" - Adding answer '${formAnswers.hasStayEnded}' to session under key ${SessionKeys.hasHealthEventEnded}")
+            Redirect("#").addingToSession((SessionKeys.hasHealthEventEnded, formAnswers.hasStayEnded))
           }
           case _ => {
             logger.debug("[HealthReasonController][onSubmitForHasHospitalStayEnded]- Something went wrong with 'valid' for answers")

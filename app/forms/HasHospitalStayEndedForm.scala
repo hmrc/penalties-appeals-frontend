@@ -29,14 +29,15 @@ object HasHospitalStayEndedForm extends Mappings {
   def hasHospitalStayEndedForm()(implicit messages: Messages): Form[HospitalStayEndInput] = {
     Form(mapping(
       "hasStayEnded" -> text("healthReason.hasTheHospitalStayEnded.error.required")
-        .verifying("healthReason.wasHospitalStayRequired.error.required", value => options.contains(value)),
+        .verifying("healthReason.hasTheHospitalStayEnded.error.required", value => options.contains(value)),
       "stayEndDate" -> ConditionalMappings.mandatoryIfEqual("hasStayEnded", "yes", localDate(
         invalidKey = "healthReason.hasTheHospitalStayEnded.date.error.invalid",
         allRequiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required.all",
         twoRequiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required.two",
         requiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required",
         fieldLengthKey = "healthReason.hasTheHospitalStayEnded.date.error.invalid",
-        futureKey = None //TODO - update when merged with PRM-311
+        futureKey = Some("healthReason.hasTheHospitalStayEnded.date.error.notInFuture"),
+        dateNotEqualOrAfterKeyAndCompareDate = None //TODO - update when merged with PRM-311
       ))
     )(HospitalStayEndInput.apply)(HospitalStayEndInput.unapply)
     )

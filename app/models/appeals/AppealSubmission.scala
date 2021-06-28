@@ -363,7 +363,7 @@ object AppealSubmission {
             dateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueHappened),
             startDateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueStarted),
             endDateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueEnded),
-            eventOngoing = userRequest.session.get(SessionKeys.isHealthEventOngoing).getOrElse("no") == "yes",
+            eventOngoing = userRequest.session.get(SessionKeys.hasHealthEventEnded).getOrElse("yes") == "no",
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)

@@ -17,7 +17,6 @@
 package controllers
 
 import java.time.{LocalDate, LocalDateTime}
-
 import base.SpecBase
 import models.NormalMode
 import org.jsoup.Jsoup
@@ -30,7 +29,8 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
+import views.html.reasonableExcuseJourneys.health.{HasTheHospitalStayEndedPage, WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
+import viewtils.ConditionalRadioHelper
 
 import scala.concurrent.Future
 
@@ -39,6 +39,8 @@ class HealthReasonControllerSpec extends SpecBase {
   val hospitalStayPage = injector.instanceOf[WasHospitalStayRequiredPage]
   val whenHealthIssueHappenedPage = injector.instanceOf[WhenDidHealthReasonHappenPage]
   val whenDidHospitalStayBeginPage = injector.instanceOf[WhenDidHospitalStayBeginPage]
+  val conditionalRadioHelper = injector.instanceOf[ConditionalRadioHelper]
+  val hasTheHosptialStayEndedPage = injector.instanceOf[HasTheHospitalStayEndedPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -52,6 +54,9 @@ class HealthReasonControllerSpec extends SpecBase {
       hospitalStayPage,
       whenHealthIssueHappenedPage,
       whenDidHospitalStayBeginPage
+      conditionalRadioHelper,
+      hasTheHosptialStayEndedPage,
+      errorHandler
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
@@ -407,6 +412,138 @@ class HealthReasonControllerSpec extends SpecBase {
       "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
         val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequest)
         status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
+}
+
+
+    "onPageLoadForHasHospitalStayEnded" should {
+
+      "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(SessionKeys.hasHealthEventEnded -> "yes")
+          .withSession(SessionKeys.whenHealthIssueEnded -> "2022-01-01")))
+        status(result) shouldBe OK
+        val documentParsed = Jsoup.parse(contentAsString(result))
+        documentParsed.select("#hasStayEnded").get(0).hasAttr("checked") shouldBe true
+        documentParsed.select("#stayEndDate .govuk-date-input__input").get(0).attr("value") shouldBe "1"
+        documentParsed.select("#stayEndDate .govuk-date-input__input").get(1).attr("value") shouldBe "1"
+        documentParsed.select("#stayEndDate .govuk-date-input__input").get(2).attr("value") shouldBe "2022"
+      }
+
+      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForHasHospitalStayEnded" should {
+      "the user is authorised" when {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- redirects to CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "hasStayEnded": "yes",
+                | "stayEndDate.day": 1,
+                | "stayEndDate.month": 2,
+                | "stayEndDate.year": 2021
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+//          TODO: implement with PRM-310
+//          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+          await(result).session.get(SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.of(2021, 2, 1).toString
+          await(result).session.get(SessionKeys.hasHealthEventEnded).get shouldBe "yes"
+        }
+
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "redirects to late appeal page when appeal > 30 days late" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+          val result = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "hasStayEnded": "no",
+                | "stayEndDate.day": "",
+                | "stayEndDate.month": "",
+                | "stayEndDate.year": ""
+                |}
+                |""".stripMargin
+            )
+          )))
+          status(result) shouldBe SEE_OTHER
+//          TODO: implement with PRM-310
+//          redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          await(result).session.get(SessionKeys.whenHealthIssueEnded).isEmpty shouldBe true
+          await(result).session.get(SessionKeys.hasHealthEventEnded).get shouldBe "no"
+        }
+
+        "return 400 (BAD_REQUEST)" when {
+          "the 'yes' option is selected but no date has been entered" in new Setup(AuthTestModels.successfulAuthResult) {
+            when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+            val result = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "hasStayEnded": "yes",
+                  | "stayEndDate.day": "",
+                  | "stayEndDate.month": "",
+                  | "stayEndDate.year": ""
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe BAD_REQUEST
+          }
+
+          "no option selected" in new Setup(AuthTestModels.successfulAuthResult) {
+            when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+            val result = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "hasStayEnded": ""
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe BAD_REQUEST
+          }
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
       }
     }
   }

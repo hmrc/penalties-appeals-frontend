@@ -6,9 +6,7 @@
         legendClasses: Option[String] = Some("govuk-visually-hidden"),
         id: String = "date",
         hintText: Option[String] = None,
-        legendAsPageHeading: Boolean = false,
-        isConditional: Boolean = false
-)(implicit messages: Messages)
+        legendAsPageHeading: Boolean = false)(implicit messages: Messages)
 
 @idOfError = @{
     form.errors.headOption.fold(
@@ -52,11 +50,6 @@
         )
     ),
     hint = hintText.map(hint => Hint(content = HtmlContent(messages(hint)))),
-    errorMessage =
-            if(!isConditional){
-                form(idOfError).error.fold(form.errors.find(_.key.isEmpty))(err => Some(err)).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
-            } else {
-                form("stayEndDate").error.fold(form.errors.find(_.key.isEmpty))(err => Some(err)).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
-            }
+    errorMessage = form(idOfError).error.fold(form.errors.find(_.key.isEmpty))(err => Some(err)).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
 
 ))

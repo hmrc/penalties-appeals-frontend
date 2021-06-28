@@ -16,46 +16,36 @@
 
 package viewtils
 
-import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.ViewUtils
 
-object RadioOptionHelper {
-  def radioOptionsForHasCrimeBeenReportedPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
-    Seq(
-      RadioItem(
-        value = Some("yes"),
-        content = Text(messages("crimeReason.hasBeenReported.yes")),
-        checked = form("value").value.contains("yes")
-      ),
-      RadioItem(
-        value = Some("no"),
-        content = Text(messages("crimeReason.hasBeenReported.no")),
-        checked = form("value").value.contains("no")
-      ),
-      RadioItem(
-        value = Some("unknown"),
-        content = Text(messages("crimeReason.hasBeenReported.unknown")),
-        checked = form("value").value.contains("unknown")
-      )
-    )
-  }
+import javax.inject.Inject
 
-  def yesNoRadioOptions(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+class ConditionalRadioHelper @Inject()(dateInput: views.html.components.inputDate) extends ViewUtils {
+
+  def conditionalYesNoOptions(form: Form[_], messagePrefix: String)(implicit messages: Messages): Seq[RadioItem] = {
     Seq(
       RadioItem(
         value = Some("yes"),
         content = Text(messages("common.radioOption.yes")),
-        checked = form("value").value.contains("yes")
+        checked = form("hasStayEnded").value.contains("yes"),
+        conditionalHtml = Some(html(dateInput(
+          form = form,
+          legendContent = messages(s"$messagePrefix.yes.heading"),
+          legendClasses = Some("govuk-fieldset__legend govuk-label"),
+          id = "stayEndDate",
+          hintText = Some(messages(s"$messagePrefix.yes.hint"))
+        )))
       ),
       RadioItem(
         value = Some("no"),
         content = Text(messages("common.radioOption.no")),
-        checked = form("value").value.contains("no")
+        checked = form("hasStayEnded").value.contains("no")
       )
     )
   }
+
 }

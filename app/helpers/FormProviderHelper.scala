@@ -49,16 +49,16 @@ object FormProviderHelper {
     }
   }
 
-  def getSessionKeysAndAttemptToFillConditionalForm(formProvider: Form[HospitalStayEndInput], sessionKeysToQuery: (String, String)
+  def getSessionKeysAndAttemptToFillConditionalForm(formProvider: Form[HospitalStayEndInput], sessionKvs: (String, String)
                                                    )(implicit request: Request[_]): Form[HospitalStayEndInput] = {
-    sessionKeysToQuery match {
-      case (key1, key2) if request.session.get(key1).isDefined && request.session.get(key2).isDefined => {
-        val parsedDate: LocalDate = LocalDate.parse(request.session.get(key2).get)
-        val formInput = HospitalStayEndInput(request.session.get(key1).get, Some(parsedDate))
+    (request.session.get(sessionKvs._1), request.session.get(sessionKvs._2)) match {
+      case (Some(key1), Some(key2)) => {
+        val parsedDate: LocalDate = LocalDate.parse(key2)
+        val formInput = HospitalStayEndInput(key1, Some(parsedDate))
         formProvider.fill(formInput)
       }
-      case (key1, key2) if request.session.get(key1).isDefined && !request.session.get(key2).isDefined => {
-        val formInput = HospitalStayEndInput(request.session.get(key1).get, None)
+      case (Some(key1), None) => {
+        val formInput = HospitalStayEndInput(key1, None)
         formProvider.fill(formInput)
       }
       case (_, _) => formProvider
