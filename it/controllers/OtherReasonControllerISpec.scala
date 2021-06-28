@@ -29,9 +29,9 @@ import java.time.LocalDate
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: OtherReasonController = injector.instanceOf[OtherReasonController]
-  "GET /when-did-you-become-unable" should {
+  "GET /when-inability-to-manage-account-happened" should {
     "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-you-become-unable").withSession(
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -44,13 +44,13 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-you-become-unable")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened")
       val request = await(controller.onPageLoadForWhenDidBecomeUnable(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-you-become-unable").withSession(
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -61,14 +61,14 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-you-become-unable").get())
+      val request = await(buildClientForRequestToApp(uri = "/when-inability-to-manage-account-happened").get())
       request.status shouldBe Status.SEE_OTHER
     }
   }
 
-  "POST /when-did-you-become-unable" should {
+  "POST /when-inability-to-manage-account-happened" should {
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-you-become-unable").withSession(
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -93,7 +93,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 400 (BAD_REQUEST)" when {
       "the date submitted is in the future" in {
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-you-become-unable").withSession(
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
           (SessionKeys.penaltyId, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -115,7 +115,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-you-become-unable").withSession(
+        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
           (SessionKeys.penaltyId, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -128,7 +128,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "the date submitted is missing a field" in {
-        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-you-become-unable").withSession(
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
           (SessionKeys.penaltyId, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -178,13 +178,13 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-you-become-unable")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened")
       val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-you-become-unable").withSession(
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -196,7 +196,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-you-become-unable").post(""))
+      val request = await(buildClientForRequestToApp(uri = "/when-inability-to-manage-account-happened").post(""))
       request.status shouldBe Status.SEE_OTHER
     }
   }

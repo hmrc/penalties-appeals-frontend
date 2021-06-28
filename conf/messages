@@ -187,7 +187,7 @@ healthReason.whenHealthIssueHappened.error.notInFuture = The date you became una
 # ----------------------------------------------------------
 otherReason.whenDidBecomeUnable.title = When did you become unable to manage the VAT account?
 otherReason.whenDidBecomeUnable.heading = When did you become unable to manage the VAT account?
-otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue stopped you from working on or making this submission.<br><br>For example, 12 3 2018
+otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>For example, 12 3 2018
 otherReason.whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
 otherReason.whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
 otherReason.whenDidBecomeUnable.error.required = The date you became unable to manage VAT must include a {0}

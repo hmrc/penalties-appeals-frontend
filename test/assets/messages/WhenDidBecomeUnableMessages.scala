@@ -21,7 +21,7 @@ object WhenDidBecomeUnableMessages {
 
   val heading = "When did you become unable to manage the VAT account?"
 
-  val hintText = "Tell us the date when this issue stopped you from working on or making this submission. For example, 12 3 2018"
+  val hintText = "Tell us the date when this issue first stopped you from working on or making this submission. For example, 12 3 2018"
 
   val dayEntry = "Day"
 
