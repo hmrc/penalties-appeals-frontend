@@ -219,7 +219,7 @@ case class OtherAppealInformation(
                                    `type`: String,
                                    dateOfEvent: String,
                                    statement: Option[String],
-                                   supportingEvidence: Evidence,
+                                   supportingEvidence: Option[Evidence],
                                    lateAppeal: Boolean,
                                    lateAppealReason: Option[String]
                                  ) extends AppealInformation
@@ -233,13 +233,18 @@ object OtherAppealInformation {
       "type" -> otherAppealInformation.`type`,
       "dateOfEvent" -> otherAppealInformation.dateOfEvent,
       "statement" -> otherAppealInformation.statement.get,
-      "supportingEvidence" -> Json.toJson(otherAppealInformation.supportingEvidence),
       "lateAppeal" -> otherAppealInformation.lateAppeal
     ).deepMerge(
       otherAppealInformation.lateAppealReason.fold(
         Json.obj()
       )(
         lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
+      )
+    ).deepMerge(
+      otherAppealInformation.supportingEvidence.fold(
+        Json.obj()
+      )(
+        evidence => Json.obj("supportingEvidence" -> evidence)
       )
     )
   }
@@ -376,12 +381,12 @@ object AppealSubmission {
             `type` = "other",
             dateOfEvent = userRequest.session.get(SessionKeys.whenDidBecomeUnable).get,
             statement = userRequest.session.get(SessionKeys.whyReturnSubmittedLate),
-            supportingEvidence = Evidence(
+            supportingEvidence = userRequest.session.get(SessionKeys.evidenceFileName).fold[Option[Evidence]](None)(_ => Some(Evidence(
               //TODO: change with multi-evidence upload option
               noOfUploadedFiles = 1,
               //TODO: this could change to something more concrete
               referenceId = userRequest.session.get(SessionKeys.penaltyId).get
-            ),
+            ))),
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
           )
