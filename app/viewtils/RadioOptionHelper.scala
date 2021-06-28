@@ -79,7 +79,7 @@ class ConditionalRadioHelper @Inject()(dateInput: views.html.components.inputDat
       RadioItem(
         value = Some("no"),
         content = Text(messages("common.radioOption.no")),
-        checked = form("hasStayEnded").value.contains("no"),
+        checked = form("hasStayEnded").value.contains("no")
       )
     )
   }
