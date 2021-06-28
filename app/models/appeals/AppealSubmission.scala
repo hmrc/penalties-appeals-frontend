@@ -24,6 +24,7 @@ sealed trait AppealInformation {
   val `type`: String
   val statement: Option[String]
   val lateAppeal: Boolean
+  val lateAppealReason: Option[String]
 }
 
 case class CrimeAppealInformation(
@@ -214,6 +215,36 @@ object HealthAppealInformation {
   }
 }
 
+case class OtherAppealInformation(
+                                   `type`: String,
+                                   dateOfEvent: String,
+                                   statement: Option[String],
+                                   supportingEvidence: Evidence,
+                                   lateAppeal: Boolean,
+                                   lateAppealReason: Option[String]
+                                 ) extends AppealInformation
+
+object OtherAppealInformation {
+  implicit val evidenceFormatter: OFormat[Evidence] = Evidence.format
+  implicit val otherAppealInformationFormatter: OFormat[OtherAppealInformation] = Json.format[OtherAppealInformation]
+
+  val otherAppealInformationWrites: Writes[OtherAppealInformation] = (otherAppealInformation: OtherAppealInformation) => {
+    Json.obj(
+      "type" -> otherAppealInformation.`type`,
+      "dateOfEvent" -> otherAppealInformation.dateOfEvent,
+      "statement" -> otherAppealInformation.statement.get,
+      "supportingEvidence" -> Json.toJson(otherAppealInformation.supportingEvidence),
+      "lateAppeal" -> otherAppealInformation.lateAppeal
+    ).deepMerge(
+      otherAppealInformation.lateAppealReason.fold(
+        Json.obj()
+      )(
+        lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
+      )
+    )
+  }
+}
+
 case class AppealSubmission(
                              submittedBy: String,
                              penaltyId: String,
@@ -240,6 +271,9 @@ object AppealSubmission {
       case "health" => {
         Json.toJson(payload.asInstanceOf[HealthAppealInformation])(HealthAppealInformation.healthAppealWrites)
       }
+      case "other" => {
+        Json.toJson(payload.asInstanceOf[OtherAppealInformation])(OtherAppealInformation.otherAppealInformationWrites)
+      }
     }
   }
 
@@ -259,10 +293,7 @@ object AppealSubmission {
             reportedIssue = userRequest.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
-              case "" => None
-              case reason => Some(reason)
-            }
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
           )
         )
       }
@@ -277,10 +308,7 @@ object AppealSubmission {
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfFireOrFlood).get,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
-              case "" => None
-              case reason => Some(reason)
-            }
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
           )
         )
       }
@@ -296,10 +324,7 @@ object AppealSubmission {
             dateOfEvent = userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
-              case "" => None
-              case reason => Some(reason)
-            }
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
           )
         )
       }
@@ -316,10 +341,7 @@ object AppealSubmission {
             endDateOfEvent = userRequest.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
-              case "" => None
-              case reason => Some(reason)
-            }
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
           )
         )
       }
@@ -339,10 +361,29 @@ object AppealSubmission {
             eventOngoing = userRequest.session.get(SessionKeys.isHealthEventOngoing).getOrElse("no") == "yes",
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason).getOrElse("") match {
-              case "" => None
-              case reason => Some(reason)
-            }
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
+          )
+        )
+      }
+
+      case "other" => {
+        AppealSubmission(
+          submittedBy = if (userRequest.isAgent) "agent" else "client",
+          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          appealInformation = OtherAppealInformation(
+            `type` = "other",
+            dateOfEvent = userRequest.session.get(SessionKeys.whenDidBecomeUnable).get,
+            statement = userRequest.session.get(SessionKeys.whyReturnSubmittedLate),
+            supportingEvidence = Evidence(
+              //TODO: change with multi-evidence upload option
+              noOfUploadedFiles = 1,
+              //TODO: this could change to something more concrete
+              referenceId = userRequest.session.get(SessionKeys.penaltyId).get
+            ),
+            lateAppeal = isLateAppeal,
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
           )
         )
       }
