@@ -452,24 +452,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     }
 
-    //TODO: implement with payload builder
-//    "redirect the user to the confirmation page on success for other" when {
-//      "the user hasn't uploaded a file" in {
-//
-//      }
-//
-//      "the user has uploaded a file" in {
-//
-//      }
-//
-//      "no file upload - late appeal" in {
-//
-//      }
-//
-//      "file upload - late appeal"
-//
-//    }
-
     "show an ISE when the appeal fails" in {
       PenaltiesStub.failedAppealSubmission
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
