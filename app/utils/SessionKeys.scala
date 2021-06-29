@@ -42,7 +42,6 @@ object SessionKeys {
   val whenDidBecomeUnable = "whenDidBecomeUnable"
   val evidenceFileName = "evidenceFileName"
   val whyReturnSubmittedLate = "whyReturnSubmittedLate"
-  val evidenceFileName = "evidenceFileName"
 
   val allKeys: Seq[String] = Seq(
     appealType,
