@@ -22,8 +22,17 @@ import play.api.data.FormError
 class WhyReturnSubmittedLateFormSpec extends SpecBase {
   val form = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
 
-  "the value entered does not exist in the possible, valid values" in {
-    val result = form.bind(Map("why-return-submitted-late-text" -> "")).apply("why-return-submitted-late-text")
-    result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "otherReason.whyReturnSubmittedLate.error.required"))
+  "When no reason is given" should {
+    "give required error and not bind" in {
+      val result = form.bind(Map("why-return-submitted-late-text" -> "")).apply("why-return-submitted-late-text")
+      result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "otherReason.whyReturnSubmittedLate.error.required"))
+    }
+  }
+
+  "A valid reason is given" should {
+    "give required error and not bind" in {
+      val result = form.bind(Map("why-return-submitted-late-text" -> "Valid Reason.")).apply("why-return-submitted-late-text")
+      result.errors shouldBe empty
+    }
   }
 }

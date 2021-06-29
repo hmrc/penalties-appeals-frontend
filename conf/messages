@@ -200,6 +200,16 @@ otherReason.whenDidBecomeUnable.error.required = The date you became unable to m
 otherReason.whenDidBecomeUnable.error.invalid = The date you became unable to manage VAT must be a real date
 otherReason.whenDidBecomeUnable.error.notInFuture = The date you became unable to manage VAT must be today or in the past
 
+
+# Upload Evidence
+# ----------------------------------------------------------
+otherReason.uploadEvidence.title = Evidence to support this appeal (optional)
+otherReason.uploadEvidence.heading = Evidence to support this appeal (optional)
+otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the appeal.
+otherReason.uploadEvidence.p2 =  Evidence might include any documents or letters that show why the return was submitted late.
+otherReason.uploadEvidence.p3 = We will still review your appeal if you do not upload evidence.
+otherReason.uploadEvidence.uploadLabel = Upload Evidence
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day
