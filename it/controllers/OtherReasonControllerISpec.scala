@@ -32,7 +32,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
   "GET /when-inability-to-manage-account-happened" should {
     "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence").withSession(
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -116,7 +116,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence").withSession(
+        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
           (SessionKeys.penaltyId, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
