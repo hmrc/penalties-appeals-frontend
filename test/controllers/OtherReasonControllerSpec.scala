@@ -28,13 +28,14 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.other.WhenDidBecomeUnablePage
+import views.html.reasonableExcuseJourneys.other.{WhenDidBecomeUnablePage, WhyReturnSubmittedLatePage}
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
+  val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
@@ -46,6 +47,7 @@ class OtherReasonControllerSpec extends SpecBase {
 
     val controller: OtherReasonController = new OtherReasonController(
       whenDidYouBecomeUnablePage,
+      whyReturnSubmittedLatePage,
       mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 

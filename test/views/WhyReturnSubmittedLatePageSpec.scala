@@ -17,8 +17,8 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.{WhenDidBecomeUnableForm, WhyReturnSubmittedLateForm}
-import messages.WhenDidBecomeUnableMessages._
+import forms.WhyReturnSubmittedLateForm
+import messages.WhyReturnSubmittedLateMessages._
 import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -32,7 +32,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = whyReturnSubmittedLate.apply(form,
-      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode))
+      controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(NormalMode))
 
     val formProvider = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
 
