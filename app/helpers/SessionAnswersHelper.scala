@@ -113,13 +113,13 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
           controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url),
         (messages("checkYourAnswers.technicalIssues.whenDidTechIssuesEnd"),
           dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get)),
-        controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url)
+          controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url)
       )
 
       case "health" => getHealthReasonAnswers
 
       case "other" => {
-        val base = Seq(
+        Seq(
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
             controllers.routes.ReasonableExcuseController.onPageLoad().url),
@@ -130,17 +130,12 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             request.session.get(SessionKeys.whyReturnSubmittedLate).get,
             //TODO: change with Chris' controller
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
+          (messages("checkYourAnswers.other.fileEvidence"),
+            //TODO: replace with default message
+            request.session.get(SessionKeys.evidenceFileName).getOrElse(""),
+            //TODO: change with Andrew's controller
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url)
         )
-
-        request.session.get(SessionKeys.evidenceFileName).fold(base)(fileName => {
-          base :+
-            (
-              messages("checkYourAnswers.other.fileEvidence"),
-              fileName,
-              //TODO: change with Andrew's controller
-              controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
-            )
-        })
       }
     }
 

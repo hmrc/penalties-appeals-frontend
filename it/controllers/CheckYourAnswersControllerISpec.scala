@@ -189,6 +189,96 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 
+    "return 200 (OK) when the user is authorised and has the correct keys in session for other" when {
+      "no file upload - no late appeal" in {
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Submission",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason"
+        )
+        val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        await(request).header.status shouldBe Status.OK
+        val parsedBody = Jsoup.parse(contentAsString(request))
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe ""
+      }
+
+      "file upload - no late appeal" in {
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Submission",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
+          SessionKeys.evidenceFileName -> "file.docx"
+        )
+        val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        await(request).header.status shouldBe Status.OK
+        val parsedBody = Jsoup.parse(contentAsString(request))
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file.docx"
+      }
+
+      "no file upload - late appeal" in {
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Submission",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
+          SessionKeys.lateAppealReason -> "This is why the appeal is late."
+        )
+        val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        await(request).header.status shouldBe Status.OK
+        val parsedBody = Jsoup.parse(contentAsString(request))
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe ""
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Why you did not appeal sooner"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
+      }
+
+      "file upload - late appeal" in {
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Submission",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
+          SessionKeys.evidenceFileName -> "file.docx",
+          SessionKeys.lateAppealReason -> "This is why the appeal is late."
+        )
+        val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        await(request).header.status shouldBe Status.OK
+        val parsedBody = Jsoup.parse(contentAsString(request))
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file.docx"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Why you did not appeal sooner"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
+      }
+    }
+
     "return 500 (ISE) when the user hasn't selected a reasonable excuse option" in {
       val fakeRequestWithMissingReasonableExcuse: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
@@ -361,6 +451,24 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
     }
+
+    //TODO: implement with payload builder
+//    "redirect the user to the confirmation page on success for other" when {
+//      "the user hasn't uploaded a file" in {
+//
+//      }
+//
+//      "the user has uploaded a file" in {
+//
+//      }
+//
+//      "no file upload - late appeal" in {
+//
+//      }
+//
+//      "file upload - late appeal"
+//
+//    }
 
     "show an ISE when the appeal fails" in {
       PenaltiesStub.failedAppealSubmission
