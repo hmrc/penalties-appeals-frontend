@@ -30,7 +30,7 @@ class WhyReturnSubmittedLateFormSpec extends SpecBase {
   }
 
   "A valid reason is given" should {
-    "give required error and not bind" in {
+    "bind successfully and not give errors" in {
       val result = form.bind(Map("why-return-submitted-late-text" -> "Valid Reason.")).apply("why-return-submitted-late-text")
       result.errors shouldBe empty
     }
