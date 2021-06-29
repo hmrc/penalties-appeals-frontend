@@ -61,6 +61,11 @@ GET        /when-did-health-issue-happen/change            controllers.HealthRea
 POST       /when-did-health-issue-happen                   controllers.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode: Mode = NormalMode)
 POST       /when-did-health-issue-happen/change            controllers.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode: Mode = CheckMode)
 
+# Other Reasonable Excuse Journey
+GET        /why-was-the-return-submitted-late                   controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = NormalMode)
+GET        /why-was-the-return-submitted-late/change            controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = CheckMode)
+POST       /why-was-the-return-submitted-late                   controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = NormalMode)
+POST       /why-was-the-return-submitted-late/change            controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = CheckMode)
 
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()

@@ -38,6 +38,7 @@ object SessionKeys {
   val whenHealthIssueStarted = "whenHealthIssueStarted"
   val whenHealthIssueEnded = "whenHealthIssueEnded"
   val isHealthEventOngoing = "isHealthEventOngoing"
+  val whyReturnSubmittedLate = "whyReturnSubmittedLate"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -59,6 +60,7 @@ object SessionKeys {
     whenHealthIssueHappened,
     whenHealthIssueStarted,
     whenHealthIssueEnded,
-    isHealthEventOngoing
+    isHealthEventOngoing,
+    whyReturnSubmittedLate
   )
 }
