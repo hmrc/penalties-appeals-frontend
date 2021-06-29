@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package forms
+package messages
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms.single
-import play.api.i18n.Messages
+object WhenDidBecomeUnableMessages {
+  val title = "When did you become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
 
-object WhyReturnSubmittedLateForm extends Mappings {
-  def whyReturnSubmittedLateForm()(implicit messages: Messages) = Form[String](
-    single(
-      "why-return-submitted-late-text" -> text(errorKey = "otherReason.whyReturnSubmittedLate.error.required")
-    )
-  )
+  val heading = "When did you become unable to manage the VAT account?"
+
+  val hintText = "Tell us the date when this issue first stopped you from working on or making this submission. For example, 12 3 2018"
+
+  val dayEntry = "Day"
+
+  val monthEntry = "Month"
+
+  val yearEntry = "Year"
+
+  val continueButton = "Continue"
 }

@@ -26,3 +26,4 @@ case object WhenDidTechnologyIssuesBeginPage extends Page
 case object WhenDidTechnologyIssuesEndPage extends Page
 case object WasHospitalStayRequiredPage extends Page
 case object WhenDidHealthIssueHappenPage extends Page
+case object WhenDidBecomeUnable extends Page

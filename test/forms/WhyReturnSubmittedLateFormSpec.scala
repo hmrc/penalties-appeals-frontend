@@ -16,15 +16,14 @@
 
 package forms
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms.single
-import play.api.i18n.Messages
+import base.SpecBase
+import play.api.data.FormError
 
-object WhyReturnSubmittedLateForm extends Mappings {
-  def whyReturnSubmittedLateForm()(implicit messages: Messages) = Form[String](
-    single(
-      "why-return-submitted-late-text" -> text(errorKey = "otherReason.whyReturnSubmittedLate.error.required")
-    )
-  )
+class WhyReturnSubmittedLateFormSpec extends SpecBase {
+  val form = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
+
+  "the value entered does not exist in the possible, valid values" in {
+    val result = form.bind(Map("why-return-submitted-late-text" -> "")).apply("why-return-submitted-late-text")
+    result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "otherReason.whyReturnSubmittedLate.error.required"))
+  }
 }

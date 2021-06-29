@@ -18,13 +18,21 @@ package forms
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.Forms.single
 import play.api.i18n.Messages
 
-object WhyReturnSubmittedLateForm extends Mappings {
-  def whyReturnSubmittedLateForm()(implicit messages: Messages) = Form[String](
-    single(
-      "why-return-submitted-late-text" -> text(errorKey = "otherReason.whyReturnSubmittedLate.error.required")
+import java.time.LocalDate
+
+object WhenDidBecomeUnableForm extends Mappings {
+  def whenDidBecomeUnableForm()(implicit messages: Messages): Form[LocalDate] = {
+    Form(
+      "date" -> localDate(
+      invalidKey = "otherReason.whenDidBecomeUnable.error.invalid",
+      allRequiredKey = "otherReason.whenDidBecomeUnable.error.required.all",
+      twoRequiredKey = "otherReason.whenDidBecomeUnable.error.required.two",
+      requiredKey = "otherReason.whenDidBecomeUnable.error.required",
+      fieldLengthKey = "otherReason.whenDidBecomeUnable.error.invalid",
+      futureKey = Some("otherReason.whenDidBecomeUnable.error.notInFuture")
+      )
     )
-  )
+  }
 }

@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package forms
+package messages
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms.single
-import play.api.i18n.Messages
+object WhyReturnSubmittedLateMessages {
+  val title = "Why was the return submitted late? - Appeal a VAT penalty - GOV.UK"
 
-object WhyReturnSubmittedLateForm extends Mappings {
-  def whyReturnSubmittedLateForm()(implicit messages: Messages) = Form[String](
-    single(
-      "why-return-submitted-late-text" -> text(errorKey = "otherReason.whyReturnSubmittedLate.error.required")
-    )
-  )
+  val heading = "Why was the return submitted late?"
+
+  val continueButton = "Continue"
 }
