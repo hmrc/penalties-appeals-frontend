@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package models.pages
+package messages
 
-trait Page
+object WhenDidHospitalStayBeginMessages {
 
-case object HasCrimeBeenReportedPage extends Page
-case object WhenDidCrimeHappenPage extends Page
-case object WhenDidFireOrFloodHappenPage extends Page
-case object WhenDidPersonLeaveTheBusinessPage extends Page
-case object WhenDidTechnologyIssuesBeginPage extends Page
-case object WhenDidTechnologyIssuesEndPage extends Page
-case object WasHospitalStayRequiredPage extends Page
-case object WhenDidHealthIssueHappenPage extends Page
-case object WhenDidBecomeUnable extends Page
-case object WhenDidHospitalStayBeginPage extends Page
-//TODO Add object for Hospital Stay End
+    val title = "When did the hospital stay begin? - Appeal a VAT penalty - GOV.UK"
+    val heading = "When did the hospital stay begin?"
+    val hintText = "For example, 12 3 2018"
+    val dayEntry = "Day"
+    val monthEntry = "Month"
+    val yearEntry = "Year"
+    val continueButton = "Continue"
+
+}

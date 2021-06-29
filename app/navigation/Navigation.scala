@@ -18,7 +18,7 @@ package navigation
 
 import config.AppConfig
 import models.{CheckMode, Mode, NormalMode, UserRequest, pages}
-import models.pages.{Page, WasHospitalStayRequiredPage, _}
+import models.pages.{Page, WasHospitalStayRequiredPage, WhenDidHospitalStayBeginPage, _}
 import play.api.mvc.Call
 import controllers.routes
 import helpers.DateTimeHelper
@@ -39,7 +39,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode)),
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(CheckMode, answer, request)),
-    WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
+    WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidHospitalStayBeginPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
@@ -50,7 +51,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)),
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(NormalMode, answer, request)),
-    WhenDidHealthIssueHappenPage-> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
+    WhenDidHealthIssueHappenPage-> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WhenDidHospitalStayBeginPage-> ((_, _) => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode))
+    // TODO - Add when hospital stay end journey is added, currently reloads hospital begin page
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None)(implicit userRequest: UserRequest[_]): Call = {
@@ -71,8 +74,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
         routes.CheckYourAnswersController.onPageLoad()
       }
       case (_, Some(ans)) if ans.equalsIgnoreCase("no") => routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
-      // TODO - change when hospital stay was required journey is added, currently reloads page
-      case (_, Some(ans)) if ans.equalsIgnoreCase("yes")=> routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
+      case (_, Some(ans)) if ans.equalsIgnoreCase("yes")=> routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(mode)
       case _ => {
         logger.debug("[Navigation][routingForHospitalStay]: unable to get answer - reloading 'WasHospitalStayRequiredPage'")
         routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
