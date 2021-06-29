@@ -32,7 +32,8 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     "technicalIssues" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidTechnologyIssuesBegin, SessionKeys.whenDidTechnologyIssuesEnd),
     "healthIssueHospitalStayOngoing" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.isHealthEventOngoing, SessionKeys.wasHospitalStayRequired),
     "healthIssueHospitalStayEnded" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.whenHealthIssueEnded, SessionKeys.isHealthEventOngoing, SessionKeys.wasHospitalStayRequired),
-    "healthIssueNoHospitalStay" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.wasHospitalStayRequired, SessionKeys.whenHealthIssueHappened)
+    "healthIssueNoHospitalStay" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.wasHospitalStayRequired, SessionKeys.whenHealthIssueHappened),
+    "other" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whyReturnSubmittedLate, SessionKeys.whenDidBecomeUnable)
   )
 
   def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): Boolean = {
@@ -112,10 +113,28 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
           controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url),
         (messages("checkYourAnswers.technicalIssues.whenDidTechIssuesEnd"),
           dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get)),
-        controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url)
+          controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url)
       )
 
       case "health" => getHealthReasonAnswers
+
+      case "other" => {
+        Seq(
+          (messages("checkYourAnswers.reasonableExcuse"),
+            messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+            controllers.routes.ReasonableExcuseController.onPageLoad().url),
+          (messages("checkYourAnswers.other.unableToManageAccount"),
+            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidBecomeUnable).get)),
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
+          (messages("checkYourAnswers.other.statementOfLateness"),
+            request.session.get(SessionKeys.whyReturnSubmittedLate).get,
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url),
+          (messages("checkYourAnswers.other.fileEvidence"),
+            //TODO: replace with default message
+            request.session.get(SessionKeys.evidenceFileName).getOrElse(""),
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url)
+        )
+      }
     }
 
     request.session.get(SessionKeys.lateAppealReason).fold(

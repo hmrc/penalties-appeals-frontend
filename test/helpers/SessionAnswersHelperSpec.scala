@@ -17,7 +17,7 @@
 package helpers
 
 import base.SpecBase
-import models.{CheckMode, NormalMode}
+import models.CheckMode
 import utils.SessionKeys
 
 class SessionAnswersHelperSpec extends SpecBase {
@@ -220,6 +220,31 @@ class SessionAnswersHelperSpec extends SpecBase {
           val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithSomeHealthKeysPresent)
           result shouldBe false
         }
+      }
+    }
+
+    "for other" must {
+      "return true - when all keys present" in {
+        val fakeRequestWithAllOtherReasonKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithAllOtherReasonKeysPresent)
+        result shouldBe true
+      }
+
+      "return false - when not all keys are present" in {
+        val fakeRequestWithSomeOtherReasonKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01"
+          )
+        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithSomeOtherReasonKeysPresent)
+        result shouldBe false
       }
     }
   }
@@ -446,6 +471,118 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(3)._2 shouldBe "Lorem ipsum"
           result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
+      }
+    }
+
+    "for other" must {
+      "for no upload" in {
+        val fakeRequestWithOtherNoUploadKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01"
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._1 shouldBe "Why was the return submitted late?"
+        result(2)._2 shouldBe "This is why my VAT return was late."
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(3)._1 shouldBe "Evidence to support this appeal"
+        //TODO: may need to change with default message
+        result(3)._2 shouldBe ""
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+      }
+
+      "for no upload - and late appeal" in {
+        val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._1 shouldBe "Why was the return submitted late?"
+        result(2)._2 shouldBe "This is why my VAT return was late."
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(3)._1 shouldBe "Evidence to support this appeal"
+        //TODO: may need to change with default message
+        result(3)._2 shouldBe ""
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(4)._1 shouldBe "Why you did not appeal sooner"
+        result(4)._2 shouldBe "This is the reason why my appeal was late."
+        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+
+      "for upload" in {
+        val fakeRequestWithNoLateAppealButUploadPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.evidenceFileName -> "file.docx"
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._1 shouldBe "Why was the return submitted late?"
+        result(2)._2 shouldBe "This is why my VAT return was late."
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(3)._1 shouldBe "Evidence to support this appeal"
+        //TODO: may need to change with default message
+        result(3)._2 shouldBe "file.docx"
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+      }
+
+      "for upload - and late appeal" in {
+        val fakeRequestWithNoLateAppealButUploadPresent = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.evidenceFileName -> "file.docx",
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
+          )
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._1 shouldBe "Why was the return submitted late?"
+        result(2)._2 shouldBe "This is why my VAT return was late."
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(3)._1 shouldBe "Evidence to support this appeal"
+        //TODO: may need to change with default message
+        result(3)._2 shouldBe "file.docx"
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(4)._1 shouldBe "Why you did not appeal sooner"
+        result(4)._2 shouldBe "This is the reason why my appeal was late."
+        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
     }
   }

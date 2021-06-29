@@ -200,6 +200,7 @@ otherReason.whenDidBecomeUnable.error.required = The date you became unable to m
 otherReason.whenDidBecomeUnable.error.invalid = The date you became unable to manage VAT must be a real date
 otherReason.whenDidBecomeUnable.error.notInFuture = The date you became unable to manage VAT must be today or in the past
 
+
 # Upload Evidence
 # ----------------------------------------------------------
 otherReason.uploadEvidence.title = Evidence to support this appeal (optional)
@@ -247,6 +248,12 @@ checkYourAnswers.health.unableToManageAccount = When did you become unable to ma
 checkYourAnswers.health.yes = Yes
 checkYourAnswers.health.no = No
 # Need to implement other messages for hospital stay
+
+checkYourAnswers.other.reasonableExcuse = The reason does not fit into any of the other categories
+checkYourAnswers.other.unableToManageAccount = When did you become unable to manage the VAT account?
+checkYourAnswers.other.statementOfLateness = Why was the return submitted late?
+checkYourAnswers.other.fileEvidence = Evidence to support this appeal
+
 
 # Appeal Confirmation page
 # ----------------------------------------------------------

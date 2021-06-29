@@ -38,8 +38,8 @@ object SessionKeys {
   val whenHealthIssueStarted = "whenHealthIssueStarted"
   val whenHealthIssueEnded = "whenHealthIssueEnded"
   val isHealthEventOngoing = "isHealthEventOngoing"
-  val whyReturnSubmittedLate = "whyReturnSubmittedLate"
   val whenDidBecomeUnable = "whenDidBecomeUnable"
+  val whyReturnSubmittedLate = "whyReturnSubmittedLate"
   val evidenceFileName = "evidenceFileName"
 
   val allKeys: Seq[String] = Seq(
@@ -65,6 +65,7 @@ object SessionKeys {
     isHealthEventOngoing,
     whyReturnSubmittedLate,
     whenDidBecomeUnable,
+    whyReturnSubmittedLate,
     evidenceFileName
   )
 }
