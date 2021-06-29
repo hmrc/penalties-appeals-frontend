@@ -30,7 +30,7 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage}
+import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
 
 import scala.concurrent.Future
 
@@ -38,6 +38,7 @@ class HealthReasonControllerSpec extends SpecBase {
 
   val hospitalStayPage = injector.instanceOf[WasHospitalStayRequiredPage]
   val whenHealthIssueHappenedPage = injector.instanceOf[WhenDidHealthReasonHappenPage]
+  val whenDidHospitalStayBeginPage = injector.instanceOf[WhenDidHospitalStayBeginPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -49,7 +50,8 @@ class HealthReasonControllerSpec extends SpecBase {
     val controller: HealthReasonController = new HealthReasonController(
       mainNavigator,
       hospitalStayPage,
-      whenHealthIssueHappenedPage
+      whenHealthIssueHappenedPage,
+      whenDidHospitalStayBeginPage
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
@@ -111,23 +113,22 @@ class HealthReasonControllerSpec extends SpecBase {
             await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "no"
           }
 
-        //TODO - placeholder for when hospital stay pages added - may need some tweaking
-//        "the validation is performed against possible values " +
-//          "- redirect when hospital stay began page and set the session key value" in new Setup(AuthTestModels.successfulAuthResult) {
-//            val result = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
-//              .withJsonBody(
-//                Json.parse(
-//                  """
-//                    |{
-//                    |   "value": "yes"
-//                    |}
-//                    |""".stripMargin
-//                )
-//              )))
-//            status(result) shouldBe SEE_OTHER
-//            redirectLocation(result).get shouldBe "#"
-//            await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "yes"
-//          }
+        "the validation is performed against possible values " +
+          "- redirects to when hospital stay begin page and set the session key value" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+            .withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "yes"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
+          await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "yes"
+        }
 
         "the validation is performed against possible values - value does not appear in options list" in new Setup(AuthTestModels.successfulAuthResult) {
             val result = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
@@ -278,6 +279,135 @@ class HealthReasonControllerSpec extends SpecBase {
         }
       }
     }
-  }
 
+    "onPageLoadForWhenDidHospitalStayBegin" when {
+
+      "the user is authorised" must {
+
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+
+        "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+            .withSession(SessionKeys.whenHealthIssueStarted -> "2021-01-01")))
+          status(result) shouldBe OK
+          val documentParsed = Jsoup.parse(contentAsString(result))
+          documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
+          documentParsed.select(".govuk-date-input__input").get(1).attr("value") shouldBe "1"
+          documentParsed.select(".govuk-date-input__input").get(2).attr("value") shouldBe "2021"
+        }
+
+        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "the user is unauthorised" when {
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForWhenDidHospitalStayBegin" should {
+
+      "the user is authorised" must {
+
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing to has crime been reported page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "date.day": 1,
+                | "date.month": 2,
+                | "date.year": 2021
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+          await(result).session.get(SessionKeys.whenHealthIssueStarted).get shouldBe LocalDate.of(2021, 2, 1).toString
+        }
+
+        "return 400 (BAD_REQUEST)" when {
+
+          "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "date.day": "what",
+                  | "date.month": "is",
+                  | "date.year": "this"
+                  |}
+                  |""".stripMargin))))
+            status(result) shouldBe BAD_REQUEST
+          }
+
+          "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "date.day": 31,
+                  | "date.month": 2,
+                  | "date.year": 2021
+                  |}
+                  |""".stripMargin))))
+            status(result) shouldBe BAD_REQUEST
+          }
+
+          "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "date.day": 124356,
+                  | "date.month": 432567,
+                  | "date.year": 3124567
+                  |}
+                  |""".stripMargin))))
+            status(result) shouldBe BAD_REQUEST
+          }
+        }
+      }
+
+      "return 500" when {
+        "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequest.withJsonBody(
+            Json.parse(
+              """
+                |{
+                |   "value": "no"
+                |}
+                |""".stripMargin
+            )
+          ))
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+
+      }
+    }
+
+    "the user is unauthorised" when {
+
+      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+        val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequest)
+        status(result) shouldBe FORBIDDEN
+      }
+
+      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+        val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
 }
