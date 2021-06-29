@@ -178,7 +178,7 @@ class AppealServiceSpec extends SpecBase {
   "submitAppeal" should {
     "for crime" must {
       "parse the session keys into a model and return true when the connector call is successful" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockPenaltiesConnector.submitAppeal(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
         val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe true
@@ -186,14 +186,14 @@ class AppealServiceSpec extends SpecBase {
 
       "return false" when {
         "the connector returns a non-200 response" in new Setup {
-          when(mockPenaltiesConnector.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockPenaltiesConnector.submitAppeal(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
           val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
           result shouldBe false
         }
 
         "the connector throws an exception" in new Setup {
-          when(mockPenaltiesConnector.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockPenaltiesConnector.submitAppeal(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.failed(new Exception("I failed.")))
           val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
           result shouldBe false

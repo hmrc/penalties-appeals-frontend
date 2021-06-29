@@ -28,7 +28,7 @@ import java.time.LocalDateTime
 object PenaltiesStub {
   private val appealUri = "/penalties/appeals-data/late-submissions"
   private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
-  private val submitAppealUri = "/penalties/appeals/submit-appeal"
+  private val submitAppealUri = "/penalties/appeals/submit-appeal?enrolmentKey=HMRC-MTD-VAT~VRN~123456789"
 
   def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String): StubMapping = {
     stubFor(get(urlEqualTo(s"$appealUri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
