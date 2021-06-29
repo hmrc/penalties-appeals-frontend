@@ -38,6 +38,7 @@ object SessionKeys {
   val whenHealthIssueStarted = "whenHealthIssueStarted"
   val whenHealthIssueEnded = "whenHealthIssueEnded"
   val isHealthEventOngoing = "isHealthEventOngoing"
+  val whyReturnSubmittedLate = "whyReturnSubmittedLate"
   val whenDidBecomeUnable = "whenDidBecomeUnable"
   val evidenceFileName = "evidenceFileName"
 
@@ -62,6 +63,7 @@ object SessionKeys {
     whenHealthIssueStarted,
     whenHealthIssueEnded,
     isHealthEventOngoing,
+    whyReturnSubmittedLate,
     whenDidBecomeUnable,
     evidenceFileName
   )

@@ -183,6 +183,12 @@ healthReason.whenHealthIssueHappened.error.required = The date you became unable
 healthReason.whenHealthIssueHappened.error.invalid = The date you became unable to manage VAT must be a real date
 healthReason.whenHealthIssueHappened.error.notInFuture = The date you became unable to manage VAT must be today or in the past
 
+# Why was the return submitted late page
+# ----------------------------------------------------------
+otherReason.whyReturnSubmittedLate.title = Why was the return submitted late?
+otherReason.whyReturnSubmittedLate.heading = Why was the return submitted late?
+otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
+
 # When did you become unable page
 # ----------------------------------------------------------
 otherReason.whenDidBecomeUnable.title = When did you become unable to manage the VAT account?

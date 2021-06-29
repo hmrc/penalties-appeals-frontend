@@ -22,7 +22,7 @@ import play.api.data.FormError
 class WhenBecomeUnableFormSpec extends SpecBase {
   val form = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()
 
-  "whenCrimeHappenedForm" should {
+  "whenBecomeUnableForm" should {
     "bind when the date is valid" in {
       val result = form.bind(
         Map(

@@ -18,6 +18,8 @@ package controllers
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import forms.WhenDidBecomeUnableForm
+import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 import forms.{UploadEvidenceForm, WhenDidBecomeUnableForm}
 import helpers.FormProviderHelper
 import models.Mode
@@ -34,6 +36,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
+                                      whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage,
                                       uploadEvidencePage: UploadEvidencePage,
                                       navigation: Navigation)
                                      (implicit authorise: AuthPredicate,
@@ -65,6 +68,30 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             .addingToSession((SessionKeys.whenDidBecomeUnable, dateUnable.toString))
         }
       )
+    }
+  }
+
+  def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(whyReturnSubmittedLateForm(), SessionKeys.whyReturnSubmittedLate)
+      val postAction = controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode)
+      Ok(whyReturnSubmittedLatePage(formProvider,postAction))
+    }
+  }
+
+  def onSubmitForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      whyReturnSubmittedLateForm.bindFromRequest().fold(
+        formWithErrors => {
+          val postAction = controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode)
+          BadRequest(whyReturnSubmittedLatePage(formWithErrors,postAction))
+        },
+        whyReturnSubmittedLateReason => {
+          logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable] - Adding '$whyReturnSubmittedLateReason' to session under key: ${SessionKeys.whyReturnSubmittedLate}")
+          //TODO Add redirect to reason page
+          Redirect("")
+            .addingToSession(SessionKeys.whyReturnSubmittedLate -> whyReturnSubmittedLateReason)
+        })
     }
   }
 

@@ -302,4 +302,103 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       request.status shouldBe Status.SEE_OTHER
     }
   }
+
+
+  "GET /why-was-the-return-submitted-late" should {
+    "return 200 (OK) when the user is authorised" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-was-the-return-submitted-late").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+      )
+      val request = await(controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.OK
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-was-the-return-submitted-late")
+      val request = await(controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-was-the-return-submitted-late").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/why-was-the-return-submitted-late").get())
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
+  "POST /why-was-the-return-submitted-late" should {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-return-submitted-late").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+      ).withJsonBody(Json.parse(
+        """
+          |{
+          | "why-return-submitted-late-text": "Other Reason"
+          |}
+          |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe "" //TODO change this on navigation update
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whyReturnSubmittedLate).get shouldBe "Other Reason"
+    }
+
+    "return 400 (BAD_REQUEST)" when {
+      "no body is submitted" in {
+        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-return-submitted-late").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        )
+        val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-return-submitted-late")
+      val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-return-submitted-late").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/why-was-the-return-submitted-late").post(""))
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
 }

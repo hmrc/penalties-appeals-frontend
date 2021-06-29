@@ -35,6 +35,7 @@ import scala.concurrent.Future
 
 class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
+  val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
@@ -47,6 +48,7 @@ class OtherReasonControllerSpec extends SpecBase {
 
     val controller: OtherReasonController = new OtherReasonController(
       whenDidYouBecomeUnablePage,
+      whyReturnSubmittedLatePage,
       uploadEvidencePage,
       mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
