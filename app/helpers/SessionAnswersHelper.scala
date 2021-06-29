@@ -128,13 +128,11 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
           (messages("checkYourAnswers.other.statementOfLateness"),
             request.session.get(SessionKeys.whyReturnSubmittedLate).get,
-            //TODO: change with Chris' controller
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url),
           (messages("checkYourAnswers.other.fileEvidence"),
             //TODO: replace with default message
             request.session.get(SessionKeys.evidenceFileName).getOrElse(""),
-            //TODO: change with Andrew's controller
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url)
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url)
         )
       }
     }

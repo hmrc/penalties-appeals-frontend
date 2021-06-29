@@ -25,6 +25,7 @@ import play.api.http.Status._
 import utils.Logger.logger
 import play.api.libs.json.{JsResult, Json}
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.SessionKeys
 
 import java.time.LocalDateTime

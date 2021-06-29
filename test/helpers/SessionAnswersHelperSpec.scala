@@ -493,12 +493,11 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the return submitted late?"
         result(2)._2 shouldBe "This is why my VAT return was late."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
         //TODO: may need to change with default message
         result(3)._2 shouldBe ""
-        //TODO: change with Andrew's controller
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
 
       "for no upload - and late appeal" in {
@@ -520,12 +519,11 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the return submitted late?"
         result(2)._2 shouldBe "This is why my VAT return was late."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
         //TODO: may need to change with default message
         result(3)._2 shouldBe ""
-        //TODO: change with Andrew's controller
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         result(4)._1 shouldBe "Why you did not appeal sooner"
         result(4)._2 shouldBe "This is the reason why my appeal was late."
         result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
@@ -550,12 +548,11 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the return submitted late?"
         result(2)._2 shouldBe "This is why my VAT return was late."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
         //TODO: may need to change with default message
         result(3)._2 shouldBe "file.docx"
-        //TODO: change with Andrew's controller
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
 
       "for upload - and late appeal" in {
@@ -578,12 +575,11 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the return submitted late?"
         result(2)._2 shouldBe "This is why my VAT return was late."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
         //TODO: may need to change with default message
         result(3)._2 shouldBe "file.docx"
-        //TODO: change with Andrew's controller
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         result(4)._1 shouldBe "Why you did not appeal sooner"
         result(4)._2 shouldBe "This is the reason why my appeal was late."
         result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
