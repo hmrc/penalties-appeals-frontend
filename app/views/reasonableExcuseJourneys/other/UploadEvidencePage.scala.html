@@ -1,0 +1,32 @@
+
+@import config.AppConfig
+
+@this(layout: Layout,
+        formHelper: FormWithCSRF,
+        govukFileUpload: GovukFileUpload,
+        govukButton: GovukButton)
+
+@(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageTitle = messages("otherReason.uploadEvidence.title"),
+    isPageFullWidth = false,
+    formHasErrors = form.errors.nonEmpty,
+    formErrors = form.errors) {
+    <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.heading")</h1>
+    <p class="govuk-body">@messages("otherReason.uploadEvidence.p1")</p>
+    <p class="govuk-body">@messages("otherReason.uploadEvidence.p2")</p>
+    <p class="govuk-body">@messages("otherReason.uploadEvidence.p3")</p>
+
+    @formHelper(action = postAction) {
+        @govukFileUpload(FileUpload(
+            name = "upload-evidence",
+            id = "upload-evidence",
+            label = Label(
+                classes = "govuk-label govuk-label--m",
+                content = Text(messages("otherReason.uploadEvidence.uploadLabel"))
+            )
+        ))
+
+        @govukButton(Button(content = Text(messages("common.continue"))))
+    }
+}
