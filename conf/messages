@@ -236,6 +236,7 @@ healthReason.hasTheHospitalStayEnded.date.error.required.two = The date the hosp
 healthReason.hasTheHospitalStayEnded.date.error.required = The date the hospital stay ended must include a {0}
 healthReason.hasTheHospitalStayEnded.date.error.invalid = The date the hospital stay ended must be a real date
 healthReason.hasTheHospitalStayEnded.date.error.notInFuture = The date the hospital stay ended must be today or in the past
+healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The date the hospital stay ended must be the same or after it began
 
 # Date input fields
 # ----------------------------------------------------------

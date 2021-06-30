@@ -19,8 +19,11 @@ package forms
 import base.SpecBase
 import play.api.data.FormError
 
+import java.time.LocalDate
+
 class HasHospitalStayEndedFormSpec extends FormBehaviours with SpecBase {
-  val form = HasHospitalStayEndedForm.hasHospitalStayEndedForm
+  val sampleStartDate = LocalDate.parse("2020-01-02")
+  val form = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
 
   "radio field option not present" should {
     "not apply any validation on the date - fail" in {
@@ -65,6 +68,19 @@ class HasHospitalStayEndedFormSpec extends FormBehaviours with SpecBase {
         )
         result.errors.size shouldBe 1
         result.errors.head shouldBe FormError("stayEndDate.day", "healthReason.hasTheHospitalStayEnded.date.error.notInFuture", Seq("day", "month", "year"))
+      }
+
+      "the date entered is before the start date" in {
+        val result = form.bind(
+          Map(
+            "hasStayEnded" -> "yes",
+            "stayEndDate.day" -> "1",
+            "stayEndDate.month" -> "1",
+            "stayEndDate.year" -> "2020"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError("stayEndDate.day", "healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate", Seq("day", "month", "year"))
       }
 
       "the date is not valid" in {

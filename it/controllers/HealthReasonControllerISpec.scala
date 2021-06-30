@@ -37,7 +37,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
       )
       val request = await(controller.onPageLoadForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
@@ -74,7 +74,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
       ).withJsonBody(
         Json.parse(
           """
@@ -96,7 +96,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
       ).withJsonBody(
         Json.parse(
           """
@@ -119,7 +119,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         ).withJsonBody(
           Json.parse(
             """
@@ -139,7 +139,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         )
         val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -178,7 +178,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
       )
       val request = await(controller.onPageLoadForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
@@ -216,7 +216,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(1).toString)
+        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString)
       ).withJsonBody(
         Json.parse(
           """
@@ -240,7 +240,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(31).toString)
+        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(31).toString)
       ).withJsonBody(
         Json.parse(
           """
@@ -265,7 +265,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         ).withJsonBody(
           Json.parse(
             """
@@ -287,7 +287,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         )
         val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe BAD_REQUEST
@@ -301,7 +301,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         )
 
         val noDayJsonBody: JsValue = Json.parse(
@@ -378,10 +378,25 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.whenHealthIssueStarted, "2020-01-01")
       )
       val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not have the start date" in {
+      val fakeRequestWithNoStartDateKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+      )
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended")
+      val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestWithNoStartDateKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
@@ -409,7 +424,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(1).toString)
+        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
+        (SessionKeys.whenHealthIssueStarted, "2020-01-01")
       ).withJsonBody(
         Json.parse(
           """
@@ -436,7 +452,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(31).toString)
+        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(31).toString),
+        (SessionKeys.whenHealthIssueStarted, "2020-01-01")
       ).withJsonBody(
         Json.parse(
           """
@@ -460,7 +477,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.whenHealthIssueStarted, "2020-01-01")
         ).withJsonBody(
           Json.parse(
             """
@@ -475,6 +493,29 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
+      "the date submitted is before the start date" in {
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.whenHealthIssueStarted, "2021-01-02")
+        ).withJsonBody(
+          Json.parse(
+            """
+              |{
+              | "stayEndDate.day": "01",
+              | "stayEndDate.month": "01",
+              | "stayEndDate.year": "2021"
+              |}
+              |""".stripMargin)
+        )
+        val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
           (SessionKeys.penaltyId, "1234"),
@@ -482,7 +523,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.whenHealthIssueStarted, "2020-01-01")
         )
         val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe BAD_REQUEST
@@ -496,7 +538,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.whenHealthIssueStarted, "2020-01-01")
         )
 
         val noDayJsonBody: JsValue = Json.parse(
@@ -539,6 +582,19 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         requestNoYear.header.status shouldBe Status.BAD_REQUEST
 
       }
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not have a start date" in {
+      val fakeRequestWithNoStartDateKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+      )
+      val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithNoStartDateKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {

@@ -28,9 +28,13 @@ import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.HasTheHospitalStayEndedPage
 import viewtils.{ConditionalRadioHelper, RadioOptionHelper}
 
+import java.time.LocalDate
+
 class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
   "HasTheHospitalStayEndedPage" should {
     val conditionalRadioHelper = injector.instanceOf[ConditionalRadioHelper]
+    val sampleStartDate = LocalDate.parse("2020-01-01")
+
     val hasTheHospitalStayEndedPage: HasTheHospitalStayEndedPage = injector.instanceOf[HasTheHospitalStayEndedPage]
     object Selectors extends BaseSelectors {
       val collapsableYesText = "#conditional-hasStayEnded div > fieldset > legend"
@@ -41,7 +45,7 @@ class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
 
       override val labelForRadioButton = (index: Int) => if(index == 1) "label[for=hasStayEnded]" else s"label[for=hasStayEnded-$index]"
     }
-    val formProvider: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm()
+    val formProvider: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
     val radioOptions = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded")
     def applyView(form: Form[_]): HtmlFormat.Appendable = {
       hasTheHospitalStayEndedPage.apply(form, radioOptions, controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(NormalMode))

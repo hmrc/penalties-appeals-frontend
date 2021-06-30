@@ -23,10 +23,12 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import uk.gov.voa.play.form.ConditionalMappings
 
+import java.time.LocalDate
+
 object HasHospitalStayEndedForm extends Mappings {
   final val options = Seq("yes", "no")
 
-  def hasHospitalStayEndedForm()(implicit messages: Messages): Form[HospitalStayEndInput] = {
+  def hasHospitalStayEndedForm(healthIssueStartDate: LocalDate)(implicit messages: Messages): Form[HospitalStayEndInput] = {
     Form(mapping(
       "hasStayEnded" -> text("healthReason.hasTheHospitalStayEnded.error.required")
         .verifying("healthReason.hasTheHospitalStayEnded.error.required", value => options.contains(value)),
@@ -37,7 +39,7 @@ object HasHospitalStayEndedForm extends Mappings {
         requiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required",
         fieldLengthKey = "healthReason.hasTheHospitalStayEnded.date.error.invalid",
         futureKey = Some("healthReason.hasTheHospitalStayEnded.date.error.notInFuture"),
-        dateNotEqualOrAfterKeyAndCompareDate = None //TODO - update when merged with PRM-311
+        dateNotEqualOrAfterKeyAndCompareDate = Some(("healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate", healthIssueStartDate))
       ))
     )(HospitalStayEndInput.apply)(HospitalStayEndInput.unapply)
     )

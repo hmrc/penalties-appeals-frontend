@@ -85,8 +85,10 @@ class FormProviderHelperSpec extends SpecBase {
   }
 
   "getSessionKeysAndAttemptToFillConditionalForm" should {
+    val sampleStartDate = LocalDate.parse("2020-01-01")
+
     "fill only the first answer if the second answer is not present" in {
-      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm()
+      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
       val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm,
         (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))(fakeRequest.withSession(SessionKeys.hasHealthEventEnded -> "yes"))
       val expectedResult = mockForm.fill(HospitalStayEndInput("yes", None))
@@ -94,7 +96,7 @@ class FormProviderHelperSpec extends SpecBase {
     }
 
     "fill both answers when both exist in the session" in {
-      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm()
+      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
       val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm,
         (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))(fakeRequest.withSession(
         SessionKeys.hasHealthEventEnded -> "yes",
@@ -104,7 +106,7 @@ class FormProviderHelperSpec extends SpecBase {
     }
 
     "leave the form as is when no answers exist" in {
-      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm()
+      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
       val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm, (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))
       result shouldBe mockForm
     }
