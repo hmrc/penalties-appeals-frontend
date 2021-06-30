@@ -38,7 +38,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
   }
 
-  lazy val submitAppealUrl: String = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl")
+  def submitAppealUrl(enrolmentKey: String) = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl") + s"?enrolmentKey=$enrolmentKey"
 
   lazy val reasonableExcuseFetchUrl: String = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.fetchUrl")
 
