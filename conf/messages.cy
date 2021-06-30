@@ -275,9 +275,7 @@ checkYourAnswers.health.unexpectedHospitalStay = Did this health issue include a
 checkYourAnswers.health.unableToManageAccount = When did you become unable to manage the VAT account?
 checkYourAnswers.health.yes = Yes
 checkYourAnswers.health.no = No
-checkYourAnswers.health.whenDidHospitalStayBegin = When did the hospital stay begin?
-checkYourAnswers.health.hasTheHospitalStayEnded = Has the hospital stay ended?
-checkYourAnswers.health.whenDidHospitalStayEnd = When did it end?
+# Need to implement other messages for hospital stay
 
 checkYourAnswers.other.reasonableExcuse = The reason does not fit into any of the other categories
 checkYourAnswers.other.unableToManageAccount = When did you become unable to manage the VAT account?
