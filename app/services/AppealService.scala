@@ -77,9 +77,10 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig:
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
     val isLateAppeal = dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
+    val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
 
     val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal)
-    penaltiesConnector.submitAppeal(modelFromRequest).map {
+    penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey).map {
       response => response.status match {
         case OK => {
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")

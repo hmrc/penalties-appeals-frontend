@@ -138,7 +138,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           lateAppealReason = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model))
+      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789"))
       result.status shouldBe OK
     }
   }

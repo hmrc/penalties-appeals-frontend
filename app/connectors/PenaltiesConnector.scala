@@ -82,8 +82,8 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     }
   }
 
-  def submitAppeal(appealSubmission: AppealSubmission)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl,
+  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
+    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey),
       appealSubmission)(AppealSubmission.writes, implicitly, implicitly, implicitly)
   }
 }
