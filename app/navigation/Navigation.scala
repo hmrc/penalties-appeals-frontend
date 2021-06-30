@@ -18,7 +18,7 @@ package navigation
 
 import config.AppConfig
 import models.{CheckMode, Mode, NormalMode, UserRequest}
-import models.pages.{Page, WasHospitalStayRequiredPage, WhenDidHospitalStayBeginPage, _}
+import models.pages._
 import play.api.mvc.{Call, Request}
 import controllers.routes
 import helpers.DateTimeHelper
@@ -39,7 +39,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(CheckMode, answer, request)),
     WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidHospitalStayBeginPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidHospitalStayBeginPage -> ((_, request) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode)),
+    DidHospitalStayEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidBecomeUnablePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhyWasReturnSubmittedLatePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
@@ -55,8 +56,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(NormalMode, answer, request)),
     WhenDidHealthIssueHappenPage-> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhenDidHospitalStayBeginPage-> ((_, _) => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode)),
-    // TODO - Add when hospital stay end journey is added, currently reloads hospital begin page
+    WhenDidHospitalStayBeginPage-> ((_, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode)),
+    DidHospitalStayEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidBecomeUnablePage -> ((_, _) => routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode)),
     WhyWasReturnSubmittedLatePage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
     EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))

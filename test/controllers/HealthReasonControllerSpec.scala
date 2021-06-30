@@ -329,7 +329,7 @@ class HealthReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-          "- routing to has crime been reported page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          "- routing to has when hospital stay ended page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
             Json.parse(
               """
@@ -340,6 +340,7 @@ class HealthReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode).url
           await(result).session.get(SessionKeys.whenHealthIssueStarted).get shouldBe LocalDate.of(2021, 2, 1).toString
         }
 
@@ -476,8 +477,7 @@ class HealthReasonControllerSpec extends SpecBase {
               |}
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
-        //          TODO: implement with PRM-310
-        //          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+        redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         await(result).session.get(SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.of(2021, 2, 1).toString
         await(result).session.get(SessionKeys.hasHealthEventEnded).get shouldBe "yes"
       }
@@ -495,8 +495,7 @@ class HealthReasonControllerSpec extends SpecBase {
           )
         )))
         status(result) shouldBe SEE_OTHER
-        //          TODO: implement with PRM-310
-        //          redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         await(result).session.get(SessionKeys.whenHealthIssueEnded).isEmpty shouldBe true
         await(result).session.get(SessionKeys.hasHealthEventEnded).get shouldBe "no"
       }

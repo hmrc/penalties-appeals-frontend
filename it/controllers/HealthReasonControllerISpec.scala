@@ -438,8 +438,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      //TODO: implement in PRM-310
-//      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.parse("2021-02-08").toString
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasHealthEventEnded).get shouldBe "yes"
     }
@@ -463,8 +462,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      //TODO: implement in PRM-310
-//      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasHealthEventEnded).get shouldBe "no"
     }
 

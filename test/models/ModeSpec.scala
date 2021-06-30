@@ -19,7 +19,6 @@ package models
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsString, Json}
-import play.api.mvc.JavascriptLiteral
 
 class ModeSpec extends AnyWordSpec with Matchers {
   "Mode" should {
