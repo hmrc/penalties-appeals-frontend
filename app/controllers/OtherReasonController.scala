@@ -16,13 +16,16 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 import forms.{UploadEvidenceForm, WhenDidBecomeUnableForm}
 import helpers.FormProviderHelper
+import javax.inject.Inject
 import models.Mode
+import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -31,9 +34,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
-
-import java.time.LocalDate
-import javax.inject.Inject
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
                                       whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage,
@@ -64,7 +64,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         },
         dateUnable => {
           logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable] - Adding '$dateUnable' to session under key: ${SessionKeys.whenDidBecomeUnable}")
-          Redirect("") //TODO Add redirect to reason page
+          Redirect(navigation.nextPage(WhenDidBecomeUnablePage, mode, Some(dateUnable.toString)))
             .addingToSession((SessionKeys.whenDidBecomeUnable, dateUnable.toString))
         }
       )
@@ -88,8 +88,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         },
         whyReturnSubmittedLateReason => {
           logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable] - Adding '$whyReturnSubmittedLateReason' to session under key: ${SessionKeys.whyReturnSubmittedLate}")
-          //TODO Add redirect to reason page
-          Redirect("")
+          Redirect(navigation.nextPage(WhyWasReturnSubmittedLatePage, mode, Some(whyReturnSubmittedLateReason)))
             .addingToSession(SessionKeys.whyReturnSubmittedLate -> whyReturnSubmittedLateReason)
         })
     }
@@ -115,7 +114,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         },
         evidenceFileName => {
           logger.debug(s"[OtherReasonController][onSubmitForUploadEvidence] - Adding '${evidenceFileName.getOrElse("")}' to session under key: ${SessionKeys.evidenceFileName}")
-          Redirect("") //TODO Add redirect to reason page
+          Redirect(navigation.nextPage(EvidencePage, mode, evidenceFileName))
             .addingToSession((SessionKeys.evidenceFileName, evidenceFileName.getOrElse("")))
         }
       )

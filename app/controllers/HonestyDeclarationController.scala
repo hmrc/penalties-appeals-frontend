@@ -28,12 +28,15 @@ import utils.Logger.logger
 import utils.{ReasonableExcuses, SessionKeys}
 import views.html.HonestyDeclarationPage
 import viewtils.ImplicitDateFormatter
-
 import java.time.{LocalDate, LocalDateTime}
+
 import javax.inject.Inject
+import models.pages.HonestyDeclarationPage
+import navigation.Navigation
 
 class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDeclarationPage,
-                                             errorHandler: ErrorHandler)
+                                             errorHandler: ErrorHandler,
+                                             navigation: Navigation)
                                             (implicit mcc: MessagesControllerComponents,
                                              appConfig: AppConfig,
                                              authorise: AuthPredicate,
@@ -68,8 +71,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
             },
             _ => {
               logger.debug(s"[HonestyDeclarationController][onSubmit] - Adding 'true' to session for key: ${SessionKeys.hasConfirmedDeclaration}")
-              //TODO: change to next page
-              Redirect(getNextURLBasedOnReasonableExcuse(reasonableExcuse))
+              Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, Some(reasonableExcuse)))
                 .addingToSession((SessionKeys.hasConfirmedDeclaration, "true"))
             }
           )
@@ -89,16 +91,6 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
           s"Due date defined? ${request.session.get(SessionKeys.dueDateOfPeriod).isDefined}")
         errorHandler.showInternalServerError
       }
-    }
-  }
-
-  def getNextURLBasedOnReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): String = {
-    reasonableExcuse match {
-      case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
-      case ReasonableExcuses.fireOrFlood => controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url
-      case ReasonableExcuses.lossOfStaff => controllers.routes.LossOfStaffReasonController.onPageLoad(NormalMode).url
-      case ReasonableExcuses.technicalIssues => controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(NormalMode).url
-      case ReasonableExcuses.health => controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
     }
   }
 }

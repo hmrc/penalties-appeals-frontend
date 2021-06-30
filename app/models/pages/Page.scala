@@ -18,6 +18,7 @@ package models.pages
 
 trait Page
 
+case object HonestyDeclarationPage extends Page
 case object HasCrimeBeenReportedPage extends Page
 case object WhenDidCrimeHappenPage extends Page
 case object WhenDidFireOrFloodHappenPage extends Page
@@ -26,6 +27,8 @@ case object WhenDidTechnologyIssuesBeginPage extends Page
 case object WhenDidTechnologyIssuesEndPage extends Page
 case object WasHospitalStayRequiredPage extends Page
 case object WhenDidHealthIssueHappenPage extends Page
-case object WhenDidBecomeUnable extends Page
 case object WhenDidHospitalStayBeginPage extends Page
 //TODO Add object for Hospital Stay End
+case object WhenDidBecomeUnablePage extends Page
+case object WhyWasReturnSubmittedLatePage extends Page
+case object EvidencePage extends Page
