@@ -183,7 +183,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url),
           (messages("checkYourAnswers.health.whenDidHospitalStayEnd"),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueEnded).get)),
-            controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url),
+            controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url)
         )
       }
 
@@ -200,7 +200,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url),
           (messages("checkYourAnswers.health.hasTheHospitalStayEnded"),
             messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.hasHealthEventEnded).get}"),
-            controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url),
+            controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url)
         )
       }
     }
