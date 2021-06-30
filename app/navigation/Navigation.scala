@@ -17,17 +17,16 @@
 package navigation
 
 import config.AppConfig
-import models.{CheckMode, Mode, NormalMode, UserRequest, pages}
+import models.{CheckMode, Mode, NormalMode, UserRequest}
 import models.pages.{Page, WasHospitalStayRequiredPage, WhenDidHospitalStayBeginPage, _}
-import play.api.mvc.Call
+import play.api.mvc.{Call, Request}
 import controllers.routes
 import helpers.DateTimeHelper
 import utils.Logger.logger
-import utils.SessionKeys
+import utils.{ReasonableExcuses, SessionKeys}
 import java.time.LocalDateTime
 
 import javax.inject.Inject
-import play.api.mvc.Results.BadRequest
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
                            appConfig: AppConfig) {
@@ -40,10 +39,14 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(CheckMode, answer, request)),
     WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidHospitalStayBeginPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
+    WhenDidHospitalStayBeginPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidBecomeUnablePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhyWasReturnSubmittedLatePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
+    HonestyDeclarationPage -> ((answer, request) => getNextURLBasedOnReasonableExcuse(answer.get, NormalMode)(request)),
     HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidCrimeHappenPage -> ((_, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode)),
     WhenDidFireOrFloodHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
@@ -52,8 +55,11 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(NormalMode, answer, request)),
     WhenDidHealthIssueHappenPage-> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhenDidHospitalStayBeginPage-> ((_, _) => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode))
+    WhenDidHospitalStayBeginPage-> ((_, _) => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode)),
     // TODO - Add when hospital stay end journey is added, currently reloads hospital begin page
+    WhenDidBecomeUnablePage -> ((_, _) => routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode)),
+    WhyWasReturnSubmittedLatePage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
+    EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None)(implicit userRequest: UserRequest[_]): Call = {
@@ -79,6 +85,17 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
         logger.debug("[Navigation][routingForHospitalStay]: unable to get answer - reloading 'WasHospitalStayRequiredPage'")
         routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
       }
+    }
+  }
+
+  def getNextURLBasedOnReasonableExcuse(reasonableExcuse: String, mode: Mode)(implicit request: Request[_]): Call = {
+    reasonableExcuse match {
+      case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(mode)
+      case ReasonableExcuses.fireOrFlood => controllers.routes.FireOrFloodReasonController.onPageLoad(mode)
+      case ReasonableExcuses.lossOfStaff => controllers.routes.LossOfStaffReasonController.onPageLoad(mode)
+      case ReasonableExcuses.technicalIssues => controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(mode)
+      case ReasonableExcuses.health => controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
+      case ReasonableExcuses.other => controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode)
     }
   }
 

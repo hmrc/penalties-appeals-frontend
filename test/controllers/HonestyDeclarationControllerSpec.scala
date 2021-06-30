@@ -44,7 +44,8 @@ class HonestyDeclarationControllerSpec extends SpecBase {
 
     val controller: HonestyDeclarationController = new HonestyDeclarationController(
       honestyDeclarationPage,
-      errorHandler
+      errorHandler,
+      mainNavigator
     )(mcc, appConfig, authPredicate, dataRequiredAction)
   }
 

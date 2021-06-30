@@ -88,7 +88,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe "" //TODO change to reason page url
+      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenDidBecomeUnable).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 
@@ -259,7 +259,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         )
         val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers("Location") shouldBe "" //TODO change to reason page url
+        request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.evidenceFileName).get shouldBe "test.png"
       }
 
@@ -274,7 +274,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         )
         val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers("Location") shouldBe "" //TODO change to reason page url
+        request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         request.session(fakeRequestWithCorrectKeysAndNoBody).get(SessionKeys.evidenceFileName).get shouldBe ""
       }
     }
@@ -359,7 +359,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe "" //TODO change this on navigation update
+      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whyReturnSubmittedLate).get shouldBe "Other Reason"
     }
 

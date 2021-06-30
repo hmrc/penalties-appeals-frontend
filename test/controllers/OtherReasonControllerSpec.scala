@@ -121,7 +121,7 @@ class OtherReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe "" //TODO change to CYA page route
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad.url
           await(result).session.get(SessionKeys.whenDidBecomeUnable).get shouldBe LocalDate.of(2021, 2, 1).toString
         }
 
@@ -239,7 +239,7 @@ class OtherReasonControllerSpec extends SpecBase {
                   |}
                   |""".stripMargin))))
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe "" //TODO change to CYA page route url
+            redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
             await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
           }
 
@@ -254,7 +254,7 @@ class OtherReasonControllerSpec extends SpecBase {
             "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe "" //TODO change to CYA page route url
+            redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
             await(result).session.get(SessionKeys.evidenceFileName).get shouldBe ""
           }
         }
