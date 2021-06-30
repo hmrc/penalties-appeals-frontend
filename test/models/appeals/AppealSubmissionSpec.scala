@@ -426,7 +426,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.wasHospitalStayRequired -> "yes",
-          SessionKeys.isHealthEventOngoing -> "no",
+          SessionKeys.hasHealthEventEnded -> "yes",
           SessionKeys.whenHealthIssueStarted -> "2022-01-01",
           SessionKeys.whenHealthIssueEnded -> "2022-01-31"
         ))
@@ -454,7 +454,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.wasHospitalStayRequired -> "yes",
-          SessionKeys.isHealthEventOngoing -> "yes",
+          SessionKeys.hasHealthEventEnded -> "no",
           SessionKeys.whenHealthIssueStarted -> "2022-01-01"
         ))
 

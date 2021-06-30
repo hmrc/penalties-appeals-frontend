@@ -18,28 +18,32 @@ package controllers
 
 import java.time.LocalDate
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.{WasHospitalStayRequiredForm, WhenDidHealthIssueHappenForm, WhenDidHospitalStayBeginForm}
-
+import forms.{HasHospitalStayEndedForm, WasHospitalStayRequiredForm, WhenDidHealthIssueHappenForm, WhenDidHospitalStayBeginForm}
 import javax.inject.Inject
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.{WhenDidHospitalStayBeginPage, _}
+import models.appeals.HospitalStayEndInput
+import models.pages._
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+import utils.Logger.logger
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.health.{WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage,WhenDidHospitalStayBeginPage}
-import viewtils.RadioOptionHelper
+import views.html.reasonableExcuseJourneys.health._
+import viewtils.{ConditionalRadioHelper, RadioOptionHelper}
 
 class HealthReasonController @Inject()(navigation: Navigation,
                                        wasHospitalStayRequiredPage: WasHospitalStayRequiredPage,
                                        whenDidHealthReasonHappenPage: WhenDidHealthReasonHappenPage,
-                                       whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginPage)
+                                       whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginPage,
+                                       conditionalRadioHelper: ConditionalRadioHelper,
+                                       hasTheHospitalStayEnded: HasTheHospitalStayEndedPage,
+                                       errorHandler: ErrorHandler)
                                       (implicit authorise: AuthPredicate,
                                        dataRequired: DataRequiredAction,
                                        appConfig: AppConfig,
@@ -51,7 +55,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
       WasHospitalStayRequiredForm.wasHospitalStayRequiredForm,
       SessionKeys.wasHospitalStayRequired
     )
-    val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForWasHospitalStayRequiredPage(formProvider)
+    val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
     val postAction = controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(mode)
     Ok(wasHospitalStayRequiredPage(formProvider, radioOptionsToRender, postAction))
   }
@@ -59,7 +63,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
   def onSubmitForWasHospitalStayRequired(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     WasHospitalStayRequiredForm.wasHospitalStayRequiredForm.bindFromRequest.fold(
       formWithErrors => {
-        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForWasHospitalStayRequiredPage(formWithErrors)
+        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
         val postAction = controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(mode)
         BadRequest(wasHospitalStayRequiredPage(formWithErrors, radioOptionsToRender, postAction))
       },
@@ -76,7 +80,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
       SessionKeys.whenHealthIssueHappened
     )
     val postAction = controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode)
-    Ok(whenDidHealthReasonHappenPage(formProvider,postAction))
+    Ok(whenDidHealthReasonHappenPage(formProvider, postAction))
   }
 
   def onSubmitForWhenHealthReasonHappened(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
@@ -115,5 +119,64 @@ class HealthReasonController @Inject()(navigation: Navigation,
         }
       )
     }
+  }
+
+  def onPageLoadForHasHospitalStayEnded(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
+    request.session.get(SessionKeys.whenHealthIssueStarted).fold(
+      errorHandler.showInternalServerError
+    )(
+      healthIssueStartDate => {
+        val parsedHealthIssueStartDate = LocalDate.parse(healthIssueStartDate)
+        val formProvider: Form[HospitalStayEndInput] = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(
+          HasHospitalStayEndedForm.hasHospitalStayEndedForm(parsedHealthIssueStartDate),
+          (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded)
+        )
+        val radioOptionsToRender = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded")
+        val postAction = controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(mode)
+        Ok(hasTheHospitalStayEnded(formProvider, radioOptionsToRender, postAction))
+      }
+    )
+
+  }
+
+  def onSubmitForHasHospitalStayEnded(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
+    request.session.get(SessionKeys.whenHealthIssueStarted).fold(
+      errorHandler.showInternalServerError
+    )(
+      healthIssueStartDate => {
+        val parsedHealthIssueStartDate = LocalDate.parse(healthIssueStartDate)
+        HasHospitalStayEndedForm.hasHospitalStayEndedForm(parsedHealthIssueStartDate).bindFromRequest().fold(
+          formWithErrors => {
+            val radioOptionsToRender = conditionalRadioHelper.conditionalYesNoOptions(formWithErrors, "healthReason.hasTheHospitalStayEnded")
+            val postAction = controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(mode)
+            BadRequest(hasTheHospitalStayEnded(formWithErrors, radioOptionsToRender, postAction))
+          },
+          formAnswers => {
+            //TODO - update redirect routes when navigation added in PRM-310
+            (formAnswers.hasStayEnded, formAnswers.stayEndDate) match {
+              case (hasStayEnded, endDate) if endDate.isDefined && hasStayEnded.contains("yes") => {
+                logger.debug(s"[HealthReasonController][onSubmitForHasHospitalStayEnded] - Adding answers to session:\n" +
+                  s"- '${formAnswers.hasStayEnded}' under key: ${SessionKeys.hasHealthEventEnded}\n" +
+                  s"- '${formAnswers.stayEndDate.get}' under key: ${SessionKeys.whenHealthIssueEnded}")
+                Redirect("#")
+                  .addingToSession(
+                    (SessionKeys.hasHealthEventEnded, formAnswers.hasStayEnded),
+                    (SessionKeys.whenHealthIssueEnded, formAnswers.stayEndDate.get.toString)
+                  )
+              }
+              case (hasStayEnded, endDate) if hasStayEnded.contains("no") && endDate.isEmpty => {
+                logger.debug(s"[HealthReasonController][onSubmitForHasHospitalStayEnded]" +
+                  s" - Adding answer '${formAnswers.hasStayEnded}' to session under key ${SessionKeys.hasHealthEventEnded}")
+                Redirect("#").addingToSession((SessionKeys.hasHealthEventEnded, formAnswers.hasStayEnded))
+              }
+              case _ => {
+                logger.debug("[HealthReasonController][onSubmitForHasHospitalStayEnded]- Something went wrong with 'valid' for answers")
+                errorHandler.showInternalServerError
+              }
+            }
+          }
+        )
+      }
+    )
   }
 }

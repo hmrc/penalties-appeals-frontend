@@ -30,8 +30,8 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     "lossOfStaff" -> Seq(SessionKeys.whenPersonLeftTheBusiness, SessionKeys.reasonableExcuse, SessionKeys.hasConfirmedDeclaration),
     "fireOrFlood" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.dateOfFireOrFlood, SessionKeys.hasConfirmedDeclaration),
     "technicalIssues" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidTechnologyIssuesBegin, SessionKeys.whenDidTechnologyIssuesEnd),
-    "healthIssueHospitalStayOngoing" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.isHealthEventOngoing, SessionKeys.wasHospitalStayRequired),
-    "healthIssueHospitalStayEnded" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.whenHealthIssueEnded, SessionKeys.isHealthEventOngoing, SessionKeys.wasHospitalStayRequired),
+    "healthIssueHospitalStayOngoing" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.hasHealthEventEnded, SessionKeys.wasHospitalStayRequired),
+    "healthIssueHospitalStayEnded" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.whenHealthIssueEnded, SessionKeys.hasHealthEventEnded, SessionKeys.wasHospitalStayRequired),
     "healthIssueNoHospitalStay" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.wasHospitalStayRequired, SessionKeys.whenHealthIssueHappened),
     "other" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whyReturnSubmittedLate, SessionKeys.whenDidBecomeUnable)
   )
@@ -40,20 +40,20 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     val keysInSession = request.session.data.keys.toSet
     reasonableExcuse match {
       case "health" => {
-        (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.isHealthEventOngoing)) match {
+        (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.hasHealthEventEnded)) match {
           //No hospital stay
           case (Some("no"), _) => {
             val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueNoHospitalStay").toSet
             answersRequired.subsetOf(keysInSession)
           }
           //Hospital stay ongoing
-          case (Some("yes"), Some("yes")) => {
+          case (Some("yes"), Some("no")) => {
             val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueHospitalStayOngoing").toSet
             answersRequired.subsetOf(keysInSession)
           }
 
           //Hospital stay ended
-          case (Some("yes"), Some("no")) => {
+          case (Some("yes"), Some("yes")) => {
             val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueHospitalStayEnded").toSet
             answersRequired.subsetOf(keysInSession)
           }
@@ -151,7 +151,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
   }
 
   def getHealthReasonAnswers()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
-    (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.isHealthEventOngoing)) match {
+    (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.hasHealthEventEnded)) match {
       //No hospital stay
       case (Some("no"), _) => {
         Seq(

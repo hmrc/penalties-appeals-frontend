@@ -19,8 +19,9 @@ package helpers
 import play.api.data.Form
 import play.api.mvc.Request
 import utils.SessionKeys
-
 import java.time.LocalDate
+
+import models.appeals.HospitalStayEndInput
 
 object FormProviderHelper {
   def getSessionKeyAndAttemptToFillAnswerAsString(formProvider: Form[String], sessionKeyToQuery: String)(implicit request: Request[_]): Form[String] = {
@@ -45,6 +46,22 @@ object FormProviderHelper {
       formProvider.fill(parsedDate)
     } else {
       formProvider
+    }
+  }
+
+  def getSessionKeysAndAttemptToFillConditionalForm(formProvider: Form[HospitalStayEndInput], sessionKvs: (String, String)
+                                                   )(implicit request: Request[_]): Form[HospitalStayEndInput] = {
+    (request.session.get(sessionKvs._1), request.session.get(sessionKvs._2)) match {
+      case (Some(key1), Some(key2)) => {
+        val parsedDate: LocalDate = LocalDate.parse(key2)
+        val formInput = HospitalStayEndInput(key1, Some(parsedDate))
+        formProvider.fill(formInput)
+      }
+      case (Some(key1), None) => {
+        val formInput = HospitalStayEndInput(key1, None)
+        formProvider.fill(formInput)
+      }
+      case (_, _) => formProvider
     }
   }
 }

@@ -34,10 +34,9 @@ object SessionKeys {
   val whenDidTechnologyIssuesEnd = "whenDidTechnologyIssuesEnd"
   val wasHospitalStayRequired = "wasHospitalStayRequired"
   val whenHealthIssueHappened = "whenHealthIssueHappened"
-  //TODO: use when implementing 'yes' journey for hospital stay
   val whenHealthIssueStarted = "whenHealthIssueStarted"
   val whenHealthIssueEnded = "whenHealthIssueEnded"
-  val isHealthEventOngoing = "isHealthEventOngoing"
+  val hasHealthEventEnded = "hasHealthEventEnded"
   val whenDidBecomeUnable = "whenDidBecomeUnable"
   val whyReturnSubmittedLate = "whyReturnSubmittedLate"
   val evidenceFileName = "evidenceFileName"
@@ -62,10 +61,9 @@ object SessionKeys {
     whenHealthIssueHappened,
     whenHealthIssueStarted,
     whenHealthIssueEnded,
-    isHealthEventOngoing,
-    whyReturnSubmittedLate,
     whenDidBecomeUnable,
     whyReturnSubmittedLate,
-    evidenceFileName
+    evidenceFileName,
+    hasHealthEventEnded
   )
 }

@@ -17,6 +17,8 @@
 package helpers
 
 import base.SpecBase
+import forms.HasHospitalStayEndedForm
+import models.appeals.HospitalStayEndInput
 import play.api.data.Form
 import play.api.data.Forms._
 import utils.SessionKeys
@@ -78,6 +80,34 @@ class FormProviderHelperSpec extends SpecBase {
       val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.reasonableExcuse)(fakeRequest.withSession(
         "this-is-a-key" -> "this-is-a-value"
       ))
+      result shouldBe mockForm
+    }
+  }
+
+  "getSessionKeysAndAttemptToFillConditionalForm" should {
+    val sampleStartDate = LocalDate.parse("2020-01-01")
+
+    "fill only the first answer if the second answer is not present" in {
+      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
+      val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm,
+        (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))(fakeRequest.withSession(SessionKeys.hasHealthEventEnded -> "yes"))
+      val expectedResult = mockForm.fill(HospitalStayEndInput("yes", None))
+      result shouldBe expectedResult
+    }
+
+    "fill both answers when both exist in the session" in {
+      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
+      val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm,
+        (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))(fakeRequest.withSession(
+        SessionKeys.hasHealthEventEnded -> "yes",
+        SessionKeys.whenHealthIssueEnded -> "2022-01-01"))
+      val expectedResult = mockForm.fill(HospitalStayEndInput("yes", Some(LocalDate.parse("2022-01-01"))))
+      result shouldBe expectedResult
+    }
+
+    "leave the form as is when no answers exist" in {
+      val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
+      val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm, (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))
       result shouldBe mockForm
     }
   }
