@@ -166,16 +166,42 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url)
         )
       }
-      //Hospital stay ongoing
+      //Hospital stay ended
       case (Some("yes"), Some("yes")) => {
-        //TODO: implement
-        Seq()
+        Seq(
+          (messages("checkYourAnswers.reasonableExcuse"),
+            messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+            controllers.routes.ReasonableExcuseController.onPageLoad().url),
+          (messages("checkYourAnswers.health.unexpectedHospitalStay"),
+            messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url),
+          (messages("checkYourAnswers.health.whenDidHospitalStayBegin"),
+            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueStarted).get)),
+            controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url),
+          (messages("checkYourAnswers.health.hasTheHospitalStayEnded"),
+            messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.hasHealthEventEnded).get}"),
+            controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url),
+          (messages("checkYourAnswers.health.whenDidHospitalStayEnd"),
+            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueEnded).get)),
+            controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url)
+        )
       }
 
-      //Hospital stay ended
+      //Hospital stay ongoing
       case (Some("yes"), Some("no")) => {
-        //TODO: implement
-        Seq()
+        Seq((messages("checkYourAnswers.reasonableExcuse"),
+          messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+          controllers.routes.ReasonableExcuseController.onPageLoad().url),
+          (messages("checkYourAnswers.health.unexpectedHospitalStay"),
+            messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url),
+          (messages("checkYourAnswers.health.whenDidHospitalStayBegin"),
+            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueStarted).get)),
+            controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url),
+          (messages("checkYourAnswers.health.hasTheHospitalStayEnded"),
+            messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.hasHealthEventEnded).get}"),
+            controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url)
+        )
       }
     }
   }
