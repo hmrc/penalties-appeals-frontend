@@ -394,7 +394,6 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
       )
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended")
       val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestWithNoStartDateKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
