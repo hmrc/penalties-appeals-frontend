@@ -20,7 +20,6 @@ import java.time.{LocalDate, LocalDateTime}
 
 import base.SpecBase
 import models.{CheckMode, NormalMode}
-import navigation.Navigation
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}

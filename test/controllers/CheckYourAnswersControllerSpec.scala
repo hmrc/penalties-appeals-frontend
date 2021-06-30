@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito.{mock, reset, when}
 import play.api.mvc.Result

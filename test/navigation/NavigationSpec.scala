@@ -106,6 +106,16 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
+      s"called with $DidHospitalStayEndPage" in new Setup {
+        val result = mainNavigator.nextPage(DidHospitalStayEndPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $WhenDidHospitalStayBeginPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidHospitalStayBeginPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url
+      }
+
       s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late AND late appeal reason hasn't been entered" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
         val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
@@ -155,6 +165,16 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
+
+      s"called with $DidHospitalStayEndPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020,4,1,0,0,0))
+        val result = mainNavigator.nextPage(DidHospitalStayEndPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        .withSession(
+          SessionKeys.appealType -> "health"
+        )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
     }
 
     "in NormalMode" when {
@@ -196,6 +216,16 @@ class NavigationSpec extends SpecBase {
       s"called with $WhenDidHealthIssueHappenPage" in new Setup {
         val result = mainNavigator.nextPage(WhenDidHealthIssueHappenPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $DidHospitalStayEndPage" in new Setup {
+        val result = mainNavigator.nextPage(DidHospitalStayEndPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $WhenDidHospitalStayBeginPage" in new Setup {
+        val result = mainNavigator.nextPage(WhenDidHospitalStayBeginPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode).url
       }
 
       s"called with $WhenDidBecomeUnablePage" in new Setup {
@@ -266,6 +296,16 @@ class NavigationSpec extends SpecBase {
           .withSession(
             SessionKeys.appealType -> "other"
           )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
+      s"called with $DidHospitalStayEndPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020,4,1,0,0,0))
+        val result = mainNavigator.nextPage(DidHospitalStayEndPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        .withSession(
+          SessionKeys.appealType -> "health"
+        )))
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
