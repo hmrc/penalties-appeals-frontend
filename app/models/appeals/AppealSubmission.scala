@@ -352,6 +352,8 @@ object AppealSubmission {
       }
 
       case "health" => {
+        val isHospitalStay = userRequest.session.get(SessionKeys.wasHospitalStayRequired).get == "yes"
+        val isOngoingHospitalStay = userRequest.session.get(SessionKeys.hasHealthEventEnded).contains("no")
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
@@ -359,11 +361,11 @@ object AppealSubmission {
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
           appealInformation = HealthAppealInformation(
             `type` = "health",
-            hospitalStayInvolved = userRequest.session.get(SessionKeys.wasHospitalStayRequired).get == "yes",
-            dateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueHappened),
-            startDateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueStarted),
-            endDateOfEvent = userRequest.session.get(SessionKeys.whenHealthIssueEnded),
-            eventOngoing = userRequest.session.get(SessionKeys.hasHealthEventEnded).getOrElse("yes") == "no",
+            hospitalStayInvolved = isHospitalStay,
+            dateOfEvent = if(isHospitalStay) None else userRequest.session.get(SessionKeys.whenHealthIssueHappened),
+            startDateOfEvent = if(isHospitalStay) userRequest.session.get(SessionKeys.whenHealthIssueStarted) else None,
+            endDateOfEvent = if(isOngoingHospitalStay) None else userRequest.session.get(SessionKeys.whenHealthIssueEnded),
+            eventOngoing = isOngoingHospitalStay,
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
