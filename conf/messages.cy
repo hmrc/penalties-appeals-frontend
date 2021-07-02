@@ -283,6 +283,7 @@ checkYourAnswers.other.reasonableExcuse = The reason does not fit into any of th
 checkYourAnswers.other.unableToManageAccount = When did you become unable to manage the VAT account?
 checkYourAnswers.other.statementOfLateness = Why was the return submitted late?
 checkYourAnswers.other.fileEvidence = Evidence to support this appeal
+checkYourAnswers.other.noFileUpload = Not provided
 
 
 # Appeal Confirmation page

@@ -119,6 +119,11 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
       case "health" => getHealthReasonAnswers
 
       case "other" => {
+        val fileNameOrDefault: String = {
+          if(request.session.get(SessionKeys.evidenceFileName).isEmpty || request.session.get(SessionKeys.evidenceFileName).contains("")) {
+            messages("checkYourAnswers.other.noFileUpload")
+          } else request.session.get(SessionKeys.evidenceFileName).get
+        }
         Seq(
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
@@ -130,8 +135,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             request.session.get(SessionKeys.whyReturnSubmittedLate).get,
             controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url),
           (messages("checkYourAnswers.other.fileEvidence"),
-            //TODO: replace with default message
-            request.session.get(SessionKeys.evidenceFileName).getOrElse(""),
+            fileNameOrDefault,
             controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url)
         )
       }

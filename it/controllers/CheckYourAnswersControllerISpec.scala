@@ -207,7 +207,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         await(request).header.status shouldBe Status.OK
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe ""
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Not provided"
       }
 
       "file upload - no late appeal" in {
@@ -249,7 +249,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         await(request).header.status shouldBe Status.OK
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe ""
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Not provided"
         parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Why you did not appeal sooner"
         parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
       }
