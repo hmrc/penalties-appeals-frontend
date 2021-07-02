@@ -495,8 +495,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._2 shouldBe "This is why my VAT return was late."
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
-        //TODO: may need to change with default message
-        result(3)._2 shouldBe ""
+        result(3)._2 shouldBe "Not provided"
         result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
 
@@ -521,8 +520,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._2 shouldBe "This is why my VAT return was late."
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
-        //TODO: may need to change with default message
-        result(3)._2 shouldBe ""
+        result(3)._2 shouldBe "Not provided"
         result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         result(4)._1 shouldBe "Why you did not appeal sooner"
         result(4)._2 shouldBe "This is the reason why my appeal was late."
@@ -550,7 +548,6 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._2 shouldBe "This is why my VAT return was late."
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
-        //TODO: may need to change with default message
         result(3)._2 shouldBe "file.docx"
         result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
@@ -577,7 +574,6 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._2 shouldBe "This is why my VAT return was late."
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
-        //TODO: may need to change with default message
         result(3)._2 shouldBe "file.docx"
         result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         result(4)._1 shouldBe "Why you did not appeal sooner"
