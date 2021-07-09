@@ -17,7 +17,7 @@
 package viewtils
 
 import base.SpecBase
-import forms.HasCrimeBeenReportedForm
+import forms.{HasCrimeBeenReportedForm, WhyReturnWasSubmittedLateAgentForm}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
@@ -40,7 +40,7 @@ class RadioOptionHelperSpec extends SpecBase {
           value = Some("unknown"),
           content = Text("I do not know"),
           checked = false
-        ),
+        )
       )
 
       val result = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(form)
@@ -64,10 +64,50 @@ class RadioOptionHelperSpec extends SpecBase {
           value = Some("unknown"),
           content = Text("I do not know"),
           checked = false
-        ),
+        )
       )
 
       val result = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(form)
+      result shouldBe expectedResult
+    }
+  }
+
+  "radioOptionsForWhyReturnSubmittedLateAgent" should {
+    "return the correct radio options for the HasCrimeBeenReportedPage - no option has been selected" in {
+      val form = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
+      val expectedResult = Seq(
+        RadioItem(
+          value = Some("client"),
+          content = Text("My client did not get information to me on time"),
+          checked = false
+        ),
+        RadioItem(
+          value = Some("agent"),
+          content = Text("Something else happened to delay me"),
+          checked = false
+        )
+      )
+
+      val result = RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(form)
+      result shouldBe expectedResult
+    }
+
+    "return the correct radio options for the HasCrimeBeenReportedPage - option has been selected" in {
+      val form = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm.fill("client")
+      val expectedResult = Seq(
+        RadioItem(
+          value = Some("client"),
+          content = Text("My client did not get information to me on time"),
+          checked = true
+        ),
+        RadioItem(
+          value = Some("agent"),
+          content = Text("Something else happened to delay me"),
+          checked = false
+        )
+      )
+
+      val result = RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(form)
       result shouldBe expectedResult
     }
   }
