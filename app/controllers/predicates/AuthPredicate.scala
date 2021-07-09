@@ -24,8 +24,10 @@ import play.api.mvc.{ActionBuilder, ActionFunction, Request, _}
 import services.AuthService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.allEnrolments
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.{EnrolmentKeys, SessionKeys}
 import views.html.errors.Unauthorised
 
 import javax.inject.{Inject, Singleton}
@@ -53,10 +55,9 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
         logger.debug(s"$logMsgStart - User is $affinityGroup and has ${allEnrolments.enrolments.size} enrolments. " +
           s"Enrolments: ${allEnrolments.enrolments}")
         (isAgent(affinityGroup), allEnrolments) match {
-          case (true, enrolments) => {
+          case (true, _) => {
             logger.debug(s"$logMsgStart - Authorising user as Agent")
-            //TODO: replace this with agent processing
-            checkVatEnrolment(enrolments, block)
+            authoriseAsAgent(block)
           }
           case (false, enrolments) => {
             logger.debug(s"$logMsgStart - Authorising user as Individual/Organisation")
@@ -86,6 +87,42 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
     } else {
       logger.debug(s"$logMsgStart - User does not have an activated HMRC-MTD-VAT enrolment. User had these enrolments: ${allEnrolments.enrolments}")
       Future(Forbidden(unauthorisedView()))
+    }
+  }
+
+  private[predicates] def authoriseAsAgent[A](block: UserRequest[A] => Future[Result])
+                                             (implicit request: Request[A]): Future[Result] = {
+
+    val agentDelegatedAuthorityRule: String => Enrolment = vrn =>
+      Enrolment(EnrolmentKeys.mtdVATEnrolmentKey)
+        .withIdentifier(EnrolmentKeys.vrnId, vrn)
+        .withDelegatedAuthRule(EnrolmentKeys.agentDelegatedAuthRuleKey)
+    request.session.get(SessionKeys.agentSessionVrn) match {
+      case Some(vrn) =>
+        authService
+          .authorised(agentDelegatedAuthorityRule(vrn))
+          .retrieve(allEnrolments) {
+            enrolments =>
+              enrolments.enrolments.collectFirst {
+                case Enrolment(EnrolmentKeys.agentEnrolmentKey, Seq(EnrolmentIdentifier(_, arn)), EnrolmentKeys.activated, _) => arn
+              } match {
+                case Some(arn) => block(UserRequest(vrn, arn = Some(arn)))
+                case None =>
+                  logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
+                  Future.successful(Forbidden(unauthorisedView()))
+              }
+          } recover {
+          case _: NoActiveSession =>
+            logger.debug(s"AgentPredicate][authoriseAsAgent] - No active session. Redirecting to ${appConfig.signInUrl}")
+            Redirect(appConfig.signInUrl)
+          case _: AuthorisationException =>
+            logger.debug(s"[AgentPredicate][authoriseAsAgent] - Agent does not have delegated authority for client. " +
+              s"Showing unauthorised")
+            Forbidden(unauthorisedView())
+        }
+      case None =>
+        logger.debug(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session. Redirecting to ${appConfig.agentClientLookupStartUrl(request.uri)}")
+        Future.successful(Redirect(appConfig.agentClientLookupStartUrl(request.uri)))
     }
   }
 

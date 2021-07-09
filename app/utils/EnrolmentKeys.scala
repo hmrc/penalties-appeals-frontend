@@ -21,6 +21,8 @@ object EnrolmentKeys {
   val vrnId: String = "VRN"
   val agentAffinityGroup: String = "Agent"
   val activated = "Activated"
+  val agentDelegatedAuthRuleKey = "mtd-vat-auth"
+  val agentEnrolmentKey = "HMRC-AS-AGENT"
 
   def constructMTDVATEnrolmentKey(vrn: String): String = s"$mtdVATEnrolmentKey~$vrnId~$vrn"
 }
