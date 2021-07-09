@@ -59,4 +59,19 @@ object RadioOptionHelper {
       )
     )
   }
+
+  def radioOptionsForSubmitVATReturnPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+    Seq(
+      RadioItem(
+        value = Some("agent"),
+        content = Text(messages("agents.whoPlannedToSubmitVATReturn.agent")),
+        checked = form("value").value.contains("agent")
+      ),
+      RadioItem(
+        value = Some("client"),
+        content = Text(messages("agents.whoPlannedToSubmitVATReturn.client")),
+        checked = form("value").value.contains("client")
+      )
+    )
+  }
 }
