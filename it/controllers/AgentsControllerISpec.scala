@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 
 class AgentsControllerISpec extends IntegrationSpecCommonBase {
   val controller: AgentsController = injector.instanceOf[AgentsController]
-  
+
   "GET /why-return-was-submitted-late-agent" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-return-was-submitted-late-agent").withSession(
@@ -149,4 +149,5 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
       request.status shouldBe Status.SEE_OTHER
     }
   }
+
 }

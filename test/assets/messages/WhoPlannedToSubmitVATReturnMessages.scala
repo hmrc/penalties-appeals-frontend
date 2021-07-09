@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package messages
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms.single
+object WhoPlannedToSubmitVATReturnMessages {
 
-object WhoPlannedToSubmitVATReturnForm extends Mappings {
-  final val options = Seq("agent", "client")
-  val whoPlannedToSubmitVATReturnForm = Form[String](
-    single(
-      "value" -> text("agents.whoPlannedToSubmitVATReturn.error.required")
-        .verifying("agents.whoPlannedToSubmitVATReturn.error.required", value => options.contains(value))
-    )
-  )
+  val title = "Before the deadline, who planned to submit the return? - Appeal a VAT penalty - GOV.UK"
+
+  val heading = "Before the deadline, who planned to submit the return?"
+
+  val clientDidOption = "My Client did"
+
+  val agentDidOption = "I did"
+
+  val continueButton = "Continue"
 
 }

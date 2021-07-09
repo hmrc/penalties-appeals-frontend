@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import models.NormalMode
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
@@ -28,11 +29,13 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
+import views.html.agents.WhoPlannedToSubmitVATReturnPage
 import views.html.agents.WhyWasTheReturnSubmittedLateAgentPage
 
 import scala.concurrent.Future
 
 class AgentsControllerSpec extends SpecBase {
+  val whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage = injector.instanceOf[WhoPlannedToSubmitVATReturnPage]
   val whyWasTheReturnSubmittedLatePage: WhyWasTheReturnSubmittedLateAgentPage = injector.instanceOf[WhyWasTheReturnSubmittedLateAgentPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {

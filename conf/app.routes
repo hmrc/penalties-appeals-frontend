@@ -84,10 +84,10 @@ POST       /upload-evidence-for-the-appeal                  controllers.OtherRea
 POST       /upload-evidence-for-the-appeal/change            controllers.OtherReasonController.onSubmitForUploadEvidence(mode: Mode = CheckMode)
 
 # Who Planned to Submit VAT Return
-GET        /who-planned-to-submit-vat-return                  controllers.SubmitVATReturnController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
-POST       /who-planned-to-submit-vat-return                  controllers.SubmitVATReturnController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
-GET        /who-planned-to-submit-vat-return                  controllers.SubmitVATReturnController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
-POST       /who-planned-to-submit-vat-return                  controllers.SubmitVATReturnController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
+GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
+POST       /who-planned-to-submit-vat-return                  controllers.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
+GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
+POST       /who-planned-to-submit-vat-return                  controllers.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
 
 
 # Check Your Answers page
