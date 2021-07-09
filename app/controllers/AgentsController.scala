@@ -35,10 +35,9 @@ import viewtils.RadioOptionHelper
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class SubmitVATReturnController @Inject()(navigation: Navigation,
+class AgentsController @Inject()(navigation: Navigation,
                                           whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage)
                                          (implicit mcc: MessagesControllerComponents,
-                                          ec: ExecutionContext,
                                           appConfig: AppConfig,
                                           authorise: AuthPredicate,
                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
@@ -46,25 +45,26 @@ class SubmitVATReturnController @Inject()(navigation: Navigation,
   def onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-        WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitForm,
+        WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm,
         SessionKeys.whoPlannedToSubmitVATReturn
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider)
-      val postAction = controllers.routes.SubmitVATReturnController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
+      val postAction = controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
       Ok(whoPlannedToSubmitVATReturnPage(formProvider, radioOptionsToRender, postAction))
     }
   }
 
   def onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitForm.bindFromRequest().fold(
+      WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm.bindFromRequest().fold(
         formWithErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formWithErrors)
-          val postAction = controllers.routes.SubmitVATReturnController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
+          val postAction = controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
           BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction))
         },
         vatReturnSubmittedBy => {
-          Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnPage, mode, Some(vatReturnSubmittedBy)))
+          //TODO: updated as per routing for agents in Navigation
+          Redirect("#")
             .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
         }
       )
