@@ -83,6 +83,13 @@ GET        /upload-evidence-for-the-appeal/change            controllers.OtherRe
 POST       /upload-evidence-for-the-appeal                  controllers.OtherReasonController.onSubmitForUploadEvidence(mode: Mode = NormalMode)
 POST       /upload-evidence-for-the-appeal/change            controllers.OtherReasonController.onSubmitForUploadEvidence(mode: Mode = CheckMode)
 
+# Who Planned to Submit VAT Return
+GET        /who-planned-to-submit-vat-return                  controllers.SubmitVATReturnController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
+POST       /who-planned-to-submit-vat-return                  controllers.SubmitVATReturnController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
+GET        /who-planned-to-submit-vat-return                  controllers.SubmitVATReturnController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
+POST       /who-planned-to-submit-vat-return                  controllers.SubmitVATReturnController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
+
+
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()
