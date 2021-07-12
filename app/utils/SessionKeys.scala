@@ -41,6 +41,7 @@ object SessionKeys {
   val whyReturnSubmittedLate = "whyReturnSubmittedLate"
   val evidenceFileName = "evidenceFileName"
   val agentSessionVrn = "CLIENT_VRN"
+  val causeOfLateSubmissionAgent = "causeOfLateSubmissionAgent"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -65,6 +66,7 @@ object SessionKeys {
     whenDidBecomeUnable,
     whyReturnSubmittedLate,
     evidenceFileName,
-    hasHealthEventEnded
+    hasHealthEventEnded,
+    causeOfLateSubmissionAgent
   )
 }

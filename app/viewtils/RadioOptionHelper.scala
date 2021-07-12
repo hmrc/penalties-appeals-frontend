@@ -45,6 +45,21 @@ object RadioOptionHelper {
     )
   }
 
+  def radioOptionsForWhyReturnSubmittedLateAgent(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+    Seq(
+      RadioItem(
+        value = Some("client"),
+        content = Text(messages("agents.whyWasTheReturnSubmittedLate.option.client")),
+        checked = form("value").value.contains("client")
+      ),
+      RadioItem(
+        value = Some("agent"),
+        content = Text(messages("agents.whyWasTheReturnSubmittedLate.option.agent")),
+        checked = form("value").value.contains("agent")
+      )
+    )
+  }
+
   def yesNoRadioOptions(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
     Seq(
       RadioItem(
