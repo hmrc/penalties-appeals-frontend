@@ -18,30 +18,55 @@ package controllers
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.WhoPlannedToSubmitVATReturnForm
+import forms.{WhoPlannedToSubmitVATReturnForm, WhyReturnWasSubmittedLateAgentForm}
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.WhoPlannedToSubmitVATReturnPage
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 import utils.SessionKeys
-import views.html.agents.WhoPlannedToSubmitVATReturnPage
+import views.html.agents.{WhoPlannedToSubmitVATReturnPage, WhyWasTheReturnSubmittedLateAgentPage}
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class AgentsController @Inject()(navigation: Navigation,
+                                          whyWasTheReturnSubmittedLatePage: WhyWasTheReturnSubmittedLateAgentPage,
                                           whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage)
                                          (implicit mcc: MessagesControllerComponents,
                                           appConfig: AppConfig,
                                           authorise: AuthPredicate,
                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit userRequest => {
+      logger.debug("[AgentsController][onPageLoadForWhyReturnSubmittedLate] - Loaded 'why was return submitted late' page as user is agent")
+      val postAction = controllers.routes.AgentsController.onSubmitForWhyReturnSubmittedLate(mode)
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm,
+        SessionKeys.causeOfLateSubmissionAgent)
+      Ok(whyWasTheReturnSubmittedLatePage(formProvider, RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(formProvider), postAction))
+    }
+  }
 
+  def onSubmitForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit userRequest => {
+      val postAction = controllers.routes.AgentsController.onSubmitForWhyReturnSubmittedLate(mode)
+      WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm.bindFromRequest().fold(
+        formWithErrors => {
+          BadRequest(whyWasTheReturnSubmittedLatePage(formWithErrors, RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(formWithErrors), postAction))
+        },
+        causeOfLateSubmission => {
+          //TODO: change with routing for agents
+          Redirect("#")
+            .addingToSession(SessionKeys.causeOfLateSubmissionAgent -> causeOfLateSubmission)
+        }
+      )
+    }
+
+  }
   def onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
