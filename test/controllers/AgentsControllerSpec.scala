@@ -29,14 +29,13 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
-import views.html.agents.WhoPlannedToSubmitVATReturnPage
-import views.html.agents.WhyWasTheReturnSubmittedLateAgentPage
+import views.html.agents.{WhyWasTheReturnSubmittedLateAgentPage,WhoPlannedToSubmitVATReturnPage}
 
 import scala.concurrent.Future
 
 class AgentsControllerSpec extends SpecBase {
-  val whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage = injector.instanceOf[WhoPlannedToSubmitVATReturnPage]
   val whyWasTheReturnSubmittedLatePage: WhyWasTheReturnSubmittedLateAgentPage = injector.instanceOf[WhyWasTheReturnSubmittedLateAgentPage]
+  val whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage = injector.instanceOf[WhoPlannedToSubmitVATReturnPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -47,177 +46,243 @@ class AgentsControllerSpec extends SpecBase {
 
     val controller: AgentsController = new AgentsController(
       whyWasTheReturnSubmittedLatePage,
+      whoPlannedToSubmitVATReturnPage,
       mainNavigator
     )(mcc, appConfig, authPredicate, dataRequiredAction)
   }
 
-  "onPageLoadForWhyReturnSubmittedLate" should {
-    "the user is authorised" must {
+  "AgentsController" should {
+    "onPageLoadForWhyReturnSubmittedLate" should {
+      "the user is authorised" must {
 
-      "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(userRequestWithCorrectKeys)
-        status(result) shouldBe OK
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+
+        "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.causeOfLateSubmissionAgent -> "agent")))
+          status(result) shouldBe OK
+          val documentParsed = Jsoup.parse(contentAsString(result))
+          documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
+        }
+
+        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
       }
 
-      "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-<<<<<<< HEAD
-        val result = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.causeOfLateSubmissionAgent -> "agent")))
-        status(result) shouldBe OK
-        val documentParsed = Jsoup.parse(contentAsString(result))
-        documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
-      }
+      "the user is unauthorised" when {
 
-      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
-=======
-        val result: Future[Result] = controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "client")))
-        status(result) shouldBe OK
-        val documentParsed: Document = Jsoup.parse(contentAsString(result))
-        documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
-      }
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
 
-
-      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
->>>>>>> origin/PRM-406
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
-    }
-
-    "the user is unauthorised" when {
-
-      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-<<<<<<< HEAD
-        val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
-=======
-        val result: Future[Result] = controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
->>>>>>> origin/PRM-406
-        status(result) shouldBe FORBIDDEN
-      }
-
-      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-<<<<<<< HEAD
-        val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
-=======
-        val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
->>>>>>> origin/PRM-406
-        status(result) shouldBe SEE_OTHER
-      }
-    }
-  }
-
-<<<<<<< HEAD
-  "onSubmitForWhyReturnSubmittedLate" should {
-    "user submits the form" when {
-      "the validation is performed against possible values - redirect on success and set the session key value" in
-        new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-=======
-  "onSubmitForWhoPlannedToSubmitVATReturn" should {
-    "user submits the form" when {
-      "the validation is performed against possible values - redirect on success and set the session key value" in
-        new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
->>>>>>> origin/PRM-406
-            Json.parse(
-              """
-                |{
-                |   "value": "agent"
-                |}
-                |""".stripMargin
-            )
-          )))
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD
-          //TODO: change to Reasonable excuse selection page
-          redirectLocation(result).get shouldBe "#"
-          await(result).session.get(SessionKeys.causeOfLateSubmissionAgent).get shouldBe "agent"
-=======
-          //TODO: update it to the redirected page
-          redirectLocation(result).get shouldBe "#"
-          await(result).session.get(SessionKeys.whoPlannedToSubmitVATReturn).get shouldBe "agent"
->>>>>>> origin/PRM-406
         }
+      }
+    }
 
-      "the validation is performed against possible values - value does not appear in options list" in
-        new Setup(AuthTestModels.successfulAuthResult) {
-<<<<<<< HEAD
-          val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-=======
-          val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
->>>>>>> origin/PRM-406
+    "onSubmitForWhyReturnSubmittedLate" should {
+      "user submits the form" when {
+        "the validation is performed against possible values - redirect on success and set the session key value" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "agent"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe SEE_OTHER
+            //TODO: change to Reasonable excuse selection page
+            redirectLocation(result).get shouldBe "#"
+            await(result).session.get(SessionKeys.causeOfLateSubmissionAgent).get shouldBe "agent"
+          }
+
+        "the validation is performed against possible values - value does not appear in options list" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "this_is_fake"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe BAD_REQUEST
+            contentAsString(result) should include("There is a problem")
+            contentAsString(result) should include("Tell us the reason the return was submitted late")
+          }
+
+        "the validation is performed against an empty value - value is an empty string" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": ""
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe BAD_REQUEST
+            contentAsString(result) should include("There is a problem")
+            contentAsString(result) should include("Tell us the reason the return was submitted late")
+          }
+      }
+
+      "return 500" when {
+        "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest.withJsonBody(
             Json.parse(
               """
                 |{
-                |   "value": "this_is_fake"
+                |   "value": "no"
                 |}
                 |""".stripMargin
             )
-          )))
-          status(result) shouldBe BAD_REQUEST
-          contentAsString(result) should include("There is a problem")
-<<<<<<< HEAD
-          contentAsString(result) should include("Tell us the reason the return was submitted late")
-=======
-          contentAsString(result) should include("Tell us who planned to submit the VAT return")
->>>>>>> origin/PRM-406
+          ))
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
-      "the validation is performed against an empty value - value is an empty string" in
-        new Setup(AuthTestModels.successfulAuthResult) {
-<<<<<<< HEAD
-          val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-=======
-          val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
->>>>>>> origin/PRM-406
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+    "onPageLoadForWhoPlannedToSubmitVATReturn" should {
+      "the user is authorised" must {
+
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+
+        "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "client")))
+          status(result) shouldBe OK
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
+          documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
+        }
+
+
+        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForWhoPlannedToSubmitVATReturn" should {
+      "user submits the form" when {
+        "the validation is performed against possible values - redirect on success and set the session key value" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "agent"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe SEE_OTHER
+            //TODO: update it
+            redirectLocation(result).get shouldBe "#"
+            await(result).session.get(SessionKeys.whoPlannedToSubmitVATReturn).get shouldBe "agent"
+          }
+
+        "the validation is performed against possible values - value does not appear in options list" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "this_is_fake"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe BAD_REQUEST
+            contentAsString(result) should include("There is a problem")
+            contentAsString(result) should include("Tell us who planned to submit the VAT return")
+          }
+
+        "the validation is performed against an empty value - value is an empty string" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": ""
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe BAD_REQUEST
+            contentAsString(result) should include("There is a problem")
+            contentAsString(result) should include("Tell us who planned to submit the VAT return")
+          }
+      }
+
+      "return 500" when {
+        "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest.withJsonBody(
             Json.parse(
               """
                 |{
-                |   "value": ""
+                |   "value": "no"
                 |}
                 |""".stripMargin
             )
-          )))
-          status(result) shouldBe BAD_REQUEST
-          contentAsString(result) should include("There is a problem")
-<<<<<<< HEAD
-          contentAsString(result) should include("Tell us the reason the return was submitted late")
-=======
-          contentAsString(result) should include("Tell us who planned to submit the VAT return")
->>>>>>> origin/PRM-406
+          ))
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
-    }
 
-    "return 500" when {
-      "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-<<<<<<< HEAD
-        val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest.withJsonBody(
-=======
-        val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest.withJsonBody(
->>>>>>> origin/PRM-406
-          Json.parse(
-            """
-              |{
-              |   "value": "no"
-              |}
-              |""".stripMargin
-          )
-        ))
-        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
-    }
+      "the user is unauthorised" when {
 
-    "the user is unauthorised" when {
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
 
-      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-        val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
-        status(result) shouldBe FORBIDDEN
-      }
-
-      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-        val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
       }
     }
   }

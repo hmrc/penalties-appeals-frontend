@@ -17,9 +17,7 @@
 package viewtils
 
 import base.SpecBase
-import forms.{HasCrimeBeenReportedForm, WhyReturnWasSubmittedLateAgentForm}
-import forms.{HasCrimeBeenReportedForm, WhoPlannedToSubmitVATReturnForm}
-import forms.{HasCrimeBeenReportedForm, WhoPlannedToSubmitVATReturnForm}
+import forms.{HasCrimeBeenReportedForm, WhyReturnWasSubmittedLateAgentForm,WhoPlannedToSubmitVATReturnForm}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
@@ -73,8 +71,8 @@ class RadioOptionHelperSpec extends SpecBase {
       result shouldBe expectedResult
     }
   }
-
-  "radioOptionsForWhyReturnSubmittedLateAgent" should {
+  
+ "radioOptionsForWhyReturnSubmittedLateAgent" should {
     "return the correct radio options for the WhyReturnSubmittedLatePage - no option has been selected" in {
       val form = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
       val expectedResult = Seq(
@@ -110,46 +108,6 @@ class RadioOptionHelperSpec extends SpecBase {
       )
 
       val result = RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(form)
-      result shouldBe expectedResult
-    }
-  }
-
-  "radioOptionsForSubmitVATReturnPage" should {
-    "return the correct radio options for the WhoPlannedToSubmitVATReturnPage - no option has been selected" in {
-      val form = WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm
-      val expectedResult = Seq(
-        RadioItem(
-          value = Some("agent"),
-          content = Text("I did"),
-          checked = false
-        ),
-        RadioItem(
-          value = Some("client"),
-          content = Text("My Client did"),
-          checked = false
-        )
-      )
-
-      val result = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(form)
-      result shouldBe expectedResult
-    }
-
-    "return the correct radio options for the WhoPlannedToSubmitVATReturnPage - option has been selected" in {
-      val form = WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm.fill("agent")
-      val expectedResult = Seq(
-        RadioItem(
-          value = Some("agent"),
-          content = Text("I did"),
-          checked = true
-        ),
-        RadioItem(
-          value = Some("client"),
-          content = Text("My Client did"),
-          checked = false
-        )
-      )
-
-      val result = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(form)
       result shouldBe expectedResult
     }
   }
