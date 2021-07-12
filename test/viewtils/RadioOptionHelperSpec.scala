@@ -73,7 +73,7 @@ class RadioOptionHelperSpec extends SpecBase {
   }
 
   "radioOptionsForWhyReturnSubmittedLateAgent" should {
-    "return the correct radio options for the HasCrimeBeenReportedPage - no option has been selected" in {
+    "return the correct radio options for the WhyReturnSubmittedLatePage - no option has been selected" in {
       val form = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
       val expectedResult = Seq(
         RadioItem(
@@ -92,7 +92,7 @@ class RadioOptionHelperSpec extends SpecBase {
       result shouldBe expectedResult
     }
 
-    "return the correct radio options for the HasCrimeBeenReportedPage - option has been selected" in {
+    "return the correct radio options for the WhyReturnSubmittedLatePage - option has been selected" in {
       val form = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm.fill("client")
       val expectedResult = Seq(
         RadioItem(
