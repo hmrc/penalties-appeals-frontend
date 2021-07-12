@@ -69,6 +69,8 @@ class AgentsController @Inject()(navigation: Navigation,
         }
       )
     }
+
+  }
 import forms.WhyReturnWasSubmittedLateAgentForm
 import helpers.FormProviderHelper
 import models.Mode
@@ -113,5 +115,6 @@ class AgentsController @Inject()(whyWasTheReturnSubmittedLatePage: WhyWasTheRetu
       )
     }
 
+      }
+    }
   }
-}
