@@ -59,4 +59,18 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val feedbackUrl: String = config.get[String]("urls.feedbackUrl")
 
   lazy val daysRequiredForLateAppeal: Int = config.get[Int]("constants.daysRequiredForLateAppeal")
+
+  val vatAgentClientLookupFrontendHost: String = "vat-agent-client-lookup-frontend.host"
+  val vatAgentClientLookupFrontendStartUrl: String = "vat-agent-client-lookup-frontend.startUrl"
+
+  private lazy val agentClientLookupHost = servicesConfig.getConfString(vatAgentClientLookupFrontendHost, "")
+
+  private lazy val platformHost = servicesConfig.getString("host")
+
+  private lazy val agentClientLookupRedirectUrl: String => String = uri => SafeRedirectUrl(platformHost + uri).encodedUrl
+
+  lazy val agentClientLookupStartUrl = (uri: String) =>
+    agentClientLookupHost +
+      servicesConfig.getConfString(vatAgentClientLookupFrontendStartUrl, "") +
+      s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
 }

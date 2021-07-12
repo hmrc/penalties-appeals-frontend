@@ -59,21 +59,35 @@ trait AuthMocks extends SpecBase {
       )
     ))
 
-  def mockAgentAuthorised(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] = {
-    //TODO: Need to change this response to a more 'Agent-like' setup
-    setupAuthResponse(Future.successful(
-      new ~(Some(AffinityGroup.Agent),
-        Enrolments(
-          Set(
-            Enrolment("HMRC-MTD-VAT",
-              Seq(
-                EnrolmentIdentifier("VRN", vrn)
-              ),
-              "Activated"
-            )
-          ))
-      )
+  def mockAgentAuthorised(): OngoingStubbing[Future[Enrolments]] = {
+    when(mockAuthConnector.authorise[Enrolments](
+      Matchers.any(), Matchers.any())(
+      Matchers.any(), Matchers.any())
+    ).thenReturn(Future.successful(
+      Enrolments(
+        Set(
+          Enrolment(
+            "HMRC-AS-AGENT",
+            Seq(EnrolmentIdentifier("AgentReferenceNumber", "1234567")),
+            "Activated"
+          )
+        ))
     ))
+  }
+
+  def mockAgentAuthorisedNoARN(): OngoingStubbing[Future[Enrolments]] = {
+    when(mockAuthConnector.authorise[Enrolments](
+      Matchers.any(), Matchers.any())(
+      Matchers.any(), Matchers.any())
+    ).thenReturn(Future.successful(
+      Enrolments(
+        Set(
+          Enrolment(
+            "HMRC-AS-AGENT",
+            Seq(),
+            "Activated"
+          )
+        ))))
   }
 
   def mockOrganisationNonActivatedMTDVATEnrolment(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
