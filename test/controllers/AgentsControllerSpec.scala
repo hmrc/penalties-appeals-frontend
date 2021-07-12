@@ -45,9 +45,9 @@ class AgentsControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     val controller: AgentsController = new AgentsController(
+      mainNavigator,
       whyWasTheReturnSubmittedLatePage,
-      whoPlannedToSubmitVATReturnPage,
-      mainNavigator
+      whoPlannedToSubmitVATReturnPage
     )(mcc, appConfig, authPredicate, dataRequiredAction)
   }
 
