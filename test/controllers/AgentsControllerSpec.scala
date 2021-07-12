@@ -99,6 +99,8 @@ class AgentsControllerSpec extends SpecBase {
             )
           )))
           status(result) shouldBe SEE_OTHER
+          //TODO: update it to the redirected page
+          redirectLocation(result).get shouldBe "#"
           await(result).session.get(SessionKeys.whoPlannedToSubmitVATReturn).get shouldBe "agent"
         }
 
