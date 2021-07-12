@@ -85,9 +85,9 @@ POST       /upload-evidence-for-the-appeal/change            controllers.OtherRe
 
 # Who Planned to Submit VAT Return
 GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
+GET        /who-planned-to-submit-vat-return/change           controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
 POST       /who-planned-to-submit-vat-return                  controllers.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
-GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
-POST       /who-planned-to-submit-vat-return                  controllers.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
+POST       /who-planned-to-submit-vat-return/change           controllers.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
 
 
 # Check Your Answers page
