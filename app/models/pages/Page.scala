@@ -32,3 +32,4 @@ case object DidHospitalStayEndPage extends Page
 case object WhenDidBecomeUnablePage extends Page
 case object WhyWasReturnSubmittedLatePage extends Page
 case object EvidencePage extends Page
+case object WhoPlannedToSubmitVATReturnPage extends Page

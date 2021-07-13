@@ -214,6 +214,14 @@ otherReason.whenDidBecomeUnable.error.required = The date you became unable to m
 otherReason.whenDidBecomeUnable.error.invalid = The date you became unable to manage VAT must be a real date
 otherReason.whenDidBecomeUnable.error.notInFuture = The date you became unable to manage VAT must be today or in the past
 
+# Who Planned to Submit VAT Return
+# ----------------------------------------------------------
+agents.whoPlannedToSubmitVATReturn.agent = I did
+agents.whoPlannedToSubmitVATReturn.client = My Client did
+agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submit the VAT return
+agents.whoPlannedToSubmitVATReturn.title = Before the deadline, who planned to submit the return?
+agents.whoPlannedToSubmitVATReturn.heading = Before the deadline, who planned to submit the return?
+
 
 # Upload Evidence
 # ----------------------------------------------------------

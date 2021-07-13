@@ -18,26 +18,30 @@ package controllers
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.WhyReturnWasSubmittedLateAgentForm
+import forms.{WhoPlannedToSubmitVATReturnForm, WhyReturnWasSubmittedLateAgentForm}
 import helpers.FormProviderHelper
 import models.Mode
 import navigation.Navigation
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.agents.WhyWasTheReturnSubmittedLateAgentPage
+import views.html.agents.{WhoPlannedToSubmitVATReturnPage, WhyWasTheReturnSubmittedLateAgentPage}
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
 
-class AgentsController @Inject()(whyWasTheReturnSubmittedLatePage: WhyWasTheReturnSubmittedLateAgentPage,
-                                 navigation: Navigation)(implicit mcc: MessagesControllerComponents,
-                                                         appConfig: AppConfig,
-                                                         authorise: AuthPredicate,
-                                                         dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
-  def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+class AgentsController @Inject()(navigation: Navigation,
+                                          whyWasTheReturnSubmittedLatePage: WhyWasTheReturnSubmittedLateAgentPage,
+                                          whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage)
+                                         (implicit mcc: MessagesControllerComponents,
+                                          appConfig: AppConfig,
+                                          authorise: AuthPredicate,
+                                          dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit userRequest => {
       logger.debug("[AgentsController][onPageLoadForWhyReturnSubmittedLate] - Loaded 'why was return submitted late' page as user is agent")
       val postAction = controllers.routes.AgentsController.onSubmitForWhyReturnSubmittedLate(mode)
@@ -62,5 +66,33 @@ class AgentsController @Inject()(whyWasTheReturnSubmittedLatePage: WhyWasTheRetu
       )
     }
 
+  }
+  def onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
+        WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm,
+        SessionKeys.whoPlannedToSubmitVATReturn
+      )
+      val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider)
+      val postAction = controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
+      Ok(whoPlannedToSubmitVATReturnPage(formProvider, radioOptionsToRender, postAction))
+    }
+  }
+
+  def onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm.bindFromRequest().fold(
+        formWithErrors => {
+          val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formWithErrors)
+          val postAction = controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
+          BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction))
+        },
+        vatReturnSubmittedBy => {
+          //TODO: updated as per routing for agents in Navigation
+          Redirect("#")
+            .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+        }
+      )
+    }
   }
 }
