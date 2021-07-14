@@ -16,7 +16,7 @@
 
 package messages
 
-object WhoPlannedToSubmitVATReturnMessages {
+object WhoPlannedToSubmitVATReturnAgentMessages {
 
   val title = "Before the deadline, who planned to submit the return? - Appeal a VAT penalty - GOV.UK"
 

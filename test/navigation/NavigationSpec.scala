@@ -309,6 +309,30 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
+
+      s"called with $WhyWasTheReturnSubmittedLateAgentPage when the appeal > 30 days late" in new Setup {
+        val result = mainNavigator.nextPage(WhyWasTheReturnSubmittedLateAgentPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.causeOfLateSubmissionAgent -> "causeOfLateSubmissionAgent"
+          )))
+        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
+      }
+
+      s"called with $WhoPlannedToSubmitVATReturnAgentPage when the appeal > 30 days late" in new Setup {
+        val result = mainNavigator.nextPage(WhoPlannedToSubmitVATReturnAgentPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "agent"
+          )))
+        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
+      }
+
+      s"called with $ReasonableExcuseSelectionPage when the appeal > 30 days late" in new Setup {
+        val result = mainNavigator.nextPage(ReasonableExcuseSelectionPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+          )))
+        result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      }
     }
   }
 

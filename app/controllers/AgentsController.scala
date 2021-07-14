@@ -18,7 +18,7 @@ package controllers
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.{WhoPlannedToSubmitVATReturnForm, WhyReturnWasSubmittedLateAgentForm}
+import forms.{WhoPlannedToSubmitVATReturnAgentForm, WhyReturnWasSubmittedLateAgentForm}
 import helpers.FormProviderHelper
 import models.{Mode, NormalMode}
 import models.pages.{ReasonableExcuseSelectionPage, WhoPlannedToSubmitVATReturnAgentPage, WhyWasTheReturnSubmittedLateAgentPage}
@@ -72,7 +72,7 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
     implicit request => {
       logger.debug("[AgentsController][onPageLoadForWhoPlannedToSubmitVATReturn] - Loaded 'Who Planned ToSubmit VAT Return' page as user is agent")
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-        WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm,
+        WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm,
         SessionKeys.whoPlannedToSubmitVATReturn
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider)
@@ -83,14 +83,14 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
 
   def onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm.bindFromRequest().fold(
+      WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm.bindFromRequest().fold(
         formWithErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formWithErrors)
           val postAction = controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
           BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction))
         },
         vatReturnSubmittedBy => {
-          (vatReturnSubmittedBy) match {
+          (vatReturnSubmittedBy.toLowerCase) match {
             case "agent" => {
               Redirect(navigation.nextPage(WhyWasTheReturnSubmittedLateAgentPage, mode))
                 .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
@@ -109,7 +109,7 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, NormalMode))
     }

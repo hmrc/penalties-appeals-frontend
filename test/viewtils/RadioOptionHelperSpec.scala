@@ -17,7 +17,7 @@
 package viewtils
 
 import base.SpecBase
-import forms.{HasCrimeBeenReportedForm, WhyReturnWasSubmittedLateAgentForm,WhoPlannedToSubmitVATReturnForm}
+import forms.{HasCrimeBeenReportedForm, WhyReturnWasSubmittedLateAgentForm,WhoPlannedToSubmitVATReturnAgentForm}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
@@ -114,7 +114,7 @@ class RadioOptionHelperSpec extends SpecBase {
 
   "radioOptionsForSubmitVATReturnPage" should {
     "return the correct radio options for the WhoPlannedToSubmitVATReturnPage - no option has been selected" in {
-      val form = WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm
+      val form = WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm
       val expectedResult = Seq(
         RadioItem(
           value = Some("agent"),
@@ -133,7 +133,7 @@ class RadioOptionHelperSpec extends SpecBase {
     }
 
     "return the correct radio options for the WhoPlannedToSubmitVATReturnPage - option has been selected" in {
-      val form = WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm.fill("agent")
+      val form = WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm.fill("agent")
       val expectedResult = Seq(
         RadioItem(
           value = Some("agent"),

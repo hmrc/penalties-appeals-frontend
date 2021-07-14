@@ -17,21 +17,20 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.WhoPlannedToSubmitVATReturnForm
-import messages.WhoPlannedToSubmitVATReturnMessages
+import forms.WhoPlannedToSubmitVATReturnAgentForm
 import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.agents.WhoPlannedToSubmitVATReturnPage
-import messages.WhoPlannedToSubmitVATReturnMessages._
+import views.html.agents.WhoPlannedToSubmitVATReturnAgentPage
+import messages.WhoPlannedToSubmitVATReturnAgentMessages._
 import viewtils.RadioOptionHelper
 
-class WhoPlannedToSubmitVATReturnPageSpec extends SpecBase with ViewBehaviours {
-  val whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage = injector.instanceOf[WhoPlannedToSubmitVATReturnPage]
+class WhoPlannedToSubmitVATReturnAgentPageSpec extends SpecBase with ViewBehaviours {
+  val whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnAgentPage = injector.instanceOf[WhoPlannedToSubmitVATReturnAgentPage]
   object Selectors extends BaseSelectors
-  val formProvider = WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm
+  val formProvider = WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm
   def applyView(form: Form[_]): HtmlFormat.Appendable = whoPlannedToSubmitVATReturnPage.apply(form,
     RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider),
     controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode))

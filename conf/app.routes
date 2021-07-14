@@ -8,7 +8,7 @@ GET        /appeal-start                    controllers.AppealStartController.on
 GET        /initialise-appeal               controllers.InitialiseAppealController.onPageLoad(penaltyId: String)
 
 #Agent appeal and start page
-POST       /appeal-start-agents             controllers.AgentsController.onSubmit()
+GET       /appeal-start-agents             controllers.AgentsController.onPageLoad()
 
 #Reasonable excuse list
 GET        /reason-for-missing-deadline     controllers.ReasonableExcuseController.onPageLoad()
