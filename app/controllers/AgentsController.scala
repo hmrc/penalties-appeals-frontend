@@ -20,7 +20,8 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.{WhoPlannedToSubmitVATReturnForm, WhyReturnWasSubmittedLateAgentForm}
 import helpers.FormProviderHelper
-import models.Mode
+import models.{Mode, NormalMode}
+import models.pages.{ReasonableExcuseSelectionPage, WhoPlannedToSubmitVATReturnAgentPage, WhyWasTheReturnSubmittedLateAgentPage}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -29,14 +30,14 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.agents.{WhoPlannedToSubmitVATReturnPage, WhyWasTheReturnSubmittedLateAgentPage}
+import views.html.agents.{WhoPlannedToSubmitVATReturnAgentPage, WhyWasTheReturnSubmittedLateAgentPage}
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
 
 class AgentsController @Inject()(navigation: Navigation,
                                           whyWasTheReturnSubmittedLatePage: WhyWasTheReturnSubmittedLateAgentPage,
-                                          whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage)
+                                          whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnAgentPage)
                                          (implicit mcc: MessagesControllerComponents,
                                           appConfig: AppConfig,
                                           authorise: AuthPredicate,
@@ -59,8 +60,7 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
           BadRequest(whyWasTheReturnSubmittedLatePage(formWithErrors, RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(formWithErrors), postAction))
         },
         causeOfLateSubmission => {
-          //TODO: change with routing for agents
-          Redirect("#")
+          Redirect(navigation.nextPage(ReasonableExcuseSelectionPage,mode))
             .addingToSession(SessionKeys.causeOfLateSubmissionAgent -> causeOfLateSubmission)
         }
       )
@@ -88,11 +88,22 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
           BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction))
         },
         vatReturnSubmittedBy => {
-          //TODO: updated as per routing for agents in Navigation
-          Redirect("#")
-            .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+          if (vatReturnSubmittedBy.contains("agent")) {
+            Redirect(navigation.nextPage(WhyWasTheReturnSubmittedLateAgentPage, mode))
+              .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+          }
+          else{
+            Redirect(navigation.nextPage(ReasonableExcuseSelectionPage,mode))
+              .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+          }
         }
       )
+    }
+  }
+
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, NormalMode))
     }
   }
 }

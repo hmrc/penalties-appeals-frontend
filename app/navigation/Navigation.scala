@@ -43,7 +43,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     DidHospitalStayEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidBecomeUnablePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhyWasReturnSubmittedLatePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
+    EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhoPlannedToSubmitVATReturnAgentPage -> ((_, _) => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)),
+    WhyWasTheReturnSubmittedLateAgentPage -> ((_, _) => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)),
+    ReasonableExcuseSelectionPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad())
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
@@ -60,7 +63,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     DidHospitalStayEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidBecomeUnablePage -> ((_, _) => routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode)),
     WhyWasReturnSubmittedLatePage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
-    EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
+    EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WhoPlannedToSubmitVATReturnAgentPage -> ((_, _) => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)),
+    WhyWasTheReturnSubmittedLateAgentPage -> ((_, _) => routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(NormalMode)),
+    ReasonableExcuseSelectionPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad())
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None)(implicit userRequest: UserRequest[_]): Call = {

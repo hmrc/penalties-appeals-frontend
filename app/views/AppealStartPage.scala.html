@@ -15,10 +15,13 @@
  *@
 
 @import config.AppConfig
+@import utils.SessionKeys
 
 @this(layout: Layout,
         bullets: components.bullets,
-        link: components.link)
+        link: components.link,
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF)
 
 @(isLate: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
@@ -55,5 +58,11 @@
     <p class="govuk-body">@messages("appealStart.p5")</p>
     <p class="govuk-body">@messages("appealStart.p6")</p>
 
-    @link(routes.ReasonableExcuseController.onPageLoad().url, "common.continue", button = true, classes = "govuk-button")
+    @if(request.session.get(SessionKeys.agentSessionVrn).isDefined){
+        @formHelper(action = controllers.routes.AgentsController.onSubmit()) {
+        @govukButton(Button(content = Text(messages("common.continue"))))
+            }
+        } else {
+            @link(routes.ReasonableExcuseController.onPageLoad().url, "common.continue", button = true, classes = "govuk-button")
+            }
 }
