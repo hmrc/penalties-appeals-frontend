@@ -123,7 +123,7 @@ class RadioOptionHelperSpec extends SpecBase {
         ),
         RadioItem(
           value = Some("client"),
-          content = Text("My Client did"),
+          content = Text("My client did"),
           checked = false
         )
       )
@@ -142,7 +142,7 @@ class RadioOptionHelperSpec extends SpecBase {
         ),
         RadioItem(
           value = Some("client"),
-          content = Text("My Client did"),
+          content = Text("My client did"),
           checked = false
         )
       )
