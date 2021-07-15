@@ -20,7 +20,7 @@ import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.single
 
-object WhoPlannedToSubmitVATReturnForm extends Mappings {
+object WhoPlannedToSubmitVATReturnAgentForm extends Mappings {
   final val options = Seq("agent", "client")
   val whoPlannedToSubmitVATReturnForm = Form[String](
     single(
