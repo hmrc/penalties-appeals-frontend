@@ -16,11 +16,12 @@
 
 package controllers
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.{WhoPlannedToSubmitVATReturnForm, WhyReturnWasSubmittedLateAgentForm}
+import forms.{WhoPlannedToSubmitVATReturnAgentForm, WhyReturnWasSubmittedLateAgentForm}
 import helpers.FormProviderHelper
-import models.Mode
+import models.{Mode, NormalMode}
+import models.pages.{ReasonableExcuseSelectionPage, WhoPlannedToSubmitVATReturnAgentPage, WhyWasTheReturnSubmittedLateAgentPage}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -29,14 +30,15 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.agents.{WhoPlannedToSubmitVATReturnPage, WhyWasTheReturnSubmittedLateAgentPage}
+import views.html.agents.{WhoPlannedToSubmitVATReturnAgentPage, WhyWasTheReturnSubmittedLateAgentPage}
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
 
 class AgentsController @Inject()(navigation: Navigation,
                                           whyWasTheReturnSubmittedLatePage: WhyWasTheReturnSubmittedLateAgentPage,
-                                          whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnPage)
+                                          whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnAgentPage,
+                                          errorHandler: ErrorHandler)
                                          (implicit mcc: MessagesControllerComponents,
                                           appConfig: AppConfig,
                                           authorise: AuthPredicate,
@@ -59,18 +61,18 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
           BadRequest(whyWasTheReturnSubmittedLatePage(formWithErrors, RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(formWithErrors), postAction))
         },
         causeOfLateSubmission => {
-          //TODO: change with routing for agents
-          Redirect("#")
+          Redirect(navigation.nextPage(ReasonableExcuseSelectionPage,mode))
             .addingToSession(SessionKeys.causeOfLateSubmissionAgent -> causeOfLateSubmission)
         }
       )
     }
-
   }
+
   def onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
+      logger.debug("[AgentsController][onPageLoadForWhoPlannedToSubmitVATReturn] - Loaded 'Who Planned ToSubmit VAT Return' page as user is agent")
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-        WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm,
+        WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm,
         SessionKeys.whoPlannedToSubmitVATReturn
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider)
@@ -81,18 +83,35 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
 
   def onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      WhoPlannedToSubmitVATReturnForm.whoPlannedToSubmitVATReturnForm.bindFromRequest().fold(
+      WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm.bindFromRequest().fold(
         formWithErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formWithErrors)
           val postAction = controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
           BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction))
         },
         vatReturnSubmittedBy => {
-          //TODO: updated as per routing for agents in Navigation
-          Redirect("#")
-            .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+          (vatReturnSubmittedBy.toLowerCase) match {
+            case "agent" => {
+              Redirect(navigation.nextPage(WhyWasTheReturnSubmittedLateAgentPage, mode))
+                .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+            }
+            case "client" => {
+              Redirect(navigation.nextPage(ReasonableExcuseSelectionPage, mode))
+                .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+            }
+            case _ => {
+              logger.debug("[AgentsController][onSubmitForWhoPlannedToSubmitVATReturn]- Something went wrong with 'vatReturnSubmittedBy'")
+              errorHandler.showInternalServerError
+            }
+          }
         }
       )
+    }
+  }
+
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, NormalMode))
     }
   }
 }

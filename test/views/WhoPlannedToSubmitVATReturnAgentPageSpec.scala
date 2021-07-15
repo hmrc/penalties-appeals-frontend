@@ -17,40 +17,37 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.{WhyReturnWasSubmittedLateAgentForm}
-import messages.WhyWasTheReturnSubmittedLateAgentMessages._
+import forms.WhoPlannedToSubmitVATReturnAgentForm
 import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.agents.WhyWasTheReturnSubmittedLateAgentPage
+import views.html.agents.WhoPlannedToSubmitVATReturnAgentPage
+import messages.WhoPlannedToSubmitVATReturnAgentMessages._
 import viewtils.RadioOptionHelper
 
-class WhyWasTheReturnSubmittedLateAgentPageSpec extends SpecBase with ViewBehaviours {
-  "WhyWasTheReturnSubmittedLateAgentPage" should {
-    val whyReturnSubmittedLate: WhyWasTheReturnSubmittedLateAgentPage = injector.instanceOf[WhyWasTheReturnSubmittedLateAgentPage]
-    val formProvider = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
+class WhoPlannedToSubmitVATReturnAgentPageSpec extends SpecBase with ViewBehaviours {
+  val whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnAgentPage = injector.instanceOf[WhoPlannedToSubmitVATReturnAgentPage]
+  object Selectors extends BaseSelectors
+  val formProvider = WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm
+  def applyView(form: Form[_]): HtmlFormat.Appendable = whoPlannedToSubmitVATReturnPage.apply(form,
+    RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider),
+    controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode))
 
-    object Selectors extends BaseSelectors
-
-    def applyView(form: Form[_]): HtmlFormat.Appendable = {
-      whyReturnSubmittedLate.apply(form,
-        RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(formProvider),
-          controllers.routes.AgentsController.onSubmitForWhyReturnSubmittedLate(NormalMode)
-      )
-    }
+  "WhoPlannedToSubmitVATReturnPage" should {
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> heading,
-      Selectors.labelForRadioButton(1) -> clientRadioOption,
-      Selectors.labelForRadioButton(2) -> agentRadioOption,
+      Selectors.labelForRadioButton(1) -> agentDidOption,
+      Selectors.labelForRadioButton(2) -> clientDidOption,
       Selectors.button -> continueButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)
   }
+
 }

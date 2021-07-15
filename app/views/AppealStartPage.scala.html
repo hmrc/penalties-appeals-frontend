@@ -15,6 +15,7 @@
  *@
 
 @import config.AppConfig
+@import utils.SessionKeys
 
 @this(layout: Layout,
         bullets: components.bullets,
@@ -55,5 +56,10 @@
     <p class="govuk-body">@messages("appealStart.p5")</p>
     <p class="govuk-body">@messages("appealStart.p6")</p>
 
-    @link(routes.ReasonableExcuseController.onPageLoad().url, "common.continue", button = true, classes = "govuk-button")
+    @link(if(request.session.get(SessionKeys.agentSessionVrn).isDefined){
+        routes.AgentsController.onPageLoad().url
+            }else{
+        routes.ReasonableExcuseController.onPageLoad().url
+    }
+     ,"common.continue", button = true, classes = "govuk-button")
 }
