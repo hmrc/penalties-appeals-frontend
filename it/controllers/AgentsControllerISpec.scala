@@ -68,7 +68,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /why-return-was-submitted-late-agent" should {
-    "return 303 (SEE_OTHER) to reasonable excuse selection page and add the session key to the session when the body is correct" in {
+    "return 303 (SEE_OTHER) to 'why return was submitted late agent selection' page and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/why-return-was-submitted-late-agent").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
