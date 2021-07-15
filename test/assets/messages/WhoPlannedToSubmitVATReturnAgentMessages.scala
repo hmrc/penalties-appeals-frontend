@@ -22,7 +22,7 @@ object WhoPlannedToSubmitVATReturnAgentMessages {
 
   val heading = "Before the deadline, who planned to submit the return?"
 
-  val clientDidOption = "My Client did"
+  val clientDidOption = "My client did"
 
   val agentDidOption = "I did"
 
