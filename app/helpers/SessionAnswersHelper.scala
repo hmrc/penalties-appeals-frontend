@@ -21,6 +21,8 @@ import play.api.i18n.Messages
 import play.api.mvc.Request
 import utils.SessionKeys
 import viewtils.ImplicitDateFormatter
+import config.ErrorHandler
+import utils.Logger.logger
 
 import java.time.LocalDate
 
@@ -211,13 +213,37 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
   }
 
   def getContentForAgentsCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
-    Seq(
+
+    val seqWhoPlannedToSubmitVATReturn = Seq(
       (messages("checkYourAnswers.agents.whoPlannedToSubmitVATReturn"),
         messages(s"checkYourAnswers.agents.whoPlannedToSubmitVATReturn.${request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get}"),
-        controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url),
-      (messages("checkYourAnswers.agents.whyWasTheReturnSubmittedLate"),
+        controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url))
+
+    val seqWhyWasTheReturnSubmittedLate = if(request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get.equals("agent")) {
+      Seq((messages("checkYourAnswers.agents.whyWasTheReturnSubmittedLate"),
         messages(s"checkYourAnswers.agents.whyWasTheReturnSubmittedLate.${request.session.get(SessionKeys.causeOfLateSubmissionAgent).get}"),
         controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url))
+    }
+    else Seq.empty
+
+    seqWhoPlannedToSubmitVATReturn ++ seqWhyWasTheReturnSubmittedLate
   }
 
+  def getAllTheContentForCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)]={
+
+    val reasonableExcuse = request.session.get(SessionKeys.reasonableExcuse).get
+    val agentSession =request.session.get(SessionKeys.agentSessionVrn).isDefined
+
+    if(isAllAnswerPresentForReasonableExcuse(reasonableExcuse) && !agentSession) {
+      getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse)
+    }
+      else if(agentSession){
+      getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse)
+    }
+    else {
+      logger.error(s"[SessionAnswersHelper] User hasn't got all keys in session for reasonable excuses :$reasonableExcuse")
+      logger.debug(s"[SessionAnswersHelper] User has keys: ${request.session.data} and tried to load page with reasonable excuses :$reasonableExcuse and agent's response")
+      Seq.empty
+    }
+  }
 }

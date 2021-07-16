@@ -49,22 +49,17 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         errorHandler.showInternalServerError
       })(
         reasonableExcuse => {
-          if (SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for reasonable excuse: $reasonableExcuse")
-            val answersFromSession = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse)
-            if (request.session.get(SessionKeys.agentSessionVrn).isDefined) {
-              logger.debug("[CheckYourAnswersController][onPageLoad] Loading check your answers page for agent")
-              val answersFromAgentSession = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()
-              Ok(checkYourAnswersPage(answersFromAgentSession ++ answersFromSession))
-            }  else {
-              Ok(checkYourAnswersPage(answersFromSession))
-            }
-          } else {
-            logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} and tried to load page with reasonable excuse: $reasonableExcuse")
-            errorHandler.showInternalServerError
-          }
+        if (SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+          logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
+          val answersFromSession = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
+          Ok(checkYourAnswersPage(answersFromSession))
+        } else {
+          logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
+          logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
+            s"and tried to load page with reasonable excuse: $reasonableExcuse")
+          errorHandler.showInternalServerError
         }
+      }
       )
     }
   }
