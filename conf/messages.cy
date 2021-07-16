@@ -217,7 +217,7 @@ otherReason.whenDidBecomeUnable.error.notInFuture = The date you became unable t
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
 agents.whoPlannedToSubmitVATReturn.agent = I did
-agents.whoPlannedToSubmitVATReturn.client = My Client did
+agents.whoPlannedToSubmitVATReturn.client = My client did
 agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submit the VAT return
 agents.whoPlannedToSubmitVATReturn.title = Before the deadline, who planned to submit the return?
 agents.whoPlannedToSubmitVATReturn.heading = Before the deadline, who planned to submit the return?
