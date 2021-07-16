@@ -25,6 +25,8 @@ sealed trait AppealInformation {
   val statement: Option[String]
   val lateAppeal: Boolean
   val lateAppealReason: Option[String]
+  val whoPlannedToSubmit: Option[String]
+  val causeOfLateSubmissionAgent:Option[String]
 }
 
 case class CrimeAppealInformation(
@@ -33,7 +35,9 @@ case class CrimeAppealInformation(
                                    reportedIssue: Boolean,
                                    statement: Option[String],
                                    lateAppeal: Boolean,
-                                   lateAppealReason: Option[String]
+                                   lateAppealReason: Option[String],
+                                   whoPlannedToSubmit: Option[String],
+                                   causeOfLateSubmissionAgent:Option[String]
                                  ) extends AppealInformation
 
 object CrimeAppealInformation {
@@ -57,6 +61,18 @@ object CrimeAppealInformation {
       )(
         lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
       )
+    ).deepMerge(
+      crimeAppealInformation.whoPlannedToSubmit.fold(
+        Json.obj()
+      )(
+        whoPlannedToSubmit => Json.obj("whoPlannedToSubmit" -> whoPlannedToSubmit)
+      )
+    ).deepMerge(
+      crimeAppealInformation.causeOfLateSubmissionAgent.fold(
+        Json.obj()
+      )(
+        causeOfLateSubmissionAgent => Json.obj("causeOfLateSubmissionAgent" -> causeOfLateSubmissionAgent)
+      )
     )
   }
 }
@@ -66,7 +82,9 @@ case class FireOrFloodAppealInformation(
                                          dateOfEvent: String,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
-                                         lateAppealReason: Option[String]
+                                         lateAppealReason: Option[String],
+                                         whoPlannedToSubmit: Option[String],
+                                         causeOfLateSubmissionAgent:Option[String]
                                        ) extends AppealInformation
 
 object FireOrFloodAppealInformation {
@@ -89,6 +107,18 @@ object FireOrFloodAppealInformation {
       )(
         lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
       )
+    ).deepMerge(
+      fireOrFloodAppealInformation.whoPlannedToSubmit.fold(
+        Json.obj()
+      )(
+        whoPlannedToSubmit => Json.obj("whoPlannedToSubmit" -> whoPlannedToSubmit)
+      )
+    ).deepMerge(
+      fireOrFloodAppealInformation.causeOfLateSubmissionAgent.fold(
+        Json.obj()
+      )(
+        causeOfLateSubmissionAgent => Json.obj("causeOfLateSubmissionAgent" -> causeOfLateSubmissionAgent)
+      )
     )
   }
 }
@@ -98,7 +128,9 @@ case class LossOfStaffAppealInformation(
                                    dateOfEvent: String,
                                    statement: Option[String],
                                    lateAppeal: Boolean,
-                                   lateAppealReason: Option[String]
+                                   lateAppealReason: Option[String],
+                                   whoPlannedToSubmit: Option[String],
+                                   causeOfLateSubmissionAgent:Option[String]
                                  ) extends AppealInformation
 
 object LossOfStaffAppealInformation {
@@ -121,6 +153,18 @@ object LossOfStaffAppealInformation {
       )(
         lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
       )
+    ).deepMerge(
+      lossOfStaffAppealInformation.whoPlannedToSubmit.fold(
+        Json.obj()
+      )(
+        whoPlannedToSubmit => Json.obj("whoPlannedToSubmit" -> whoPlannedToSubmit)
+      )
+    ).deepMerge(
+      lossOfStaffAppealInformation.causeOfLateSubmissionAgent.fold(
+        Json.obj()
+      )(
+        causeOfLateSubmissionAgent => Json.obj("causeOfLateSubmissionAgent" -> causeOfLateSubmissionAgent)
+      )
     )
   }
 }
@@ -131,7 +175,9 @@ case class TechnicalIssuesAppealInformation(
                                          endDateOfEvent: String,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
-                                         lateAppealReason: Option[String]
+                                         lateAppealReason: Option[String],
+                                         whoPlannedToSubmit: Option[String],
+                                         causeOfLateSubmissionAgent:Option[String]
                                        ) extends AppealInformation
 
 object TechnicalIssuesAppealInformation {
@@ -155,6 +201,18 @@ object TechnicalIssuesAppealInformation {
       )(
         lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
       )
+    ).deepMerge(
+      technicalIssuesAppealInformation.whoPlannedToSubmit.fold(
+        Json.obj()
+      )(
+        whoPlannedToSubmit => Json.obj("whoPlannedToSubmit" -> whoPlannedToSubmit)
+      )
+    ).deepMerge(
+      technicalIssuesAppealInformation.causeOfLateSubmissionAgent.fold(
+        Json.obj()
+      )(
+        causeOfLateSubmissionAgent => Json.obj("causeOfLateSubmissionAgent" -> causeOfLateSubmissionAgent)
+      )
     )
   }
 }
@@ -168,7 +226,9 @@ case class HealthAppealInformation(
                                          eventOngoing: Boolean,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
-                                         lateAppealReason: Option[String]
+                                         lateAppealReason: Option[String],
+                                         whoPlannedToSubmit: Option[String],
+                                         causeOfLateSubmissionAgent:Option[String]
                                        ) extends AppealInformation
 
 object HealthAppealInformation {
@@ -211,6 +271,18 @@ object HealthAppealInformation {
           )
         }
       }
+    ).deepMerge(
+      healthAppealInformation.whoPlannedToSubmit.fold(
+        Json.obj()
+      )(
+        whoPlannedToSubmit => Json.obj("whoPlannedToSubmit" -> whoPlannedToSubmit)
+      )
+    ).deepMerge(
+      healthAppealInformation.causeOfLateSubmissionAgent.fold(
+        Json.obj()
+      )(
+        causeOfLateSubmissionAgent => Json.obj("causeOfLateSubmissionAgent" -> causeOfLateSubmissionAgent)
+      )
     )
   }
 }
@@ -221,7 +293,9 @@ case class OtherAppealInformation(
                                    statement: Option[String],
                                    supportingEvidence: Option[Evidence],
                                    lateAppeal: Boolean,
-                                   lateAppealReason: Option[String]
+                                   lateAppealReason: Option[String],
+                                   whoPlannedToSubmit: Option[String],
+                                   causeOfLateSubmissionAgent:Option[String]
                                  ) extends AppealInformation
 
 object OtherAppealInformation {
@@ -245,6 +319,18 @@ object OtherAppealInformation {
         Json.obj()
       )(
         evidence => Json.obj("supportingEvidence" -> evidence)
+      )
+    ).deepMerge(
+      otherAppealInformation.whoPlannedToSubmit.fold(
+        Json.obj()
+      )(
+        whoPlannedToSubmit => Json.obj("whoPlannedToSubmit" -> whoPlannedToSubmit)
+      )
+    ).deepMerge(
+      otherAppealInformation.causeOfLateSubmissionAgent.fold(
+        Json.obj()
+      )(
+        causeOfLateSubmissionAgent => Json.obj("causeOfLateSubmissionAgent" -> causeOfLateSubmissionAgent)
       )
     )
   }
@@ -298,7 +384,9 @@ object AppealSubmission {
             reportedIssue = userRequest.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
+            whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
+            causeOfLateSubmissionAgent = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent)
           )
         )
       }
@@ -313,7 +401,9 @@ object AppealSubmission {
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfFireOrFlood).get,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
+            whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
+            causeOfLateSubmissionAgent = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent)
           )
         )
       }
@@ -329,7 +419,9 @@ object AppealSubmission {
             dateOfEvent = userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
+            whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
+            causeOfLateSubmissionAgent = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent)
           )
         )
       }
@@ -346,7 +438,9 @@ object AppealSubmission {
             endDateOfEvent = userRequest.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
+            whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
+            causeOfLateSubmissionAgent = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent)
           )
         )
       }
@@ -368,7 +462,9 @@ object AppealSubmission {
             eventOngoing = isOngoingHospitalStay,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
+            whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
+            causeOfLateSubmissionAgent = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent)
           )
         )
       }
@@ -390,7 +486,9 @@ object AppealSubmission {
               referenceId = userRequest.session.get(SessionKeys.penaltyId).get
             ))),
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason)
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
+            whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
+            causeOfLateSubmissionAgent = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent)
           )
         )
       }

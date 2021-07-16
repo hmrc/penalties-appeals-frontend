@@ -135,7 +135,9 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           reportedIssue = true,
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       )
       val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789"))

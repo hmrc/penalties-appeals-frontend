@@ -170,7 +170,7 @@ class PenaltiesConnectorSpec extends SpecBase {
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
       val appealSubmissionModel = AppealSubmission(
         submittedBy = "client", penaltyId = "1234", reasonableExcuse = "crime", honestyDeclaration = true, appealInformation = CrimeAppealInformation(
-          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None
+          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None, whoPlannedToSubmit = None, causeOfLateSubmissionAgent = None
         )
       )
       val result = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789"))
@@ -185,7 +185,7 @@ class PenaltiesConnectorSpec extends SpecBase {
         .thenReturn("http://url/url")
       val appealSubmissionModel = AppealSubmission(
         submittedBy = "client", penaltyId = "1234", reasonableExcuse = "crime", honestyDeclaration = true, appealInformation = CrimeAppealInformation(
-          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None
+          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None, whoPlannedToSubmit = None, causeOfLateSubmissionAgent = None
         )
       )
       val result = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789")))
