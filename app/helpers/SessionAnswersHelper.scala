@@ -209,4 +209,15 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
       }
     }
   }
+
+  def getContentForAgentsCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
+    Seq(
+      (messages("checkYourAnswers.agents.whoPlannedToSubmitVATReturn"),
+        messages(s"checkYourAnswers.agents.whoPlannedToSubmitVATReturn.${request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get}"),
+        controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url),
+      (messages("checkYourAnswers.agents.whyWasTheReturnSubmittedLate"),
+        messages(s"checkYourAnswers.agents.whyWasTheReturnSubmittedLate.${request.session.get(SessionKeys.causeOfLateSubmissionAgent).get}"),
+        controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url))
+  }
+
 }
