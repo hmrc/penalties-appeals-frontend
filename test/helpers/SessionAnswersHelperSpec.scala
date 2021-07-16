@@ -17,7 +17,7 @@
 package helpers
 
 import base.SpecBase
-import models.CheckMode
+import models.{CheckMode, UserRequest}
 import utils.SessionKeys
 
 class SessionAnswersHelperSpec extends SpecBase {
@@ -660,6 +660,101 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(3)._1 shouldBe "Has the hospital stay ended?"
         result(3)._2 shouldBe "No"
         result(3)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url
+      }
+    }
+  }
+
+  "getContentForAgentsCheckYourAnswersPage" should {
+    "when the client planned to submit VAT return (so no cause Of LateSubmission chosen)" should {
+      "return a Seq[String, String, String] of answers" in {
+        val fakeRequestWithClientPresent = fakeRequest
+          .withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "client",
+            SessionKeys.causeOfLateSubmissionAgent -> "client"
+          )
+
+        val result = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithClientPresent, implicitly)
+        result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
+        result(0)._2 shouldBe "My client did"
+        result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+      }
+    }
+
+    "when the agent planned to submit VAT return with cause Of LateSubmission being agent" should {
+      "return a Seq[String, String, String] of answers" in {
+        val fakeRequestWithAgentKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+            SessionKeys.causeOfLateSubmissionAgent -> "agent"
+          )
+
+        val result = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
+        result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
+        result(0)._2 shouldBe "I did"
+        result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+        result(1)._1 shouldBe "Why was the return submitted late?"
+        result(1)._2 shouldBe "Something else happened to delay me"
+        result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+
+      }
+    }
+
+    "when the agent planned to submit VAT return with cause Of LateSubmission being client" should {
+      "return a Seq[String, String, String] of answers" in {
+        val fakeRequestWithAgentKeysPresent = fakeRequest
+          .withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+            SessionKeys.causeOfLateSubmissionAgent -> "client"
+          )
+
+        val result = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
+        result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
+        result(0)._2 shouldBe "I did"
+        result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+        result(1)._1 shouldBe "Why was the return submitted late?"
+        result(1)._2 shouldBe "My client did not get information to me on time"
+        result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+
+      }
+    }
+  }
+
+  "getAllTheContentForCheckYourAnswersPage" should {
+    "when agent session is present" should  {
+      "return getAllTheContentForCheckYourAnswersPage as list of getContentForAgentsCheckYourAnswersPage and  " +
+        "getContentForReasonableExcuseCheckYourAnswersPage" in {
+        val fakeRequestWithReasonableExcusePresentOnly = fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "technicalIssues",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+            SessionKeys.agentSessionVrn -> "123456789",
+            SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+          )
+
+        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithReasonableExcusePresentOnly, implicitly)
+        val resultAgent = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithReasonableExcusePresentOnly, implicitly)
+        val resultAllContent=SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithReasonableExcusePresentOnly, implicitly)
+
+        resultAgent ++ resultReasonableExcuses shouldBe resultAllContent
+
+      }
+    }
+    "when agent session is not present" should  {
+      "return getAllTheContentForCheckYourAnswersPage as list of getContentForReasonableExcuseCheckYourAnswersPage only" in {
+        val fakeRequestWithCorrectKeysAndReasonableExcuseSet = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
+          .withSession(SessionKeys.reasonableExcuse -> "technicalIssues",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+              (SessionKeys.reasonableExcuse, reasonableExcuse)))
+
+        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
+        val resultAllContent=SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
+
+        resultReasonableExcuses shouldBe resultAllContent
+
       }
     }
   }
