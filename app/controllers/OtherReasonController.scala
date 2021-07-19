@@ -83,7 +83,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     implicit request => {
       whyReturnSubmittedLateForm.bindFromRequest().fold(
         formWithErrors => {
-          val postAction = controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode)
+          val postAction = controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode)
           BadRequest(whyReturnSubmittedLatePage(formWithErrors,postAction))
         },
         whyReturnSubmittedLateReason => {
