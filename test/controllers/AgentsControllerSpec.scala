@@ -301,35 +301,5 @@ class AgentsControllerSpec extends SpecBase {
           }
       }
     }
-
-    "onSubmit" when {
-
-      "the user is authorised" must {
-
-        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-          status(result) shouldBe (SEE_OTHER)
-          redirectLocation(result) shouldBe Some(controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode).url)
-        }
-
-        "user does not have the correct session keys to start an appeal" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
-        }
-      }
-
-      "the user is unauthorised" when {
-
-        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-          status(result) shouldBe FORBIDDEN
-        }
-
-        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-        }
-      }
-    }
   }
 }

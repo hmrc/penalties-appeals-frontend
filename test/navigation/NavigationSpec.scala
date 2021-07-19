@@ -17,11 +17,11 @@
 package navigation
 
 import java.time.LocalDateTime
-
 import base.SpecBase
 import models.pages._
 import models.{CheckMode, NormalMode}
 import org.mockito.Mockito._
+import play.api.mvc.Session
 import utils.SessionKeys
 
 class NavigationSpec extends SpecBase {
@@ -116,6 +116,23 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url
       }
 
+      s"called with $WhoPlannedToSubmitVATReturnAgentPage - user selected 'client' and now changes to agent" in new Setup {
+        val result = mainNavigator.nextPage(WhoPlannedToSubmitVATReturnAgentPage, CheckMode, Some("agent"))(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+          )))
+        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+      }
+
+      s"called with $WhyWasTheReturnSubmittedLateAgentPage" in new Setup {
+        val result = mainNavigator.nextPage(WhyWasTheReturnSubmittedLateAgentPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+            SessionKeys.causeOfLateSubmissionAgent -> "agent"
+          )))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
       s"called with $HasCrimeBeenReportedPage when the appeal > 30 days late AND late appeal reason hasn't been entered" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
         val result = mainNavigator.nextPage(HasCrimeBeenReportedPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
@@ -178,9 +195,9 @@ class NavigationSpec extends SpecBase {
 
       s"called with $WhoPlannedToSubmitVATReturnAgentPage when the appeal > 30 days late" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
-        val result = mainNavigator.nextPage(WhoPlannedToSubmitVATReturnAgentPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        val result = mainNavigator.nextPage(WhoPlannedToSubmitVATReturnAgentPage, CheckMode, Some("client"))(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
-            (SessionKeys.whoPlannedToSubmitVATReturn -> "agent")
+            SessionKeys.whoPlannedToSubmitVATReturn -> "client"
           )))
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
@@ -336,28 +353,20 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
 
-      s"called with $WhyWasTheReturnSubmittedLateAgentPage when the appeal > 30 days late" in new Setup {
+      s"called with $WhyWasTheReturnSubmittedLateAgentPage" in new Setup {
         val result = mainNavigator.nextPage(WhyWasTheReturnSubmittedLateAgentPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
-          .withSession(
-            SessionKeys.causeOfLateSubmissionAgent -> "causeOfLateSubmissionAgent"
-          )))
-        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
-      }
-
-      s"called with $WhoPlannedToSubmitVATReturnAgentPage when the appeal > 30 days late" in new Setup {
-        val result = mainNavigator.nextPage(WhoPlannedToSubmitVATReturnAgentPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
-          .withSession(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent"
-          )))
-        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
-      }
-
-      s"called with $ReasonableExcuseSelectionPage when the appeal > 30 days late" in new Setup {
-        val result = mainNavigator.nextPage(ReasonableExcuseSelectionPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
             SessionKeys.whoPlannedToSubmitVATReturn -> "client"
           )))
         result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      }
+
+      s"called with $WhoPlannedToSubmitVATReturnAgentPage" in new Setup {
+        val result = mainNavigator.nextPage(WhoPlannedToSubmitVATReturnAgentPage, NormalMode, Some("agent"))(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "agent"
+          )))
+        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
       }
     }
   }

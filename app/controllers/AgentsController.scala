@@ -92,11 +92,11 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
         vatReturnSubmittedBy => {
           (vatReturnSubmittedBy.toLowerCase) match {
             case "agent" => {
-              Redirect(navigation.nextPage(WhyWasTheReturnSubmittedLateAgentPage, mode))
+              Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(vatReturnSubmittedBy)))
                 .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
             }
             case "client" => {
-              Redirect(navigation.nextPage(ReasonableExcuseSelectionPage, mode))
+              Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(vatReturnSubmittedBy)))
                 .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
             }
             case _ => {
@@ -106,12 +106,6 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
           }
         }
       )
-    }
-  }
-
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
-    implicit request => {
-      Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, NormalMode))
     }
   }
 }
