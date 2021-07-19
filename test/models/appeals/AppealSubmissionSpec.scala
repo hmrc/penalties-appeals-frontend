@@ -29,7 +29,9 @@ class AppealSubmissionSpec extends SpecBase {
       |   "type": "crime",
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "reportedIssue": true,
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -39,7 +41,9 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "type": "lossOfStaff",
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -50,7 +54,9 @@ class AppealSubmissionSpec extends SpecBase {
       |   "type": "technicalIssues",
       |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -60,7 +66,9 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "type": "fireOrFlood",
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -73,7 +81,9 @@ class AppealSubmissionSpec extends SpecBase {
       |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
       |   "eventOngoing": false,
       |   "hospitalStayInvolved": true,
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -85,7 +95,9 @@ class AppealSubmissionSpec extends SpecBase {
       |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "eventOngoing": true,
       |   "hospitalStayInvolved": true,
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -97,7 +109,9 @@ class AppealSubmissionSpec extends SpecBase {
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "hospitalStayInvolved": false,
       |   "eventOngoing": false,
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -112,7 +126,9 @@ class AppealSubmissionSpec extends SpecBase {
       |     "noOfUploadedFiles": 1,
       |     "referenceId": "ref1"
       |   },
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -123,7 +139,9 @@ class AppealSubmissionSpec extends SpecBase {
       |   "type": "other",
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "statement": "This is a statement.",
-      |   "lateAppeal": false
+      |   "lateAppeal": false,
+      |   "whoPlannedToSubmit": "agent",
+      |   "causeOfLateSubmissionAgent": "client"
       |}
       |""".stripMargin
   )
@@ -137,7 +155,9 @@ class AppealSubmissionSpec extends SpecBase {
           reportedIssue = true,
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe crimeAppealInformationJson
@@ -151,7 +171,9 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe fireOrFloodAppealInformationJson
@@ -165,7 +187,9 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe lossOfStaffAppealInformationJson
@@ -180,7 +204,9 @@ class AppealSubmissionSpec extends SpecBase {
           endDateOfEvent = "2021-04-24T18:25:43.511Z",
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe technicalIssuesAppealInformationJson
@@ -198,7 +224,9 @@ class AppealSubmissionSpec extends SpecBase {
           hospitalStayInvolved = true,
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe healthAppealInformationHospitalStayNotOngoingJson
@@ -215,7 +243,9 @@ class AppealSubmissionSpec extends SpecBase {
           hospitalStayInvolved = true,
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe healthAppealInformationHospitalStayOngoingJson
@@ -232,7 +262,9 @@ class AppealSubmissionSpec extends SpecBase {
           hospitalStayInvolved = false,
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe healthAppealInformationNoHospitalStayJson
@@ -249,7 +281,9 @@ class AppealSubmissionSpec extends SpecBase {
             noOfUploadedFiles = 1, referenceId = "ref1"
           )),
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe otherAppealInformationJson
@@ -262,7 +296,9 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("This is a statement."),
           supportingEvidence = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe otherAppealInformationJsonNoEvidence
@@ -276,7 +312,9 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.reasonableExcuse -> "crime",
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfCrime -> "2022-01-01")
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+        SessionKeys.causeOfLateSubmissionAgent -> "client")
       )
 
       val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false)(fakeAgentRequestForCrimeJourney)
@@ -285,7 +323,9 @@ class AppealSubmissionSpec extends SpecBase {
       result.submittedBy shouldBe "agent"
       result.honestyDeclaration shouldBe true
       result.appealInformation shouldBe CrimeAppealInformation(
-        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None
+        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None,
+        whoPlannedToSubmit = Some("agent"),
+        causeOfLateSubmissionAgent = Some("client")
       )
     }
 
@@ -304,7 +344,14 @@ class AppealSubmissionSpec extends SpecBase {
       result.submittedBy shouldBe "client"
       result.honestyDeclaration shouldBe true
       result.appealInformation shouldBe CrimeAppealInformation(
-        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = true, lateAppealReason = Some("Some Reason")
+        `type` = "crime",
+        dateOfEvent = "2022-01-01",
+        reportedIssue = true,
+        statement = None,
+        lateAppeal = true,
+        lateAppealReason = Some("Some Reason"),
+        whoPlannedToSubmit = None,
+        causeOfLateSubmissionAgent = None
       )
     }
 
@@ -323,7 +370,14 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe CrimeAppealInformation(
-          `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = false, statement = None, lateAppeal = false, lateAppealReason = None
+          `type` = "crime",
+          dateOfEvent = "2022-01-01",
+          reportedIssue = false,
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
     }
@@ -341,7 +395,13 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe FireOrFloodAppealInformation(
-          `type` = "fireOrFlood", dateOfEvent = "2022-01-01", statement = None, lateAppeal = false, lateAppealReason = None
+          `type` = "fireOrFlood",
+          dateOfEvent = "2022-01-01",
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
     }
@@ -360,7 +420,13 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe LossOfStaffAppealInformation(
-          `type` = "lossOfStaff", dateOfEvent = "2022-01-01", statement = None, lateAppeal = false, lateAppealReason = None
+          `type` = "lossOfStaff",
+          dateOfEvent = "2022-01-01",
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
 
@@ -368,7 +434,8 @@ class AppealSubmissionSpec extends SpecBase {
         val fakeRequestForLossOfStaffJourney = UserRequest("123456789", arn = Some("AGENT1"))(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.reasonableExcuse -> "lossOfStaff",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01")
+          SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
+          SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false)(fakeRequestForLossOfStaffJourney)
@@ -377,7 +444,13 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "agent"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe LossOfStaffAppealInformation(
-          `type` = "lossOfStaff", dateOfEvent = "2022-01-01", statement = None, lateAppeal = false, lateAppealReason = None
+          `type` = "lossOfStaff",
+          dateOfEvent = "2022-01-01",
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("client"),
+          causeOfLateSubmissionAgent = None
         )
       }
     }
@@ -397,7 +470,14 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
-          `type` = "technicalIssues", startDateOfEvent = "2022-01-01", endDateOfEvent = "2022-01-02", statement = None, lateAppeal = false, lateAppealReason = None
+          `type` = "technicalIssues",
+          startDateOfEvent = "2022-01-01",
+          endDateOfEvent = "2022-01-02",
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
 
@@ -406,7 +486,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.reasonableExcuse -> "lossOfStaff",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-          SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
+          SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+          SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false)(fakeRequestForTechnicalIssuesJourney)
@@ -415,7 +496,14 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "agent"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
-          `type` = "technicalIssues", startDateOfEvent = "2022-01-01", endDateOfEvent = "2022-01-02", statement = None, lateAppeal = false, lateAppealReason = None
+          `type` = "technicalIssues",
+          startDateOfEvent = "2022-01-01",
+          endDateOfEvent = "2022-01-02",
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None,
+          whoPlannedToSubmit = Some("client"),
+          causeOfLateSubmissionAgent = None
         )
       }
     }
@@ -445,7 +533,9 @@ class AppealSubmissionSpec extends SpecBase {
           eventOngoing = false,
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
 
@@ -472,7 +562,9 @@ class AppealSubmissionSpec extends SpecBase {
           eventOngoing = true,
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
 
@@ -498,7 +590,9 @@ class AppealSubmissionSpec extends SpecBase {
           eventOngoing = false,
           statement = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
     }
@@ -519,8 +613,14 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe OtherAppealInformation(
-          `type` = "other", dateOfEvent = "2022-01-01", statement = Some("This is a reason."), lateAppeal = false, lateAppealReason = None, supportingEvidence =
-            Some(Evidence(1, "123"))
+          `type` = "other",
+          dateOfEvent = "2022-01-01",
+          statement = Some("This is a reason."),
+          lateAppeal = false,
+          lateAppealReason = None,
+          supportingEvidence = Some(Evidence(1, "123")),
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
 
@@ -538,8 +638,14 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe OtherAppealInformation(
-          `type` = "other", dateOfEvent = "2022-01-01", statement = Some("This is a reason."), lateAppeal = false, lateAppealReason = None, supportingEvidence =
-            None
+          `type` = "other",
+          dateOfEvent = "2022-01-01",
+          statement = Some("This is a reason."),
+          lateAppeal = false,
+          lateAppealReason = None,
+          supportingEvidence = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
 
@@ -559,8 +665,14 @@ class AppealSubmissionSpec extends SpecBase {
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe OtherAppealInformation(
-          `type` = "other", dateOfEvent = "2022-01-01", statement = Some("This is a reason."), lateAppeal = true, lateAppealReason = Some("This is a reason for appealing late."), supportingEvidence =
-            Some(Evidence(1, "123"))
+          `type` = "other",
+          dateOfEvent = "2022-01-01",
+          statement = Some("This is a reason."),
+          lateAppeal = true,
+          lateAppealReason = Some("This is a reason for appealing late."),
+          supportingEvidence = Some(Evidence(1, "123")),
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
       }
     }
@@ -581,7 +693,9 @@ class AppealSubmissionSpec extends SpecBase {
             reportedIssue = true,
             statement = None,
             lateAppeal = false,
-            lateAppealReason = None
+            lateAppealReason = None,
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
         )
         val jsonRepresentingModel: JsValue = Json.obj(
@@ -593,7 +707,9 @@ class AppealSubmissionSpec extends SpecBase {
             "type" -> "crime",
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "reportedIssue" -> true,
-            "lateAppeal" -> false
+            "lateAppeal" -> false,
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         )
 
@@ -614,7 +730,9 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = None,
             lateAppeal = false,
-            lateAppealReason = None
+            lateAppealReason = None,
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
         )
 
@@ -626,7 +744,9 @@ class AppealSubmissionSpec extends SpecBase {
           "appealInformation" -> Json.obj(
             "type" -> "fireOrFlood",
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "lateAppeal" -> false
+            "lateAppeal" -> false,
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         )
 
@@ -647,7 +767,9 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = None,
             lateAppeal = false,
-            lateAppealReason = None
+            lateAppealReason = None,
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
         )
         val jsonRepresentingModel: JsValue = Json.obj(
@@ -658,7 +780,9 @@ class AppealSubmissionSpec extends SpecBase {
           "appealInformation" -> Json.obj(
             "type" -> "lossOfStaff",
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "lateAppeal" -> false
+            "lateAppeal" -> false,
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         )
 
@@ -680,7 +804,9 @@ class AppealSubmissionSpec extends SpecBase {
             endDateOfEvent = "2021-04-24T18:25:43.511Z",
             statement = None,
             lateAppeal = false,
-            lateAppealReason = None
+            lateAppealReason = None,
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
         )
 
@@ -693,7 +819,9 @@ class AppealSubmissionSpec extends SpecBase {
             "type" -> "technicalIssues",
             "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
-            "lateAppeal" -> false
+            "lateAppeal" -> false,
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         )
 
@@ -719,7 +847,9 @@ class AppealSubmissionSpec extends SpecBase {
               dateOfEvent = None,
               statement = None,
               lateAppeal = true,
-              lateAppealReason = Some("Reason")
+              lateAppealReason = Some("Reason"),
+              whoPlannedToSubmit = Some("agent"),
+              causeOfLateSubmissionAgent = Some("client")
             )
           )
           val jsonRepresentingModel: JsValue = Json.obj(
@@ -734,7 +864,9 @@ class AppealSubmissionSpec extends SpecBase {
               "eventOngoing" -> false,
               "hospitalStayInvolved" -> true,
               "lateAppeal" -> true,
-              "lateAppealReason" -> "Reason"
+              "lateAppealReason" -> "Reason",
+              "whoPlannedToSubmit" -> "agent",
+              "causeOfLateSubmissionAgent" -> "client"
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -756,7 +888,9 @@ class AppealSubmissionSpec extends SpecBase {
               dateOfEvent = None,
               statement = None,
               lateAppeal = true,
-              lateAppealReason = Some("Reason")
+              lateAppealReason = Some("Reason"),
+              whoPlannedToSubmit = Some("agent"),
+              causeOfLateSubmissionAgent = Some("client")
             )
           )
           val jsonRepresentingModel: JsValue = Json.obj(
@@ -770,7 +904,9 @@ class AppealSubmissionSpec extends SpecBase {
               "eventOngoing" -> true,
               "hospitalStayInvolved" -> true,
               "lateAppeal" -> true,
-              "lateAppealReason" -> "Reason"
+              "lateAppealReason" -> "Reason",
+              "whoPlannedToSubmit" -> "agent",
+              "causeOfLateSubmissionAgent" -> "client"
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -793,7 +929,9 @@ class AppealSubmissionSpec extends SpecBase {
               dateOfEvent = Some("2021-04-23T18:25:43.511Z"),
               statement = None,
               lateAppeal = true,
-              lateAppealReason = Some("Reason")
+              lateAppealReason = Some("Reason"),
+              whoPlannedToSubmit = Some("agent"),
+              causeOfLateSubmissionAgent = Some("client")
             )
           )
           val jsonRepresentingModel: JsValue = Json.obj(
@@ -807,7 +945,9 @@ class AppealSubmissionSpec extends SpecBase {
               "eventOngoing" -> false,
               "hospitalStayInvolved" -> false,
               "lateAppeal" -> true,
-              "lateAppealReason" -> "Reason"
+              "lateAppealReason" -> "Reason",
+              "whoPlannedToSubmit" -> "agent",
+              "causeOfLateSubmissionAgent" -> "client"
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -832,7 +972,9 @@ class AppealSubmissionSpec extends SpecBase {
               referenceId = "ref1"
             )),
             lateAppeal = false,
-            lateAppealReason = None
+            lateAppealReason = None,
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
         )
 
@@ -849,7 +991,9 @@ class AppealSubmissionSpec extends SpecBase {
               "noOfUploadedFiles" -> 1,
               "referenceId" -> "ref1"
             ),
-            "lateAppeal" -> false
+            "lateAppeal" -> false,
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         )
 
@@ -869,7 +1013,9 @@ class AppealSubmissionSpec extends SpecBase {
             statement = Some("This was the reason"),
             supportingEvidence = None,
             lateAppeal = false,
-            lateAppealReason = None
+            lateAppealReason = None,
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
         )
 
@@ -882,7 +1028,9 @@ class AppealSubmissionSpec extends SpecBase {
             "type" -> "other",
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "statement" -> "This was the reason",
-            "lateAppeal" -> false
+            "lateAppeal" -> false,
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         )
 
@@ -905,7 +1053,9 @@ class AppealSubmissionSpec extends SpecBase {
               referenceId = "ref1"
             )),
             lateAppeal = true,
-            lateAppealReason = Some("Late reason")
+            lateAppealReason = Some("Late reason"),
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
         )
 
@@ -923,7 +1073,9 @@ class AppealSubmissionSpec extends SpecBase {
               "referenceId" -> "ref1"
             ),
             "lateAppeal" -> true,
-            "lateAppealReason" -> "Late reason"
+            "lateAppealReason" -> "Late reason",
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         )
 
@@ -942,7 +1094,9 @@ class AppealSubmissionSpec extends SpecBase {
           reportedIssue = true,
           statement = None,
           lateAppeal = true,
-          lateAppealReason = Some("Reason")
+          lateAppealReason = Some("Reason"),
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = Json.toJson(model)(CrimeAppealInformation.crimeAppealWrites)
         result shouldBe Json.obj(
@@ -950,7 +1104,9 @@ class AppealSubmissionSpec extends SpecBase {
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "reportedIssue" -> true,
           "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason"
+          "lateAppealReason" -> "Reason",
+          "whoPlannedToSubmit" -> "agent",
+          "causeOfLateSubmissionAgent" -> "client"
         )
       }
     }
@@ -962,14 +1118,18 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = true,
-          lateAppealReason = Some("Reason")
+          lateAppealReason = Some("Reason"),
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = Json.toJson(model)(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
         result shouldBe Json.obj(
           "type" -> "fireOrFlood",
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason"
+          "lateAppealReason" -> "Reason",
+          "whoPlannedToSubmit" -> "agent",
+          "causeOfLateSubmissionAgent" -> "client"
         )
       }
     }
@@ -983,14 +1143,18 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = true,
-          lateAppealReason = Some("Reason")
+          lateAppealReason = Some("Reason"),
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = Json.toJson(model)(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
         result shouldBe Json.obj(
           "type" -> "lossOfStaff",
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason"
+          "lateAppealReason" -> "Reason",
+          "whoPlannedToSubmit" -> "agent",
+          "causeOfLateSubmissionAgent" -> "client"
         )
       }
     }
@@ -1005,7 +1169,9 @@ class AppealSubmissionSpec extends SpecBase {
           endDateOfEvent = "2021-04-24T18:25:43.511Z",
           statement = None,
           lateAppeal = true,
-          lateAppealReason = Some("Reason")
+          lateAppealReason = Some("Reason"),
+          whoPlannedToSubmit = Some("agent"),
+          causeOfLateSubmissionAgent = Some("client")
         )
         val result = Json.toJson(model)(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
         result shouldBe Json.obj(
@@ -1013,7 +1179,9 @@ class AppealSubmissionSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
           "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason"
+          "lateAppealReason" -> "Reason",
+          "whoPlannedToSubmit" -> "agent",
+          "causeOfLateSubmissionAgent" -> "client"
         )
       }
     }
@@ -1032,7 +1200,9 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfEvent = None,
             statement = None,
             lateAppeal = true,
-            lateAppealReason = Some("Reason")
+            lateAppealReason = Some("Reason"),
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
@@ -1042,7 +1212,9 @@ class AppealSubmissionSpec extends SpecBase {
             "eventOngoing" -> false,
             "hospitalStayInvolved" -> true,
             "lateAppeal" -> true,
-            "lateAppealReason" -> "Reason"
+            "lateAppealReason" -> "Reason",
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         }
 
@@ -1056,7 +1228,9 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfEvent = None,
             statement = None,
             lateAppeal = true,
-            lateAppealReason = Some("Reason")
+            lateAppealReason = Some("Reason"),
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
@@ -1065,7 +1239,9 @@ class AppealSubmissionSpec extends SpecBase {
             "eventOngoing" -> true,
             "hospitalStayInvolved" -> true,
             "lateAppeal" -> true,
-            "lateAppealReason" -> "Reason"
+            "lateAppealReason" -> "Reason",
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         }
 
@@ -1080,7 +1256,9 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfEvent = Some("2021-04-23T18:25:43.511Z"),
             statement = None,
             lateAppeal = true,
-            lateAppealReason = Some("Reason")
+            lateAppealReason = Some("Reason"),
+            whoPlannedToSubmit = Some("agent"),
+            causeOfLateSubmissionAgent = Some("client")
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
@@ -1089,7 +1267,9 @@ class AppealSubmissionSpec extends SpecBase {
             "eventOngoing" -> false,
             "hospitalStayInvolved" -> false,
             "lateAppeal" -> true,
-            "lateAppealReason" -> "Reason"
+            "lateAppealReason" -> "Reason",
+            "whoPlannedToSubmit" -> "agent",
+            "causeOfLateSubmissionAgent" -> "client"
           )
         }
       }
@@ -1105,7 +1285,9 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("I was late. Sorry."),
           supportingEvidence = Some(Evidence(1, "reference-3000")),
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
         val expectedResult = Json.parse(
           """
@@ -1131,7 +1313,9 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("I was late. Sorry."),
           supportingEvidence = Some(Evidence(1, "reference-3000")),
           lateAppeal = true,
-          lateAppealReason = Some("This is a reason")
+          lateAppealReason = Some("This is a reason"),
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
         val expectedResult = Json.parse(
           """
@@ -1158,7 +1342,9 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("I was late. Sorry."),
           supportingEvidence = None,
           lateAppeal = false,
-          lateAppealReason = None
+          lateAppealReason = None,
+          whoPlannedToSubmit = None,
+          causeOfLateSubmissionAgent = None
         )
         val expectedResult = Json.parse(
           """
