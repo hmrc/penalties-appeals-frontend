@@ -272,6 +272,62 @@ class OtherReasonControllerSpec extends SpecBase {
           }
         }
       }
+
+      "onSubmitForWhyReturnSubmittedLate" should {
+        "the user is authorised" must {
+          "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+            "- routing to file upload when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "why-return-submitted-late-text": "This is a reason"
+                  |}
+                  |""".stripMargin))))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+            await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
+          }
+
+          "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+            "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "why-return-submitted-late-text": "This is a reason"
+                  |}
+                  |""".stripMargin))))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+            await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
+          }
+
+          "return 400 (BAD_REQUEST) when the user does not enter a reason" in new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "why-return-submitted-late-text": ""
+                  |}
+                  |""".stripMargin))))
+            status(result) shouldBe BAD_REQUEST
+          }
+        }
+
+        "the user is unauthorised" when {
+
+          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+            status(result) shouldBe FORBIDDEN
+          }
+
+          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+            status(result) shouldBe SEE_OTHER
+          }
+        }
+      }
     }
   }
 }
