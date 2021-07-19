@@ -44,9 +44,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidBecomeUnablePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhyWasReturnSubmittedLatePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhoPlannedToSubmitVATReturnAgentPage -> ((_, _) => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)),
-    WhyWasTheReturnSubmittedLateAgentPage -> ((_, _) => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)),
-    ReasonableExcuseSelectionPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad())
+    WhoPlannedToSubmitVATReturnAgentPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhyWasTheReturnSubmittedLateAgentPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    ReasonableExcuseSelectionPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
