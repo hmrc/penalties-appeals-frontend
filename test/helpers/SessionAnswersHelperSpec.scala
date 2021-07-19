@@ -669,8 +669,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       "return a Seq[String, String, String] of answers" in {
         val fakeRequestWithClientPresent = fakeRequest
           .withSession(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "client",
-            SessionKeys.causeOfLateSubmissionAgent -> "client"
+            SessionKeys.whoPlannedToSubmitVATReturn -> "client"
           )
 
         val result = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithClientPresent, implicitly)

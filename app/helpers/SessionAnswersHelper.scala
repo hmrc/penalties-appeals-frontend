@@ -241,8 +241,6 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
       getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse)
     }
     else {
-      logger.error(s"[SessionAnswersHelper] User hasn't got all keys in session for reasonable excuses :$reasonableExcuse")
-      logger.debug(s"[SessionAnswersHelper] User has keys: ${request.session.data} and tried to load page with reasonable excuses :$reasonableExcuse and agent's response")
       Seq.empty
     }
   }
