@@ -168,8 +168,8 @@ technicalIssues.end.error.endDateLessThanStartDate = The date the technology iss
 
 # Was hospital stay required page
 # ----------------------------------------------------------
-healthReason.wasHospitalStayRequired.title = Did this health issue include an unexpected hospital stay?
-healthReason.wasHospitalStayRequired.heading = Did this health issue include an unexpected hospital stay?
+healthReason.wasHospitalStayRequired.title = Did this health issue include a unexpected hospital stay?
+healthReason.wasHospitalStayRequired.heading = Did this health issue include a unexpected hospital stay?
 healthReason.wasHospitalStayRequired.yes = yes
 healthReason.wasHospitalStayRequired.no = no
 healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital unexpectedly
@@ -216,11 +216,11 @@ otherReason.whenDidBecomeUnable.error.notInFuture = The date you became unable t
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
+agents.whoPlannedToSubmitVATReturn.title = Before the deadline, who planned to submit the return?
+agents.whoPlannedToSubmitVATReturn.heading = Before the deadline, who planned to submit the return?
 agents.whoPlannedToSubmitVATReturn.agent = I did
 agents.whoPlannedToSubmitVATReturn.client = My client did
 agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submit the VAT return
-agents.whoPlannedToSubmitVATReturn.title = Before the deadline, who planned to submit the return?
-agents.whoPlannedToSubmitVATReturn.heading = Before the deadline, who planned to submit the return?
 
 
 # Upload Evidence
@@ -279,7 +279,7 @@ checkYourAnswers.technicalIssues.whenDidTechIssuesBegin = When did the technolog
 checkYourAnswers.technicalIssues.whenDidTechIssuesEnd = When did the technology issues end?
 checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
 checkYourAnswers.health.reasonableExcuse = Health
-checkYourAnswers.health.unexpectedHospitalStay = Did this health issue include an unexpected hospital stay?
+checkYourAnswers.health.unexpectedHospitalStay = Did this health issue include a unexpected hospital stay?
 checkYourAnswers.health.unableToManageAccount = When did you become unable to manage the VAT account?
 checkYourAnswers.health.yes = Yes
 checkYourAnswers.health.no = No
@@ -299,7 +299,6 @@ checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = I did
 checkYourAnswers.agents.whyWasTheReturnSubmittedLate = Why was the return submitted late?
 checkYourAnswers.agents.whyWasTheReturnSubmittedLate.client = My client did not get information to me on time
 checkYourAnswers.agents.whyWasTheReturnSubmittedLate.agent = Something else happened to delay me
-
 
 # Appeal Confirmation page
 # ----------------------------------------------------------

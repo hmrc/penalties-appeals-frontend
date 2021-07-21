@@ -439,7 +439,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "Health"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
+          result(1)._1 shouldBe "Did this health issue include a unexpected hospital stay?"
           result(1)._2 shouldBe "No"
           result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
           result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
@@ -461,7 +461,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "Health"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
+          result(1)._1 shouldBe "Did this health issue include a unexpected hospital stay?"
           result(1)._2 shouldBe "No"
           result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
           result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
@@ -598,7 +598,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Health"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-        result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
+        result(1)._1 shouldBe "Did this health issue include a unexpected hospital stay?"
         result(1)._2 shouldBe "No"
         result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
         result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
@@ -622,7 +622,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Health"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-        result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
+        result(1)._1 shouldBe "Did this health issue include a unexpected hospital stay?"
         result(1)._2 shouldBe "Yes"
         result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
         result(2)._1 shouldBe "When did the hospital stay begin?"
@@ -651,7 +651,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Health"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-        result(1)._1 shouldBe "Did this health issue include an unexpected hospital stay?"
+        result(1)._1 shouldBe "Did this health issue include a unexpected hospital stay?"
         result(1)._2 shouldBe "Yes"
         result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
         result(2)._1 shouldBe "When did the hospital stay begin?"
