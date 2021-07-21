@@ -25,11 +25,15 @@ object HonestyDeclarationMessages {
 
   val li1 = (reasonText: String, dueDate: String) => s"because $reasonText, I was unable to submit the VAT Return due on $dueDate"
 
+  val li1Other = (dueDate: String) => s"I was unable to submit the VAT Return due on $dueDate"
+
   val li2 = "no one else was available to make the submission for me"
 
   val li3 = "I will provide honest and accurate information in this appeal"
 
   val extraLiForLossOfStaff = "the staff member did not return or get replaced before the due date"
+
+  val extraLiForHealth = "the timing of the health issue was unexpected"
 
   val acceptAndContinueButton = "Accept and continue"
 }

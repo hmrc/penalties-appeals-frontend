@@ -26,6 +26,7 @@ object HonestyDeclarationHelper {
   def getExtraText(reasonableExcuse: String): Seq[String] = {
     reasonableExcuse match {
       case "lossOfStaff" => Seq("honestyDeclaration.li.extra.lossOfStaff")
+      case "health" => Seq("honestyDeclaration.li.extra.health")
       case _ => Seq()
     }
   }
