@@ -107,6 +107,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   def getNextURLBasedOnReasonableExcuse(reasonableExcuse: String, mode: Mode)(implicit request: Request[_]): Call = {
     reasonableExcuse match {
+      case ReasonableExcuses.bereavement => controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(mode)
       case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(mode)
       case ReasonableExcuses.fireOrFlood => controllers.routes.FireOrFloodReasonController.onPageLoad(mode)
       case ReasonableExcuses.lossOfStaff => controllers.routes.LossOfStaffReasonController.onPageLoad(mode)

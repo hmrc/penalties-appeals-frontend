@@ -19,6 +19,16 @@ GET        /sign-out                        controllers.SignOutController.signOu
 GET        /language/:lang                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 GET        /assets/*file                     controllers.Assets.versioned(path = "/public", file: Asset)
 
+# Bereavement Reasonable Excuse Journey
+GET        /when-did-the-person-die                     controllers.BereavementReasonController.onPageLoadForWhenThePersonDied(mode: Mode = NormalMode)
+GET        /when-did-the-person-die/change              controllers.BereavementReasonController.onPageLoadForWhenThePersonDied(mode: Mode = CheckMode)
+POST       /when-did-the-person-die                     controllers.BereavementReasonController.onSubmitForWhenThePersonDied(mode: Mode = NormalMode)
+POST       /when-did-the-person-die/change              controllers.BereavementReasonController.onSubmitForWhenThePersonDied(mode: Mode = CheckMode)
+GET        /when-did-the-person-die                     controllers.BereavementReasonController.onPageLoadForWhenThePersonDied(mode: Mode = NormalMode)
+GET        /when-did-the-person-die/change              controllers.BereavementReasonController.onPageLoadForWhenThePersonDied(mode: Mode = CheckMode)
+POST       /when-did-the-person-die                     controllers.BereavementReasonController.onSubmitForWhenThePersonDied(mode: Mode = NormalMode)
+POST       /when-did-the-person-die/change              controllers.BereavementReasonController.onSubmitForWhenThePersonDied(mode: Mode = CheckMode)
+
 # Crime Reasonable Excuse Journey
 GET        /when-did-the-crime-happen              controllers.CrimeReasonController.onPageLoadForWhenCrimeHappened(mode: Mode = NormalMode)
 GET        /when-did-the-crime-happen/change       controllers.CrimeReasonController.onPageLoadForWhenCrimeHappened(mode: Mode = CheckMode)

@@ -246,6 +246,17 @@ healthReason.hasTheHospitalStayEnded.date.error.invalid = The date the hospital 
 healthReason.hasTheHospitalStayEnded.date.error.notInFuture = The date the hospital stay ended must be today or in the past
 healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The date the hospital stay ended must be the same or after it began
 
+# When did the person die page
+# ----------------------------------------------------------
+bereavementReason.title = When did the person die?
+bereavementReason.heading = When did the person die?
+bereavementReason.hintText = For example, 12 3 2018
+bereavementReason.error.required.all = Enter the date when the person died
+bereavementReason.error.required.two = The date must include a {0} and {1}
+bereavementReason.error.required = The date must include a {0}
+bereavementReason.error.invalid = The date must be a real date
+bereavementReason.error.notInFuture = The date must be today or in the past
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day
