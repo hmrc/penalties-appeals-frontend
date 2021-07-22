@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package utils
+package messages
 
-object ReasonableExcuses {
-  val bereavement = "bereavement"
-  val crime = "crime"
-  val fireOrFlood = "fireOrFlood"
-  val lossOfStaff = "lossOfStaff"
-  val technicalIssues = "technicalIssues"
-  val health = "health"
-  val other = "other"
+object WhenDidThePersonDiePageMessages {
+
+  val title = "When did the person die? - Appeal a VAT penalty - GOV.UK"
+  val heading = "When did the person die?"
+  val hintText = "For example, 12 3 2018"
+  val dayEntry = "Day"
+  val monthEntry = "Month"
+  val yearEntry = "Year"
+  val continueButton = "Continue"
+
 }
