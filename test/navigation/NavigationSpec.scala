@@ -218,6 +218,16 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
+
+      s"called with $WhenDidThePersonDiePage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidThePersonDiePage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "bereavement")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
     }
 
     "in NormalMode" when {
@@ -367,6 +377,17 @@ class NavigationSpec extends SpecBase {
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent"
           )))
         result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
+      }
+
+      s"called with $WhenDidThePersonDiePage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).
+          thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidThePersonDiePage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "bereavement")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
       }
     }
   }

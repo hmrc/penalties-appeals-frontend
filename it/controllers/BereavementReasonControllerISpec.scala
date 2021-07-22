@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
@@ -76,7 +76,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent -> LocalDateTime.now().minusDays(20).toString)
       ).withJsonBody(
         Json.parse(
           """
@@ -89,7 +89,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe "#"
+      request.header.headers("Location") shouldBe  controllers.routes.CheckYourAnswersController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenDidThePersonDie).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 
@@ -334,7 +334,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
     )
     val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
     request.header.status shouldBe Status.SEE_OTHER
-    request.header.headers("Location") shouldBe "#"
+    request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
     request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenDidThePersonDie).get shouldBe LocalDate.parse("2021-02-08").toString
   }
 }
