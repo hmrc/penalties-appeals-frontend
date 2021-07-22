@@ -22,6 +22,7 @@ import messages.MakingALateAppealMessages._
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
+import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.MakingALateAppealPage
 
@@ -33,7 +34,8 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
     }
     def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form)
 
-    val formProvider = MakingALateAppealForm.makingALateAppealForm
+    val formProvider = MakingALateAppealForm.makingALateAppealForm(fakeRequest.
+      withSession(SessionKeys.reasonableExcuse -> "crime"))
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(

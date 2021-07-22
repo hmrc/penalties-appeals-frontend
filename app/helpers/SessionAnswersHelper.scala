@@ -28,6 +28,7 @@ import java.time.LocalDate
 
 object SessionAnswersHelper extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
+    "bereavement" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidThePersonDie, SessionKeys.hasConfirmedDeclaration),
     "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
     "lossOfStaff" -> Seq(SessionKeys.whenPersonLeftTheBusiness, SessionKeys.reasonableExcuse, SessionKeys.hasConfirmedDeclaration),
     "fireOrFlood" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.dateOfFireOrFlood, SessionKeys.hasConfirmedDeclaration),
@@ -76,6 +77,15 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
   def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String)(implicit request: Request[_],
                                                                                   messages: Messages): Seq[(String, String, String)] = {
     val reasonableExcuseContent = reasonableExcuse match {
+      case "bereavement" => Seq(
+        (messages("checkYourAnswers.reasonableExcuse"),
+          messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
+          controllers.routes.ReasonableExcuseController.onPageLoad().url),
+        (messages("checkYourAnswers.bereavement.whenDidThePersonDie"),
+          dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidThePersonDie).get)),
+          controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url)
+      )
+
       case "crime" => Seq(
         (messages("checkYourAnswers.reasonableExcuse"),
           messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),

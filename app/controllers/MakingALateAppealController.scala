@@ -43,7 +43,7 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      MakingALateAppealForm.makingALateAppealForm().bindFromRequest().fold(
+      MakingALateAppealForm.makingALateAppealForm(request).bindFromRequest().fold(
         formWithErrors => BadRequest(makingALateAppealPage(formWithErrors)),
         lateAppealReason => {
           Redirect(routes.CheckYourAnswersController.onPageLoad())

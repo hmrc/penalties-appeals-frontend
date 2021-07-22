@@ -664,6 +664,46 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
   }
 
+  "for bereavement (someone died)" must {
+    "return all the keys from the session ready to be passed to the view" in {
+      val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequest
+        .withSession(
+          SessionKeys.reasonableExcuse -> "bereavement",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidThePersonDie -> "2022-01-01"
+        )
+
+      val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
+      result(0)._1 shouldBe "Reason for missing the VAT deadline"
+      result(0)._2 shouldBe "Bereavement (someone died)"
+      result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      result(1)._1 shouldBe "When did the person die?"
+      result(1)._2 shouldBe "1 January 2022"
+      result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
+    }
+
+    "return all keys and the 'Why you did not appeal sooner' text" in {
+      val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequest
+        .withSession(
+          SessionKeys.reasonableExcuse -> "bereavement",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidThePersonDie -> "2022-01-01",
+          SessionKeys.lateAppealReason -> "Lorem ipsum"
+        )
+
+      val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
+      result(0)._1 shouldBe "Reason for missing the VAT deadline"
+      result(0)._2 shouldBe "Bereavement (someone died)"
+      result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      result(1)._1 shouldBe "When did the person die?"
+      result(1)._2 shouldBe "1 January 2022"
+      result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
+      result(2)._1 shouldBe "Why you did not appeal sooner"
+      result(2)._2 shouldBe "Lorem ipsum"
+      result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+    }
+  }
+
   "getContentForAgentsCheckYourAnswersPage" should {
     "when the client planned to submit VAT return (so no cause Of LateSubmission chosen)" should {
       "return a Seq[String, String, String] of answers" in {
