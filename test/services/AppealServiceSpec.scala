@@ -53,6 +53,17 @@ class AppealServiceSpec extends SpecBase {
       |}
       |""".stripMargin)
 
+  val appealDataAsJsonLPP: JsValue = Json.parse(
+    """
+      |{
+      | "type": "LATE_PAYMENT",
+      | "startDate": "2020-01-01T12:00:00",
+      | "endDate": "2020-01-01T13:00:00",
+      | "dueDate": "2020-02-07T13:00:00",
+      | "dateCommunicationSent": "2020-02-08T13:00:00"
+      |}
+      |""".stripMargin)
+
   class Setup {
     reset(mockPenaltiesConnector, mockDateTimeHelper)
     val service: AppealService = new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper)
@@ -62,26 +73,34 @@ class AppealServiceSpec extends SpecBase {
 
   "validatePenaltyIdForEnrolmentKey" should {
     "return None when the connector returns None" in new Setup {
-      when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
     "return None when the connectors returns Json that cannot be parsed to a model" in new Setup {
-      when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
     "return Some when the connector returns Json that is parseable to a model" in new Setup {
-      when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(appealDataAsJson)))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234")(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      await(result).isDefined shouldBe true
+    }
+
+    "return Some when the connector returns Json that is parseable to a model for LPP" in new Setup {
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(appealDataAsJsonLPP)))
+
+      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
   }

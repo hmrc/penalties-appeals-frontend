@@ -28,7 +28,21 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
     "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned" in {
       implicit val fakeRequest = FakeRequest()
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoad("1234")(fakeRequest)
+      val result = controller.onPageLoad("1234", isLPP = false)(fakeRequest)
+      await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
+      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
+      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+    }
+
+    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned for LPP" in {
+      implicit val fakeRequest = FakeRequest()
+      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true)
+      val result = controller.onPageLoad("1234", isLPP = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
@@ -41,7 +55,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
 
     "render an ISE when the appeal data can not be retrieved" in {
       failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoad("1234")(FakeRequest())
+      val result = controller.onPageLoad("1234", isLPP = false)(FakeRequest())
       await(result).header.status shouldBe INTERNAL_SERVER_ERROR
     }
   }

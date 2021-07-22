@@ -29,14 +29,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltiesConnector @Inject()(httpClient: HttpClient,
                                    appConfig: AppConfig) {
-  def getAppealsDataForPenalty(penaltyId: String, enrolmentKey: String)
+
+  def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean): String = {
+    if(isLPP) {
+      appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))
+    } else appConfig.appealLSPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))
+  }
+
+  def getAppealsDataForPenalty(penaltyId: String, enrolmentKey: String, isLPP: Boolean)
                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getAppealsDataForPenalty] -"
     httpClient.GET[HttpResponse](
-      appConfig.appealDataForPenaltyAndEnrolmentKey(
-        penaltyId,
-        EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey)
-      )
+      getAppealUrlBasedOnPenaltyType(penaltyId, enrolmentKey, isLPP)
     ).map {
       response => response.status match {
         case OK => {
