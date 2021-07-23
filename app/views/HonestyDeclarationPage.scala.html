@@ -41,7 +41,15 @@
         @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
             @messages("honestyDeclaration.lpp.li.1.2", friendlyDate)
         } else {
-            @getMessage("honestyDeclaration.li.1.2", friendlyDate)
+            @if(user.isAgent && didClientCauseLateSubmission){
+                @if(reasonText.contains("crime") || reasonText.contains("death")){
+                    @getMessage("honestyDeclaration.li.1.2", friendlyDate)
+                }else{
+                    @getMessage("honestyDeclaration.li.1.2.myClient", friendlyDate)
+                }
+            }else{
+                @messages("honestyDeclaration.li.1.2", friendlyDate)
+            }
         }
         </li>
         @extraBullets.map { bullet =>
@@ -53,7 +61,7 @@
         @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
             @messages("honestyDeclaration.lpp.li.2")
         } else {
-            @getMessage("honestyDeclaration.li.2")
+            @getMessage("honestyDeclaration.li.2", false)
         }
         </li>
         <li>

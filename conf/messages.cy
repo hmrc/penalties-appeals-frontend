@@ -81,6 +81,7 @@ honestyDeclaration.p1 = I confirm that:
 honestyDeclaration.li.1.1 = because {0},
 honestyDeclaration.li.1.2 = I was unable to submit the VAT Return due on {0}
 agent.honestyDeclaration.li.1.2 = they were unable to submit the VAT Return due on {0}
+agent.honestyDeclaration.li.1.2.myClient = my client was unable to submit the VAT Return due on {0}
 honestyDeclaration.lpp.li.1.2 = I was unable to pay the VAT bill due on {0}
 honestyDeclaration.li.2 = no one else was available to make the submission for me
 agent.honestyDeclaration.li.2 = no one else was available to make the submission for them
@@ -185,14 +186,22 @@ healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone 
 # When did the health issue happen page
 # ----------------------------------------------------------
 healthReason.whenHealthIssueHappened.title = When did you become unable to manage the VAT account?
+agent.healthReason.whenHealthIssueHappened.title = When did your client become unable to manage the VAT account?
 healthReason.whenHealthIssueHappened.heading = When did you become unable to manage the VAT account?
+agent.healthReason.whenHealthIssueHappened.heading = When did your client become unable to manage the VAT account?
 healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>For example, 12 3 2018
+agent.healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your client’s ability to complete this submission.<br><br>For example, 12 3 2018
 healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your ability to make this payment.<br><br>For example, 12 3 2018
 healthReason.whenHealthIssueHappened.error.required.all = Tell us when you became unable to manage the VAT account
+agent.healthReason.whenHealthIssueHappened.error.required.all = Tell us when your client became unable to manage the VAT account
 healthReason.whenHealthIssueHappened.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
+agent.healthReason.whenHealthIssueHappened.error.required.two = The date your client became unable to manage VAT must include a {0} and a {1}
 healthReason.whenHealthIssueHappened.error.required = The date you became unable to manage VAT must include a {0}
+agent.healthReason.whenHealthIssueHappened.error.required = The date your client became unable to manage VAT must include a {0}
 healthReason.whenHealthIssueHappened.error.invalid = The date you became unable to manage VAT must be a real date
+agent.healthReason.whenHealthIssueHappened.error.invalid = The date your client became unable to manage VAT must be a real date
 healthReason.whenHealthIssueHappened.error.notInFuture = The date you became unable to manage VAT must be today or in the past
+agent.healthReason.whenHealthIssueHappened.error.notInFuture = The date your client became unable to manage VAT must be today or in the past
 
 # When did the hospital stay begin page
 # ----------------------------------------------------------
@@ -217,14 +226,22 @@ otherReason.whyReturnSubmittedLate.error.required = Explain why the VAT bill was
 # When did you become unable page
 # ----------------------------------------------------------
 otherReason.whenDidBecomeUnable.title = When did you become unable to manage the VAT account?
+agent.otherReason.whenDidBecomeUnable.title = When did your client become unable to manage the VAT account?
 otherReason.whenDidBecomeUnable.heading = When did you become unable to manage the VAT account?
+agent.otherReason.whenDidBecomeUnable.heading = When did your client become unable to manage the VAT account?
 otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>For example, 12 3 2018
+agent.otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped your client from working on or making this submission.<br><br>For example, 12 3 2018
 otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped you from making this payment.<br><br>For example, 12 3 2018
 otherReason.whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
+agent.otherReason.whenDidBecomeUnable.error.required.all = Tell us when your client became unable to manage the VAT account
 otherReason.whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
+agent.otherReason.whenDidBecomeUnable.error.required.two = The date your client became unable to manage the VAT account must include a {0} and a {1}
 otherReason.whenDidBecomeUnable.error.required = The date you became unable to manage VAT must include a {0}
+agent.otherReason.whenDidBecomeUnable.error.required = The date your client became unable to manage the VAT account must include a {0}
 otherReason.whenDidBecomeUnable.error.invalid = The date you became unable to manage VAT must be a real date
+agent.otherReason.whenDidBecomeUnable.error.invalid = The date your client became unable to manage the VAT account must be a real date
 otherReason.whenDidBecomeUnable.error.notInFuture = The date you became unable to manage VAT must be today or in the past
+agent.otherReason.whenDidBecomeUnable.error.notInFuture = The date your client became unable to manage the VAT account must be today or in the past
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
@@ -313,6 +330,7 @@ checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
 checkYourAnswers.health.reasonableExcuse = Health
 checkYourAnswers.health.hospitalStay = Did this health issue include a hospital stay?
 checkYourAnswers.health.unableToManageAccount = When did you become unable to manage the VAT account?
+agent.checkYourAnswers.health.unableToManageAccount = When did your client become unable to manage the VAT account?
 checkYourAnswers.health.yes = Yes
 checkYourAnswers.health.no = No
 checkYourAnswers.health.whenDidHospitalStayBegin = When did the hospital stay begin?
@@ -323,6 +341,7 @@ checkYourAnswers.bereavement.reasonableExcuse = Bereavement (someone died)
 
 checkYourAnswers.other.reasonableExcuse = The reason does not fit into any of the other categories
 checkYourAnswers.other.unableToManageAccount = When did you become unable to manage the VAT account?
+agent.checkYourAnswers.other.unableToManageAccount = When did your client become unable to manage the VAT account?
 checkYourAnswers.other.statementOfLateness = Why was the return submitted late?
 checkYourAnswers.other.fileEvidence = Evidence to support this appeal
 checkYourAnswers.other.noFileUpload = Not provided

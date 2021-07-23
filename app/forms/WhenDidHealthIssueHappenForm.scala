@@ -19,20 +19,22 @@ package forms
 import java.time.LocalDate
 
 import forms.mappings.Mappings
+import models.UserRequest
 import play.api.data.Form
 import play.api.i18n.Messages
+import utils.MessageRenderer.getMessageKey
 
 object WhenDidHealthIssueHappenForm extends Mappings {
 
-  def whenHealthIssueHappenedForm()(implicit messages: Messages): Form[LocalDate] = {
+  def whenHealthIssueHappenedForm()(implicit messages: Messages, user: UserRequest[_]): Form[LocalDate] = {
     Form(
       "date" -> localDate(
-        invalidKey = "healthReason.whenHealthIssueHappened.error.invalid",
-        allRequiredKey = "healthReason.whenHealthIssueHappened.error.required.all",
-        twoRequiredKey = "healthReason.whenHealthIssueHappened.error.required.two",
-        requiredKey = "healthReason.whenHealthIssueHappened.error.required",
-        fieldLengthKey = "healthReason.whenHealthIssueHappened.error.invalid",
-        futureKey = Some("healthReason.whenHealthIssueHappened.error.notInFuture")
+        invalidKey = getMessageKey("healthReason.whenHealthIssueHappened.error.invalid"),
+        allRequiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required.all"),
+        twoRequiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required.two"),
+        requiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required"),
+        fieldLengthKey = getMessageKey("healthReason.whenHealthIssueHappened.error.invalid"),
+        futureKey = Some(getMessageKey("healthReason.whenHealthIssueHappened.error.notInFuture"))
       )
     )
   }

@@ -23,8 +23,9 @@ import utils.SessionKeys
 import viewtils.ImplicitDateFormatter
 import config.ErrorHandler
 import utils.Logger.logger
-
 import java.time.LocalDate
+
+import utils.MessageRenderer.getMessage
 
 object SessionAnswersHelper extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
@@ -74,7 +75,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
   }
 
   //scalastyle:off
-  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String)(implicit request: Request[_],
+  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String)(implicit request: UserRequest[_],
                                                                                   messages: Messages): Seq[(String, String, String)] = {
     val reasonableExcuseContent = reasonableExcuse match {
       case "bereavement" => Seq(
@@ -140,7 +141,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
             controllers.routes.ReasonableExcuseController.onPageLoad().url),
-          (messages("checkYourAnswers.other.unableToManageAccount"),
+          (getMessage("checkYourAnswers.other.unableToManageAccount"),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidBecomeUnable).get)),
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
           (messages("checkYourAnswers.other.statementOfLateness"),
@@ -166,7 +167,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     )
   }
 
-  def getHealthReasonAnswers()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
+  def getHealthReasonAnswers()(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {
     (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.hasHealthEventEnded)) match {
       //No hospital stay
       case (Some("no"), _) => {
@@ -177,7 +178,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
           (messages("checkYourAnswers.health.hospitalStay"),
             messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
             controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url),
-          (messages("checkYourAnswers.health.unableToManageAccount"),
+          (getMessage("checkYourAnswers.health.unableToManageAccount"),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueHappened).get)),
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url)
         )
@@ -239,7 +240,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     seqWhoPlannedToSubmitVATReturn ++ seqWhyWasTheReturnSubmittedLate
   }
 
-  def getAllTheContentForCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
+  def getAllTheContentForCheckYourAnswersPage()(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {
 
     val reasonableExcuse = request.session.get(SessionKeys.reasonableExcuse)
     val agentSession = request.session.get(SessionKeys.agentSessionVrn).isDefined

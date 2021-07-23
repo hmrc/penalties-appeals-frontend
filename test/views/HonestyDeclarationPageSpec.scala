@@ -55,7 +55,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         Selectors.title -> title,
         Selectors.h1 -> h1,
         Selectors.pElementIndex(2) -> p1,
-        Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText("of agent context reason", "1 January 2022"),
+        Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClient("of agent context reason", "1 January 2022"),
         Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText,
         Selectors.listIndexWithElementIndex(3, 3) -> li3,
         Selectors.button -> acceptAndContinueButton

@@ -20,18 +20,31 @@ import models.UserRequest
 import play.api.i18n.Messages
 
 object MessageRenderer {
-  def getMessage(msgKey: String, msgArgs: Any*)(implicit messages: Messages, user: UserRequest[_]): String = {
 
-    if (user.isAgent){
-      if(user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client") ||
-        (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") && user.session.get(SessionKeys.causeOfLateSubmissionAgent).contains("client"))){
-        messages.apply(s"agent.$msgKey", msgArgs: _*)
-      }
-      else {
-        messages.apply(msgKey, msgArgs: _*)
-      }
-    }else{
+  def getMessageKey(msgKey: String)(implicit user: UserRequest[_]): String = {
+    if (user.isAgent && didClientCauseLateSubmission) {
+      s"agent.$msgKey"
+    } else {
+      msgKey
+    }
+  }
+
+  def getMessage(msgKey: String, msgArgs: Any*)(implicit messages: Messages, user: UserRequest[_]): String = {
+    if (user.isAgent && didClientCauseLateSubmission) {
+      messages.apply(s"agent.$msgKey", msgArgs: _*)
+    } else {
       messages.apply(msgKey, msgArgs: _*)
+    }
+  }
+
+  def didClientCauseLateSubmission()(implicit user: UserRequest[_]): Boolean = {
+    val clientPlannedToSubmit = user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
+    val clientCausedLateSubmissionReturn = user.session.get(SessionKeys.causeOfLateSubmissionAgent).contains("client")
+
+    (clientPlannedToSubmit, clientCausedLateSubmissionReturn) match {
+      case (true, _) => true
+      case (false, true) => true
+      case (false, false) => false
     }
   }
 }

@@ -19,9 +19,15 @@ package messages
 object WhenDidBecomeUnableMessages {
   val title = "When did you become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
 
+  val titleAgentText = "When did your client become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
+
   val heading = "When did you become unable to manage the VAT account?"
 
+  val headingAgentText = "When did your client become unable to manage the VAT account?"
+
   val hintText = "Tell us the date when this issue first stopped you from working on or making this submission. For example, 12 3 2018"
+
+  val hintTextAgentText = "Tell us the date when this issue first stopped your client from working on or making this submission. For example, 12 3 2018"
 
   val hintTextLpp = "Tell us the date when this issue first stopped you from making this payment. For example, 12 3 2018"
 

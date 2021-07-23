@@ -7,13 +7,13 @@
         govukButton: GovukButton,
         dateInput: components.inputDate)
 
-@(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @hintText = @{
     if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) "otherReason.whenDidBecomeUnable.lpp.hintText" else "otherReason.whenDidBecomeUnable.hintText"
 }
 
-@layout(pageTitle = messages("otherReason.whenDidBecomeUnable.title"),
+@layout(pageTitle = getMessage("otherReason.whenDidBecomeUnable.title"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
@@ -21,9 +21,9 @@
 
         @dateInput(
             form = form,
-            legendContent = messages("otherReason.whenDidBecomeUnable.heading"),
+            legendContent = getMessage("otherReason.whenDidBecomeUnable.heading"),
             legendClasses = Some("govuk-fieldset__legend govuk-fieldset__legend--l"),
-            hintText = Some(messages(hintText)),
+            hintText = Some(getMessage(hintText)),
             legendAsPageHeading = true
         )
 
