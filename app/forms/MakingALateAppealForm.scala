@@ -19,20 +19,12 @@ package forms
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.single
-import play.api.mvc.Request
-import utils.SessionKeys
 
 
 object MakingALateAppealForm extends Mappings {
-  def makingALateAppealForm(implicit request: Request[_]) = Form[String](
+  def makingALateAppealForm() = Form[String](
     single(
-      if(request.session.get(SessionKeys.reasonableExcuse)
-        .get.equalsIgnoreCase("bereavement"))
-        "late-appeal-text" ->
-          text(errorKey = "makingALateAppeal.bereavementReason.error.required")
-    else
-      "late-appeal-text" ->
-        text(errorKey = "makingALateAppeal.error.required")
+      "late-appeal-text" -> text(errorKey = "makingALateAppeal.error.required")
     )
   )
 }

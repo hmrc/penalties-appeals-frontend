@@ -336,7 +336,6 @@ makingALateAppeal.title = Making a late appeal
 makingALateAppeal.heading = Making a late appeal
 makingALateAppeal.p1 = You usually need to appeal within 30 days of being told about a penalty. If you do not appeal within 30 days, we’ll use information you provide here to decide whether we can consider your late appeal.
 makingALateAppeal.error.required = You must provide some information about why you did not appeal sooner
-makingALateAppeal.bereavementReason.error.required = Explain why you did not appeal sooner
 
 # Agents 'Why was return submitted late?'
 # ----------------------------------------------------------

@@ -17,34 +17,16 @@
 package forms
 
 import base.SpecBase
-import utils.SessionKeys
 import play.api.data.FormError
 
 class MakingALateAppealFormSpec extends SpecBase with FormBehaviours {
-  var request = fakeRequest
+
   "MakingALateAppealForm" should {
-    "bind for bereavement" when {
-      request = fakeRequest
-        .withSession(SessionKeys.reasonableExcuse -> "bereavement")
-      val form = MakingALateAppealForm.makingALateAppealForm(request)
-      behave like mandatoryField(form, "late-appeal-text",
-        FormError("late-appeal-text", "makingALateAppeal.bereavementReason.error.required"))
-      "a text value entered for bereavement" in {
-        val result = form.bind(
-          Map(
-            "late-appeal-text" -> "Some reason."
-          )
-        )
-        result.hasErrors shouldBe false
-      }
-    }
-    "bind for crime" when {
-      request = fakeRequest
-        .withSession(SessionKeys.reasonableExcuse -> "crime")
-      val form = MakingALateAppealForm.makingALateAppealForm(request)
+    "bind" when {
+      val form = MakingALateAppealForm.makingALateAppealForm()
       behave like mandatoryField(form, "late-appeal-text",
         FormError("late-appeal-text", "makingALateAppeal.error.required"))
-      "a text value entered for crime" in {
+      "a text value entered for bereavement" in {
         val result = form.bind(
           Map(
             "late-appeal-text" -> "Some reason."

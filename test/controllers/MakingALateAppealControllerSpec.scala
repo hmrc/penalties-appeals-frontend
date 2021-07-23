@@ -47,14 +47,12 @@ class MakingALateAppealControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return 200" when {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoad()(fakeRequestWithCorrectKeys.withSession(SessionKeys.reasonableExcuse -> "crime"))
+        val result = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
       "return OK and correct view (pre-populated textbox when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoad()(fakeRequestConverter(fakeRequestWithCorrectKeys
-          .withSession(SessionKeys.lateAppealReason -> "This is a reason.")
-        .withSession(SessionKeys.reasonableExcuse -> "crime")))
+        val result = controller.onPageLoad()(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.lateAppealReason -> "This is a reason.")))
         status(result) shouldBe OK
         val documentParsed = Jsoup.parse(contentAsString(result))
         documentParsed.select("#late-appeal-text").first().text() shouldBe "This is a reason."
