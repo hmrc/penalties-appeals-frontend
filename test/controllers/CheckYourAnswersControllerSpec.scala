@@ -104,6 +104,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     )
   )
 
+  val fakeRequestForBereavementJourney = fakeRequestConverter(fakeRequestWithCorrectKeys
+    .withSession(
+      SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.hasConfirmedDeclaration -> "true",
+      SessionKeys.whenDidThePersonDie -> "2021-01-01"
+    )
+  )
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
     reset(mockAppealService)
@@ -155,6 +163,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       "return OK and correct view - when all answers exist for other" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForOtherJourney)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - when all answers exist for bereavement" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoad()(fakeRequestForBereavementJourney)
         status(result) shouldBe OK
       }
 

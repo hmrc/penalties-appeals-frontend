@@ -297,6 +297,8 @@ checkYourAnswers.health.no = No
 checkYourAnswers.health.whenDidHospitalStayBegin = When did the hospital stay begin?
 checkYourAnswers.health.hasTheHospitalStayEnded = Has the hospital stay ended?
 checkYourAnswers.health.whenDidHospitalStayEnd = When did it end?
+checkYourAnswers.bereavement.whenDidThePersonDie = When did the person die?
+checkYourAnswers.bereavement.reasonableExcuse = Bereavement (someone died)
 
 checkYourAnswers.other.reasonableExcuse = The reason does not fit into any of the other categories
 checkYourAnswers.other.unableToManageAccount = When did you become unable to manage the VAT account?
