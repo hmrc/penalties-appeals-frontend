@@ -75,8 +75,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
   }
 
   //scalastyle:off
-  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String)(implicit request: UserRequest[_],
-                                                                                  messages: Messages): Seq[(String, String, String)] = {
+  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String)(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {
     val reasonableExcuseContent = reasonableExcuse match {
       case "bereavement" => Seq(
         (messages("checkYourAnswers.reasonableExcuse"),
