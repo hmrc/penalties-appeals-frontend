@@ -19,10 +19,12 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhyReturnSubmittedLateForm
 import messages.WhyReturnSubmittedLateMessages._
-import models.NormalMode
+import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
+import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.WhyReturnSubmittedLatePage
 
@@ -31,8 +33,8 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     val whyReturnSubmittedLate: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
     object Selectors extends BaseSelectors
 
-    def applyView(form: Form[_]): HtmlFormat.Appendable = whyReturnSubmittedLate.apply(form,
-      controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(NormalMode))
+    def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whyReturnSubmittedLate.apply(form,
+      controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(NormalMode))(request, implicitly, implicitly)
 
     val formProvider = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
 
@@ -45,5 +47,17 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     )
 
     behave like pageWithExpectedMessages(expectedContent)
+
+    "display the LPP variation when the appeal is for a LPP" must {
+      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+
+      val expectedContent = Seq(
+        Selectors.title -> titleLpp,
+        Selectors.h1 -> headingLpp,
+        Selectors.button -> continueButton
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
   }
 }

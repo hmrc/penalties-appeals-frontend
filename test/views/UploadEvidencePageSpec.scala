@@ -19,10 +19,12 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.UploadEvidenceForm
 import messages.UploadEvidenceMessages._
-import models.NormalMode
+import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
+import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.UploadEvidencePage
 
@@ -35,7 +37,9 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     }
     val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
-    def applyView(form: Form[_]): HtmlFormat.Appendable = uploadEvidencePage.apply(form, controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode))
+    def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
+      uploadEvidencePage.apply(form, controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode))(request, implicitly, implicitly)
+    }
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 
@@ -50,5 +54,21 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     )
 
     behave like pageWithExpectedMessages(expectedContent)
+
+    "display the LPP variation when the appeal is for a LPP" must {
+      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(2) -> p1,
+        Selectors.pElementIndex(3) -> p2Lpp,
+        Selectors.pElementIndex(4) -> p3,
+        Selectors.label -> uploadLabel,
+        Selectors.button -> continueButton
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
   }
 }

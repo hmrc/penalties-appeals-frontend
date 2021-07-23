@@ -15,11 +15,13 @@
  *@
 
 @import config.AppConfig
+@import utils.SessionKeys
 
 @this(layout: Layout,
         link: components.link,
         govukButton: GovukButton,
         formHelper: FormWithCSRF)
+
 
 @(form: Form[_], reasonText: String, friendlyDate: String, extraBullets: Seq[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
@@ -35,7 +37,13 @@
         @if(!reasonText.equals("")){
             @messages("honestyDeclaration.li.1.1", reasonText)&nbsp
         }
-        @messages("honestyDeclaration.li.1.2", friendlyDate)
+
+        @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+            @messages("honestyDeclaration.lpp.li.1.2", friendlyDate)
+        } else {
+            @messages("honestyDeclaration.li.1.2", friendlyDate)
+        }
+
         </li>
         @extraBullets.map { bullet =>
             <li>
@@ -43,7 +51,11 @@
             </li>
         }
         <li>
-        @messages("honestyDeclaration.li.2")
+        @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+            @messages("honestyDeclaration.lpp.li.2", friendlyDate)
+        } else {
+            @messages("honestyDeclaration.li.2", friendlyDate)
+        }
         </li>
         <li>
         @messages("honestyDeclaration.li.3")

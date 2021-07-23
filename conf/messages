@@ -41,6 +41,7 @@ appealStart.p3 = You can still appeal to the tax tribunal if you are not satisfi
 appealStart.h2 = Before you start
 appealStart.p4 = You need:
 appealStart.li.2.1 = a reason why the VAT Return was late (HMRC calls this a ’reasonable excuse’)
+appealStart.lpp.li.2.1 = a reason why the VAT payment was late (HMRC calls this a ’reasonable excuse’)
 appealStart.li.2.2 = the dates the reason related to
 appealStart.li.2.3 = details of why you did not appeal sooner
 appealStart.p5 = In some cases, we might also ask you to upload evidence to support the appeal.
@@ -79,7 +80,9 @@ honestyDeclaration.heading = Honesty declaration
 honestyDeclaration.p1 = I confirm that:
 honestyDeclaration.li.1.1 = because {0},
 honestyDeclaration.li.1.2 = I was unable to submit the VAT Return due on {0}
+honestyDeclaration.lpp.li.1.2 = I was unable to pay the VAT bill due on {0}
 honestyDeclaration.li.2 = no one else was available to make the submission for me
+honestyDeclaration.lpp.li.2 = no one else was available to make the payment for me
 honestyDeclaration.li.3 = I will provide honest and accurate information in this appeal
 honestyDeclaration.li.extra.lossOfStaff = the staff member did not return or get replaced before the due date
 honestyDeclaration.li.extra.health = the timing of the health issue was unexpected
@@ -180,6 +183,7 @@ healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone 
 healthReason.whenHealthIssueHappened.title = When did you become unable to manage the VAT account?
 healthReason.whenHealthIssueHappened.heading = When did you become unable to manage the VAT account?
 healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>For example, 12 3 2018
+healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your ability to make this payment.<br><br>For example, 12 3 2018
 healthReason.whenHealthIssueHappened.error.required.all = Tell us when you became unable to manage the VAT account
 healthReason.whenHealthIssueHappened.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
 healthReason.whenHealthIssueHappened.error.required = The date you became unable to manage VAT must include a {0}
@@ -201,14 +205,17 @@ healthReason.whenDidHospitalStayBegin.error.notInFuture = The date the hospital 
 # Why was the return submitted late page
 # ----------------------------------------------------------
 otherReason.whyReturnSubmittedLate.title = Why was the return submitted late?
+otherReason.whyReturnSubmittedLate.lpp.title = Why was the VAT bill paid late?
 otherReason.whyReturnSubmittedLate.heading = Why was the return submitted late?
-otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
+otherReason.whyReturnSubmittedLate.lpp.heading = Why was the VAT bill paid late?
+otherReason.whyReturnSubmittedLate.error.required = Explain why the VAT bill was paid late
 
 # When did you become unable page
 # ----------------------------------------------------------
 otherReason.whenDidBecomeUnable.title = When did you become unable to manage the VAT account?
 otherReason.whenDidBecomeUnable.heading = When did you become unable to manage the VAT account?
 otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>For example, 12 3 2018
+otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped you from making this payment.<br><br>For example, 12 3 2018
 otherReason.whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
 otherReason.whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
 otherReason.whenDidBecomeUnable.error.required = The date you became unable to manage VAT must include a {0}
@@ -229,7 +236,8 @@ agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submi
 otherReason.uploadEvidence.title = Evidence to support this appeal (optional)
 otherReason.uploadEvidence.heading = Evidence to support this appeal (optional)
 otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the appeal.
-otherReason.uploadEvidence.p2 =  Evidence might include any documents or letters that show why the return was submitted late.
+otherReason.uploadEvidence.p2 = Evidence might include any documents or letters that show why the return was submitted late.
+otherReason.uploadEvidence.lpp.p2 = Evidence might include any documents or letters that show why the VAT bill was paid late.
 otherReason.uploadEvidence.p3 = We will still review your appeal if you do not upload evidence.
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
 

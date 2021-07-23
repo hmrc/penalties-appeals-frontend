@@ -19,7 +19,11 @@ package messages
 object WhyReturnSubmittedLateMessages {
   val title = "Why was the return submitted late? - Appeal a VAT penalty - GOV.UK"
 
+  val titleLpp = "Why was the VAT bill paid late? - Appeal a VAT penalty - GOV.UK"
+
   val heading = "Why was the return submitted late?"
+
+  val headingLpp = "Why was the VAT bill paid late?"
 
   val continueButton = "Continue"
 }

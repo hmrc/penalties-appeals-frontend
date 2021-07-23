@@ -21,6 +21,7 @@ object WhenDidHealthReasonHappenMessages {
   val title = "When did you become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
   val heading = "When did you become unable to manage the VAT account?"
   val hintText = "Tell us the date when the health issue started to affect your ability to complete this submission. For example, 12 3 2018"
+  val hintTextLpp = "Tell us the date when the health issue started to affect your ability to make this payment. For example, 12 3 2018"
   val dayEntry = "Day"
   val monthEntry = "Month"
   val yearEntry = "Year"

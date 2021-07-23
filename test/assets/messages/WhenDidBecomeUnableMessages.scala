@@ -23,6 +23,8 @@ object WhenDidBecomeUnableMessages {
 
   val hintText = "Tell us the date when this issue first stopped you from working on or making this submission. For example, 12 3 2018"
 
+  val hintTextLpp = "Tell us the date when this issue first stopped you from making this payment. For example, 12 3 2018"
+
   val dayEntry = "Day"
 
   val monthEntry = "Month"
