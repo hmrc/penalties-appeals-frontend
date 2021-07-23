@@ -33,14 +33,18 @@ class MessageRendererSpec extends SpecBase {
   "getMessage" should {
     "load the relevant agent message " when {
       "the user is an agent" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest)
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.
+          withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+            SessionKeys.causeOfLateSubmissionAgent -> "client"))
         val fakeMessageKey = "message.key"
         val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, fakeAgentRequest)
         result shouldBe "agent.message.key"
       }
 
       "apply the given arguments" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest)
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest
+          withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.causeOfLateSubmissionAgent -> "client"))
         val messagesApi = new DefaultMessagesApi(testMessages)
         val messages = messagesApi.preferred(FakeRequest("GET", "/"))
         val fakeMessageKey = "test.message"

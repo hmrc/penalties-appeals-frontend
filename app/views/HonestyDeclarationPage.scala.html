@@ -23,7 +23,7 @@
         formHelper: FormWithCSRF)
 
 
-@(form: Form[_], reasonText: String, friendlyDate: String, extraBullets: Seq[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], reasonText: String, friendlyDate: String, extraBullets: Seq[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @layout(pageTitle = messages("honestyDeclaration.title"),
     isPageFullWidth = false,
@@ -41,9 +41,8 @@
         @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
             @messages("honestyDeclaration.lpp.li.1.2", friendlyDate)
         } else {
-            @messages("honestyDeclaration.li.1.2", friendlyDate)
+            @getMessage("honestyDeclaration.li.1.2", friendlyDate)
         }
-
         </li>
         @extraBullets.map { bullet =>
             <li>
@@ -52,9 +51,9 @@
         }
         <li>
         @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
-            @messages("honestyDeclaration.lpp.li.2", friendlyDate)
+            @messages("honestyDeclaration.lpp.li.2")
         } else {
-            @messages("honestyDeclaration.li.2", friendlyDate)
+            @getMessage("honestyDeclaration.li.2")
         }
         </li>
         <li>

@@ -16,11 +16,16 @@
 
 package helpers
 
+import models.UserRequest
 import play.api.i18n.Messages
+import utils.MessageRenderer.getMessage
 
 object HonestyDeclarationHelper {
-  def getReasonText(reasonableExcuse: String)(implicit messages: Messages): String = {
-    messages(s"honestyDeclaration.$reasonableExcuse")
+  def getReasonText(reasonableExcuse: String)(implicit messages: Messages, user: UserRequest[_]): String = {
+    reasonableExcuse match {
+      case excuse if excuse == "crime" || excuse == "bereavement" => getMessage(s"honestyDeclaration.$reasonableExcuse")
+      case _ => messages(s"honestyDeclaration.$reasonableExcuse")
+    }
   }
 
   def getExtraText(reasonableExcuse: String): Seq[String] = {

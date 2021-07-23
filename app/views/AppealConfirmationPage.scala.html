@@ -20,7 +20,7 @@
         bullets: components.bullets,
         link: components.link)
 
-@(penaltyTypeMsgKey: String, periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(penaltyTypeMsgKey: String, periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @penaltyType = @{
     messages(penaltyTypeMsgKey)
@@ -56,10 +56,10 @@
 
     <ul class="govuk-list">
         <li>
-            <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">@messages("appealConfirmation.returnToPenalties")</a>
+            <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">@getMessage("appealConfirmation.returnToPenalties")</a>
         </li>
         <li>
-            <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="view-vat-account-link">@messages("appealConfirmation.returnToVatVc")</a>
+            <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="view-vat-account-link">@getMessage("appealConfirmation.returnToVatVc")</a>
         </li>
     </ul>
 

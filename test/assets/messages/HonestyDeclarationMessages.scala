@@ -29,7 +29,11 @@ object HonestyDeclarationMessages {
 
   val li1Other = (dueDate: String) => s"I was unable to submit the VAT Return due on $dueDate"
 
+  val li1AgentText = (reasonText: String, dueDate: String) => s"because $reasonText, they were unable to submit the VAT Return due on $dueDate"
+
   val li2 = "no one else was available to make the submission for me"
+
+  val li2AgentText = "no one else was available to make the submission for them"
 
   val li2Lpp = "no one else was available to make the payment for me"
 

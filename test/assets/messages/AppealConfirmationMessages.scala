@@ -39,7 +39,11 @@ object AppealConfirmationMessages {
 
   val returnToPenalties = "Return to your VAT penalties"
 
+  val returnToPenaltiesAgentText = "Return to your client’s VAT penalties"
+
   val goToVatVC = "View your VAT account"
+
+  val goToVatVCAgentText = "View your client’s VAT account"
 
   val goToFeedback = "What did you think of this service? (takes 30 seconds)"
 }

@@ -21,8 +21,15 @@ import play.api.i18n.Messages
 
 object MessageRenderer {
   def getMessage(msgKey: String, msgArgs: Any*)(implicit messages: Messages, user: UserRequest[_]): String = {
+
     if (user.isAgent){
-      messages.apply(s"agent.$msgKey", msgArgs: _*)
+      if(user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client") ||
+        (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") && user.session.get(SessionKeys.causeOfLateSubmissionAgent).contains("client"))){
+        messages.apply(s"agent.$msgKey", msgArgs: _*)
+      }
+      else {
+        messages.apply(msgKey, msgArgs: _*)
+      }
     }else{
       messages.apply(msgKey, msgArgs: _*)
     }

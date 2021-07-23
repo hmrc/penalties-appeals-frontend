@@ -67,8 +67,14 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val vrn: String = "123456789"
 
+  val arn: Option[String] = Some("AGENT1")
+
   def fakeRequestConverter(fakeRequest: FakeRequest[AnyContent] = fakeRequestWithCorrectKeys): UserRequest[AnyContent] = {
     UserRequest(vrn)(fakeRequest)
+  }
+
+  def agentFakeRequestConverter(fakeRequest: FakeRequest[AnyContent] = fakeRequestWithCorrectKeys): UserRequest[AnyContent] = {
+    UserRequest(vrn = vrn, arn = arn)(fakeRequest)
   }
 
   val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
@@ -91,4 +97,13 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   )
 
   def asDocument(html: Html): Document = Jsoup.parse(html.toString())
+
+  val agentRequest = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
+
+  val vatTraderUser: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest)
+
+  val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+    SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+    SessionKeys.causeOfLateSubmissionAgent -> "client")
+  )
 }

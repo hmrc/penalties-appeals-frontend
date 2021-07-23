@@ -16,7 +16,7 @@
 
 package controllers
 
-import models.NormalMode
+import models.{NormalMode, UserRequest}
 import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -73,7 +73,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith ("I was unable to submit the VAT Return due on ")
+      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("I was unable to submit the VAT Return due on ")
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
@@ -99,6 +99,29 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       AuthStub.unauthorised()
       val request = await(buildClientForRequestToApp(uri = "/honesty-declaration").get())
       request.status shouldBe Status.SEE_OTHER
+    }
+
+
+    "when an agent is authorised and has the correct keys" must {
+      "return 200 (OK) and the correct message - show agent context messages" in {
+        AuthStub.agentAuthorised()
+        val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(FakeRequest("GET", "/honesty-declaration")
+          .withSession((SessionKeys.agentSessionVrn, "VRN1234"),
+            (SessionKeys.penaltyId, "1234"),
+            (SessionKeys.appealType, "Late_Submission"),
+            (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+            (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+            (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+            (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+            (SessionKeys.reasonableExcuse, "crime"),
+            (SessionKeys.whoPlannedToSubmitVATReturn, "agent"),
+            (SessionKeys.causeOfLateSubmissionAgent, "client"))
+        )
+        val request  = controller.onPageLoad()(agentUserSessionKeys)
+        await(request).header.status shouldBe Status.OK
+        val parsedBody = Jsoup.parse(contentAsString(request))
+        parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text should startWith("because my client was affected by a crime")
+      }
     }
   }
 
