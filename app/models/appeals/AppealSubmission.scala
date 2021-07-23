@@ -29,6 +29,51 @@ sealed trait AppealInformation {
   val causeOfLateSubmissionAgent:Option[String]
 }
 
+case class BereavementAppealInformation(
+                                         `type`: String,
+                                          dateOfEvent: String,
+                                          statement: Option[String],
+                                          lateAppeal: Boolean,
+                                          lateAppealReason: Option[String],
+                                          whoPlannedToSubmit: Option[String],
+                                          causeOfLateSubmissionAgent: Option[String]
+                                       ) extends AppealInformation
+object BereavementAppealInformation {
+  implicit val bereavementAppealInformationFormatter: OFormat[BereavementAppealInformation] = Json.format[BereavementAppealInformation]
+
+  val bereavementAppealWrites: Writes[BereavementAppealInformation] = (bereavementAppealInformation: BereavementAppealInformation) => {
+    Json.obj(
+      "type" -> bereavementAppealInformation.`type`,
+      "dateOfEvent" -> bereavementAppealInformation.dateOfEvent,
+      "lateAppeal" -> bereavementAppealInformation.lateAppeal
+    ).deepMerge(
+      bereavementAppealInformation.statement.fold(
+        Json.obj()
+      )(
+        statement => Json.obj("statement" -> statement)
+      )
+    ).deepMerge(
+      bereavementAppealInformation.lateAppealReason.fold(
+        Json.obj()
+      )(
+        lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
+      )
+    ).deepMerge(
+      bereavementAppealInformation.whoPlannedToSubmit.fold(
+        Json.obj()
+      )(
+        whoPlannedToSubmit => Json.obj("whoPlannedToSubmit" -> whoPlannedToSubmit)
+      )
+    ).deepMerge(
+      bereavementAppealInformation.causeOfLateSubmissionAgent.fold(
+        Json.obj()
+      )(
+        causeOfLateSubmissionAgent => Json.obj("causeOfLateSubmissionAgent" -> causeOfLateSubmissionAgent)
+      )
+    )
+  }
+}
+
 case class CrimeAppealInformation(
                                    `type`: String,
                                    dateOfEvent: String,
@@ -347,6 +392,9 @@ case class AppealSubmission(
 object AppealSubmission {
   def parseAppealInformationToJson(payload: AppealInformation): JsValue = {
     payload.`type` match {
+      case "bereavement" => {
+        Json.toJson(payload.asInstanceOf[BereavementAppealInformation])(BereavementAppealInformation.bereavementAppealWrites)
+      }
       case "crime" => {
         Json.toJson(payload.asInstanceOf[CrimeAppealInformation])(CrimeAppealInformation.crimeAppealWrites)
       }
@@ -372,6 +420,23 @@ object AppealSubmission {
   def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean)
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
+      case "bereavement" => {
+        AppealSubmission(
+          submittedBy = if(userRequest.isAgent) "agent" else "client",
+          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          appealInformation = BereavementAppealInformation(
+            `type` = "bereavement",
+            dateOfEvent = userRequest.session.get(SessionKeys.whenDidThePersonDie).get,
+            statement = None,
+            lateAppeal = isLateAppeal,
+            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
+            whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
+            causeOfLateSubmissionAgent = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent)
+          )
+        )
+      }
       case "crime" => {
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
