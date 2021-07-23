@@ -24,7 +24,6 @@ object SessionKeys {
   val dateCommunicationSent: String = "dateCommunicationSent"
   val penaltyId: String = "penaltyId"
   val reasonableExcuse: String = "reasonableExcuse"
-  val dateOfBereavement: String = "dateOfBereavement"
   val dateOfCrime: String = "dateOfCrime"
   val dateOfFireOrFlood: String = "dateOfFireOrFlood"
   val hasConfirmedDeclaration: String = "hasConfirmedDeclaration"
