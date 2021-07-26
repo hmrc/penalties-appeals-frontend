@@ -82,6 +82,7 @@ honestyDeclaration.li.1.2 = I was unable to submit the VAT Return due on {0}
 honestyDeclaration.li.2 = no one else was available to make the submission for me
 honestyDeclaration.li.3 = I will provide honest and accurate information in this appeal
 honestyDeclaration.li.extra.lossOfStaff = the staff member did not return or get replaced before the due date
+honestyDeclaration.li.extra.health = the timing of the health issue was unexpected
 honestyDeclaration.crime = I was affected by a crime
 honestyDeclaration.bereavement = I was affected by someone’s death
 honestyDeclaration.fireOrFlood = of a fire or flood
@@ -172,7 +173,7 @@ healthReason.wasHospitalStayRequired.title = Did this health issue include a hos
 healthReason.wasHospitalStayRequired.heading = Did this health issue include a hospital stay?
 healthReason.wasHospitalStayRequired.yes = yes
 healthReason.wasHospitalStayRequired.no = no
-healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital unexpectedly
+healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital
 
 # When did the health issue happen page
 # ----------------------------------------------------------
@@ -290,7 +291,7 @@ checkYourAnswers.technicalIssues.whenDidTechIssuesBegin = When did the technolog
 checkYourAnswers.technicalIssues.whenDidTechIssuesEnd = When did the technology issues end?
 checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
 checkYourAnswers.health.reasonableExcuse = Health
-checkYourAnswers.health.unexpectedHospitalStay = Did this health issue include a hospital stay?
+checkYourAnswers.health.hospitalStay = Did this health issue include a hospital stay?
 checkYourAnswers.health.unableToManageAccount = When did you become unable to manage the VAT account?
 checkYourAnswers.health.yes = Yes
 checkYourAnswers.health.no = No
