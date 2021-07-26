@@ -879,7 +879,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           SessionKeys.whenDidThePersonDie -> "2022-01-01"
         ))
 
-      val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
+      val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
       result(0)._1 shouldBe "Reason for missing the VAT deadline"
       result(0)._2 shouldBe "Bereavement (someone died)"
       result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -897,7 +897,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           SessionKeys.lateAppealReason -> "Lorem ipsum"
         ))
 
-      val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
+      val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
       result(0)._1 shouldBe "Reason for missing the VAT deadline"
       result(0)._2 shouldBe "Bereavement (someone died)"
       result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
