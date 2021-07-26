@@ -33,6 +33,20 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val penaltiesConnector: PenaltiesConnector = injector.instanceOf[PenaltiesConnector]
 
+  "getAppealUrlBasedOnPenaltyType" should {
+    "return the correct url for LPP" in {
+      val expectedResult = "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789"
+      val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true)
+      actualResult shouldBe expectedResult
+    }
+
+    "return the correct url for LSP" in {
+      val expectedResult = "http://localhost:11111/penalties/appeals-data/late-submissions?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789"
+      val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = false)
+      actualResult shouldBe expectedResult
+    }
+  }
+
   "getAppealsDataForPenalty" should {
     s"return $Some and the $JsValue returned by the call when the call is successful" in {
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
@@ -43,7 +57,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString,
         "dateCommunicationSent" -> LocalDateTime.of(2020, 2, 8, 12, 0, 0).toString
       )
-      val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
+      val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
       result.isDefined shouldBe true
       result.get shouldBe sampleJsonToPassBack
     }
@@ -51,19 +65,19 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
     s"return $None" when {
       "the call returns 404" in {
         failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", status = Status.NOT_FOUND)
-        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
         result.isDefined shouldBe false
       }
 
       "the call returns some unknown response" in {
         failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", status = Status.IM_A_TEAPOT)
-        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
         result.isDefined shouldBe false
       }
 
       "the call fails completely with no response" in {
         failedCall("1234", "HMRC-MTD-VAT~VRN~123456789")
-        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
         result.isDefined shouldBe false
       }
     }
@@ -115,7 +129,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
       "the call fails completely with no response" in {
         failedCallForFetchingReasonableExcuse
-        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789")(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
         result.isDefined shouldBe false
       }
     }

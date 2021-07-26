@@ -26,18 +26,21 @@ import play.api.libs.json.Json
 import java.time.LocalDateTime
 
 object PenaltiesStub {
-  private val appealUri = "/penalties/appeals-data/late-submissions"
+  private val appealUriForLSP = "/penalties/appeals-data/late-submissions"
+  private val appealUriForLPP = "/penalties/appeals-data/late-payments"
   private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
   private val submitAppealUri = "/penalties/appeals/submit-appeal?enrolmentKey=HMRC-MTD-VAT~VRN~123456789"
 
-  def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String): StubMapping = {
-    stubFor(get(urlEqualTo(s"$appealUri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
+  def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String, isLPP: Boolean = false): StubMapping = {
+    val typeOfPenalty = if(isLPP) PenaltyTypeEnum.Late_Payment else PenaltyTypeEnum.Late_Submission
+    val uri = if(isLPP) appealUriForLPP else appealUriForLSP
+    stubFor(get(urlEqualTo(s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
       .willReturn(
         aResponse()
           .withStatus(Status.OK)
           .withBody(
             Json.obj(
-              "type" -> PenaltyTypeEnum.Late_Submission,
+              "type" -> typeOfPenalty,
               "startDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
               "endDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
               "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString,
@@ -100,7 +103,7 @@ object PenaltiesStub {
   }
 
   def failedGetAppealDataResponse(penaltyId: String, enrolmentKey: String, status: Int = Status.INTERNAL_SERVER_ERROR): StubMapping = {
-    stubFor(get(urlEqualTo(appealUri + s"?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
+    stubFor(get(urlEqualTo(appealUriForLSP + s"?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
       .willReturn(
         aResponse()
           .withStatus(status)
@@ -118,7 +121,7 @@ object PenaltiesStub {
   }
 
   def failedCall(penaltyId: String, enrolmentKey: String): StubMapping = {
-    stubFor(get(urlEqualTo(appealUri + s"?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
+    stubFor(get(urlEqualTo(appealUriForLSP + s"?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
       .willReturn(
         aResponse()
           .withFault(Fault.CONNECTION_RESET_BY_PEER)

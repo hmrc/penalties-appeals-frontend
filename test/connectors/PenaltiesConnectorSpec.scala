@@ -44,6 +44,16 @@ class PenaltiesConnectorSpec extends SpecBase {
       |}
       |""".stripMargin)
 
+  val appealDataAsJsonLPP: JsValue = Json.parse(
+    """
+      |{
+      | "type": "LATE_PAYMENT",
+      | "startDate": "2020-01-01T12:00:00",
+      | "endDate": "2020-01-01T13:00:00",
+      | "lateAppeal": "false"
+      |}
+      |""".stripMargin)
+
   val reasonableExcusesAsJson: JsValue = Json.parse(
     """
       |{
@@ -89,35 +99,68 @@ class PenaltiesConnectorSpec extends SpecBase {
     )
   }
 
+  "getAppealUrlBasedOnPenaltyType" should {
+    "return the correct URL when the appeal is for a LPP" in new Setup {
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
+        .thenReturn("http://url/url")
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
+        .thenReturn("http://wrongurl/wrongurl")
+
+      val result = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = true)
+      result shouldBe "http://url/url"
+    }
+
+    "return the correct URL when the appeal is for a LSP" in new Setup {
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
+        .thenReturn("http://wrongurl/wrongurl")
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
+        .thenReturn("http://url/url")
+
+      val result = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = false)
+      result shouldBe "http://url/url"
+    }
+  }
+
   "getAppealsDataForPenalty" should {
     s"return $Some $JsValue when the connector call succeeds" in new Setup {
       when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJson.toString())))
-      when(mockAppConfig.appealDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getAppealsDataForPenalty("12345", "123456789"))
+      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false))
       result.isDefined shouldBe true
       result.get.toString() shouldBe appealDataAsJson.toString()
+    }
+
+    s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJsonLPP.toString())))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
+        .thenReturn("http://url/url")
+
+      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true))
+      result.isDefined shouldBe true
+      result.get.toString() shouldBe appealDataAsJsonLPP.toString()
     }
 
     s"return $None when the connector returns NOT_FOUND (${Status.NOT_FOUND})" in new Setup {
       when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
-      when(mockAppConfig.appealDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getAppealsDataForPenalty("12345", "123456789"))
+      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false))
       result.isDefined shouldBe false
     }
 
     s"return $None when the connector returns an unknown status e.g. ISE (${Status.INTERNAL_SERVER_ERROR})" in new Setup {
       when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(Status.IM_A_TEAPOT, "")))
-      when(mockAppConfig.appealDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getAppealsDataForPenalty("12345", "123456789"))
+      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false))
       result.isDefined shouldBe false
     }
   }
