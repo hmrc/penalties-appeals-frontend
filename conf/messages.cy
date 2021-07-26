@@ -182,6 +182,7 @@ healthReason.wasHospitalStayRequired.heading = Did this health issue include a h
 healthReason.wasHospitalStayRequired.yes = yes
 healthReason.wasHospitalStayRequired.no = no
 healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital
+agent.healthReason.wasHospitalStayRequired.error.required = Tell us if your client or someone else was admitted to hospital
 
 # When did the health issue happen page
 # ----------------------------------------------------------
