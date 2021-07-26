@@ -596,7 +596,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for bereavement" in {
-      PenaltiesStub.successfulAppealSubmission
+      PenaltiesStub.successfulAppealSubmission(false)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
