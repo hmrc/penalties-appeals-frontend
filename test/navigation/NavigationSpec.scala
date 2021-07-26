@@ -474,4 +474,33 @@ class NavigationSpec extends SpecBase {
       }
     }
   }
+
+  "getNextURLBasedOnReasonableExcuse" should{
+    "in NormalMode" must {
+      s"called with $WhenDidThePersonDiePage" in new Setup {
+               val result = mainNavigator.getNextURLBasedOnReasonableExcuse("bereavement" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(NormalMode).url
+      }
+      s"called with $WhenDidCrimeHappenPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("crime" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
+      }
+      s"called with $WhenDidFireOrFloodHappenPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("fireOrFlood" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url
+      }
+      s"called with $WhenDidTechnologyIssuesBeginPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("technicalIssues" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(NormalMode).url
+      }
+      s"called with $WhenDidHealthIssueHappenPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("health" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
+      }
+      s"called with $WhenDidBecomeUnablePage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("other" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode).url
+      }
+    }
+  }
 }
