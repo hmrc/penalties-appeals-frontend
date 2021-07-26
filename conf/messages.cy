@@ -168,8 +168,8 @@ technicalIssues.end.error.endDateLessThanStartDate = The date the technology iss
 
 # Was hospital stay required page
 # ----------------------------------------------------------
-healthReason.wasHospitalStayRequired.title = Did this health issue include a unexpected hospital stay?
-healthReason.wasHospitalStayRequired.heading = Did this health issue include a unexpected hospital stay?
+healthReason.wasHospitalStayRequired.title = Did this health issue include a hospital stay?
+healthReason.wasHospitalStayRequired.heading = Did this health issue include a hospital stay?
 healthReason.wasHospitalStayRequired.yes = yes
 healthReason.wasHospitalStayRequired.no = no
 healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital unexpectedly
@@ -290,7 +290,7 @@ checkYourAnswers.technicalIssues.whenDidTechIssuesBegin = When did the technolog
 checkYourAnswers.technicalIssues.whenDidTechIssuesEnd = When did the technology issues end?
 checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
 checkYourAnswers.health.reasonableExcuse = Health
-checkYourAnswers.health.unexpectedHospitalStay = Did this health issue include a unexpected hospital stay?
+checkYourAnswers.health.unexpectedHospitalStay = Did this health issue include a hospital stay?
 checkYourAnswers.health.unableToManageAccount = When did you become unable to manage the VAT account?
 checkYourAnswers.health.yes = Yes
 checkYourAnswers.health.no = No

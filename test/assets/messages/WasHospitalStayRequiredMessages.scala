@@ -18,8 +18,8 @@ package messages
 
 object WasHospitalStayRequiredMessages {
 
-  val title = "Did this health issue include a unexpected hospital stay? - Appeal a VAT penalty - GOV.UK"
-  val h1 = "Did this health issue include a unexpected hospital stay?"
+  val title = "Did this health issue include a hospital stay? - Appeal a VAT penalty - GOV.UK"
+  val h1 = "Did this health issue include a hospital stay?"
   val yesOption = "Yes"
   val noOption = "No"
   val continueButton = "Continue"
