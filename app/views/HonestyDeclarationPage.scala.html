@@ -35,7 +35,7 @@
     <ul class="govuk-list govuk-list--bullet">
         <li>
         @if(!reasonText.equals("")){
-            @messages("honestyDeclaration.li.1.1", reasonText)&nbsp
+            @messages("honestyDeclaration.li.1.1", reasonText)
         }
 
         @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
