@@ -148,7 +148,7 @@ class HealthReasonControllerSpec extends SpecBase {
           )))
           status(result) shouldBe BAD_REQUEST
           contentAsString(result) should include("There is a problem")
-          contentAsString(result) should include("Tell us if you or someone else was admitted to hospital unexpectedly")
+          contentAsString(result) should include("Tell us if you or someone else was admitted to hospital")
         }
 
         "the validation is performed against an empty value - value is an empty string" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -163,7 +163,7 @@ class HealthReasonControllerSpec extends SpecBase {
           )))
           status(result) shouldBe BAD_REQUEST
           contentAsString(result) should include("There is a problem")
-          contentAsString(result) should include("Tell us if you or someone else was admitted to hospital unexpectedly")
+          contentAsString(result) should include("Tell us if you or someone else was admitted to hospital")
         }
       }
 
