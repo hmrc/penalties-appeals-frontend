@@ -44,8 +44,10 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
         s"Due date of period = ${request.session.get(SessionKeys.dueDateOfPeriod)}, \n" +
         s"Date communication sent of period = ${request.session.get(SessionKeys.dateCommunicationSent)}, \n")
       val dateCommunicationSentParsed = LocalDateTime.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
+      val isObligationAppeal = request.session.get(SessionKeys.isObligationAppeal).isDefined
       Future.successful(Ok(appealStartPage(
-        dateCommunicationSentParsed.isBefore(LocalDateTime.now().minusDays(appConfig.daysRequiredForLateAppeal))
+        dateCommunicationSentParsed.isBefore(LocalDateTime.now().minusDays(appConfig.daysRequiredForLateAppeal)),
+        isObligationAppeal
       )))
     }
   }
