@@ -70,5 +70,42 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       behave like pageWithExpectedMessages(expectedContent)
     }
+
+    "display appeal against the obligation page when the appeal is for LSP" must {
+      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+        SessionKeys.isObligationAppeal -> "true")))
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(2) -> p1,
+        Selectors.pElementIndex(3) -> p2AppealAgainstObligation,
+        Selectors.pElementIndex(4) -> p3,
+        Selectors.label -> uploadLabel,
+        Selectors.button -> continueButton
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "display appeal against the obligation page when the appeal is for LPP" must {
+      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+        SessionKeys.isObligationAppeal -> "true")))
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(2) -> p1,
+        //TODO: change to relevant text for LPP variation of obligation appeal
+        Selectors.pElementIndex(3) -> "",
+        Selectors.pElementIndex(4) -> p3,
+        Selectors.label -> uploadLabel,
+        Selectors.button -> continueButton
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
   }
 }
