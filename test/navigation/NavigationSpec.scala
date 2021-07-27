@@ -218,6 +218,16 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
+
+      s"called with $WhenDidThePersonDiePage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidThePersonDiePage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "bereavement")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
     }
 
     "in NormalMode" when {
@@ -368,6 +378,17 @@ class NavigationSpec extends SpecBase {
           )))
         result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
       }
+
+      s"called with $WhenDidThePersonDiePage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).
+          thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result = mainNavigator.nextPage(WhenDidThePersonDiePage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            (SessionKeys.appealType -> "bereavement")
+          )))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
     }
   }
 
@@ -450,6 +471,35 @@ class NavigationSpec extends SpecBase {
           )), NormalMode)
 
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+    }
+  }
+
+  "getNextURLBasedOnReasonableExcuse" should{
+    "in NormalMode" must {
+      s"called with $WhenDidThePersonDiePage" in new Setup {
+               val result = mainNavigator.getNextURLBasedOnReasonableExcuse("bereavement" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(NormalMode).url
+      }
+      s"called with $WhenDidCrimeHappenPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("crime" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
+      }
+      s"called with $WhenDidFireOrFloodHappenPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("fireOrFlood" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url
+      }
+      s"called with $WhenDidTechnologyIssuesBeginPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("technicalIssues" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(NormalMode).url
+      }
+      s"called with $WhenDidHealthIssueHappenPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("health" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
+      }
+      s"called with $WhenDidBecomeUnablePage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse("other" , NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode).url
       }
     }
   }

@@ -46,7 +46,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, CheckMode)),
     WhyWasTheReturnSubmittedLateAgentPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    ReasonableExcuseSelectionPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
+    ReasonableExcuseSelectionPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidThePersonDiePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
@@ -66,7 +67,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, NormalMode)),
     WhyWasTheReturnSubmittedLateAgentPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
-    ReasonableExcuseSelectionPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad())
+    ReasonableExcuseSelectionPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
+    WhenDidThePersonDiePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None)(implicit userRequest: UserRequest[_]): Call = {

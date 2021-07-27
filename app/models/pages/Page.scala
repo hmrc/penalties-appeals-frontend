@@ -35,3 +35,4 @@ case object EvidencePage extends Page
 case object WhoPlannedToSubmitVATReturnAgentPage extends Page
 case object ReasonableExcuseSelectionPage extends Page
 case object WhyWasTheReturnSubmittedLateAgentPage extends Page
+case object WhenDidThePersonDiePage extends Page

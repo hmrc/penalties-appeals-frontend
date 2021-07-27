@@ -44,7 +44,7 @@ class BereavementReasonControllerSpec extends SpecBase {
       Matchers.any(), Matchers.any())
     ).thenReturn(authResult)
     val controller: BereavementReasonController = new BereavementReasonController(
-      whenDidThePersonDiePage
+      whenDidThePersonDiePage, mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
@@ -103,7 +103,7 @@ class BereavementReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe "#"
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
           await(result).session.get(SessionKeys.whenDidThePersonDie).get shouldBe LocalDate.of(2021, 2, 1).toString
         }
 
