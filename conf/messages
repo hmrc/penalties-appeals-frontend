@@ -373,4 +373,4 @@ agents.whyWasTheReturnSubmittedLate.error.invalid = Tell us the reason the retur
 otherRelevantInformation.title = Tell us why you want to appeal the penalty
 otherRelevantInformation.heading = Tell us why you want to appeal the penalty
 otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
-otherRelevantInformation.error.required = Tell us why you want to appeal the penalty
+otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
