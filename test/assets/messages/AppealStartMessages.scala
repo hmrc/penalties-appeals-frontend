@@ -37,6 +37,8 @@ object AppealStartMessages {
 
   val li3 = "a reason why the VAT Return was late (HMRC calls this a ’reasonable excuse’)"
 
+  val li3Lpp = "a reason why the VAT payment was late (HMRC calls this a ’reasonable excuse’)"
+
   val li4 = "the dates the reason related to"
 
   val li5 = "details of why you did not appeal sooner"

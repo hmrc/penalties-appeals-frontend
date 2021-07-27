@@ -20,7 +20,7 @@ import config.AppConfig
 import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
 import models.appeals.AppealSubmission
-import models.{AppealData, ReasonableExcuse, UserRequest}
+import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.http.Status._
 import utils.Logger.logger
 import play.api.libs.json.{JsResult, Json}
@@ -78,9 +78,10 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig:
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
     val isLateAppeal = dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
     val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
+    val isLPP = userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)
 
     val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal)
-    penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey).map {
+    penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP).map {
       response => response.status match {
         case OK => {
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")

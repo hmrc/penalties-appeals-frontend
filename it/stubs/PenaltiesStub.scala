@@ -29,7 +29,7 @@ object PenaltiesStub {
   private val appealUriForLSP = "/penalties/appeals-data/late-submissions"
   private val appealUriForLPP = "/penalties/appeals-data/late-payments"
   private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
-  private val submitAppealUri = "/penalties/appeals/submit-appeal?enrolmentKey=HMRC-MTD-VAT~VRN~123456789"
+  private val submitAppealUri = (isLPP: Boolean) => s"/penalties/appeals/submit-appeal?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&isLPP=$isLPP"
 
   def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String, isLPP: Boolean = false): StubMapping = {
     val typeOfPenalty = if(isLPP) PenaltyTypeEnum.Late_Payment else PenaltyTypeEnum.Late_Submission
@@ -78,24 +78,24 @@ object PenaltiesStub {
     )
   }
 
-  def successfulAppealSubmission: StubMapping = {
-    stubFor(post(urlEqualTo(submitAppealUri))
+  def successfulAppealSubmission(isLPP: Boolean): StubMapping = {
+    stubFor(post(urlEqualTo(submitAppealUri(isLPP)))
       .willReturn(
         aResponse()
           .withStatus(Status.OK)
       ))
   }
 
-  def failedAppealSubmissionWithFault: StubMapping = {
-    stubFor(post(urlEqualTo(submitAppealUri))
+  def failedAppealSubmissionWithFault(isLPP: Boolean): StubMapping = {
+    stubFor(post(urlEqualTo(submitAppealUri(isLPP)))
       .willReturn(
         aResponse()
           .withFault(Fault.CONNECTION_RESET_BY_PEER)
       ))
   }
 
-  def failedAppealSubmission: StubMapping = {
-    stubFor(post(urlEqualTo(submitAppealUri))
+  def failedAppealSubmission(isLPP: Boolean): StubMapping = {
+    stubFor(post(urlEqualTo(submitAppealUri(isLPP)))
       .willReturn(
         aResponse()
           .withStatus(Status.INTERNAL_SERVER_ERROR)

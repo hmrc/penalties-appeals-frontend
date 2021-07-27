@@ -32,7 +32,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
 
   "submitAppeal" should {
     "return true when the connector call succeeds for crime" in {
-      successfulAppealSubmission
+      successfulAppealSubmission(false)
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -50,7 +50,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     }
 
     "return true when the connector call succeeds for loss of staff" in {
-      successfulAppealSubmission
+      successfulAppealSubmission(false)
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -67,7 +67,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     }
 
     "return true when the connector call succeeds for technical issues" in {
-      successfulAppealSubmission
+      successfulAppealSubmission(false)
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -86,7 +86,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
 
     "return true for hospital stay" when {
       "there is no hospital stay" in {
-        successfulAppealSubmission
+        successfulAppealSubmission(false)
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -104,7 +104,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       }
 
       "there is a ongoing hospital stay" in {
-        successfulAppealSubmission
+        successfulAppealSubmission(false)
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -123,7 +123,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       }
 
       "there has been a hospital stay that has ended" in {
-        successfulAppealSubmission
+        successfulAppealSubmission(false)
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -141,11 +141,29 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
         result shouldBe true
       }
+
+      "return true when the connector call succeeds for LPP" in {
+        successfulAppealSubmission(true)
+        val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Payment",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "crime",
+          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.dateOfCrime -> "2022-01-01"
+        ))
+        val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+        result shouldBe true
+      }
     }
 
     "return false" when {
       "the connector returns a fault" in {
-        failedAppealSubmissionWithFault
+        failedAppealSubmissionWithFault(false)
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -163,7 +181,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       }
 
       "the connector returns an unknown status code" in {
-        failedAppealSubmission
+        failedAppealSubmission(false)
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",

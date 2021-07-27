@@ -22,6 +22,8 @@ import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.AppealStartPage
 import messages.AppealStartMessages._
+import models.PenaltyTypeEnum
+import utils.SessionKeys
 
 class AppealStartPageSpec extends SpecBase with ViewBehaviours {
   "AppealStartPage" should {
@@ -69,6 +71,32 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
         Selectors.h2 -> h2,
         Selectors.pElementIndex(7) -> p4,
         Selectors.listIndexWithElementIndex(8, 1) -> li3,
+        Selectors.listIndexWithElementIndex(8, 2) -> li4,
+        Selectors.listIndexWithElementIndex(8, 3) -> li5,
+        Selectors.pElementIndex(9) -> p5,
+        Selectors.pElementIndex(10) -> p6,
+        Selectors.button -> button
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "the appeal is for a LPP" when {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true)(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(2) -> p1,
+        Selectors.listIndexWithElementIndex(3, 1) -> li1,
+        Selectors.listIndexWithElementIndex(3, 2) -> li2,
+        Selectors.pElementIndex(4) -> p2,
+        Selectors.pElementIndex(5) -> p3,
+        Selectors.h2 -> h2,
+        Selectors.pElementIndex(7) -> p4,
+        Selectors.listIndexWithElementIndex(8, 1) -> li3Lpp,
         Selectors.listIndexWithElementIndex(8, 2) -> li4,
         Selectors.listIndexWithElementIndex(8, 3) -> li5,
         Selectors.pElementIndex(9) -> p5,

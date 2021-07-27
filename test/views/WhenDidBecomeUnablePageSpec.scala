@@ -19,10 +19,12 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidBecomeUnableForm
 import messages.WhenDidBecomeUnableMessages._
-import models.NormalMode
+import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
+import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.WhenDidBecomeUnablePage
 
@@ -31,8 +33,8 @@ class WhenDidBecomeUnablePageSpec extends SpecBase with ViewBehaviours {
     val whenDidBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
     object Selectors extends BaseSelectors
 
-    def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidBecomeUnablePage.apply(form,
-      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode))
+    def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whenDidBecomeUnablePage.apply(form,
+      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode))(request, implicitly, implicitly)
 
     val formProvider = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()
 
@@ -49,5 +51,21 @@ class WhenDidBecomeUnablePageSpec extends SpecBase with ViewBehaviours {
     )
 
     behave like pageWithExpectedMessages(expectedContent)
+
+    "display the LPP variation when the appeal is for a LPP" must {
+      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> heading,
+        Selectors.hintText -> hintTextLpp,
+        Selectors.dateEntry(1) -> dayEntry,
+        Selectors.dateEntry(2) -> monthEntry,
+        Selectors.dateEntry(3) -> yearEntry,
+        Selectors.button -> continueButton
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
   }
 }

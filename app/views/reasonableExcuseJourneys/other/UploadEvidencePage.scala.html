@@ -1,5 +1,6 @@
 
 @import config.AppConfig
+@import utils.SessionKeys
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
@@ -8,13 +9,17 @@
 
 @(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
+@lppOrLspDynamicText = @{
+    if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) "otherReason.uploadEvidence.lpp.p2" else "otherReason.uploadEvidence.p2"
+}
+
 @layout(pageTitle = messages("otherReason.uploadEvidence.title"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
     <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.heading")</h1>
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p1")</p>
-    <p class="govuk-body">@messages("otherReason.uploadEvidence.p2")</p>
+    <p class="govuk-body">@messages(lppOrLspDynamicText)</p>
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p3")</p>
 
     @formHelper(action = postAction) {

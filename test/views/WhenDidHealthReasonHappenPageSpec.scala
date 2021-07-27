@@ -19,10 +19,12 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHealthIssueHappenForm
 import messages.WhenDidHealthReasonHappenMessages._
-import models.NormalMode
+import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
+import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.WhenDidHealthReasonHappenPage
 
@@ -32,8 +34,8 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors
 
-  def applyView(form: Form[_]): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
-    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))
+  def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
+    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(request, implicitly, implicitly)
 
   val formProvider = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()
 
@@ -51,6 +53,22 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
     )
 
     behave like pageWithExpectedMessages(expectedContent)
+
+    "display the LPP variation when the appeal is for a LPP" must {
+      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> heading,
+        Selectors.hintText -> hintTextLpp,
+        Selectors.dateEntry(1) -> dayEntry,
+        Selectors.dateEntry(2) -> monthEntry,
+        Selectors.dateEntry(3) -> yearEntry,
+        Selectors.button -> continueButton
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
   }
 
 }
