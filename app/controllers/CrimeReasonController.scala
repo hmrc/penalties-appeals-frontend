@@ -18,15 +18,14 @@ package controllers
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.{HasCrimeBeenReportedForm, ReasonableExcuseForm, WhenDidCrimeHappenForm}
+import forms.{HasCrimeBeenReportedForm, WhenDidCrimeHappenForm}
 import helpers.FormProviderHelper
 import models.Mode
 import models.pages._
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request}
-import play.twirl.api.HtmlFormat
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger

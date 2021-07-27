@@ -182,150 +182,148 @@ class OtherReasonControllerSpec extends SpecBase {
       }
     }
 
-    "OtherReasonController" should {
-      "onPageLoadForUploadEvidence" when {
+    "onPageLoadForUploadEvidence" when {
 
-        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
+      "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.evidenceFileName -> "test.png")))
+        status(result) shouldBe OK
+      }
+
+      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
         }
 
-        "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.evidenceFileName -> "test.png")))
-          status(result) shouldBe OK
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForUploadEvidence" should {
+      "the user is authorised" must {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing to late appeal or CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "upload-evidence": "test.png"
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+          await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
         }
 
-        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "upload-evidence": "test.png"
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+          await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
+        }
+
+        "return 303 (SEE_OTHER) adding the key to the session when the body is empty " +
+          "- routing to late appeal or CYA been reported page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
+          status(result) shouldBe SEE_OTHER
+          await(result).session.get(SessionKeys.evidenceFileName).get shouldBe ""
+        }
+
+        "return 303 (SEE_OTHER) adding the key to the session when the body is empty " +
+          "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+          await(result).session.get(SessionKeys.evidenceFileName).get shouldBe ""
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
           val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe FORBIDDEN
         }
 
-        "the user is unauthorised" when {
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
 
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
+    "onSubmitForWhyReturnSubmittedLate" should {
+      "the user is authorised" must {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing to file upload when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "why-return-submitted-late-text": "This is a reason"
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+          await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
+        }
 
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "why-return-submitted-late-text": "This is a reason"
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+          await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
+        }
+
+        "return 400 (BAD_REQUEST) when the user does not enter a reason" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "why-return-submitted-late-text": ""
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe BAD_REQUEST
         }
       }
 
-      "onSubmitForUploadEvidence" should {
-        "the user is authorised" must {
-          "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-            "- routing to late appeal or CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "upload-evidence": "test.png"
-                  |}
-                  |""".stripMargin))))
-            status(result) shouldBe SEE_OTHER
-            await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
-          }
+      "the user is unauthorised" when {
 
-          "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-            "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "upload-evidence": "test.png"
-                  |}
-                  |""".stripMargin))))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-            await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
-          }
-
-          "return 303 (SEE_OTHER) adding the key to the session when the body is empty " +
-            "- routing to late appeal or CYA been reported page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
-            status(result) shouldBe SEE_OTHER
-            await(result).session.get(SessionKeys.evidenceFileName).get shouldBe ""
-          }
-
-          "return 303 (SEE_OTHER) adding the key to the session when the body is empty " +
-            "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-            await(result).session.get(SessionKeys.evidenceFileName).get shouldBe ""
-          }
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
         }
 
-        "the user is unauthorised" when {
-
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
-        }
-      }
-
-      "onSubmitForWhyReturnSubmittedLate" should {
-        "the user is authorised" must {
-          "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-            "- routing to file upload when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "why-return-submitted-late-text": "This is a reason"
-                  |}
-                  |""".stripMargin))))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
-            await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
-          }
-
-          "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-            "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "why-return-submitted-late-text": "This is a reason"
-                  |}
-                  |""".stripMargin))))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-            await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
-          }
-
-          "return 400 (BAD_REQUEST) when the user does not enter a reason" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "why-return-submitted-late-text": ""
-                  |}
-                  |""".stripMargin))))
-            status(result) shouldBe BAD_REQUEST
-          }
-        }
-
-        "the user is unauthorised" when {
-
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
         }
       }
     }

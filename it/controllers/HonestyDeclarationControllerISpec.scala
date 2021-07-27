@@ -37,7 +37,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.reasonableExcuse, "crime")
       )
       val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
@@ -51,7 +51,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.reasonableExcuse, "lossOfStaff")
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
@@ -67,7 +67,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.reasonableExcuse, "other")
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
@@ -89,7 +89,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
       )
       val request = await(controller.onPageLoad()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -110,7 +110,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.reasonableExcuse, "crime")
       ).withJsonBody(Json.parse(
         """
@@ -132,7 +132,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.reasonableExcuse, "crime")
       ).withJsonBody(Json.parse(
         """
@@ -158,7 +158,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
       )
       val request = await(controller.onSubmit()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR

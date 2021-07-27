@@ -17,21 +17,24 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.MakingALateAppealForm
-import messages.MakingALateAppealMessages._
+import forms.OtherRelevantInformationForm
+import messages.OtherRelevantInformationMessages._
+import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.MakingALateAppealPage
+import views.html.obligation.OtherRelevantInformationPage
 
-class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
-  "MakingALateAppealPage" should {
-    val makingALateAppealPage: MakingALateAppealPage = injector.instanceOf[MakingALateAppealPage]
+class OtherRelevantInformationPageSpec extends SpecBase with ViewBehaviours {
+  "OtherRelevantInformationPage" should {
+    val otherRelevantInformationPage: OtherRelevantInformationPage = injector.instanceOf[OtherRelevantInformationPage]
     object Selectors extends BaseSelectors
-    def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form)
+    val postAction: Call = controllers.routes.AppealAgainstObligationController.onSubmit(NormalMode)
+    def applyView(form: Form[_]): HtmlFormat.Appendable = otherRelevantInformationPage.apply(form, postAction)
 
-    val formProvider = MakingALateAppealForm.makingALateAppealForm
+    val formProvider = OtherRelevantInformationForm.otherRelevantInformationForm
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(
