@@ -22,7 +22,7 @@
         bullets: components.bullets,
         link: components.link)
 
-@(isLate: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(isLate: Boolean, isObligationAppeal: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @baseBulletPoints = @{
     Seq(
@@ -50,12 +50,19 @@
             baseBulletPoints.:+(
             Html(messages("appealStart.li.2.3"))
             )
+        } else if(isObligationAppeal) {
+            Seq(
+                Html(messages("appealStart.obligation.li.2.1")),
+                Html(messages("appealStart.obligation.li.2.2"))
+            )
         } else {
             baseBulletPoints
         }
     )
-    <p class="govuk-body">@messages("appealStart.p5")</p>
-    <p class="govuk-body">@messages("appealStart.p6")</p>
+    @if(!isObligationAppeal){
+        <p class="govuk-body">@messages("appealStart.p5")</p>
+        <p class="govuk-body">@messages("appealStart.p6")</p>
+    }
 
     @link(if(request.session.get(SessionKeys.agentSessionVrn).isDefined){
         routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url

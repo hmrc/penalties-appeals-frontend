@@ -31,7 +31,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
 
     s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -56,7 +56,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     s"it has been more than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -82,7 +82,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal is for a LPP" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true)(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false)(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -101,6 +101,28 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
         Selectors.listIndexWithElementIndex(8, 3) -> li5,
         Selectors.pElementIndex(9) -> p5,
         Selectors.pElementIndex(10) -> p6,
+        Selectors.button -> button
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+    "the appeal is against an obligation" when {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(2) -> p1,
+        Selectors.listIndexWithElementIndex(3, 1) -> li1,
+        Selectors.listIndexWithElementIndex(3, 2) -> li2,
+        Selectors.pElementIndex(4) -> p2,
+        Selectors.pElementIndex(5) -> p3,
+        Selectors.h2 -> h2,
+        Selectors.pElementIndex(7) -> p4,
+        Selectors.listIndexWithElementIndex(8, 1) -> li3Obl,
+        Selectors.listIndexWithElementIndex(8, 2) -> li4Obl,
         Selectors.button -> button
       )
 
