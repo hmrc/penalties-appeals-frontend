@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.CancelVATRegistrationForm
 import helpers.FormProviderHelper
@@ -31,7 +31,8 @@ import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
 
-class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: CancelVATRegistrationPage)
+class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: CancelVATRegistrationPage,
+                                                errorHandler: ErrorHandler)
                                                (implicit authorise: AuthPredicate,
                                                 dataRequired: DataRequiredAction,
                                                 appConfig: AppConfig,
@@ -58,10 +59,23 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
           BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction))
         },
         cancelVATRegistration => {
-          logger.debug(s"[CancelVATRegistrationController][onSubmitForCancelVATRegistration] " +
-            s"- Adding '$cancelVATRegistration' to session under key: ${SessionKeys.cancelVATRegistration}")
-          Redirect("#")
-            .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
+          (cancelVATRegistration.toLowerCase) match {
+            case "yes" => {
+              //TODO: redireted incase of yes
+              Redirect("#")
+                .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
+            }
+            case "no" => {
+              //TODO: redireted incase of no
+              Redirect("#")
+                .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
+            }
+            case _ => {
+              logger.debug(s"[CancelVATRegistrationController][onSubmitForCancelVATRegistration]- " +
+                s"Something went wrong with 'cancelVATRegistration'... ${SessionKeys.cancelVATRegistration}")
+              errorHandler.showInternalServerError
+            }
+          }
         }
       )
     }

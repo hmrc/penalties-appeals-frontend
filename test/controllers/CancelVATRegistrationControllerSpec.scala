@@ -17,17 +17,24 @@
 package controllers
 
 import base.SpecBase
+import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import play.api.libs.json.Json
+import play.api.mvc.Result
+import play.api.test.Helpers.{status, _}
+import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import utils.SessionKeys
 import views.html.CancelVATRegistrationPage
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class CancelVATRegistrationControllerSpec extends SpecBase {
   val cancelVATRegistrationPage: CancelVATRegistrationPage = injector.instanceOf[CancelVATRegistrationPage]
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
     reset(mockAuthConnector)
@@ -37,9 +44,76 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     val controller: CancelVATRegistrationController = new CancelVATRegistrationController(
-      cancelVATRegistrationPage
+      cancelVATRegistrationPage, errorHandler
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+  }
+
+  "CancelVATRegistrationController" should {
+    "onPageLoadForCancelVATRegistration" should {
+      "the user is authorised" must {
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+      }
+      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+      "return OK and correct view (pre-populated option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = controller.onPageLoadForCancelVATRegistration()(fakeRequestConverter(fakeRequestWithCorrectKeys.
+          withSession(SessionKeys.cancelVATRegistration -> "yes")))
+        status(result) shouldBe OK
+      }
+      "the user is unauthorised" when {
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForWhenCrimeHappened" should {
+      "the user is authorised" must {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing when a valid option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                |   "value": "yes"
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+          await(result).session.get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
+        }
+      }
+      "the user is unauthorised" when {
+        "return 400 (BAD_REQUEST) when a no option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                |   "value": ""
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe BAD_REQUEST
+        }
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
   }
 }
