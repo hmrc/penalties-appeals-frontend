@@ -44,6 +44,7 @@ object SessionKeys {
   val agentSessionVrn = "CLIENT_VRN"
   val causeOfLateSubmissionAgent = "causeOfLateSubmissionAgent"
   val whenDidThePersonDie = "whenDidThePersonDie"
+  val isObligationAppeal = "isObligationAppeal"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -71,6 +72,7 @@ object SessionKeys {
     hasHealthEventEnded,
     whoPlannedToSubmitVATReturn,
     causeOfLateSubmissionAgent,
-    whenDidThePersonDie
+    whenDidThePersonDie,
+    isObligationAppeal
   )
 }
