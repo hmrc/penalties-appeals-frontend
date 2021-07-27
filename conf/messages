@@ -266,6 +266,12 @@ bereavementReason.error.required = The date must include a {0}
 bereavementReason.error.invalid = The date must be a real date
 bereavementReason.error.notInFuture = The date must be today or in the past
 
+# Cancel VAT Registration Page
+# -----------------------------------------------------------
+cancelVATRegistration.title = Has HMRC been asked to cancel the VAT registration for this business?
+cancelVATRegistration.heading = Has HMRC been asked to cancel the VAT registration for this business?
+cancelVATRegistration.hintText = A business must cancel its VAT registration if it stops trading, deregisters for VAT or if the business ownership is transferred.
+
 # Date input fields
 # ----------------------------------------------------------
 date.day = Day
