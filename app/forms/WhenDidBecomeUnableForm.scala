@@ -19,19 +19,21 @@ package forms
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.i18n.Messages
-
+import utils.MessageRenderer.getMessageKey
 import java.time.LocalDate
 
+import models.UserRequest
+
 object WhenDidBecomeUnableForm extends Mappings {
-  def whenDidBecomeUnableForm()(implicit messages: Messages): Form[LocalDate] = {
+  def whenDidBecomeUnableForm()(implicit messages: Messages, user: UserRequest[_]): Form[LocalDate] = {
     Form(
       "date" -> localDate(
-      invalidKey = "otherReason.whenDidBecomeUnable.error.invalid",
-      allRequiredKey = "otherReason.whenDidBecomeUnable.error.required.all",
-      twoRequiredKey = "otherReason.whenDidBecomeUnable.error.required.two",
-      requiredKey = "otherReason.whenDidBecomeUnable.error.required",
-      fieldLengthKey = "otherReason.whenDidBecomeUnable.error.invalid",
-      futureKey = Some("otherReason.whenDidBecomeUnable.error.notInFuture")
+      invalidKey = getMessageKey("otherReason.whenDidBecomeUnable.error.invalid"),
+      allRequiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required.all"),
+      twoRequiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required.two"),
+      requiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required"),
+      fieldLengthKey = getMessageKey("otherReason.whenDidBecomeUnable.error.invalid"),
+      futureKey = Some(getMessageKey("otherReason.whenDidBecomeUnable.error.notInFuture"))
       )
     )
   }

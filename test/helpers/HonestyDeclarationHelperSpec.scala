@@ -17,21 +17,27 @@
 package helpers
 
 import base.SpecBase
+import models.UserRequest
+import utils.SessionKeys
 
 class HonestyDeclarationHelperSpec extends SpecBase {
   "getReasonText" should {
 
-    def reasonTest(reasonableExcuse: String, expectedText: String): Unit = {
+    def reasonTest(reasonableExcuse: String, expectedText: String, user: UserRequest[_]): Unit = {
       s"the reason is '$reasonableExcuse' - text should be $expectedText" in {
-        val result = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
+        val result = HonestyDeclarationHelper.getReasonText(reasonableExcuse)(messages, user)
         result shouldBe expectedText
       }
     }
 
-    "return the correct message" when {
-      reasonTest("crime", "I was affected by a crime")
+    "return the correct agent message" when {
+        reasonTest("crime", "my client was affected by a crime", agentUserSessionKeys)
+      }
+
+      "return the correct VAT trader message" when {
+        reasonTest("crime", "I was affected by a crime", vatTraderUser)
+      }
     }
-  }
 
   "getExtraText" should {
     "return the correct message key(s) for 'loss of staff'" in {

@@ -34,33 +34,59 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors
 
-  def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
-    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(request, implicitly, implicitly)
+  def applyVATTraderView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
+    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(request, implicitly, implicitly, vatTraderUser)
 
-  val formProvider = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()
+  val vatTraderFormProvider = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderUser)
+
+  def applyAgentView(form: Form[_], request: FakeRequest[_] = agentRequest): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
+    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(request, implicitly, implicitly, agentUserSessionKeys)
+
+  val agentFormProvider = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserSessionKeys)
 
   "WhenDidHealthReasonHappenPage" should {
-    implicit val doc: Document = asDocument(applyView(formProvider))
 
-    val expectedContent = Seq(
-      Selectors.title -> title,
-      Selectors.h1 -> heading,
-      Selectors.hintText -> hintText,
-      Selectors.dateEntry(1) -> dayEntry,
-      Selectors.dateEntry(2) -> monthEntry,
-      Selectors.dateEntry(3) -> yearEntry,
-      Selectors.button -> continueButton
-    )
+    "when a VAT trader is on the page" must {
 
-    behave like pageWithExpectedMessages(expectedContent)
-
-    "display the LPP variation when the appeal is for a LPP" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+      implicit val doc: Document = asDocument(applyVATTraderView(vatTraderFormProvider))
 
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> heading,
-        Selectors.hintText -> hintTextLpp,
+        Selectors.hintText -> hintText,
+        Selectors.dateEntry(1) -> dayEntry,
+        Selectors.dateEntry(2) -> monthEntry,
+        Selectors.dateEntry(3) -> yearEntry,
+        Selectors.button -> continueButton
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+
+      "display the LPP variation when the appeal is for a LPP" must {
+        implicit val doc: Document = asDocument(applyVATTraderView(vatTraderFormProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+
+        val expectedContent = Seq(
+          Selectors.title -> title,
+          Selectors.h1 -> heading,
+          Selectors.hintText -> hintTextLpp,
+          Selectors.dateEntry(1) -> dayEntry,
+          Selectors.dateEntry(2) -> monthEntry,
+          Selectors.dateEntry(3) -> yearEntry,
+          Selectors.button -> continueButton
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)
+      }
+
+    }
+
+    "when an agent is on the page must" must {
+      implicit val doc: Document = asDocument(applyAgentView(agentFormProvider))
+
+      val expectedContent = Seq(
+        Selectors.title -> titleAgentText,
+        Selectors.h1 -> headingAgentText,
+        Selectors.hintText -> hintTextAgentText,
         Selectors.dateEntry(1) -> dayEntry,
         Selectors.dateEntry(2) -> monthEntry,
         Selectors.dateEntry(3) -> yearEntry,

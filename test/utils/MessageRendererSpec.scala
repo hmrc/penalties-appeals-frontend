@@ -24,23 +24,27 @@ import play.api.test.FakeRequest
 class MessageRendererSpec extends SpecBase {
 
   val testMessages = Map(
-    "default"-> Map(
+    "default" -> Map(
       "test.message" -> "I am a {0} with no ARN",
       "agent.test.message" -> "I’m an {0} with an {1}"
     )
   )
 
   "getMessage" should {
-    "load the relevant agent message " when {
+    "load the relevant agent message" when {
       "the user is an agent" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest)
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.
+          withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+            SessionKeys.causeOfLateSubmissionAgent -> "client"))
         val fakeMessageKey = "message.key"
         val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, fakeAgentRequest)
         result shouldBe "agent.message.key"
       }
 
       "apply the given arguments" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest)
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest
+          withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.causeOfLateSubmissionAgent -> "client"))
         val messagesApi = new DefaultMessagesApi(testMessages)
         val messages = messagesApi.preferred(FakeRequest("GET", "/"))
         val fakeMessageKey = "test.message"
@@ -64,6 +68,25 @@ class MessageRendererSpec extends SpecBase {
         val fakeMessageKey = "test.message"
         val result = MessageRenderer.getMessage(fakeMessageKey, "vat trader")(messages, fakeVATTraderRequest)
         result shouldBe "I am a vat trader with no ARN"
+      }
+    }
+  }
+
+  "getMessageKey" should {
+    "load the relevant message key" when {
+      "the user is an agent" in {
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.
+          withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "agent"))
+        val fakeMessageKey = "message.key"
+        val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, agentUserSessionKeys)
+        result shouldBe "agent.message.key"
+      }
+
+      "the user is a VAT trader" in {
+        val fakeVATTraderRequest = UserRequest(vrn = "123456789")(fakeRequest)
+        val fakeMessageKey = "message.key"
+        val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, vatTraderUser)
+        result shouldBe "message.key"
       }
     }
   }

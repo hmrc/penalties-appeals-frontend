@@ -16,15 +16,41 @@
 
 package forms
 
+import models.UserRequest
 import play.api.data.FormError
+import play.api.mvc.AnyContent
+import play.api.test.FakeRequest
+import utils.SessionKeys
 
 class WasHospitalStayRequiredFormSpec extends FormBehaviours {
-  val form = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm
 
-  behave like mandatoryField(form, "value", FormError("value", "healthReason.wasHospitalStayRequired.error.required"))
+  "when a VAT trader is in session" must {
+    val vatTraderUserRequest = UserRequest("123456789")(FakeRequest("GET", "/"))
+    val vatTraderForm = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(vatTraderUserRequest)
+    behave like mandatoryField(vatTraderForm, "value", FormError("value", "healthReason.wasHospitalStayRequired.error.required"))
 
-  "the value entered does not exist in the possible, valid values" in {
-    val result = form.bind(Map("value" -> "random-value")).apply("value")
-    result.errors.headOption shouldBe Some(FormError("value", "healthReason.wasHospitalStayRequired.error.required"))
+    "the value entered does not exist in the possible, valid values" in {
+      val result = vatTraderForm.bind(Map("value" -> "random-value")).apply("value")
+      result.errors.headOption shouldBe Some(FormError("value", "healthReason.wasHospitalStayRequired.error.required"))
+    }
   }
+
+  "when an agent is in session" must {
+    val agentUserRequest: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(FakeRequest("GET", "/")
+      .withSession(
+        SessionKeys.agentSessionVrn -> "VRN1234",
+        SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+        SessionKeys.causeOfLateSubmissionAgent -> "client")
+    )
+
+    val agentForm = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(agentUserRequest)
+    behave like mandatoryField(agentForm, "value", FormError("value", "agent.healthReason.wasHospitalStayRequired.error.required"))
+
+    "the value entered does not exist in the possible, valid values" in {
+      val result = agentForm.bind(Map("value" -> "random-value")).apply("value")
+      result.errors.headOption shouldBe Some(FormError("value", "agent.healthReason.wasHospitalStayRequired.error.required"))
+    }
+  }
+
+
 }

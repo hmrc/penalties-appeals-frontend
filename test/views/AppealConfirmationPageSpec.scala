@@ -40,44 +40,74 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
       val obligationExtraParagraph = "#main-content p:nth-child(4)"
     }
 
-    def applyView(penaltyTypeMsgKey: String,
-                  periodStart: String,
-                  periodEnd: String,
-                  isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)
+    def applyVATTraderView(penaltyTypeMsgKey: String,
+                           periodStart: String,
+                           periodEnd: String,
+                  isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
+      penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)(fakeRequest, messages, appConfig, vatTraderUser)
 
-    implicit val lateSubmissionPenaltyDoc: Document = asDocument(applyView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023"))
+    implicit val vatTraderLateSubmissionPenaltyDoc: Document = asDocument(applyVATTraderView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023"))
 
-    val expectedContent = Seq(
-      Selectors.title -> title,
-      Selectors.h1 -> headingPanelH1,
-      Selectors.h2 -> h2WhatHappensNext,
-      Selectors.penaltyType -> headingPanelBodyLSP,
-      Selectors.whatHappensNextPTag(3) -> p1,
-      Selectors.whatHappensNextPTag(4) -> p2,
-      Selectors.whatHappensNextPTag(5) -> p3,
-      Selectors.whatHappensNextPTag(6) -> p4,
-      Selectors.penaltiesLink -> returnToPenalties,
-      Selectors.vatAccountLink -> goToVatVC,
-      Selectors.feedbackLink -> goToFeedback
-    )
+    def applyAgentView(penaltyTypeMsgKey: String,
+                       periodStart: String,
+                       periodEnd: String): HtmlFormat.Appendable = appealConfirmationPage.apply(
+      penaltyTypeMsgKey, periodStart, periodEnd)(agentRequest, messages, appConfig, agentUserSessionKeys)
 
-    behave like pageWithExpectedMessages(expectedContent)
+    implicit val agentDoc: Document = asDocument(applyAgentView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023"))
 
-    "the back link should not be present" in {
-      lateSubmissionPenaltyDoc.select("#back-link").text().isEmpty shouldBe true
+
+    "when agent is on page " must {
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> headingPanelH1,
+        Selectors.h2 -> h2WhatHappensNext,
+        Selectors.penaltyType -> headingPanelBodyLSP,
+        Selectors.whatHappensNextPTag(3) -> p1,
+        Selectors.whatHappensNextPTag(4) -> p2,
+        Selectors.whatHappensNextPTag(5) -> p3,
+        Selectors.whatHappensNextPTag(6) -> p4,
+        Selectors.penaltiesLink -> returnToPenaltiesAgentText,
+        Selectors.vatAccountLink -> goToVatVCAgentText,
+        Selectors.feedbackLink -> goToFeedback
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
 
-    "the penalty information should not be visible" in {
-      lateSubmissionPenaltyDoc.select("#penalty-information").text().isEmpty shouldBe true
-    }
+    "when VAT trader is on page" must {
 
-    "the panel body should contain late payment penalty when there is such" in {
-      implicit val latePaymentPenaltyDoc: Document = asDocument(applyView("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
-      latePaymentPenaltyDoc.select(Selectors.penaltyType).text() shouldBe headingPanelBodyLPP
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> headingPanelH1,
+        Selectors.h2 -> h2WhatHappensNext,
+        Selectors.penaltyType -> headingPanelBodyLSP,
+        Selectors.whatHappensNextPTag(3) -> p1,
+        Selectors.whatHappensNextPTag(4) -> p2,
+        Selectors.whatHappensNextPTag(5) -> p3,
+        Selectors.whatHappensNextPTag(6) -> p4,
+        Selectors.penaltiesLink -> returnToPenalties,
+        Selectors.vatAccountLink -> goToVatVC,
+        Selectors.feedbackLink -> goToFeedback
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)(vatTraderLateSubmissionPenaltyDoc)
+
+      "the back link should not be present" in {
+        vatTraderLateSubmissionPenaltyDoc.select("#back-link").text().isEmpty shouldBe true
+      }
+
+      "the penalty information should not be visible" in {
+        vatTraderLateSubmissionPenaltyDoc.select("#penalty-information").text().isEmpty shouldBe true
+      }
+
+      "the panel body should contain late payment penalty when there is such" in {
+        implicit val latePaymentPenaltyDoc: Document = asDocument(applyVATTraderView("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
+        latePaymentPenaltyDoc.select(Selectors.penaltyType).text() shouldBe headingPanelBodyLPP
+      }
     }
 
     "the extra paragraph should be visible when the appeal is against the obligation" in {
-      implicit val appealAgainstObligationDoc: Document = asDocument(applyView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023", isObligationAppeal = true))
+      implicit val appealAgainstObligationDoc: Document = asDocument(applyVATTraderView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023", isObligationAppeal = true))
       appealAgainstObligationDoc.select(Selectors.obligationExtraParagraph).text() shouldBe obligationParagraph
     }
   }

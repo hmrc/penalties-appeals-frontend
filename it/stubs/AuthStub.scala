@@ -58,6 +58,39 @@ object AuthStub {
     )
   }
 
+  def agentAuthorised(): StubMapping = {
+    stubFor(post(urlMatching(authoriseUri))
+      .willReturn(
+        aResponse()
+          .withStatus(Status.OK)
+          .withBody(
+            Json.obj(
+              "affinityGroup"-> "Agent",
+              "allEnrolments" -> Json.arr(
+                Json.obj(
+                  "key" -> EnrolmentKeys.agentEnrolmentKey,
+                  "identifiers" -> Json.arr(
+                    Json.obj(
+                      "key" -> "AgentReferenceNumber",
+                      "value" -> "123456789",
+                      "state" -> EnrolmentKeys.activated
+                    )
+                  )
+                )
+              ),
+              "internalId" -> "internal",
+              "groupIdentifier" -> "123456789-ABCD-123456789",
+              "credentialRole" -> "role1",
+              "optionalCredentials" -> Json.obj(
+                "providerId" -> "12345",
+                "providerType" -> "credType"
+              )
+            ).toString()
+          )
+      )
+    )
+  }
+
   def unauthorised(): StubMapping = {
     stubFor(post(urlMatching(authoriseUri))
       .willReturn(
