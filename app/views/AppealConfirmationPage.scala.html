@@ -20,7 +20,7 @@
         bullets: components.bullets,
         link: components.link)
 
-@(penaltyTypeMsgKey: String, periodStart: String, periodEnd: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(penaltyTypeMsgKey: String, periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @penaltyType = @{
     messages(penaltyTypeMsgKey)
@@ -43,6 +43,10 @@
     </div>
 
     <p class="govuk-body">@messages("appealConfirmation.p1")</p>
+
+    @if(isObligationAppeal) {
+        <p class="govuk-body">@messages("appealConfirmation.obligation.p")</p>
+    }
 
     <p class="govuk-body">@messages("appealConfirmation.p2")</p>
 

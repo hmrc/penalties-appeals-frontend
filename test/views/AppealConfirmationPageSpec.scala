@@ -36,11 +36,14 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
       val vatAccountLink = "#view-vat-account-link"
 
       val feedbackLink = "#feedback-link"
+
+      val obligationExtraParagraph = "#main-content p:nth-child(4)"
     }
 
     def applyView(penaltyTypeMsgKey: String,
                   periodStart: String,
-                  periodEnd: String): HtmlFormat.Appendable = appealConfirmationPage.apply(penaltyTypeMsgKey, periodStart, periodEnd)
+                  periodEnd: String,
+                  isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)
 
     implicit val lateSubmissionPenaltyDoc: Document = asDocument(applyView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023"))
 
@@ -71,6 +74,11 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
     "the panel body should contain late payment penalty when there is such" in {
       implicit val latePaymentPenaltyDoc: Document = asDocument(applyView("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
       latePaymentPenaltyDoc.select(Selectors.penaltyType).text() shouldBe headingPanelBodyLPP
+    }
+
+    "the extra paragraph should be visible when the appeal is against the obligation" in {
+      implicit val appealAgainstObligationDoc: Document = asDocument(applyView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023", isObligationAppeal = true))
+      appealAgainstObligationDoc.select(Selectors.obligationExtraParagraph).text() shouldBe obligationParagraph
     }
   }
 }
