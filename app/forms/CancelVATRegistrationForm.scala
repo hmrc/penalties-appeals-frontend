@@ -22,9 +22,10 @@ import play.api.data.Forms.single
 
 object CancelVATRegistrationForm extends Mappings {
   final val options = Seq("yes", "no")
-  def cancelVATRegistrationForm() = Form[String](
+  val cancelVATRegistrationForm = Form[String](
     single(
-      "value" -> Forms.text.verifying(value => options.contains(value))
+      "value" -> text("cancelVATRegistration.error.required")
+        .verifying("cancelVATRegistration.error.required", value => options.contains(value))
     )
   )
 }

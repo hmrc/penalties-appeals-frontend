@@ -16,17 +16,15 @@
 
 package forms
 
+import play.api.data.FormError
+
 class CancelVATRegistrationFormSpec extends FormBehaviours {
-  val form = CancelVATRegistrationForm.cancelVATRegistrationForm()
-  "CancelVATRegistrationForm" should {
-    "bind when an option is selected" in {
-      val result = form.bind(
-        Map(
-          "value" -> "yes"
-        )
-      )
-      result.errors shouldBe empty
-    }
+  val form = CancelVATRegistrationForm.cancelVATRegistrationForm
+  behave like mandatoryField(form, "value", FormError("value", "cancelVATRegistration.error.required"))
+
+  "the value entered does not exist in the possible, valid values" in {
+    val result = form.bind(Map("value" -> "random-value")).apply("value")
+    result.errors.headOption shouldBe Some(FormError("value", "cancelVATRegistration.error.required"))
   }
 }
 

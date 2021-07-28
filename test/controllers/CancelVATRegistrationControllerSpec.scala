@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
@@ -29,7 +28,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.CancelVATRegistrationPage
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class CancelVATRegistrationControllerSpec extends SpecBase {
@@ -44,7 +43,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     val controller: CancelVATRegistrationController = new CancelVATRegistrationController(
-      cancelVATRegistrationPage, errorHandler
+      cancelVATRegistrationPage
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
@@ -79,7 +78,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
       }
     }
 
-    "onSubmitForWhenCrimeHappened" should {
+    "onSubmitForCancelVATRegistration" should {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing when a valid option is selected" in new Setup(AuthTestModels.successfulAuthResult) {

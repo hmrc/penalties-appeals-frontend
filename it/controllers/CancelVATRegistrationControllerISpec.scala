@@ -83,27 +83,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase{
       request.header.headers("Location") shouldBe "#"
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
     }
-    "return 303 (SEE_OTHER) to CYA page when appeal IS late and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
-        (SessionKeys.penaltyId, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> LocalDateTime.now.minusDays(31).toString)
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "yes"
-            |}
-            |""".stripMargin)
-      )
-      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndCorrectBody))
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe "#"
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
-    }
+
     "return 400 (BAD_REQUEST)" when {
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
