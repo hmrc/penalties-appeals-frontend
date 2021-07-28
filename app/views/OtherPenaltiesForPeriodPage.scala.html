@@ -16,7 +16,7 @@
         <p class="govuk-body">@messages("otherPenalties.p2")</p>
 
         @formHelper(action = controllers.routes.OtherPenaltiesForPeriodController.onSubmit()){
-            <input type="hidden" id="declaration" name="value" value="true">
+            <input type="hidden" id="acknowledgement" name="value" value="true">
 
             @govukButton(Button(content = Text(messages("common.continue"))))
         }
