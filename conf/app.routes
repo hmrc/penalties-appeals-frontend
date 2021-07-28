@@ -95,6 +95,10 @@ GET        /who-planned-to-submit-vat-return/change           controllers.Agents
 POST       /who-planned-to-submit-vat-return                  controllers.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
 POST       /who-planned-to-submit-vat-return/change           controllers.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
 
+# Cancel VAT Registration
+GET        /cancel-vat-registration              controllers.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+POST       /cancel-vat-registration              controllers.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
+
 
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
