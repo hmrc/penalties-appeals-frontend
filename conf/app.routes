@@ -115,6 +115,10 @@ GET        /why-return-was-submitted-late-agent/change         controllers.Agent
 POST       /why-return-was-submitted-late-agent                controllers.AgentsController.onSubmitForWhyReturnSubmittedLate(mode: Mode = NormalMode)
 POST       /why-return-was-submitted-late-agent/change         controllers.AgentsController.onSubmitForWhyReturnSubmittedLate(mode: Mode = CheckMode)
 
+# Appeal Obligation - Other penalties for period
+GET        /multiple-penalties              controllers.OtherPenaltiesForPeriodController.onPageLoad
+POST       /multiple-penalties              controllers.OtherPenaltiesForPeriodController.onSubmit
+
 # Other Relevant Information page
 GET        /other-relevant-information                         controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = NormalMode)
 GET        /other-relevant-information/change                  controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = CheckMode)

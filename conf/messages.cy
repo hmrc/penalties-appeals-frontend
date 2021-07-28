@@ -99,6 +99,7 @@ honestyDeclaration.other =
 error.prefix = Error:
 # Not sure if this is as per design
 error.clickAcceptAndContinue = Please click ’Accept and continue’
+error.clickContinue = Please click ’Continue’
 
 
 site.opensInNewTab = (opens in a new tab)
@@ -365,6 +366,13 @@ agents.whyWasTheReturnSubmittedLate.heading = Why was the return submitted late?
 agents.whyWasTheReturnSubmittedLate.option.client = My client did not get information to me on time
 agents.whyWasTheReturnSubmittedLate.option.agent = Something else happened to delay me
 agents.whyWasTheReturnSubmittedLate.error.invalid = Tell us the reason the return was submitted late
+
+# Other penalties for period page - Appeal against obligation
+# ----------------------------------------------------------
+otherPenalties.title = Other penalties for this period
+otherPenalties.heading = Other penalties for this period
+otherPenalties.p1 = If HMRC accepts your appeal, we will remove all other late submission or late payment penalties for the same period.
+otherPenalties.p2 = You do not need to appeal against them separately.
 
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
