@@ -1,0 +1,24 @@
+
+@this(layout: Layout,
+        link: components.link,
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF)
+
+@(form: Form[_])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageTitle = messages("otherPenalties.title"),
+        isPageFullWidth = false,
+        formHasErrors = form.errors.nonEmpty,
+        formErrors = form.errors) {
+
+        <h1 class="govuk-heading-l">@messages("otherPenalties.heading")</h1>
+        <p class="govuk-body">@messages("otherPenalties.p1")</p>
+        <p class="govuk-body">@messages("otherPenalties.p2")</p>
+
+        @formHelper(action = controllers.routes.OtherPenaltiesForPeriodController.onSubmit()){
+            <input type="hidden" id="acknowledgement" name="value" value="true">
+
+            @govukButton(Button(content = Text(messages("common.continue"))))
+        }
+}
+
