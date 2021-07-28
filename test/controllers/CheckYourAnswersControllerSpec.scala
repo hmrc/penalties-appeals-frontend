@@ -112,6 +112,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     )
   )
 
+  val fakeRequestForObligationAppealJourney = fakeRequestConverter(fakeRequestWithCorrectKeys
+    .withSession(
+      SessionKeys.isObligationAppeal -> "true",
+      SessionKeys.otherRelevantInformation -> "This is some relevant information"
+    )
+  )
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
     reset(mockAppealService)
@@ -168,6 +175,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       "return OK and correct view - when all answers exist for bereavement" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForBereavementJourney)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - when it is an appeal against the obligation" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoad()(fakeRequestForObligationAppealJourney)
         status(result) shouldBe OK
       }
 
