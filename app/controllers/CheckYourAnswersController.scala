@@ -45,8 +45,14 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
   def onPageLoad: Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
-        logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
-        errorHandler.showInternalServerError
+        if(request.session.get(SessionKeys.isObligationAppeal).isDefined && SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+          logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
+          val answersFromSession = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
+          Ok(checkYourAnswersPage(answersFromSession))
+        } else {
+          logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
+          errorHandler.showInternalServerError
+        }
       })(
         reasonableExcuse => {
         if (SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {

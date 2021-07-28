@@ -239,19 +239,33 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     seqWhoPlannedToSubmitVATReturn ++ seqWhyWasTheReturnSubmittedLate
   }
 
-  def getAllTheContentForCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)]={
+  def getAllTheContentForCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
 
-    val reasonableExcuse = request.session.get(SessionKeys.reasonableExcuse).get
-    val agentSession =request.session.get(SessionKeys.agentSessionVrn).isDefined
+    val reasonableExcuse = request.session.get(SessionKeys.reasonableExcuse)
+    val agentSession = request.session.get(SessionKeys.agentSessionVrn).isDefined
 
-    if(isAllAnswerPresentForReasonableExcuse(reasonableExcuse) && !agentSession) {
-      getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse)
+    (request.session.get(SessionKeys.isObligationAppeal), reasonableExcuse.isDefined, agentSession) match {
+      case (Some(_), _, _) => getContentForObligationAppealCheckYourAnswersPage
+      case (_, true, false) if isAllAnswerPresentForReasonableExcuse(reasonableExcuse.get) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
+      case (_, _, true) if reasonableExcuse.isDefined => getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
+      case _ => Seq.empty
     }
-      else if(agentSession){
-      getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse)
+  }
+
+  def getContentForObligationAppealCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
+    val fileNameOrDefault: String = {
+      if(request.session.get(SessionKeys.evidenceFileName).isEmpty || request.session.get(SessionKeys.evidenceFileName).contains("")) {
+        messages("checkYourAnswers.other.noFileUpload")
+      } else request.session.get(SessionKeys.evidenceFileName).get
     }
-    else {
-      Seq.empty
-    }
+    Seq(
+      (messages("checkYourAnswers.obligation.whyYouWantToAppealPenalty"),
+        request.session.get(SessionKeys.otherRelevantInformation).get,
+        "#"),
+      (messages("checkYourAnswers.obligation.fileEvidence"),
+        fileNameOrDefault,
+        "#"
+      )
+    )
   }
 }

@@ -780,7 +780,27 @@ class SessionAnswersHelperSpec extends SpecBase {
 
       }
     }
-    "when agent session is not present" should  {
+    "when agent session is not present" should {
+      "the appeal is against the obligation" when {
+        "show the obligation variation of the page" in {
+          val fakeRequestForAppealingTheObligation = UserRequest(vrn)(fakeRequest.withSession(
+            SessionKeys.isObligationAppeal -> "true",
+            SessionKeys.otherRelevantInformation -> "This is some relevant information",
+            SessionKeys.evidenceFileName -> "file.txt"
+          ))
+
+          val result = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestForAppealingTheObligation, implicitly)
+          result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
+          result(0)._2 shouldBe "This is some relevant information"
+          //TODO: change to 'other relevant information' page
+          result(0)._3 shouldBe "#"
+          result(1)._1 shouldBe "Evidence to support this appeal"
+          result(1)._2 shouldBe "file.txt"
+          //TODO: change to file upload page
+          result(1)._3 shouldBe "#"
+        }
+      }
+
       "return getAllTheContentForCheckYourAnswersPage as list of getContentForReasonableExcuseCheckYourAnswersPage only" in {
         val fakeRequestWithCorrectKeysAndReasonableExcuseSet = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
           .withSession(SessionKeys.reasonableExcuse -> "technicalIssues",

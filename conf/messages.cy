@@ -330,6 +330,9 @@ checkYourAnswers.agents.whyWasTheReturnSubmittedLate = Why was the return submit
 checkYourAnswers.agents.whyWasTheReturnSubmittedLate.client = My client did not get information to me on time
 checkYourAnswers.agents.whyWasTheReturnSubmittedLate.agent = Something else happened to delay me
 
+checkYourAnswers.obligation.whyYouWantToAppealPenalty = Tell us why you want to appeal the penalty
+checkYourAnswers.obligation.fileEvidence = Evidence to support this appeal
+
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
