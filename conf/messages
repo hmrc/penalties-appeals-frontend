@@ -367,3 +367,10 @@ agents.whyWasTheReturnSubmittedLate.heading = Why was the return submitted late?
 agents.whyWasTheReturnSubmittedLate.option.client = My client did not get information to me on time
 agents.whyWasTheReturnSubmittedLate.option.agent = Something else happened to delay me
 agents.whyWasTheReturnSubmittedLate.error.invalid = Tell us the reason the return was submitted late
+
+# Other Relevant Information Page - Appeal against obligation
+# ----------------------------------------------------------
+otherRelevantInformation.title = Tell us why you want to appeal the penalty
+otherRelevantInformation.heading = Tell us why you want to appeal the penalty
+otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
+otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty

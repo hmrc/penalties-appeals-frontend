@@ -114,3 +114,9 @@ GET        /why-return-was-submitted-late-agent                controllers.Agent
 GET        /why-return-was-submitted-late-agent/change         controllers.AgentsController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = CheckMode)
 POST       /why-return-was-submitted-late-agent                controllers.AgentsController.onSubmitForWhyReturnSubmittedLate(mode: Mode = NormalMode)
 POST       /why-return-was-submitted-late-agent/change         controllers.AgentsController.onSubmitForWhyReturnSubmittedLate(mode: Mode = CheckMode)
+
+# Other Relevant Information page
+GET        /other-relevant-information                         controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = NormalMode)
+GET        /other-relevant-information/change                  controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = CheckMode)
+POST       /other-relevant-information                         controllers.AppealAgainstObligationController.onSubmit(mode: Mode = NormalMode)
+POST       /other-relevant-information/change                  controllers.AppealAgainstObligationController.onSubmit(mode: Mode = CheckMode)

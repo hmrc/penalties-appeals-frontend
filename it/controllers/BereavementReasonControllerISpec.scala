@@ -39,7 +39,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
       )
       val request = await(controller.onPageLoadForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe OK
@@ -76,7 +76,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> LocalDateTime.now().minusDays(20).toString)
+        (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString)
       ).withJsonBody(
         Json.parse(
           """
@@ -93,6 +93,31 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenDidThePersonDie).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to 'Making a Late appeal page' when appeal is > " +
+      "30 days late" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "date.day": "08",
+            | "date.month": "02",
+            | "date.year": "2021"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenDidThePersonDie).get shouldBe LocalDate.parse("2021-02-08").toString
+    }
+
     "return 400 (BAD_REQUEST)" when {
       "the date submitted is in the future" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
@@ -101,7 +126,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         ).withJsonBody(
           Json.parse(
             """
@@ -123,7 +148,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         )
         val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -136,7 +161,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         )
 
         val noDayJsonBody: JsValue = Json.parse(
@@ -211,7 +236,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         ).withJsonBody(
           Json.parse(
             """
@@ -233,7 +258,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         )
         val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe BAD_REQUEST
@@ -246,7 +271,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
         )
 
         val noDayJsonBody: JsValue = Json.parse(
@@ -321,7 +346,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
       (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
       (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
       (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-      (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00")
+      (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
     ).withJsonBody(
       Json.parse(
         """
