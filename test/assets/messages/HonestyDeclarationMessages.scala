@@ -23,11 +23,13 @@ object HonestyDeclarationMessages {
 
   val p1 = "I confirm that:"
 
-  val li1 = (reasonText: String, dueDate: String) => s"because $reasonText, I was unable to submit the VAT Return due on $dueDate"
+  val li1: (String, String) => String = (reasonText: String, dueDate: String) => s"because $reasonText, I was unable to submit the VAT Return due on $dueDate"
 
-  val li1Lpp = (reasonText: String, dueDate: String) => s"because $reasonText, I was unable to pay the VAT bill due on $dueDate"
+  val li1Lpp: (String, String) => String = (reasonText: String, dueDate: String) => s"because $reasonText, I was unable to pay the VAT bill due on $dueDate"
 
-  val li1Other = (dueDate: String) => s"I was unable to submit the VAT Return due on $dueDate"
+  val li1Other: String => String = (dueDate: String) => s"I was unable to submit the VAT Return due on $dueDate"
+
+  val li1Obligation = "HMRC has been asked to cancel the VAT registration"
 
   val li1AgentText = (reasonText: String, dueDate: String) => s"because $reasonText, they were unable to submit the VAT Return due on $dueDate"
 
@@ -38,6 +40,8 @@ object HonestyDeclarationMessages {
   val li2AgentText = "no one else was available to make the submission for them"
 
   val li2Lpp = "no one else was available to make the payment for me"
+
+  val li2Obligation: (String, String) => String = (startDate: String, endDate: String) => s"there was no VAT Return due for the period $startDate to $endDate"
 
   val li3 = "I will provide honest and accurate information in this appeal"
 
