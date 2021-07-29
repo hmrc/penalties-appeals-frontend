@@ -73,6 +73,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
@@ -95,6 +96,62 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
+    }
+  }
+
+  "onPageLoadForObligation" should {
+    "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val result = await(controller.onPageLoadForObligation("12345", isLPP = false)(fakeRequest))
+      result.header.status shouldBe INTERNAL_SERVER_ERROR
+    }
+
+    "call the penalties backend and handle a success response and add the keys to the session " +
+      "- redirect to Cancel VAT Registration page" in new Setup(AuthTestModels.successfulAuthResult) {
+      val appealDataToReturn: AppealData = AppealData(
+        `type` = PenaltyTypeEnum.Late_Submission,
+        startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
+        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
+        dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
+        dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
+      )
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(appealDataToReturn)))
+      val result = controller.onPageLoadForObligation("12345", isLPP = false)(fakeRequest)
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      await(result).header.status shouldBe SEE_OTHER
+      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
+      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
+    }
+
+    "call the penalties backend and handle a success response and add the keys to the session " +
+      "- redirect to Cancel VAT Registration page for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
+      val appealDataToReturn: AppealData = AppealData(
+        `type` = PenaltyTypeEnum.Late_Payment,
+        startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
+        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
+        dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
+        dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
+      )
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(appealDataToReturn)))
+      val result = controller.onPageLoadForObligation("12345", isLPP = true)(fakeRequest)
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      await(result).header.status shouldBe SEE_OTHER
+      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
+      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
     }
   }
 }

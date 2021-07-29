@@ -37,6 +37,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
     "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned for LPP" in {
@@ -51,11 +52,51 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
     "render an ISE when the appeal data can not be retrieved" in {
       failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       val result = controller.onPageLoad("1234", isLPP = false)(FakeRequest())
+      await(result).header.status shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "GET /initialise-appeal-against-the-obligation" should {
+    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" in {
+      implicit val fakeRequest = FakeRequest()
+      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      val result = controller.onPageLoadForObligation("1234", isLPP = false)(fakeRequest)
+      await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
+      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
+
+    }
+
+    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned for LPP" in {
+      implicit val fakeRequest = FakeRequest()
+      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true)
+      val result = controller.onPageLoadForObligation("1234", isLPP = true)(fakeRequest)
+      await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
+      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
+    }
+
+    "render an ISE when the appeal data can not be retrieved" in {
+      failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      val result = controller.onPageLoadForObligation("1234", isLPP = false)(FakeRequest())
       await(result).header.status shouldBe INTERNAL_SERVER_ERROR
     }
   }

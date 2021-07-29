@@ -18,7 +18,7 @@ package controllers
 
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
-import models.{AppealData, PenaltyTypeEnum, UserRequest}
+import models.{AppealData, UserRequest}
 import utils.Logger.logger
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
@@ -40,7 +40,21 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
           errorHandler.showInternalServerError
         )(
           appealData => {
-            removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData)
+            removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData, false)
+          }
+        )
+      }
+    }
+  }
+
+  def onPageLoadForObligation(penaltyId: String, isLPP: Boolean): Action[AnyContent] = authorise.async {
+    implicit user => {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP).map {
+        _.fold(
+          errorHandler.showInternalServerError
+        )(
+          appealData => {
+            removeExistingKeysFromSessionAndRedirect(routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration(), penaltyId, appealData, true)
           }
         )
       }
@@ -49,7 +63,8 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
   private def removeExistingKeysFromSessionAndRedirect[A](urlToRedirectTo: Call,
                                                           penaltyId: String,
-                                                          appealModel: AppealData)(implicit user: UserRequest[A]): Result = {
+                                                          appealModel: AppealData,
+                                                          isAppealAgainstObligation: Boolean)(implicit user: UserRequest[A]): Result = {
     logger.debug(s"[InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Resetting appeals session: removing keys from session" +
       s" and replacing with new keys")
     Redirect(urlToRedirectTo)
@@ -60,5 +75,6 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
       .addingToSession((SessionKeys.endDateOfPeriod, appealModel.endDate.toString))
       .addingToSession((SessionKeys.dueDateOfPeriod, appealModel.dueDate.toString))
       .addingToSession((SessionKeys.dateCommunicationSent, appealModel.dateCommunicationSent.toString))
-  }
+      .addingToSession(if(isAppealAgainstObligation) (SessionKeys.isObligationAppeal, isAppealAgainstObligation.toString) else ("", ""))  }
+
 }
