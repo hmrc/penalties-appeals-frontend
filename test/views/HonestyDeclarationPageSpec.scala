@@ -34,20 +34,20 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
     val honestyDeclarationPage: HonestyDeclarationPage = injector.instanceOf[HonestyDeclarationPage]
     object Selectors extends BaseSelectors
 
-    def applyView(form: Form[_],
+    def applyVATTraderView(form: Form[_],
                   reasonText: String,
                   dueDate: String, startDate: String, endDate: String,
                   extraBullets: Seq[String] = Seq.empty, request: FakeRequest[_] = fakeRequest, isObligation: Boolean = false): HtmlFormat.Appendable = {
       honestyDeclarationPage.apply(form, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(request, implicitly, implicitly, vatTraderUser)
     }
 
-    implicit val doc: Document = asDocument(applyView(honestyDeclarationForm, "of reason",
+    implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "of reason",
       "1 January 2022", "1 January 2021", "31 January 2021"))
 
     def applyAgentView(form: Form[_],
                        reasonText: String,
                        dueDate: String, startDate: String, endDate: String,
-                       extraBullets: Seq[String] = Seq.empty, request: FakeRequest[_] = agentRequest, is Obligation: Boolean = false): HtmlFormat.Appendable = {
+                       extraBullets: Seq[String] = Seq.empty, request: FakeRequest[_] = agentRequest, isObligation: Boolean = false): HtmlFormat.Appendable = {
       honestyDeclarationPage.apply(form, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(request, implicitly, implicitly, agentUserSessionKeys)
     }
 
@@ -70,7 +70,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       "display the correct variation" when {
         "the option selected is 'crime'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.crime"), "1 January 2022"))
+          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.crime"),
+            "1 January 2022", "1 January 2021", "31 January 2021"))
 
           val expectedContent = Seq(
             Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
@@ -81,7 +82,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'bereavement'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.bereavement"), "1 January 2022"))
+          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.bereavement"),
+            "1 January 2022", "1 January 2021", "31 January 2021"))
 
           val expectedContent = Seq(
             Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
@@ -215,7 +217,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       "it is an appeal against an obligation" must {
         implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
-        implicit val doc: Document = asDocument(applyView(honestyDeclarationForm, "",
+        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "",
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq(), fakeRequest.withSession(), isObligation = true))
 
