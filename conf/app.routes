@@ -76,10 +76,10 @@ POST       /has-the-hospital-stay-ended                    controllers.HealthRea
 POST       /has-the-hospital-stay-ended/change             controllers.HealthReasonController.onSubmitForHasHospitalStayEnded(mode:Mode = CheckMode)
 
 # Other Reasonable Excuse Journey
-GET        /why-was-the-return-submitted-late                   controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = NormalMode)
-GET        /why-was-the-return-submitted-late/change            controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = CheckMode)
-POST       /why-was-the-return-submitted-late                   controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = NormalMode)
-POST       /why-was-the-return-submitted-late/change            controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = CheckMode)
+GET        /why-was-the-vat-late                   controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = NormalMode)
+GET        /why-was-the-vat-late/change            controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = CheckMode)
+POST       /why-was-the-vat-late                   controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = NormalMode)
+POST       /why-was-the-vat-late/change            controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = CheckMode)
 GET        /when-inability-to-manage-account-happened              controllers.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode: Mode = NormalMode)
 GET        /when-inability-to-manage-account-happened/change       controllers.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode: Mode = CheckMode)
 POST       /when-inability-to-manage-account-happened              controllers.OtherReasonController.onSubmitForWhenDidBecomeUnable(mode: Mode = NormalMode)
