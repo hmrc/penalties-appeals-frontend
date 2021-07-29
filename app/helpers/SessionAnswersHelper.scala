@@ -16,15 +16,15 @@
 
 package helpers
 
-import models.{CheckMode, UserRequest}
+import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import utils.SessionKeys
 import viewtils.ImplicitDateFormatter
 import config.ErrorHandler
 import utils.Logger.logger
-import java.time.LocalDate
 
+import java.time.LocalDate
 import utils.MessageRenderer.getMessage
 
 object SessionAnswersHelper extends ImplicitDateFormatter {
@@ -136,6 +136,14 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             messages("checkYourAnswers.other.noFileUpload")
           } else request.session.get(SessionKeys.evidenceFileName).get
         }
+
+        val statementOfLatenessForLPPOrLSP: String = {
+          if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+            messages("checkYourAnswers.other.lpp.statementOfLateness")
+          } else {
+            messages("checkYourAnswers.other.statementOfLateness")
+          }
+        }
         Seq(
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
@@ -143,7 +151,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
           (getMessage("checkYourAnswers.other.unableToManageAccount"),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidBecomeUnable).get)),
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
-          (messages("checkYourAnswers.other.statementOfLateness"),
+          (statementOfLatenessForLPPOrLSP,
             request.session.get(SessionKeys.whyReturnSubmittedLate).get,
             controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url),
           (messages("checkYourAnswers.other.fileEvidence"),
