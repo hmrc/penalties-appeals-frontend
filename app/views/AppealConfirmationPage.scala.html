@@ -52,7 +52,9 @@
 
     <p class="govuk-body">@messages("appealConfirmation.p3")</p>
 
-    <p class="govuk-body">@messages("appealConfirmation.p4")</p>
+    @if(!user.isAgent){
+        <p class="govuk-body">@messages("appealConfirmation.p4")</p>
+    }
 
     <ul class="govuk-list">
         <li>
