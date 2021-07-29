@@ -43,9 +43,9 @@ class CancelVATRegistrationPageSpec extends SpecBase with ViewBehaviours {
       Selectors.h1 -> h1,
       Selectors.labelForRadioButton(1) -> yesOption,
       Selectors.labelForRadioButton(2) -> noOption,
+      Selectors.hintText -> hintText,
       Selectors.button -> continueButton
     )
-
     behave like pageWithExpectedMessages(expectedContent)
   }
 }

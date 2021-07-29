@@ -21,5 +21,6 @@ object CancelVATRegistrationMessages {
   val h1 = "Has HMRC been asked to cancel the VAT registration for this business?"
   val yesOption = "Yes"
   val noOption = "No"
+  val hintText = "A business must cancel its VAT registration if it stops trading, deregisters for VAT or if the business ownership is transferred."
   val continueButton = "Continue"
 }
