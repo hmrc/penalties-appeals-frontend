@@ -23,10 +23,6 @@ import utils.SessionKeys
 sealed trait AppealInformation {
   val `type`: String
   val statement: Option[String]
-  val lateAppeal: Boolean
-  val lateAppealReason: Option[String]
-  val whoPlannedToSubmit: Option[String]
-  val causeOfLateSubmissionAgent:Option[String]
 }
 
 case class BereavementAppealInformation(
@@ -381,6 +377,31 @@ object OtherAppealInformation {
   }
 }
 
+case class ObligationAppealInformation(
+                                        `type`: String,
+                                        statement: Option[String],
+                                        supportingEvidence: Option[Evidence]
+) extends AppealInformation
+
+object ObligationAppealInformation {
+  implicit val evidenceFormatter: OFormat[Evidence] = Evidence.format
+  implicit val obligationAppealInformationFormatter: OFormat[ObligationAppealInformation] = Json.format[ObligationAppealInformation]
+
+  val obligationAppealInformationWrites: Writes[ObligationAppealInformation] = (obligationAppealInformation: ObligationAppealInformation) => {
+    Json.obj(
+      "type" -> obligationAppealInformation.`type`,
+      "statement" -> obligationAppealInformation.statement.get
+    ).deepMerge(
+      obligationAppealInformation.supportingEvidence.fold(
+        Json.obj()
+    )(
+        supportingEvidence => Json.obj("supportingEvidence" -> supportingEvidence)
+      )
+
+    )
+  }
+}
+
 case class AppealSubmission(
                              submittedBy: String,
                              penaltyId: String,
@@ -412,6 +433,9 @@ object AppealSubmission {
       }
       case "other" => {
         Json.toJson(payload.asInstanceOf[OtherAppealInformation])(OtherAppealInformation.otherAppealInformationWrites)
+      }
+      case "obligation" => {
+        Json.toJson(payload.asInstanceOf[ObligationAppealInformation])(ObligationAppealInformation.obligationAppealInformationWrites)
       }
     }
   }
@@ -554,6 +578,24 @@ object AppealSubmission {
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
             causeOfLateSubmissionAgent = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent)
+          )
+        )
+      }
+      case "obligation" => {
+        AppealSubmission(
+          submittedBy = if (userRequest.isAgent) "agent" else "client",
+          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          appealInformation = ObligationAppealInformation(
+            `type` = "obligation",
+            statement = userRequest.session.get(SessionKeys.whyReturnSubmittedLate),
+            supportingEvidence = userRequest.session.get(SessionKeys.evidenceFileName).fold[Option[Evidence]](None)(_ => Some(Evidence(
+              //TODO: change with multi-evidence upload option
+              noOfUploadedFiles = 1,
+              //TODO: this could change to something more concrete
+              referenceId = userRequest.session.get(SessionKeys.penaltyId).get
+            )))
           )
         )
       }

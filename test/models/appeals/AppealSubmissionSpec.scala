@@ -146,6 +146,28 @@ class AppealSubmissionSpec extends SpecBase {
       |""".stripMargin
   )
 
+  val obligationAppealInformationJson: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "obligation",
+      |   "statement": "This is a statement.",
+      |   "supportingEvidence":{
+      |     "noOfUploadedFiles": 1,
+      |     "referenceId": "ref1"
+      |   }
+      |}
+      |""".stripMargin
+  )
+
+  val obligationAppealInformationJsonNoEvidence: JsValue = Json.parse(
+    """
+      |{
+      |   "type": "obligation",
+      |   "statement": "This is a statement."
+      |}
+      |""".stripMargin
+  )
+
   "parseAppealInformationToJson" should {
     "for crime" must {
       "parse the appeal information model into a JsObject" in {
@@ -302,6 +324,29 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe otherAppealInformationJsonNoEvidence
+      }
+    }
+
+    "for obligation" must {
+      "parse the appeal information model into a JsObject" in {
+        val model = ObligationAppealInformation(
+          `type` = "obligation",
+          statement = Some("This is a statement."),
+          supportingEvidence = Some(Evidence(
+            noOfUploadedFiles = 1, referenceId = "ref1"))
+        )
+        val result = AppealSubmission.parseAppealInformationToJson(model)
+        result shouldBe obligationAppealInformationJson
+      }
+
+      "parse the appeal information model into a JsObject - when no evidence is provided" in{
+        val model = ObligationAppealInformation(
+          `type` = "obligation",
+          statement = Some("This is a statement."),
+          supportingEvidence = None
+        )
+        val result = AppealSubmission.parseAppealInformationToJson(model)
+        result shouldBe obligationAppealInformationJsonNoEvidence
       }
     }
   }
@@ -646,7 +691,7 @@ class AppealSubmissionSpec extends SpecBase {
 
     "for other" must {
       "parse the session keys to a model" in {
-        val fakeRequestForLossOfStaffJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+        val fakeRequestForOtherJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
@@ -654,7 +699,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false)(fakeRequestForOtherJourney)
         result.reasonableExcuse shouldBe "other"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -720,6 +765,49 @@ class AppealSubmissionSpec extends SpecBase {
           supportingEvidence = Some(Evidence(1, "123")),
           whoPlannedToSubmit = None,
           causeOfLateSubmissionAgent = None
+        )
+      }
+    }
+
+    "for obligation" must {
+      "parse the session keys to a model" in {
+        val fakeRequestForObligationJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.evidenceFileName -> "file1.txt",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
+        )
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false)(fakeRequestForObligationJourney)
+        result.reasonableExcuse shouldBe "obligation"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "client"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe ObligationAppealInformation(
+          `type` = "obligation",
+          statement = Some("This is a reason."),
+          supportingEvidence = Some(Evidence(1, "123"))
+        )
+      }
+
+      "parse the session keys to a model - no evidence" in {
+        val fakeRequestForObligationJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
+        )
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false)(fakeRequestForObligationJourney)
+        result.reasonableExcuse shouldBe "obligation"
+        result.penaltyId shouldBe "123"
+        result.submittedBy shouldBe "client"
+        result.honestyDeclaration shouldBe true
+        result.appealInformation shouldBe ObligationAppealInformation(
+          `type` = "obligation",
+          statement = Some("This is a reason."),
+          supportingEvidence = None
         )
       }
     }
@@ -1164,6 +1252,71 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe jsonRepresentingModel
       }
     }
+
+    "for obligation" must {
+      "write the model to JSON" in {
+        val modelToConvertToJson: AppealSubmission = AppealSubmission(
+          submittedBy = "client",
+          penaltyId = "1234",
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
+          appealInformation = ObligationAppealInformation(
+            `type` = "obligation",
+            statement = Some("This was the reason"),
+            supportingEvidence = Some(Evidence(
+              noOfUploadedFiles = 1,
+              referenceId = "ref1"
+            ))
+          )
+        )
+
+        val jsonRepresentModel: JsValue = Json.obj(
+          "submittedBy" -> "client",
+          "penaltyId" -> "1234",
+          "reasonableExcuse" -> "obligation",
+          "honestyDeclaration" -> true,
+          "appealInformation" -> Json.obj(
+            "type" -> "obligation",
+            "statement" -> "This was the reason",
+            "supportingEvidence" -> Json.obj(
+              "noOfUploadedFiles" -> 1,
+              "referenceId" -> "ref1"
+            )
+          )
+        )
+
+        val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
+        result shouldBe jsonRepresentModel
+      }
+
+      "write the model to JSON - no evidence" in {
+        val modelToConvertToJson: AppealSubmission = AppealSubmission(
+          submittedBy = "client",
+          penaltyId = "1234",
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
+          appealInformation = ObligationAppealInformation(
+            `type` = "obligation",
+            statement = Some("This was the reason"),
+            supportingEvidence = None
+          )
+        )
+
+        val jsonRepresentModel: JsValue = Json.obj(
+          "submittedBy" -> "client",
+          "penaltyId" -> "1234",
+          "reasonableExcuse" -> "obligation",
+          "honestyDeclaration" -> true,
+          "appealInformation" -> Json.obj(
+            "type" -> "obligation",
+            "statement" -> "This was the reason"
+          )
+        )
+
+        val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
+        result shouldBe jsonRepresentModel
+      }
+    }
   }
 
   "BereavementAppealInformation" should {
@@ -1461,6 +1614,50 @@ class AppealSubmissionSpec extends SpecBase {
             | "dateOfEvent": "2022-01-01T13:00:00.000Z",
             | "statement": "I was late. Sorry.",
             | "lateAppeal": false
+            |}
+            |""".stripMargin)
+        val result = Json.toJson(modelToConvertToJson)
+        result shouldBe expectedResult
+      }
+    }
+  }
+
+  "ObligationAppealInformation" should {
+    "obligationAppealInformationWrites" should {
+      "write to JSON" in {
+        val modelToConvertToJson = ObligationAppealInformation(
+          `type` = "obligation",
+          statement = Some("I was late. Sorry."),
+          supportingEvidence = Some(Evidence(
+            noOfUploadedFiles = 1,
+            referenceId = "reference-3000"))
+        )
+        val expectedResult = Json.parse(
+          """
+            |{
+            | "type": "obligation",
+            | "statement": "I was late. Sorry.",
+            | "supportingEvidence": {
+            |   "noOfUploadedFiles": 1,
+            |   "referenceId": "reference-3000"
+            | }
+            |}
+            |""".stripMargin)
+        val result = Json.toJson(modelToConvertToJson)
+        result shouldBe expectedResult
+      }
+
+      "write to JSON - no evidence" in {
+        val modelToConvertToJson = ObligationAppealInformation(
+          `type` = "obligation",
+          statement = Some("I was late. Sorry."),
+          supportingEvidence = None
+        )
+        val expectedResult = Json.parse(
+          """
+            |{
+            | "type": "obligation",
+            | "statement": "I was late. Sorry."
             |}
             |""".stripMargin)
         val result = Json.toJson(modelToConvertToJson)
