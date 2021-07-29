@@ -17,7 +17,7 @@
 package helpers
 
 import base.SpecBase
-import models.{CheckMode, UserRequest}
+import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import utils.SessionKeys
 
 class SessionAnswersHelperSpec extends SpecBase {
@@ -421,6 +421,37 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(3)._1 shouldBe "Why you did not appeal sooner"
         result(3)._2 shouldBe "Lorem ipsum"
         result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+    }
+
+    "for LPP on other journey" must {
+      "display the correct wording" in {
+        val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
+          .withSession(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
+          ))
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._1 shouldBe "Why was the VAT bill paid late?"
+        result(2)._2 shouldBe "This is why my VAT payment was late."
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(3)._1 shouldBe "Evidence to support this appeal"
+        result(3)._2 shouldBe "Not provided"
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(4)._1 shouldBe "Why you did not appeal sooner"
+        result(4)._2 shouldBe "This is the reason why my appeal was late."
+        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
     }
 
@@ -1006,6 +1037,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(1)._3 shouldBe "#"
         }
       }
+
       "return getAllTheContentForCheckYourAnswersPage as list of getContentForReasonableExcuseCheckYourAnswersPage only" in {
         val fakeRequestWithCorrectKeysAndReasonableExcuseSet = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
           .withSession(SessionKeys.reasonableExcuse -> "technicalIssues",
