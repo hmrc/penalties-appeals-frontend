@@ -56,7 +56,7 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
     implicit val agentDoc: Document = asDocument(applyAgentView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023"))
 
 
-    "when agent is on page " must {
+    "when agent is on the page " must {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> headingPanelH1,
@@ -65,13 +65,16 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
         Selectors.whatHappensNextPTag(3) -> p1,
         Selectors.whatHappensNextPTag(4) -> p2,
         Selectors.whatHappensNextPTag(5) -> p3,
-        Selectors.whatHappensNextPTag(6) -> p4,
         Selectors.penaltiesLink -> returnToPenaltiesAgentText,
         Selectors.vatAccountLink -> goToVatVCAgentText,
         Selectors.feedbackLink -> goToFeedback
       )
 
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+
+      "not show the secure/email message" in {
+        agentDoc.select(Selectors.whatHappensNextPTag(6)).text.isEmpty shouldBe true
+      }
     }
 
     "when VAT trader is on page" must {
