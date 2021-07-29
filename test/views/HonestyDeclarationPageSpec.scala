@@ -233,6 +233,26 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
         behave like pageWithExpectedMessages(expectedContent)(doc)
       }
+
+      "it is a LPP appeal and the reason is technicalIssues" must {
+        implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
+        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, messages("honestyDeclaration.technicalIssues"),
+          "1 January 2022", "1 January 2021", "31 January 2021",
+          Seq(), fakeRequest.withSession(SessionKeys.reasonableExcuse -> "technicalIssues", SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+
+        val expectedContent = Seq(
+          Selectors.title -> title,
+          Selectors.h1 -> h1,
+          Selectors.pElementIndex(2) -> p1,
+          Selectors.listIndexWithElementIndex(3, 1) -> li1Lpp(messages("honestyDeclaration.technicalIssues"), "1 January 2022"),
+          Selectors.listIndexWithElementIndex(3, 2) -> li2Lpp,
+          Selectors.listIndexWithElementIndex(3, 3) -> liLppTechIssues,
+          Selectors.listIndexWithElementIndex(3, 4) -> li3,
+          Selectors.button -> acceptAndContinueButton
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)(doc)
+      }
     }
   }
 }

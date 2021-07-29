@@ -68,6 +68,12 @@
             @getMessage("honestyDeclaration.li.2")
         }
         </li>
+        @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) && request.session.get(SessionKeys.reasonableExcuse).contains("technicalIssues")) {
+            <li>
+                @messages("honestyDeclaration.li.extra.technicalIssues")
+            </li>
+        }
+
         <li>
         @messages("honestyDeclaration.li.3")
         </li>

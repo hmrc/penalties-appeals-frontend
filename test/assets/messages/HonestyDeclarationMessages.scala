@@ -41,6 +41,8 @@ object HonestyDeclarationMessages {
 
   val li2Lpp = "no one else was available to make the payment for me"
 
+  val liLppTechIssues = "the technical failure was not due to lack of funds"
+
   val li2Obligation: (String, String) => String = (startDate: String, endDate: String) => s"there was no VAT Return due for the period $startDate to $endDate"
 
   val li3 = "I will provide honest and accurate information in this appeal"
