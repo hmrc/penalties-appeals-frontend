@@ -101,7 +101,8 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig:
     }
   }
 
-  def otherPenaltiesInTaxPeriod(penaltyId: String, isLPP: Boolean)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
+  def otherPenaltiesInTaxPeriod(penaltyId: String, isLPP: Boolean)
+                               (implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
     val startOfLogMsg: String = "[AppealService][otherPenaltiesInTaxPeriod] -"
     penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId, userRequest.vrn, isLPP).map(
       response => response.status match {
@@ -114,7 +115,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig:
       }
     ).recover {
       case e => {
-        logger.error(s"$startOfLogMsg n unknown error occurred, error message: ${e.getMessage}")
+        logger.error(s"$startOfLogMsg unknown error occurred, error message: ${e.getMessage}")
         false
       }
     }
