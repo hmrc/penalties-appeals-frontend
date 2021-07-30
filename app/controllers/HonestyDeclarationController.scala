@@ -25,7 +25,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
-import utils.{ReasonableExcuses, SessionKeys}
+import utils. SessionKeys
 import views.html.HonestyDeclarationPage
 import viewtils.ImplicitDateFormatter
 import java.time.{LocalDate, LocalDateTime}
@@ -77,8 +77,13 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
             },
             _ => {
               logger.debug(s"[HonestyDeclarationController][onSubmit] - Adding 'true' to session for key: ${SessionKeys.hasConfirmedDeclaration}")
-              Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, Some(reasonableExcuse)))
-                .addingToSession((SessionKeys.hasConfirmedDeclaration, "true"))
+              if(isObligation) {
+                Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, None))
+                  .addingToSession((SessionKeys.hasConfirmedDeclaration, "true"))
+              } else {
+                Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, Some(reasonableExcuse)))
+                  .addingToSession((SessionKeys.hasConfirmedDeclaration, "true"))
+              }
             }
           )
         }
@@ -93,6 +98,9 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
       request.session.get(SessionKeys.isObligationAppeal).isDefined) match {
       case (Some(reasonableExcuse), Some(dueDate), Some(startDate), Some(endDate), isObligation: Boolean) => {
         fOnSuccess(reasonableExcuse, dueDate, startDate, endDate, isObligation)
+      }
+      case (None, Some(dueDate), Some(startDate), Some(endDate), isObligation: Boolean) if isObligation => {
+        fOnSuccess("obligation", dueDate, startDate, endDate, isObligation)
       }
       case _ => {
         logger.error(s"[HonestyDeclarationController][tryToGetExcuseAndDueDateFromSession] - One or more session key was not in session. \n" +

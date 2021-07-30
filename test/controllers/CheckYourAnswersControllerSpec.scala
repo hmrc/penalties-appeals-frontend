@@ -119,6 +119,12 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     )
   )
 
+  val fakeRequestForEvidenceUpload = fakeRequestConverter(fakeRequestWithCorrectKeys
+    .withSession(
+      SessionKeys.evidenceFileName -> "fileName.txt"
+    )
+  )
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
     reset(mockAppealService)
@@ -179,6 +185,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       }
 
       "return OK and correct view - when it is an appeal against the obligation" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoad()(fakeRequestForObligationAppealJourney)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - when file is uploaded" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForObligationAppealJourney)
         status(result) shouldBe OK
       }
@@ -282,5 +293,4 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       }
     }
   }
-
 }

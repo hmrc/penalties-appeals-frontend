@@ -20,6 +20,9 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.CancelVATRegistrationForm
 import helpers.FormProviderHelper
+import models.NormalMode
+import models.pages.CancelVATRegistrationPage
+import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,7 +34,8 @@ import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
 
-class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: CancelVATRegistrationPage)
+class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: CancelVATRegistrationPage,
+                                                navigation: Navigation)
                                                (implicit authorise: AuthPredicate,
                                                 dataRequired: DataRequiredAction,
                                                 appConfig: AppConfig,
@@ -58,7 +62,7 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
           BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction))
         },
         cancelVATRegistration => {
-              Redirect("#")
+              Redirect(navigation.nextPage(CancelVATRegistrationPage,NormalMode, Some(cancelVATRegistration)))
                 .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
         }
       )

@@ -39,7 +39,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(CheckMode, answer, request)),
     WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidHospitalStayBeginPage -> ((_, request) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode)),
+    WhenDidHospitalStayBeginPage -> ((_, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode)),
     DidHospitalStayEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidBecomeUnablePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhyWasReturnSubmittedLatePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
@@ -47,11 +47,12 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, CheckMode)),
     WhyWasTheReturnSubmittedLateAgentPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     ReasonableExcuseSelectionPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidThePersonDiePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
+    WhenDidThePersonDiePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    OtherRelevantInformationPage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
-    HonestyDeclarationPage -> ((answer, request) => getNextURLBasedOnReasonableExcuse(answer.get, NormalMode)(request)),
+    HonestyDeclarationPage -> ((answer, request) => getNextURLBasedOnReasonableExcuse(answer, NormalMode)(request)),
     HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidCrimeHappenPage -> ((_, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode)),
     WhenDidFireOrFloodHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
@@ -68,7 +69,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, NormalMode)),
     WhyWasTheReturnSubmittedLateAgentPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
     ReasonableExcuseSelectionPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
-    WhenDidThePersonDiePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
+    WhenDidThePersonDiePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    AppealStartPage -> ((_, _) => routes.AppealStartController.onPageLoad()),
+    OtherRelevantInformationPage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
+    CancelVATRegistrationPage -> ((answer, _) => routingForCancelVATRegistrationPage(answer))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None)(implicit userRequest: UserRequest[_]): Call = {
@@ -93,6 +97,15 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
+  def routingForCancelVATRegistrationPage(answer: Option[String]): Call = {
+    if(answer.get.toLowerCase == "yes") {
+      routes.OtherPenaltiesForPeriodController.onPageLoad()
+    } else {
+      //TODO: add route when option is 'no' for now it remains on same page
+      routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+    }
+  }
+
   def routingForHospitalStay(mode: Mode, answer: Option[String], request: UserRequest[_]): Call = {
     (mode, answer) match {
       case (CheckMode, Some(ans)) if ans.equalsIgnoreCase("no") && request.session.get(SessionKeys.whenHealthIssueHappened).isDefined => {
@@ -107,8 +120,11 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def getNextURLBasedOnReasonableExcuse(reasonableExcuse: String, mode: Mode)(implicit request: Request[_]): Call = {
-    reasonableExcuse match {
+  def getNextURLBasedOnReasonableExcuse(reasonableExcuse: Option[String], mode: Mode)(implicit request: Request[_]): Call = {
+    reasonableExcuse.fold(
+      //Route to Other Relevant Information page
+      controllers.routes.AppealAgainstObligationController.onPageLoad(mode)
+    ) {
       case ReasonableExcuses.bereavement => controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(mode)
       case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(mode)
       case ReasonableExcuses.fireOrFlood => controllers.routes.FireOrFloodReasonController.onPageLoad(mode)
@@ -124,7 +140,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
     if (dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
-      && (userRequest.session.get(SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)) {
+      && (userRequest.session.get(SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)
+      && userRequest.session.get(SessionKeys.isObligationAppeal).isEmpty) {
       logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
         s"Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
       controllers.routes.MakingALateAppealController.onPageLoad()

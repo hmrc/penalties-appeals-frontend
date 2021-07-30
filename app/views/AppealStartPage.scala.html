@@ -65,9 +65,11 @@
     }
 
     @link(if(request.session.get(SessionKeys.agentSessionVrn).isDefined){
-        routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
-            }else{
-        routes.ReasonableExcuseController.onPageLoad().url
-    }
+            routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
+        }else if(request.session.get(SessionKeys.isObligationAppeal).isDefined){
+            routes.HonestyDeclarationController.onPageLoad().url
+        }else{
+            routes.ReasonableExcuseController.onPageLoad().url
+        }
      ,"common.continue", button = true, classes = "govuk-button")
 }

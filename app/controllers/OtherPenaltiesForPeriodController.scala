@@ -19,12 +19,16 @@ package controllers
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.OtherPenaltiesForPeriodForm._
+import models.NormalMode
+import models.pages.AppealStartPage
+
 import javax.inject.Inject
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
+import utils.SessionKeys
 import views.html.OtherPenaltiesForPeriodPage
 
 class OtherPenaltiesForPeriodController @Inject()(page: OtherPenaltiesForPeriodPage,
@@ -48,8 +52,7 @@ class OtherPenaltiesForPeriodController @Inject()(page: OtherPenaltiesForPeriodP
         BadRequest(page(formWithErrors))
       },
       _ => {
-        // TODO - update when routing is added
-        Redirect("#")
+        Redirect(navigation.nextPage(AppealStartPage,NormalMode))
       }
     )
   }

@@ -43,7 +43,8 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     val controller: CancelVATRegistrationController = new CancelVATRegistrationController(
-      cancelVATRegistrationPage
+      cancelVATRegistrationPage,
+      mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))

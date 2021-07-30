@@ -21,6 +21,7 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.OtherRelevantInformationForm
 import helpers.FormProviderHelper
 import models.Mode
+import models.pages.{OtherRelevantInformationPage}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -56,7 +57,7 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
           BadRequest(otherRelevantInformationPage(formWithErrors, postAction))
         },
         otherInformationForAppealAgainstObligation => {
-          Redirect("")
+          Redirect(navigation.nextPage(OtherRelevantInformationPage,mode))
             .addingToSession(SessionKeys.otherRelevantInformation -> otherInformationForAppealAgainstObligation)
         }
       )
