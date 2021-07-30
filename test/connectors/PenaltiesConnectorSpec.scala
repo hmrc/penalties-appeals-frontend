@@ -235,4 +235,26 @@ class PenaltiesConnectorSpec extends SpecBase {
       result.getMessage shouldBe "something went wrong."
     }
   }
+
+  "getOtherPenaltiesInTaxPeriod" should {
+    "return the HTTP response back to the caller" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
+      when(mockAppConfig.otherPenaltiesForPeriodUrl(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn("http://url/url")
+
+      val result = await(connector.getOtherPenaltiesInTaxPeriod("1234", "HMRC-MTD-VAT~VRN~123456789", false))
+      result.status shouldBe OK
+    }
+
+    "return an exception when something unexpected goes wrong" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.failed(new Exception("something went wrong.")))
+      when(mockAppConfig.otherPenaltiesForPeriodUrl(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn("http://url/url")
+
+      val result = intercept[Exception](await(connector.getOtherPenaltiesInTaxPeriod("1234", "HMRC-MTD-VAT~VRN~123456789", false)))
+      result.getMessage shouldBe "something went wrong."
+    }
+  }
 }

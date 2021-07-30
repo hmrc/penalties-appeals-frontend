@@ -31,7 +31,7 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
                                    appConfig: AppConfig) {
 
   def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean): String = {
-    if(isLPP) {
+    if (isLPP) {
       appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))
     } else appConfig.appealLSPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))
   }
@@ -42,20 +42,21 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     httpClient.GET[HttpResponse](
       getAppealUrlBasedOnPenaltyType(penaltyId, enrolmentKey, isLPP)
     ).map {
-      response => response.status match {
-        case OK => {
-          logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with ID: $penaltyId and enrolment key $enrolmentKey")
-          Some(response.json)
+      response =>
+        response.status match {
+          case OK => {
+            logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with ID: $penaltyId and enrolment key $enrolmentKey")
+            Some(response.json)
+          }
+          case NOT_FOUND => {
+            logger.info(s"$startOfLogMsg Returned 404 from Penalties backend - with body: ${response.body}")
+            None
+          }
+          case _ => {
+            logger.warn(s"$startOfLogMsg Returned unknown response ${response.status} with body: ${response.body}")
+            None
+          }
         }
-        case NOT_FOUND => {
-          logger.info(s"$startOfLogMsg Returned 404 from Penalties backend - with body: ${response.body}")
-          None
-        }
-        case _ => {
-          logger.warn(s"$startOfLogMsg Returned unknown response ${response.status} with body: ${response.body}")
-          None
-        }
-      }
     }.recover {
       case e => {
         logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
@@ -68,7 +69,7 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     val startOfLogMsg: String = "[PenaltiesConnector][getListOfReasonableExcuses] -"
     httpClient.GET[HttpResponse](
       appConfig.reasonableExcuseFetchUrl
-    ).map (
+    ).map(
       response => Some(response.json)
     ).recover {
       case notFoundException: NotFoundException => {
@@ -89,5 +90,10 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
   def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
     httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP),
       appealSubmission)(AppealSubmission.writes, implicitly, implicitly, implicitly)
+  }
+
+  def getOtherPenaltiesInTaxPeriod(penaltyId: String, enrolmentKey: String, isLPP: Boolean)
+                                  (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
+    httpClient.GET[HttpResponse](appConfig.otherPenaltiesForPeriodUrl(penaltyId, enrolmentKey, isLPP))
   }
 }

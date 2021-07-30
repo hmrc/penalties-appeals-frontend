@@ -41,7 +41,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig:
       )(
         jsValue => {
           val parsedAppealDataModel = Json.fromJson(jsValue)(AppealData.format)
-          parsedAppealDataModel.fold (
+          parsedAppealDataModel.fold(
             failure => {
               logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Failed to parse to model with error(s): $failure")
               None
@@ -82,19 +82,40 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig:
 
     val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal)
     penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP).map {
-      response => response.status match {
-        case OK => {
-          logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
-          true
+      response =>
+        response.status match {
+          case OK => {
+            logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
+            true
+          }
+          case _ => {
+            logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
+            false
+          }
         }
-        case _ => {
-          logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
-          false
-        }
-      }
     } recover {
       case e => {
         logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
+        false
+      }
+    }
+  }
+
+  def otherPenaltiesInTaxPeriod(penaltyId: String, isLPP: Boolean)
+                               (implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
+    val startOfLogMsg: String = "[AppealService][otherPenaltiesInTaxPeriod] -"
+    penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId, userRequest.vrn, isLPP).map(
+      response => response.status match {
+        case OK =>
+          logger.debug(s"$startOfLogMsg Received OK from the other penalties call")
+          true
+        case NO_CONTENT =>
+          logger.debug(s"$startOfLogMsg Received No CONTENT from the other penalties call")
+          false
+      }
+    ).recover {
+      case e => {
+        logger.error(s"$startOfLogMsg unknown error occurred, error message: ${e.getMessage}")
         false
       }
     }
