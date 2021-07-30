@@ -34,13 +34,13 @@
     <p class="govuk-body">@messages("honestyDeclaration.p1")</p>
     <ul class="govuk-list govuk-list--bullet">
         <li>
-        @if(!reasonText.equals("")){
+        @if(!reasonText.equals("") && !isObligationAppeal){
             @messages("honestyDeclaration.li.1.1", reasonText)
         } else if(isObligationAppeal) {
             @messages("honestyDeclaration.obligation.li.1")
         }
 
-        @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+        @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) && !isObligationAppeal) {
             @messages("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
         } else if(!isObligationAppeal) {
             @if(user.isAgent && didClientCauseLateSubmission){
