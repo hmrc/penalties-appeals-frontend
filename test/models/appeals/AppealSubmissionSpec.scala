@@ -776,7 +776,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.evidenceFileName -> "file1.txt",
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
+          SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false)(fakeRequestForObligationJourney)
@@ -796,7 +796,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
+          SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false)(fakeRequestForObligationJourney)

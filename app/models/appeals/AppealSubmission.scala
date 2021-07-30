@@ -589,7 +589,7 @@ object AppealSubmission {
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
           appealInformation = ObligationAppealInformation(
             `type` = "obligation",
-            statement = userRequest.session.get(SessionKeys.whyReturnSubmittedLate),
+            statement = userRequest.session.get(SessionKeys.otherRelevantInformation),
             supportingEvidence = userRequest.session.get(SessionKeys.evidenceFileName).fold[Option[Evidence]](None)(_ => Some(Evidence(
               //TODO: change with multi-evidence upload option
               noOfUploadedFiles = 1,
