@@ -16,16 +16,17 @@
 
 package controllers
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.CancelVATRegistrationForm
 import helpers.FormProviderHelper
-import models.NormalMode
+import models.{NormalMode, PenaltyTypeEnum}
 import models.pages.CancelVATRegistrationPage
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.AppealService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
@@ -33,12 +34,16 @@ import views.html.CancelVATRegistrationPage
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: CancelVATRegistrationPage,
                                                 navigation: Navigation)
                                                (implicit authorise: AuthPredicate,
                                                 dataRequired: DataRequiredAction,
+                                                appealService: AppealService,
                                                 appConfig: AppConfig,
+                                                ec:ExecutionContext,
+                                                errorHandler: ErrorHandler,
                                                 mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
   def onPageLoadForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRequired) {
@@ -53,17 +58,23 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
     }
   }
 
-  def onSubmitForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onSubmitForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit userRequest => {
-      CancelVATRegistrationForm.cancelVATRegistrationForm.bindFromRequest().fold(
+            CancelVATRegistrationForm.cancelVATRegistrationForm.bindFromRequest().fold(
         form => {
           val postAction = controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
-          BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction))
+          Future((BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction))))
         },
-        cancelVATRegistration => {
-              Redirect(navigation.nextPage(CancelVATRegistrationPage,NormalMode, Some(cancelVATRegistration)))
-                .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
+              cancelVATRegistration => {
+                appealService.otherPenaltiesInTaxPeriod(userRequest.session.get(SessionKeys.penaltyId).get,
+                  userRequest.session.get(SessionKeys.appealType).
+                    contains(PenaltyTypeEnum.Late_Payment.toString))(userRequest, ec, hc)
+                  .map(multiplePenalties => {
+                    val extraData: Map[String, String] = Map("multiplePenalties"-> multiplePenalties.toString)
+                    Redirect(navigation.nextPage(CancelVATRegistrationPage, NormalMode, Some(cancelVATRegistration),Some(extraData)))
+                      .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
+                  })
         }
       )
     }

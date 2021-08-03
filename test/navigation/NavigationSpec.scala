@@ -233,6 +233,10 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
+      s"called with $OtherRelevantInformationPage" in new Setup {
+        val result = mainNavigator.getNextURLBasedOnReasonableExcuse(None , CheckMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+      }
     }
 
     "in NormalMode" when {
@@ -411,6 +415,20 @@ class NavigationSpec extends SpecBase {
           )))
         result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
       }
+
+      s"called with $EvidencePage isObligation is true" in new Setup {
+        val result = mainNavigator.nextPage(EvidencePage, NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.isObligationAppeal -> "true"
+          )))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+      s"called with $OtherPenaltiesForPeriodPage redirects to AppealStart Page" in new Setup {
+        val result = mainNavigator.nextPage(OtherPenaltiesForPeriodPage, NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+         ))
+        result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
+      }
     }
   }
 
@@ -532,9 +550,17 @@ class NavigationSpec extends SpecBase {
 
   "routingForCancelVATRegistrationPage" should{
     "redirect to OtherPenaltiesForPeriod page" when {
-      "yes option selected" in new Setup {
-        val result = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"))
+      "yes option selected and multiplePenalties is true" in new Setup {
+        val result = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"),Some(Map("multiplePenalties" -> "true")))
         result.url shouldBe controllers.routes.OtherPenaltiesForPeriodController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+    }
+
+    "redirect to AppealStart page" when {
+      "yes option selected and multiplePenalties is false" in new Setup {
+        val result = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"),Some(Map("multiplePenalties" -> "false")))
+        result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
     }

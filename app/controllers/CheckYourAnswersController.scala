@@ -74,7 +74,12 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
         if(request.session.get(SessionKeys.isObligationAppeal).isDefined) {
-          Future(Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation()))
+          appealService.submitAppeal("obligation").map {
+            case true => {
+              Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
+            }
+            case false => errorHandler.showInternalServerError
+          }
         } else {
           logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
           Future(errorHandler.showInternalServerError)

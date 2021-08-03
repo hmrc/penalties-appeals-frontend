@@ -119,12 +119,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     )
   )
 
-  val fakeRequestForEvidenceUpload = fakeRequestConverter(fakeRequestWithCorrectKeys
-    .withSession(
-      SessionKeys.evidenceFileName -> "fileName.txt"
-    )
-  )
-
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
     reset(mockAppealService)
@@ -235,6 +229,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
       }
+      "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(true))
+        val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      }
 
       "redirect the user to an ISE" when {
 
@@ -242,6 +243,12 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(false))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+        "the obligation appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(false))
+          val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 

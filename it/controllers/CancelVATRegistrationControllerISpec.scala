@@ -78,7 +78,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase{
       )
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe routes.OtherPenaltiesForPeriodController.onPageLoad().url
+      request.header.headers("Location") shouldBe routes.AppealStartController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
     }
 

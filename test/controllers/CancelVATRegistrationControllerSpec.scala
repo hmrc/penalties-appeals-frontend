@@ -22,6 +22,7 @@ import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers.{status, _}
+import services.AppealService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
@@ -29,11 +30,13 @@ import utils.SessionKeys
 import views.html.CancelVATRegistrationPage
 
 import java.time.LocalDateTime
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CancelVATRegistrationControllerSpec extends SpecBase {
   val cancelVATRegistrationPage: CancelVATRegistrationPage = injector.instanceOf[CancelVATRegistrationPage]
 
+  implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+  implicit val appealService: AppealService = injector.instanceOf[AppealService]
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
     reset(mockAuthConnector)
@@ -45,7 +48,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
     val controller: CancelVATRegistrationController = new CancelVATRegistrationController(
       cancelVATRegistrationPage,
       mainNavigator
-    )(authPredicate, dataRequiredAction, appConfig, mcc)
+    )(authPredicate, dataRequiredAction,appealService, appConfig,ec,errorHandler,mcc)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }

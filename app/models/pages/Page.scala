@@ -39,3 +39,4 @@ case object WhenDidThePersonDiePage extends Page
 case object CancelVATRegistrationPage extends Page
 case object AppealStartPage extends Page
 case object OtherRelevantInformationPage extends Page
+case object OtherPenaltiesForPeriodPage extends Page

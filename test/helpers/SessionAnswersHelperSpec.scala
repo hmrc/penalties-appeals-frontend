@@ -1059,12 +1059,12 @@ class SessionAnswersHelperSpec extends SpecBase {
   "getContentForObligationAppealCheckYourAnswersPage" should{
     "when no evidence file uploaded" should{
       "return a Seq[String, String, String] of answers" in {
-        val fakeRequestWithAgentKeysPresent = fakeRequest
+        val fakeRequestWithObligationKeysPresent = fakeRequest
           .withSession(
             SessionKeys.evidenceFileName -> "",
             SessionKeys.otherRelevantInformation -> "Some Information"
           )
-        val result = SessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
+        val result = SessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
         result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
         result(0)._2 shouldBe "Some Information"
         result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
@@ -1075,12 +1075,12 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
     "when evidence file is uploaded" should{
       "return a Seq[String, String, String] of answers" in {
-        val fakeRequestWithAgentKeysPresent = fakeRequest
+        val fakeRequestWithObligationKeysPresent = fakeRequest
           .withSession(
             SessionKeys.evidenceFileName -> "some-file-name.txt",
             SessionKeys.otherRelevantInformation -> "Some Information"
           )
-        val result = SessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
+        val result = SessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
         result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
         result(0)._2 shouldBe "Some Information"
         result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
