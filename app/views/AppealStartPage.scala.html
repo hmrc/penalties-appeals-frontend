@@ -46,14 +46,14 @@
     <h2 class="govuk-heading-m govuk-!-margin-bottom-2">@messages("appealStart.h2")</h2>
     <p class="govuk-body">@messages("appealStart.p4")</p>
     @bullets(
-        if(isLate) {
-            baseBulletPoints.:+(
-            Html(messages("appealStart.li.2.3"))
-            )
-        } else if(isObligationAppeal) {
+        if(isObligationAppeal) {
             Seq(
                 Html(messages("appealStart.obligation.li.2.1")),
                 Html(messages("appealStart.obligation.li.2.2"))
+            )
+        } else if(isLate) {
+            baseBulletPoints.:+(
+                Html(messages("appealStart.li.2.3"))
             )
         } else {
             baseBulletPoints

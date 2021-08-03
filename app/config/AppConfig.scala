@@ -42,7 +42,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
   }
 
-  def otherPenaltiesForPeriodUrl(penaltyId: String, enrolmentKey: String, isLPP: Boolean) = s"$penaltiesServiceBaseUrl/appeals/multiple-penalties-in-same-period?enrolmentKey=$enrolmentKey&penaltyId=$penaltyId&isLPP=$isLPP"
+  def otherPenaltiesForPeriodUrl(penaltyId: String, enrolmentKey: String, isLPP: Boolean) = s"$penaltiesServiceBaseUrl/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=$enrolmentKey&penaltyId=$penaltyId&isLPP=$isLPP"
 
   def submitAppealUrl(enrolmentKey: String, isLPP: Boolean) = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl") + s"?enrolmentKey=$enrolmentKey&isLPP=$isLPP"
 
