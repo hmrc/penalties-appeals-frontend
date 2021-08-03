@@ -31,7 +31,7 @@ object PenaltiesStub {
   private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
   private val submitAppealUri = (isLPP: Boolean) => s"/penalties/appeals/submit-appeal?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&isLPP=$isLPP"
   private val fetchOtherPenalties= (penaltyID: String) =>
-    s"/appeals/multiple-penalties-in-same-period?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&penaltyId=$penaltyID&isLPP=false"
+    s"/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&penaltyId=$penaltyID&isLPP=false"
 
   def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String, isLPP: Boolean = false): StubMapping = {
     val typeOfPenalty = if(isLPP) PenaltyTypeEnum.Late_Payment else PenaltyTypeEnum.Late_Submission

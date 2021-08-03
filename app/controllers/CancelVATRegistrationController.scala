@@ -45,7 +45,7 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
       val postAction = controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
-      Ok(cancelVATRegistrationPage(formProvider,radioOptionsToRender, postAction))
+      Ok(cancelVATRegistrationPage(formProvider, radioOptionsToRender, postAction))
     }
   }
 
@@ -58,8 +58,8 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
           BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction))
         },
         cancelVATRegistration => {
-              Redirect("#")
-                .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
+          Redirect("#")
+            .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
         }
       )
     }
