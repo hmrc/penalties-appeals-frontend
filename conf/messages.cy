@@ -268,6 +268,7 @@ otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us 
 otherReason.uploadEvidence.p2 = Evidence might include any documents or letters that show why the return was submitted late.
 otherReason.uploadEvidence.lpp.p2 = Evidence might include any documents or letters that show why the VAT bill was paid late.
 otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return.
+otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return and pay VAT.
 otherReason.uploadEvidence.p3 = We will still review your appeal if you do not upload evidence.
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
 
