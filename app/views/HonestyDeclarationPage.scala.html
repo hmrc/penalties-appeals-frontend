@@ -61,10 +61,14 @@
                 </li>
             }
             <li>
-                @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+                @if(isObligationAppeal) {
+                    @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+                        @messages("honestyDeclaration.obligation.lpp.li.2", friendlyStartDate, friendlyEndDate)
+                    } else {
+                        @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
+                    }
+                } else if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
                     @messages("honestyDeclaration.lpp.li.2")
-                } else if(isObligationAppeal) {
-                @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
                 } else {
                 @getMessage("honestyDeclaration.li.2")
                 }

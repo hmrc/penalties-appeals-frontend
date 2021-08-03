@@ -90,6 +90,7 @@ honestyDeclaration.li.2 = no one else was available to make the submission for m
 agent.honestyDeclaration.li.2 = no one else was available to make the submission for them
 honestyDeclaration.lpp.li.2 = no one else was available to make the payment for me
 honestyDeclaration.obligation.li.2 = there was no VAT Return due for the period {0} to {1}
+honestyDeclaration.obligation.lpp.li.2 = there was no VAT due for the period {0} to {1}
 honestyDeclaration.li.3 = I will provide honest and accurate information in this appeal
 honestyDeclaration.li.extra.lossOfStaff = the staff member did not return or get replaced before the due date
 honestyDeclaration.li.extra.health = the timing of the health issue was unexpected
@@ -267,6 +268,7 @@ otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us 
 otherReason.uploadEvidence.p2 = Evidence might include any documents or letters that show why the return was submitted late.
 otherReason.uploadEvidence.lpp.p2 = Evidence might include any documents or letters that show why the VAT bill was paid late.
 otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return.
+otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return and pay VAT.
 otherReason.uploadEvidence.p3 = We will still review your appeal if you do not upload evidence.
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
 

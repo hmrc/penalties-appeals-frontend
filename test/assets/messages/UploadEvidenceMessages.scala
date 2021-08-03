@@ -30,6 +30,8 @@ object UploadEvidenceMessages {
 
   val p2AppealAgainstObligation = "Evidence might include any documents or letters that show why the business did not need to submit a return."
 
+  val p2LPPAppealAgainstObligation = "Evidence might include any documents or letters that show why the business did not need to submit a return and pay VAT."
+
   val p3 = "We will still review your appeal if you do not upload evidence."
 
   val uploadLabel = "Upload Evidence"
