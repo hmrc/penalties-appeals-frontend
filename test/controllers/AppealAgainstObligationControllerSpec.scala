@@ -98,8 +98,7 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
               |}
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
-        //TODO: route to file upload when navigation is in
-        redirectLocation(result).get shouldBe ""
+        redirectLocation(result).get shouldBe routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
         await(result).session.get(SessionKeys.otherRelevantInformation).get shouldBe "This is some information"
       }
 
@@ -113,8 +112,7 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
               |}
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
-        //TODO: route to CYA page when navigation is in
-        redirectLocation(result).get shouldBe ""
+        redirectLocation(result).get shouldBe routes.CheckYourAnswersController.onPageLoad().url
         await(result).session.get(SessionKeys.otherRelevantInformation).get shouldBe "This is some information"
       }
 

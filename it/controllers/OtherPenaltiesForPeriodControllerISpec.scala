@@ -16,6 +16,7 @@
 
 package controllers
 
+import models.NormalMode
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
@@ -83,7 +84,7 @@ class OtherPenaltiesForPeriodControllerISpec extends IntegrationSpecCommonBase {
       ))
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe "#"
+      request.header.headers("Location") shouldBe routes.AppealStartController.onPageLoad().url
     }
 
     "return 400 (BAD_REQUEST) when the user posts invalid data" in {

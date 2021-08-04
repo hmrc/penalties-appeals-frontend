@@ -73,8 +73,17 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
-        logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
-        Future(errorHandler.showInternalServerError)
+        if(request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
+          appealService.submitAppeal("obligation").map {
+            case true => {
+              Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
+            }
+            case false => errorHandler.showInternalServerError
+          }
+        } else {
+          logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
+          Future(errorHandler.showInternalServerError)
+        }
       })(
         reasonableExcuse => {
           if (SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {

@@ -17,14 +17,12 @@
 package controllers
 
 import play.api.http.Status
-import play.api.libs.json.{Json}
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
-import java.time.{LocalDate, LocalDateTime}
 
 class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase{
   val controller: CancelVATRegistrationController = injector.instanceOf[CancelVATRegistrationController]
@@ -80,7 +78,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase{
       )
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe "#"
+      request.header.headers("Location") shouldBe routes.AppealStartController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
     }
 

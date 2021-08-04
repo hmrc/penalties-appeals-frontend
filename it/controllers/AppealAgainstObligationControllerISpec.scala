@@ -83,8 +83,7 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmit(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      //TODO: route to CYA page when navigation is in
-      request.header.headers("Location") shouldBe ""
+      request.header.headers("Location") shouldBe routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.otherRelevantInformation).get shouldBe "Other Reason"
     }
 

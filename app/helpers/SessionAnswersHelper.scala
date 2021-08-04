@@ -269,10 +269,10 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     Seq(
       (messages("checkYourAnswers.obligation.whyYouWantToAppealPenalty"),
         request.session.get(SessionKeys.otherRelevantInformation).get,
-        "#"),
+        controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url),
       (messages("checkYourAnswers.obligation.fileEvidence"),
         fileNameOrDefault,
-        "#"
+        controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       )
     )
   }

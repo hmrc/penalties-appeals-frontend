@@ -19,6 +19,9 @@ package controllers
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.OtherPenaltiesForPeriodForm._
+import models.NormalMode
+import models.pages.OtherPenaltiesForPeriodPage
+
 import javax.inject.Inject
 import navigation.Navigation
 import play.api.i18n.I18nSupport
@@ -48,10 +51,8 @@ class OtherPenaltiesForPeriodController @Inject()(page: OtherPenaltiesForPeriodP
         BadRequest(page(formWithErrors))
       },
       _ => {
-        // TODO - update when routing is added
-        Redirect("#")
+        Redirect(navigation.nextPage(OtherPenaltiesForPeriodPage,NormalMode))
       }
     )
   }
-
 }
