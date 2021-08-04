@@ -364,6 +364,26 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
       parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "file.txt"
     }
 
+    "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - agent" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.agentSessionVrn -> "VRN1234",
+        SessionKeys.appealType -> "Late_Payment",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "bereavement",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whenDidThePersonDie -> "2021-01-01"
+      )
+      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+      await(request).header.status shouldBe Status.OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "When did the person die?"
+      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "1 January 2021"
+    }
+
 
     "return 500 (ISE) when the user hasn't selected a reasonable excuse option" in {
       val fakeRequestWithMissingReasonableExcuse: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
@@ -623,6 +643,28 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
         PenaltiesStub.successfulAppealSubmission(true)
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Payment",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
+          SessionKeys.evidenceFileName -> "file.docx",
+          SessionKeys.lateAppealReason -> "This is a reason for late appeal"
+        )
+        val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+        request.header.status shouldBe Status.SEE_OTHER
+        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      }
+
+      "for LPP - agent" in {
+        PenaltiesStub.successfulAppealSubmission(true)
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.agentSessionVrn -> "VRN1234",
           SessionKeys.appealType -> "Late_Payment",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",

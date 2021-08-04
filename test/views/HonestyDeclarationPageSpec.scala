@@ -41,21 +41,14 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       honestyDeclarationPage.apply(form, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(implicitly, implicitly, userRequest)
     }
 
-    def applyAgentViewLPP(form: Form[_],
-                           reasonText: String,
-                           dueDate: String, startDate: String, endDate: String,
-                           extraBullets: Seq[String] = Seq.empty, isObligation: Boolean = false): HtmlFormat.Appendable = {
-      honestyDeclarationPage.apply(form, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(implicitly, implicitly, agentUserLPP)
-    }
-
     implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "of reason",
       "1 January 2022", "1 January 2021", "31 January 2021"))
 
     def applyAgentView(form: Form[_],
                        reasonText: String,
                        dueDate: String, startDate: String, endDate: String,
-                       extraBullets: Seq[String] = Seq.empty, isObligation: Boolean = false): HtmlFormat.Appendable = {
-      honestyDeclarationPage.apply(form, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(implicitly, implicitly, agentUserSessionKeys)
+                       extraBullets: Seq[String] = Seq.empty, userRequest: UserRequest[_] = agentUserSessionKeys, isObligation: Boolean = false): HtmlFormat.Appendable = {
+      honestyDeclarationPage.apply(form, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(implicitly, implicitly, userRequest)
     }
 
     implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "of agent context reason",
@@ -103,8 +96,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       "display the correct LPP variation" when {
         "the option selected is 'crime'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentViewLPP(honestyDeclarationForm, messages("agent.honestyDeclaration.crime"),
-            "1 January 2022", "1 January 2021", "31 January 2021"))
+          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.crime"),
+            "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
             Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextLPP(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
@@ -115,8 +108,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'bereavement'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentViewLPP(honestyDeclarationForm, messages("agent.honestyDeclaration.bereavement"),
-            "1 January 2022", "1 January 2021", "31 January 2021"))
+          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.bereavement"),
+            "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
             Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextLPP(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
@@ -127,8 +120,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'health' and others related" must {
-          implicit val agentDoc: Document = asDocument(applyAgentViewLPP(honestyDeclarationForm, messages("agent.honestyDeclaration.health"),
-            "1 January 2022", "1 January 2021", "31 January 2021"))
+          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.health"),
+            "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
             Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClientLPP(messages("agent.honestyDeclaration.health"), "1 January 2022"),
@@ -139,8 +132,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'other'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentViewLPP(honestyDeclarationForm, "",
-            "1 January 2022", "1 January 2021", "31 January 2021"))
+          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "",
+            "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
             Selectors.listIndexWithElementIndex(3, 1) -> li1AgentOtherLPP("1 January 2022")

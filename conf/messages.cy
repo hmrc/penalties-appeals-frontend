@@ -243,6 +243,7 @@ agent.otherReason.whenDidBecomeUnable.heading = When did your client become unab
 otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>For example, 12 3 2018
 agent.otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped your client from working on or making this submission.<br><br>For example, 12 3 2018
 otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped you from making this payment.<br><br>For example, 12 3 2018
+agent.otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped your client from making this payment.<br><br>For example, 12 3 2018
 otherReason.whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
 agent.otherReason.whenDidBecomeUnable.error.required.all = Tell us when your client became unable to manage the VAT account
 otherReason.whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}

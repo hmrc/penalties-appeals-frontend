@@ -626,6 +626,35 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
       }
+
+      "for LPP" in {
+        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.evidenceFileName -> "file.docx",
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
+          ))
+
+        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithLPPKeysPresent, implicitly)
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._1 shouldBe "Why was the return submitted late?"
+        result(2)._2 shouldBe "This is why my VAT return was late."
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(3)._1 shouldBe "Evidence to support this appeal"
+        result(3)._2 shouldBe "file.docx"
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(4)._1 shouldBe "Why you did not appeal sooner"
+        result(4)._2 shouldBe "This is the reason why my appeal was late."
+        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
     }
 
     "when a VAT trader is on the page" should {
@@ -1014,7 +1043,23 @@ class SessionAnswersHelperSpec extends SpecBase {
         val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithReasonableExcusePresentOnly, implicitly)
 
         resultAgent ++ resultReasonableExcuses shouldBe resultAllContent
+      }
 
+      "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage when it is a LPP appeal" in {
+        val fakeRequestWithReasonableExcusePresentOnly = agentFakeRequestConverter(agentRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "technicalIssues",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+            SessionKeys.agentSessionVrn -> "123456789"
+          ))
+
+        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithReasonableExcusePresentOnly, implicitly)
+        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithReasonableExcusePresentOnly, implicitly)
+
+        resultReasonableExcuses shouldBe resultAllContent
       }
     }
     "when agent session is not present" should {

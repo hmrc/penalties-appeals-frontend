@@ -7,10 +7,10 @@
         govukButton: GovukButton,
         dateInput: components.inputDate)
 
-@(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@(form: Form[_], postAction: Call)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @lppOrLspDynamicText = @{
-    if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) "healthReason.whenHealthIssueHappened.lpp.hintText" else "healthReason.whenHealthIssueHappened.hintText"
+    if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) "healthReason.whenHealthIssueHappened.lpp.hintText" else "healthReason.whenHealthIssueHappened.hintText"
 }
 
 @layout(pageTitle = getMessage("healthReason.whenHealthIssueHappened.title"),

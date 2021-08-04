@@ -19,7 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHealthIssueHappenForm
 import messages.WhenDidHealthReasonHappenMessages._
-import models.{NormalMode, PenaltyTypeEnum}
+import models.{NormalMode, PenaltyTypeEnum, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.test.FakeRequest
@@ -34,13 +34,13 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors
 
-  def applyVATTraderView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
-    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(request, implicitly, implicitly, vatTraderUser)
+  def applyVATTraderView(form: Form[_], userRequest: UserRequest[_] = vatTraderUser): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
+    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(implicitly, implicitly, userRequest)
 
   val vatTraderFormProvider = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderUser)
 
-  def applyAgentView(form: Form[_], request: FakeRequest[_] = agentRequest): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
-    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(request, implicitly, implicitly, agentUserSessionKeys)
+  def applyAgentView(form: Form[_], userRequest: UserRequest[_] = agentUserSessionKeys): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
+    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(implicitly, implicitly, userRequest)
 
   val agentFormProvider = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserSessionKeys)
 
@@ -63,7 +63,8 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)
 
       "display the LPP variation when the appeal is for a LPP" must {
-        implicit val doc: Document = asDocument(applyVATTraderView(vatTraderFormProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+        val userRequest = UserRequest("123456789")(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
+        implicit val doc: Document = asDocument(applyVATTraderView(vatTraderFormProvider, userRequest))
 
         val expectedContent = Seq(
           Selectors.title -> title,
@@ -94,6 +95,22 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
       )
 
       behave like pageWithExpectedMessages(expectedContent)
+
+      "display the LPP variation when the appeal is for a LPP" must {
+        implicit val doc: Document = asDocument(applyAgentView(agentFormProvider, agentUserLPP))
+
+        val expectedContent = Seq(
+          Selectors.title -> titleAgentText,
+          Selectors.h1 -> headingAgentText,
+          Selectors.hintText -> hintTextAgentLpp,
+          Selectors.dateEntry(1) -> dayEntry,
+          Selectors.dateEntry(2) -> monthEntry,
+          Selectors.dateEntry(3) -> yearEntry,
+          Selectors.button -> continueButton
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)
+      }
     }
   }
 
