@@ -30,7 +30,8 @@ object MessageRenderer {
   }
 
   def getMessage(msgKey: String, msgArgs: Any*)(implicit messages: Messages, user: UserRequest[_]): String = {
-    if (user.isAgent && didClientCauseLateSubmission) {
+    if (user.isAgent && (didClientCauseLateSubmission ||
+      (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).isEmpty && user.session.get(SessionKeys.causeOfLateSubmissionAgent).isEmpty))) {
       messages.apply(s"agent.$msgKey", msgArgs: _*)
     } else {
       messages.apply(msgKey, msgArgs: _*)

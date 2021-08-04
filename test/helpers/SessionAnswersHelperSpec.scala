@@ -18,7 +18,6 @@ package helpers
 
 import base.SpecBase
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
-import play.api.mvc.Session
 import utils.SessionKeys
 
 class SessionAnswersHelperSpec extends SpecBase {

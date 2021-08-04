@@ -22,7 +22,7 @@
         formHelper: FormWithCSRF)
 
 
-@(form: Form[_], reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@(form: Form[_], reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
     @layout(pageTitle = messages("honestyDeclaration.title"),
         isPageFullWidth = false,
@@ -36,14 +36,22 @@
                 @if(!reasonText.equals("") && !isObligationAppeal) {
                     @messages("honestyDeclaration.li.1.1", reasonText)
                 } else if(isObligationAppeal) {
-                @messages("honestyDeclaration.obligation.li.1")
+                        @messages("honestyDeclaration.obligation.li.1")
                 }
 
                 @if(!isObligationAppeal) {
-                    @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
-                        @messages("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
+                    @if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+                        @if(userRequest.isAgent) {
+                            @if(reasonText.contains("crime") || reasonText.contains("death")) {
+                                @getMessage("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
+                            } else {
+                                @getMessage("honestyDeclaration.lpp.li.1.2.myClient", friendlyDueDate)
+                            }
+                        } else {
+                            @messages("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
+                        }
                     } else {
-                        @if(user.isAgent && didClientCauseLateSubmission) {
+                        @if(userRequest.isAgent && didClientCauseLateSubmission) {
                             @if(reasonText.contains("crime") || reasonText.contains("death")) {
                                 @getMessage("honestyDeclaration.li.1.2", friendlyDueDate)
                             } else {
@@ -62,18 +70,18 @@
             }
             <li>
                 @if(isObligationAppeal) {
-                    @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+                    @if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
                         @messages("honestyDeclaration.obligation.lpp.li.2", friendlyStartDate, friendlyEndDate)
                     } else {
                         @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
                     }
-                } else if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
-                    @messages("honestyDeclaration.lpp.li.2")
+                } else if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+                        @getMessage("honestyDeclaration.lpp.li.2")
                 } else {
-                @getMessage("honestyDeclaration.li.2")
+                    @getMessage("honestyDeclaration.li.2")
                 }
             </li>
-            @if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) && request.session.get(SessionKeys.reasonableExcuse).contains("technicalIssues")) {
+            @if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) && userRequest.session.get(SessionKeys.reasonableExcuse).contains("technicalIssues")) {
                 <li>
                 @messages("honestyDeclaration.li.extra.technicalIssues")
                 </li>

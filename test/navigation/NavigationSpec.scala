@@ -16,16 +16,14 @@
 
 package navigation
 
-import java.time.LocalDateTime
 import base.SpecBase
-import controllers.HonestyDeclarationController
 import models.pages._
 import models.{CheckMode, NormalMode}
 import org.mockito.Mockito._
-import play.api.mvc.{Result, Session}
 import utils.SessionKeys
-import views.html.{HonestyDeclarationPage, OtherPenaltiesForPeriodPage}
-import views.html.obligation.OtherRelevantInformationPage
+import views.html.HonestyDeclarationPage
+
+import java.time.LocalDateTime
 
 class NavigationSpec extends SpecBase {
   val honestyDeclarationPage: HonestyDeclarationPage = injector.instanceOf[HonestyDeclarationPage]
