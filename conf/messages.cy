@@ -202,6 +202,7 @@ healthReason.whenHealthIssueHappened.heading = When did you become unable to man
 agent.healthReason.whenHealthIssueHappened.heading = When did your client become unable to manage the VAT account?
 healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>For example, 12 3 2018
 agent.healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your client’s ability to complete this submission.<br><br>For example, 12 3 2018
+agent.healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your client’s ability to make this payment.<br><br>For example, 12 3 2018
 healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your ability to make this payment.<br><br>For example, 12 3 2018
 healthReason.whenHealthIssueHappened.error.required.all = Tell us when you became unable to manage the VAT account
 agent.healthReason.whenHealthIssueHappened.error.required.all = Tell us when your client became unable to manage the VAT account
