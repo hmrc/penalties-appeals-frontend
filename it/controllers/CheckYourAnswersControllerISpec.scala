@@ -16,15 +16,22 @@
 
 package controllers
 
+import models.UserRequest
 import org.jsoup.Jsoup
+import org.mockito.Matchers
+import org.mockito.Mockito.{mock, when}
 import play.api.http.Status
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.AppealService
 import stubs.{AuthStub, PenaltiesStub}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
+import scala.concurrent.{ExecutionContext, Future}
+
+class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
   val controller: CheckYourAnswersController = injector.instanceOf[CheckYourAnswersController]
 
   "GET /check-your-answers" should {
@@ -650,6 +657,46 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+    }
+    "redirect the user to the confirmation page on success for obligation true" in {
+      PenaltiesStub.successfulAppealSubmission(false)
+      val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.isObligationAppeal -> "true",
+        SessionKeys.otherRelevantInformation -> "some text"
+      ))
+      implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+      implicit val hc: HeaderCarrier = HeaderCarrier()
+      val appealService: AppealService = injector.instanceOf[AppealService]
+      appealService.submitAppeal("obligation")(fakeRequestWithCorrectKeys,implicitly,implicitly)
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+    }
+    "redirect the user to the InternalServerError on failure for obligation false" in  {
+      PenaltiesStub.successfulAppealSubmission(false)
+      val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.isObligationAppeal -> "false",
+        SessionKeys.otherRelevantInformation -> "some-text"
+      ))
+      val mockAppealService: AppealService = mock(classOf[AppealService])
+      when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(false))
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "show an ISE when the appeal fails" in {

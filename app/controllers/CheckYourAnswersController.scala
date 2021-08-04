@@ -73,7 +73,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
-        if(request.session.get(SessionKeys.isObligationAppeal).isDefined) {
+        if(request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
           appealService.submitAppeal("obligation").map {
             case true => {
               Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())

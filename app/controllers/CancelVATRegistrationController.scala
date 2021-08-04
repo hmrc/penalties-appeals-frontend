@@ -42,7 +42,7 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
                                                 dataRequired: DataRequiredAction,
                                                 appealService: AppealService,
                                                 appConfig: AppConfig,
-                                                ec:ExecutionContext,
+                                                ec: ExecutionContext,
                                                 errorHandler: ErrorHandler,
                                                 mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
@@ -54,27 +54,27 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
       val postAction = controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
-      Ok(cancelVATRegistrationPage(formProvider,radioOptionsToRender, postAction))
+      Ok(cancelVATRegistrationPage(formProvider, radioOptionsToRender, postAction))
     }
   }
 
   def onSubmitForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit userRequest => {
-            CancelVATRegistrationForm.cancelVATRegistrationForm.bindFromRequest().fold(
+      CancelVATRegistrationForm.cancelVATRegistrationForm.bindFromRequest().fold(
         form => {
           val postAction = controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
-          Future((BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction))))
+          Future(BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction)))
         },
-              cancelVATRegistration => {
-                appealService.otherPenaltiesInTaxPeriod(userRequest.session.get(SessionKeys.penaltyId).get,
-                  userRequest.session.get(SessionKeys.appealType).
-                    contains(PenaltyTypeEnum.Late_Payment.toString))(userRequest, ec, hc)
-                  .map(multiplePenalties => {
-                    val extraData: Map[String, String] = Map("multiplePenalties"-> multiplePenalties.toString)
-                    Redirect(navigation.nextPage(CancelVATRegistrationPage, NormalMode, Some(cancelVATRegistration),Some(extraData)))
-                      .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
-                  })
+        cancelVATRegistration => {
+          appealService.otherPenaltiesInTaxPeriod(userRequest.session.get(SessionKeys.penaltyId).get,
+            userRequest.session.get(SessionKeys.appealType).
+              contains(PenaltyTypeEnum.Late_Payment.toString))(userRequest, ec, hc)
+            .map(multiplePenalties => {
+              val extraData: Map[String, String] = Map("multiplePenalties" -> multiplePenalties.toString)
+              Redirect(navigation.nextPage(CancelVATRegistrationPage, NormalMode, Some(cancelVATRegistration), Some(extraData)))
+                .addingToSession((SessionKeys.cancelVATRegistration, cancelVATRegistration))
+            })
         }
       )
     }
