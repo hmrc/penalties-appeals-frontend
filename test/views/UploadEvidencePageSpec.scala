@@ -98,8 +98,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.title -> title,
         Selectors.h1 -> h1,
         Selectors.pElementIndex(2) -> p1,
-        //TODO: change to relevant text for LPP variation of obligation appeal
-        Selectors.pElementIndex(3) -> "",
+        Selectors.pElementIndex(3) -> p2LPPAppealAgainstObligation,
         Selectors.pElementIndex(4) -> p3,
         Selectors.label -> uploadLabel,
         Selectors.button -> continueButton

@@ -11,8 +11,7 @@
 
 @lppOrLspOrObligationDynamicText = @{
     if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) && request.session.get(SessionKeys.isObligationAppeal).isDefined) {
-        //TODO: change to LPP appeal against obligation
-        ""
+        "otherReason.uploadEvidence.appealAgainstObligation.lpp.p2"
     } else if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
         "otherReason.uploadEvidence.lpp.p2"
     } else if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString) && request.session.get(SessionKeys.isObligationAppeal).isDefined) {
