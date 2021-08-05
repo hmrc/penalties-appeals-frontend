@@ -128,5 +128,31 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
 
       behave like pageWithExpectedMessages(expectedContent)
     }
+
+    "the appeal is triggered by an agent and is not a LPP - redirect to the correct page" in {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+        SessionKeys.agentSessionVrn -> "VRN1234"), implicitly, implicitly)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      doc.select("#main-content a").attr("href") shouldBe "/penalties-appeals/who-planned-to-submit-vat-return"
+    }
+
+    "the appeal is an obligation appeal - redirect to the correct page" in {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      doc.select("#main-content a").attr("href") shouldBe "/penalties-appeals/honesty-declaration"
+    }
+
+    "the appeal does not match the special cases - redirect to the correct page" in {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      doc.select("#main-content a").attr("href") shouldBe "/penalties-appeals/reason-for-missing-deadline"
+    }
+
   }
 }
