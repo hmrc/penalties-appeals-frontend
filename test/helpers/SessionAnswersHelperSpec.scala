@@ -631,8 +631,9 @@ class SessionAnswersHelperSpec extends SpecBase {
         val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
             SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
             SessionKeys.evidenceFileName -> "file.docx",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
@@ -645,8 +646,8 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
-        result(2)._1 shouldBe "Why was the return submitted late?"
-        result(2)._2 shouldBe "This is why my VAT return was late."
+        result(2)._1 shouldBe "Why was the VAT bill paid late?"
+        result(2)._2 shouldBe "This is why my VAT bill was paid late."
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
         result(3)._1 shouldBe "Evidence to support this appeal"
         result(3)._2 shouldBe "file.docx"

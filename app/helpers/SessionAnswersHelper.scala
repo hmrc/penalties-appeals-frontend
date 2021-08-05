@@ -255,10 +255,10 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     (request.session.get(SessionKeys.isObligationAppeal), reasonableExcuse.isDefined, agentSession) match {
       case (Some(_), _, _) => getContentForObligationAppealCheckYourAnswersPage
       case (_, true, false) if isAllAnswerPresentForReasonableExcuse(reasonableExcuse.get) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
-      case (_, _, true) if reasonableExcuse.isDefined && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) => {
+      case (_, true, true) if request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) => {
         getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
       }
-      case (_, _, true) if reasonableExcuse.isDefined => getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
+      case (_, true, true) => getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
       case _ => Seq.empty
     }
   }
