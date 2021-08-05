@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import models.PenaltyTypeEnum
 import org.mockito.Matchers
 import org.mockito.Mockito.{mock, reset, when}
 import play.api.mvc.Result
@@ -119,6 +120,16 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     )
   )
 
+  val fakeRequestForLPPAgentAppeal = fakeRequestConverter(fakeRequestWithCorrectKeys
+    .withSession(
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+      SessionKeys.agentSessionVrn -> "VRN1234",
+      SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.hasConfirmedDeclaration -> "true",
+      SessionKeys.whenDidThePersonDie -> "2021-01-01"
+    )
+  )
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
     reset(mockAppealService)
@@ -185,6 +196,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       "return OK and correct view - when file is uploaded" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForObligationAppealJourney)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - when user is agent submitting an LPP appeal" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = Controller.onPageLoad()(fakeRequestForLPPAgentAppeal)
         status(result) shouldBe OK
       }
 

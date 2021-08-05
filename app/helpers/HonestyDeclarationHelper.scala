@@ -16,10 +16,9 @@
 
 package helpers
 
-import models.{PenaltyTypeEnum, UserRequest}
+import models.UserRequest
 import play.api.i18n.Messages
 import utils.MessageRenderer.getMessage
-import utils.SessionKeys
 
 object HonestyDeclarationHelper {
   def getReasonText(reasonableExcuse: String)(implicit messages: Messages, user: UserRequest[_]): String = {

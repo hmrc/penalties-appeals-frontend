@@ -18,7 +18,6 @@ package helpers
 
 import base.SpecBase
 import models.UserRequest
-import utils.SessionKeys
 
 class HonestyDeclarationHelperSpec extends SpecBase {
   "getReasonText" should {

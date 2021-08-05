@@ -19,7 +19,7 @@ package base
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
 import helpers.DateTimeHelper
-import models.UserRequest
+import models.{PenaltyTypeEnum, UserRequest}
 import navigation.Navigation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -106,4 +106,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
     SessionKeys.causeOfLateSubmissionAgent -> "client")
   )
+
+  val agentUserLPP: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString
+  ))
 }

@@ -16,12 +16,11 @@
 
 package helpers
 
+import models.appeals.HospitalStayEndInput
 import play.api.data.Form
 import play.api.mvc.Request
-import utils.SessionKeys
-import java.time.LocalDate
 
-import models.appeals.HospitalStayEndInput
+import java.time.LocalDate
 
 object FormProviderHelper {
   def getSessionKeyAndAttemptToFillAnswerAsString(formProvider: Form[String], sessionKeyToQuery: String)(implicit request: Request[_]): Form[String] = {

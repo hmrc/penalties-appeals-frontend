@@ -25,6 +25,7 @@ object WhenDidHealthReasonHappenMessages {
   val hintText = "Tell us the date when the health issue started to affect your ability to complete this submission. For example, 12 3 2018"
   val hintTextAgentText = "Tell us the date when the health issue started to affect your client’s ability to complete this submission. For example, 12 3 2018"
   val hintTextLpp = "Tell us the date when the health issue started to affect your ability to make this payment. For example, 12 3 2018"
+  val hintTextAgentLpp = "Tell us the date when the health issue started to affect your client’s ability to make this payment. For example, 12 3 2018"
   val dayEntry = "Day"
   val monthEntry = "Month"
   val yearEntry = "Year"
