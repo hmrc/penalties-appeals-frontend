@@ -18,7 +18,7 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.ReasonableExcuseForm
-import models.{ReasonableExcuse, UserRequest}
+import models.{PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -26,6 +26,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import views.behaviours.ViewBehaviours
 import views.html.ReasonableExcuseSelectionPage
 import messages.ReasonableExcuseSelectionMessages._
+import utils.SessionKeys
 
 class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
   "ReasonableExcuseSelectionPage" when {
@@ -102,6 +103,15 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
       "have a link to external guidance" in {
         //TODO: Change to next page link
         doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "#"
+      }
+
+      "show the correct heading content when appealing a late payment penalty" in {
+        implicit val doc = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(
+          fakeRequestWithCorrectKeys.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
+        ))
+
+        doc.select(Selectors.title).text shouldBe title
+        doc.select(Selectors.h1).text shouldBe h1
       }
     }
 
