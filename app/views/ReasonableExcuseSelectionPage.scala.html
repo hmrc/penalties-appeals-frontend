@@ -24,9 +24,9 @@
         link: components.link
 )
 
-@(form: Form[_], radioOptions: Seq[RadioItem])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem])(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("reasonableExcuses.title"),
+@layout(pageTitle = if(request.isAgent){messages("agent.reasonableExcuses.title")}else{messages("reasonableExcuses.title")},
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
@@ -34,7 +34,7 @@
 
         @radios(
             form = form,
-            legend = messages("reasonableExcuses.heading"),
+            legend = if(request.isAgent){messages("agent.reasonableExcuses.heading")}else{messages("reasonableExcuses.heading")},
             items = radioOptions,
             legendAsHeading = true
         )

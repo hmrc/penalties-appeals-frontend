@@ -18,7 +18,7 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.ReasonableExcuseForm
-import models.ReasonableExcuse
+import models.{ReasonableExcuse, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -28,11 +28,12 @@ import views.html.ReasonableExcuseSelectionPage
 import messages.ReasonableExcuseSelectionMessages._
 
 class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
-  "ReasonableExcuseSelectionPage" should {
+  "ReasonableExcuseSelectionPage" when {
     val reasonableExcuseSelectionPage: ReasonableExcuseSelectionPage = injector.instanceOf[ReasonableExcuseSelectionPage]
     object Selectors extends BaseSelectors
 
-    def applyView(form: Form[_], seqOfRadioOptions: Seq[RadioItem]): HtmlFormat.Appendable = reasonableExcuseSelectionPage.apply(form, seqOfRadioOptions)
+    def applyView(form: Form[_], seqOfRadioOptions: Seq[RadioItem], request: UserRequest[_]): HtmlFormat.Appendable =
+      reasonableExcuseSelectionPage.apply(form, seqOfRadioOptions)(request, implicitly, implicitly)
 
     val seqOfReasonableExcuses: Seq[ReasonableExcuse] = Seq(
       ReasonableExcuse(
@@ -77,28 +78,57 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
       "reasonableExcuses.breakerText",
       seqOfReasonableExcuses)
 
-    implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses))
 
-    val expectedContent = Seq(
-      Selectors.title -> title,
-      Selectors.h1 -> h1,
-      Selectors.labelForRadioButton(1) -> radioOption1,
-      Selectors.labelForRadioButton(2) -> radioOption2,
-      Selectors.labelForRadioButton(3) -> radioOption3,
-      Selectors.labelForRadioButton(4) -> radioOption4,
-      Selectors.labelForRadioButton(5) -> radioOption5,
-      Selectors.labelForRadioButton(6) -> radioOption6,
-      Selectors.breakerElement -> breakerText,
-      Selectors.labelForRadioButton(8) -> radioOption7,
-      Selectors.button -> submitButton,
-      Selectors.externalGuidanceLink -> externalGuidanceLink
-    )
+    "an agent is on the page" must {
+      implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(fakeRequestWithCorrectKeys)))
 
-    behave like pageWithExpectedMessages(expectedContent)
+      val expectedContent = Seq(
+        Selectors.title -> agentTitle,
+        Selectors.h1 -> agentH1,
+        Selectors.labelForRadioButton(1) -> radioOption1,
+        Selectors.labelForRadioButton(2) -> radioOption2,
+        Selectors.labelForRadioButton(3) -> radioOption3,
+        Selectors.labelForRadioButton(4) -> radioOption4,
+        Selectors.labelForRadioButton(5) -> radioOption5,
+        Selectors.labelForRadioButton(6) -> radioOption6,
+        Selectors.breakerElement -> breakerText,
+        Selectors.labelForRadioButton(8) -> radioOption7,
+        Selectors.button -> submitButton,
+        Selectors.externalGuidanceLink -> externalGuidanceLink
+      )
 
-    "have a link to external guidance" in {
-      //TODO: Change to next page link
-      doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "#"
+      behave like pageWithExpectedMessages(expectedContent)
+
+      "have a link to external guidance" in {
+        //TODO: Change to next page link
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "#"
+      }
+    }
+
+    "a VAT trader is on the page" must {
+      implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, userRequestWithCorrectKeys))
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.labelForRadioButton(1) -> radioOption1,
+        Selectors.labelForRadioButton(2) -> radioOption2,
+        Selectors.labelForRadioButton(3) -> radioOption3,
+        Selectors.labelForRadioButton(4) -> radioOption4,
+        Selectors.labelForRadioButton(5) -> radioOption5,
+        Selectors.labelForRadioButton(6) -> radioOption6,
+        Selectors.breakerElement -> breakerText,
+        Selectors.labelForRadioButton(8) -> radioOption7,
+        Selectors.button -> submitButton,
+        Selectors.externalGuidanceLink -> externalGuidanceLink
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+
+      "have a link to external guidance" in {
+        //TODO: Change to next page link
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "#"
+      }
     }
   }
 }
