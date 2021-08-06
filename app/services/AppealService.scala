@@ -34,8 +34,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig: AppConfig, dateTimeHelper: DateTimeHelper) {
 
-  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
-    penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP).map {
+  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
+                                         (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+    penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
       _.fold[Option[AppealData]](
         None
       )(
@@ -78,7 +79,8 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig:
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
     val isLateAppeal = dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
     val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
-    val isLPP = userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)
+    val appealType = userRequest.session.get(SessionKeys.appealType)
+    val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)
 
     val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal)
     penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP).map {

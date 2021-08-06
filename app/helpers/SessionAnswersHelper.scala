@@ -138,7 +138,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
         }
 
         val statementOfLatenessForLPPOrLSP: String = {
-          if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+          if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) || request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)) {
             messages("checkYourAnswers.other.lpp.statementOfLateness")
           } else {
             messages("checkYourAnswers.other.statementOfLateness")
@@ -251,11 +251,12 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
 
     val reasonableExcuse = request.session.get(SessionKeys.reasonableExcuse)
     val agentSession = request.session.get(SessionKeys.agentSessionVrn).isDefined
+    val appealType = request.session.get(SessionKeys.appealType)
 
     (request.session.get(SessionKeys.isObligationAppeal), reasonableExcuse.isDefined, agentSession) match {
       case (Some(_), _, _) => getContentForObligationAppealCheckYourAnswersPage
       case (_, true, false) if isAllAnswerPresentForReasonableExcuse(reasonableExcuse.get) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
-      case (_, true, true) if request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) => {
+      case (_, true, true) if appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString) => {
         getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
       }
       case (_, true, true) => getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)

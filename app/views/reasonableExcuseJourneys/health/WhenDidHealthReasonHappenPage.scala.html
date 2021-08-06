@@ -9,8 +9,11 @@
 
 @(form: Form[_], postAction: Call)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
+@appealType = @{userRequest.session.get(SessionKeys.appealType)}
 @lppOrLspDynamicText = @{
-    if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) "healthReason.whenHealthIssueHappened.lpp.hintText" else "healthReason.whenHealthIssueHappened.hintText"
+    if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+        "healthReason.whenHealthIssueHappened.lpp.hintText"
+    } else "healthReason.whenHealthIssueHappened.hintText"
 }
 
 @layout(pageTitle = getMessage("healthReason.whenHealthIssueHappened.title"),

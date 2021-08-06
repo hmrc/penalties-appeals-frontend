@@ -59,6 +59,7 @@ penaltyInformation.headerText = {0}: {1} to {2}
 # ----------------------------------------------------------
 penaltyType.lateSubmission = Late submission penalty
 penaltyType.latePayment = Late payment penalty
+penaltyType.additional = Additional penalty
 
 # Reasonable excuse
 # ----------------------------------------------------------

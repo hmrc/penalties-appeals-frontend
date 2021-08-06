@@ -33,9 +33,9 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
                                            errorHandler: ErrorHandler)(implicit mcc: MessagesControllerComponents, authorise: AuthPredicate)
   extends FrontendController(mcc) with I18nSupport {
 
-  def onPageLoad(penaltyId: String, isLPP: Boolean): Action[AnyContent] = authorise.async {
+  def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP).map {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional).map {
         _.fold(
           errorHandler.showInternalServerError
         )(
@@ -47,9 +47,9 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
   }
 
-  def onPageLoadForObligation(penaltyId: String, isLPP: Boolean): Action[AnyContent] = authorise.async {
+  def onPageLoadForObligation(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP).map {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional).map {
         _.fold(
           errorHandler.showInternalServerError
         )(

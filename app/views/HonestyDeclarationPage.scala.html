@@ -24,78 +24,80 @@
 
 @(form: Form[_], reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
-    @layout(pageTitle = messages("honestyDeclaration.title"),
-        isPageFullWidth = false,
-        formHasErrors = form.errors.nonEmpty,
-        formErrors = form.errors) {
+@appealType = @{userRequest.session.get(SessionKeys.appealType)}
 
-        <h1 class="govuk-heading-l">@messages("honestyDeclaration.heading")</h1>
-        <p class="govuk-body">@messages("honestyDeclaration.p1")</p>
-        <ul class="govuk-list govuk-list--bullet">
-            <li>
-                @if(!reasonText.equals("") && !isObligationAppeal) {
-                    @messages("honestyDeclaration.li.1.1", reasonText)
-                } else if(isObligationAppeal) {
-                        @messages("honestyDeclaration.obligation.li.1")
-                }
+@layout(pageTitle = messages("honestyDeclaration.title"),
+    isPageFullWidth = false,
+    formHasErrors = form.errors.nonEmpty,
+    formErrors = form.errors) {
 
-                @if(!isObligationAppeal) {
-                    @if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
-                        @if(userRequest.isAgent) {
-                            @if(reasonText.contains("crime") || reasonText.contains("death")) {
-                                @getMessage("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
-                            } else {
-                                @getMessage("honestyDeclaration.lpp.li.1.2.myClient", friendlyDueDate)
-                            }
-                        } else {
-                            @messages("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
-                        }
-                    } else {
-                        @if(userRequest.isAgent && didClientCauseLateSubmission) {
-                            @if(reasonText.contains("crime") || reasonText.contains("death")) {
-                                @getMessage("honestyDeclaration.li.1.2", friendlyDueDate)
-                            } else {
-                                @getMessage("honestyDeclaration.li.1.2.myClient", friendlyDueDate)
-                            }
-                        } else {
-                            @messages("honestyDeclaration.li.1.2", friendlyDueDate)
-                        }
-                    }
-                }
-            </li>
-            @extraBullets.map { bullet =>
-                <li>
-                    @messages(bullet)
-                </li>
+    <h1 class="govuk-heading-l">@messages("honestyDeclaration.heading")</h1>
+    <p class="govuk-body">@messages("honestyDeclaration.p1")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>
+            @if(!reasonText.equals("") && !isObligationAppeal) {
+                @messages("honestyDeclaration.li.1.1", reasonText)
+            } else if(isObligationAppeal) {
+                    @messages("honestyDeclaration.obligation.li.1")
             }
-            <li>
-                @if(isObligationAppeal) {
-                    @if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
-                        @messages("honestyDeclaration.obligation.lpp.li.2", friendlyStartDate, friendlyEndDate)
+
+            @if(!isObligationAppeal) {
+                @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+                    @if(userRequest.isAgent) {
+                        @if(reasonText.contains("crime") || reasonText.contains("death")) {
+                            @getMessage("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
+                        } else {
+                            @getMessage("honestyDeclaration.lpp.li.1.2.myClient", friendlyDueDate)
+                        }
                     } else {
-                        @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
+                        @messages("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
                     }
-                } else if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
-                        @getMessage("honestyDeclaration.lpp.li.2")
                 } else {
-                    @getMessage("honestyDeclaration.li.2")
+                    @if(userRequest.isAgent && didClientCauseLateSubmission) {
+                        @if(reasonText.contains("crime") || reasonText.contains("death")) {
+                            @getMessage("honestyDeclaration.li.1.2", friendlyDueDate)
+                        } else {
+                            @getMessage("honestyDeclaration.li.1.2.myClient", friendlyDueDate)
+                        }
+                    } else {
+                        @messages("honestyDeclaration.li.1.2", friendlyDueDate)
+                    }
                 }
-            </li>
-            @if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) && userRequest.session.get(SessionKeys.reasonableExcuse).contains("technicalIssues")) {
-                <li>
-                @messages("honestyDeclaration.li.extra.technicalIssues")
-                </li>
             }
-
+        </li>
+        @extraBullets.map { bullet =>
             <li>
-            @messages("honestyDeclaration.li.3")
+                @messages(bullet)
             </li>
-        </ul>
-
-        @formHelper(action = controllers.routes.HonestyDeclarationController.onSubmit()) {
-
-            <input type="hidden" id="declaration" name="value" value="true">
-
-            @govukButton(Button(content = Text(messages("common.acceptAndContinue"))))
         }
+        <li>
+            @if(isObligationAppeal) {
+                @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+                    @messages("honestyDeclaration.obligation.lpp.li.2", friendlyStartDate, friendlyEndDate)
+                } else {
+                    @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
+                }
+            } else if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+                    @getMessage("honestyDeclaration.lpp.li.2")
+            } else {
+                @getMessage("honestyDeclaration.li.2")
+            }
+        </li>
+        @if((appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) && userRequest.session.get(SessionKeys.reasonableExcuse).contains("technicalIssues")) {
+            <li>
+            @messages("honestyDeclaration.li.extra.technicalIssues")
+            </li>
+        }
+
+        <li>
+        @messages("honestyDeclaration.li.3")
+        </li>
+    </ul>
+
+    @formHelper(action = controllers.routes.HonestyDeclarationController.onSubmit()) {
+
+        <input type="hidden" id="declaration" name="value" value="true">
+
+        @govukButton(Button(content = Text(messages("common.acceptAndContinue"))))
     }
+}

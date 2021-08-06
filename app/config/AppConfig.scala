@@ -38,8 +38,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
   }
 
-  def appealLPPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+  def appealLPPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String, isAdditional: Boolean): String = {
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional"
   }
 
   def otherPenaltiesForPeriodUrl(penaltyId: String, enrolmentKey: String, isLPP: Boolean) = s"$penaltiesServiceBaseUrl/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=$enrolmentKey&penaltyId=$penaltyId&isLPP=$isLPP"

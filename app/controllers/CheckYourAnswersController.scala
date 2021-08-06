@@ -20,7 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.SessionAnswersHelper
 import models.PenaltyTypeEnum
-import models.PenaltyTypeEnum.{Late_Payment, Late_Submission}
+import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AppealService
@@ -108,6 +108,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       val penaltyType: String = PenaltyTypeEnum.withName(request.session.get(SessionKeys.appealType).get) match {
         case Late_Submission => "penaltyType.lateSubmission"
         case Late_Payment => "penaltyType.latePayment"
+        case Additional => "penaltyType.additional"
       }
       val readablePeriodStart: String = dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.startDateOfPeriod).get))
       val readablePeriodEnd: String = dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.endDateOfPeriod).get))
