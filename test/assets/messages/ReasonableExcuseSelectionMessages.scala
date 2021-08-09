@@ -22,6 +22,10 @@ object ReasonableExcuseSelectionMessages {
 
   val h1 = "What was the reason for missing the VAT deadline?"
 
+  val agentTitle = "What was the reason for the delay? - Appeal a VAT penalty - GOV.UK"
+
+  val agentH1 = "What was the reason for the delay?"
+
   val radioOption1 = "Bereavement (someone died)"
 
   val radioOption2 = "Crime"
