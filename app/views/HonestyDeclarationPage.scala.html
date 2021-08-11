@@ -77,7 +77,7 @@
                 } else {
                     @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
                 }
-            } else if(userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) {
+            } else if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
                     @getMessage("honestyDeclaration.lpp.li.2")
             } else {
                 @getMessage("honestyDeclaration.li.2")
