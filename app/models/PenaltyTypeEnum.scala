@@ -21,6 +21,7 @@ import play.api.libs.json._
 object PenaltyTypeEnum extends Enumeration {
   val Late_Submission = Value
   val Late_Payment = Value
+  val Additional = Value
 
   implicit val format: Format[PenaltyTypeEnum.Value] = new Format[PenaltyTypeEnum.Value] {
     override def writes(o: PenaltyTypeEnum.Value): JsValue = {
@@ -31,6 +32,7 @@ object PenaltyTypeEnum extends Enumeration {
       json.as[String] match {
         case "LATE_SUBMISSION" => JsSuccess(Late_Submission)
         case "LATE_PAYMENT" => JsSuccess(Late_Payment)
+        case "ADDITIONAL" => JsSuccess(Additional)
         case e => JsError(s"$e not recognised")
       }
     }

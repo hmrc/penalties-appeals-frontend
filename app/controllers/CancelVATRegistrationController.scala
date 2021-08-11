@@ -67,9 +67,9 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
           Future(BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction)))
         },
         cancelVATRegistration => {
-          appealService.otherPenaltiesInTaxPeriod(userRequest.session.get(SessionKeys.penaltyId).get,
-            userRequest.session.get(SessionKeys.appealType).
-              contains(PenaltyTypeEnum.Late_Payment.toString))(userRequest, ec, hc)
+          val optAppealType = userRequest.session.get(SessionKeys.appealType)
+          val isLPP = optAppealType.contains(PenaltyTypeEnum.Late_Payment.toString) || optAppealType.contains(PenaltyTypeEnum.Additional.toString)
+          appealService.otherPenaltiesInTaxPeriod(userRequest.session.get(SessionKeys.penaltyId).get, isLPP)(userRequest, ec, hc)
             .map(multiplePenalties => {
               val extraData: Map[String, String] = Map("multiplePenalties" -> multiplePenalties.toString)
               Redirect(navigation.nextPage(CancelVATRegistrationPage, NormalMode, Some(cancelVATRegistration), Some(extraData)))

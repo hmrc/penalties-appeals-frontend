@@ -30,17 +30,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class PenaltiesConnector @Inject()(httpClient: HttpClient,
                                    appConfig: AppConfig) {
 
-  def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean): String = {
-    if (isLPP) {
-      appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))
+  def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean, isAdditional: Boolean): String = {
+    if (isLPP || isAdditional) {
+      appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey), isAdditional)
     } else appConfig.appealLSPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))
   }
 
-  def getAppealsDataForPenalty(penaltyId: String, enrolmentKey: String, isLPP: Boolean)
+  def getAppealsDataForPenalty(penaltyId: String, enrolmentKey: String, isLPP: Boolean, isAdditional: Boolean)
                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getAppealsDataForPenalty] -"
     httpClient.GET[HttpResponse](
-      getAppealUrlBasedOnPenaltyType(penaltyId, enrolmentKey, isLPP)
+      getAppealUrlBasedOnPenaltyType(penaltyId, enrolmentKey, isLPP, isAdditional)
     ).map {
       response =>
         response.status match {
