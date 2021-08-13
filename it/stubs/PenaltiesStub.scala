@@ -33,10 +33,15 @@ object PenaltiesStub {
   private val fetchOtherPenalties= (penaltyID: String) =>
     s"/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&penaltyId=$penaltyID&isLPP=false"
 
-  def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String, isLPP: Boolean = false): StubMapping = {
-    val typeOfPenalty = if(isLPP) PenaltyTypeEnum.Late_Payment else PenaltyTypeEnum.Late_Submission
+  def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String, isLPP: Boolean = false, isAdditional:Boolean = false): StubMapping = {
+
     val uri = if(isLPP) appealUriForLPP else appealUriForLSP
-    stubFor(get(urlEqualTo(s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"))
+    var testURL = s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+    val typeOfPenalty = if (isLPP) {
+                          testURL = testURL + s"&isAdditional=$isAdditional"
+                          if (isAdditional) PenaltyTypeEnum.Additional else PenaltyTypeEnum.Late_Payment
+                        } else PenaltyTypeEnum.Late_Submission
+    stubFor(get(urlEqualTo(testURL))
       .willReturn(
         aResponse()
           .withStatus(Status.OK)

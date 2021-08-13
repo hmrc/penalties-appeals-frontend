@@ -30,6 +30,7 @@ object PenaltyTypeHelper {
     penaltyAsEnum match {
       case Some(PenaltyTypeEnum.Late_Submission) => Some(messages("penaltyType.lateSubmission"))
       case Some(PenaltyTypeEnum.Late_Payment) => Some(messages("penaltyType.latePayment"))
+      case Some(PenaltyTypeEnum.Additional) => Some(messages("penaltyType.latePayment"))
       case _ => None
     }
   }
