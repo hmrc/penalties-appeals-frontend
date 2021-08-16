@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AppealService @Inject()(penaltiesConnector: PenaltiesConnector, appConfig: AppConfig, dateTimeHelper: DateTimeHelper) {
 
-  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean,isAdditional:Boolean)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean,isAdditional:Boolean)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP,isAdditional).map {
       _.fold[Option[AppealData]](
         None

@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PenaltiesConnector @Inject()(httpClient: HttpClient,
                                    appConfig: AppConfig) {
 
-  def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean,isAdditional:Boolean): String = {
+ def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean,isAdditional:Boolean): String = {
     if (isLPP) {
       appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey),isAdditional)
     } else appConfig.appealLSPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))

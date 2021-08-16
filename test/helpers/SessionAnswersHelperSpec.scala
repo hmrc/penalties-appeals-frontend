@@ -1029,7 +1029,7 @@ class SessionAnswersHelperSpec extends SpecBase {
     "when agent session is present" should {
       "return getAllTheContentForCheckYourAnswersPage as list of getContentForAgentsCheckYourAnswersPage and  " +
         "getContentForReasonableExcuseCheckYourAnswersPage" in {
-        val fakeRequestWithReasonableExcusePresentOnly = agentFakeRequestConverter(agentRequest
+        val fakeRequest = agentFakeRequestConverter(agentRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "technicalIssues",
             SessionKeys.hasConfirmedDeclaration -> "true",
@@ -1039,15 +1039,15 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whoPlannedToSubmitVATReturn -> "client"
           ))
 
-        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithReasonableExcusePresentOnly, implicitly)
-        val resultAgent = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithReasonableExcusePresentOnly, implicitly)
-        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithReasonableExcusePresentOnly, implicitly)
+        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
+        val resultAgent = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequest, implicitly)
+        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
 
         resultAgent ++ resultReasonableExcuses shouldBe resultAllContent
       }
 
       "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage when it is a LPP appeal" in {
-        val fakeRequestWithReasonableExcusePresentOnly = agentFakeRequestConverter(agentRequest
+        val fakeRequest = agentFakeRequestConverter(agentRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "technicalIssues",
             SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
@@ -1057,8 +1057,25 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.agentSessionVrn -> "123456789"
           ))
 
-        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithReasonableExcusePresentOnly, implicitly)
-        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithReasonableExcusePresentOnly, implicitly)
+        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
+        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
+
+        resultReasonableExcuses shouldBe resultAllContent
+      }
+
+      "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage when it is a LPP appeal (Additional)" in {
+        val fakeRequest = agentFakeRequestConverter(agentRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "technicalIssues",
+            SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString,
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+            SessionKeys.agentSessionVrn -> "123456789"
+          ))
+
+        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
+        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
 
         resultReasonableExcuses shouldBe resultAllContent
       }

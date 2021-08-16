@@ -59,11 +59,14 @@ penaltyInformation.headerText = {0}: {1} to {2}
 # ----------------------------------------------------------
 penaltyType.lateSubmission = Late submission penalty
 penaltyType.latePayment = Late payment penalty
+penaltyType.additional = Additional penalty
 
 # Reasonable excuse
 # ----------------------------------------------------------
 reasonableExcuses.title = What was the reason for missing the VAT deadline?
+agent.reasonableExcuses.title = What was the reason for the delay?
 reasonableExcuses.heading = What was the reason for missing the VAT deadline?
+agent.reasonableExcuses.heading = What was the reason for the delay?
 reasonableExcuses.bereavementReason = Bereavement (someone died)
 reasonableExcuses.crimeReason = Crime
 reasonableExcuses.fireOrFloodReason = Fire or flood

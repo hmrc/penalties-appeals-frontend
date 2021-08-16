@@ -111,6 +111,22 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
 
         behave like pageWithExpectedMessages(expectedContent)
       }
+
+      "display the LPP variation when the appeal is for a LPP - Additional" must {
+        implicit val doc: Document = asDocument(applyAgentView(agentFormProvider, agentUserLPPAdditional))
+
+        val expectedContent = Seq(
+          Selectors.title -> titleAgentText,
+          Selectors.h1 -> headingAgentText,
+          Selectors.hintText -> hintTextAgentLpp,
+          Selectors.dateEntry(1) -> dayEntry,
+          Selectors.dateEntry(2) -> monthEntry,
+          Selectors.dateEntry(3) -> yearEntry,
+          Selectors.button -> continueButton
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)
+      }
     }
   }
 

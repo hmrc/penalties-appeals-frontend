@@ -54,6 +54,16 @@ class PenaltiesConnectorSpec extends SpecBase {
       |}
       |""".stripMargin)
 
+  val appealDataAsJsonLPPAdditional: JsValue = Json.parse(
+    """
+      |{
+      | "type": "ADDITIONAL",
+      | "startDate": "2020-01-01T12:00:00",
+      | "endDate": "2020-01-01T13:00:00",
+      | "lateAppeal": "false"
+      |}
+      |""".stripMargin)
+
   val reasonableExcusesAsJson: JsValue = Json.parse(
     """
       |{
@@ -109,7 +119,8 @@ class PenaltiesConnectorSpec extends SpecBase {
       val result = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = true, isAdditional = false)
       result shouldBe "http://url/url"
     }
-    "return the correct URL when the appeal is for a LPP additional" in new Setup {
+
+    "return the correct URL when the appeal is for a LPP Additional" in new Setup {
       when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn("http://url/url")
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
@@ -120,7 +131,7 @@ class PenaltiesConnectorSpec extends SpecBase {
     }
 
     "return the correct URL when the appeal is for a LSP" in new Setup {
-      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any(),Matchers.any()))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn("http://wrongurl/wrongurl")
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any()))
         .thenReturn("http://url/url")
@@ -142,7 +153,7 @@ class PenaltiesConnectorSpec extends SpecBase {
       result.get.toString() shouldBe appealDataAsJson.toString()
     }
 
-    s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
+s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJsonLPP.toString())))
       when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -162,6 +173,17 @@ class PenaltiesConnectorSpec extends SpecBase {
       val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = false))
       result.isDefined shouldBe true
       result.get.toString() shouldBe appealDataAsJsonLPP.toString()
+    }
+
+    s"return $Some $JsValue when the connector call succeeds for LPP - Additional" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJsonLPPAdditional.toString())))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn("http://url/url")
+
+      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = true))
+      result.isDefined shouldBe true
+      result.get.toString() shouldBe appealDataAsJsonLPPAdditional.toString()
     }
 
     s"return $None when the connector returns NOT_FOUND (${Status.NOT_FOUND})" in new Setup {

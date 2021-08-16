@@ -25,8 +25,12 @@
 
 @(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
+@appealType = @{request.session.get(SessionKeys.appealType)}
+
 @pageTitleAndHeading = @{
-    if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString)) "otherReason.whyReturnSubmittedLate.lpp.title" else "otherReason.whyReturnSubmittedLate.title"
+    if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+        "otherReason.whyReturnSubmittedLate.lpp.title"
+    } else "otherReason.whyReturnSubmittedLate.title"
 }
 
 @layout(pageTitle = messages(pageTitleAndHeading),
