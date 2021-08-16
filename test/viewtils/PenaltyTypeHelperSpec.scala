@@ -43,7 +43,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
       s"the string matches an enum value - return $Some with the correct message for Additional" in {
         val result = PenaltyTypeHelper.convertPenaltyTypeToContentString("Additional")
         result.isDefined shouldBe true
-        result.get shouldBe messages("penaltyType.latePayment")
+        result.get shouldBe messages("penaltyType.additional")
       }
 
       s"the string does not match an enum value - return $None" in {
