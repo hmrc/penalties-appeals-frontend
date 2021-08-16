@@ -114,6 +114,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       val readablePeriodEnd: String = dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.endDateOfPeriod).get))
       Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd))
         .removingFromSession(SessionKeys.allKeys: _*)
+      val isObligationAppeal: Boolean = request.session.get(SessionKeys.isObligationAppeal).contains("true")
+      Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal))
     }
   }
 }

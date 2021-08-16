@@ -33,14 +33,13 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val penaltiesConnector: PenaltiesConnector = injector.instanceOf[PenaltiesConnector]
 
-  "getAppealUrlBasedOnPenaltyType" should {
+ "getAppealUrlBasedOnPenaltyType" should {
     "return the correct url for LPP" in {
       val expectedResult = "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=false"
       val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = false)
       actualResult shouldBe expectedResult
     }
-
-    "return the correct url for LPP - Additional" in {
+    "return the correct url for LPP Additional" in {
       val expectedResult = "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=true"
       val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
       actualResult shouldBe expectedResult

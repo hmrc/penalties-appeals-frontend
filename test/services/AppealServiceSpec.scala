@@ -84,6 +84,7 @@ class AppealServiceSpec extends SpecBase {
 
   "validatePenaltyIdForEnrolmentKey" should {
     "return None when the connector returns None" in new Setup {
+
       when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
@@ -92,6 +93,7 @@ class AppealServiceSpec extends SpecBase {
     }
 
     "return None when the connectors returns Json that cannot be parsed to a model" in new Setup {
+
       when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
@@ -100,6 +102,7 @@ class AppealServiceSpec extends SpecBase {
     }
 
     "return Some when the connector returns Json that is parseable to a model" in new Setup {
+
       when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(appealDataAsJson)))
 
@@ -108,6 +111,7 @@ class AppealServiceSpec extends SpecBase {
     }
 
     "return Some when the connector returns Json that is parseable to a model for LPP" in new Setup {
+
       when(mockPenaltiesConnector.getAppealsDataForPenalty(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPP)))
 

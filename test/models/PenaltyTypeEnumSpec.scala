@@ -54,7 +54,6 @@ class PenaltyTypeEnumSpec extends AnyWordSpec with Matchers {
     result.get shouldBe PenaltyTypeEnum.Additional
   }
 
-
   "return a JSError when there is no matches for the specified value" in {
     val result = Json.fromJson(JsString("invalid"))(PenaltyTypeEnum.format)
     result.isError shouldBe true
@@ -71,6 +70,12 @@ class PenaltyTypeEnumSpec extends AnyWordSpec with Matchers {
       val result = PenaltyTypeEnum.withNameOpt("Late_Payment")
       result.isDefined shouldBe true
       result.get shouldBe PenaltyTypeEnum.Late_Payment
+    }
+
+    s"return $Some ${PenaltyTypeEnum.Additional} when the string matches the enum value" in {
+      val result = PenaltyTypeEnum.withNameOpt("Additional")
+      result.isDefined shouldBe true
+      result.get shouldBe PenaltyTypeEnum.Additional
     }
 
     s"return $None when the string does not match any enum value" in {
