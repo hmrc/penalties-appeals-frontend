@@ -18,7 +18,6 @@ package views.behaviours
 
 import base.SpecBase
 import org.jsoup.nodes.Document
-import org.scalatest.MustMatchers._
 
 trait ViewBehaviours extends SpecBase {
 
@@ -28,7 +27,7 @@ trait ViewBehaviours extends SpecBase {
       s"element with cssSelector '$cssSelector'" must {
         s"have message '$message'" in {
           val elem = document.select(cssSelector)
-          elem.first.text() mustBe message
+          elem.first.text() shouldBe message
         }
       }
   }

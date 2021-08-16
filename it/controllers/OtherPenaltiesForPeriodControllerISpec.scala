@@ -16,7 +16,6 @@
 
 package controllers
 
-import models.NormalMode
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
