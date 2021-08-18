@@ -17,7 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
-import play.api.data.{Form, Forms}
+import play.api.data.Form
 import play.api.data.Forms.single
 
 object CancelVATRegistrationForm extends Mappings {

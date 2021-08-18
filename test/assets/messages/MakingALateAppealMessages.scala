@@ -17,12 +17,11 @@
 package messages
 
 object MakingALateAppealMessages {
-  val title = "Making a late appeal - Appeal a VAT penalty - GOV.UK"
+  val title = "This penalty was issued more than 30 days ago - Appeal a VAT penalty - GOV.UK"
 
-  val heading = "Making a late appeal"
+  val heading = "This penalty was issued more than 30 days ago"
 
-  val hintText = "You usually need to appeal within 30 days of being told about a penalty. If you do not appeal within 30 days, we’ll " +
-    "use information you provide here to decide whether we can consider your late appeal."
+  val hintText = "You usually need to appeal within 30 days of the date on the penalty notice. Tell us here why you could not appeal within 30 days."
 
   val continueBtn = "Continue"
 }

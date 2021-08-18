@@ -16,19 +16,17 @@
 
 package controllers
 
-import java.time.format.DateTimeFormatter
-import java.time.{Duration, LocalDateTime}
-
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import utils.Logger.logger
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 import utils.SessionKeys
 import views.html.AppealStartPage
-import javax.inject.Inject
 
+import java.time.LocalDateTime
+import javax.inject.Inject
 import scala.concurrent.Future
 
 class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit mcc: MessagesControllerComponents,

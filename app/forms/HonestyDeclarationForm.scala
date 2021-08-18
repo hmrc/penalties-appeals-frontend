@@ -18,7 +18,7 @@ package forms
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.Forms.{nonEmptyText, single}
+import play.api.data.Forms.single
 
 object HonestyDeclarationForm extends Mappings {
   val honestyDeclarationForm = Form[String](

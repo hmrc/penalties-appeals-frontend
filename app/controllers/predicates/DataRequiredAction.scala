@@ -18,7 +18,7 @@ package controllers.predicates
 
 import config.ErrorHandler
 import models.UserRequest
-import play.api.mvc.{ActionRefiner, Request, Result}
+import play.api.mvc.{ActionRefiner, Result}
 import utils.SessionKeys
 
 import javax.inject.Inject
