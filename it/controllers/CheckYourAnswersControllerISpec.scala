@@ -31,7 +31,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
+class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   val controller: CheckYourAnswersController = injector.instanceOf[CheckYourAnswersController]
 
   "GET /check-your-answers" should {
@@ -131,7 +131,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Why you did not appeal sooner"
+      parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Reason for appealing after 30 days"
       parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 
@@ -151,7 +151,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Why you did not appeal sooner"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Reason for appealing after 30 days"
       parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 
@@ -171,7 +171,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Why you did not appeal sooner"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Reason for appealing after 30 days"
       parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 
@@ -192,7 +192,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Why you did not appeal sooner"
+      parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Reason for appealing after 30 days"
       parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 
@@ -257,7 +257,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
         parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Not provided"
-        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Why you did not appeal sooner"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Reason for appealing after 30 days"
         parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
       }
 
@@ -281,7 +281,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
         parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file.docx"
-        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Why you did not appeal sooner"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Reason for appealing after 30 days"
         parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
       }
     }
@@ -321,7 +321,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase{
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Why you did not appeal sooner"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Reason for appealing after 30 days"
       parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 

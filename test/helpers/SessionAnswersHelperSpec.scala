@@ -272,7 +272,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url
       }
 
-      "return all keys and the 'Why you did not appeal sooner' text" in {
+      "return all keys and the 'Reason for appealing after 30 days' text" in {
         val fakeRequestWithAllCrimeKeysPresent = fakeRequestConverter(fakeRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "crime",
@@ -292,7 +292,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._1 shouldBe "Has this crime been reported to the police?"
         result(2)._2 shouldBe "Yes"
         result(2)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url
-        result(3)._1 shouldBe "Why you did not appeal sooner"
+        result(3)._1 shouldBe "Reason for appealing after 30 days"
         result(3)._2 shouldBe "Lorem ipsum"
         result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
@@ -315,7 +315,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
       }
 
-      "return all keys and the 'Why you did not appeal sooner' text" in {
+      "return all keys and the 'Reason for appealing after 30 days' text" in {
         val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequestConverter(fakeRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "fireOrFlood",
@@ -330,7 +330,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._1 shouldBe "When did the fire or flood happen?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
-        result(2)._1 shouldBe "Why you did not appeal sooner"
+        result(2)._1 shouldBe "Reason for appealing after 30 days"
         result(2)._2 shouldBe "Lorem ipsum"
         result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
@@ -354,7 +354,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._3 shouldBe controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url
       }
 
-      "return all keys and the 'Why you did not appeal sooner' text" in {
+      "return all keys and the 'Reason for appealing after 30 days' text" in {
         val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequestConverter(fakeRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "lossOfStaff",
@@ -370,7 +370,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._1 shouldBe "When did the person become unavailable?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url
-        result(2)._1 shouldBe "Why you did not appeal sooner"
+        result(2)._1 shouldBe "Reason for appealing after 30 days"
         result(2)._2 shouldBe "Lorem ipsum"
         result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
@@ -398,7 +398,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
       }
 
-      "return all keys and the 'Why you did not appeal sooner' text" in {
+      "return all keys and the 'Reason for appealing after 30 days' text" in {
         val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequestConverter(fakeRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "technicalIssues",
@@ -418,7 +418,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(2)._1 shouldBe "When did the technology issues end?"
         result(2)._2 shouldBe "2 January 2022"
         result(2)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
-        result(3)._1 shouldBe "Why you did not appeal sooner"
+        result(3)._1 shouldBe "Reason for appealing after 30 days"
         result(3)._2 shouldBe "Lorem ipsum"
         result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
@@ -449,7 +449,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(3)._1 shouldBe "Evidence to support this appeal"
         result(3)._2 shouldBe "Not provided"
         result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-        result(4)._1 shouldBe "Why you did not appeal sooner"
+        result(4)._1 shouldBe "Reason for appealing after 30 days"
         result(4)._2 shouldBe "This is the reason why my appeal was late."
         result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
@@ -482,7 +482,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
           }
 
-          "return all keys and the 'Why you did not appeal sooner' text" in {
+          "return all keys and the 'Reason for appealing after 30 days' text" in {
             val fakeRequestWithNoHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
               .withSession(
                 SessionKeys.reasonableExcuse -> "health",
@@ -504,7 +504,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             result(2)._1 shouldBe "When did your client become unable to manage the VAT account?"
             result(2)._2 shouldBe "1 January 2022"
             result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
-            result(3)._1 shouldBe "Why you did not appeal sooner"
+            result(3)._1 shouldBe "Reason for appealing after 30 days"
             result(3)._2 shouldBe "Lorem ipsum"
             result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
           }
@@ -563,7 +563,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(3)._1 shouldBe "Evidence to support this appeal"
           result(3)._2 shouldBe "Not provided"
           result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-          result(4)._1 shouldBe "Why you did not appeal sooner"
+          result(4)._1 shouldBe "Reason for appealing after 30 days"
           result(4)._2 shouldBe "This is the reason why my appeal was late."
           result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
@@ -621,7 +621,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(3)._1 shouldBe "Evidence to support this appeal"
           result(3)._2 shouldBe "file.docx"
           result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-          result(4)._1 shouldBe "Why you did not appeal sooner"
+          result(4)._1 shouldBe "Reason for appealing after 30 days"
           result(4)._2 shouldBe "This is the reason why my appeal was late."
           result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
@@ -652,7 +652,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(3)._1 shouldBe "Evidence to support this appeal"
         result(3)._2 shouldBe "file.docx"
         result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-        result(4)._1 shouldBe "Why you did not appeal sooner"
+        result(4)._1 shouldBe "Reason for appealing after 30 days"
         result(4)._2 shouldBe "This is the reason why my appeal was late."
         result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
@@ -683,7 +683,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
           }
 
-          "return all keys and the 'Why you did not appeal sooner' text" in {
+          "return all keys and the 'Reason for appealing after 30 days' text" in {
             val fakeRequestWithNoHospitalStayKeysPresent = fakeRequestConverter(fakeRequest
               .withSession(
                 SessionKeys.reasonableExcuse -> "health",
@@ -703,7 +703,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
             result(2)._2 shouldBe "1 January 2022"
             result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
-            result(3)._1 shouldBe "Why you did not appeal sooner"
+            result(3)._1 shouldBe "Reason for appealing after 30 days"
             result(3)._2 shouldBe "Lorem ipsum"
             result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
           }
@@ -758,7 +758,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(3)._1 shouldBe "Evidence to support this appeal"
           result(3)._2 shouldBe "Not provided"
           result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-          result(4)._1 shouldBe "Why you did not appeal sooner"
+          result(4)._1 shouldBe "Reason for appealing after 30 days"
           result(4)._2 shouldBe "This is the reason why my appeal was late."
           result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
@@ -812,7 +812,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result(3)._1 shouldBe "Evidence to support this appeal"
           result(3)._2 shouldBe "file.docx"
           result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-          result(4)._1 shouldBe "Why you did not appeal sooner"
+          result(4)._1 shouldBe "Reason for appealing after 30 days"
           result(4)._2 shouldBe "This is the reason why my appeal was late."
           result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
@@ -949,7 +949,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
     }
 
-    "return all keys and the 'Why you did not appeal sooner' text" in {
+    "return all keys and the 'Reason for appealing after 30 days' text" in {
       val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequestConverter(fakeRequest
         .withSession(
           SessionKeys.reasonableExcuse -> "bereavement",
@@ -965,7 +965,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       result(1)._1 shouldBe "When did the person die?"
       result(1)._2 shouldBe "1 January 2022"
       result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
-      result(2)._1 shouldBe "Why you did not appeal sooner"
+      result(2)._1 shouldBe "Reason for appealing after 30 days"
       result(2)._2 shouldBe "Lorem ipsum"
       result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
     }
