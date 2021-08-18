@@ -21,18 +21,18 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.HonestyDeclarationForm._
 import helpers.HonestyDeclarationHelper
 import models.NormalMode
-import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.Logger.logger
-import utils. SessionKeys
-import views.html.HonestyDeclarationPage
-import viewtils.ImplicitDateFormatter
-import java.time.{LocalDate, LocalDateTime}
-
-import javax.inject.Inject
 import models.pages.HonestyDeclarationPage
 import navigation.Navigation
+import play.api.i18n.I18nSupport
+import play.api.mvc._
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
+import utils.SessionKeys
+import views.html.HonestyDeclarationPage
+import viewtils.ImplicitDateFormatter
+
+import java.time.LocalDateTime
+import javax.inject.Inject
 
 class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDeclarationPage,
                                              errorHandler: ErrorHandler,

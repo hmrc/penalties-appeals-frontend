@@ -19,13 +19,11 @@ package helpers
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
 import play.api.mvc.Request
+import utils.MessageRenderer.getMessage
 import utils.SessionKeys
 import viewtils.ImplicitDateFormatter
-import config.ErrorHandler
-import utils.Logger.logger
 
 import java.time.LocalDate
-import utils.MessageRenderer.getMessage
 
 object SessionAnswersHelper extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(

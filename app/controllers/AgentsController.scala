@@ -20,8 +20,8 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.{WhoPlannedToSubmitVATReturnAgentForm, WhyReturnWasSubmittedLateAgentForm}
 import helpers.FormProviderHelper
-import models.{Mode, NormalMode}
-import models.pages.{ReasonableExcuseSelectionPage, WhoPlannedToSubmitVATReturnAgentPage, WhyWasTheReturnSubmittedLateAgentPage}
+import models.Mode
+import models.pages.{ReasonableExcuseSelectionPage, WhoPlannedToSubmitVATReturnAgentPage}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport

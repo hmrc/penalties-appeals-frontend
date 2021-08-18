@@ -16,13 +16,10 @@
 
 package viewtils
 
-import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
-import uk.gov.hmrc.govukfrontend.views.viewmodels.dateinput.DateInput
-import utils.ViewUtils
 
 object RadioOptionHelper {
   def radioOptionsForHasCrimeBeenReportedPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {

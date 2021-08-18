@@ -16,9 +16,9 @@
 
 package testUtils
 
-import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
-import uk.gov.hmrc.auth.core.{AffinityGroup, BearerTokenExpired, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core._
 
 import scala.concurrent.Future
 
