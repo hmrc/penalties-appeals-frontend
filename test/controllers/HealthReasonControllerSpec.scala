@@ -20,7 +20,7 @@ import java.time.{LocalDate, LocalDateTime}
 import base.SpecBase
 import models.NormalMode
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.Result
@@ -46,8 +46,8 @@ class HealthReasonControllerSpec extends SpecBase {
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      Matchers.any(), Matchers.any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
-      Matchers.any(), Matchers.any())
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+      any(), any())
     ).thenReturn(authResult)
 
     val controller: HealthReasonController = new HealthReasonController(

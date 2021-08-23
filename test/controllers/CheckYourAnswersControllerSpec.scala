@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import models.PenaltyTypeEnum
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -134,8 +134,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     reset(mockAuthConnector)
     reset(mockAppealService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      Matchers.any(), Matchers.any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
-      Matchers.any(), Matchers.any())
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+      any(), any())
     ).thenReturn(authResult)
   }
 
@@ -239,14 +239,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   "onSubmit" should {
     "the user is authorised" must {
       "redirect the user to the confirmation page on success" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockAppealService.submitAppeal(any())(any(), any(), any()))
           .thenReturn(Future.successful(true))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
       }
       "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockAppealService.submitAppeal(any())(any(), any(), any()))
           .thenReturn(Future.successful(true))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
         status(result) shouldBe SEE_OTHER
@@ -256,13 +256,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       "redirect the user to an ISE" when {
 
         "the appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(false))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
         "the obligation appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(false))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe INTERNAL_SERVER_ERROR

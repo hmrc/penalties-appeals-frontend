@@ -18,7 +18,6 @@ package controllers
 
 import models.UserRequest
 import org.jsoup.Jsoup
-import org.mockito.Matchers
 import org.mockito.Mockito.{mock, when}
 import play.api.http.Status
 import play.api.mvc.AnyContent
