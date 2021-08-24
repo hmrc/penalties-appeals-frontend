@@ -16,17 +16,10 @@
 
 package services.monitoring
 
-import utils.JsonUtils
-import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json.{JsNull, JsString, JsValue}
+import play.api.libs.json.JsValue
 
-trait JsonAuditModel extends JsonUtils {
+trait JsonAuditModel{
   val auditType: String
   val transactionName: String
   val detail: JsValue
-
-  implicit def booleanToJson(bool: Boolean): JsValueWrapper = if (bool) JsString("Yes") else JsString("No")
-
-  implicit def oBooleanToJson(oBool: Option[Boolean]): JsValueWrapper = (oBool map booleanToJson).fold[JsValueWrapper](JsNull)(x => x)
-
 }

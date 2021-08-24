@@ -18,6 +18,7 @@ package controllers
 
 import models.UserRequest
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 import play.api.http.Status
 import play.api.mvc.AnyContent
@@ -756,7 +757,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.otherRelevantInformation -> "some-text"
       ))
       val mockAppealService: AppealService = mock(classOf[AppealService])
-      when(mockAppealService.submitAppeal(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockAppealService.submitAppeal(any())(any(), any(), any()))
         .thenReturn(Future.successful(false))
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
