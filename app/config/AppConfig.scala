@@ -73,6 +73,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   private lazy val platformHost = servicesConfig.getString("host")
 
+  val appName = servicesConfig.getString("appName")
+
   private lazy val agentClientLookupRedirectUrl: String => String = uri => SafeRedirectUrl(platformHost + uri).encodedUrl
 
   lazy val agentClientLookupStartUrl = (uri: String) =>

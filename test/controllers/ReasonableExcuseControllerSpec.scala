@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import models.ReasonableExcuse
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.mvc.Result
@@ -42,8 +42,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
     reset(mockAuthConnector)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      Matchers.any(), Matchers.any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
-      Matchers.any(), Matchers.any())
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+      any(), any())
     ).thenReturn(authResult)
 
     val controller: ReasonableExcuseController = new ReasonableExcuseController(
@@ -75,7 +75,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
     "call the service and retrieve the list of reasonable excuses" when {
       "the call succeeds - return OK with the list of radio options (no previous answer - " +
         "has penalty info in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.getReasonableExcuseListAndParse()(Matchers.any(), Matchers.any()))
+        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
           .thenReturn(Future.successful(
             Some(seqOfReasonableExcuses)
           ))
@@ -86,7 +86,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
 
       "the call succeeds - return OK with the list of radio options (pre-selected option when present in session)" in
         new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.getReasonableExcuseListAndParse()(Matchers.any(), Matchers.any()))
+          when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
             .thenReturn(Future.successful(
               Some(seqOfReasonableExcuses)
             ))
@@ -105,7 +105,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
       }
 
       "the call fails to retrieve the reasonable excuse list" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.getReasonableExcuseListAndParse()(Matchers.any(), Matchers.any()))
+        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
           .thenReturn(Future.successful(
             None
           ))
@@ -151,7 +151,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
     "user submits the form" when {
       "the validation is performed against possible values - redirect on success and set the session key value" in
         new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.getReasonableExcuseListAndParse()(Matchers.any(), Matchers.any()))
+        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
           .thenReturn(Future.successful(
             Some(seqOfReasonableExcuses)
           ))
@@ -172,7 +172,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
 
       "the validation is performed against possible values - value does not appear in reasonable excuse list" in
         new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.getReasonableExcuseListAndParse()(Matchers.any(), Matchers.any()))
+        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
           .thenReturn(Future.successful(
             Some(seqOfReasonableExcuses)
           ))
@@ -191,7 +191,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
 
       "the validation is performed against an empty value - value is an empty string" in
         new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.getReasonableExcuseListAndParse()(Matchers.any(), Matchers.any()))
+        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
           .thenReturn(Future.successful(
             Some(seqOfReasonableExcuses)
           ))
@@ -226,7 +226,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
       }
 
       "the call fails to retrieve the reasonable excuse list" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.getReasonableExcuseListAndParse()(Matchers.any(), Matchers.any()))
+        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
           .thenReturn(Future.successful(
             None
           ))

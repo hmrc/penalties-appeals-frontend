@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import models.{AppealData, PenaltyTypeEnum}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import services.AppealService
@@ -36,8 +36,8 @@ class InitialiseAppealControllerSpec extends SpecBase {
     reset(mockAppealsService)
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      Matchers.any(), Matchers.any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
-      Matchers.any(), Matchers.any())
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+      any(), any())
     ).thenReturn(authResult)
     val controller = new InitialiseAppealController(
       mockAppealsService,
@@ -47,7 +47,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val result = await(controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
@@ -62,7 +62,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
         dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
       )
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
       val result = controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
@@ -85,7 +85,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
         dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
       )
-        when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(),any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
       val result = controller.onPageLoad("12345", isLPP = true, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
@@ -109,7 +109,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
         dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
       )
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
       val result = controller.onPageLoad("12345", isLPP = true, isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
@@ -126,7 +126,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
   "onPageLoadForObligation" should {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val result = await(controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
@@ -142,7 +142,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
         dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
       )
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
       val result = controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
@@ -165,7 +165,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
         dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
       )
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
       val result = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
@@ -187,7 +187,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
             dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
             dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
           )
-          when(mockAppealsService.validatePenaltyIdForEnrolmentKey(Matchers.any(), Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(),any())(any(), any(), any()))
             .thenReturn(Future.successful(Some(appealDataToReturn)))
           val result = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = true)(fakeRequest)
           redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url

@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -37,8 +37,8 @@ class AppealStartControllerSpec extends SpecBase {
 
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      Matchers.any(), Matchers.any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
-      Matchers.any(), Matchers.any())
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+      any(), any())
     ).thenReturn(authResult)
   }
 
