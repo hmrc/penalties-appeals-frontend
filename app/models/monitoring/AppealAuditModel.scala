@@ -22,7 +22,7 @@ import play.api.libs.json._
 import services.monitoring.JsonAuditModel
 import utils.JsonUtils
 
-case class AppealAuditModel(appealSubmission: AppealSubmission, isLPP: Boolean)
+case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String)
                            (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
 
   override val auditType: String = "PenaltyAppealSubmitted"
@@ -33,7 +33,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, isLPP: Boolean)
     "identifierType" -> "VRN",
     "agentReferenceNumber" -> request.arn,
     "penaltyId" -> appealSubmission.penaltyId,
-    "penaltyType" -> (if (isLPP) "LPP" else "LSP"),
+    "penaltyType" -> penaltyType,
     "appealInformation" -> appealInformationJsonObj(appealSubmission)
   )
 

@@ -48,7 +48,7 @@ class AppealAuditModelSpec extends SpecBase {
 
     val bereavementLateAppealInformation = bereavementAppealInformation.copy(lateAppeal = true, lateAppealReason = Some("this is a very good reason"))
 
-    val bereavementAgentAppealInformationLSP = bereavementAppealInformation.copy(whoPlannedToSubmit = Some("agent"), causeOfLateSubmissionAgent = Some("client"))
+    val bereavementAgentAppealInformation = bereavementAppealInformation.copy(whoPlannedToSubmit = Some("agent"), causeOfLateSubmissionAgent = Some("client"))
 
     val crimeAppealInformation: CrimeAppealInformation = CrimeAppealInformation(
       `type` = "crime",
@@ -136,24 +136,30 @@ class AppealAuditModelSpec extends SpecBase {
     )
 
     implicit val userRequest: UserRequest[AnyContent] = userRequestWithCorrectKeys
-    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), isLPP = true)
-    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), isLPP = true)
-    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), isLPP = true)
-    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), isLPP = true)
-    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), isLPP = true)
-    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), isLPP = true)
-    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), isLPP = true)
-    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), isLPP = true)
-    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), isLPP = true)
-    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), isLPP = true)
-    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), isLPP = true)
-    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), isLPP = true)
+    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LPP")
+    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), "LPP")
+    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), "LPP")
+    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), "LPP")
+    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), "LPP")
+    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), "LPP")
+    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), "LPP")
+    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), "LPP")
+    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), "LPP")
+    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), "LPP")
+    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), "LPP")
+    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), "LPP")
 
-    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), isLPP = true)
-    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), isLPP = true)
+    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), "LPP")
+    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), "LPP")
 
-    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), isLPP = false)
-    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformationLSP), isLPP = false)
+    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSP")
+    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSP")
+
+    val lsppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSPP")
+    val lsppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSPP")
+
+    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "Additional")
+    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "Additional")
 
     "have the correct auditType" in {
       lppBereavementModel.auditType shouldBe "PenaltyAppealSubmitted"
@@ -421,6 +427,66 @@ class AppealAuditModelSpec extends SpecBase {
         "identifierType" -> "VRN",
         "penaltyId" -> "123456789",
         "penaltyType" -> "LSP",
+        "appealInformation" -> Json.obj(
+          "type" -> "bereavement",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
+        )
+      )
+    }
+
+    "output the correct details for a lspp appeal submission" in {
+      lsppBereavementModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyId" -> "123456789",
+        "penaltyType" -> "LSPP",
+        "appealInformation" -> Json.obj(
+          "type" -> "bereavement",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
+        )
+      )
+    }
+
+    "output the correct details for a lspp appeal submission by an agent" in {
+      lsppAgentBereavementModel.detail shouldBe Json.obj(
+        "submittedBy" -> "agent",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyId" -> "123456789",
+        "penaltyType" -> "LSPP",
+        "appealInformation" -> Json.obj(
+          "type" -> "bereavement",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
+        )
+      )
+    }
+
+    "output the correct details for a additional penalty appeal submission" in {
+      additionalBereavementModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyId" -> "123456789",
+        "penaltyType" -> "Additional",
+        "appealInformation" -> Json.obj(
+          "type" -> "bereavement",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
+        )
+      )
+    }
+
+    "output the correct details for a additional penalty appeal submission by an agent" in {
+      additionalAgentBereavementModel.detail shouldBe Json.obj(
+        "submittedBy" -> "agent",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyId" -> "123456789",
+        "penaltyType" -> "Additional",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
