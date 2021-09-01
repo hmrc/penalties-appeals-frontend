@@ -29,13 +29,9 @@ import scala.concurrent.ExecutionContext
 class SignOutController @Inject()(val mcc: MessagesControllerComponents)
                                  (implicit ec: ExecutionContext,
                                   appConfig: AppConfig) extends FrontendController(mcc) {
+
   def signOut: Action[AnyContent] = Action { implicit request =>
-    implicit val hc: HeaderCarrier =
-      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     Redirect(appConfig.signOutUrl)
   }
 
-  val timeout: Action[AnyContent] = Action {
-    Redirect(appConfig.signOutUrl)
-  }
 }

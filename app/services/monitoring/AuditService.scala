@@ -27,7 +27,6 @@ import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import utils.Logger.logger.logger
 
 import scala.concurrent.ExecutionContext
-import scala.language.implicitConversions
 
 @Singleton
 class AuditService  @Inject()(appConfig: AppConfig,auditConnector: AuditConnector){

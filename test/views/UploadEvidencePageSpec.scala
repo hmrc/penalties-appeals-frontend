@@ -33,7 +33,13 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
   "UploadEvidencePage" should {
     val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
     object Selectors extends BaseSelectors {
-      val label = ".govuk-label"
+      val detailsHeading = ".govuk-details__summary-text"
+
+      val detailsContentP1 = ".govuk-details__text > p:nth-child(1)"
+
+      val detailsContentP2 = ".govuk-details__text > p:nth-child(3)"
+
+      val detailsContentLi = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
     }
     val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
@@ -49,7 +55,16 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       Selectors.pElementIndex(2) -> p1,
       Selectors.pElementIndex(3) -> p2,
       Selectors.pElementIndex(4) -> p3,
-      Selectors.label -> uploadLabel,
+      Selectors.pElementIndex(5) -> p4,
+      Selectors.pElementIndex(6) -> p5,
+      Selectors.detailsHeading -> detailsHeading,
+      Selectors.detailsContentP1 -> detailsP1,
+      Selectors.detailsContentLi(1) -> detailsLi1,
+      Selectors.detailsContentLi(2) -> detailsLi2,
+      Selectors.detailsContentLi(3) -> detailsLi3,
+      Selectors.detailsContentLi(4) -> detailsLi4,
+      Selectors.detailsContentLi(5) -> detailsLi5,
+      Selectors.detailsContentP2 -> detailsP2,
       Selectors.button -> continueButton
     )
 
@@ -64,7 +79,16 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.pElementIndex(2) -> p1,
         Selectors.pElementIndex(3) -> p2Lpp,
         Selectors.pElementIndex(4) -> p3,
-        Selectors.label -> uploadLabel,
+        Selectors.pElementIndex(5) -> p4,
+        Selectors.pElementIndex(6) -> p5,
+        Selectors.detailsHeading -> detailsHeading,
+        Selectors.detailsContentP1 -> detailsP1,
+        Selectors.detailsContentLi(1) -> detailsLi1,
+        Selectors.detailsContentLi(2) -> detailsLi2,
+        Selectors.detailsContentLi(3) -> detailsLi3,
+        Selectors.detailsContentLi(4) -> detailsLi4,
+        Selectors.detailsContentLi(5) -> detailsLi5,
+        Selectors.detailsContentP2 -> detailsP2,
         Selectors.button -> continueButton
       )
 
@@ -82,7 +106,16 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.pElementIndex(2) -> p1,
         Selectors.pElementIndex(3) -> p2AppealAgainstObligation,
         Selectors.pElementIndex(4) -> p3,
-        Selectors.label -> uploadLabel,
+        Selectors.pElementIndex(5) -> p4,
+        Selectors.pElementIndex(6) -> p5,
+        Selectors.detailsHeading -> detailsHeading,
+        Selectors.detailsContentP1 -> detailsP1,
+        Selectors.detailsContentLi(1) -> detailsLi1,
+        Selectors.detailsContentLi(2) -> detailsLi2,
+        Selectors.detailsContentLi(3) -> detailsLi3,
+        Selectors.detailsContentLi(4) -> detailsLi4,
+        Selectors.detailsContentLi(5) -> detailsLi5,
+        Selectors.detailsContentP2 -> detailsP2,
         Selectors.button -> continueButton
       )
 
@@ -98,7 +131,16 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.pElementIndex(2) -> p1,
         Selectors.pElementIndex(3) -> p2Lpp,
         Selectors.pElementIndex(4) -> p3,
-        Selectors.label -> uploadLabel,
+        Selectors.pElementIndex(5) -> p4,
+        Selectors.pElementIndex(6) -> p5,
+        Selectors.detailsHeading -> detailsHeading,
+        Selectors.detailsContentP1 -> detailsP1,
+        Selectors.detailsContentLi(1) -> detailsLi1,
+        Selectors.detailsContentLi(2) -> detailsLi2,
+        Selectors.detailsContentLi(3) -> detailsLi3,
+        Selectors.detailsContentLi(4) -> detailsLi4,
+        Selectors.detailsContentLi(5) -> detailsLi5,
+        Selectors.detailsContentP2 -> detailsP2,
         Selectors.button -> continueButton
       )
 
@@ -116,7 +158,16 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.pElementIndex(2) -> p1,
         Selectors.pElementIndex(3) -> p2LPPAppealAgainstObligation,
         Selectors.pElementIndex(4) -> p3,
-        Selectors.label -> uploadLabel,
+        Selectors.pElementIndex(5) -> p4,
+        Selectors.pElementIndex(6) -> p5,
+        Selectors.detailsHeading -> detailsHeading,
+        Selectors.detailsContentP1 -> detailsP1,
+        Selectors.detailsContentLi(1) -> detailsLi1,
+        Selectors.detailsContentLi(2) -> detailsLi2,
+        Selectors.detailsContentLi(3) -> detailsLi3,
+        Selectors.detailsContentLi(4) -> detailsLi4,
+        Selectors.detailsContentLi(5) -> detailsLi5,
+        Selectors.detailsContentP2 -> detailsP2,
         Selectors.button -> continueButton
       )
 

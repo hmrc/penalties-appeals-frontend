@@ -37,6 +37,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
 
   implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
   implicit val appealService: AppealService = injector.instanceOf[AppealService]
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
     reset(mockAuthConnector)
@@ -48,7 +49,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
     val controller: CancelVATRegistrationController = new CancelVATRegistrationController(
       cancelVATRegistrationPage,
       mainNavigator
-    )(authPredicate, dataRequiredAction,appealService, appConfig,ec,errorHandler,mcc)
+    )(authPredicate, dataRequiredAction, appealService, appConfig, ec, mcc)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }
