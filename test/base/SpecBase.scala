@@ -32,6 +32,7 @@ import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import services.AuthService
+import services.monitoring.AuditService
 import uk.gov.hmrc.auth.core.AuthConnector
 import utils.SessionKeys
 import views.html.errors.Unauthorised
@@ -60,6 +61,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   val unauthorised: Unauthorised = injector.instanceOf[Unauthorised]
 
   val mockAuthConnector: AuthConnector = mock(classOf[AuthConnector])
+
+  val mockAuditService :AuditService = mock(classOf[AuditService])
 
   lazy val dataRequiredAction = injector.instanceOf[DataRequiredActionImpl]
 
