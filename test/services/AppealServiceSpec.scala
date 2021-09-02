@@ -19,11 +19,13 @@ package services
 import base.SpecBase
 import connectors.PenaltiesConnector
 import models.{ReasonableExcuse, UserRequest}
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers._
+import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.SessionKeys
 
@@ -77,7 +79,7 @@ class AppealServiceSpec extends SpecBase {
 
   class Setup {
     reset(mockPenaltiesConnector, mockDateTimeHelper)
-    val service: AppealService = new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper)
+    val service: AppealService = new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper,mockAuditService)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }
@@ -224,6 +226,11 @@ class AppealServiceSpec extends SpecBase {
           .thenReturn(Future.successful(HttpResponse(OK, "")))
         val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe true
+      }
+
+      "call the audit method in audit service after appeal is submitted successfully (in the above submitAppeal)" in new Setup{
+          verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
+          ArgumentMatchers.any[ExecutionContext],ArgumentMatchers.any())
       }
 
       "return false" when {
