@@ -1,0 +1,7 @@
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(govukDetails: GovukDetails)
+
+@(summary: String, content: Html)(implicit request: Request[_], messages: Messages)
+
+@govukDetails(Details(summary = HtmlContent(messages(summary)), content = HtmlContent(content)))

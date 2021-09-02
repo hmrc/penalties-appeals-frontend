@@ -278,6 +278,16 @@ otherReason.uploadEvidence.lpp.p2 = Evidence might include any documents or lett
 otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return.
 otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return and pay VAT.
 otherReason.uploadEvidence.p3 = We will still review your appeal if you do not upload evidence.
+otherReason.uploadEvidence.p4 = You can upload up to 5 documents.
+otherReason.uploadEvidence.p5 = Each document must be smaller than 6MB.
+otherReason.uploadEvidence.details.heading = Types of file you can upload
+otherReason.uploadEvidence.details.p1 = These file types are allowed:
+otherReason.uploadEvidence.details.li.1 = image (.jpg, .jpeg, .png or .tiff)
+otherReason.uploadEvidence.details.li.2 = PDF (.pdf)
+otherReason.uploadEvidence.details.li.3 = email (.txt or .msg)
+otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel or PowerPoint)
+otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
+otherReason.uploadEvidence.details.p2 = You cannot upload zip files or documents that are password-protected.
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
 
 # Has the hospital stay ended page

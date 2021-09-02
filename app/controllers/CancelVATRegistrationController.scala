@@ -43,7 +43,6 @@ class CancelVATRegistrationController @Inject()(cancelVATRegistrationPage: Cance
                                                 appealService: AppealService,
                                                 appConfig: AppConfig,
                                                 ec: ExecutionContext,
-                                                errorHandler: ErrorHandler,
                                                 mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
   def onPageLoadForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRequired) {

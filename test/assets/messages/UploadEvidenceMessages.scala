@@ -34,7 +34,25 @@ object UploadEvidenceMessages {
 
   val p3 = "We will still review your appeal if you do not upload evidence."
 
-  val uploadLabel = "Upload Evidence"
+  val p4 = "You can upload up to 5 documents."
+
+  val p5 = "Each document must be smaller than 6MB."
+
+  val detailsHeading = "Types of file you can upload"
+
+  val detailsP1 = "These file types are allowed:"
+
+  val detailsLi1 = "image (.jpg, .jpeg, .png or .tiff)"
+
+  val detailsLi2 = "PDF (.pdf)"
+
+  val detailsLi3 = "email (.txt or .msg)"
+
+  val detailsLi4 = "Microsoft (Word, Excel or PowerPoint)"
+
+  val detailsLi5 = "Open Document Format (ODF)"
+
+  val detailsP2 = "You cannot upload zip files or documents that are password-protected."
 
   val continueButton = "Continue"
 
