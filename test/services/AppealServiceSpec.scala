@@ -221,15 +221,12 @@ class AppealServiceSpec extends SpecBase {
 
   "submitAppeal" should {
     "for crime" must {
-      "parse the session keys into a model and return true when the connector call is successful" in new Setup {
+      "parse the session keys into a model and return true when the connector call is successful and audit the response" in new Setup {
         when(mockPenaltiesConnector.submitAppeal(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
         val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe true
-      }
-
-      "call the audit method in audit service after appeal is submitted successfully (in the above submitAppeal)" in new Setup{
-          verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
+        verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
           ArgumentMatchers.any[ExecutionContext],ArgumentMatchers.any())
       }
 
