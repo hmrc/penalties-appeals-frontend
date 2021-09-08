@@ -16,6 +16,7 @@
 
 @import utils.SessionKeys
 @import viewtils.{ImplicitDateFormatter, PenaltyTypeHelper}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.hmrcReportTechnicalIssueHelper
 
 @import java.time.LocalDateTime
 
@@ -23,6 +24,7 @@
         govukTemplate: GovukTemplate,
         govukHeader: GovukHeader,
         govukFooter: GovukFooter,
+        techincalIssuesHelper: hmrcReportTechnicalIssueHelper,
         errorSummary: components.errorSummary
 )
 
@@ -97,6 +99,7 @@
         @contentBlock
         </div>
     </div>
+    @techincalIssuesHelper()
 }
 
 @govukTemplate(
