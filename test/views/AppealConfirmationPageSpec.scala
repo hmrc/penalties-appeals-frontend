@@ -27,7 +27,7 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
   "AppealConfirmationPage" should {
     val appealConfirmationPage: AppealConfirmationPage = injector.instanceOf[AppealConfirmationPage]
     object Selectors extends BaseSelectors {
-      val whatHappensNextPTag = (index: Int) => s"#main-content > div > div > p:nth-child($index)"
+      val whatHappensNextPTag: Int => String = (index: Int) => s"#main-content > div > div > p:nth-child($index)"
 
       val penaltyType = ".govuk-panel__body"
 
@@ -110,7 +110,8 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the extra paragraph should be visible when the appeal is against the obligation" in {
-      implicit val appealAgainstObligationDoc: Document = asDocument(applyVATTraderView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023", isObligationAppeal = true))
+      implicit val appealAgainstObligationDoc: Document = asDocument(
+        applyVATTraderView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023", isObligationAppeal = true))
       appealAgainstObligationDoc.select(Selectors.obligationExtraParagraph).text() shouldBe obligationParagraph
     }
   }

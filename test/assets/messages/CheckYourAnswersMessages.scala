@@ -27,7 +27,8 @@ object CheckYourAnswersMessages {
 
   val h2Declaration = "Declaration"
 
-  val pDeclaration = "By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge. A false declaration can result in prosecution."
+  val pDeclaration: String = "By submitting this appeal," +
+    " you are making a legal declaration that the information is correct and complete to the best of your knowledge. A false declaration can result in prosecution."
 
   val button = "Accept and send"
 }

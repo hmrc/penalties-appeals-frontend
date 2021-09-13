@@ -29,8 +29,10 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.obligation.OtherRelevantInformationPage
-
 import java.time.LocalDateTime
+
+import org.jsoup.nodes.Document
+
 import scala.concurrent.Future
 
 class AppealAgainstObligationControllerSpec extends SpecBase {
@@ -48,7 +50,8 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
       mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(
+      LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }
 
   "onPageLoad" should {
@@ -60,9 +63,10 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
         }
 
         "return OK and correct view (pre-populated text when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onPageLoad(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.otherRelevantInformation -> "this is some relevant information")))
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.otherRelevantInformation -> "this is some relevant information")))
           status(result) shouldBe OK
-          val documentParsed = Jsoup.parse(contentAsString(result))
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select("#other-relevant-information-text").text() shouldBe "this is some relevant information"
         }
 

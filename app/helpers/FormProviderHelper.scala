@@ -31,7 +31,8 @@ object FormProviderHelper {
     }
   }
 
-  def getSessionKeyAndAttemptToFillAnswerAsOptionString(formProvider: Form[Option[String]], sessionKeyToQuery: String)(implicit request: Request[_]): Form[Option[String]] = {
+  def getSessionKeyAndAttemptToFillAnswerAsOptionString(formProvider: Form[Option[String]], sessionKeyToQuery: String)
+                                                       (implicit request: Request[_]): Form[Option[String]] = {
     if (request.session.get(sessionKeyToQuery).isDefined) {
       formProvider.fill(Some(request.session.get(sessionKeyToQuery).get))
     } else {

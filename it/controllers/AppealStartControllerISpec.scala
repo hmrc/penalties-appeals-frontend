@@ -24,7 +24,7 @@ import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class AppealStartControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[AppealStartController]
+  val controller: AppealStartController = injector.instanceOf[AppealStartController]
   "GET /appeal-start" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-start").withSession(

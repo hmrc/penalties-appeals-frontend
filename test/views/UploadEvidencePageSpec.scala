@@ -48,7 +48,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       val detailsContentP3 = ".govuk-details__text > p:nth-child(4)"
 
-      val detailsContentLi = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
+      val detailsContentLi: Int => String = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
 
       val addAnotherButton = ".multi-file-upload__add-another"
 
@@ -108,7 +108,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     behave like pageWithExpectedMessages(expectedContent)
 
     "display the LPP variation when the appeal is for a LPP" must {
-      implicit val lppDoc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+      implicit val lppDoc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
 
       val expectedContent = Seq(
         Selectors.title -> title,
@@ -164,7 +165,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     }
 
     "display the LPP variation when the appeal is for a LPP - Additional" must {
-      implicit val lppAdditionalDoc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString)))
+      implicit val lppAdditionalDoc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+        SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString)))
 
       val expectedContent = Seq(
         Selectors.title -> title,

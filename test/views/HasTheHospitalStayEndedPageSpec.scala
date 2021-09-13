@@ -16,6 +16,8 @@
 
 package views
 
+import java.time.LocalDate
+
 import base.{BaseSelectors, SpecBase}
 import forms.HasHospitalStayEndedForm
 import messages.HasTheHospitalStayEndedMessages._
@@ -41,9 +43,9 @@ class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
 
       val collapsableYesHintText = "#stayEndDate-hint"
 
-      override val dateEntry = (index: Int) => s"#stayEndDate > div:nth-child($index) > div > label"
+      override val dateEntry: Int => String = (index: Int) => s"#stayEndDate > div:nth-child($index) > div > label"
 
-      override val labelForRadioButton = (index: Int) => if(index == 1) "label[for=hasStayEnded]" else s"label[for=hasStayEnded-$index]"
+      override val labelForRadioButton: Int => String = (index: Int) => if(index == 1) "label[for=hasStayEnded]" else s"label[for=hasStayEnded-$index]"
     }
     val formProvider: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
     val radioOptions = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded")

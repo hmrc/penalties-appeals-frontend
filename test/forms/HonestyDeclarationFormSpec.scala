@@ -16,10 +16,10 @@
 
 package forms
 
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class HonestyDeclarationFormSpec extends FormBehaviours {
-  val form = HonestyDeclarationForm.honestyDeclarationForm
+  val form: Form[String] = HonestyDeclarationForm.honestyDeclarationForm
 
   behave like mandatoryField(form, "value", FormError("value", "error.clickAcceptAndContinue"))
 }

@@ -24,11 +24,12 @@ import play.api.data.Form
 import java.time.LocalDate
 
 class ConditionalRadioHelperSpec extends SpecBase {
-  val sampleStartDate = LocalDate.parse("2020-01-01")
+  val sampleStartDate: LocalDate = LocalDate.parse("2020-01-01")
   val radioHelper: ConditionalRadioHelper = injector.instanceOf[ConditionalRadioHelper]
   "conditionalYesNoOptions" should {
     "select the radio option if the form has a prefilled value - for yes" in {
-      val form: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate).fill(HospitalStayEndInput("yes", Some(LocalDate.parse("2022-01-01"))))
+      val form: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
+        .fill(HospitalStayEndInput("yes", Some(LocalDate.parse("2022-01-01"))))
       val result = radioHelper.conditionalYesNoOptions(form, "healthReason.hasTheHospitalStayEnded")
       result.head.checked shouldBe true
     }

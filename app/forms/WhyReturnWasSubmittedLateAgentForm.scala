@@ -23,7 +23,7 @@ import play.api.data.Forms.single
 object WhyReturnWasSubmittedLateAgentForm extends Mappings {
   final val options = Seq("agent", "client")
 
-  val whyReturnWasSubmittedLateAgentForm = Form[String](
+  val whyReturnWasSubmittedLateAgentForm: Form[String] = Form[String](
     single(
       "value" -> text("agents.whyWasTheReturnSubmittedLate.error.invalid")
         .verifying("agents.whyWasTheReturnSubmittedLate.error.invalid", value => options.contains(value))

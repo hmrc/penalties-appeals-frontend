@@ -57,7 +57,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
     s"return $Some $Seq String when all the keys exist in the session and the enum can be parsed" in {
       val result = PenaltyTypeHelper.getKeysFromSession()(userRequestWithCorrectKeys, implicitly)
       result.isDefined shouldBe true
-      result.get(0) shouldBe messages("penaltyType.lateSubmission")
+      result.get.head shouldBe messages("penaltyType.lateSubmission")
       result.get(1) shouldBe ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse("2020-01-01T12:00:00.500"))
       result.get(2) shouldBe ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse("2020-01-01T12:00:00.500"))
     }

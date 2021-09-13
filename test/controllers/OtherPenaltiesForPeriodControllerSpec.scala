@@ -42,7 +42,6 @@ class OtherPenaltiesForPeriodControllerSpec extends SpecBase {
 
     val controller: OtherPenaltiesForPeriodController = new OtherPenaltiesForPeriodController(
       otherPenaltiesForPeriodPage,
-      errorHandler,
       mainNavigator
     )(mcc, appConfig, authPredicate, dataRequiredAction)
   }

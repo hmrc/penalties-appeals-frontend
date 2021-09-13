@@ -51,7 +51,8 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
       mainNavigator
     )(authPredicate, dataRequiredAction, appealService, appConfig, ec, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
+      2020, 2, 1, 0, 0, 0))
   }
 
   "CancelVATRegistrationController" should {
@@ -67,7 +68,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
       "return OK and correct view (pre-populated option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoadForCancelVATRegistration()(fakeRequestConverter(fakeRequestWithCorrectKeys.
+        val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequestConverter(fakeRequestWithCorrectKeys.
           withSession(SessionKeys.cancelVATRegistration -> "yes")))
         status(result) shouldBe OK
       }

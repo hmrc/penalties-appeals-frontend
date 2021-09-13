@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.data.Forms.single
 
 object HonestyDeclarationForm extends Mappings {
-  val honestyDeclarationForm = Form[String](
+  val honestyDeclarationForm: Form[String] = Form[String](
     single(
       "value" -> text("error.clickAcceptAndContinue").verifying("error.clickAcceptAndContinue", _ == "true")
     )

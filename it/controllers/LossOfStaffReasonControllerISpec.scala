@@ -27,7 +27,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 import java.time.{LocalDate, LocalDateTime}
 
 class LossOfStaffReasonControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[LossOfStaffReasonController]
+  val controller: LossOfStaffReasonController = injector.instanceOf[LossOfStaffReasonController]
 
   "GET /when-did-the-person-leave" should {
     "return 200 (OK) when the user is authorised" in {

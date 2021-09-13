@@ -29,7 +29,7 @@ import java.time.{LocalDate, LocalDateTime}
 
 class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
-  val controller = injector.instanceOf[BereavementReasonController]
+  val controller: BereavementReasonController = injector.instanceOf[BereavementReasonController]
 
   "GET /when-did-the-person-die" should {
     "return 200 (OK) when the user is authorised" in {

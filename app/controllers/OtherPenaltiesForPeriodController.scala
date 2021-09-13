@@ -16,13 +16,12 @@
 
 package controllers
 
-import config.{AppConfig, ErrorHandler}
+import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.OtherPenaltiesForPeriodForm._
+import javax.inject.Inject
 import models.NormalMode
 import models.pages.OtherPenaltiesForPeriodPage
-
-import javax.inject.Inject
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,7 +30,6 @@ import utils.Logger.logger
 import views.html.OtherPenaltiesForPeriodPage
 
 class OtherPenaltiesForPeriodController @Inject()(page: OtherPenaltiesForPeriodPage,
-                                                  errorHandler: ErrorHandler,
                                                   navigation: Navigation)(
                                                    implicit mcc: MessagesControllerComponents,
                                                    appConfig: AppConfig,

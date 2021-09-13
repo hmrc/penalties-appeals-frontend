@@ -69,7 +69,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           BadRequest(whenDidBecomeUnablePage(formWithErrors, postAction))
         },
         dateUnable => {
-          logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable] - Adding '$dateUnable' to session under key: ${SessionKeys.whenDidBecomeUnable}")
+          logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable]" +
+            s" - Adding '$dateUnable' to session under key: ${SessionKeys.whenDidBecomeUnable}")
           Redirect(navigation.nextPage(WhenDidBecomeUnablePage, mode, Some(dateUnable.toString)))
             .addingToSession((SessionKeys.whenDidBecomeUnable, dateUnable.toString))
         }
@@ -93,7 +94,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           BadRequest(whyReturnSubmittedLatePage(formWithErrors, postAction))
         },
         whyReturnSubmittedLateReason => {
-          logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable] - Adding '$whyReturnSubmittedLateReason' to session under key: ${SessionKeys.whyReturnSubmittedLate}")
+          logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable]" +
+            s" - Adding '$whyReturnSubmittedLateReason' to session under key: ${SessionKeys.whyReturnSubmittedLate}")
           Redirect(navigation.nextPage(WhyWasReturnSubmittedLatePage, mode, Some(whyReturnSubmittedLateReason)))
             .addingToSession(SessionKeys.whyReturnSubmittedLate -> whyReturnSubmittedLateReason)
         })

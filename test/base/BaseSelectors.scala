@@ -22,20 +22,20 @@ class BaseSelectors {
   val h1 = "#main-content h1"
   val h2 = "#main-content h2"
 
-  val pElementIndex = (index: Int) => s"#main-content p.govuk-body:nth-child($index)"
+  val pElementIndex: Int => String = (index: Int) => s"#main-content p.govuk-body:nth-child($index)"
 
   val externalGuidanceLink = "#external-guidance-link"
 
-  val labelForRadioButton = (index: Int) => if(index == 1) "label[for=value]" else s"label[for=value-$index]"
+  val labelForRadioButton: Int => String = (index: Int) => if(index == 1) "label[for=value]" else s"label[for=value-$index]"
 
   val breakerElement = ".govuk-radios__divider"
 
-  val listIndexWithElementIndex = (ulIndex: Int, liIndex: Int) => s"#main-content ul:nth-child($ulIndex) li:nth-child($liIndex)"
+  val listIndexWithElementIndex: (Int, Int) => String = (ulIndex: Int, liIndex: Int) => s"#main-content ul:nth-child($ulIndex) li:nth-child($liIndex)"
 
   val button = "#main-content .govuk-button"
 
   val hintText = "#main-content .govuk-hint"
 
-  val dateEntry = (index: Int) => s"#date > div:nth-child($index) > div > label"
+  val dateEntry: Int => String = (index: Int) => s"#date > div:nth-child($index) > div > label"
 
 }

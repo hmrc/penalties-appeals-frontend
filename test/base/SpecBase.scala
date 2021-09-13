@@ -29,6 +29,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.inject.Injector
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
@@ -45,7 +46,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
-  lazy val injector = app.injector
+  lazy val injector: Injector = app.injector
 
   val mockDateTimeHelper: DateTimeHelper = mock(classOf[DateTimeHelper])
 
@@ -69,7 +70,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val mockUploadJourneyRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
 
-  lazy val dataRequiredAction = injector.instanceOf[DataRequiredActionImpl]
+  lazy val dataRequiredAction: DataRequiredActionImpl = injector.instanceOf[DataRequiredActionImpl]
 
   val mockAuthService: AuthService = new AuthService(mockAuthConnector)
 
@@ -86,16 +87,17 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   }
 
   val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
+    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"),
+      (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
+      (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
       (SessionKeys.journeyId, "1234"))
 
   val userRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestWithCorrectKeys)
 
-  val fakeRequestWithCorrectKeysAndReasonableExcuseSet = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
+  val fakeRequestWithCorrectKeysAndReasonableExcuseSet: String => UserRequest[AnyContent] = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
     .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
-      (SessionKeys.reasonableExcuse, reasonableExcuse), (SessionKeys.journeyId, "1234")))
+      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"),
+      (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"), (SessionKeys.reasonableExcuse, reasonableExcuse), (SessionKeys.journeyId, "1234")))
 
   val fakeRequestWithCorrectKeysAndHonestyDeclarationSet = fakeRequest
     .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
@@ -112,7 +114,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   def asDocument(html: Html): Document = Jsoup.parse(html.toString())
 
-  val agentRequest = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
+  val agentRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
 
   val vatTraderUser: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest)
 

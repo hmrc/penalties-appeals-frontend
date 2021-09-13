@@ -25,8 +25,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class SignOutController @Inject() (val mcc: MessagesControllerComponents)(
-    implicit
-    ec: ExecutionContext,
+    implicit val ec: ExecutionContext,
     appConfig: AppConfig
 ) extends FrontendController(mcc) {
 

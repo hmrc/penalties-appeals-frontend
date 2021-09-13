@@ -29,8 +29,10 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.technicalIssues.TechnologyIssuesDatePage
-
 import java.time.{LocalDate, LocalDateTime}
+
+import org.jsoup.nodes.Document
+
 import scala.concurrent.Future
 
 class TechnicalIssuesReasonControllerSpec extends SpecBase {
@@ -43,9 +45,11 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
       any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
       any(), any())
     ).thenReturn(authResult)
-    val controller = new TechnicalIssuesReasonController(whenDidTechnologyIssuesBeginPage, mainNavigator, errorHandler)(authPredicate, dataRequiredAction, appConfig, mcc)
+    val controller = new TechnicalIssuesReasonController(whenDidTechnologyIssuesBeginPage, mainNavigator, errorHandler)(
+      authPredicate, dataRequiredAction, appConfig, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
+      2020, 2, 1, 0, 0, 0))
 
   }
 
@@ -58,10 +62,10 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        val result: Future[Result] = controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(SessionKeys.whenDidTechnologyIssuesBegin -> "2021-01-01")))
         status(result) shouldBe OK
-        val documentParsed = Jsoup.parse(contentAsString(result))
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
         documentParsed.select(".govuk-date-input__input").get(1).attr("value") shouldBe "1"
         documentParsed.select(".govuk-date-input__input").get(2).attr("value") shouldBe "2021"
@@ -97,11 +101,11 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        val result: Future[Result] = controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(SessionKeys.whenDidTechnologyIssuesEnd -> "2021-01-01",
                        SessionKeys.whenDidTechnologyIssuesBegin -> "2020-12-31")))
         status(result) shouldBe OK
-        val documentParsed = Jsoup.parse(contentAsString(result))
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
         documentParsed.select(".govuk-date-input__input").get(1).attr("value") shouldBe "1"
         documentParsed.select(".govuk-date-input__input").get(2).attr("value") shouldBe "2021"
@@ -147,7 +151,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(NormalMode).url
-        await(result).session.get(SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.of(2021, 2, 1).toString
+        await(result).session.get(SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.of(
+          2021, 2, 1).toString
       }
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -163,7 +168,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
-        await(result).session.get(SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.of(2021, 2, 1).toString
+        await(result).session.get(SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.of(
+          2021, 2, 1).toString
       }
 
       "return 400 (BAD_REQUEST)" when {
@@ -242,7 +248,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        await(result).session.get(SessionKeys.whenDidTechnologyIssuesEnd).get shouldBe LocalDate.of(2021, 2, 1).toString
+        await(result).session.get(SessionKeys.whenDidTechnologyIssuesEnd).get shouldBe LocalDate.of(
+          2021, 2, 1).toString
       }
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -262,7 +269,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        await(result).session.get(SessionKeys.whenDidTechnologyIssuesEnd).get shouldBe LocalDate.of(2021, 2, 1).toString
+        await(result).session.get(SessionKeys.whenDidTechnologyIssuesEnd).get shouldBe LocalDate.of(
+          2021, 2, 1).toString
       }
 
       "return 400 (BAD_REQUEST)" when {

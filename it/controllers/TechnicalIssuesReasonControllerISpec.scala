@@ -28,7 +28,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 import java.time.{LocalDate, LocalDateTime}
 
 class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[TechnicalIssuesReasonController]
+  val controller: TechnicalIssuesReasonController = injector.instanceOf[TechnicalIssuesReasonController]
 
   "GET /when-did-the-technology-issues-begin" should {
     "return 200 (OK) when the user is authorised" in {
@@ -145,7 +145,8 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(CheckMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.parse("2021-02-08").toString
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(
+        SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 
     "return 400 (BAD_REQUEST)" when {

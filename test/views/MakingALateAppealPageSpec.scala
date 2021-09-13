@@ -31,7 +31,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
     def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form)
 
-    val formProvider = MakingALateAppealForm.makingALateAppealForm
+    val formProvider = MakingALateAppealForm.makingALateAppealForm()
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(

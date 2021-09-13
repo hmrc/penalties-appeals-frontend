@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
@@ -48,7 +49,8 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
       mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
+      2020, 2, 1, 0, 0, 0))
   }
 
   "FireOrFloodReasonController" should {
@@ -62,9 +64,10 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
         }
 
         "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onPageLoad(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.dateOfFireOrFlood -> "2021-01-01")))
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.dateOfFireOrFlood -> "2021-01-01")))
           status(result) shouldBe OK
-          val documentParsed = Jsoup.parse(contentAsString(result))
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
           documentParsed.select(".govuk-date-input__input").get(1).attr("value") shouldBe "1"
           documentParsed.select(".govuk-date-input__input").get(2).attr("value") shouldBe "2021"
@@ -107,7 +110,8 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          await(result).session.get(SessionKeys.dateOfFireOrFlood).get shouldBe LocalDate.of(2021, 2, 1).toString
+          await(result).session.get(SessionKeys.dateOfFireOrFlood).get shouldBe LocalDate.of(
+            2021, 2, 1).toString
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         }
 
@@ -123,7 +127,8 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          await(result).session.get(SessionKeys.dateOfFireOrFlood).get shouldBe LocalDate.of(2021, 2, 1).toString
+          await(result).session.get(SessionKeys.dateOfFireOrFlood).get shouldBe LocalDate.of(
+            2021, 2, 1).toString
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         }
 

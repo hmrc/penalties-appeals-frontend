@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 object ReasonableExcuseForm extends Mappings {
-  val reasonableExcuseForm = (possibleExcuseValues: Seq[String]) => Form[String](
+  val reasonableExcuseForm: Seq[String] => Form[String] = (possibleExcuseValues: Seq[String]) => Form[String](
     single(
       "value" -> text("reasonableExcuses.error.required").verifying("reasonableExcuses.error.required", value => possibleExcuseValues.contains(value))
     )

@@ -26,6 +26,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import play.api.mvc.AnyContentAsEmpty
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,19 +35,19 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
 
 
   val mockConfiguration: AppConfig = mock(classOf[AppConfig])
-  val mockAuditConnector = mock(classOf[AuditConnector])
+  val mockAuditConnector: AuditConnector = mock(classOf[AuditConnector])
   val testAppName = "penalties-frontend"
   val testUrl = "testUrl"
 
   val testAuditService = new AuditService(mockConfiguration, mockAuditConnector)
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val request = FakeRequest("POST", "testUrl")
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("POST", "testUrl")
 
-  val testJsonAuditModel = new JsonAuditModel{
+  val testJsonAuditModel: JsonAuditModel = new JsonAuditModel{
     override val auditType = "testJsonAuditType"
     override val transactionName = "testJsonTransactionName"
-    override val detail = Json.obj("foo" -> "bar")
+    override val detail: JsObject = Json.obj("foo" -> "bar")
   }
 
   override def beforeEach(): Unit = {

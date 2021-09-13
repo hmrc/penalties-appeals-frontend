@@ -26,7 +26,7 @@ import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[AppealAgainstObligationController]
+  val controller: AppealAgainstObligationController = injector.instanceOf[AppealAgainstObligationController]
 
   "GET /other-relevant-information" should {
     "return 200 (OK) when the user is authorised" in {

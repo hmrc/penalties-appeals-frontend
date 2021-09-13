@@ -33,13 +33,17 @@ object HonestyDeclarationMessages {
 
   val li1Obligation = "HMRC has been asked to cancel the VAT registration"
 
-  val li1AgentText = (reasonText: String, dueDate: String) => s"because $reasonText, they were unable to submit the VAT Return due on $dueDate"
+  val li1AgentText: (String, String) => String = (reasonText: String, dueDate: String) => s"because $reasonText," +
+    s" they were unable to submit the VAT Return due on $dueDate"
 
-  val li1AgentTextLPP = (reasonText: String, dueDate: String) => s"because $reasonText, they were unable to pay the VAT bill due on $dueDate"
+  val li1AgentTextLPP: (String, String) => String = (reasonText: String, dueDate: String) => s"because $reasonText," +
+    s" they were unable to pay the VAT bill due on $dueDate"
 
-  val li1AgentTextMyClient = (reasonText: String, dueDate: String) => s"because $reasonText, my client was unable to submit the VAT Return due on $dueDate"
+  val li1AgentTextMyClient: (String, String) => String = (reasonText: String, dueDate: String) => s"because $reasonText," +
+    s" my client was unable to submit the VAT Return due on $dueDate"
 
-  val li1AgentTextMyClientLPP = (reasonText: String, dueDate: String) => s"because $reasonText, my client was unable to pay the VAT bill due on $dueDate"
+  val li1AgentTextMyClientLPP: (String, String) => String = (reasonText: String, dueDate: String) => s"because $reasonText," +
+    s" my client was unable to pay the VAT bill due on $dueDate"
 
   val li2 = "no one else was available to make the submission for me"
 

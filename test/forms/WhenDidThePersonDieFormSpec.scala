@@ -16,11 +16,13 @@
 
 package forms
 
+import java.time.LocalDate
+
 import base.SpecBase
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class WhenDidThePersonDieFormSpec extends SpecBase{
-  val form = WhenDidThePersonDieForm.whenDidThePersonDieForm()
+  val form: Form[LocalDate] = WhenDidThePersonDieForm.whenDidThePersonDieForm()
 
   "WhenDidThePersonDieForm" should {
     "bind when the date is valid" in {

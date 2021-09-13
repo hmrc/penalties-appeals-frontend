@@ -22,7 +22,8 @@ import play.api.data.{Form, FormError}
 import java.time.LocalDate
 
 class WhenDidTechnologyIssuesEndFormSpec extends SpecBase {
-  val form: Form[LocalDate] = WhenDidTechnologyIssuesEndForm.whenDidTechnologyIssuesEndForm(LocalDate.of(2021, 1, 1))
+  val form: Form[LocalDate] = WhenDidTechnologyIssuesEndForm.whenDidTechnologyIssuesEndForm(LocalDate.of(
+    2021, 1, 1))
 
   "WhenDidTechnologyIssuesEndForm" should {
     "bind when the date is valid" in {

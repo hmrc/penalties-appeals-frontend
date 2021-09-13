@@ -22,7 +22,7 @@ import play.api.data.Forms.single
 
 object HasCrimeBeenReportedForm extends Mappings {
   final val options = Seq("yes", "no", "unknown")
-  val hasCrimeBeenReportedForm = Form[String](
+  val hasCrimeBeenReportedForm: Form[String] = Form[String](
     single(
       "value" -> text("crimeReason.hasBeenReported.required")
         .verifying("crimeReason.hasBeenReported.required", value => options.contains(value))

@@ -19,9 +19,9 @@ package models
 import play.api.libs.json._
 
 object PenaltyTypeEnum extends Enumeration {
-  val Late_Submission = Value
-  val Late_Payment = Value
-  val Additional = Value
+  val Late_Submission: PenaltyTypeEnum.Value = Value
+  val Late_Payment: PenaltyTypeEnum.Value = Value
+  val Additional: PenaltyTypeEnum.Value = Value
 
   implicit val format: Format[PenaltyTypeEnum.Value] = new Format[PenaltyTypeEnum.Value] {
     override def writes(o: PenaltyTypeEnum.Value): JsValue = {

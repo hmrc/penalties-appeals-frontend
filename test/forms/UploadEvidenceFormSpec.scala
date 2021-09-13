@@ -17,9 +17,10 @@
 package forms
 
 import base.SpecBase
+import play.api.data.Form
 
 class UploadEvidenceFormSpec extends SpecBase {
-  val form = UploadEvidenceForm.uploadEvidenceForm
+  val form: Form[Option[String]] = UploadEvidenceForm.uploadEvidenceForm
 
   "UploadEvidenceForm" should {
     "bind when a file is uploaded" in {

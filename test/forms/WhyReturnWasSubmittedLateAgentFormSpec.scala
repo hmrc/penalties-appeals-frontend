@@ -17,10 +17,10 @@
 package forms
 
 import base.SpecBase
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class WhyReturnWasSubmittedLateAgentFormSpec extends SpecBase {
-  val form = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
+  val form: Form[String] = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
 
   "WhyReturnWasSubmittedLateAgentForm" should {
     "bind" when {

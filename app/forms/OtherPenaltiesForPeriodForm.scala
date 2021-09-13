@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.data.Forms.single
 
 object OtherPenaltiesForPeriodForm extends Mappings {
-  val otherPenaltiesForPeriodForm = Form[String](
+  val otherPenaltiesForPeriodForm: Form[String] = Form[String](
     single(
       "value" -> text("error.clickContinue").verifying("error.clickContinue", _ == "true")
     )

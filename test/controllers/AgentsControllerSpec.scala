@@ -62,9 +62,11 @@ class AgentsControllerSpec extends SpecBase {
         }
 
         "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.causeOfLateSubmissionAgent -> "agent")))
+          val result: Future[Result] = controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.causeOfLateSubmissionAgent -> "agent"))
+          )
           status(result) shouldBe OK
-          val documentParsed = Jsoup.parse(contentAsString(result))
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
         }
 
@@ -92,7 +94,7 @@ class AgentsControllerSpec extends SpecBase {
       "user submits the form" when {
         "the validation is performed against possible values - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -108,7 +110,7 @@ class AgentsControllerSpec extends SpecBase {
 
         "the validation is performed against possible values - value does not appear in options list" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -124,7 +126,7 @@ class AgentsControllerSpec extends SpecBase {
 
         "the validation is performed against an empty value - value is an empty string" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -141,7 +143,7 @@ class AgentsControllerSpec extends SpecBase {
 
       "return 500" when {
         "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest.withJsonBody(
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest.withJsonBody(
             Json.parse(
               """
                 |{
@@ -177,7 +179,9 @@ class AgentsControllerSpec extends SpecBase {
         }
 
         "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "client")))
+          val result: Future[Result] = controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "client"))
+          )
           status(result) shouldBe OK
           val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
@@ -208,7 +212,8 @@ class AgentsControllerSpec extends SpecBase {
       "user submits the form" when {
         "the validation is performed against possible values (agent) - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(
+              fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -224,7 +229,8 @@ class AgentsControllerSpec extends SpecBase {
 
           "the validation is performed against possible values - value does not appear in options list" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(
+              fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -240,7 +246,8 @@ class AgentsControllerSpec extends SpecBase {
 
         "the validation is performed against an empty value - value is an empty string" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(
+              fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -257,7 +264,7 @@ class AgentsControllerSpec extends SpecBase {
 
       "return 500" when {
         "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest.withJsonBody(
+          val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest.withJsonBody(
             Json.parse(
               """
                 |{
@@ -286,7 +293,8 @@ class AgentsControllerSpec extends SpecBase {
       "user submits the form as client" when {
         "the validation is performed against possible values (client) - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(
+              fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{

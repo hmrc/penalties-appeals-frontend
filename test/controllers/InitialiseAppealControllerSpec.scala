@@ -26,12 +26,14 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
-
 import java.time.LocalDateTime
+
+import play.api.mvc.Result
+
 import scala.concurrent.Future
 
 class InitialiseAppealControllerSpec extends SpecBase {
-  val mockAppealsService = mock(classOf[AppealService])
+  val mockAppealsService: AppealService = mock(classOf[AppealService])
   class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]) {
     reset(mockAppealsService)
     reset(mockAuthConnector)
@@ -49,7 +51,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      val result = await(controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest))
+      val result: Result = await(controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
@@ -57,14 +59,18 @@ class InitialiseAppealControllerSpec extends SpecBase {
       "- redirect to start appeal" in new Setup(AuthTestModels.successfulAuthResult) {
       val appealDataToReturn: AppealData = AppealData(
         `type` = PenaltyTypeEnum.Late_Submission,
-        startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
-        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
-        dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
-        dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
+        startDate = LocalDateTime.of(
+          2020, 1, 1, 1, 1, 0),
+        endDate = LocalDateTime.of(
+          2020, 1, 2, 1, 1, 0),
+        dueDate = LocalDateTime.of(
+          2020, 2, 7, 1, 1, 0),
+        dateCommunicationSent = LocalDateTime.of(
+          2020, 2, 8, 1, 1, 0)
       )
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result = controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
@@ -80,14 +86,18 @@ class InitialiseAppealControllerSpec extends SpecBase {
       "- redirect to start appeal for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
       val appealDataToReturn: AppealData = AppealData(
         `type` = PenaltyTypeEnum.Late_Payment,
-        startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
-        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
-        dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
-        dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
+        startDate = LocalDateTime.of(
+          2020, 1, 1, 1, 1, 0),
+        endDate = LocalDateTime.of(
+          2020, 1, 2, 1, 1, 0),
+        dueDate = LocalDateTime.of(
+          2020, 2, 7, 1, 1, 0),
+        dateCommunicationSent = LocalDateTime.of(
+          2020, 2, 8, 1, 1, 0)
       )
         when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(),any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result = controller.onPageLoad("12345", isLPP = true, isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
@@ -104,14 +114,17 @@ class InitialiseAppealControllerSpec extends SpecBase {
       "- redirect to start appeal for Additional Penalty (LPP)" in new Setup(AuthTestModels.successfulAuthResult) {
       val appealDataToReturn: AppealData = AppealData(
         `type` = PenaltyTypeEnum.Additional,
-        startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
-        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
-        dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
+        startDate = LocalDateTime.of(
+          2020, 1, 1, 1, 1, 0),
+        endDate = LocalDateTime.of(
+          2020, 1, 2, 1, 1, 0),
+        dueDate = LocalDateTime.of(
+          2020, 2, 7, 1, 1, 0),
         dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
       )
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result = controller.onPageLoad("12345", isLPP = true, isAdditional = true)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
@@ -128,7 +141,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      val result = await(controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest))
+      val result: Result = await(controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
   }
@@ -137,14 +150,18 @@ class InitialiseAppealControllerSpec extends SpecBase {
       "- redirect to Cancel VAT Registration page" in new Setup(AuthTestModels.successfulAuthResult) {
       val appealDataToReturn: AppealData = AppealData(
         `type` = PenaltyTypeEnum.Late_Submission,
-        startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
-        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
-        dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
-        dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
+        startDate = LocalDateTime.of(
+          2020, 1, 1, 1, 1, 0),
+        endDate = LocalDateTime.of(
+          2020, 1, 2, 1, 1, 0),
+        dueDate = LocalDateTime.of(
+          2020, 2, 7, 1, 1, 0),
+        dateCommunicationSent = LocalDateTime.of(
+          2020, 2, 8, 1, 1, 0)
       )
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result = controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
@@ -160,14 +177,18 @@ class InitialiseAppealControllerSpec extends SpecBase {
       "- redirect to Cancel VAT Registration page for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
       val appealDataToReturn: AppealData = AppealData(
         `type` = PenaltyTypeEnum.Late_Payment,
-        startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
-        endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
-        dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
-        dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
+        startDate = LocalDateTime.of(
+          2020, 1, 1, 1, 1, 0),
+        endDate = LocalDateTime.of(
+          2020, 1, 2, 1, 1, 0),
+        dueDate = LocalDateTime.of(
+          2020, 2, 7, 1, 1, 0),
+        dateCommunicationSent = LocalDateTime.of(
+          2020, 2, 8, 1, 1, 0)
       )
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
@@ -182,14 +203,18 @@ class InitialiseAppealControllerSpec extends SpecBase {
           "- redirect to Cancel VAT Registration page for LPP additional" in new Setup(AuthTestModels.successfulAuthResult) {
           val appealDataToReturn: AppealData = AppealData(
             `type` = PenaltyTypeEnum.Additional,
-            startDate = LocalDateTime.of(2020, 1, 1, 1, 1, 0),
-            endDate = LocalDateTime.of(2020, 1, 2, 1, 1, 0),
-            dueDate = LocalDateTime.of(2020, 2, 7, 1, 1, 0),
-            dateCommunicationSent = LocalDateTime.of(2020, 2, 8, 1, 1, 0)
+            startDate = LocalDateTime.of(
+              2020, 1, 1, 1, 1, 0),
+            endDate = LocalDateTime.of(
+              2020, 1, 2, 1, 1, 0),
+            dueDate = LocalDateTime.of(
+              2020, 2, 7, 1, 1, 0),
+            dateCommunicationSent = LocalDateTime.of(
+              2020, 2, 8, 1, 1, 0)
           )
           when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(),any())(any(), any(), any()))
             .thenReturn(Future.successful(Some(appealDataToReturn)))
-          val result = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = true)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = true)(fakeRequest)
           redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
           await(result).header.status shouldBe SEE_OTHER
           await(result).session.get(SessionKeys.appealType).isDefined shouldBe true

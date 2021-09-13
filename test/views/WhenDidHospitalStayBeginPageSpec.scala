@@ -16,6 +16,8 @@
 
 package views
 
+import java.time.LocalDate
+
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHospitalStayBeginForm
 import messages.WhenDidHospitalStayBeginMessages._
@@ -33,7 +35,7 @@ class WhenDidHospitalStayBeginPageSpec extends SpecBase with ViewBehaviours{
   def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidHospitalStayBeginPage.apply(form,
     controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(NormalMode))
 
-  val formProvider = WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm()
+  val formProvider: Form[LocalDate] = WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm()
 
   "WhenDidHospitalStayBeginPage" should {
     implicit val doc: Document = asDocument(applyView(formProvider))

@@ -25,7 +25,7 @@ import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class OtherPenaltiesForPeriodControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[OtherPenaltiesForPeriodController]
+  val controller: OtherPenaltiesForPeriodController = injector.instanceOf[OtherPenaltiesForPeriodController]
 
   "GET /multiple-penalties" should {
     "return 200 (OK) when the user is authorised and has the correct keys" in {

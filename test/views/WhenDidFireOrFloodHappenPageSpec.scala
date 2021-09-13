@@ -16,6 +16,8 @@
 
 package views
 
+import java.time.LocalDate
+
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidFireOrFloodHappenForm
 import messages.WhenDidFireOrFloodHappenMessages._
@@ -35,7 +37,7 @@ class WhenDidFireOrFloodHappenPageSpec extends SpecBase with ViewBehaviours{
   def applyView(form: Form[_]): HtmlFormat.Appendable = fireOrFloodPage.apply(form,
   controllers.routes.FireOrFloodReasonController.onSubmit(NormalMode))
 
-  val formProvider = WhenDidFireOrFloodHappenForm.whenFireOrFloodHappenedForm()
+  val formProvider: Form[LocalDate] = WhenDidFireOrFloodHappenForm.whenFireOrFloodHappenedForm()
 
   "WhenDidFireOrFloodHappenPage" should {
 

@@ -81,7 +81,8 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
 
 
     "an agent is on the page" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(fakeRequestWithCorrectKeys)))
+      implicit val doc: Document = asDocument(applyView(
+        formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(fakeRequestWithCorrectKeys)))
 
       val expectedContent = Seq(
         Selectors.title -> agentTitle,
@@ -106,7 +107,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "show the correct heading content when appealing a late payment penalty" in {
-        implicit val doc = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(
+        implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(
           fakeRequestWithCorrectKeys.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
         ))
 

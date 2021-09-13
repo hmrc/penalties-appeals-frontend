@@ -312,17 +312,15 @@ object HealthAppealInformation {
       )
     ).deepMerge(
       (healthAppealInformation.hospitalStayInvolved, healthAppealInformation.eventOngoing) match {
-        case (true, false) => {
+        case (true, false) =>
           Json.obj(
             "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get,
             "endDateOfEvent" -> healthAppealInformation.endDateOfEvent.get
           )
-        }
-        case _ => {
+        case _ =>
           Json.obj(
             "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get
           )
-        }
       }
     ).deepMerge(
       healthAppealInformation.isClientResponsibleForSubmission.fold(
