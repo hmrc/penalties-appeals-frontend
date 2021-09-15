@@ -28,7 +28,7 @@
         phaseBanner: components.phaseBanner,
         govukBackLink: GovukBackLink,
         hmrcStandardFooter: HmrcStandardFooter,
-        languageSelect: views.html.LanguageSelect
+        languageSelect: views.html.LanguageSelect,
 )
 @(
     pageTitle: String,
@@ -37,6 +37,7 @@
     showPenaltyInformation: Boolean = true,
     formHasErrors: Boolean = false,
     backLinkEnabled: Boolean = true,
+    customJavaScript: Option[String] = None,
     formErrors: Seq[FormError] = Seq.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
@@ -63,6 +64,7 @@
 @scripts = {
 @if(scriptsBlock.isEmpty) {
     <script src="@controllers.routes.Assets.versioned("javascripts/backLink.js")"></script>
+    @customJavaScript.map {x => <script src='@controllers.routes.Assets.versioned(s"javascripts/$x")'></script> }
     <script>window.GOVUKFrontend.initAll();</script>
 } else {
     @scriptsBlock.get
