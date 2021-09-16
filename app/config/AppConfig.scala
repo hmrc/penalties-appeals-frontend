@@ -23,7 +23,7 @@ import play.api.i18n.Lang
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 
 @Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends AppConfigTrait{
   val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
   val en: String            = "en"
@@ -81,4 +81,12 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     agentClientLookupHost +
       servicesConfig.getConfString(vatAgentClientLookupFrontendStartUrl, "") +
       s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
+
+  lazy val pegaBearerToken: String = "bearerToken" //TODO: bearerToken to be configured for PEGA
+}
+
+trait AppConfigTrait{
+
+  def pegaBearerToken: String
+
 }
