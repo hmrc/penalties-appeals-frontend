@@ -1,6 +1,7 @@
 
 @import config.AppConfig
 @import utils.SessionKeys
+@import views.html.components.upload.uploadItem
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
@@ -39,7 +40,8 @@
 @layout(pageTitle = messages("otherReason.uploadEvidence.title"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors) {
+    formErrors = form.errors,
+    customJavaScript = Some("upload/multiFileUpload.js")) {
     <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.heading")</h1>
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p1")</p>
     <p class="govuk-body">@messages(lppOrLspOrObligationDynamicText)</p>
@@ -48,12 +50,19 @@
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
     @details("otherReason.uploadEvidence.details.heading", detailsContent)
 
-    @formHelper(action = postAction) {
-        @govukFileUpload(FileUpload(
-            name = "upload-evidence",
-            id = "upload-evidence"
-        ))
 
-        @govukButton(Button(content = Text(messages("common.continue"))))
-    }
+    @formHelper(action = postAction,
+        args = (Symbol("data-multi-file-upload-start-rows"), "1"), (Symbol("data-multi-file-upload-max-files"), "5"), (Symbol("id"), "multi-upload-form")) {
+            <ul class="multi-file-upload__item-list"></ul>
+
+            <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.addAnother")</button>
+
+            <div class="multi-file-upload__notifications govuk-visually-hidden" aria-live="polite" role="status"></div>
+
+            <script type="text/x-template" id="multi-file-upload-item-tpl">@uploadItem("")</script>
+
+            <p>
+                @govukButton(Button(content = Text(messages("common.continue"))))
+            </p>
+        }
 }

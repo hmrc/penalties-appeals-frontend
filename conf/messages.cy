@@ -289,6 +289,8 @@ otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel or PowerPoint)
 otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
 otherReason.uploadEvidence.details.p2 = You cannot upload zip files or documents that are password-protected.
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
+otherReason.uploadEvidence.document = Document
+otherReason.uploadEvidence.addAnother = Add another document
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------

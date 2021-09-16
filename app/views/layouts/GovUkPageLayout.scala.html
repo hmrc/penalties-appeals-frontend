@@ -18,8 +18,6 @@
 @import viewtils.{ImplicitDateFormatter, PenaltyTypeHelper}
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.hmrcReportTechnicalIssueHelper
 
-@import java.time.LocalDateTime
-
 @this(
         govukTemplate: GovukTemplate,
         govukHeader: GovukHeader,
@@ -31,6 +29,7 @@
 @(
         pageTitle: Option[String] = None,
         headBlock: Option[Html] = None,
+        customScripts: Option[String] = None,
         headerBlock: Option[Html] = None,
         beforeContentBlock: Option[Html] = None,
         footerBlock: Option[Html] = None,

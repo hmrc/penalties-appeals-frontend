@@ -40,6 +40,10 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val detailsContentP2 = ".govuk-details__text > p:nth-child(3)"
 
       val detailsContentLi = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
+
+      val addAnotherButton = ".multi-file-upload__add-another"
+
+      val continueButton = "#multi-upload-form > p > button"
     }
     val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
@@ -65,7 +69,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentLi(4) -> detailsLi4,
       Selectors.detailsContentLi(5) -> detailsLi5,
       Selectors.detailsContentP2 -> detailsP2,
-      Selectors.button -> continueButton
+      Selectors.addAnotherButton -> addAnotherButton,
+      Selectors.continueButton -> continueButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)
@@ -89,7 +94,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
-        Selectors.button -> continueButton
+        Selectors.addAnotherButton -> addAnotherButton,
+        Selectors.continueButton -> continueButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)(lppDoc)
@@ -116,7 +122,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
-        Selectors.button -> continueButton
+        Selectors.addAnotherButton -> addAnotherButton,
+        Selectors.continueButton -> continueButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
@@ -141,7 +148,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
-        Selectors.button -> continueButton
+        Selectors.addAnotherButton -> addAnotherButton,
+        Selectors.continueButton -> continueButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)(lppAdditionalDoc)
@@ -168,7 +176,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
-        Selectors.button -> continueButton
+        Selectors.addAnotherButton -> addAnotherButton,
+        Selectors.continueButton -> continueButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)

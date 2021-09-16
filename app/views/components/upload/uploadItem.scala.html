@@ -1,0 +1,16 @@
+@(acceptedFileExtensions: String)(implicit messages: Messages)
+<li class="multi-file-upload__item">
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="file-{fileIndex}">@messages("otherReason.uploadEvidence.document") <span class="multi-file-upload__number">{fileNumber}</span></label>
+        <div class="multi-file-upload__item-content">
+            <div class="multi-file-upload__file-container">
+                                                                                @* TODO: 'name' attribute to be removed, temp fix *@
+                <input class="multi-file-upload__file govuk-file-upload" type="file" id="file-{fileIndex}" name="upload-evidence" accept="@acceptedFileExtensions">
+                <span class="multi-file-upload__file-name"></span>
+                <a href="" target="_blank" class="govuk-link multi-file-upload__file-preview">Preview</a>
+            </div>
+
+            @* TODO: add item upload status and remove/change links *@
+        </div>
+    </div>
+</li>

@@ -40,7 +40,6 @@ lazy val microservice = Project(appName, file("."))
     ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := true,
     PlayKeys.playDefaultPort := 9181
-    // ***************
   )
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)
