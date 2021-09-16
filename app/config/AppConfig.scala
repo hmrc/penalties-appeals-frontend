@@ -22,6 +22,8 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import play.api.i18n.Lang
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 
+import scala.concurrent.duration.Duration
+
 @Singleton
 class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
   val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
@@ -31,6 +33,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   val defaultLanguage: Lang = Lang(en)
 
   lazy val signInUrl: String = config.get[String]("signIn.url")
+
+  lazy val mongoTTL: Duration = config.get[Duration]("mongodb.ttl")
 
   lazy val penaltiesServiceBaseUrl: String = servicesConfig.baseUrl("penalties")
 
