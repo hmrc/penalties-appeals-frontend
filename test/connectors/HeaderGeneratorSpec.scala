@@ -16,31 +16,33 @@
 
 package connectors
 
-import config.MockAppConfigTrait
-import org.scalatest.{Matchers, WordSpec}
+import base.SpecBase
+import config.AppConfig
+import org.mockito.Mockito.{mock, when}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.HeaderNames
 import uk.gov.hmrc.http.HeaderCarrier
 
 
-class HeaderGeneratorSpec extends WordSpec with Matchers with HeaderNames with MockAppConfigTrait {
+class HeaderGeneratorSpec extends AnyWordSpec with HeaderNames with SpecBase {
 
+  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val testHeaderGenerator = new HeaderGenerator(mockAppConfig)
-  val bearerToken           = "someToken"
+  val bearerToken = "someToken"
 
   "HeaderGenerator.headersForPEGA" must {
 
-      "include the Authorization header if it is supplied in AppConfig" in {
-      MockAppConfig.pegaBearerToken returns bearerToken
+    "include the Authorization header if it is supplied in AppConfig" in {
+      when(mockAppConfig.pegaBearerToken).thenReturn(bearerToken)
       implicit val hc: HeaderCarrier = HeaderCarrier()
-      val headers                    = testHeaderGenerator.headersForPEGA().toMap
-
+      val headers = testHeaderGenerator.headersForPEGA().toMap
       headers(AUTHORIZATION) shouldBe s"Bearer $bearerToken"
     }
 
     "not include the Authorization header if it is empty string in AppConfig" in {
-      MockAppConfig.pegaBearerToken returns ""
+      when(mockAppConfig.pegaBearerToken).thenReturn("")
       implicit val hc: HeaderCarrier = HeaderCarrier()
-      val headers                    = testHeaderGenerator.headersForPEGA().toMap
+      val headers = testHeaderGenerator.headersForPEGA().toMap
       headers.contains(AUTHORIZATION) shouldBe false
     }
   }

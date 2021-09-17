@@ -16,18 +16,18 @@
 
 package connectors
 
-import config.AppConfigTrait
+import config.AppConfig
 import play.api.http.HeaderNames._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class HeaderGenerator @Inject()(appConfig: AppConfigTrait){
+class HeaderGenerator @Inject()(appConfig: AppConfig) {
 
   def headersForPEGA()(implicit hc: HeaderCarrier): Seq[(String, String)] = {
     appConfig.pegaBearerToken match {
-      case ""          => Seq.empty
+      case "" => Seq.empty
       case bearerToken => Seq(AUTHORIZATION -> s"Bearer $bearerToken")
     }
   }

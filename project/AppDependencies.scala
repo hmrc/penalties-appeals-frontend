@@ -22,7 +22,6 @@ object AppDependencies {
     "com.vladsch.flexmark"     %  "flexmark-all"              % "0.36.8"           % "test, it",
     "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.26.3"           % "it",
     "uk.gov.hmrc"             %% "service-integration-test" % "1.1.0-play-28"    % "test, it",
-    "org.mockito"             % "mockito-core"              % "3.4.6"            % "test, it",
-    "org.scalamock"           %% "scalamock-scalatest-support" % "3.6.0"         % "test"
+    "org.mockito"             % "mockito-core"              % "3.4.6"            % "test, it"
   )
 }
