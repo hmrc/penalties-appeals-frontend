@@ -10,11 +10,13 @@ object AppDependencies {
     "uk.gov.hmrc"             %% "play-frontend-hmrc"             % "0.64.0-play-28",
     "uk.gov.hmrc"             %% "play-frontend-govuk"            % "0.71.0-play-28",
     "uk.gov.hmrc"             %% "play-language"                  % "5.0.0-play-28",
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"             % "0.53.0",
     "uk.gov.hmrc"             %% "play-conditional-form-mapping"  % "1.9.0-play-28"
   )
 
   val test = Seq(
     "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % "5.3.0"            % "test, it",
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % "0.50.0"           % "test, it",
     "org.scalatest"           %% "scalatest"                % "3.0.9"            % "test, it",
     "org.jsoup"               %  "jsoup"                    % "1.13.1"           % "test, it",
     "com.typesafe.play"       %% "play-test"                % PlayVersion.current  % "test, it",

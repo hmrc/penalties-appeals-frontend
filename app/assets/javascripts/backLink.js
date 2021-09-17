@@ -1,4 +1,4 @@
-var backLinks = document.querySelectorAll('#back-link[href="#"]')
+var backLinks = document.querySelectorAll('#back-link[href="#"]');
 // prevent resubmit warning
 if (window.history && window.history.replaceState && typeof window.history.replaceState === 'function') {
     window.history.replaceState(null, null, window.location.href);

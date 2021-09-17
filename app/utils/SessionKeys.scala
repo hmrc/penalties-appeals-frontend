@@ -47,6 +47,7 @@ object SessionKeys {
   val isObligationAppeal = "isObligationAppeal"
   val cancelVATRegistration = "cancelVATRegistration"
   val otherRelevantInformation = "otherRelevantInformation"
+  val journeyId = "journeyId"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -77,6 +78,7 @@ object SessionKeys {
     whenDidThePersonDie,
     isObligationAppeal,
     cancelVATRegistration,
-    otherRelevantInformation
+    otherRelevantInformation,
+    journeyId
   )
 }

@@ -54,6 +54,10 @@ object UploadEvidenceMessages {
 
   val detailsP2 = "You cannot upload zip files or documents that are password-protected."
 
+  val document1 = "Document 1"
+
+  val addAnotherButton = "Add another document"
+
   val continueButton = "Continue"
 
 }

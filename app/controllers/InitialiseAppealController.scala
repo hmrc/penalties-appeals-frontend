@@ -26,6 +26,7 @@ import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
 
+import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -67,6 +68,8 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
                                                           isAppealAgainstObligation: Boolean)(implicit user: UserRequest[A]): Result = {
     logger.debug(s"[InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Resetting appeals session: removing keys from session" +
       s" and replacing with new keys")
+    val journeyId: String = UUID.randomUUID().toString
+    logger.debug(s"InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Setting journeyId to: $journeyId")
     Redirect(urlToRedirectTo)
       .removingFromSession(SessionKeys.allKeys: _*)
       .addingToSession((SessionKeys.penaltyId, penaltyId))
@@ -75,6 +78,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
       .addingToSession((SessionKeys.endDateOfPeriod, appealModel.endDate.toString))
       .addingToSession((SessionKeys.dueDateOfPeriod, appealModel.dueDate.toString))
       .addingToSession((SessionKeys.dateCommunicationSent, appealModel.dateCommunicationSent.toString))
+      .addingToSession((SessionKeys.journeyId, journeyId))
       .addingToSession(if(isAppealAgainstObligation) (SessionKeys.isObligationAppeal, isAppealAgainstObligation.toString) else ("", ""))  }
 
 }

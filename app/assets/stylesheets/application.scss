@@ -3,3 +3,5 @@ $hmrc-assets-path: "/penalties-appeals/assets/lib/hmrc-frontend/hmrc/";
 
 @import "lib/govuk-frontend/govuk/all";
 @import "lib/hmrc-frontend/hmrc/all";
+
+@import "upload/multi-file-upload";
