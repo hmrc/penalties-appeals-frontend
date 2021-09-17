@@ -50,7 +50,10 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
   )
 
   val uploadJourneyModel: UploadJourney = UploadJourney(
-    reference = "123456789", fileStatus = "READY", downloadUrl = Some("www.test.com"), uploadDetails = Some(
+    reference = "123456789",
+    fileStatus = UploadStatusEnum.READY,
+    downloadUrl = Some("www.test.com"),
+    uploadDetails = Some(
       UploadDetails(
         fileName = "file1.txt",
         fileMimeType = "text/plain",
