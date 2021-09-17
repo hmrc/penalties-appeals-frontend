@@ -19,6 +19,7 @@ package connectors
 import config.AppConfig
 import play.api.http.HeaderNames._
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Logger.logger
 
 import javax.inject.{Inject, Singleton}
 
@@ -26,9 +27,11 @@ import javax.inject.{Inject, Singleton}
 class HeaderGenerator @Inject()(appConfig: AppConfig) {
 
   def headersForPEGA()(implicit hc: HeaderCarrier): Seq[(String, String)] = {
+    val headers = Seq("Environment" -> appConfig.pegaEnvironment)
+    logger.debug(s"[HeaderGenerator] [headersForPEGA] $headers")
     appConfig.pegaBearerToken match {
-      case "" => Seq.empty
-      case bearerToken => Seq(AUTHORIZATION -> s"Bearer $bearerToken")
+      case "" => headers
+      case bearerToken => headers ++ Seq(AUTHORIZATION -> s"Bearer $bearerToken")
     }
   }
 }
