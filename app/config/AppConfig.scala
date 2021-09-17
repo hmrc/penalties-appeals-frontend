@@ -82,5 +82,5 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
       servicesConfig.getConfString(vatAgentClientLookupFrontendStartUrl, "") +
       s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
 
-  lazy val pegaBearerToken: String = "pega.bearerToken"
+  lazy val pegaBearerToken: String = config.get[String]("pega.bearerToken")
 }
