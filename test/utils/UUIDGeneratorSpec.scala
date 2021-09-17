@@ -16,9 +16,10 @@
 
 package utils
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class UUIDGeneratorSpec extends WordSpec with MustMatchers {
+class UUIDGeneratorSpec extends AnyWordSpec with Matchers {
 
   val uuidGenerator = new UUIDGenerator
 

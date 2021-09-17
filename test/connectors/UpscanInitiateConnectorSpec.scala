@@ -18,13 +18,19 @@ package connectors
 
 import base.SpecBase
 import config.AppConfig
-import connectors.httpParsers.UpscanInitiateHttpParser.{BadRequest, UpscanInitiateResponse}
-import models.upscan.{UploadFormTemplateRequest, UpscanInitiateRequest, UpscanInitiateResponseModel}
+import connectors.httpParsers.UpscanInitiateHttpParser.{
+  BadRequest,
+  UpscanInitiateResponse
+}
+import models.upscan.{
+  UploadFormTemplateRequest,
+  UpscanInitiateRequest,
+  UpscanInitiateResponseModel
+}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{when, _}
-import play.api.http.Status
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,7 +42,11 @@ class UpscanInitiateConnectorSpec extends SpecBase {
   val mockAppConfig: AppConfig = mock(classOf[AppConfig])
 
   val upscanInitiateDataModel: UpscanInitiateRequest = UpscanInitiateRequest("")
-  val sampleUpscanResponse: UpscanInitiateResponseModel = UpscanInitiateResponseModel("foo", UploadFormTemplateRequest("bar", Map("doo" -> "dar")))
+  val sampleUpscanResponse: UpscanInitiateResponseModel =
+    UpscanInitiateResponseModel(
+      "foo",
+      UploadFormTemplateRequest("bar", Map("doo" -> "dar"))
+    )
 
   class Setup {
     reset(mockHttpClient)
@@ -49,23 +59,33 @@ class UpscanInitiateConnectorSpec extends SpecBase {
 
   "initiateToUpscan" should {
 
-    "return Right when parser returns right" in new Setup{
+    "return Right when parser returns right" in new Setup {
       when(mockAppConfig.upscanInitiateBaseUrl)
         .thenReturn("http://url/url")
 
-      when(mockHttpClient.POST[UpscanInitiateRequest, UpscanInitiateResponse](any(), any(), any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(Right(sampleUpscanResponse)))
+      when(
+        mockHttpClient.POST[UpscanInitiateRequest, UpscanInitiateResponse](
+          any(),
+          any(),
+          any()
+        )(any(), any(), any(), any())
+      ).thenReturn(Future.successful(Right(sampleUpscanResponse)))
 
       val result = connector.initiateToUpscan(upscanInitiateDataModel)
 
       await(result) shouldBe Right(sampleUpscanResponse)
     }
 
-    "return left when the parser returns left" in new Setup{
+    "return left when the parser returns left" in new Setup {
       when(mockAppConfig.upscanInitiateBaseUrl)
         .thenReturn("http://url/wrongurl")
-      when(mockHttpClient.POST[UpscanInitiateRequest, UpscanInitiateResponse](any(), any(), any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(Left(BadRequest)))
+      when(
+        mockHttpClient.POST[UpscanInitiateRequest, UpscanInitiateResponse](
+          any(),
+          any(),
+          any()
+        )(any(), any(), any(), any())
+      ).thenReturn(Future.successful(Left(BadRequest)))
 
       val result = connector.initiateToUpscan(upscanInitiateDataModel)
 
