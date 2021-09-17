@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import scala.concurrent.duration.Duration
 
 @Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig){
   val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
   val en: String            = "en"
@@ -85,4 +85,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     agentClientLookupHost +
       servicesConfig.getConfString(vatAgentClientLookupFrontendStartUrl, "") +
       s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
+
+  lazy val pegaBearerToken: String = config.get[String]("pega.bearerToken")
 }
