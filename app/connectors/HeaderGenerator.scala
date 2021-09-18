@@ -19,16 +19,22 @@ package connectors
 import config.AppConfig
 import play.api.http.HeaderNames._
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Logger.logger
+import utils.UUIDGenerator
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class HeaderGenerator @Inject()(appConfig: AppConfig) {
+class HeaderGenerator @Inject()(appConfig: AppConfig, idGenerator: UUIDGenerator) {
 
   def headersForPEGA()(implicit hc: HeaderCarrier): Seq[(String, String)] = {
+    val headers = Seq(
+      "CorrelationId" -> idGenerator.generateUUID
+    )
+    logger.debug(s"[HeaderGenerator] [headersForPEGA] $headers")
     appConfig.pegaBearerToken match {
-      case "" => Seq.empty
-      case bearerToken => Seq(AUTHORIZATION -> s"Bearer $bearerToken")
+      case "" => headers
+      case bearerToken => headers ++ Seq(AUTHORIZATION -> s"Bearer $bearerToken")
     }
   }
 }
