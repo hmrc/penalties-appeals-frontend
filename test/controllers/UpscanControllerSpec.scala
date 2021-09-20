@@ -24,40 +24,55 @@ import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.JsString
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
-
 import java.time.LocalDateTime
+
+import connectors.UpscanConnector
+
 import scala.concurrent.Future
 
 class UpscanControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
-  val controller: UpscanController = new UpscanController(repository)(appConfig, stubMessagesControllerComponents())
+  val connector: UpscanConnector = mock(classOf[UpscanConnector])
+  val controller: UpscanController = new UpscanController(repository, connector)(appConfig, stubMessagesControllerComponents())
 
   "UpscanController" should {
-    "return OK" when {
-      "the user has an upload state in the database" in {
-        when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Some(UploadStatusEnum.WAITING)))
-        val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
-        status(result) shouldBe OK
-        contentAsString(result) shouldBe "\"WAITING\""
+    "getStatusOfFileUpload" must {
+      "return OK" when {
+        "the user has an upload state in the database" in {
+          when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(UploadStatusEnum.WAITING)))
+          val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
+          status(result) shouldBe OK
+          contentAsString(result) shouldBe "\"WAITING\""
+        }
+
+        "the user has a successful file upload in the database" in {
+          when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(UploadStatusEnum.READY)))
+
+          val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
+          status(result) shouldBe OK
+          contentAsString(result) shouldBe "\"READY\""
+        }
       }
 
-      "the user has a successful file upload in the database" in {
-        when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Some(UploadStatusEnum.READY)))
-
-        val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
-        status(result) shouldBe OK
-        contentAsString(result) shouldBe "\"READY\""
+      "return NOT FOUND" when {
+        "the database does not contain such values specified" in {
+          when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+          val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
+          status(result) shouldBe NOT_FOUND
+        }
       }
     }
 
-    "return NOT FOUND" when {
-      "the database does not contain such values specified" in {
-        when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(None))
-        val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
-        status(result) shouldBe NOT_FOUND
+    "initiateCallToUpscan" must {
+      "return OK" when {
+        "the user has a upload state in the database" in {
+          val result = controller.initiateCallToUpscan("1234")(fakeRequest)
+          status(result) shouldBe OK
+          contentAsJson(result) shouldBe "asdf"
+        }
       }
     }
   }
