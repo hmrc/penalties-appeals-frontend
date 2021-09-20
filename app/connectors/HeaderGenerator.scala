@@ -29,7 +29,8 @@ class HeaderGenerator @Inject()(appConfig: AppConfig, idGenerator: UUIDGenerator
 
   def headersForPEGA()(implicit hc: HeaderCarrier): Seq[(String, String)] = {
     val headers = Seq(
-      "CorrelationId" -> idGenerator.generateUUID
+      "CorrelationId" -> idGenerator.generateUUID,
+      "Environment" -> appConfig.pegaEnvironment
     )
     val correlationId = headers.find(_._1 == "CorrelationId").map(_._2).getOrElse("")
     logger.info(s"CorrelationId  $correlationId")
