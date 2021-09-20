@@ -89,4 +89,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val pegaBearerToken: String = config.get[String]("pega.bearerToken")
 
   lazy val pegaEnvironment: String = config.get[String]("pega.environment")
+
+  lazy val upscanInitiateBaseUrl: String = servicesConfig.baseUrl("upscan-initiate")
+
 }
