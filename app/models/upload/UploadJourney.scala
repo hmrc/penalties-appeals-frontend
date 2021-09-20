@@ -16,15 +16,31 @@
 
 package models.upload
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsValue, Json, OFormat, Reads}
 
 case class UploadJourney (
                            reference: String,
-                           fileStatus: String,
+                           fileStatus: UploadStatusEnum.Value,
                            downloadUrl: Option[String] = None,
                            uploadDetails: Option[UploadDetails] = None
                          )
 
 object UploadJourney {
   implicit val format: OFormat[UploadJourney] = Json.format[UploadJourney]
+
+  val reads: Reads[UploadJourney] = (json: JsValue) => {
+    for {
+      reference <- (json \ "reference").validate[String]
+      fileStatus <- (json \ "fileStatus").validateOpt[UploadStatusEnum.Value]
+      downloadUrl <- (json \ "downloadUrl").validateOpt[String]
+      uploadDetails <- (json \ "uploadDetails").validateOpt[UploadDetails]
+    } yield {
+      UploadJourney(
+        reference,
+        fileStatus.getOrElse(UploadStatusEnum.WAITING),
+        downloadUrl,
+        uploadDetails
+      )
+    }
+  }
 }

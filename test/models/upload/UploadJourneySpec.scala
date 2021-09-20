@@ -49,8 +49,19 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       |""".stripMargin
   )
 
+  val uploadJourneyWithoutUrlOrUploadDetailsAndNoStatusAsJson: JsValue = Json.parse(
+    """
+      |{
+      | "reference": "123456789"
+      |}
+      |""".stripMargin
+  )
+
   val uploadJourneyModel: UploadJourney = UploadJourney(
-    reference = "123456789", fileStatus = "READY", downloadUrl = Some("www.test.com"), uploadDetails = Some(
+    reference = "123456789",
+    fileStatus = UploadStatusEnum.READY,
+    downloadUrl = Some("www.test.com"),
+    uploadDetails = Some(
       UploadDetails(
         fileName = "file1.txt",
         fileMimeType = "text/plain",
@@ -63,6 +74,8 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
 
   val uploadJourneyWithoutUrlOrUploadDetailsModel: UploadJourney = uploadJourneyModel.copy(downloadUrl = None, uploadDetails = None)
 
+  val uploadJourneyWithoutUrlOrUploadWithDefaultStatusDetailsModel: UploadJourney = uploadJourneyModel.copy(downloadUrl = None, uploadDetails = None, fileStatus = UploadStatusEnum.WAITING)
+
   "UploadJourneySpec" should {
     "be readable from JSON" in {
       val result = Json.fromJson(uploadJourneyAsJson)(UploadJourney.format)
@@ -74,6 +87,12 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       val result = Json.fromJson(uploadJourneyWithoutUrlOrUploadDetailsAsJson)(UploadJourney.format)
       result.isSuccess shouldBe true
       result.get shouldBe uploadJourneyWithoutUrlOrUploadDetailsModel
+    }
+
+    "be readable from JSON when there is no url, upload details or status (set to WAITING)" in {
+      val result = Json.fromJson(uploadJourneyWithoutUrlOrUploadDetailsAndNoStatusAsJson)(UploadJourney.reads)
+      result.isSuccess shouldBe true
+      result.get shouldBe uploadJourneyWithoutUrlOrUploadWithDefaultStatusDetailsModel
     }
 
     "be writable to JSON" in {
