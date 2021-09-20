@@ -48,7 +48,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
     def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
-      uploadEvidencePage.apply(form, controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode))(request, implicitly, implicitly)
+      uploadEvidencePage.apply(form, controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode), "")(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView(formProvider))

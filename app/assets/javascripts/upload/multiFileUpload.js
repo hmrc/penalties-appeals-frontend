@@ -6,7 +6,8 @@ class MultiFileUpload {
         this.config = {
             startRows: parseInt(form.dataset.multiFileUploadStartRows) || 1,
             minFiles: parseInt(form.dataset.multiFileUploadMinFiles) || 1,
-            maxFiles: parseInt(form.dataset.multiFileUploadMaxFiles) || 5
+            maxFiles: parseInt(form.dataset.multiFilUeploadMaxFiles) || 5,
+            uploadedFiles: form.dataset.multiFileUploadUploadedFiles ? JSON.parse(form.dataset.multiFileUploadUploadedFiles) : []
         }
 
         this.classes = {
@@ -45,6 +46,11 @@ class MultiFileUpload {
 
      createInitialRows() {
         let rowCount = 0;
+
+         this.config.uploadedFiles.forEach(fileData => {
+             this.createUploadedItem(fileData);
+             rowCount++;
+         });
 
         if (rowCount < this.config.startRows) {
             for (let a = rowCount; a < this.config.startRows; a++) {

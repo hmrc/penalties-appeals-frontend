@@ -31,12 +31,14 @@ import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
   val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
@@ -46,12 +48,15 @@ class OtherReasonControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
+    when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
+
     val controller: OtherReasonController = new OtherReasonController(
       whenDidYouBecomeUnablePage,
       whyReturnSubmittedLatePage,
       uploadEvidencePage,
-      mainNavigator
-    )(authPredicate, dataRequiredAction, appConfig, mcc)
+      mainNavigator,
+      mockUploadJourneyRepository
+    )(authPredicate, dataRequiredAction, appConfig, mcc, ec)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }

@@ -17,8 +17,9 @@
 package repositories
 
 import config.AppConfig
+import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey}
 import models.upload.{UploadJourney, UploadStatusEnum}
-import uk.gov.hmrc.mongo.cache.{CacheIdType, CacheItem, DataKey, MongoCacheRepository}
+import uk.gov.hmrc.mongo.cache.{CacheIdType, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 
 import javax.inject.{Inject, Singleton}
@@ -45,5 +46,19 @@ class UploadJourneyRepository @Inject()(
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatusEnum.Value]] = {
     get[UploadJourney](journeyId)(DataKey(fileReference)).map(_.map(_.fileStatus))
+  }
+
+  def getUploadsForJourney(journeyId: Option[String]): Future[Option[Seq[UploadJourney]]] = {
+    journeyId match {
+      case Some(id) =>
+        findById(id)
+        .map {
+          case Some(cacheItem) if cacheItem.data.fields.nonEmpty =>
+            val list = cacheItem.data.values
+            Some(list.map( a => a.as[UploadJourney]).toSeq)
+          case None => None
+        }
+      case _ => Future.successful(None)
+    }
   }
 }
