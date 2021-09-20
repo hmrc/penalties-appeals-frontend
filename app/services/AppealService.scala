@@ -17,7 +17,7 @@
 package services
 
 import config.AppConfig
-import connectors.PenaltiesConnector
+import connectors.{HeaderGenerator, PenaltiesConnector}
 import helpers.DateTimeHelper
 import models.appeals.AppealSubmission
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum}
@@ -37,7 +37,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               appConfig: AppConfig,
                               dateTimeHelper: DateTimeHelper,
-                              auditService: AuditService) {
+                              auditService: AuditService,
+                              headerGenerator: HeaderGenerator) {
 
 def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean,isAdditional:Boolean)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP,isAdditional).map {
@@ -93,11 +94,11 @@ def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean,isAddi
           case OK => {
             if(isLPP)
               if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString))
-                auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString))
+                auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, headerGenerator))
               else
-                auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString))
+                auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString,headerGenerator))
             else
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString,headerGenerator))
             logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
             true
           }
