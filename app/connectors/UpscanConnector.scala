@@ -30,6 +30,6 @@ class UpscanConnector @Inject()(httpClient: HttpClient,
   val postInitiateUrl: String = s"${appConfig.upscanInitiateBaseUrl}/upscan/v2/initiate"
 
   def initiateToUpscan(request: UpscanInitiateRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UpscanInitiateResponse] = {
-    httpClient.POST(postInitiateUrl, request)(UpscanInitiateRequest.writes, UpscanInitiateResponseReads, hc, ec)
+    httpClient.POST[UpscanInitiateRequest, UpscanInitiateResponse](postInitiateUrl, request)(UpscanInitiateRequest.writes, UpscanInitiateResponseReads, hc, ec)
   }
 }

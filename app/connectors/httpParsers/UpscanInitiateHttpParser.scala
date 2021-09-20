@@ -30,7 +30,7 @@ object UpscanInitiateHttpParser {
     def read(method: String, url: String, response: HttpResponse): UpscanInitiateResponse = {
       response.status match {
         case OK =>
-          response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.formats) match {
+          response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.JsonReadsForModel) match {
             case JsSuccess(model, _) => Right(model)
             case _ => Left(InvalidJson)
           }
@@ -44,7 +44,7 @@ object UpscanInitiateHttpParser {
     }
   }
 
-  trait ErrorResponse {
+  sealed trait ErrorResponse {
     val status: Int
     val body: String
   }
