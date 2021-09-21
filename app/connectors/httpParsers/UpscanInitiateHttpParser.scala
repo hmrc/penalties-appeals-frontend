@@ -30,7 +30,7 @@ object UpscanInitiateHttpParser {
     def read(method: String, url: String, response: HttpResponse): UpscanInitiateResponse = {
       response.status match {
         case OK =>
-          response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.JsonReadsForModel) match {
+          response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.jsonReadsForModel) match {
             case JsSuccess(model, _) => Right(model)
             case _ => Left(InvalidJson)
           }
