@@ -30,7 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
-                                        (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
+                                        (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def callbackFromUpscan(journeyId: String): Action[JsValue] = Action.async(parse.json) {
     implicit request => {

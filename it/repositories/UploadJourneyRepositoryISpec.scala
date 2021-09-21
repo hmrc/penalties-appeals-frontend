@@ -60,4 +60,32 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       modelInRepository shouldBe callbackModel
     }
   }
+
+  "getStatusOfFileUpload" should {
+    s"return $None when the document is not in Mongo" in {
+      await(deleteAll())
+      val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
+      result.isDefined shouldBe false
+    }
+
+    s"return $Some when the document is in Mongo" in {
+      val callbackModel = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
+      result.isDefined shouldBe true
+      result.get shouldBe UploadStatusEnum.READY
+    }
+  }
 }

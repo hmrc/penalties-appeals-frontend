@@ -17,7 +17,7 @@
 package repositories
 
 import config.AppConfig
-import models.upload.UploadJourney
+import models.upload.{UploadJourney, UploadStatusEnum}
 import uk.gov.hmrc.mongo.cache.{CacheIdType, CacheItem, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 
@@ -41,5 +41,9 @@ class UploadJourneyRepository @Inject()(
 
   def updateStateOfFileUpload(journeyId: String, callbackModel: UploadJourney): Future[CacheItem] = {
     put(journeyId)(DataKey(callbackModel.reference), callbackModel)
+  }
+
+  def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatusEnum.Value]] = {
+    get[UploadJourney](journeyId)(DataKey(fileReference)).map(_.map(_.fileStatus))
   }
 }
