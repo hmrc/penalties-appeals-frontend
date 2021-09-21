@@ -16,7 +16,6 @@
 
 package utils
 
-import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatest.{MustMatchers, WordSpec}
 
 class UUIDGeneratorSpec extends WordSpec with MustMatchers {
@@ -25,13 +24,6 @@ class UUIDGeneratorSpec extends WordSpec with MustMatchers {
 
   "IdGenerator" when {
     "generating submissionIds" when {
-      "generate ids that are different" in {
-        val num = 1000000
-        val ids = for (_ <- 1 to num) yield uuidGenerator.generateUUID
-
-        ids.toSet.size shouldBe num
-      }
-
       "generate ids that are uuids" in {
         uuidGenerator.generateUUID must fullyMatch regex """([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})""".r
       }
