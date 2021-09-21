@@ -52,7 +52,7 @@
 
 
     @formHelper(action = postAction,
-        args = (Symbol("data-multi-file-upload-start-rows"), "1"), (Symbol("data-multi-file-upload-max-files"), "5"), (Symbol("id"), "multi-upload-form"), (Symbol("multiFileUploadUploadedFiles"), previousUploads)) {
+        args = (Symbol("data-multi-file-upload-start-rows"), "1"), (Symbol("data-multi-file-upload-max-files"), "5"), (Symbol("id"), "multi-upload-form"), (Symbol("data-multi-file-upload-uploaded-files"), previousUploads)) {
             <ul class="multi-file-upload__item-list"></ul>
 
             <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.addAnother")</button>

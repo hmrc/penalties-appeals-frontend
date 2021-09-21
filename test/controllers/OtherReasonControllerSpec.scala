@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import models.upload.UploadJourney
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -24,7 +25,7 @@ import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import testUtils.AuthTestModels
+import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
@@ -40,7 +41,7 @@ class OtherReasonControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
@@ -48,7 +49,7 @@ class OtherReasonControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-    when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
+    when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(previousUpload))
 
     val controller: OtherReasonController = new OtherReasonController(
       whenDidYouBecomeUnablePage,
@@ -194,7 +195,9 @@ class OtherReasonControllerSpec extends SpecBase {
         status(result) shouldBe OK
       }
 
-      "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+      "return OK and correct view (pre-populated date when present in session)" in new Setup(
+        AuthTestModels.successfulAuthResult, Some(UploadData.oneWaitingUploads)
+      ) {
         val result = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.evidenceFileName -> "test.png")))
         status(result) shouldBe OK
       }
