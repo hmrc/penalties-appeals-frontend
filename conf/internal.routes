@@ -1,0 +1,4 @@
+#Internal routes
+
++nocsrf
+POST       /upscan-callback/:journeyId             controllers.internal.UpscanCallbackController.callbackFromUpscan(journeyId: String)

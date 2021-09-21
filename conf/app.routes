@@ -126,3 +126,6 @@ GET        /other-relevant-information                         controllers.Appea
 GET        /other-relevant-information/change                  controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = CheckMode)
 POST       /other-relevant-information                         controllers.AppealAgainstObligationController.onSubmit(mode: Mode = NormalMode)
 POST       /other-relevant-information/change                  controllers.AppealAgainstObligationController.onSubmit(mode: Mode = CheckMode)
+
+# Upscan endpoints
+GET        /upscan/upload-status/:journeyId/:fileReference      controllers.UpscanController.getStatusOfFileUpload(journeyId: String, fileReference: String)

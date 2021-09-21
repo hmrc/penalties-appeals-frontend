@@ -34,6 +34,7 @@ class HeaderGenerator @Inject()(appConfig: AppConfig, idGenerator: UUIDGenerator
       "CorrelationId" -> correlationId
     )
     logger.info(s"CorrelationId  $correlationId")
+    val headers = Seq("Environment" -> appConfig.pegaEnvironment)
     logger.debug(s"[HeaderGenerator] [headersForPEGA] $headers")
     appConfig.pegaBearerToken match {
       case "" => headers
