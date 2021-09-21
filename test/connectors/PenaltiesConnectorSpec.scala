@@ -19,6 +19,7 @@ package connectors
 import base.SpecBase
 import config.AppConfig
 import models.appeals.{AppealSubmission, CrimeAppealInformation}
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -103,9 +104,11 @@ class PenaltiesConnectorSpec extends SpecBase {
   class Setup {
     reset(mockHttpClient)
     reset(mockAppConfig)
+    val mockHeaderGenerator = mock(classOf[HeaderGenerator])
     val connector = new PenaltiesConnector(
       mockHttpClient,
-      mockAppConfig
+      mockAppConfig,
+      mockHeaderGenerator
     )
   }
 
@@ -235,9 +238,11 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
     }
   }
 
-  "submitAppeal" should {
+  "submitAppeal with headers" should {
     "return the HTTP response back to the caller" in new Setup {
-      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(),
+      when(mockHeaderGenerator.headersForPEGA()).thenReturn(Seq("someHeader" -> "someHeaderValue"))
+      val mockHeaders = mockHeaderGenerator.headersForPEGA()
+      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(),ArgumentMatchers.eq(mockHeaders))(any(),
         any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
       when(mockAppConfig.submitAppealUrl(any(), any()))
