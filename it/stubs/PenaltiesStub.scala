@@ -21,22 +21,24 @@ import com.github.tomakehurst.wiremock.http.Fault
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.PenaltyTypeEnum
 import play.api.http.Status
-import play.api.libs.json.Json
-
+import play.api.libs.json.{JsValue, Json}
 import java.time.LocalDateTime
+
+import models.upscan.UpscanInitiateRequest
 
 object PenaltiesStub {
   private val appealUriForLSP = "/penalties/appeals-data/late-submissions"
   private val appealUriForLPP = "/penalties/appeals-data/late-payments"
   private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
   private val submitAppealUri = (isLPP: Boolean) => s"/penalties/appeals/submit-appeal?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&isLPP=$isLPP"
-  private val fetchOtherPenalties= (penaltyID: String) =>
+  private val fetchOtherPenalties = (penaltyID: String) =>
     s"/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&penaltyId=$penaltyID&isLPP=false"
+  private val initiateUpscanUrl = "http://localhost:1111/upscan/v2/initiate"
 
   def successfulGetAppealDataResponse(penaltyId: String, enrolmentKey: String, isLPP: Boolean = false, isAdditional: Boolean = false): StubMapping = {
-    val typeOfPenalty = if(isAdditional) PenaltyTypeEnum.Additional else if(isLPP) PenaltyTypeEnum.Late_Payment else PenaltyTypeEnum.Late_Submission
-    val uri = if(isLPP) appealUriForLPP else appealUriForLSP
-    val extraAdditionalParam = if(isLPP) s"&isAdditional=$isAdditional" else ""
+    val typeOfPenalty = if (isAdditional) PenaltyTypeEnum.Additional else if (isLPP) PenaltyTypeEnum.Late_Payment else PenaltyTypeEnum.Late_Submission
+    val uri = if (isLPP) appealUriForLPP else appealUriForLSP
+    val extraAdditionalParam = if (isLPP) s"&isAdditional=$isAdditional" else ""
     stubFor(get(urlEqualTo(s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey$extraAdditionalParam"))
       .willReturn(
         aResponse()

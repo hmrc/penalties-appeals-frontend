@@ -17,11 +17,12 @@
 package repositories
 
 import config.AppConfig
-import uk.gov.hmrc.mongo.cache.{CacheIdType, MongoCacheRepository}
+import models.upload.{UploadJourney, UploadStatusEnum}
+import uk.gov.hmrc.mongo.cache.{CacheIdType, CacheItem, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadJourneyRepository @Inject()(
@@ -36,4 +37,13 @@ class UploadJourneyRepository @Inject()(
     ttl = appConfig.mongoTTL,
     timestampSupport = timestampSupport,
     cacheIdType = CacheIdType.SimpleCacheId
-  )(ec)
+  )(ec) {
+
+  def updateStateOfFileUpload(journeyId: String, callbackModel: UploadJourney): Future[CacheItem] = {
+    put(journeyId)(DataKey(callbackModel.reference), callbackModel)
+  }
+
+  def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatusEnum.Value]] = {
+    get[UploadJourney](journeyId)(DataKey(fileReference)).map(_.map(_.fileStatus))
+  }
+}
