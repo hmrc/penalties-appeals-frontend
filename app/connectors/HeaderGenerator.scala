@@ -31,7 +31,7 @@ class HeaderGenerator @Inject()(appConfig: AppConfig, idGenerator: UUIDGenerator
   def headersForPEGA()(implicit hc: HeaderCarrier): Seq[(String, String)] = {
     val correlationId = idGenerator.generateUUID
     val headers = Seq(
-      "CorrelationId" -> idGenerator.generateUUID
+      "CorrelationId" -> correlationId
     )
     logger.info(s"CorrelationId  $correlationId")
     logger.debug(s"[HeaderGenerator] [headersForPEGA] $headers")
