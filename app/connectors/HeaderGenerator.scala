@@ -29,10 +29,10 @@ import javax.inject.{Inject, Singleton}
 class HeaderGenerator @Inject()(appConfig: AppConfig, idGenerator: UUIDGenerator) {
 
   def headersForPEGA()(implicit hc: HeaderCarrier): Seq[(String, String)] = {
+    val correlationId = idGenerator.generateUUID
     val headers = Seq(
       "CorrelationId" -> idGenerator.generateUUID
     )
-    val correlationId = headers.find(_._1 == "CorrelationId").map(_._2).getOrElse("")
     logger.info(s"CorrelationId  $correlationId")
     logger.debug(s"[HeaderGenerator] [headersForPEGA] $headers")
     appConfig.pegaBearerToken match {
