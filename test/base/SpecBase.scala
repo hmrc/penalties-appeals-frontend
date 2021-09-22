@@ -31,6 +31,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import repositories.UploadJourneyRepository
 import services.AuthService
 import services.monitoring.AuditService
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -63,6 +64,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   val mockAuthConnector: AuthConnector = mock(classOf[AuthConnector])
 
   val mockAuditService :AuditService = mock(classOf[AuditService])
+
+  val mockUploadJourneyRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
 
   lazy val dataRequiredAction = injector.instanceOf[DataRequiredActionImpl]
 

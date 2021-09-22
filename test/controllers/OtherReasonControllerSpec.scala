@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import models.upload.UploadJourney
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -24,21 +25,23 @@ import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import testUtils.AuthTestModels
+import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
   val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
@@ -46,12 +49,15 @@ class OtherReasonControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
+    when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(previousUpload))
+
     val controller: OtherReasonController = new OtherReasonController(
       whenDidYouBecomeUnablePage,
       whyReturnSubmittedLatePage,
       uploadEvidencePage,
-      mainNavigator
-    )(authPredicate, dataRequiredAction, appConfig, mcc)
+      mainNavigator,
+      mockUploadJourneyRepository
+    )(authPredicate, dataRequiredAction, appConfig, mcc, ec)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }
@@ -189,7 +195,9 @@ class OtherReasonControllerSpec extends SpecBase {
         status(result) shouldBe OK
       }
 
-      "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+      "return OK and correct view (pre-populated date when present in session)" in new Setup(
+        AuthTestModels.successfulAuthResult, Some(UploadData.oneWaitingUploads)
+      ) {
         val result = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.evidenceFileName -> "test.png")))
         status(result) shouldBe OK
       }
