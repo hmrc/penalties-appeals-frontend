@@ -106,12 +106,13 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       for {
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
+        val previousUploads = previousUploadsState.fold("[]")(previousUploads => Json.stringify(Json.toJson(previousUploads)))
         val formProvider: Form[Option[String]] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsOptionString(
           UploadEvidenceForm.uploadEvidenceForm,
           SessionKeys.evidenceFileName
         )
         val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidence(mode)
-        Ok(uploadEvidencePage(formProvider, postAction, Json.stringify(Json.toJson(previousUploadsState))))
+        Ok(uploadEvidencePage(formProvider, postAction, previousUploads))
       }
     }
   }
@@ -121,10 +122,11 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       for {
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
+        val previousUploads = previousUploadsState.fold("[]")(previousUploads => Json.stringify(Json.toJson(previousUploads)))
         val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidence(mode)
         UploadEvidenceForm.uploadEvidenceForm.bindFromRequest().fold(
           formWithErrors => {
-            BadRequest(uploadEvidencePage(formWithErrors, postAction, Json.stringify(Json.toJson(previousUploadsState))))
+            BadRequest(uploadEvidencePage(formWithErrors, postAction, previousUploads))
           },
           evidenceFileName => {
             logger.debug(s"[OtherReasonController][onSubmitForUploadEvidence] - Adding '${evidenceFileName.getOrElse("")}' to session under key: ${SessionKeys.evidenceFileName}")
