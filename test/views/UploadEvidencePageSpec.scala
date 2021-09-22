@@ -57,6 +57,10 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val multiUploadForm = "#multi-upload-form"
 
       val multiUploadFormFilesAKey = "data-multi-file-upload-uploaded-files"
+
+      val multiUploadFormInitiateUploadAKey = "data-multi-file-upload-send-url-tpl"
+
+      val multiUploadFormGetStatusAKey = "data-multi-file-upload-status-url-tpl"
     }
     val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
@@ -68,7 +72,11 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     }
 
     def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
-      uploadEvidencePage.apply(form, controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode), previousUploadsToString(previousUploads))(request, implicitly, implicitly)
+      uploadEvidencePage.apply(form,
+        controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode),
+        controllers.routes.UpscanController.initiateCallToUpscan("1234"),
+        controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),
+        previousUploadsToString(previousUploads))(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView(formProvider))
@@ -215,6 +223,17 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val expectedString = Json.stringify(Json.toJson(Some(UploadData.maxWaitingUploads)))
 
       doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormFilesAKey) shouldBe expectedString
+    }
+
+    "load the correct parameters for initiating uploads and getting status of uploads" in {
+      implicit val doc: Document = asDocument(
+        applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
+      )
+      val expectedInitiateString = "/penalties-appeals/upscan/call-to-upscan/1234"
+      val expectedStatusString = "/penalties-appeals/upscan/upload-status/1234/%7BfileRef%7D"
+
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormInitiateUploadAKey) shouldBe expectedInitiateString
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormGetStatusAKey) shouldBe expectedStatusString
     }
   }
 }

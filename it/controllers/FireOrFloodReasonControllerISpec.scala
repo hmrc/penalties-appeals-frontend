@@ -37,7 +37,8 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoad(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
@@ -74,7 +75,8 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString)
+        (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString),
+        (SessionKeys.journeyId, "1234"),
       ).withJsonBody(
         Json.parse(
           """
@@ -99,7 +101,8 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
       ).withJsonBody(
         Json.parse(
           """
@@ -124,7 +127,8 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         ).withJsonBody(
           Json.parse(
             """
@@ -146,7 +150,8 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         )
         val request = await(controller.onSubmit(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -159,7 +164,8 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         )
 
         val noDayJsonBody: JsValue = Json.parse(

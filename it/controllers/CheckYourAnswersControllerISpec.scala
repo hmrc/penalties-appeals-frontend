@@ -46,7 +46,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "crime",
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfCrime -> "2022-01-01"
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -67,7 +68,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.reasonableExcuse -> "lossOfStaff",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -87,7 +89,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "technicalIssues",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-        SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+        SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -108,7 +111,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.reasonableExcuse -> "fireOrFlood",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfFireOrFlood -> "2022-01-01"
+        SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
@@ -126,7 +130,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.dateOfCrime -> "2022-01-01",
-        SessionKeys.lateAppealReason -> "Lorem ipsum"
+        SessionKeys.lateAppealReason -> "Lorem ipsum",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -146,7 +151,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "fireOrFlood",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.dateOfFireOrFlood -> "2022-01-01",
-        SessionKeys.lateAppealReason -> "Lorem ipsum"
+        SessionKeys.lateAppealReason -> "Lorem ipsum",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -166,7 +172,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "lossOfStaff",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
-        SessionKeys.lateAppealReason -> "Lorem ipsum"
+        SessionKeys.lateAppealReason -> "Lorem ipsum",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -187,7 +194,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
         SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
-        SessionKeys.lateAppealReason -> "Lorem ipsum"
+        SessionKeys.lateAppealReason -> "Lorem ipsum",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -208,7 +216,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason"
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
+          SessionKeys.journeyId -> "1234"
         )
         val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
@@ -229,7 +238,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx"
+          SessionKeys.evidenceFileName -> "file.docx",
+          SessionKeys.journeyId -> "1234"
         )
         val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
@@ -250,7 +260,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.lateAppealReason -> "This is why the appeal is late."
+          SessionKeys.lateAppealReason -> "This is why the appeal is late.",
+          SessionKeys.journeyId -> "1234"
         )
         val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
@@ -274,7 +285,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
           SessionKeys.evidenceFileName -> "file.docx",
-          SessionKeys.lateAppealReason -> "This is why the appeal is late."
+          SessionKeys.lateAppealReason -> "This is why the appeal is late.",
+          SessionKeys.journeyId -> "1234"
         )
         val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
@@ -296,7 +308,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.reasonableExcuse -> "bereavement",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.whenDidThePersonDie -> "2021-01-01"
+        SessionKeys.whenDidThePersonDie -> "2021-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -316,7 +329,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "bereavement",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.whenDidThePersonDie -> "2021-01-01",
-        SessionKeys.lateAppealReason -> "Lorem ipsum"
+        SessionKeys.lateAppealReason -> "Lorem ipsum",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -334,7 +348,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.isObligationAppeal -> "true",
-        SessionKeys.otherRelevantInformation -> "Lorem ipsum"
+        SessionKeys.otherRelevantInformation -> "Lorem ipsum",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -353,7 +368,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.isObligationAppeal -> "true",
         SessionKeys.otherRelevantInformation -> "Lorem ipsum",
-        SessionKeys.evidenceFileName -> "file.txt"
+        SessionKeys.evidenceFileName -> "file.txt",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -375,7 +391,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.reasonableExcuse -> "bereavement",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.whenDidThePersonDie -> "2021-01-01"
+        SessionKeys.whenDidThePersonDie -> "2021-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -393,6 +410,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoad()(fakeRequestWithMissingReasonableExcuse))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -407,7 +425,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfCrime -> "2022-01-01"
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoad()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -433,7 +452,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "crime",
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfCrime -> "2022-01-01"
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
@@ -451,7 +471,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.reasonableExcuse -> "fireOrFlood",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfFireOrFlood -> "2022-01-01"
+        SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
@@ -469,7 +490,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.reasonableExcuse -> "lossOfStaff",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
@@ -488,7 +510,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "technicalIssues",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-        SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+        SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
@@ -508,7 +531,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.wasHospitalStayRequired -> "no",
-          SessionKeys.whenHealthIssueHappened -> "2021-01-01T12:00:00"
+          SessionKeys.whenHealthIssueHappened -> "2021-01-01T12:00:00",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -528,7 +552,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.wasHospitalStayRequired -> "yes",
           SessionKeys.hasHealthEventEnded -> "no",
-          SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00"
+          SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -549,7 +574,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.wasHospitalStayRequired -> "yes",
           SessionKeys.hasHealthEventEnded -> "yes",
           SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00",
-          SessionKeys.whenHealthIssueEnded -> "2021-01-02T12:00:00"
+          SessionKeys.whenHealthIssueEnded -> "2021-01-02T12:00:00",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -571,7 +597,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason"
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -591,7 +618,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx"
+          SessionKeys.evidenceFileName -> "file.docx",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -611,7 +639,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.lateAppealReason -> "This is a reason for late appeal"
+          SessionKeys.lateAppealReason -> "This is a reason for late appeal",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -632,7 +661,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
           SessionKeys.evidenceFileName -> "file.docx",
-          SessionKeys.lateAppealReason -> "This is a reason for late appeal"
+          SessionKeys.lateAppealReason -> "This is a reason for late appeal",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -653,7 +683,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
           SessionKeys.evidenceFileName -> "file.docx",
-          SessionKeys.lateAppealReason -> "This is a reason for late appeal"
+          SessionKeys.lateAppealReason -> "This is a reason for late appeal",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -675,7 +706,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
           SessionKeys.evidenceFileName -> "file.docx",
-          SessionKeys.lateAppealReason -> "This is a reason for late appeal"
+          SessionKeys.lateAppealReason -> "This is a reason for late appeal",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -697,7 +729,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
           SessionKeys.evidenceFileName -> "file.docx",
-          SessionKeys.lateAppealReason -> "This is a reason for late appeal"
+          SessionKeys.lateAppealReason -> "This is a reason for late appeal",
+          SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
@@ -716,7 +749,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.reasonableExcuse -> "bereavement",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.whenDidThePersonDie -> "2021-01-01"
+        SessionKeys.whenDidThePersonDie -> "2021-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
@@ -733,17 +767,18 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.isObligationAppeal -> "true",
-        SessionKeys.otherRelevantInformation -> "some text"
+        SessionKeys.otherRelevantInformation -> "some text",
+        SessionKeys.journeyId -> "1234"
       ))
       implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
       implicit val hc: HeaderCarrier = HeaderCarrier()
       val appealService: AppealService = injector.instanceOf[AppealService]
-      appealService.submitAppeal("obligation")(fakeRequestWithCorrectKeys,implicitly,implicitly)
+      appealService.submitAppeal("obligation")(fakeRequestWithCorrectKeys, implicitly, implicitly)
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
-    "redirect the user to the InternalServerError on failure for obligation false" in  {
+    "redirect the user to the InternalServerError on failure for obligation false" in {
       PenaltiesStub.successfulAppealSubmission(false)
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
@@ -754,7 +789,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.isObligationAppeal -> "false",
-        SessionKeys.otherRelevantInformation -> "some-text"
+        SessionKeys.otherRelevantInformation -> "some-text",
+        SessionKeys.journeyId -> "1234"
       ))
       val mockAppealService: AppealService = mock(classOf[AppealService])
       when(mockAppealService.submitAppeal(any())(any(), any(), any()))
@@ -775,7 +811,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "crime",
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfCrime -> "2022-01-01"
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -800,7 +837,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "crime",
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfCrime -> "2022-01-01"
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoadForConfirmation()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK

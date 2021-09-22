@@ -66,7 +66,8 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
   "POST /upscan/call-to-upscan/:journeyId" should {
     "return 200 (OK) when the user there is an upload state in the database" in {
-      successfulInitiateCall("""
+      successfulInitiateCall(
+        """
           |{
           | "reference": "12345",
           | "uploadRequest": {

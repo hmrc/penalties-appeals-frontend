@@ -30,84 +30,46 @@ import models.upscan.{UpscanInitiateRequest, UpscanInitiateResponseModel}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UpscanController @Inject() (
-    repository: UploadJourneyRepository,
-    connector: UpscanConnector
-)(implicit appConfig: AppConfig, mcc: MessagesControllerComponents)
-    extends FrontendController(mcc) {
+class UpscanController @Inject()(repository: UploadJourneyRepository, connector: UpscanConnector)
+                                (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  def getStatusOfFileUpload(
-      journeyId: String,
-      fileReference: String
-  ): Action[AnyContent] =
-    Action.async { implicit request =>
-      {
-        logger.debug(
-          s"[UpscanController][getStatusOfFileUpload] - File upload status requested for journey: $journeyId with file reference: $fileReference"
+  def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
+    implicit request => {
+      logger.debug(s"[UpscanController][getStatusOfFileUpload] - File upload status requested for journey: $journeyId with file reference: $fileReference")
+      repository.getStatusOfFileUpload(journeyId, fileReference).map(
+        _.fold({
+          logger.error(s"[UpscanController][getStatusOfFileUpload] - File upload status was not found for journey: $journeyId with file reference: $fileReference")
+          NotFound(s"File $fileReference in journey $journeyId did not exist.")
+        })(
+          fileStatus => {
+            logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file reference: $fileReference - returning status: $fileStatus")
+            Ok(Json.toJson(fileStatus))
+          }
         )
-        repository
-          .getStatusOfFileUpload(journeyId, fileReference)
-          .map(
-            _.fold({
-              logger.error(
-                s"[UpscanController][getStatusOfFileUpload] - File upload status was not found for journey:" +
-                  s" $journeyId with file reference: $fileReference"
+      )
+    }
+  }
+
+  def initiateCallToUpscan(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request => {
+      logger.debug(s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId")
+      val initiateRequest = UpscanInitiateRequest(appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url)
+      connector.initiateToUpscan(initiateRequest).flatMap(
+        response => {
+          response.fold(
+            error => Future(InternalServerError(s"[UpscanController][initiateCallToUpscan] - Failed to map response for journey: $journeyId")),
+            responseModel => {
+              logger.debug(s"[UpscanController][initiateCallToUpscan] - Retrieving response model for journey: $journeyId")
+              val uploadJourney = UploadJourney(responseModel.reference, UploadStatusEnum.WAITING)
+              repository.updateStateOfFileUpload(journeyId, uploadJourney).map(
+                _ => {
+                  Ok(Json.toJson(responseModel)(UpscanInitiateResponseModel.formats))
+                }
               )
-              NotFound(
-                s"File $fileReference in journey $journeyId did not exist."
-              )
-            })(fileStatus => {
-              logger.debug(
-                s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId" +
-                  s" with file reference: $fileReference - returning status: $fileStatus"
-              )
-              Ok(Json.toJson(fileStatus))
-            })
+            }
           )
-      }
+        }
+      )
     }
-
-  def initiateCallToUpscan(journeyId: String): Action[AnyContent] =
-    Action.async { implicit request =>
-      {
-        logger.debug(
-          s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId"
-        )
-        val initiateRequest = UpscanInitiateRequest(
-          controllers.internal.routes.UpscanCallbackController
-            .callbackFromUpscan(journeyId)
-            .url
-        )
-        connector
-          .initiateToUpscan(initiateRequest)
-          .flatMap(response => {
-            response.fold(
-              error =>
-                Future(
-                  InternalServerError(
-                    s"[UpscanController][initiateCallToUpscan] - Failed to map response for journey: $journeyId"
-                  )
-                ),
-              responseModel => {
-                logger.debug(
-                  s"[UpscanController][initiateCallToUpscan] - Retrieving response model for journey: $journeyId"
-                )
-                val uploadJourney = UploadJourney(
-                  responseModel.reference,
-                  UploadStatusEnum.WAITING
-                )
-                repository
-                  .updateStateOfFileUpload(journeyId, uploadJourney)
-                  .map(_ => {
-                    Ok(
-                      Json.toJson(responseModel)(
-                        UpscanInitiateResponseModel.formats
-                      )
-                    )
-                  })
-              }
-            )
-          })
-      }
-    }
+  }
 }

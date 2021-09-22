@@ -25,9 +25,20 @@
   max-width: 100%;
 }
 
-.multi-file-upload__file-name,
+
 .multi-file-upload__file-preview {
   display: none;
+  word-break: break-all;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  @include govuk-font($size: 19);
+
+  @include govuk-media-query($from: tablet) {
+    margin-bottom: 0;
+  }
+}
+
+.multi-file-upload__file-name {
   word-break: break-all;
   margin-bottom: 10px;
   margin-right: 10px;
