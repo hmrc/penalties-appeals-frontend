@@ -26,6 +26,7 @@
         )
     )
     @p(Html(messages("otherReason.uploadEvidence.details.p2")))
+    @p(Html(messages("otherReason.uploadEvidence.details.p3")))
 }
 @lppOrLspOrObligationDynamicText = @{
     if((appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) && request.session.get(SessionKeys.isObligationAppeal).isDefined) {

@@ -18,15 +18,8 @@ package connectors
 
 import base.SpecBase
 import config.AppConfig
-import connectors.httpParsers.UpscanInitiateHttpParser.{
-  BadRequest,
-  UpscanInitiateResponse
-}
-import models.upscan.{
-  UploadFormTemplateRequest,
-  UpscanInitiateRequest,
-  UpscanInitiateResponseModel
-}
+import connectors.httpParsers.UpscanInitiateHttpParser.{BadRequest, UpscanInitiateResponse}
+import models.upscan.{UploadFormTemplateRequest, UpscanInitiateRequest, UpscanInitiateResponseModel}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{when, _}
 import play.api.test.Helpers._
