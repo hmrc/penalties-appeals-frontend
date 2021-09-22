@@ -146,9 +146,9 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
       successfulAppealSubmission(isLPP = false)
       val model = AppealSubmission(
         submittedBy = "client",
-        penaltyId = "1234",
         reasonableExcuse = "crime",
         honestyDeclaration = true,
+        agentDetails = None,
         appealInformation = CrimeAppealInformation(
           `type` = "crime",
           dateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -168,9 +168,9 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
       successfulAppealSubmission(isLPP = true)
       val model = AppealSubmission(
         submittedBy = "client",
-        penaltyId = "1234",
         reasonableExcuse = "crime",
         honestyDeclaration = true,
+        agentDetails = None,
         appealInformation = CrimeAppealInformation(
           `type` = "crime",
           dateOfEvent = "2021-04-23T18:25:43.511Z",

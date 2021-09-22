@@ -33,9 +33,9 @@ class AppealAuditModelSpec extends SpecBase {
 
     def appealSubmission(appealInformation: AppealInformation): AppealSubmission = AppealSubmission(
       submittedBy = "client",
-      penaltyId = "123456789",
       reasonableExcuse = appealInformation.`type`,
       honestyDeclaration = true,
+      agentDetails = None,
       appealInformation
     )
 
@@ -185,7 +185,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -201,7 +200,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -218,7 +216,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -234,7 +231,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -250,7 +246,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -267,7 +262,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -285,7 +279,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -302,7 +295,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -319,7 +311,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "LPP",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
@@ -336,7 +327,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -362,7 +352,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -378,7 +367,6 @@ class AppealAuditModelSpec extends SpecBase {
           "submittedBy" -> "client",
           "taxIdentifier" -> "123456789",
           "identifierType" -> "VRN",
-          "penaltyId" -> "123456789",
           "penaltyType" -> "LPP",
           "correlationId"-> "someUUID",
           "appealInformation" -> Json.obj(
@@ -402,7 +390,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "agent",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "LPP",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
@@ -418,7 +405,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "LPP",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
@@ -435,7 +421,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "LSP",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
@@ -451,7 +436,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "agent",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "LSP",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
@@ -467,7 +451,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "LSPP",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
@@ -483,7 +466,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "agent",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "LSPP",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
@@ -499,7 +481,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "Additional",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
@@ -515,7 +496,6 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "agent",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyId" -> "123456789",
         "penaltyType" -> "Additional",
         "correlationId"-> "someUUID",
         "appealInformation" -> Json.obj(
