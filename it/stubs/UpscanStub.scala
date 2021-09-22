@@ -16,51 +16,43 @@
 
 package stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlEqualTo}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.Status
 import play.api.libs.json.Json
 
 object UpscanStub {
-
   private val initiateUpscanUrl = "/upscan/v2/initiate"
 
-  def successfulCallToUpscan: StubMapping = {
-    stubFor(post(urlEqualTo(initiateUpscanUrl))
-      .willReturn(
-        aResponse()
-          .withStatus(Status.OK)
-          .withBody(
-            Json.obj(
-              "reference" -> "123456789",
-              "uploadRequest" -> Json.obj(
-                "href" -> "bar",
-                "fields" -> Json.obj(
-                  "doo" -> "dar"
-                )
-              )
-            ).toString()
-          )
-      )
+  def successfulInitiateCall(responseBody: String): StubMapping = {
+    stubFor(
+      post(urlEqualTo(initiateUpscanUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withBody(responseBody)
+        )
     )
   }
 
   def successfulCallInvalidJson: StubMapping = {
-    stubFor(post(urlEqualTo(initiateUpscanUrl))
-      .willReturn(
-        aResponse()
-          .withStatus(Status.OK)
-          .withBody(Json.obj().toString())
-      )
+    stubFor(
+      post(urlEqualTo(initiateUpscanUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withBody(Json.obj().toString())
+        )
     )
   }
 
-  def failedCallToUpscan: StubMapping = {
-    stubFor(post(urlEqualTo(initiateUpscanUrl))
-      .willReturn(
-        aResponse()
-          .withStatus(Status.BAD_REQUEST)
-      )
+  def failedInitiateCall(responseBody: String): StubMapping = {
+    stubFor(
+      post(urlEqualTo(initiateUpscanUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.BAD_REQUEST)
+        )
     )
   }
 }

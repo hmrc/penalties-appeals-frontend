@@ -23,23 +23,40 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.Logger.logger
 
 object UpscanInitiateHttpParser {
-  type UpscanInitiateResponse = Either[ErrorResponse, UpscanInitiateResponseModel]
+  type UpscanInitiateResponse =
+    Either[ErrorResponse, UpscanInitiateResponseModel]
 
-  implicit object UpscanInitiateResponseReads extends HttpReads[UpscanInitiateResponse] {
+  implicit object UpscanInitiateResponseReads
+      extends HttpReads[UpscanInitiateResponse] {
 
-    def read(method: String, url: String, response: HttpResponse): UpscanInitiateResponse = {
+    def read(
+        method: String,
+        url: String,
+        response: HttpResponse
+    ): UpscanInitiateResponse = {
       response.status match {
         case OK =>
-          response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.jsonReadsForModel) match {
+          response.json.validate[UpscanInitiateResponseModel](
+            UpscanInitiateResponseModel.jsonReadsForModel
+          ) match {
             case JsSuccess(model, _) => Right(model)
-            case _ => Left(InvalidJson)
+            case _                   => Left(InvalidJson)
           }
         case BAD_REQUEST =>
-          logger.debug(s"[UpScanInitiateResponseReads][read]: Bad request returned with reason: ${response.body}")
+          logger.debug(
+            s"[UpScanInitiateResponseReads][read]: Bad request returned with reason: ${response.body}"
+          )
           Left(BadRequest)
         case status =>
-          logger.warn(s"[UpScanInitiateResponseReads][read]: Unexpected response, status $status returned")
-          Left(UnexpectedFailure(status, s"Unexpected response, status $status returned"))
+          logger.warn(
+            s"[UpScanInitiateResponseReads][read]: Unexpected response, status $status returned"
+          )
+          Left(
+            UnexpectedFailure(
+              status,
+              s"Unexpected response, status $status returned"
+            )
+          )
       }
     }
   }
@@ -59,5 +76,8 @@ object UpscanInitiateHttpParser {
     override val body: String = "incorrect Json body sent"
   }
 
-  case class UnexpectedFailure(override val status: Int, override val body: String) extends ErrorResponse
+  case class UnexpectedFailure(
+      override val status: Int,
+      override val body: String
+  ) extends ErrorResponse
 }

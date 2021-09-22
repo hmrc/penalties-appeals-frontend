@@ -16,7 +16,12 @@
 
 package connectors
 
-import models.upscan.{UploadFormTemplateRequest, UpscanInitiateRequest, UpscanInitiateResponseModel}
+import models.upscan.{
+  UploadFormTemplateRequest,
+  UpscanInitiateRequest,
+  UpscanInitiateResponseModel
+}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import stubs.UpscanStub._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,11 +42,28 @@ class UpscanInitiateConnectorISpec extends IntegrationSpecCommonBase {
     minimumFileSize = Some(1),
     maximumFileSize = Some(1024)
   )
-  val upscanResponseModel: UpscanInitiateResponseModel = UpscanInitiateResponseModel("123456789", UploadFormTemplateRequest("bar", Map("doo" -> "dar")))
+  val upscanResponseModel: UpscanInitiateResponseModel =
+    UpscanInitiateResponseModel(
+      "123456789",
+      UploadFormTemplateRequest("bar", Map("doo" -> "dar"))
+    )
 
   "initiateToUpscan" should {
+
+    val responseBody = Json
+      .obj(
+        "reference" -> "123456789",
+        "uploadRequest" -> Json.obj(
+          "href" -> "bar",
+          "fields" -> Json.obj(
+            "doo" -> "dar"
+          )
+        )
+      )
+      .toString()
+
     "return a Right when a successful call is made" in {
-      successfulCallToUpscan
+      successfulInitiateCall(responseBody)
       val requestModel = UpscanInitiateRequest(
         callbackUrl = "https://foo/wrongUrl",
         successRedirect = None,
@@ -63,7 +85,7 @@ class UpscanInitiateConnectorISpec extends IntegrationSpecCommonBase {
     }
 
     "return a Left when an unsuccessful call is made" in {
-      failedCallToUpscan
+      failedInitiateCall(responseBody)
       val result = await(upscanConnector.initiateToUpscan(requestModelNoUrl))
       result.isRight shouldBe false
       result.left.get.status shouldBe BAD_REQUEST
