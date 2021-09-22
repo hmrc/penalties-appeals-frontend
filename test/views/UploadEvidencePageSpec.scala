@@ -72,7 +72,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     }
 
     def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
-      uploadEvidencePage.apply(form,
+      uploadEvidencePage.apply(
         controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode),
         controllers.routes.UpscanController.initiateCallToUpscan("1234"),
         controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),

@@ -16,23 +16,21 @@
 
 package controllers
 
+import java.time.LocalDateTime
+
 import models.UserRequest
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
-import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{mock, when}
+import org.jsoup.{Jsoup, nodes}
 import org.mongodb.scala.Document
 import play.api.http.Status
-import play.api.mvc.AnyContent
+import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
-import services.AppealService
 import stubs.{AuthStub, PenaltiesStub}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
@@ -238,6 +236,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "file upload - no late appeal" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+          SessionKeys.journeyId -> "4321",
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
@@ -247,15 +246,73 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx",
-          SessionKeys.journeyId -> "1234"
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason"
         )
-        val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        val callBackModel: UploadJourney = UploadJourney(
+          reference = "ref1",
+          fileStatus = UploadStatusEnum.READY,
+          downloadUrl = Some("download.file/url"),
+          uploadDetails = Some(UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            checksum = "check1234",
+            size = 2
+          ))
+        )
+        await(repository.updateStateOfFileUpload("4321", callBackModel))
+        val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
-        val parsedBody = Jsoup.parse(contentAsString(request))
+        val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file.docx"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
+      }
+
+      "multiple file upload - no late appeal" in  {
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+          SessionKeys.journeyId -> "4321",
+          SessionKeys.penaltyId -> "1234",
+          SessionKeys.appealType -> "Late_Submission",
+          SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason"
+        )
+        val callBackModel: UploadJourney = UploadJourney(
+          reference = "ref1",
+          fileStatus = UploadStatusEnum.READY,
+          downloadUrl = Some("download.file/url"),
+          uploadDetails = Some(UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            checksum = "check1234",
+            size = 2
+          ))
+        )
+        val callBackModel2: UploadJourney = UploadJourney(
+          reference = "ref2",
+          fileStatus = UploadStatusEnum.READY,
+          downloadUrl = Some("download.file/url"),
+          uploadDetails = Some(UploadDetails(
+            fileName = "file2.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            checksum = "check1234",
+            size = 2
+          ))
+        )
+        await(repository.updateStateOfFileUpload("4321", callBackModel))
+        await(repository.updateStateOfFileUpload("4321", callBackModel2))
+        val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        await(request).header.status shouldBe Status.OK
+        val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file1.txt, file2.txt"
       }
 
       "no file upload - late appeal" in {
@@ -284,6 +341,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "file upload - late appeal" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+          SessionKeys.journeyId -> "4321",
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
@@ -294,15 +352,26 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx",
-          SessionKeys.lateAppealReason -> "This is why the appeal is late.",
-          SessionKeys.journeyId -> "1234"
+          SessionKeys.lateAppealReason -> "This is why the appeal is late."
         )
-        val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        val callBackModel: UploadJourney = UploadJourney(
+          reference = "ref1",
+          fileStatus = UploadStatusEnum.READY,
+          downloadUrl = Some("download.file/url"),
+          uploadDetails = Some(UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            checksum = "check1234",
+            size = 2
+          ))
+        )
+        await(repository.updateStateOfFileUpload("4321", callBackModel))
+        val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
-        val parsedBody = Jsoup.parse(contentAsString(request))
+        val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file.docx"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
         parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Reason for appealing after 30 days"
         parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
       }
@@ -370,6 +439,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal - with file upload" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        SessionKeys.journeyId -> "4321",
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
@@ -377,17 +447,28 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.isObligationAppeal -> "true",
-        SessionKeys.otherRelevantInformation -> "Lorem ipsum",
-        SessionKeys.evidenceFileName -> "file.txt",
-        SessionKeys.journeyId -> "1234"
+        SessionKeys.otherRelevantInformation -> "Lorem ipsum"
       )
+      val callBackModel: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+      await(repository.updateStateOfFileUpload("4321", callBackModel))
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
       parsedBody.select("#main-content dl > div:nth-child(1) > dt").text() shouldBe "Tell us why you want to appeal the penalty"
       parsedBody.select("#main-content dl > div:nth-child(1) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
       parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "Evidence to support this appeal"
-      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "file.txt"
+      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - agent" in {
@@ -628,7 +709,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx",
           SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
@@ -670,7 +750,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx",
           SessionKeys.lateAppealReason -> "This is a reason for late appeal",
           SessionKeys.journeyId -> "1234"
         )
@@ -692,7 +771,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx",
           SessionKeys.lateAppealReason -> "This is a reason for late appeal",
           SessionKeys.journeyId -> "1234"
         )
@@ -715,7 +793,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx",
           SessionKeys.lateAppealReason -> "This is a reason for late appeal",
           SessionKeys.journeyId -> "1234"
         )
@@ -738,7 +815,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.evidenceFileName -> "file.docx",
           SessionKeys.lateAppealReason -> "This is a reason for late appeal",
           SessionKeys.journeyId -> "1234"
         )

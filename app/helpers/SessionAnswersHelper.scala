@@ -16,6 +16,9 @@
 
 package helpers
 
+import java.time.LocalDate
+
+import javax.inject.Inject
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -23,17 +26,18 @@ import utils.MessageRenderer.getMessage
 import utils.SessionKeys
 import viewtils.ImplicitDateFormatter
 
-import java.time.LocalDate
-
-object SessionAnswersHelper extends ImplicitDateFormatter {
+class SessionAnswersHelper @Inject()() extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
     "bereavement" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidThePersonDie, SessionKeys.hasConfirmedDeclaration),
     "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
     "lossOfStaff" -> Seq(SessionKeys.whenPersonLeftTheBusiness, SessionKeys.reasonableExcuse, SessionKeys.hasConfirmedDeclaration),
     "fireOrFlood" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.dateOfFireOrFlood, SessionKeys.hasConfirmedDeclaration),
     "technicalIssues" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidTechnologyIssuesBegin, SessionKeys.whenDidTechnologyIssuesEnd),
-    "healthIssueHospitalStayOngoing" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.hasHealthEventEnded, SessionKeys.wasHospitalStayRequired),
-    "healthIssueHospitalStayEnded" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.whenHealthIssueEnded, SessionKeys.hasHealthEventEnded, SessionKeys.wasHospitalStayRequired),
+    "healthIssueHospitalStayOngoing" ->
+      Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.hasHealthEventEnded, SessionKeys.wasHospitalStayRequired),
+    "healthIssueHospitalStayEnded" ->
+      Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.whenHealthIssueEnded,
+        SessionKeys.hasHealthEventEnded, SessionKeys.wasHospitalStayRequired),
     "healthIssueNoHospitalStay" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.wasHospitalStayRequired, SessionKeys.whenHealthIssueHappened),
     "other" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whyReturnSubmittedLate, SessionKeys.whenDidBecomeUnable)
   )
@@ -41,39 +45,34 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
   def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): Boolean = {
     val keysInSession = request.session.data.keys.toSet
     reasonableExcuse match {
-      case "health" => {
+      case "health" =>
         (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.hasHealthEventEnded)) match {
           //No hospital stay
-          case (Some("no"), _) => {
+          case (Some("no"), _) =>
             val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueNoHospitalStay").toSet
             answersRequired.subsetOf(keysInSession)
-          }
           //Hospital stay ongoing
-          case (Some("yes"), Some("no")) => {
+          case (Some("yes"), Some("no")) =>
             val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueHospitalStayOngoing").toSet
             answersRequired.subsetOf(keysInSession)
-          }
 
           //Hospital stay ended
-          case (Some("yes"), Some("yes")) => {
+          case (Some("yes"), Some("yes")) =>
             val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueHospitalStayEnded").toSet
             answersRequired.subsetOf(keysInSession)
-          }
 
           //Wrong configuration of health answers
           case _ => false
         }
-      }
-      case _ => {
+      case _ =>
         val answersRequired = answersRequiredForReasonableExcuseJourney(reasonableExcuse).toSet
         answersRequired.subsetOf(keysInSession)
-      }
     }
 
   }
 
   //scalastyle:off
-  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String)(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {
+  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String, fileNames: Option[String] = None)(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {
     val reasonableExcuseContent = reasonableExcuse match {
       case "bereavement" => Seq(
         (messages("checkYourAnswers.reasonableExcuse"),
@@ -128,12 +127,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
 
       case "health" => getHealthReasonAnswers
 
-      case "other" => {
-        val fileNameOrDefault: String = {
-          if(request.session.get(SessionKeys.evidenceFileName).isEmpty || request.session.get(SessionKeys.evidenceFileName).contains("")) {
-            messages("checkYourAnswers.other.noFileUpload")
-          } else request.session.get(SessionKeys.evidenceFileName).get
-        }
+      case "other" =>
 
         val statementOfLatenessForLPPOrLSP: String = {
           if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) || request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)) {
@@ -153,10 +147,9 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             request.session.get(SessionKeys.whyReturnSubmittedLate).get,
             controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url),
           (messages("checkYourAnswers.other.fileEvidence"),
-            fileNameOrDefault,
+            if(fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
             controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url)
         )
-      }
     }
 
     request.session.get(SessionKeys.lateAppealReason).fold(
@@ -175,7 +168,7 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
   def getHealthReasonAnswers()(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {
     (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.hasHealthEventEnded)) match {
       //No hospital stay
-      case (Some("no"), _) => {
+      case (Some("no"), _) =>
         Seq(
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
@@ -187,9 +180,8 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueHappened).get)),
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url)
         )
-      }
       //Hospital stay ended
-      case (Some("yes"), Some("yes")) => {
+      case (Some("yes"), Some("yes")) =>
         Seq(
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
@@ -207,10 +199,9 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueEnded).get)),
             controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url)
         )
-      }
 
       //Hospital stay ongoing
-      case (Some("yes"), Some("no")) => {
+      case (Some("yes"), Some("no")) =>
         Seq((messages("checkYourAnswers.reasonableExcuse"),
           messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
           controllers.routes.ReasonableExcuseController.onPageLoad().url),
@@ -224,7 +215,6 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
             messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.hasHealthEventEnded).get}"),
             controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url)
         )
-      }
     }
   }
 
@@ -245,35 +235,29 @@ object SessionAnswersHelper extends ImplicitDateFormatter {
     seqWhoPlannedToSubmitVATReturn ++ seqWhyWasTheReturnSubmittedLate
   }
 
-  def getAllTheContentForCheckYourAnswersPage()(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {
+  def getAllTheContentForCheckYourAnswersPage(uploadFilenames: Option[String] = None)(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {
 
     val reasonableExcuse = request.session.get(SessionKeys.reasonableExcuse)
     val agentSession = request.session.get(SessionKeys.agentSessionVrn).isDefined
     val appealType = request.session.get(SessionKeys.appealType)
 
     (request.session.get(SessionKeys.isObligationAppeal), reasonableExcuse.isDefined, agentSession) match {
-      case (Some(_), _, _) => getContentForObligationAppealCheckYourAnswersPage
-      case (_, true, false) if isAllAnswerPresentForReasonableExcuse(reasonableExcuse.get) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
-      case (_, true, true) if appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString) => {
-        getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
-      }
-      case (_, true, true) => getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get)
+      case (Some(_), _, _) => getContentForObligationAppealCheckYourAnswersPage(uploadFilenames)
+      case (_, true, false) if isAllAnswerPresentForReasonableExcuse(reasonableExcuse.get) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
+      case (_, true, true) if appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString) =>
+        getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
+      case (_, true, true) => getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
       case _ => Seq.empty
     }
   }
 
-  def getContentForObligationAppealCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
-    val fileNameOrDefault: String = {
-      if(request.session.get(SessionKeys.evidenceFileName).isEmpty || request.session.get(SessionKeys.evidenceFileName).contains("")) {
-        messages("checkYourAnswers.other.noFileUpload")
-      } else request.session.get(SessionKeys.evidenceFileName).get
-    }
+  def getContentForObligationAppealCheckYourAnswersPage(fileNames: Option[String] = None)(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
     Seq(
       (messages("checkYourAnswers.obligation.whyYouWantToAppealPenalty"),
         request.session.get(SessionKeys.otherRelevantInformation).get,
         controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url),
       (messages("checkYourAnswers.obligation.fileEvidence"),
-        fileNameOrDefault,
+        if(fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
         controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       )
     )

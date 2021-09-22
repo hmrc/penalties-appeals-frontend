@@ -16,9 +16,12 @@
 
 package controllers
 
+import java.time.LocalDateTime
+
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.SessionAnswersHelper
+import javax.inject.Inject
 import models.PenaltyTypeEnum
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import play.api.i18n.I18nSupport
@@ -31,43 +34,60 @@ import utils.SessionKeys
 import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
 import viewtils.ImplicitDateFormatter
 
-import java.time.LocalDateTime
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswersPage,
                                            appealService: AppealService,
                                            appealConfirmationPage: AppealConfirmationPage,
                                            errorHandler: ErrorHandler,
-                                           uploadJourneyRepository: UploadJourneyRepository)(implicit mcc: MessagesControllerComponents,
-                                                                       ec: ExecutionContext,
-                                                                       appConfig: AppConfig,
-                                                                       authorise: AuthPredicate,
-                                                                       dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter {
-  def onPageLoad: Action[AnyContent] = (authorise andThen dataRequired) {
+                                           uploadJourneyRepository: UploadJourneyRepository,
+                                           sessionAnswersHelper: SessionAnswersHelper)
+                                          (implicit mcc: MessagesControllerComponents,
+                                           ec: ExecutionContext,
+                                           appConfig: AppConfig,
+                                           authorise: AuthPredicate,
+                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter {
+
+  def onPageLoad: Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
-        if (request.session.get(SessionKeys.isObligationAppeal).isDefined && SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+        if(request.session.get(SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
           logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
-          val answersFromSession = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
-          Ok(checkYourAnswersPage(answersFromSession))
+          for {
+            previousUploads <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
+          } yield {
+            val previousUploadsFileName = previousUploads.map(_.map(file => file.uploadDetails.map(details => details.fileName)))
+            val fileNames = previousUploadsFileName.getOrElse(Seq.empty).collect {
+              case Some(x) => x
+            }.mkString(", ")
+            val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
+            Ok(checkYourAnswersPage(answersFromSession))
+          }
         } else {
           logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
-          errorHandler.showInternalServerError
+          Future(errorHandler.showInternalServerError)
         }
       })(
         reasonableExcuse => {
-          if (SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
-            val answersFromSession = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
+        if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+          logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
+          for {
+            previousUploads <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
+          } yield {
+            val previousUploadsFileName = previousUploads.map(_.map(file => file.uploadDetails.map(details => details.fileName)))
+            val fileNames = previousUploadsFileName.getOrElse(Seq.empty).collect {
+              case Some(x) => x
+            }.mkString(", ")
+            val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
             Ok(checkYourAnswersPage(answersFromSession))
-          } else {
-            logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
-              s"and tried to load page with reasonable excuse: $reasonableExcuse")
-            errorHandler.showInternalServerError
           }
+        } else {
+          logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
+          logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
+            s"and tried to load page with reasonable excuse: $reasonableExcuse")
+          Future(errorHandler.showInternalServerError)
         }
+      }
       )
     }
   }
@@ -90,7 +110,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         }
       })(
         reasonableExcuse => {
-          if (SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
+          if (sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
             logger.debug(s"[CheckYourAnswersController][onPageLoad] All keys are present for reasonable excuse: $reasonableExcuse")
             appealService.submitAppeal(reasonableExcuse).flatMap {
               case true => {

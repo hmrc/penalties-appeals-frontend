@@ -265,7 +265,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-        request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.evidenceFileName).get shouldBe "test.png"
       }
 
       "no body is submitted" in {
@@ -282,7 +281,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-        request.session(fakeRequestWithCorrectKeysAndNoBody).get(SessionKeys.evidenceFileName).get shouldBe ""
       }
     }
 
