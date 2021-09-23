@@ -17,16 +17,20 @@
 package controllers
 
 import config.AppConfig
+import connectors.UpscanConnector
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
-
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
+import models.upload.{UploadJourney, UploadStatusEnum}
+import models.upscan.{UpscanInitiateRequest, UpscanInitiateResponseModel}
 
-class UpscanController @Inject()(repository: UploadJourneyRepository)
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+class UpscanController @Inject()(repository: UploadJourneyRepository, connector: UpscanConnector)
                                 (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
@@ -42,6 +46,29 @@ class UpscanController @Inject()(repository: UploadJourneyRepository)
             Ok(Json.toJson(fileStatus))
           }
         )
+      )
+    }
+  }
+
+  def initiateCallToUpscan(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request => {
+      logger.debug(s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId")
+      val initiateRequest = UpscanInitiateRequest(appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url)
+      connector.initiateToUpscan(initiateRequest).flatMap(
+        response => {
+          response.fold(
+            error => Future(InternalServerError(s"[UpscanController][initiateCallToUpscan] - Failed to map response for journey: $journeyId")),
+            responseModel => {
+              logger.debug(s"[UpscanController][initiateCallToUpscan] - Retrieving response model for journey: $journeyId")
+              val uploadJourney = UploadJourney(responseModel.reference, UploadStatusEnum.WAITING)
+              repository.updateStateOfFileUpload(journeyId, uploadJourney).map(
+                _ => {
+                  Ok(Json.toJson(responseModel)(UpscanInitiateResponseModel.formats))
+                }
+              )
+            }
+          )
+        }
       )
     }
   }

@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package controllers
+package testUtils
 
-import config.AppConfig
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, _}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import models.upload.{UploadJourney, UploadStatusEnum}
 
-import scala.concurrent.ExecutionContext
+object UploadData {
 
-@Singleton
-class SignOutController @Inject() (val mcc: MessagesControllerComponents)(
-    implicit
-    ec: ExecutionContext,
-    appConfig: AppConfig
-) extends FrontendController(mcc) {
+  def fileWaiting(number:Int):UploadJourney= UploadJourney(
+    reference = s"file$number",
+    fileStatus = UploadStatusEnum.WAITING,
+    downloadUrl = None,
+    uploadDetails = None
+  )
 
-  def signOut: Action[AnyContent] =
-    Action { implicit request =>
-      Redirect(appConfig.signOutUrl)
-    }
+  val maxWaitingUploads:Seq[UploadJourney] = Seq(
+    fileWaiting(1),
+    fileWaiting(2),
+    fileWaiting(3),
+    fileWaiting(4),
+    fileWaiting(4)
+  )
 
+  val oneWaitingUploads:Seq[UploadJourney] = Seq(
+    fileWaiting(1)
+  )
 }

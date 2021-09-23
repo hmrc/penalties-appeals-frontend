@@ -30,7 +30,7 @@ object UpscanInitiateHttpParser {
     def read(method: String, url: String, response: HttpResponse): UpscanInitiateResponse = {
       response.status match {
         case OK =>
-          response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.jsonReadsForModel) match {
+          response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.formats) match {
             case JsSuccess(model, _) => Right(model)
             case _ => Left(InvalidJson)
           }
@@ -59,5 +59,8 @@ object UpscanInitiateHttpParser {
     override val body: String = "incorrect Json body sent"
   }
 
-  case class UnexpectedFailure(override val status: Int, override val body: String) extends ErrorResponse
+  case class UnexpectedFailure(
+      override val status: Int,
+      override val body: String
+  ) extends ErrorResponse
 }

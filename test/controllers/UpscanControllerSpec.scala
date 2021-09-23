@@ -16,21 +16,31 @@
 
 package controllers
 
+import java.time.{Instant, LocalDateTime}
+
 import base.SpecBase
+import connectors.UpscanConnector
+import connectors.httpParsers.UpscanInitiateHttpParser.InvalidJson
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upscan.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
-import org.scalatest.matchers.must.Matchers
-import play.api.libs.json.JsString
+import play.api.libs.json._
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
+import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.mongo.cache.CacheItem
 
-import java.time.LocalDateTime
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class UpscanControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
-  val controller: UpscanController = new UpscanController(repository)(appConfig, stubMessagesControllerComponents())
+  val mockHttpClient: HttpClient = mock(classOf[HttpClient])
+  val connector: UpscanConnector = mock(classOf[UpscanConnector])
+  val controller: UpscanController = new UpscanController(
+    repository,
+    connector
+  )(appConfig, stubMessagesControllerComponents())
 
   "UpscanController" should {
     "return OK" when {
@@ -52,13 +62,70 @@ class UpscanControllerSpec extends SpecBase {
       }
     }
 
-    "return NOT FOUND" when {
-      "the database does not contain such values specified" in {
-        when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(None))
-        val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
-        status(result) shouldBe NOT_FOUND
+      "return NOT FOUND" when {
+        "the database does not contain such values specified" in {
+          when(
+            repository.getStatusOfFileUpload(
+              ArgumentMatchers.any(),
+              ArgumentMatchers.any()
+            )
+          ).thenReturn(Future.successful(None))
+          val result =
+            controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
+          status(result) shouldBe NOT_FOUND
+        }
       }
     }
-  }
+
+    val uploadJourneyModel: UploadJourney = UploadJourney(
+      reference = "ref1",
+      fileStatus = UploadStatusEnum.READY,
+      downloadUrl = Some("download.url"),
+      uploadDetails = Some(
+        UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+          checksum = "check12345678",
+          size = 987
+        )
+      )
+    )
+
+    "initiateCallToUpscan" must {
+      "return OK" when {
+        "the user has a upload state in the database" in {
+          when(connector.initiateToUpscan(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Right(
+              UpscanInitiateResponseModel(
+                "1234", UploadFormTemplateRequest("1234", Map("A" ->"B"))
+              )
+            )))
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(CacheItem("1234", Json.toJsObject(uploadJourneyModel)(UploadJourney.format), Instant.now(), Instant.now())))
+          val result = controller.initiateCallToUpscan("1234")(fakeRequest)
+          status(result) shouldBe OK
+          contentAsJson(result) shouldBe Json.obj(
+            "reference" -> "1234",
+            "uploadRequest" -> Json.obj(
+              "href" -> "1234",
+              "fields" -> Map("A" -> "B")
+            )
+          )
+        }
+      }
+
+      "return Internal Server Error" when {
+        "the user does not have an upload state in the database" in {
+          when(
+            connector.initiateToUpscan(ArgumentMatchers.any())(
+              ArgumentMatchers.any(),
+              ArgumentMatchers.any()
+            )
+          ).thenReturn(Future.successful(Left(InvalidJson)))
+          val result = controller.initiateCallToUpscan("1234")(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
+    }
 }

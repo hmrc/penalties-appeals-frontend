@@ -17,28 +17,32 @@
 package controllers
 
 import base.SpecBase
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import testUtils.AuthTestModels
+import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
   val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
@@ -46,12 +50,15 @@ class OtherReasonControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
+    when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(previousUpload))
+
     val controller: OtherReasonController = new OtherReasonController(
       whenDidYouBecomeUnablePage,
       whyReturnSubmittedLatePage,
       uploadEvidencePage,
-      mainNavigator
-    )(authPredicate, dataRequiredAction, appConfig, mcc)
+      mainNavigator,
+      mockUploadJourneyRepository
+    )(authPredicate, dataRequiredAction, appConfig, mcc, ec)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }
@@ -189,7 +196,9 @@ class OtherReasonControllerSpec extends SpecBase {
         status(result) shouldBe OK
       }
 
-      "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+      "return OK and correct view (pre-populated date when present in session)" in new Setup(
+        AuthTestModels.successfulAuthResult, Some(UploadData.oneWaitingUploads)
+      ) {
         val result = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.evidenceFileName -> "test.png")))
         status(result) shouldBe OK
       }
@@ -217,28 +226,25 @@ class OtherReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to late appeal or CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "upload-evidence": "test.png"
-                |}
-                |""".stripMargin))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(Seq(UploadJourney(
+              reference = "1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
+          //TODO: may need removing as part of upscan integration
           await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "upload-evidence": "test.png"
-                |}
-                |""".stripMargin))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(Seq(UploadJourney(
+              reference = "1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
+
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+          //TODO: may need removing as part of upscan integration
           await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
         }
 

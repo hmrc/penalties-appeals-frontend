@@ -22,7 +22,7 @@ object UploadEvidenceMessages {
 
   val h1 = "Evidence to support this appeal (optional)"
 
-  val p1 = "Use this page to upload any evidence to help us review the appeal."
+  val p1 = "Use this page to upload any evidence to help us review the penalty."
 
   val p2 = "Evidence might include any documents or letters that show why the return was submitted late."
 
@@ -53,6 +53,8 @@ object UploadEvidenceMessages {
   val detailsLi5 = "Open Document Format (ODF)"
 
   val detailsP2 = "You cannot upload zip files or documents that are password-protected."
+
+  val detailsP3 = "We’ll scan all files and reject any we think are suspicious."
 
   val document1 = "Document 1"
 

@@ -28,7 +28,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltiesConnector @Inject()(httpClient: HttpClient,
-                                   appConfig: AppConfig) {
+                                   appConfig: AppConfig, headerGenerator: HeaderGenerator) {
 
  def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean,isAdditional:Boolean): String = {
     if (isLPP) {
@@ -88,8 +88,7 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
   }
 
   def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP),
-      appealSubmission)(AppealSubmission.writes, implicitly, implicitly, implicitly)
+     httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP),appealSubmission,headerGenerator.headersForPEGA())(AppealSubmission.writes, implicitly, implicitly, implicitly)
   }
 
   def getOtherPenaltiesInTaxPeriod(penaltyId: String, enrolmentKey: String, isLPP: Boolean)

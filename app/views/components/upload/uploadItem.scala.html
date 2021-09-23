@@ -7,10 +7,19 @@
                                                                                 @* TODO: 'name' attribute to be removed, temp fix *@
                 <input class="multi-file-upload__file govuk-file-upload" type="file" id="file-{fileIndex}" name="upload-evidence" accept="@acceptedFileExtensions">
                 <span class="multi-file-upload__file-name"></span>
-                <a href="" target="_blank" class="govuk-link multi-file-upload__file-preview">Preview</a>
             </div>
 
-            @* TODO: add item upload status and remove/change links *@
+            <div class="multi-file-upload__meta-container">
+                <div class="multi-file-upload__status">
+                    <span class="multi-file-upload__progress">
+                        <span class="multi-file-upload__progress-bar" aria-live="polite" aria-label="uploading"></span>
+                    </span>
+                    <span class="multi-file-upload__uploaded-tag govuk-tag">@messages("otherReason.uploadEvidence.status.uploaded")</span>
+                    <span class="multi-file-upload__waiting-tag govuk-tag govuk-tag--grey">@messages("otherReason.uploadEvidence.status.pending")</span>
+                </div>
+            </div>
+
+            @* TODO: add remove/change links *@
         </div>
     </div>
 </li>

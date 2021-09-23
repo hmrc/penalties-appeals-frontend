@@ -37,6 +37,7 @@ class HeaderGeneratorSpec extends AnyWordSpec with HeaderNames with SpecBase {
   "HeaderGenerator.headersForPEGA" must {
 
     "create headers" in {
+      when(mockAppConfig.pegaEnvironment) thenReturn env
       when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
       implicit val hc: HeaderCarrier = HeaderCarrier()
       val headers = testHeaderGenerator.headersForPEGA().toMap
@@ -45,6 +46,7 @@ class HeaderGeneratorSpec extends AnyWordSpec with HeaderNames with SpecBase {
     }
 
     "include the Authorization header if it is supplied in AppConfig" in {
+      when(mockAppConfig.pegaEnvironment) thenReturn env
       when(mockAppConfig.pegaBearerToken).thenReturn(bearerToken)
       when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
       implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -55,11 +57,13 @@ class HeaderGeneratorSpec extends AnyWordSpec with HeaderNames with SpecBase {
     }
 
     "not include the Authorization header if it is empty string in AppConfig" in {
+      when(mockAppConfig.pegaEnvironment) thenReturn env
       when(mockAppConfig.pegaBearerToken).thenReturn("")
       when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
       implicit val hc: HeaderCarrier = HeaderCarrier()
       val headers = testHeaderGenerator.headersForPEGA().toMap
       headers("CorrelationId") shouldBe  correlationId
+      headers("Environment") shouldBe env
       headers.contains(AUTHORIZATION) shouldBe false
     }
   }

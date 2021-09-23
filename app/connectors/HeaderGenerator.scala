@@ -31,10 +31,10 @@ class HeaderGenerator @Inject()(appConfig: AppConfig, idGenerator: UUIDGenerator
   def headersForPEGA()(implicit hc: HeaderCarrier): Seq[(String, String)] = {
     val correlationId = idGenerator.generateUUID
     val headers = Seq(
-      "CorrelationId" -> correlationId
+      "CorrelationId" -> correlationId,
+      "Environment" -> appConfig.pegaEnvironment
     )
     logger.info(s"CorrelationId  $correlationId")
-    val headers = Seq("Environment" -> appConfig.pegaEnvironment)
     logger.debug(s"[HeaderGenerator] [headersForPEGA] $headers")
     appConfig.pegaBearerToken match {
       case "" => headers

@@ -272,7 +272,7 @@ agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submi
 # ----------------------------------------------------------
 otherReason.uploadEvidence.title = Evidence to support this appeal (optional)
 otherReason.uploadEvidence.heading = Evidence to support this appeal (optional)
-otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the appeal.
+otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the penalty.
 otherReason.uploadEvidence.p2 = Evidence might include any documents or letters that show why the return was submitted late.
 otherReason.uploadEvidence.lpp.p2 = Evidence might include any documents or letters that show why the VAT bill was paid late.
 otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return.
@@ -288,9 +288,12 @@ otherReason.uploadEvidence.details.li.3 = email (.txt or .msg)
 otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel or PowerPoint)
 otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
 otherReason.uploadEvidence.details.p2 = You cannot upload zip files or documents that are password-protected.
+otherReason.uploadEvidence.details.p3 = We’ll scan all files and reject any we think are suspicious.
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
 otherReason.uploadEvidence.document = Document
 otherReason.uploadEvidence.addAnother = Add another document
+otherReason.uploadEvidence.status.uploaded = Ready to Submit
+otherReason.uploadEvidence.status.pending = Pending
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------

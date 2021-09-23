@@ -38,6 +38,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.reasonableExcuse, "crime")
       )
       val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
@@ -52,6 +53,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.reasonableExcuse, "lossOfStaff")
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
@@ -68,6 +70,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.reasonableExcuse, "other")
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
@@ -85,13 +88,14 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
         (SessionKeys.reasonableExcuse, "other"),
-        (SessionKeys.isObligationAppeal, "true")
+        (SessionKeys.isObligationAppeal, "true"),
+        (SessionKeys.journeyId -> "1234")
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith ("HMRC has been asked to cancel the VAT registration")
-      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith ("there was no VAT Return due for the period")
+      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("HMRC has been asked to cancel the VAT registration")
+      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith("there was no VAT Return due for the period")
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
@@ -107,7 +111,8 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoad()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -133,9 +138,10 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
             (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
             (SessionKeys.reasonableExcuse, "crime"),
             (SessionKeys.whoPlannedToSubmitVATReturn, "agent"),
-            (SessionKeys.causeOfLateSubmissionAgent, "client"))
+            (SessionKeys.causeOfLateSubmissionAgent, "client"),
+            (SessionKeys.journeyId -> "1234"))
         )
-        val request  = controller.onPageLoad()(agentUserSessionKeys)
+        val request = controller.onPageLoad()(agentUserSessionKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text should startWith("because my client was affected by a crime")
@@ -152,6 +158,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.reasonableExcuse, "crime")
       ).withJsonBody(Json.parse(
         """
@@ -174,6 +181,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.reasonableExcuse, "crime")
       ).withJsonBody(Json.parse(
         """
@@ -199,7 +207,8 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onSubmit()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR

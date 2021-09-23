@@ -19,16 +19,23 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.UploadEvidenceForm
 import messages.UploadEvidenceMessages._
+import models.upload.UploadJourney
 import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
+import testUtils.UploadData
 import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.UploadEvidencePage
 
 class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
+
+  class Setup {
+
+  }
 
   "UploadEvidencePage" should {
     val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
@@ -39,16 +46,37 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       val detailsContentP2 = ".govuk-details__text > p:nth-child(3)"
 
+      val detailsContentP3 = ".govuk-details__text > p:nth-child(4)"
+
       val detailsContentLi = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
 
       val addAnotherButton = ".multi-file-upload__add-another"
 
       val continueButton = "#multi-upload-form > p > button"
+
+      val multiUploadForm = "#multi-upload-form"
+
+      val multiUploadFormFilesAKey = "data-multi-file-upload-uploaded-files"
+
+      val multiUploadFormInitiateUploadAKey = "data-multi-file-upload-send-url-tpl"
+
+      val multiUploadFormGetStatusAKey = "data-multi-file-upload-status-url-tpl"
     }
     val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
-    def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
-      uploadEvidencePage.apply(form, controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode))(request, implicitly, implicitly)
+    def previousUploadsToString(previousUploads:Option[Seq[UploadJourney]]):String = {
+      previousUploads match {
+        case Some(_) =>  Json.stringify(Json.toJson(previousUploads))
+        case None => ""
+      }
+    }
+
+    def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
+      uploadEvidencePage.apply(form,
+        controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode),
+        controllers.routes.UpscanController.initiateCallToUpscan("1234"),
+        controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),
+        previousUploadsToString(previousUploads))(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView(formProvider))
@@ -69,6 +97,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentLi(4) -> detailsLi4,
       Selectors.detailsContentLi(5) -> detailsLi5,
       Selectors.detailsContentP2 -> detailsP2,
+      Selectors.detailsContentP3 -> detailsP3,
       Selectors.addAnotherButton -> addAnotherButton,
       Selectors.continueButton -> continueButton
     )
@@ -94,6 +123,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
+        Selectors.detailsContentP3 -> detailsP3,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )
@@ -122,6 +152,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
+        Selectors.detailsContentP3 -> detailsP3,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )
@@ -148,6 +179,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
+        Selectors.detailsContentP3 -> detailsP3,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )
@@ -176,11 +208,32 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
+        Selectors.detailsContentP3 -> detailsP3,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "load the correct parameters for previous uploads" in {
+      implicit val doc: Document = asDocument(
+        applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
+      )
+      val expectedString = Json.stringify(Json.toJson(Some(UploadData.maxWaitingUploads)))
+
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormFilesAKey) shouldBe expectedString
+    }
+
+    "load the correct parameters for initiating uploads and getting status of uploads" in {
+      implicit val doc: Document = asDocument(
+        applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
+      )
+      val expectedInitiateString = "/penalties-appeals/upscan/call-to-upscan/1234"
+      val expectedStatusString = "/penalties-appeals/upscan/upload-status/1234/%7BfileRef%7D"
+
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormInitiateUploadAKey) shouldBe expectedInitiateString
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormGetStatusAKey) shouldBe expectedStatusString
     }
   }
 }

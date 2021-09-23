@@ -17,30 +17,28 @@
 package controllers.internal
 
 import config.AppConfig
+import javax.inject.Inject
 import models.upload.UploadJourney
-import play.api.i18n.I18nSupport
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.libs.json.JsValue
+import play.api.mvc.{Action, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.Logger.logger
 
-import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
                                         (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  def callbackFromUpscan(journeyId: String): Action[JsValue] = Action.async(parse.json) {
-    implicit request => {
-      withJsonBody[UploadJourney] {
-        callbackModel => {
-          repository.updateStateOfFileUpload(journeyId, callbackModel).map(
-            _ => NoContent
-          )
+  def callbackFromUpscan(journeyId: String): Action[JsValue] =
+    Action.async(parse.json) { implicit request =>
+      {
+        withJsonBody[UploadJourney] { callbackModel =>
+          {
+            repository
+              .updateStateOfFileUpload(journeyId, callbackModel)
+              .map(_ => NoContent)
+          }
         }
       }
     }
-  }
 }

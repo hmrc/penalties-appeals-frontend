@@ -39,7 +39,8 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe OK
@@ -76,7 +77,8 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString)
+        (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString),
+        (SessionKeys.journeyId, "1234"),
       ).withJsonBody(
         Json.parse(
           """
@@ -89,7 +91,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe  controllers.routes.CheckYourAnswersController.onPageLoad().url
+      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenDidThePersonDie).get shouldBe LocalDate.parse("2021-02-08").toString
     }
 
@@ -101,7 +103,8 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
       ).withJsonBody(
         Json.parse(
           """
@@ -126,7 +129,8 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         ).withJsonBody(
           Json.parse(
             """
@@ -148,7 +152,8 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         )
         val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -161,7 +166,8 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         )
 
         val noDayJsonBody: JsValue = Json.parse(
@@ -228,115 +234,118 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
     }
   }
 
-    "return 400 (BAD_REQUEST)" when {
-      "the date submitted is in the future" in {
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-          (SessionKeys.penaltyId, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "date.day": "08",
-              | "date.month": "02",
-              | "date.year": "2025"
-              |}
-              |""".stripMargin)
-        )
-        val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
-        request.header.status shouldBe BAD_REQUEST
-      }
-
-      "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-          (SessionKeys.penaltyId, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
-        )
-        val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
-        request.header.status shouldBe BAD_REQUEST
-      }
-
-      "the date submitted is missing a field" in {
-        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-          (SessionKeys.penaltyId, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
-        )
-
-        val noDayJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "",
-            | "date.month": "02",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
-        )
-
-        val noMonthJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
-        )
-
-        val noYearJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "02",
-            | "date.year": ""
-            |}
-            |""".stripMargin
-        )
-        val requestNoDay = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
-        requestNoDay.header.status shouldBe BAD_REQUEST
-
-        val requestNoMonth = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
-        requestNoMonth.header.status shouldBe BAD_REQUEST
-
-        val requestNoYear = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
-        requestNoYear.header.status shouldBe BAD_REQUEST
-      }
-
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die")
-      val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
+  "return 400 (BAD_REQUEST)" when {
+    "the date submitted is in the future" in {
+      val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "date.day": "08",
+            | "date.month": "02",
+            | "date.year": "2025"
+            |}
+            |""".stripMargin)
       )
-      val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithIncompleteKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
+      val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+      request.header.status shouldBe BAD_REQUEST
     }
 
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-person-die").post(""))
-      request.status shouldBe SEE_OTHER
+    "no body is submitted" in {
+      val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      )
+      val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+      request.header.status shouldBe BAD_REQUEST
     }
+
+    "the date submitted is missing a field" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      )
+
+      val noDayJsonBody: JsValue = Json.parse(
+        """
+          |{
+          | "date.day": "",
+          | "date.month": "02",
+          | "date.year": "2025"
+          |}
+          |""".stripMargin
+      )
+
+      val noMonthJsonBody: JsValue = Json.parse(
+        """
+          |{
+          | "date.day": "02",
+          | "date.month": "",
+          | "date.year": "2025"
+          |}
+          |""".stripMargin
+      )
+
+      val noYearJsonBody: JsValue = Json.parse(
+        """
+          |{
+          | "date.day": "02",
+          | "date.month": "02",
+          | "date.year": ""
+          |}
+          |""".stripMargin
+      )
+      val requestNoDay = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+      requestNoDay.header.status shouldBe BAD_REQUEST
+
+      val requestNoMonth = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+      requestNoMonth.header.status shouldBe BAD_REQUEST
+
+      val requestNoYear = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+      requestNoYear.header.status shouldBe BAD_REQUEST
+    }
+
+  }
+
+  "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die")
+    val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithNoKeys))
+    request.header.status shouldBe INTERNAL_SERVER_ERROR
+  }
+
+  "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+    val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
+      (SessionKeys.penaltyId, "1234"),
+      (SessionKeys.appealType, "Late_Submission"),
+      (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+    )
+    val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithIncompleteKeys))
+    request.header.status shouldBe INTERNAL_SERVER_ERROR
+  }
+
+  "return 303 (SEE_OTHER) when the user is not authorised" in {
+    AuthStub.unauthorised()
+    val request = await(buildClientForRequestToApp(uri = "/when-did-the-person-die").post(""))
+    request.status shouldBe SEE_OTHER
+  }
 
   "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to 'Making a Late appeal page' when appeal is > " +
     "30 days late" in {
@@ -346,7 +355,8 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
       (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
       (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
       (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-      (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+      (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+      (SessionKeys.journeyId, "1234")
     ).withJsonBody(
       Json.parse(
         """

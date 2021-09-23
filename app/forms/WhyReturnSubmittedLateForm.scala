@@ -22,9 +22,12 @@ import play.api.data.Forms.single
 import play.api.i18n.Messages
 
 object WhyReturnSubmittedLateForm extends Mappings {
-  def whyReturnSubmittedLateForm()(implicit messages: Messages) = Form[String](
-    single(
-      "why-return-submitted-late-text" -> text(errorKey = "otherReason.whyReturnSubmittedLate.error.required")
+  def whyReturnSubmittedLateForm()(implicit messages: Messages): Form[String] =
+    Form[String](
+      single(
+        "why-return-submitted-late-text" -> text(errorKey =
+          "otherReason.whyReturnSubmittedLate.error.required"
+        )
+      )
     )
-  )
 }

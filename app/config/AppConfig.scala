@@ -92,4 +92,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val upscanInitiateBaseUrl: String = servicesConfig.baseUrl("upscan-initiate")
 
+  lazy val upscanCallbackBaseUrl: String = config.get[String]("upscan.callback.base")
+
+  lazy val acceptedFileTypes: String = config.get[String]("upscan.acceptedFileTypes")
+
 }
