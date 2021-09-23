@@ -23,6 +23,7 @@ import models.PenaltyTypeEnum
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.UploadJourneyRepository
 import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
@@ -37,7 +38,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswersPage,
                                            appealService: AppealService,
                                            appealConfirmationPage: AppealConfirmationPage,
-                                           errorHandler: ErrorHandler)(implicit mcc: MessagesControllerComponents,
+                                           errorHandler: ErrorHandler,
+                                           uploadJourneyRepository: UploadJourneyRepository)(implicit mcc: MessagesControllerComponents,
                                                                        ec: ExecutionContext,
                                                                        appConfig: AppConfig,
                                                                        authorise: AuthPredicate,
@@ -73,12 +75,14 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
-        if (request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
-          appealService.submitAppeal("obligation").map {
+        if(request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
+          appealService.submitAppeal("obligation").flatMap {
             case true => {
-              Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
+              uploadJourneyRepository.removeUploadsForJourney(request.session.get(SessionKeys.journeyId).get).map {
+                _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
+              }
             }
-            case false => errorHandler.showInternalServerError
+            case false => Future(errorHandler.showInternalServerError)
           }
         } else {
           logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
@@ -88,11 +92,13 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         reasonableExcuse => {
           if (SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
             logger.debug(s"[CheckYourAnswersController][onPageLoad] All keys are present for reasonable excuse: $reasonableExcuse")
-            appealService.submitAppeal(reasonableExcuse).map {
+            appealService.submitAppeal(reasonableExcuse).flatMap {
               case true => {
-                Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
+                uploadJourneyRepository.removeUploadsForJourney(request.session.get(SessionKeys.journeyId).get).map {
+                  _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
+                }
               }
-              case false => errorHandler.showInternalServerError
+              case false => Future(errorHandler.showInternalServerError)
             }
           } else {
             logger.error(s"[CheckYourAnswersController][onSubmit] User did not have all answers for reasonable excuse: $reasonableExcuse")

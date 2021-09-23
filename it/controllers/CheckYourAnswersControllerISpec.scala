@@ -17,22 +17,32 @@
 package controllers
 
 import models.UserRequest
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
+import org.mongodb.scala.Document
 import play.api.http.Status
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.UploadJourneyRepository
 import services.AppealService
 import stubs.{AuthStub, PenaltiesStub}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
+import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   val controller: CheckYourAnswersController = injector.instanceOf[CheckYourAnswersController]
+  val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
+
+  override def beforeAll(): Unit = {
+    await(repository.collection.deleteMany(Document()).toFuture())
+    super.beforeAll()
+  }
 
   "GET /check-your-answers" should {
     "return 200 (OK) when the user is authorised and has the correct keys in session for crime" in {
@@ -773,15 +783,42 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       ))
       implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
       implicit val hc: HeaderCarrier = HeaderCarrier()
-      val appealService: AppealService = injector.instanceOf[AppealService]
-      appealService.submitAppeal("obligation")(fakeRequestWithCorrectKeys, implicitly, implicitly)
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
 
-    "redirect the user to the InternalServerError on failure for obligation false" in  {
+    "redirect the user to the confirmation page (regardless of reason) and delete all uploads for that user" in {
       PenaltiesStub.successfulAppealSubmission(false)
+      val uploadJourneyModel: UploadJourney = UploadJourney(
+        reference = "file1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/upload"), uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1024
+        ))
+      )
+      await(repository.updateStateOfFileUpload("1234", uploadJourneyModel))
+      val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.isObligationAppeal -> "true",
+        SessionKeys.otherRelevantInformation -> "some text",
+        SessionKeys.journeyId -> "1234"
+      ))
+      implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+      implicit val hc: HeaderCarrier = HeaderCarrier()
+      await(repository.collection.countDocuments().toFuture()) shouldBe 1
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+      await(repository.collection.countDocuments().toFuture()) shouldBe 0
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+    }
+
+    "redirect the user to the InternalServerError on failure for obligation false" in  {
+      PenaltiesStub.failedAppealSubmissionWithFault(false)
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -794,9 +831,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.otherRelevantInformation -> "some-text",
         SessionKeys.journeyId -> "1234"
       ))
-      val mockAppealService: AppealService = mock(classOf[AppealService])
-      when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-        .thenReturn(Future.successful(false))
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }

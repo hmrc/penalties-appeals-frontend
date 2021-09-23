@@ -161,4 +161,32 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 0
     }
   }
+
+  "removeUploadsForJourney" should {
+    "remove the document for the given journey ID" in {
+      val callbackModel = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.collection.countDocuments().toFuture()) shouldBe 1
+      await(repository.removeUploadsForJourney("1234"))
+      await(repository.collection.countDocuments().toFuture()) shouldBe 0
+    }
+
+    "not remove anything when the journey ID doesn't exist in the repo" in {
+      await(repository.collection.countDocuments().toFuture()) shouldBe 0
+      await(repository.removeUploadsForJourney("1234"))
+      await(repository.collection.countDocuments().toFuture()) shouldBe 0
+    }
+  }
 }

@@ -21,6 +21,7 @@ import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey}
 import models.upload.{UploadJourney, UploadStatusEnum}
 import uk.gov.hmrc.mongo.cache.{CacheIdType, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
+import utils.Logger.logger
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -71,5 +72,10 @@ class UploadJourneyRepository @Inject()(
         }
       }.getOrElse(0)
     }
+  }
+
+  def removeUploadsForJourney(journeyId: String): Future[Unit] = {
+    logger.info(s"[UploadJourneyRepository][removeUploadsForJourney] - Removing uploads for journey ID: $journeyId")
+    deleteEntity(journeyId)
   }
 }
