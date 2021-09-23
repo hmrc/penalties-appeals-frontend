@@ -16,18 +16,16 @@
 
 package utils
 
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.{MustMatchers, WordSpec}
 
-class UUIDGeneratorSpec extends AnyWordSpec with Matchers {
+class UUIDGeneratorSpec extends WordSpec with MustMatchers {
 
   val uuidGenerator = new UUIDGenerator
 
   "IdGenerator" when {
-    "generating submissionIds" when {
       "generate ids that are uuids" in {
         uuidGenerator.generateUUID must fullyMatch regex """([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})""".r
       }
     }
   }
-}

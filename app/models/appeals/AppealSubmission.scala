@@ -16,6 +16,7 @@
 
 package models.appeals
 
+import connectors.HeaderGenerator
 import models.UserRequest
 import play.api.libs.json._
 import utils.SessionKeys

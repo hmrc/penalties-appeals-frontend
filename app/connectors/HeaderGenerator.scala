@@ -16,6 +16,7 @@
 
 package connectors
 
+
 import config.AppConfig
 import play.api.http.HeaderNames._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -28,7 +29,6 @@ import javax.inject.{Inject, Singleton}
 class HeaderGenerator @Inject()(appConfig: AppConfig, idGenerator: UUIDGenerator) {
 
   def headersForPEGA()(implicit hc: HeaderCarrier): Seq[(String, String)] = {
-
     val correlationId = idGenerator.generateUUID
     val headers = Seq(
       "CorrelationId" -> correlationId,

@@ -17,7 +17,8 @@
 package services
 
 import base.SpecBase
-import connectors.PenaltiesConnector
+import config.AppConfig
+import connectors.{HeaderGenerator, PenaltiesConnector}
 import models.{ReasonableExcuse, UserRequest}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -27,13 +28,16 @@ import play.api.mvc.AnyContent
 import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import utils.SessionKeys
+import utils.{SessionKeys, UUIDGenerator}
 
 import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealServiceSpec extends SpecBase {
   val mockPenaltiesConnector: PenaltiesConnector = mock(classOf[PenaltiesConnector])
+  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+  val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
+  val testHeaderGenerator = new HeaderGenerator(mockAppConfig,mockUUIDGenerator)
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
@@ -79,7 +83,7 @@ class AppealServiceSpec extends SpecBase {
 
   class Setup {
     reset(mockPenaltiesConnector, mockDateTimeHelper)
-    val service: AppealService = new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper,mockAuditService)
+    val service: AppealService = new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper,mockAuditService,testHeaderGenerator)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
   }

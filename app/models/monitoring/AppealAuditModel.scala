@@ -16,14 +16,16 @@
 
 package models.monitoring
 
+import connectors.HeaderGenerator
 import models.UserRequest
 import models.appeals._
 import play.api.libs.json._
 import services.monitoring.JsonAuditModel
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.JsonUtils
 
-case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String)
-                           (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
+case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String,headerGenerator: HeaderGenerator)
+                           (implicit request: UserRequest[_], headerCarrier: HeaderCarrier) extends JsonAuditModel with JsonUtils {
 
   override val auditType: String = "PenaltyAppealSubmitted"
   override val transactionName: String = "penalties-appeal-submitted"
@@ -34,7 +36,8 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
     "agentReferenceNumber" -> request.arn,
     "penaltyId" -> appealSubmission.penaltyId,
     "penaltyType" -> penaltyType,
-    "appealInformation" -> appealInformationJsonObj(appealSubmission)
+    "appealInformation" -> appealInformationJsonObj(appealSubmission),
+    "correlationId"-> headerGenerator.headersForPEGA().find(_._1 == "CorrelationId").map(_._2)
   )
 
   def appealInformationJsonObj(appealSubmission: AppealSubmission): JsObject = {
