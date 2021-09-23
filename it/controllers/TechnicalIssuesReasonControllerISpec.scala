@@ -38,7 +38,8 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
@@ -76,6 +77,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenDidTechnologyIssuesBegin, "2020-01-01")
       )
       val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys))
@@ -90,6 +92,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenDidTechnologyIssuesBegin, "2020-01-01")
       )
       val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys))
@@ -127,7 +130,8 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString)
+        (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString),
+        (SessionKeys.journeyId, "1234")
       ).withJsonBody(
         Json.parse(
           """
@@ -153,7 +157,8 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         ).withJsonBody(
           Json.parse(
             """
@@ -175,7 +180,8 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -188,7 +194,8 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00")
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
         )
 
         val noDayJsonBody: JsValue = Json.parse(
@@ -265,6 +272,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
       ).withJsonBody(
         Json.parse(
@@ -290,6 +298,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(31).toString),
+        (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
       ).withJsonBody(
         Json.parse(
@@ -316,6 +325,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
         ).withJsonBody(
           Json.parse(
@@ -339,6 +349,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
         ).withJsonBody(
           Json.parse(
@@ -362,6 +373,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
@@ -376,6 +388,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
         )
 

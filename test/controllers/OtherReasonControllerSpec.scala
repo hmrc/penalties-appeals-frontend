@@ -17,9 +17,10 @@
 package controllers
 
 import base.SpecBase
-import models.upload.UploadJourney
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
@@ -225,28 +226,25 @@ class OtherReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to late appeal or CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "upload-evidence": "test.png"
-                |}
-                |""".stripMargin))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(Seq(UploadJourney(
+              reference = "1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
+          //TODO: may need removing as part of upscan integration
           await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "upload-evidence": "test.png"
-                |}
-                |""".stripMargin))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(Seq(UploadJourney(
+              reference = "1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
+
+          val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+          //TODO: may need removing as part of upscan integration
           await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
         }
 

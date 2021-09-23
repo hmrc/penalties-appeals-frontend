@@ -292,6 +292,8 @@ otherReason.uploadEvidence.details.p3 = We’ll scan all files and reject any we
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
 otherReason.uploadEvidence.document = Document
 otherReason.uploadEvidence.addAnother = Add another document
+otherReason.uploadEvidence.status.uploaded = Ready to Submit
+otherReason.uploadEvidence.status.pending = Pending
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------

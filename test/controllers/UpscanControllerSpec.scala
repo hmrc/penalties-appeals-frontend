@@ -34,9 +34,7 @@ import uk.gov.hmrc.mongo.cache.CacheItem
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpscanControllerSpec extends SpecBase {
-  val repository: UploadJourneyRepository = mock(
-    classOf[UploadJourneyRepository]
-  )
+  val repository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
   val connector: UpscanConnector = mock(classOf[UpscanConnector])
   val controller: UpscanController = new UpscanController(
@@ -44,38 +42,25 @@ class UpscanControllerSpec extends SpecBase {
     connector
   )(appConfig, stubMessagesControllerComponents())
 
-  implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
-
   "UpscanController" should {
-    "getStatusOfFileUpload" must {
-      "return OK" when {
-        "the user has an upload state in the database" in {
-          when(
-            repository.getStatusOfFileUpload(
-              ArgumentMatchers.any(),
-              ArgumentMatchers.any()
-            )
-          ).thenReturn(Future.successful(Some(UploadStatusEnum.WAITING)))
-          val result =
-            controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
-          status(result) shouldBe OK
-          contentAsString(result) shouldBe "\"WAITING\""
-        }
-
-        "the user has a successful file upload in the database" in {
-          when(
-            repository.getStatusOfFileUpload(
-              ArgumentMatchers.any(),
-              ArgumentMatchers.any()
-            )
-          ).thenReturn(Future.successful(Some(UploadStatusEnum.READY)))
-
-          val result =
-            controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
-          status(result) shouldBe OK
-          contentAsString(result) shouldBe "\"READY\""
-        }
+    "return OK" when {
+      "the user has an upload state in the database" in {
+        when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(UploadStatusEnum.WAITING)))
+        val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
+        status(result) shouldBe OK
+        contentAsString(result) shouldBe "\"WAITING\""
       }
+
+      "the user has a successful file upload in the database" in {
+        when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(UploadStatusEnum.READY)))
+
+        val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
+        status(result) shouldBe OK
+        contentAsString(result) shouldBe "\"READY\""
+      }
+    }
 
       "return NOT FOUND" when {
         "the database does not contain such values specified" in {
@@ -110,36 +95,14 @@ class UpscanControllerSpec extends SpecBase {
     "initiateCallToUpscan" must {
       "return OK" when {
         "the user has a upload state in the database" in {
-          when(
-            connector.initiateToUpscan(ArgumentMatchers.any())(
-              ArgumentMatchers.any(),
-              ArgumentMatchers.any()
-            )
-          ).thenReturn(
-            Future.successful(
-              Right(
-                UpscanInitiateResponseModel(
-                  "1234",
-                  UploadFormTemplateRequest("1234", Map("A" -> "B"))
-                )
+          when(connector.initiateToUpscan(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Right(
+              UpscanInitiateResponseModel(
+                "1234", UploadFormTemplateRequest("1234", Map("A" ->"B"))
               )
-            )
-          )
-          when(
-            repository.updateStateOfFileUpload(
-              ArgumentMatchers.any(),
-              ArgumentMatchers.any()
-            )
-          ).thenReturn(
-            Future.successful(
-              CacheItem(
-                "1234",
-                Json.toJsObject(uploadJourneyModel)(UploadJourney.format),
-                Instant.now(),
-                Instant.now()
-              )
-            )
-          )
+            )))
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(CacheItem("1234", Json.toJsObject(uploadJourneyModel)(UploadJourney.format), Instant.now(), Instant.now())))
           val result = controller.initiateCallToUpscan("1234")(fakeRequest)
           status(result) shouldBe OK
           contentAsJson(result) shouldBe Json.obj(
@@ -165,5 +128,4 @@ class UpscanControllerSpec extends SpecBase {
         }
       }
     }
-  }
 }

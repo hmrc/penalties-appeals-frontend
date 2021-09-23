@@ -37,11 +37,11 @@ object PenaltiesStub {
   private val initiateUpscanUrl = "http://localhost:1111/upscan/v2/initiate"
 
   def successfulGetAppealDataResponse(
-      penaltyId: String,
-      enrolmentKey: String,
-      isLPP: Boolean = false,
-      isAdditional: Boolean = false
-  ): StubMapping = {
+                                       penaltyId: String,
+                                       enrolmentKey: String,
+                                       isLPP: Boolean = false,
+                                       isAdditional: Boolean = false
+                                     ): StubMapping = {
     val typeOfPenalty =
       if (isAdditional) PenaltyTypeEnum.Additional
       else if (isLPP) PenaltyTypeEnum.Late_Payment
@@ -54,24 +54,24 @@ object PenaltiesStub {
           s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey$extraAdditionalParam"
         )
       ).willReturn(
-          aResponse()
-            .withStatus(Status.OK)
-            .withBody(
-              Json
-                .obj(
-                  "type" -> typeOfPenalty,
-                  "startDate" -> LocalDateTime
-                    .of(2020, 1, 1, 12, 0, 0)
-                    .toString,
-                  "endDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
-                  "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString,
-                  "dateCommunicationSent" -> LocalDateTime
-                    .of(2020, 2, 8, 12, 0, 0)
-                    .toString
-                )
-                .toString()
-            )
-        )
+        aResponse()
+          .withStatus(Status.OK)
+          .withBody(
+            Json
+              .obj(
+                "type" -> typeOfPenalty,
+                "startDate" -> LocalDateTime
+                  .of(2020, 1, 1, 12, 0, 0)
+                  .toString,
+                "endDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
+                "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString,
+                "dateCommunicationSent" -> LocalDateTime
+                  .of(2020, 2, 8, 12, 0, 0)
+                  .toString
+              )
+              .toString()
+          )
+      )
     )
   }
 
@@ -116,9 +116,9 @@ object PenaltiesStub {
   }
 
   def successfulCallCallForOtherPenalties(
-      penaltyId: String,
-      status: Int
-  ): StubMapping = {
+                                           penaltyId: String,
+                                           status: Int
+                                         ): StubMapping = {
     stubFor(
       get(urlEqualTo(fetchOtherPenalties(penaltyId)))
         .willReturn(
@@ -149,25 +149,25 @@ object PenaltiesStub {
   }
 
   def failedGetAppealDataResponse(
-      penaltyId: String,
-      enrolmentKey: String,
-      status: Int = Status.INTERNAL_SERVER_ERROR
-  ): StubMapping = {
+                                   penaltyId: String,
+                                   enrolmentKey: String,
+                                   status: Int = Status.INTERNAL_SERVER_ERROR
+                                 ): StubMapping = {
     stubFor(
       get(
         urlEqualTo(
           appealUriForLSP + s"?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
         )
       ).willReturn(
-          aResponse()
-            .withStatus(status)
-        )
+        aResponse()
+          .withStatus(status)
+      )
     )
   }
 
   def failedFetchReasonableExcuseListResponse(
-      status: Int = Status.INTERNAL_SERVER_ERROR
-  ): StubMapping = {
+                                               status: Int = Status.INTERNAL_SERVER_ERROR
+                                             ): StubMapping = {
     stubFor(
       get(urlEqualTo(fetchReasonableExcuseUri))
         .willReturn(
@@ -184,9 +184,9 @@ object PenaltiesStub {
           appealUriForLSP + s"?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
         )
       ).willReturn(
-          aResponse()
-            .withFault(Fault.CONNECTION_RESET_BY_PEER)
-        )
+        aResponse()
+          .withFault(Fault.CONNECTION_RESET_BY_PEER)
+      )
     )
   }
 

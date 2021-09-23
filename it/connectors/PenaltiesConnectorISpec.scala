@@ -33,7 +33,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val penaltiesConnector: PenaltiesConnector = injector.instanceOf[PenaltiesConnector]
 
- "getAppealUrlBasedOnPenaltyType" should {
+  "getAppealUrlBasedOnPenaltyType" should {
     "return the correct url for LPP" in {
       val expectedResult = "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=false"
       val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = false)
@@ -187,23 +187,23 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
     }
   }
 
-   "getOtherPenaltiesInTaxPeriod" should {
-     "return a success response" when {
-       "response is OK" in {
-         val penaltyId = "1234"
-         successfulCallCallForOtherPenalties(penaltyId, OK)
-         val result = await(penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId =  penaltyId, isLPP = false, enrolmentKey = "123456789")
-         (ExecutionContext.Implicits.global, HeaderCarrier()))
-         result.status shouldBe OK
-       }
+  "getOtherPenaltiesInTaxPeriod" should {
+    "return a success response" when {
+      "response is OK" in {
+        val penaltyId = "1234"
+        successfulCallCallForOtherPenalties(penaltyId, OK)
+        val result = await(penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId = penaltyId, isLPP = false, enrolmentKey = "123456789")
+        (ExecutionContext.Implicits.global, HeaderCarrier()))
+        result.status shouldBe OK
+      }
 
-       "response is NO_CONTENT" in {
-         val penaltyId = "1234"
-         successfulCallCallForOtherPenalties(penaltyId, NO_CONTENT)
-         val result = await(penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId =  penaltyId, isLPP = false, enrolmentKey = "123456789")
-         (ExecutionContext.Implicits.global, HeaderCarrier()))
-         result.status shouldBe NO_CONTENT
-       }
-     }
-   }
+      "response is NO_CONTENT" in {
+        val penaltyId = "1234"
+        successfulCallCallForOtherPenalties(penaltyId, NO_CONTENT)
+        val result = await(penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId = penaltyId, isLPP = false, enrolmentKey = "123456789")
+        (ExecutionContext.Implicits.global, HeaderCarrier()))
+        result.status shouldBe NO_CONTENT
+      }
+    }
+  }
 }

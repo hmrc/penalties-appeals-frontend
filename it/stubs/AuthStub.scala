@@ -65,7 +65,7 @@ object AuthStub {
           .withStatus(Status.OK)
           .withBody(
             Json.obj(
-              "affinityGroup"-> "Agent",
+              "affinityGroup" -> "Agent",
               "allEnrolments" -> Json.arr(
                 Json.obj(
                   "key" -> EnrolmentKeys.agentEnrolmentKey,

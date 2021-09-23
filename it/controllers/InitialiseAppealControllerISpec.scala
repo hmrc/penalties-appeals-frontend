@@ -37,6 +37,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
@@ -52,6 +53,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
@@ -67,6 +69,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
@@ -90,13 +93,14 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
 
     }
 
     "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned for LPP additional" in {
       implicit val fakeRequest = FakeRequest()
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true,isAdditional = true)
+      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
       val result = controller.onPageLoadForObligation("1234", isLPP = true, isAdditional = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
@@ -106,6 +110,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
     }
 
