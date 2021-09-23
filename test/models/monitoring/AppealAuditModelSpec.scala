@@ -130,7 +130,7 @@ class AppealAuditModelSpec extends SpecBase {
     )
     val otherAppealInformationWithEvidence = otherAppealInformation.copy(
       supportingEvidence = Some(Evidence(
-        noOfUploadedFiles = 1, referenceId = "ref1"
+        noOfUploadedFiles = 1
       ))
     )
 
@@ -139,7 +139,7 @@ class AppealAuditModelSpec extends SpecBase {
     )
     val obligationAppealInformationWithEvidence = obligationAppealInformation.copy(
       supportingEvidence = Some(Evidence(
-        noOfUploadedFiles = 1, referenceId = "ref1"
+        noOfUploadedFiles = 1
       ))
     )
 

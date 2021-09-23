@@ -28,13 +28,14 @@ sealed trait AppealInformation {
 
 case class BereavementAppealInformation(
                                          `type`: String,
-                                          dateOfEvent: String,
-                                          statement: Option[String],
-                                          lateAppeal: Boolean,
-                                          lateAppealReason: Option[String],
-                                          whoPlannedToSubmit: Option[String],
-                                          causeOfLateSubmissionAgent: Option[String]
+                                         dateOfEvent: String,
+                                         statement: Option[String],
+                                         lateAppeal: Boolean,
+                                         lateAppealReason: Option[String],
+                                         whoPlannedToSubmit: Option[String],
+                                         causeOfLateSubmissionAgent: Option[String]
                                        ) extends AppealInformation
+
 object BereavementAppealInformation {
   implicit val bereavementAppealInformationFormatter: OFormat[BereavementAppealInformation] = Json.format[BereavementAppealInformation]
 
@@ -79,7 +80,7 @@ case class CrimeAppealInformation(
                                    lateAppeal: Boolean,
                                    lateAppealReason: Option[String],
                                    whoPlannedToSubmit: Option[String],
-                                   causeOfLateSubmissionAgent:Option[String]
+                                   causeOfLateSubmissionAgent: Option[String]
                                  ) extends AppealInformation
 
 object CrimeAppealInformation {
@@ -126,7 +127,7 @@ case class FireOrFloodAppealInformation(
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
                                          whoPlannedToSubmit: Option[String],
-                                         causeOfLateSubmissionAgent:Option[String]
+                                         causeOfLateSubmissionAgent: Option[String]
                                        ) extends AppealInformation
 
 object FireOrFloodAppealInformation {
@@ -166,14 +167,14 @@ object FireOrFloodAppealInformation {
 }
 
 case class LossOfStaffAppealInformation(
-                                   `type`: String,
-                                   dateOfEvent: String,
-                                   statement: Option[String],
-                                   lateAppeal: Boolean,
-                                   lateAppealReason: Option[String],
-                                   whoPlannedToSubmit: Option[String],
-                                   causeOfLateSubmissionAgent:Option[String]
-                                 ) extends AppealInformation
+                                         `type`: String,
+                                         dateOfEvent: String,
+                                         statement: Option[String],
+                                         lateAppeal: Boolean,
+                                         lateAppealReason: Option[String],
+                                         whoPlannedToSubmit: Option[String],
+                                         causeOfLateSubmissionAgent: Option[String]
+                                       ) extends AppealInformation
 
 object LossOfStaffAppealInformation {
   implicit val lossOfStaffAppealInformationFormatter: OFormat[LossOfStaffAppealInformation] = Json.format[LossOfStaffAppealInformation]
@@ -212,15 +213,15 @@ object LossOfStaffAppealInformation {
 }
 
 case class TechnicalIssuesAppealInformation(
-                                         `type`: String,
-                                         startDateOfEvent: String,
-                                         endDateOfEvent: String,
-                                         statement: Option[String],
-                                         lateAppeal: Boolean,
-                                         lateAppealReason: Option[String],
-                                         whoPlannedToSubmit: Option[String],
-                                         causeOfLateSubmissionAgent:Option[String]
-                                       ) extends AppealInformation
+                                             `type`: String,
+                                             startDateOfEvent: String,
+                                             endDateOfEvent: String,
+                                             statement: Option[String],
+                                             lateAppeal: Boolean,
+                                             lateAppealReason: Option[String],
+                                             whoPlannedToSubmit: Option[String],
+                                             causeOfLateSubmissionAgent: Option[String]
+                                           ) extends AppealInformation
 
 object TechnicalIssuesAppealInformation {
   implicit val technicalIssuesAppealInformationFormatter: OFormat[TechnicalIssuesAppealInformation] = Json.format[TechnicalIssuesAppealInformation]
@@ -260,18 +261,18 @@ object TechnicalIssuesAppealInformation {
 }
 
 case class HealthAppealInformation(
-                                         `type`: String,
-                                         hospitalStayInvolved: Boolean,
-                                         dateOfEvent: Option[String],
-                                         startDateOfEvent: Option[String],
-                                         endDateOfEvent: Option[String],
-                                         eventOngoing: Boolean,
-                                         statement: Option[String],
-                                         lateAppeal: Boolean,
-                                         lateAppealReason: Option[String],
-                                         whoPlannedToSubmit: Option[String],
-                                         causeOfLateSubmissionAgent:Option[String]
-                                       ) extends AppealInformation
+                                    `type`: String,
+                                    hospitalStayInvolved: Boolean,
+                                    dateOfEvent: Option[String],
+                                    startDateOfEvent: Option[String],
+                                    endDateOfEvent: Option[String],
+                                    eventOngoing: Boolean,
+                                    statement: Option[String],
+                                    lateAppeal: Boolean,
+                                    lateAppealReason: Option[String],
+                                    whoPlannedToSubmit: Option[String],
+                                    causeOfLateSubmissionAgent: Option[String]
+                                  ) extends AppealInformation
 
 object HealthAppealInformation {
   implicit val healthAppealInformationFormatter: OFormat[HealthAppealInformation] = Json.format[HealthAppealInformation]
@@ -337,7 +338,7 @@ case class OtherAppealInformation(
                                    lateAppeal: Boolean,
                                    lateAppealReason: Option[String],
                                    whoPlannedToSubmit: Option[String],
-                                   causeOfLateSubmissionAgent:Option[String]
+                                   causeOfLateSubmissionAgent: Option[String]
                                  ) extends AppealInformation
 
 object OtherAppealInformation {
@@ -382,7 +383,7 @@ case class ObligationAppealInformation(
                                         `type`: String,
                                         statement: Option[String],
                                         supportingEvidence: Option[Evidence]
-) extends AppealInformation
+                                      ) extends AppealInformation
 
 object ObligationAppealInformation {
   implicit val evidenceFormatter: OFormat[Evidence] = Evidence.format
@@ -395,7 +396,7 @@ object ObligationAppealInformation {
     ).deepMerge(
       obligationAppealInformation.supportingEvidence.fold(
         Json.obj()
-    )(
+      )(
         supportingEvidence => Json.obj("supportingEvidence" -> supportingEvidence)
       )
 
@@ -414,40 +415,24 @@ case class AppealSubmission(
 object AppealSubmission {
   def parseAppealInformationToJson(payload: AppealInformation): JsValue = {
     payload.`type` match {
-      case "bereavement" => {
-        Json.toJson(payload.asInstanceOf[BereavementAppealInformation])(BereavementAppealInformation.bereavementAppealWrites)
-      }
-      case "crime" => {
-        Json.toJson(payload.asInstanceOf[CrimeAppealInformation])(CrimeAppealInformation.crimeAppealWrites)
-      }
-      case "fireOrFlood" => {
-        Json.toJson(payload.asInstanceOf[FireOrFloodAppealInformation])(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
-      }
-      case "lossOfStaff" => {
-        Json.toJson(payload.asInstanceOf[LossOfStaffAppealInformation])(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
-      }
-      case "technicalIssues" => {
-        Json.toJson(payload.asInstanceOf[TechnicalIssuesAppealInformation])(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
-      }
-      case "health" => {
-        Json.toJson(payload.asInstanceOf[HealthAppealInformation])(HealthAppealInformation.healthAppealWrites)
-      }
-      case "other" => {
-        Json.toJson(payload.asInstanceOf[OtherAppealInformation])(OtherAppealInformation.otherAppealInformationWrites)
-      }
-      case "obligation" => {
-        Json.toJson(payload.asInstanceOf[ObligationAppealInformation])(ObligationAppealInformation.obligationAppealInformationWrites)
-      }
+      case "bereavement" => Json.toJson(payload.asInstanceOf[BereavementAppealInformation])(BereavementAppealInformation.bereavementAppealWrites)
+      case "crime" => Json.toJson(payload.asInstanceOf[CrimeAppealInformation])(CrimeAppealInformation.crimeAppealWrites)
+      case "fireOrFlood" => Json.toJson(payload.asInstanceOf[FireOrFloodAppealInformation])(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
+      case "lossOfStaff" => Json.toJson(payload.asInstanceOf[LossOfStaffAppealInformation])(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
+      case "technicalIssues" => Json.toJson(payload.asInstanceOf[TechnicalIssuesAppealInformation])(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
+      case "health" => Json.toJson(payload.asInstanceOf[HealthAppealInformation])(HealthAppealInformation.healthAppealWrites)
+      case "other" => Json.toJson(payload.asInstanceOf[OtherAppealInformation])(OtherAppealInformation.otherAppealInformationWrites)
+      case "obligation" => Json.toJson(payload.asInstanceOf[ObligationAppealInformation])(ObligationAppealInformation.obligationAppealInformationWrites)
     }
   }
 
   //scalastyle:off
-  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean)
+  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long)
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
       case "bereavement" => {
         AppealSubmission(
-          submittedBy = if(userRequest.isAgent) "agent" else "client",
+          submittedBy = if (userRequest.isAgent) "agent" else "client",
           penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -546,9 +531,9 @@ object AppealSubmission {
           appealInformation = HealthAppealInformation(
             `type` = "health",
             hospitalStayInvolved = isHospitalStay,
-            dateOfEvent = if(isHospitalStay) None else userRequest.session.get(SessionKeys.whenHealthIssueHappened),
-            startDateOfEvent = if(isHospitalStay) userRequest.session.get(SessionKeys.whenHealthIssueStarted) else None,
-            endDateOfEvent = if(isOngoingHospitalStay) None else userRequest.session.get(SessionKeys.whenHealthIssueEnded),
+            dateOfEvent = if (isHospitalStay) None else userRequest.session.get(SessionKeys.whenHealthIssueHappened),
+            startDateOfEvent = if (isHospitalStay) userRequest.session.get(SessionKeys.whenHealthIssueStarted) else None,
+            endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.session.get(SessionKeys.whenHealthIssueEnded),
             eventOngoing = isOngoingHospitalStay,
             statement = None,
             lateAppeal = isLateAppeal,
@@ -569,12 +554,7 @@ object AppealSubmission {
             `type` = "other",
             dateOfEvent = userRequest.session.get(SessionKeys.whenDidBecomeUnable).get,
             statement = userRequest.session.get(SessionKeys.whyReturnSubmittedLate),
-            supportingEvidence = userRequest.session.get(SessionKeys.evidenceFileName).fold[Option[Evidence]](None)(_ => Some(Evidence(
-              //TODO: change with multi-evidence upload option
-              noOfUploadedFiles = 1,
-              //TODO: this could change to something more concrete
-              referenceId = userRequest.session.get(SessionKeys.penaltyId).get
-            ))),
+            supportingEvidence = if (amountOfFileUploads > 0) Some(Evidence(amountOfFileUploads)) else None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             whoPlannedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn),
@@ -591,12 +571,7 @@ object AppealSubmission {
           appealInformation = ObligationAppealInformation(
             `type` = "obligation",
             statement = userRequest.session.get(SessionKeys.otherRelevantInformation),
-            supportingEvidence = userRequest.session.get(SessionKeys.evidenceFileName).fold[Option[Evidence]](None)(_ => Some(Evidence(
-              //TODO: change with multi-evidence upload option
-              noOfUploadedFiles = 1,
-              //TODO: this could change to something more concrete
-              referenceId = userRequest.session.get(SessionKeys.penaltyId).get
-            )))
+            supportingEvidence = if (amountOfFileUploads > 0) Some(Evidence(amountOfFileUploads)) else None
           )
         )
       }
