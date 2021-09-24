@@ -42,7 +42,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.reasonableExcuse -> "crime",
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.hasConfirmedDeclaration -> "true",
-      SessionKeys.dateOfCrime -> "2022-01-01")
+    SessionKeys.dateOfCrime -> "2022-01-01")
   )
 
   val fakeRequestForLossOfStaffJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
@@ -143,7 +143,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     page,
     mockAppealService,
     confirmationPage,
-    errorHandler
+    errorHandler,
+    mockUploadJourneyRepository
   )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction)
 
   "onPageLoad" should {
@@ -241,13 +242,18 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       "redirect the user to the confirmation page on success" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
           .thenReturn(Future.successful(true))
+        when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
+          .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
       }
+
       "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
           .thenReturn(Future.successful(true))
+        when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
+          .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url

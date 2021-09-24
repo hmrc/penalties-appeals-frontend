@@ -34,7 +34,6 @@ object PenaltiesStub {
     s"/penalties/appeals/submit-appeal?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&isLPP=$isLPP"
   private val fetchOtherPenalties = (penaltyID: String) =>
     s"/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&penaltyId=$penaltyID&isLPP=false"
-  private val initiateUpscanUrl = "http://localhost:1111/upscan/v2/initiate"
 
   def successfulGetAppealDataResponse(
                                        penaltyId: String,
