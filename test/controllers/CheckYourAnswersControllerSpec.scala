@@ -90,7 +90,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.reasonableExcuse -> "other",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-    SessionKeys.whenDidBecomeUnable -> "2022-01-02"
+    SessionKeys.whenDidBecomeUnable -> "2022-01-02",
+    SessionKeys.journeyId -> "4321"
   ))
 
   val fakeRequestForCrimeJourneyNoReasonableExcuse: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
@@ -120,7 +121,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val fakeRequestForObligationAppealJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.isObligationAppeal -> "true",
-      SessionKeys.otherRelevantInformation -> "This is some relevant information"
+      SessionKeys.otherRelevantInformation -> "This is some relevant information",
+      SessionKeys.journeyId -> "4321"
     )
   )
 
@@ -148,7 +150,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     mockAppealService,
     confirmationPage,
     errorHandler,
-    mockUploadJourneyRepository,
+    uploadJourneyRespository,
     sessionAnswersHelper
   )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction)
 

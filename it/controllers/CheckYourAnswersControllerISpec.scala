@@ -37,9 +37,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   val controller: CheckYourAnswersController = injector.instanceOf[CheckYourAnswersController]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
-  override def beforeAll(): Unit = {
+  override def beforeEach(): Unit = {
     await(repository.collection.deleteMany(Document()).toFuture())
-    super.beforeAll()
+    super.beforeEach()
   }
 
   "GET /check-your-answers" should {

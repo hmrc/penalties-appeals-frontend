@@ -71,14 +71,19 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         reasonableExcuse => {
         if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
           logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
+          println(Console.BLUE + "A" + Console.RESET)
           for {
             previousUploads <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
           } yield {
+            println(Console.BLUE + "B" + Console.RESET)
             val previousUploadsFileName = previousUploads.map(_.map(file => file.uploadDetails.map(details => details.fileName)))
+            println(Console.BLUE + "C" + Console.RESET)
             val fileNames = previousUploadsFileName.getOrElse(Seq.empty).collect {
               case Some(x) => x
             }.mkString(", ")
+            println(Console.BLUE + "D" + Console.RESET)
             val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
+            println(Console.BLUE + "E" + Console.RESET)
             Ok(checkYourAnswersPage(answersFromSession))
           }
         } else {
