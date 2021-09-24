@@ -43,7 +43,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "crime",
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.dateOfCrime -> "2022-01-01"
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
       result shouldBe true
@@ -60,7 +61,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.reasonableExcuse -> "lossOfStaff",
         SessionKeys.hasConfirmedDeclaration -> "true",
-        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+        SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("lossOfStaff")(userRequest, implicitly, implicitly))
       result shouldBe true
@@ -78,7 +80,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.reasonableExcuse -> "technicalIssues",
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-        SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+        SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
+        SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("technicalIssues")(userRequest, implicitly, implicitly))
       result shouldBe true
@@ -97,7 +100,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.wasHospitalStayRequired -> "no",
-          SessionKeys.whenHealthIssueHappened -> "2021-01-01T12:00:00"
+          SessionKeys.whenHealthIssueHappened -> "2021-01-01T12:00:00",
+          SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
         result shouldBe true
@@ -116,7 +120,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.wasHospitalStayRequired -> "yes",
           SessionKeys.hasHealthEventEnded -> "no",
-          SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00"
+          SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00",
+          SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
         result shouldBe true
@@ -136,7 +141,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.wasHospitalStayRequired -> "yes",
           SessionKeys.hasHealthEventEnded -> "yes",
           SessionKeys.whenHealthIssueStarted -> "2021-01-01T12:00:00",
-          SessionKeys.whenHealthIssueEnded -> "2021-01-02T12:00:00"
+          SessionKeys.whenHealthIssueEnded -> "2021-01-02T12:00:00",
+          SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
         result shouldBe true
@@ -154,7 +160,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "crime",
           SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.dateOfCrime -> "2022-01-01"
+          SessionKeys.dateOfCrime -> "2022-01-01",
+          SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
         result shouldBe true
@@ -174,7 +181,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "crime",
           SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.dateOfCrime -> "2022-01-01"
+          SessionKeys.dateOfCrime -> "2022-01-01",
+          SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
         result shouldBe false
@@ -192,7 +200,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "crime",
           SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
           SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.dateOfCrime -> "2022-01-01"
+          SessionKeys.dateOfCrime -> "2022-01-01",
+          SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
         result shouldBe false

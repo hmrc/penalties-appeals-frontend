@@ -756,6 +756,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
+
     "redirect the user to the confirmation page on success for obligation true" in {
       PenaltiesStub.successfulAppealSubmission(false)
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
@@ -778,7 +779,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
-    "redirect the user to the InternalServerError on failure for obligation false" in {
+
+    "redirect the user to the InternalServerError on failure for obligation false" in  {
       PenaltiesStub.successfulAppealSubmission(false)
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",

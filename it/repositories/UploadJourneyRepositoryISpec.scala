@@ -122,4 +122,43 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       result.get shouldBe Seq(callbackModel)
     }
   }
+
+  "getNumberOfDocumentsForJourneyId" should {
+    "return the amount of uploads" in {
+      val callbackModel = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+
+      val callbackModel2 = UploadJourney(
+        reference = "ref2",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file2.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
+    }
+
+    "return 0 when there is no uploads for the journey" in {
+      await(repository.collection.deleteMany(Document()).toFuture())
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 0
+    }
+  }
 }

@@ -45,7 +45,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
   def onPageLoad: Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
-        if(request.session.get(SessionKeys.isObligationAppeal).isDefined && SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+        if (request.session.get(SessionKeys.isObligationAppeal).isDefined && SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
           logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
           val answersFromSession = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
           Ok(checkYourAnswersPage(answersFromSession))
@@ -55,17 +55,17 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         }
       })(
         reasonableExcuse => {
-        if (SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
-          logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
-          val answersFromSession = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
-          Ok(checkYourAnswersPage(answersFromSession))
-        } else {
-          logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
-          logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
-            s"and tried to load page with reasonable excuse: $reasonableExcuse")
-          errorHandler.showInternalServerError
+          if (SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
+            val answersFromSession = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
+            Ok(checkYourAnswersPage(answersFromSession))
+          } else {
+            logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
+              s"and tried to load page with reasonable excuse: $reasonableExcuse")
+            errorHandler.showInternalServerError
+          }
         }
-      }
       )
     }
   }
@@ -73,7 +73,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
-        if(request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
+        if (request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
           appealService.submitAppeal("obligation").map {
             case true => {
               Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())

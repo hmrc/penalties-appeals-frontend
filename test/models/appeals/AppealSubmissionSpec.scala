@@ -123,8 +123,7 @@ class AppealSubmissionSpec extends SpecBase {
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "statement": "This is a statement.",
       |   "supportingEvidence": {
-      |     "noOfUploadedFiles": 1,
-      |     "referenceId": "ref1"
+      |     "noOfUploadedFiles": 1
       |   },
       |   "lateAppeal": false,
       |   "whoPlannedToSubmit": "agent",
@@ -152,8 +151,7 @@ class AppealSubmissionSpec extends SpecBase {
       |   "type": "obligation",
       |   "statement": "This is a statement.",
       |   "supportingEvidence":{
-      |     "noOfUploadedFiles": 1,
-      |     "referenceId": "ref1"
+      |     "noOfUploadedFiles": 1
       |   }
       |}
       |""".stripMargin
@@ -300,7 +298,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = Some("This is a statement."),
           supportingEvidence = Some(Evidence(
-            noOfUploadedFiles = 1, referenceId = "ref1"
+            noOfUploadedFiles = 1
           )),
           lateAppeal = false,
           lateAppealReason = None,
@@ -333,7 +331,7 @@ class AppealSubmissionSpec extends SpecBase {
           `type` = "obligation",
           statement = Some("This is a statement."),
           supportingEvidence = Some(Evidence(
-            noOfUploadedFiles = 1, referenceId = "ref1"))
+            noOfUploadedFiles = 1))
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe obligationAppealInformationJson
@@ -362,7 +360,7 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.causeOfLateSubmissionAgent -> "client")
       )
 
-      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false)(fakeAgentRequestForCrimeJourney)
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0)(fakeAgentRequestForCrimeJourney)
       result.reasonableExcuse shouldBe "crime"
       result.penaltyId shouldBe "123"
       result.submittedBy shouldBe "agent"
@@ -383,7 +381,7 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.lateAppealReason -> "Some Reason")
       )
 
-      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", true)(fakeRequestForCrimeJourney)
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", true, 0)(fakeRequestForCrimeJourney)
       result.reasonableExcuse shouldBe "crime"
       result.penaltyId shouldBe "123"
       result.submittedBy shouldBe "client"
@@ -407,7 +405,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidThePersonDie -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false)(fakeRequestForBereavementJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0)(fakeRequestForBereavementJourney)
         result.reasonableExcuse shouldBe "bereavement"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -430,7 +428,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidThePersonDie -> "2022-01-01",
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false)(fakeRequestForBereavementJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0)(fakeRequestForBereavementJourney)
         result.reasonableExcuse shouldBe "bereavement"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -456,7 +454,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.dateOfCrime -> "2022-01-01")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false)(fakeRequestForCrimeJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0)(fakeRequestForCrimeJourney)
         result.reasonableExcuse shouldBe "crime"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -481,7 +479,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.dateOfFireOrFlood -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", false)(fakeRequestForFireOrFloodJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", false, 0)(fakeRequestForFireOrFloodJourney)
         result.reasonableExcuse shouldBe "fireOrFlood"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -506,7 +504,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0)(fakeRequestForLossOfStaffJourney)
         result.reasonableExcuse shouldBe "lossOfStaff"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -530,7 +528,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0)(fakeRequestForLossOfStaffJourney)
         result.reasonableExcuse shouldBe "lossOfStaff"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "agent"
@@ -556,7 +554,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false)(fakeRequestForTechnicalIssuesJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0)(fakeRequestForTechnicalIssuesJourney)
         result.reasonableExcuse shouldBe "technicalIssues"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -582,7 +580,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false)(fakeRequestForTechnicalIssuesJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0)(fakeRequestForTechnicalIssuesJourney)
         result.reasonableExcuse shouldBe "technicalIssues"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "agent"
@@ -611,7 +609,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueEnded -> "2022-01-31"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0)(fakeRequestForHealthJourney)
         result.reasonableExcuse shouldBe "health"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "agent"
@@ -640,7 +638,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueStarted -> "2022-01-01"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0)(fakeRequestForHealthJourney)
         result.reasonableExcuse shouldBe "health"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -668,7 +666,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueHappened -> "2022-01-01"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0)(fakeRequestForHealthJourney)
         result.reasonableExcuse shouldBe "health"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -699,7 +697,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false)(fakeRequestForOtherJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 1)(fakeRequestForOtherJourney)
         result.reasonableExcuse shouldBe "other"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -710,7 +708,7 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("This is a reason."),
           lateAppeal = false,
           lateAppealReason = None,
-          supportingEvidence = Some(Evidence(1, "123")),
+          supportingEvidence = Some(Evidence(1)),
           whoPlannedToSubmit = None,
           causeOfLateSubmissionAgent = None
         )
@@ -724,7 +722,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 0)(fakeRequestForLossOfStaffJourney)
         result.reasonableExcuse shouldBe "other"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -751,7 +749,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.lateAppealReason -> "This is a reason for appealing late.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", true)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", true, 1)(fakeRequestForLossOfStaffJourney)
         result.reasonableExcuse shouldBe "other"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -762,7 +760,7 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("This is a reason."),
           lateAppeal = true,
           lateAppealReason = Some("This is a reason for appealing late."),
-          supportingEvidence = Some(Evidence(1, "123")),
+          supportingEvidence = Some(Evidence(1)),
           whoPlannedToSubmit = None,
           causeOfLateSubmissionAgent = None
         )
@@ -779,7 +777,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false)(fakeRequestForObligationJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 1)(fakeRequestForObligationJourney)
         result.reasonableExcuse shouldBe "obligation"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -787,7 +785,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe ObligationAppealInformation(
           `type` = "obligation",
           statement = Some("This is a reason."),
-          supportingEvidence = Some(Evidence(1, "123"))
+          supportingEvidence = Some(Evidence(1))
         )
       }
 
@@ -799,7 +797,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false)(fakeRequestForObligationJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 0)(fakeRequestForObligationJourney)
         result.reasonableExcuse shouldBe "obligation"
         result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
@@ -1137,8 +1135,7 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
-              noOfUploadedFiles = 1,
-              referenceId = "ref1"
+              noOfUploadedFiles = 1
             )),
             lateAppeal = false,
             lateAppealReason = None,
@@ -1157,8 +1154,7 @@ class AppealSubmissionSpec extends SpecBase {
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
-              "noOfUploadedFiles" -> 1,
-              "referenceId" -> "ref1"
+              "noOfUploadedFiles" -> 1
             ),
             "lateAppeal" -> false,
             "whoPlannedToSubmit" -> "agent",
@@ -1218,8 +1214,7 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
-              noOfUploadedFiles = 1,
-              referenceId = "ref1"
+              noOfUploadedFiles = 1
             )),
             lateAppeal = true,
             lateAppealReason = Some("Late reason"),
@@ -1238,8 +1233,7 @@ class AppealSubmissionSpec extends SpecBase {
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
-              "noOfUploadedFiles" -> 1,
-              "referenceId" -> "ref1"
+              "noOfUploadedFiles" -> 1
             ),
             "lateAppeal" -> true,
             "lateAppealReason" -> "Late reason",
@@ -1264,8 +1258,7 @@ class AppealSubmissionSpec extends SpecBase {
             `type` = "obligation",
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
-              noOfUploadedFiles = 1,
-              referenceId = "ref1"
+              noOfUploadedFiles = 1
             ))
           )
         )
@@ -1279,8 +1272,7 @@ class AppealSubmissionSpec extends SpecBase {
             "type" -> "obligation",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
-              "noOfUploadedFiles" -> 1,
-              "referenceId" -> "ref1"
+              "noOfUploadedFiles" -> 1
             )
           )
         )
@@ -1544,7 +1536,7 @@ class AppealSubmissionSpec extends SpecBase {
           `type` = "other",
           dateOfEvent = "2022-01-01T13:00:00.000Z",
           statement = Some("I was late. Sorry."),
-          supportingEvidence = Some(Evidence(1, "reference-3000")),
+          supportingEvidence = Some(Evidence(1)),
           lateAppeal = false,
           lateAppealReason = None,
           whoPlannedToSubmit = None,
@@ -1557,8 +1549,7 @@ class AppealSubmissionSpec extends SpecBase {
             | "dateOfEvent": "2022-01-01T13:00:00.000Z",
             | "statement": "I was late. Sorry.",
             | "supportingEvidence": {
-            |   "noOfUploadedFiles": 1,
-            |   "referenceId": "reference-3000"
+            |   "noOfUploadedFiles": 1
             | },
             | "lateAppeal": false
             |}
@@ -1572,7 +1563,7 @@ class AppealSubmissionSpec extends SpecBase {
           `type` = "other",
           dateOfEvent = "2022-01-01T13:00:00.000Z",
           statement = Some("I was late. Sorry."),
-          supportingEvidence = Some(Evidence(1, "reference-3000")),
+          supportingEvidence = Some(Evidence(1)),
           lateAppeal = true,
           lateAppealReason = Some("This is a reason"),
           whoPlannedToSubmit = None,
@@ -1585,8 +1576,7 @@ class AppealSubmissionSpec extends SpecBase {
             | "dateOfEvent": "2022-01-01T13:00:00.000Z",
             | "statement": "I was late. Sorry.",
             | "supportingEvidence": {
-            |   "noOfUploadedFiles": 1,
-            |   "referenceId": "reference-3000"
+            |   "noOfUploadedFiles": 1
             | },
             | "lateAppeal": true,
             | "lateAppealReason": "This is a reason"
@@ -1628,18 +1618,18 @@ class AppealSubmissionSpec extends SpecBase {
         val modelToConvertToJson = ObligationAppealInformation(
           `type` = "obligation",
           statement = Some("I was late. Sorry."),
-          supportingEvidence = Some(Evidence(
-            noOfUploadedFiles = 1,
-            referenceId = "reference-3000"))
-        )
+          supportingEvidence = Some(
+            Evidence(
+              noOfUploadedFiles = 1
+            )
+        ))
         val expectedResult = Json.parse(
           """
             |{
             | "type": "obligation",
             | "statement": "I was late. Sorry.",
             | "supportingEvidence": {
-            |   "noOfUploadedFiles": 1,
-            |   "referenceId": "reference-3000"
+            |   "noOfUploadedFiles": 1
             | }
             |}
             |""".stripMargin)

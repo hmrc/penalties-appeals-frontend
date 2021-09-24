@@ -61,4 +61,15 @@ class UploadJourneyRepository @Inject()(
       case _ => Future.successful(None)
     }
   }
+
+  def getNumberOfDocumentsForJourneyId(journeyId: String): Future[Int] = {
+    findById(journeyId).map {
+      _.map {
+        item => {
+          val list = item.data.values
+          list.map( a => a.as[UploadJourney]).toSeq.size
+        }
+      }.getOrElse(0)
+    }
+  }
 }

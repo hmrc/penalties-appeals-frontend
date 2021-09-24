@@ -26,7 +26,6 @@ import helpers.FormProviderHelper
 import javax.inject.Inject
 import models.Mode
 import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
-import models.upload.UploadJourney
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport

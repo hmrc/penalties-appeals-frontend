@@ -25,6 +25,7 @@ import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.http.Status._
 import utils.Logger.logger
 import play.api.libs.json.{JsResult, Json}
+import repositories.UploadJourneyRepository
 import services.monitoring.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
@@ -38,10 +39,11 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               appConfig: AppConfig,
                               dateTimeHelper: DateTimeHelper,
                               auditService: AuditService,
-                              headerGenerator: HeaderGenerator) {
+                              headerGenerator: HeaderGenerator,
+                              uploadJourneyRepository: UploadJourneyRepository) {
 
-def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean,isAdditional:Boolean)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
-    penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP,isAdditional).map {
+  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+    penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
       _.fold[Option[AppealData]](
         None
       )(
@@ -86,33 +88,33 @@ def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean,isAddi
     val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
     val appealType = userRequest.session.get(SessionKeys.appealType)
     val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)
-
-    val modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal)
-    penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP).map {
-      response =>
-        response.status match {
-          case OK => {
-            if(isLPP)
-              if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString))
-                auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, headerGenerator))
-              else
-                auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString,headerGenerator))
+    for {
+      amountOfFileUploads <- uploadJourneyRepository.getNumberOfDocumentsForJourneyId(userRequest.session.get(SessionKeys.journeyId).get)
+      modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads)
+      response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP)
+    } yield {
+      response.status match {
+        case OK => {
+          if (isLPP)
+            if (appealType.contains(PenaltyTypeEnum.Late_Payment.toString))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, headerGenerator))
             else
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString,headerGenerator))
-            logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
-            true
-          }
-          case _ => {
-            logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
-            false
-          }
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, headerGenerator))
+          else
+            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, headerGenerator))
+          logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
+          true
         }
-    } recover {
-      case e => {
-        logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
-        false
+        case _ => {
+          logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
+          false
+        }
       }
     }
+  }.recover {
+    case e =>
+      logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
+      false
   }
 
   def otherPenaltiesInTaxPeriod(penaltyId: String, isLPP: Boolean)
