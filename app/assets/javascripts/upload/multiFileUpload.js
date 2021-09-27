@@ -331,7 +331,8 @@ class MultiFileUpload {
 
         this.setItemState(item, status.Uploaded);
         this.updateButtonVisibility();
-        this.updateFormStatusVisibility();
+        //TODO: implement for accessibility
+        // this.updateFormStatusVisibility();
     }
 
     updateFormStatusVisibility(forceState = undefined) {
