@@ -243,7 +243,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockHeaderGenerator.headersForPEGA()).thenReturn(Seq("someHeader" -> "someHeaderValue"))
       val mockHeaders = mockHeaderGenerator.headersForPEGA()
       when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(),ArgumentMatchers.eq(mockHeaders))(any(),
-        any(), any(), any()))
+        any(), ArgumentMatchers.eq(hc.copy(authorization = None)), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
       when(mockAppConfig.submitAppealUrl(any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
