@@ -39,7 +39,6 @@ object SessionKeys {
   val hasHealthEventEnded = "hasHealthEventEnded"
   val whenDidBecomeUnable = "whenDidBecomeUnable"
   val whyReturnSubmittedLate = "whyReturnSubmittedLate"
-  val evidenceFileName = "evidenceFileName"
   val whoPlannedToSubmitVATReturn = "whoPlannedToSubmitVATReturn"
   val agentSessionVrn = "CLIENT_VRN"
   val causeOfLateSubmissionAgent = "causeOfLateSubmissionAgent"
@@ -71,7 +70,6 @@ object SessionKeys {
     whenHealthIssueEnded,
     whenDidBecomeUnable,
     whyReturnSubmittedLate,
-    evidenceFileName,
     hasHealthEventEnded,
     whoPlannedToSubmitVATReturn,
     causeOfLateSubmissionAgent,

@@ -21,6 +21,8 @@ import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import utils.SessionKeys
 
 class SessionAnswersHelperSpec extends SpecBase {
+  val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
+
   "isAllAnswerPresentForReasonableExcuse" should {
     "for crime" must {
       "return true - when all keys present" in {
@@ -31,7 +33,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.dateOfCrime -> "2022-01-01"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithAllCrimeKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithAllCrimeKeysPresent)
         result shouldBe true
       }
 
@@ -42,7 +44,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.dateOfCrime -> "2022-01-01"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithSomeCrimeKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithSomeCrimeKeysPresent)
         result shouldBe false
       }
     }
@@ -55,7 +57,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent)
         result shouldBe true
       }
 
@@ -65,7 +67,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.reasonableExcuse -> "lossOfStaff",
             SessionKeys.hasConfirmedDeclaration -> "true"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithSomeLossOfStaffKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithSomeLossOfStaffKeysPresent)
         result shouldBe false
       }
     }
@@ -78,7 +80,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.dateOfFireOrFlood -> "2022-01-01",
             SessionKeys.hasConfirmedDeclaration -> "true",
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent)
         result shouldBe true
       }
 
@@ -88,7 +90,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.dateOfFireOrFlood -> "2022-01-01",
             SessionKeys.hasConfirmedDeclaration -> "true",
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent)
         result shouldBe false
       }
     }
@@ -102,7 +104,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent)
         result shouldBe true
       }
 
@@ -113,7 +115,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(fakeRequestWithSomeTechnicalIssuesKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(fakeRequestWithSomeTechnicalIssuesKeysPresent)
         result shouldBe false
       }
     }
@@ -128,7 +130,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.wasHospitalStayRequired -> "no",
               SessionKeys.whenHealthIssueHappened -> "2022-01-01"
             )
-          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllNonHospitalStayKeysPresent)
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllNonHospitalStayKeysPresent)
           result shouldBe true
         }
 
@@ -141,7 +143,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.hasHealthEventEnded -> "no",
               SessionKeys.whenHealthIssueStarted -> "2022-01-01"
             )
-          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllOngoingHospitalStayKeysPresent)
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllOngoingHospitalStayKeysPresent)
           result shouldBe true
         }
 
@@ -155,7 +157,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.whenHealthIssueStarted -> "2022-01-01",
               SessionKeys.whenHealthIssueEnded -> "2022-01-02"
             )
-          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllEndedHospitalStayKeysPresent)
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllEndedHospitalStayKeysPresent)
           result shouldBe true
         }
       }
@@ -169,7 +171,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.wasHospitalStayRequired -> "yes",
               SessionKeys.whenHealthIssueStarted -> "2022-01-01"
             )
-          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
           result shouldBe false
         }
 
@@ -181,7 +183,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.hasHealthEventEnded -> "yes",
               SessionKeys.whenHealthIssueStarted -> "2022-01-01"
             )
-          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
           result shouldBe false
         }
 
@@ -193,7 +195,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.wasHospitalStayRequired -> "yes",
               SessionKeys.hasHealthEventEnded -> "no"
             )
-          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
           result shouldBe false
         }
 
@@ -206,7 +208,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.hasHealthEventEnded -> "yes",
               SessionKeys.whenHealthIssueStarted -> "2022-01-01"
             )
-          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
           result shouldBe false
         }
 
@@ -217,7 +219,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
               SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
             )
-          val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithSomeHealthKeysPresent)
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithSomeHealthKeysPresent)
           result shouldBe false
         }
       }
@@ -232,7 +234,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
             SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithAllOtherReasonKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithAllOtherReasonKeysPresent)
         result shouldBe true
       }
 
@@ -243,7 +245,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01"
           )
-        val result = SessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithSomeOtherReasonKeysPresent)
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithSomeOtherReasonKeysPresent)
         result shouldBe false
       }
     }
@@ -260,7 +262,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.dateOfCrime -> "2022-01-01"
           ))
 
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Crime"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -282,7 +284,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.lateAppealReason -> "Lorem ipsum"
           ))
 
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Crime"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -306,7 +308,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.dateOfFireOrFlood -> "2022-01-01",
             SessionKeys.hasConfirmedDeclaration -> "true",
           ))
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Fire or flood"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -323,7 +325,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.lateAppealReason -> "Lorem ipsum"
           ))
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Fire or flood"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -345,7 +347,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
           ))
 
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Loss of staff essential to the VAT process"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -363,7 +365,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.lateAppealReason -> "Lorem ipsum"
           ))
 
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Loss of staff essential to the VAT process"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -386,7 +388,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
           ))
 
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Technology issues"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -408,7 +410,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.lateAppealReason -> "Lorem ipsum"
           ))
 
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Technology issues"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -436,7 +438,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
           ))
 
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "The reason does not fit into any of the other categories"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -470,7 +472,7 @@ class SessionAnswersHelperSpec extends SpecBase {
                 SessionKeys.causeOfLateSubmissionAgent -> "client"
               ))
 
-            val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
             result(0)._1 shouldBe "Reason for missing the VAT deadline"
             result(0)._2 shouldBe "Health"
             result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -494,7 +496,7 @@ class SessionAnswersHelperSpec extends SpecBase {
                 SessionKeys.causeOfLateSubmissionAgent -> "client"
               ))
 
-            val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
             result(0)._1 shouldBe "Reason for missing the VAT deadline"
             result(0)._2 shouldBe "Health"
             result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -523,7 +525,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "The reason does not fit into any of the other categories"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -550,7 +552,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "The reason does not fit into any of the other categories"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -575,12 +577,11 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.evidenceFileName -> "file.docx",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "The reason does not fit into any of the other categories"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -602,13 +603,12 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.evidenceFileName -> "file.docx",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "The reason does not fit into any of the other categories"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -635,11 +635,10 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-            SessionKeys.evidenceFileName -> "file.docx",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
           ))
 
-        val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithLPPKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithLPPKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "The reason does not fit into any of the other categories"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -671,7 +670,7 @@ class SessionAnswersHelperSpec extends SpecBase {
                 SessionKeys.whenHealthIssueHappened -> "2022-01-01"
               ))
 
-            val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
             result(0)._1 shouldBe "Reason for missing the VAT deadline"
             result(0)._2 shouldBe "Health"
             result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -693,7 +692,7 @@ class SessionAnswersHelperSpec extends SpecBase {
                 SessionKeys.lateAppealReason -> "Lorem ipsum"
               ))
 
-            val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
             result(0)._1 shouldBe "Reason for missing the VAT deadline"
             result(0)._2 shouldBe "Health"
             result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -720,7 +719,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.whenDidBecomeUnable -> "2022-01-01"
             ))
 
-          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "The reason does not fit into any of the other categories"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -745,7 +744,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
             ))
 
-          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "The reason does not fit into any of the other categories"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -769,11 +768,10 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
-              SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.evidenceFileName -> "file.docx"
+              SessionKeys.whenDidBecomeUnable -> "2022-01-01"
             ))
 
-          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "The reason does not fit into any of the other categories"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -795,11 +793,10 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.evidenceFileName -> "file.docx",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
             ))
 
-          val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "The reason does not fit into any of the other categories"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -834,7 +831,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = SessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
+          val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "Health"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -859,7 +856,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               SessionKeys.whenHealthIssueHappened -> "2022-01-01"
             ))
 
-          val result = SessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
+          val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
           result(0)._1 shouldBe "Reason for missing the VAT deadline"
           result(0)._2 shouldBe "Health"
           result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -885,7 +882,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whenHealthIssueEnded -> "2022-02-02"
           ))
 
-        val result = SessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Health"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -914,7 +911,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.hasHealthEventEnded -> "no"
           ))
 
-        val result = SessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
         result(0)._1 shouldBe "Reason for missing the VAT deadline"
         result(0)._2 shouldBe "Health"
         result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -940,7 +937,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           SessionKeys.whenDidThePersonDie -> "2022-01-01"
         ))
 
-      val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
+      val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
       result(0)._1 shouldBe "Reason for missing the VAT deadline"
       result(0)._2 shouldBe "Bereavement (someone died)"
       result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -958,7 +955,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           SessionKeys.lateAppealReason -> "Lorem ipsum"
         ))
 
-      val result = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
+      val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
       result(0)._1 shouldBe "Reason for missing the VAT deadline"
       result(0)._2 shouldBe "Bereavement (someone died)"
       result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -979,7 +976,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whoPlannedToSubmitVATReturn -> "client"
           )
 
-        val result = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithClientPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithClientPresent, implicitly)
         result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
         result(0)._2 shouldBe "My client did"
         result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
@@ -994,7 +991,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.causeOfLateSubmissionAgent -> "agent"
           )
 
-        val result = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
         result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
         result(0)._2 shouldBe "I did"
         result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
@@ -1013,7 +1010,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.causeOfLateSubmissionAgent -> "client"
           )
 
-        val result = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
         result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
         result(0)._2 shouldBe "I did"
         result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
@@ -1039,9 +1036,9 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whoPlannedToSubmitVATReturn -> "client"
           ))
 
-        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
-        val resultAgent = SessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequest, implicitly)
-        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
+        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
+        val resultAgent = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequest, implicitly)
+        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
 
         resultAgent ++ resultReasonableExcuses shouldBe resultAllContent
       }
@@ -1057,8 +1054,8 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.agentSessionVrn -> "123456789"
           ))
 
-        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
-        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
+        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
+        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
 
         resultReasonableExcuses shouldBe resultAllContent
       }
@@ -1074,8 +1071,8 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.agentSessionVrn -> "123456789"
           ))
 
-        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
-        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
+        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
+        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
 
         resultReasonableExcuses shouldBe resultAllContent
       }
@@ -1085,11 +1082,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         "show the obligation variation of the page" in {
           val fakeRequestForAppealingTheObligation = UserRequest(vrn)(fakeRequest.withSession(
             SessionKeys.isObligationAppeal -> "true",
-            SessionKeys.otherRelevantInformation -> "This is some relevant information",
-            SessionKeys.evidenceFileName -> "file.txt"
+            SessionKeys.otherRelevantInformation -> "This is some relevant information"
           ))
 
-          val result = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestForAppealingTheObligation, implicitly)
+          val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(fakeRequestForAppealingTheObligation, implicitly)
           result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
           result(0)._2 shouldBe "This is some relevant information"
           //TODO: change to 'other relevant information' page
@@ -1109,8 +1105,8 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
             (SessionKeys.reasonableExcuse, reasonableExcuse)))
 
-        val resultReasonableExcuses = SessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
-        val resultAllContent = SessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
+        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
+        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
 
         resultReasonableExcuses shouldBe resultAllContent
 
@@ -1123,10 +1119,9 @@ class SessionAnswersHelperSpec extends SpecBase {
       "return a Seq[String, String, String] of answers" in {
         val fakeRequestWithObligationKeysPresent = fakeRequest
           .withSession(
-            SessionKeys.evidenceFileName -> "",
             SessionKeys.otherRelevantInformation -> "Some Information"
           )
-        val result = SessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
         result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
         result(0)._2 shouldBe "Some Information"
         result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
@@ -1139,10 +1134,9 @@ class SessionAnswersHelperSpec extends SpecBase {
       "return a Seq[String, String, String] of answers" in {
         val fakeRequestWithObligationKeysPresent = fakeRequest
           .withSession(
-            SessionKeys.evidenceFileName -> "some-file-name.txt",
             SessionKeys.otherRelevantInformation -> "Some Information"
           )
-        val result = SessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
         result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
         result(0)._2 shouldBe "Some Information"
         result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url

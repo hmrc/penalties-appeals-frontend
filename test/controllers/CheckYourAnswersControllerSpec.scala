@@ -17,11 +17,13 @@
 package controllers
 
 import base.SpecBase
-import models.PenaltyTypeEnum
+import helpers.SessionAnswersHelper
+import models.{PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
-import play.api.mvc.Result
+import play.api.mvc.{AnyContent, Result}
 import play.api.test.Helpers._
+import repositories.UploadJourneyRepository
 import services.AppealService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
@@ -37,35 +39,37 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val page: CheckYourAnswersPage = injector.instanceOf[CheckYourAnswersPage]
   val confirmationPage: AppealConfirmationPage = injector.instanceOf[AppealConfirmationPage]
   val mockAppealService: AppealService = mock(classOf[AppealService])
+  val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
+  val uploadJourneyRespository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
-  val fakeRequestForCrimeJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "crime",
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.dateOfCrime -> "2022-01-01")
   )
 
-  val fakeRequestForLossOfStaffJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForLossOfStaffJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "lossOfStaff",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01")
   )
 
-  val fakeRequestForTechnicalIssuesJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForTechnicalIssuesJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "technicalIssues",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
     SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
   )
 
-  val fakeRequestForHealthNoHospitalStayJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForHealthNoHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "health",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.wasHospitalStayRequired -> "no",
     SessionKeys.whenHealthIssueHappened -> "2022-01-02")
   )
 
-  val fakeRequestForHealthOngoingHospitalStayJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForHealthOngoingHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "health",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.wasHospitalStayRequired -> "yes",
@@ -73,7 +77,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.whenHealthIssueStarted -> "2022-01-02")
   )
 
-  val fakeRequestForHealthEndedHospitalStayJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForHealthEndedHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "health",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.wasHospitalStayRequired -> "yes",
@@ -82,14 +86,15 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.whenHealthIssueEnded -> "2022-01-03")
   )
 
-  val fakeRequestForOtherJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "other",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-    SessionKeys.whenDidBecomeUnable -> "2022-01-02"
+    SessionKeys.whenDidBecomeUnable -> "2022-01-02",
+    SessionKeys.journeyId -> "4321"
   ))
 
-  val fakeRequestForCrimeJourneyNoReasonableExcuse = fakeRequestConverter(fakeRequestWithCorrectKeys
+  val fakeRequestForCrimeJourneyNoReasonableExcuse: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> "true",
@@ -97,7 +102,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     )
   )
 
-  val fakeRequestForCrimeJourneyWithoutSomeAnswers = fakeRequestConverter(fakeRequestWithCorrectKeys
+  val fakeRequestForCrimeJourneyWithoutSomeAnswers: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasConfirmedDeclaration -> "true",
@@ -105,7 +110,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     )
   )
 
-  val fakeRequestForBereavementJourney = fakeRequestConverter(fakeRequestWithCorrectKeys
+  val fakeRequestForBereavementJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.reasonableExcuse -> "bereavement",
       SessionKeys.hasConfirmedDeclaration -> "true",
@@ -113,14 +118,15 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     )
   )
 
-  val fakeRequestForObligationAppealJourney = fakeRequestConverter(fakeRequestWithCorrectKeys
+  val fakeRequestForObligationAppealJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.isObligationAppeal -> "true",
-      SessionKeys.otherRelevantInformation -> "This is some relevant information"
+      SessionKeys.otherRelevantInformation -> "This is some relevant information",
+      SessionKeys.journeyId -> "4321"
     )
   )
 
-  val fakeRequestForLPPAgentAppeal = fakeRequestConverter(fakeRequestWithCorrectKeys
+  val fakeRequestForLPPAgentAppeal: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
     .withSession(
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
       SessionKeys.agentSessionVrn -> "VRN1234",
@@ -144,7 +150,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     mockAppealService,
     confirmationPage,
     errorHandler,
-    mockUploadJourneyRepository
+    uploadJourneyRespository,
+    sessionAnswersHelper
   )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction)
 
   "onPageLoad" should {

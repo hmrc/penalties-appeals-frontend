@@ -53,7 +53,6 @@ class AppealServiceSpec extends SpecBase {
     SessionKeys.reasonableExcuse -> "other",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-    SessionKeys.evidenceFileName -> "file1.txt",
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
     SessionKeys.journeyId -> "1234")
   )

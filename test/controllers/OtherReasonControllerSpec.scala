@@ -199,7 +199,7 @@ class OtherReasonControllerSpec extends SpecBase {
       "return OK and correct view (pre-populated date when present in session)" in new Setup(
         AuthTestModels.successfulAuthResult, Some(UploadData.oneWaitingUploads)
       ) {
-        val result = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.evidenceFileName -> "test.png")))
+        val result = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
         status(result) shouldBe OK
       }
 
@@ -231,8 +231,6 @@ class OtherReasonControllerSpec extends SpecBase {
               reference = "1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
           val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
-          //TODO: may need removing as part of upscan integration
-          await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -244,15 +242,12 @@ class OtherReasonControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          //TODO: may need removing as part of upscan integration
-          await(result).session.get(SessionKeys.evidenceFileName).get shouldBe "test.png"
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is empty " +
           "- routing to late appeal or CYA been reported page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
-          await(result).session.get(SessionKeys.evidenceFileName).get shouldBe ""
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is empty " +
@@ -260,7 +255,6 @@ class OtherReasonControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          await(result).session.get(SessionKeys.evidenceFileName).get shouldBe ""
         }
       }
 

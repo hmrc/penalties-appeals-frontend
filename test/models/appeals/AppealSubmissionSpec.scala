@@ -693,7 +693,6 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.evidenceFileName -> "file1.txt",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
@@ -745,7 +744,6 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-          SessionKeys.evidenceFileName -> "file1.txt",
           SessionKeys.lateAppealReason -> "This is a reason for appealing late.")
         )
 
@@ -773,7 +771,6 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.evidenceFileName -> "file1.txt",
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
