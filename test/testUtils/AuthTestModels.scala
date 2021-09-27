@@ -17,13 +17,14 @@
 package testUtils
 
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, ~}
 import uk.gov.hmrc.auth.core._
 
 import scala.concurrent.Future
 
 object AuthTestModels {
-  val successfulAuthResult: Future[~[Option[AffinityGroup], Enrolments]] = Future.successful(new ~(
+  val successfulAuthResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]] = Future.successful(
+    new ~( new ~( new ~( new ~(
     Some(Organisation),
     Enrolments(
       Set(
@@ -32,17 +33,38 @@ object AuthTestModels {
           Seq(EnrolmentIdentifier("VRN", "123456789")),
           "Activated")
       )
+    )),
+    Some(Name(Some("test Name"), None))),
+    Some("testEmail@test.com")),
+    Some(
+      ItmpAddress(
+        line1 = Some("Flat 20"),
+        line2 = Some("123 Jack street"),
+        line3 = None,
+        line4 = Some("Birmingham"),
+        line5 = Some("UK"),
+        postCode = Some("AAA AAA"),
+        countryName = None,
+        countryCode = None)
+      )
     )
-  ))
+  )
 
-  val failedAuthResultNoEnrolments: Future[~[Option[AffinityGroup], Enrolments]] = Future.successful(new ~(
-    Some(Organisation),
-    Enrolments(
-      Set()
-    )
-  ))
+  val failedAuthResultNoEnrolments: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]] =
+    Future.successful(new ~(new ~(
+      new ~(
+        new ~(
+          Some(Organisation),
+          Enrolments(
+            Set())
+        ),
+        None
+      ),
+      None
+    ), None)
+  )
 
-  val failedAuthResultUnauthorised: Future[~[Option[AffinityGroup], Enrolments]] = Future.failed(
+  val failedAuthResultUnauthorised: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]] = Future.failed(
     BearerTokenExpired()
   )
 }

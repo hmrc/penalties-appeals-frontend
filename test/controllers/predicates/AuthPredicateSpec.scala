@@ -22,6 +22,7 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import testUtils.AuthMocks
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name}
 import utils.SessionKeys
 
 import scala.concurrent.Future
@@ -33,7 +34,7 @@ class AuthPredicateSpec extends AuthMocks {
 
   def targetAgent(request: Request[AnyContent]): Future[Result] = mockAuthPredicate.authoriseAsAgent({
     _: UserRequest[_] => Future.successful(Ok("welcome"))
-  })(request)
+  }, agentDetails = (None, None, None))(request)
 
   "AuthPredicate" should {
     "run the block request when the user has an active HMRC-MTD-VAT enrolment" in {

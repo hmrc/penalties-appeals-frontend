@@ -24,12 +24,12 @@ import play.api.mvc.Result
 import play.api.test.Helpers.{status, _}
 import services.AppealService
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.CancelVATRegistrationPage
-
 import java.time.LocalDateTime
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CancelVATRegistrationControllerSpec extends SpecBase {
@@ -38,11 +38,11 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
   implicit val appealService: AppealService = injector.instanceOf[AppealService]
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]) {
 
     reset(mockAuthConnector)
-    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
+      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
       any(), any())
     ).thenReturn(authResult)
 

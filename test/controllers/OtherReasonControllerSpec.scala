@@ -28,11 +28,11 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
-
 import java.time.{LocalDate, LocalDateTime}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonControllerSpec extends SpecBase {
@@ -42,11 +42,11 @@ class OtherReasonControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], previousUpload: Option[Seq[UploadJourney]] = None) {
+  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
     reset(mockAuthConnector)
-    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
+      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
       any(), any())
     ).thenReturn(authResult)
 

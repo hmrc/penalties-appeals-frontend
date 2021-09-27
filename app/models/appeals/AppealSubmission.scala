@@ -426,7 +426,7 @@ object AppealSubmission {
   }
 
   //scalastyle:off
-  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long)
+  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long, agentDetails: Option[AgentDetails])
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
       case "bereavement" => {
@@ -434,7 +434,7 @@ object AppealSubmission {
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-          agentDetails = None,
+          agentDetails = agentDetails,
           appealInformation = BereavementAppealInformation(
             `type` = "bereavement",
             dateOfEvent = userRequest.session.get(SessionKeys.whenDidThePersonDie).get,
@@ -451,7 +451,7 @@ object AppealSubmission {
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-          agentDetails = None,
+          agentDetails = agentDetails,
           appealInformation = CrimeAppealInformation(
             `type` = "crime",
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfCrime).get,
@@ -469,7 +469,7 @@ object AppealSubmission {
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-          agentDetails = None,
+          agentDetails = agentDetails,
           appealInformation = FireOrFloodAppealInformation(
             `type` = "fireOrFlood",
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfFireOrFlood).get,
@@ -487,7 +487,7 @@ object AppealSubmission {
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-          agentDetails = None,
+          agentDetails = agentDetails,
           appealInformation = LossOfStaffAppealInformation(
             `type` = "lossOfStaff",
             dateOfEvent = userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get,
@@ -505,7 +505,7 @@ object AppealSubmission {
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-          agentDetails = None,
+          agentDetails = agentDetails,
           appealInformation = TechnicalIssuesAppealInformation(
             `type` = "technicalIssues",
             startDateOfEvent = userRequest.session.get(SessionKeys.whenDidTechnologyIssuesBegin).get,
@@ -526,7 +526,7 @@ object AppealSubmission {
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-          agentDetails = None,
+          agentDetails = agentDetails,
           appealInformation = HealthAppealInformation(
             `type` = "health",
             hospitalStayInvolved = isHospitalStay,
@@ -548,7 +548,7 @@ object AppealSubmission {
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-          agentDetails = None,
+          agentDetails = agentDetails,
           appealInformation = OtherAppealInformation(
             `type` = "other",
             dateOfEvent = userRequest.session.get(SessionKeys.whenDidBecomeUnable).get,
@@ -566,7 +566,7 @@ object AppealSubmission {
           submittedBy = if (userRequest.isAgent) "agent" else "client",
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-          agentDetails = None,
+          agentDetails = agentDetails,
           appealInformation = ObligationAppealInformation(
             `type` = "obligation",
             statement = userRequest.session.get(SessionKeys.otherRelevantInformation),
