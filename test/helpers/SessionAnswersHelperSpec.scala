@@ -17,10 +17,20 @@
 package helpers
 
 import base.SpecBase
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{mock, verify, when}
+import org.mockito.internal.verification.VerificationModeFactory.times
+import org.scalatest.concurrent.ScalaFutures
+import play.api.mvc.AnyContent
+import repositories.UploadJourneyRepository
 import utils.SessionKeys
 
-class SessionAnswersHelperSpec extends SpecBase {
+import java.time.LocalDateTime
+import scala.concurrent.{Await, ExecutionContext, Future}
+
+class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
 
   "isAllAnswerPresentForReasonableExcuse" should {
@@ -1144,6 +1154,55 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._2 shouldBe "some-file-name.txt"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
+    }
+  }
+
+  "getPreviousUploadsFileNames" should{
+    "return Future[String] " in {
+      val mockRepository = mock(classOf[UploadJourneyRepository])
+      implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+      val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+        SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+        SessionKeys.whenDidBecomeUnable -> "2022-01-02",
+        SessionKeys.journeyId -> "4321"
+      ))
+      val callBackModel: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+      when(mockRepository.getUploadsForJourney(Some("4321"))).thenReturn(Future(Option(Seq(callBackModel))))
+      val  helper = new SessionAnswersHelper(mockRepository)
+      whenReady(helper.getPreviousUploadsFileNames()(fakeRequestForOtherJourney)){
+       result => result shouldBe "file1.txt"
+     }
+    }
+  }
+
+  "getContentWithExistingUploadFileNames" should{
+    "return Future[Seq[(String, String, String)]] " in {
+      implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+      val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+        SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+        SessionKeys.whenDidBecomeUnable -> "2022-01-02",
+        SessionKeys.journeyId -> "4321"
+      ))
+      val mockHelper = mock(classOf[SessionAnswersHelper])
+      val result:Future[Seq[(String, String, String)]] = Future(Seq())
+      when(mockHelper.getContentWithExistingUploadFileNames(Some("other"))(fakeRequestForOtherJourney,messages)).thenReturn(result)
+      mockHelper.getPreviousUploadsFileNames()(fakeRequestForOtherJourney)
+      verify(mockHelper, times(1)).getPreviousUploadsFileNames()(fakeRequestForOtherJourney)
     }
   }
 }
