@@ -235,7 +235,7 @@ class AppealServiceSpec extends SpecBase {
   "submitAppeal" should {
     "for crime" must {
       "parse the session keys into a model and return true when the connector call is successful and audit the response" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
         when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
           .thenReturn(Future.successful(0))
@@ -247,7 +247,7 @@ class AppealServiceSpec extends SpecBase {
 
       "return false" when {
         "the connector returns a non-200 response" in new Setup {
-          when(mockPenaltiesConnector.submitAppeal(any(), any(), any())(any(), any()))
+          when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
             .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
           when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
             .thenReturn(Future.successful(0))
@@ -256,7 +256,7 @@ class AppealServiceSpec extends SpecBase {
         }
 
         "the connector throws an exception" in new Setup {
-          when(mockPenaltiesConnector.submitAppeal(any(), any(), any())(any(), any()))
+          when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
             .thenReturn(Future.failed(new Exception("I failed.")))
           when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
             .thenReturn(Future.successful(0))

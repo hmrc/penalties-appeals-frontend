@@ -245,14 +245,14 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(),ArgumentMatchers.eq(mockHeaders))(any(),
         any(), ArgumentMatchers.eq(hc.copy(authorization = None)), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
-      when(mockAppConfig.submitAppealUrl(any(), any()))
+      when(mockAppConfig.submitAppealUrl(any(), any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
       val appealSubmissionModel = AppealSubmission(
         submittedBy = "client", reasonableExcuse = "crime", honestyDeclaration = true, agentDetails = None,  appealInformation = CrimeAppealInformation(
           `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None, whoPlannedToSubmit = None, causeOfLateSubmissionAgent = None
         )
       )
-      val result = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false))
+      val result = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789"))
       result.status shouldBe OK
     }
 
@@ -260,14 +260,14 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(),
         any(), any(), any()))
         .thenReturn(Future.failed(new Exception("something went wrong.")))
-      when(mockAppConfig.submitAppealUrl(any(), any()))
+      when(mockAppConfig.submitAppealUrl(any(), any(), any()))
         .thenReturn("http://url/url")
       val appealSubmissionModel = AppealSubmission(
         submittedBy = "client", reasonableExcuse = "crime", honestyDeclaration = true, agentDetails = None, appealInformation = CrimeAppealInformation(
           `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None, whoPlannedToSubmit = None, causeOfLateSubmissionAgent = None
         )
       )
-      val result = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false)))
+      val result = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789")))
       result.getMessage shouldBe "something went wrong."
     }
   }

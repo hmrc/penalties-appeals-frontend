@@ -143,7 +143,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
   "submitAppeal" should {
     "return the response of the call" in {
-      successfulAppealSubmission(isLPP = false)
+      successfulAppealSubmission(isLPP = false, penaltyId = "123456789")
       val model = AppealSubmission(
         submittedBy = "client",
         reasonableExcuse = "crime",
@@ -160,12 +160,12 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           causeOfLateSubmissionAgent = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false))
+      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789"))
       result.status shouldBe OK
     }
 
     "return the response of the call for LPP" in {
-      successfulAppealSubmission(isLPP = true)
+      successfulAppealSubmission(isLPP = true, penaltyId = "123456789")
       val model = AppealSubmission(
         submittedBy = "client",
         reasonableExcuse = "crime",
@@ -182,7 +182,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           causeOfLateSubmissionAgent = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true))
+      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789"))
       result.status shouldBe OK
     }
   }

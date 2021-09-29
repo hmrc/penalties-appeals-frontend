@@ -87,9 +87,9 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     }
   }
 
-  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
     val hcWithoutAuthorizationHeader: HeaderCarrier = hc.copy(authorization = None)
-    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP), appealSubmission, headerGenerator.headersForPEGA())(AppealSubmission.writes, implicitly, hcWithoutAuthorizationHeader, implicitly)
+    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyId), appealSubmission, headerGenerator.headersForPEGA())(AppealSubmission.writes, implicitly, hcWithoutAuthorizationHeader, implicitly)
   }
 
   def getOtherPenaltiesInTaxPeriod(penaltyId: String, enrolmentKey: String, isLPP: Boolean)
