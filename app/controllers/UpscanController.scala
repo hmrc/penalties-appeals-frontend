@@ -57,7 +57,11 @@ class UpscanController @Inject()(repository: UploadJourneyRepository, connector:
       connector.initiateToUpscan(initiateRequest).flatMap(
         response => {
           response.fold(
-            error => Future(InternalServerError(s"[UpscanController][initiateCallToUpscan] - Failed to map response for journey: $journeyId")),
+            error => {
+              logger.error(s"[UpscanController][initiateCallToUpscan] - Upscan call failure with status: ${error.status} and body: ${error.body}")
+              logger.error(s"[UpscanController][initiateCallToUpscan] - Failed to map response for journey: $journeyId")
+              Future(InternalServerError("An exception has occurred."))
+            },
             responseModel => {
               logger.debug(s"[UpscanController][initiateCallToUpscan] - Retrieving response model for journey: $journeyId")
               val uploadJourney = UploadJourney(responseModel.reference, UploadStatusEnum.WAITING)
@@ -70,6 +74,20 @@ class UpscanController @Inject()(repository: UploadJourneyRepository, connector:
           )
         }
       )
+    }
+  }
+
+  def removeFile(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
+    implicit request => {
+      logger.debug(s"[UpscanController][initiateCallToUpscan] - Requested removal of file for journey: $journeyId and file: $fileReference")
+      repository.removeFileForJourney(journeyId, fileReference).map {
+        _ => NoContent
+      }.recover {
+        case e => {
+          logger.error(s"[UpscanController][initiateCallToUpscan] - Failed to delete file: $fileReference for journey: $journeyId with error: ${e.getMessage}")
+          InternalServerError("An exception has occurred.")
+        }
+      }
     }
   }
 }

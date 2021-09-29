@@ -16,7 +16,7 @@
 
 package controllers
 
-import models.upload.{UploadJourney, UploadStatusEnum}
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
 import play.api.libs.json.Json
@@ -26,6 +26,7 @@ import repositories.UploadJourneyRepository
 import stubs.UpscanStub._
 import utils.IntegrationSpecCommonBase
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class UpscanControllerISpec extends IntegrationSpecCommonBase {
@@ -41,14 +42,8 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
   "GET /upscan/upload-status/:journeyId/:fileReference" should {
     "return OK (200)" when {
       "the user has an upload status in the repository" in {
-        await(
-          repository.updateStateOfFileUpload(
-            "1234",
-            UploadJourney("file-1", UploadStatusEnum.WAITING)
-          )
-        )
-        val result =
-          controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
+        await(repository.updateStateOfFileUpload("1234", UploadJourney("file-1", UploadStatusEnum.WAITING)))
+        val result = controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
         status(result) shouldBe OK
         contentAsString(result) shouldBe "\"WAITING\""
       }
@@ -57,8 +52,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     "return NOT_FOUND (404)" when {
       "the user has specified a file and journey id that is not in the repository" in {
         await(deleteAll())
-        val result =
-          controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
+        val result = controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
         status(result) shouldBe NOT_FOUND
       }
     }
@@ -81,21 +75,84 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           .post("")
       )
       result.status shouldBe OK
-      result.body.contains(
-        Json.obj(
-          "reference" -> "12345",
-          "uploadRequest" -> Json.obj()
-        )
-      )
+      Json.parse(result.body) shouldBe Json.parse(
+        """
+          |{
+          | "reference": "12345",
+          | "uploadRequest": {
+          |   "href": "12345",
+          |   "fields": {}
+          | }
+          |}
+          |""".stripMargin)
     }
 
     "return 500 (Internal Server Error) when there is no upload state in the database" in {
       failedInitiateCall("asdf")
-      val result = await(
-        buildClientForRequestToApp(uri = "/upscan/call-to-upscan/12345")
-          .post("")
-      )
+      val result = await(buildClientForRequestToApp(uri = "/upscan/call-to-upscan/12345").post(""))
       result.status shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "POST /upscan/remove-file/:journeyId/:fileReference" should {
+    "return 204 (No Content) when the user has specified a journey ID and file reference that is in the database" in {
+      await(repository.updateStateOfFileUpload("1234",
+        UploadJourney(
+          reference = "ref1",
+          fileStatus = UploadStatusEnum.READY,
+          downloadUrl = Some("download.file/url"),
+          uploadDetails = Some(UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            checksum = "check1234",
+            size = 2
+          ))
+        )))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      val result = controller.removeFile("1234", "ref1")(FakeRequest())
+      status(result) shouldBe NO_CONTENT
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 0
+    }
+
+    "return 204 (No Content) when the user has specified a journey ID is NOT in the database" in {
+      await(repository.updateStateOfFileUpload("1234",
+        UploadJourney(
+          reference = "ref1",
+          fileStatus = UploadStatusEnum.READY,
+          downloadUrl = Some("download.file/url"),
+          uploadDetails = Some(UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            checksum = "check1234",
+            size = 2
+          ))
+        )))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      val result = controller.removeFile("1235", "ref1")(FakeRequest())
+      status(result) shouldBe NO_CONTENT
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+    }
+
+    "return 204 (No Content) when the user has specified a file reference is NOT in the database" in {
+      await(repository.updateStateOfFileUpload("1234",
+        UploadJourney(
+          reference = "ref1",
+          fileStatus = UploadStatusEnum.READY,
+          downloadUrl = Some("download.file/url"),
+          uploadDetails = Some(UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            checksum = "check1234",
+            size = 2
+          ))
+        )))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      val result = controller.removeFile("1235", "ref2")(FakeRequest())
+      status(result) shouldBe NO_CONTENT
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
     }
   }
 }

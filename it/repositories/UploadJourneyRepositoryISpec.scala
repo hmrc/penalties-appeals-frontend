@@ -39,21 +39,35 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     await(deleteAll())
   }
 
-  "updateStateOfFileUpload" should {
-    "update the state based on the callback from Upscan" in {
-      val callbackModel = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file/url"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-          checksum = "check1234",
-          size = 2
-        ))
-      )
+  val callbackModel = UploadJourney(
+    reference = "ref1",
+    fileStatus = UploadStatusEnum.READY,
+    downloadUrl = Some("download.file/url"),
+    uploadDetails = Some(UploadDetails(
+      fileName = "file1.txt",
+      fileMimeType = "text/plain",
+      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+      checksum = "check1234",
+      size = 2
+    ))
+  )
 
+  val callbackModel2 = UploadJourney(
+    reference = "ref2",
+    fileStatus = UploadStatusEnum.READY,
+    downloadUrl = Some("download.file2/url"),
+    uploadDetails = Some(UploadDetails(
+      fileName = "file2.txt",
+      fileMimeType = "text/plain",
+      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+      checksum = "check1234",
+      size = 3
+    ))
+  )
+
+
+  "updateStateOfFileUpload" should {
+    "update the state based on the callback from Upscan" in new Setup {
       val result: CacheItem = await(repository.updateStateOfFileUpload("1234", callbackModel))
       result.id shouldBe "1234"
       val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("1234")(DataKey("ref1"))).get
@@ -62,26 +76,12 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
   }
 
   "getStatusOfFileUpload" should {
-    s"return $None when the document is not in Mongo" in {
-      await(deleteAll())
+    s"return $None when the document is not in Mongo" in new Setup {
       val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
       result.isDefined shouldBe false
     }
 
-    s"return $Some when the document is in Mongo" in {
-      val callbackModel = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file/url"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-          checksum = "check1234",
-          size = 2
-        ))
-      )
-
+    s"return $Some when the document is in Mongo" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel))
       val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
       result.isDefined shouldBe true
@@ -90,32 +90,19 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
   }
 
   "getUploadsForJourney" should {
-    s"return $None when the document is not in Mongo" in {
+    s"return $None when the document is not in Mongo" in new Setup {
       await(deleteAll())
       val result = await(repository.getUploadsForJourney(Some("1234")))
       result.isDefined shouldBe false
     }
 
-    s"return $None when no Id is given" in {
+    s"return $None when no Id is given" in new Setup {
       await(deleteAll())
       val result = await(repository.getUploadsForJourney(None))
       result.isDefined shouldBe false
     }
 
-    s"return $Some when the document is in Mongo" in {
-      val callbackModel = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file/url"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-          checksum = "check1234",
-          size = 2
-        ))
-      )
-
+    s"return $Some when the document is in Mongo" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel))
       val result = await(repository.getUploadsForJourney(Some("1234")))
       result.isDefined shouldBe true
@@ -124,69 +111,57 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
   }
 
   "getNumberOfDocumentsForJourneyId" should {
-    "return the amount of uploads" in {
-      val callbackModel = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file/url"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-          checksum = "check1234",
-          size = 2
-        ))
-      )
-
-      val callbackModel2 = UploadJourney(
-        reference = "ref2",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file/url"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file2.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-          checksum = "check1234",
-          size = 2
-        ))
-      )
-
+    "return the amount of uploads" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel))
       await(repository.updateStateOfFileUpload("1234", callbackModel2))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
     }
 
-    "return 0 when there is no uploads for the journey" in {
+    "return 0 when there is no uploads for the journey" in new Setup {
       await(repository.collection.deleteMany(Document()).toFuture())
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 0
     }
   }
 
   "removeUploadsForJourney" should {
-    "remove the document for the given journey ID" in {
-      val callbackModel = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file/url"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-          checksum = "check1234",
-          size = 2
-        ))
-      )
-
+    "remove the document for the given journey ID" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel))
       await(repository.collection.countDocuments().toFuture()) shouldBe 1
       await(repository.removeUploadsForJourney("1234"))
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
     }
 
-    "not remove anything when the journey ID doesn't exist in the repo" in {
+    "not remove anything when the journey ID doesn't exist in the repo" in new Setup {
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
       await(repository.removeUploadsForJourney("1234"))
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
+    }
+  }
+
+  "removeFileForJourney" should {
+    "remove the file in the journey if it exists" in new Setup {
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
+      await(repository.removeFileForJourney("1234", "ref1"))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      await(repository.getUploadsForJourney(Some("1234"))).get.head shouldBe callbackModel2
+    }
+
+    "do not remove the file in the journey if the file specified doesn't exist" in new Setup {
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
+      await(repository.removeFileForJourney("1234", "ref1234"))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
+    }
+
+    "do not remove the file in the journey if the journey specified doesn't exist" in new Setup {
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
+      await(repository.removeFileForJourney("1235", "ref1234"))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
     }
   }
 }
