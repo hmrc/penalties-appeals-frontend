@@ -865,7 +865,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page (regardless of reason) and delete all uploads for that user" in {
-      PenaltiesStub.successfulAppealSubmission(false)
+      PenaltiesStub.successfulAppealSubmission(false, "1234")
       val uploadJourneyModel: UploadJourney = UploadJourney(
         reference = "file1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/upload"), uploadDetails = Some(UploadDetails(
           fileName = "file1.txt", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1024
