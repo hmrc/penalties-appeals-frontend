@@ -294,6 +294,8 @@ otherReason.uploadEvidence.document = Document
 otherReason.uploadEvidence.addAnother = Add another document
 otherReason.uploadEvidence.status.uploaded = Ready to Submit
 otherReason.uploadEvidence.status.pending = Pending
+otherReason.uploadEvidence.button.remove = Remove
+otherReason.uploadEvidence.button.removing = Removing
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------
