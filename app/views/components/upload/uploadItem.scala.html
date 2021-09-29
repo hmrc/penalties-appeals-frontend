@@ -4,8 +4,7 @@
         <label class="govuk-label" for="file-{fileIndex}">@messages("otherReason.uploadEvidence.document") <span class="multi-file-upload__number">{fileNumber}</span></label>
         <div class="multi-file-upload__item-content">
             <div class="multi-file-upload__file-container">
-                                                                                @* TODO: 'name' attribute to be removed, temp fix *@
-                <input class="multi-file-upload__file govuk-file-upload" type="file" id="file-{fileIndex}" name="upload-evidence" accept="@acceptedFileExtensions">
+                <input class="multi-file-upload__file govuk-file-upload" type="file" id="file-{fileIndex}" accept="@acceptedFileExtensions">
                 <span class="multi-file-upload__file-name"></span>
             </div>
 
