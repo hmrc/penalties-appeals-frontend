@@ -34,7 +34,6 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
     "taxIdentifier" -> request.vrn,
     "identifierType" -> "VRN",
     "agentReferenceNumber" -> request.arn,
-    "penaltyId" -> appealSubmission.penaltyId,
     "penaltyType" -> penaltyType,
     "appealInformation" -> appealInformationJsonObj(appealSubmission),
     "correlationId"-> headerGenerator.headersForPEGA().find(_._1 == "CorrelationId").map(_._2)

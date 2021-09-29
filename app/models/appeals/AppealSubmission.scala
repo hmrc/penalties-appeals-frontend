@@ -405,9 +405,9 @@ object ObligationAppealInformation {
 
 case class AppealSubmission(
                              submittedBy: String,
-                             penaltyId: String,
                              reasonableExcuse: String,
                              honestyDeclaration: Boolean,
+                             agentDetails: Option[AgentDetails],
                              appealInformation: AppealInformation
                            )
 
@@ -426,15 +426,15 @@ object AppealSubmission {
   }
 
   //scalastyle:off
-  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long)
+  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long, agentDetails: Option[AgentDetails])
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
       case "bereavement" => {
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
-          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          agentDetails = agentDetails,
           appealInformation = BereavementAppealInformation(
             `type` = "bereavement",
             dateOfEvent = userRequest.session.get(SessionKeys.whenDidThePersonDie).get,
@@ -449,9 +449,9 @@ object AppealSubmission {
       case "crime" => {
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
-          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          agentDetails = agentDetails,
           appealInformation = CrimeAppealInformation(
             `type` = "crime",
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfCrime).get,
@@ -467,9 +467,9 @@ object AppealSubmission {
       case "fireOrFlood" => {
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
-          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          agentDetails = agentDetails,
           appealInformation = FireOrFloodAppealInformation(
             `type` = "fireOrFlood",
             dateOfEvent = userRequest.session.get(SessionKeys.dateOfFireOrFlood).get,
@@ -485,9 +485,9 @@ object AppealSubmission {
       case "lossOfStaff" => {
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
-          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          agentDetails = agentDetails,
           appealInformation = LossOfStaffAppealInformation(
             `type` = "lossOfStaff",
             dateOfEvent = userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get,
@@ -503,9 +503,9 @@ object AppealSubmission {
       case "technicalIssues" => {
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
-          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          agentDetails = agentDetails,
           appealInformation = TechnicalIssuesAppealInformation(
             `type` = "technicalIssues",
             startDateOfEvent = userRequest.session.get(SessionKeys.whenDidTechnologyIssuesBegin).get,
@@ -524,9 +524,9 @@ object AppealSubmission {
         val isOngoingHospitalStay = userRequest.session.get(SessionKeys.hasHealthEventEnded).contains("no")
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
-          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          agentDetails = agentDetails,
           appealInformation = HealthAppealInformation(
             `type` = "health",
             hospitalStayInvolved = isHospitalStay,
@@ -546,9 +546,9 @@ object AppealSubmission {
       case "other" => {
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
-          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          agentDetails = agentDetails,
           appealInformation = OtherAppealInformation(
             `type` = "other",
             dateOfEvent = userRequest.session.get(SessionKeys.whenDidBecomeUnable).get,
@@ -564,9 +564,9 @@ object AppealSubmission {
       case "obligation" => {
         AppealSubmission(
           submittedBy = if (userRequest.isAgent) "agent" else "client",
-          penaltyId = userRequest.session.get(SessionKeys.penaltyId).get,
           reasonableExcuse = reasonableExcuse,
           honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+          agentDetails = agentDetails,
           appealInformation = ObligationAppealInformation(
             `type` = "obligation",
             statement = userRequest.session.get(SessionKeys.otherRelevantInformation),
@@ -580,10 +580,15 @@ object AppealSubmission {
   val writes: Writes[AppealSubmission] = (appealSubmission: AppealSubmission) => {
     Json.obj(
       "submittedBy" -> appealSubmission.submittedBy,
-      "penaltyId" -> appealSubmission.penaltyId,
       "reasonableExcuse" -> appealSubmission.reasonableExcuse,
       "honestyDeclaration" -> appealSubmission.honestyDeclaration,
       "appealInformation" -> parseAppealInformationToJson(appealSubmission.appealInformation)
+    ).deepMerge(
+      appealSubmission.agentDetails.fold(
+        Json.obj()
+      )(
+        details => Json.obj("agentDetails" -> details)
+      )
     )
   }
 }

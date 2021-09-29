@@ -24,19 +24,19 @@ import play.api.test.Helpers._
 import services.AppealService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import utils.SessionKeys
-
 import java.time.LocalDateTime
+
 import scala.concurrent.Future
 
 class InitialiseAppealControllerSpec extends SpecBase {
   val mockAppealsService = mock(classOf[AppealService])
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]) {
     reset(mockAppealsService)
     reset(mockAuthConnector)
-    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
+      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
       any(), any())
     ).thenReturn(authResult)
     val controller = new InitialiseAppealController(

@@ -19,6 +19,7 @@ package models.appeals
 import base.SpecBase
 import models.UserRequest
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.emailaddress.EmailAddress
 import utils.SessionKeys
 
 class AppealSubmissionSpec extends SpecBase {
@@ -165,6 +166,18 @@ class AppealSubmissionSpec extends SpecBase {
       |}
       |""".stripMargin
   )
+
+  val expectedAgentDetails: Option[AgentDetails] = Some(AgentDetails(
+    agentReferenceNo = arn.get,
+    name = "Jack",
+    addressLine1 = "Flat 20",
+    addressLine2 = Some("123 Jack street"),
+    addressLine3 = None,
+    addressLine4 = Some("Birmingham"),
+    addressLine5 = Some("UK"),
+    postCode = "AAA AAA",
+    agentEmailID = Some(EmailAddress("Jack@aaa.com"))
+  ))
 
   "parseAppealInformationToJson" should {
     "for crime" must {
@@ -360,11 +373,11 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.causeOfLateSubmissionAgent -> "client")
       )
 
-      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0)(fakeAgentRequestForCrimeJourney)
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0, agentDetails)(fakeAgentRequestForCrimeJourney)
       result.reasonableExcuse shouldBe "crime"
-      result.penaltyId shouldBe "123"
       result.submittedBy shouldBe "agent"
       result.honestyDeclaration shouldBe true
+      result.agentDetails shouldBe expectedAgentDetails
       result.appealInformation shouldBe CrimeAppealInformation(
         `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None,
         whoPlannedToSubmit = Some("agent"),
@@ -381,9 +394,8 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.lateAppealReason -> "Some Reason")
       )
 
-      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", true, 0)(fakeRequestForCrimeJourney)
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", true, 0, None)(fakeRequestForCrimeJourney)
       result.reasonableExcuse shouldBe "crime"
-      result.penaltyId shouldBe "123"
       result.submittedBy shouldBe "client"
       result.honestyDeclaration shouldBe true
       result.appealInformation shouldBe CrimeAppealInformation(
@@ -405,9 +417,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidThePersonDie -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0)(fakeRequestForBereavementJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0, None)(fakeRequestForBereavementJourney)
         result.reasonableExcuse shouldBe "bereavement"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe BereavementAppealInformation(
@@ -428,9 +439,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidThePersonDie -> "2022-01-01",
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0)(fakeRequestForBereavementJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0, None)(fakeRequestForBereavementJourney)
         result.reasonableExcuse shouldBe "bereavement"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe BereavementAppealInformation(
@@ -454,9 +464,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.dateOfCrime -> "2022-01-01")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0)(fakeRequestForCrimeJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0, None)(fakeRequestForCrimeJourney)
         result.reasonableExcuse shouldBe "crime"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe CrimeAppealInformation(
@@ -479,9 +488,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.dateOfFireOrFlood -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", false, 0)(fakeRequestForFireOrFloodJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", false, 0, None)(fakeRequestForFireOrFloodJourney)
         result.reasonableExcuse shouldBe "fireOrFlood"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe FireOrFloodAppealInformation(
@@ -504,9 +512,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0, None)(fakeRequestForLossOfStaffJourney)
         result.reasonableExcuse shouldBe "lossOfStaff"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe LossOfStaffAppealInformation(
@@ -528,11 +535,11 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0, agentDetails)(fakeRequestForLossOfStaffJourney)
         result.reasonableExcuse shouldBe "lossOfStaff"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "agent"
         result.honestyDeclaration shouldBe true
+        result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe LossOfStaffAppealInformation(
           `type` = "lossOfStaff",
           dateOfEvent = "2022-01-01",
@@ -554,9 +561,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0)(fakeRequestForTechnicalIssuesJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0, None)(fakeRequestForTechnicalIssuesJourney)
         result.reasonableExcuse shouldBe "technicalIssues"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
@@ -580,11 +586,11 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0)(fakeRequestForTechnicalIssuesJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0, agentDetails)(fakeRequestForTechnicalIssuesJourney)
         result.reasonableExcuse shouldBe "technicalIssues"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "agent"
         result.honestyDeclaration shouldBe true
+        result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
           `type` = "technicalIssues",
           startDateOfEvent = "2022-01-01",
@@ -609,11 +615,11 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueEnded -> "2022-01-31"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, agentDetails)(fakeRequestForHealthJourney)
         result.reasonableExcuse shouldBe "health"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "agent"
         result.honestyDeclaration shouldBe true
+        result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe HealthAppealInformation(
           `type` = "health",
           hospitalStayInvolved = true,
@@ -638,9 +644,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueStarted -> "2022-01-01"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, None)(fakeRequestForHealthJourney)
         result.reasonableExcuse shouldBe "health"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe HealthAppealInformation(
@@ -666,9 +671,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueHappened -> "2022-01-01"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, None)(fakeRequestForHealthJourney)
         result.reasonableExcuse shouldBe "health"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe HealthAppealInformation(
@@ -696,9 +700,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 1)(fakeRequestForOtherJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 1, None)(fakeRequestForOtherJourney)
         result.reasonableExcuse shouldBe "other"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe OtherAppealInformation(
@@ -721,9 +724,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 0)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 0, None)(fakeRequestForLossOfStaffJourney)
         result.reasonableExcuse shouldBe "other"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe OtherAppealInformation(
@@ -747,9 +749,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.lateAppealReason -> "This is a reason for appealing late.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", true, 1)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", true, 1, None)(fakeRequestForLossOfStaffJourney)
         result.reasonableExcuse shouldBe "other"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe OtherAppealInformation(
@@ -774,9 +775,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 1)(fakeRequestForObligationJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 1, None)(fakeRequestForObligationJourney)
         result.reasonableExcuse shouldBe "obligation"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe ObligationAppealInformation(
@@ -794,9 +794,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 0)(fakeRequestForObligationJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 0, None)(fakeRequestForObligationJourney)
         result.reasonableExcuse shouldBe "obligation"
-        result.penaltyId shouldBe "123"
         result.submittedBy shouldBe "client"
         result.honestyDeclaration shouldBe true
         result.appealInformation shouldBe ObligationAppealInformation(
@@ -814,9 +813,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "bereavement",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = BereavementAppealInformation(
             `type` = "bereavement",
             dateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -829,7 +828,6 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val jsonRepresentingModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "bereavement",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -848,9 +846,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "crime",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = CrimeAppealInformation(
             `type` = "crime",
             dateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -864,7 +862,6 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val jsonRepresentingModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "crime",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -886,9 +883,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "fireOrFlood",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = FireOrFloodAppealInformation(
             `type` = "fireOrFlood",
             dateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -902,7 +899,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val jsonRepresentingModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "fireOrFlood",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -923,9 +919,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "lossOfStaff",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = LossOfStaffAppealInformation(
             `type` = "lossOfStaff",
             dateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -938,7 +934,6 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val jsonRepresentingModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "lossOfStaff",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -959,9 +954,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "technicalIssues",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = TechnicalIssuesAppealInformation(
             `type` = "technicalIssues",
             startDateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -976,7 +971,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val jsonRepresentingModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "technicalIssues",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -999,9 +993,9 @@ class AppealSubmissionSpec extends SpecBase {
         "there has been a hospital stay - and is no longer ongoing (both start and end date) - write the appeal model to JSON" in {
           val modelToConvertToJson = AppealSubmission(
             submittedBy = "client",
-            penaltyId = "1234",
             reasonableExcuse = "health",
             honestyDeclaration = true,
+            agentDetails = None,
             appealInformation = HealthAppealInformation(
               `type` = "health",
               startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
@@ -1018,7 +1012,6 @@ class AppealSubmissionSpec extends SpecBase {
           )
           val jsonRepresentingModel: JsValue = Json.obj(
             "submittedBy" -> "client",
-            "penaltyId" -> "1234",
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
             "appealInformation" -> Json.obj(
@@ -1040,9 +1033,9 @@ class AppealSubmissionSpec extends SpecBase {
         "there has been a hospital stay AND it is ongoing (no end date) - write the appeal model to JSON" in {
           val modelToConvertToJson = AppealSubmission(
             submittedBy = "client",
-            penaltyId = "1234",
             reasonableExcuse = "health",
             honestyDeclaration = true,
+            agentDetails = None,
             appealInformation = HealthAppealInformation(
               `type` = "health",
               startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
@@ -1059,7 +1052,6 @@ class AppealSubmissionSpec extends SpecBase {
           )
           val jsonRepresentingModel: JsValue = Json.obj(
             "submittedBy" -> "client",
-            "penaltyId" -> "1234",
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
             "appealInformation" -> Json.obj(
@@ -1081,9 +1073,9 @@ class AppealSubmissionSpec extends SpecBase {
           "write the appeal model to JSON" in {
           val modelToConvertToJson = AppealSubmission(
             submittedBy = "client",
-            penaltyId = "1234",
             reasonableExcuse = "health",
             honestyDeclaration = true,
+            agentDetails = None,
             appealInformation = HealthAppealInformation(
               `type` = "health",
               startDateOfEvent = None,
@@ -1100,7 +1092,6 @@ class AppealSubmissionSpec extends SpecBase {
           )
           val jsonRepresentingModel: JsValue = Json.obj(
             "submittedBy" -> "client",
-            "penaltyId" -> "1234",
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
             "appealInformation" -> Json.obj(
@@ -1124,9 +1115,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "other",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = OtherAppealInformation(
             `type` = "other",
             dateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -1143,7 +1134,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val jsonRepresentingModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "other",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -1166,9 +1156,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON - no evidence" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "other",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = OtherAppealInformation(
             `type` = "other",
             dateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -1183,7 +1173,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val jsonRepresentingModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "other",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -1203,9 +1192,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON - for late appeal" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "other",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = OtherAppealInformation(
             `type` = "other",
             dateOfEvent = "2021-04-23T18:25:43.511Z",
@@ -1222,7 +1211,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val jsonRepresentingModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "other",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -1248,9 +1236,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = ObligationAppealInformation(
             `type` = "obligation",
             statement = Some("This was the reason"),
@@ -1262,7 +1250,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val jsonRepresentModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "obligation",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(
@@ -1281,9 +1268,9 @@ class AppealSubmissionSpec extends SpecBase {
       "write the model to JSON - no evidence" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
           submittedBy = "client",
-          penaltyId = "1234",
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
+          agentDetails = None,
           appealInformation = ObligationAppealInformation(
             `type` = "obligation",
             statement = Some("This was the reason"),
@@ -1293,7 +1280,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val jsonRepresentModel: JsValue = Json.obj(
           "submittedBy" -> "client",
-          "penaltyId" -> "1234",
           "reasonableExcuse" -> "obligation",
           "honestyDeclaration" -> true,
           "appealInformation" -> Json.obj(

@@ -25,12 +25,13 @@ import services.AuthService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.allEnrolments
-import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.retrieve.{AgentInformation, ItmpAddress, Name, ~}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{EnrolmentKeys, SessionKeys}
 import views.html.errors.Unauthorised
-
 import javax.inject.{Inject, Singleton}
+import models.appeals.AgentDetails
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -50,16 +51,18 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
   override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
     implicit val req: Request[A] = request
     val logMsgStart: String = "[AuthPredicate][invokeBlock]"
-    authService.authorised().retrieve(Retrievals.affinityGroup and Retrievals.allEnrolments) {
-      case Some(affinityGroup) ~ allEnrolments => {
+    authService.authorised().retrieve(
+      Retrievals.affinityGroup and Retrievals.allEnrolments and Retrievals.name and Retrievals.email and Retrievals.itmpAddress
+    ) {
+      case Some(affinityGroup) ~ allEnrolments ~ name ~ email ~ address => {
         logger.debug(s"$logMsgStart - User is $affinityGroup and has ${allEnrolments.enrolments.size} enrolments. " +
           s"Enrolments: ${allEnrolments.enrolments}")
-        (isAgent(affinityGroup), allEnrolments) match {
-          case (true, _) => {
+        (isAgent(affinityGroup), allEnrolments, name, email, address) match {
+          case (true, _, _, _, _) => {
             logger.debug(s"$logMsgStart - Authorising user as Agent")
-            authoriseAsAgent(block)
+            authoriseAsAgent(block, (name, email, address))
           }
-          case (false, enrolments) => {
+          case (false, enrolments, _, _, _) => {
             logger.debug(s"$logMsgStart - Authorising user as Individual/Organisation")
             checkVatEnrolment(enrolments, block)
           }
@@ -81,7 +84,7 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
   private[predicates] def checkVatEnrolment[A](allEnrolments: Enrolments, block: UserRequest[A] => Future[Result])(implicit request: Request[A]) = {
     val logMsgStart: String = "[AuthPredicate][checkVatEnrolment]"
     val extractedMTDVATEnrolment: Option[String] = UserRequest.extractFirstMTDVatEnrolment(allEnrolments)
-    if(extractedMTDVATEnrolment.isDefined) {
+    if (extractedMTDVATEnrolment.isDefined) {
       val user: UserRequest[A] = UserRequest(extractedMTDVATEnrolment.get)
       block(user)
     } else {
@@ -90,7 +93,7 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
     }
   }
 
-  private[predicates] def authoriseAsAgent[A](block: UserRequest[A] => Future[Result])
+  private[predicates] def authoriseAsAgent[A](block: UserRequest[A] => Future[Result], agentDetails: (Option[Name], Option[String], Option[ItmpAddress]))
                                              (implicit request: Request[A]): Future[Result] = {
 
     val agentDelegatedAuthorityRule: String => Enrolment = vrn =>
@@ -106,7 +109,7 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
               enrolments.enrolments.collectFirst {
                 case Enrolment(EnrolmentKeys.agentEnrolmentKey, Seq(EnrolmentIdentifier(_, arn)), EnrolmentKeys.activated, _) => arn
               } match {
-                case Some(arn) => block(UserRequest(vrn, arn = Some(arn)))
+                case Some(arn) => block(UserRequest(vrn, arn = Some(arn), agentDetails = (agentDetails._1, agentDetails._2, agentDetails._3)))
                 case None =>
                   logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
                   Future.successful(Forbidden(unauthorisedView()))

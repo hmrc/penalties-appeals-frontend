@@ -24,7 +24,7 @@ import play.api.mvc.Result
 import testUtils.AuthTestModels
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import views.html.OtherPenaltiesForPeriodPage
 
 import scala.concurrent.Future
@@ -32,11 +32,11 @@ import scala.concurrent.Future
 class OtherPenaltiesForPeriodControllerSpec extends SpecBase {
   val otherPenaltiesForPeriodPage: OtherPenaltiesForPeriodPage = injector.instanceOf[OtherPenaltiesForPeriodPage]
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]) {
     reset(mockAuthConnector)
 
-    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
+      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
       any(), any())
     ).thenReturn(authResult)
 

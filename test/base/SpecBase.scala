@@ -19,6 +19,7 @@ package base
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
 import helpers.DateTimeHelper
+import models.appeals.AgentDetails
 import models.{PenaltyTypeEnum, UserRequest}
 import navigation.Navigation
 import org.jsoup.Jsoup
@@ -35,6 +36,8 @@ import repositories.UploadJourneyRepository
 import services.AuthService
 import services.monitoring.AuditService
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name}
+import uk.gov.hmrc.emailaddress.EmailAddress
 import utils.SessionKeys
 import views.html.errors.Unauthorised
 
@@ -63,7 +66,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val mockAuthConnector: AuthConnector = mock(classOf[AuthConnector])
 
-  val mockAuditService :AuditService = mock(classOf[AuditService])
+  val mockAuditService: AuditService = mock(classOf[AuditService])
 
   val mockUploadJourneyRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
 
@@ -120,5 +123,17 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val agentUserLPPAdditional: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
     SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString
+  ))
+
+  val agentDetails = Some(AgentDetails(
+    agentReferenceNo = arn.get,
+    name = "Jack",
+    addressLine1 = "Flat 20",
+    addressLine2 = Some("123 Jack street"),
+    addressLine3 = None,
+    addressLine4 = Some("Birmingham"),
+    addressLine5 = Some("UK"),
+    postCode = "AAA AAA",
+    agentEmailID = Some(EmailAddress("Jack@aaa.com"))
   ))
 }

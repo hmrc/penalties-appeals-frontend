@@ -21,16 +21,19 @@ import controllers.predicates.AuthPredicate
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
+import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments, InternalError, MissingBearerToken}
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait AuthMocks extends SpecBase {
-  def setupAuthResponse(authResult: Future[~[Option[AffinityGroup], Enrolments]]): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] = {
-    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
-      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+  def setupAuthResponse(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]):
+  OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] = {
+
+    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
+      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
       any(), any())
     ).thenReturn(authResult)
   }
@@ -44,18 +47,31 @@ trait AuthMocks extends SpecBase {
       unauthorised
     )
 
-  def mockOrganisationAuthorised(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
+  def mockOrganisationAuthorised(): OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
     setupAuthResponse(Future.successful(
-      new ~(Some(AffinityGroup.Organisation),
+      new ~( new ~( new ~( new ~(
+        Some(AffinityGroup.Organisation),
         Enrolments(
           Set(
-            Enrolment("HMRC-MTD-VAT",
-              Seq(
-                EnrolmentIdentifier("VRN", vrn)
-              ),
-              "Activated"
-            )
-          ))
+            Enrolment(
+              "HMRC-MTD-VAT",
+              Seq(EnrolmentIdentifier("VRN", "123456789")),
+              "Activated")
+          )
+        )),
+        Some(Name(Some("test Name"), None))),
+        Some("testEmail@test.com")),
+        Some(
+          ItmpAddress(
+            line1 = Some("Flat 20"),
+            line2 = Some("123 Jack street"),
+            line3 = None,
+            line4 = Some("Birmingham"),
+            line5 = Some("UK"),
+            postCode = Some("AAA AAA"),
+            countryName = None,
+            countryCode = None)
+        )
       )
     ))
 
@@ -90,9 +106,12 @@ trait AuthMocks extends SpecBase {
         ))))
   }
 
-  def mockOrganisationNonActivatedMTDVATEnrolment(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
+  def mockOrganisationNonActivatedMTDVATEnrolment():
+  OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+
     setupAuthResponse(Future.successful(
-      new ~(Some(AffinityGroup.Organisation),
+      new ~( new ~( new ~( new ~(
+        Some(AffinityGroup.Organisation),
         Enrolments(
           Set(
             Enrolment("HMRC-MTD-VAT",
@@ -102,13 +121,17 @@ trait AuthMocks extends SpecBase {
               "Not Activated"
             )
           )
-        )
+        )),
+        None),
+        None),
+        None)
       )
-    ))
+    )
 
-  def mockNoAffinityGroup(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
+  def mockNoAffinityGroup(): OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
     setupAuthResponse(Future.successful(
-      new ~(None,
+      new ~( new ~( new ~( new ~(
+        None,
         Enrolments(
           Set(
             Enrolment("HMRC-MTD-VAT",
@@ -118,32 +141,42 @@ trait AuthMocks extends SpecBase {
               "Not Activated"
             )
           )
-        )
+        )),
+        None),
+        None),
+        None)
       )
-    ))
+    )
 
-  def mockNoActiveSession(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
+  def mockNoActiveSession(): OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
     setupAuthResponse(Future.failed(
       MissingBearerToken("No token to be found here.")
     ))
 
-  def mockAuthorisationException(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
+  def mockAuthorisationException(): OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
     setupAuthResponse(Future.failed(
       InternalError("There has been a mystical error.")
     ))
 
-  def mockOrganisationNoEnrolments(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
+  def mockOrganisationNoEnrolments():OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
     setupAuthResponse(Future.successful(
-      new ~(Some(AffinityGroup.Organisation),
+      new ~( new ~( new ~( new ~(
+        Some(AffinityGroup.Organisation),
         Enrolments(
           Set()
-        )
+        )),
+        None),
+        None),
+        None)
       )
-    ))
+    )
 
-  def mockOrganisationAuthorisedWithNonRelatedEnrolments(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
+  def mockOrganisationAuthorisedWithNonRelatedEnrolments():
+  OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+
     setupAuthResponse(Future.successful(
-      new ~(Some(AffinityGroup.Organisation),
+      new ~( new ~( new ~( new ~(
+        Some(AffinityGroup.Organisation),
         Enrolments(
           Set(
             Enrolment("IR-SA",
@@ -162,7 +195,20 @@ trait AuthMocks extends SpecBase {
                 EnrolmentIdentifier("UTR", "123456789")
               ),
               "Activated")
-          ))
+          ))),
+        Some(Name(Some("test Name"), None))),
+        Some("testEmail@test.com")),
+        Some(
+          ItmpAddress(
+            line1 = Some("Flat 20"),
+            line2 = Some("123 Jack street"),
+            line3 = None,
+            line4 = Some("Birmingham"),
+            line5 = Some("UK"),
+            postCode = Some("AAA AAA"),
+            countryName = None,
+            countryCode = None)
+        )
       )
     ))
 }
