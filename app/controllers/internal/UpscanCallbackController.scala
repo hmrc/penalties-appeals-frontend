@@ -30,13 +30,9 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
                                         (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def callbackFromUpscan(journeyId: String): Action[JsValue] =
-    Action.async(parse.json) { implicit request =>
-      {
-        withJsonBody[UploadJourney] { callbackModel =>
-          {
-            repository
-              .updateStateOfFileUpload(journeyId, callbackModel)
-              .map(_ => NoContent)
+    Action.async(parse.json) { implicit request => {
+        withJsonBody[UploadJourney] { callbackModel => {
+            repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
           }
         }
       }

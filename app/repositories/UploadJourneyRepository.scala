@@ -80,6 +80,14 @@ class UploadJourneyRepository @Inject()(
   }
 
   def removeFileForJourney(journeyId: String, fileReference: String): Future[Unit] = {
-    delete(journeyId)(DataKey(fileReference))
+    getNumberOfDocumentsForJourneyId(journeyId).map {
+      amountOfDocuments => {
+        if(amountOfDocuments == 1) {
+          deleteEntity(journeyId)
+        } else {
+          delete(journeyId)(DataKey(fileReference))
+        }
+      }
+    }
   }
 }

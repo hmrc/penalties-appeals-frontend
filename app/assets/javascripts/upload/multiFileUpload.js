@@ -5,7 +5,8 @@ const status = {
     Waiting: "Waiting",
     Uploading: "Uploading",
     Verifying: "Verifying",
-    Uploaded: "Uploaded"
+    Uploaded: "Uploaded",
+    Removing: "Removing"
 }
 
 class MultiFileUpload {
@@ -28,7 +29,8 @@ class MultiFileUpload {
             maxRetries: parseInt(form.dataset.multiFileUploadMaxRetries) || 30,
             retryDelayMs: parseInt(form.dataset.multiFileUploadRetryDelayMs, 10) || 1000,
             sendUrlTpl: decodeURIComponent(form.dataset.multiFileUploadSendUrlTpl),
-            statusUrlTpl: decodeURIComponent(form.dataset.multiFileUploadStatusUrlTpl)
+            statusUrlTpl: decodeURIComponent(form.dataset.multiFileUploadStatusUrlTpl),
+            removeUrlTpl: decodeURIComponent(form.dataset.multiFileUploadRemoveUrlTpl)
         }
 
         this.classes = {
@@ -42,8 +44,10 @@ class MultiFileUpload {
             uploading: 'multi-file-upload__item--uploading',
             progressBar: 'multi-file-upload__progress-bar',
             filePreview: 'multi-file-upload__file-preview',
+            removing: 'multi-file-upload__item--removing',
             verifying: 'multi-file-upload__item--verifying',
-            uploaded: 'multi-file-upload__item--uploaded'
+            uploaded: 'multi-file-upload__item--uploaded',
+            remove: 'multi-file-upload__remove-item'
         }
 
         this.cacheElements();
@@ -79,6 +83,13 @@ class MultiFileUpload {
     }
 
     /**
+     * Binds events on upload items i.e. changing file and removing file
+     */
+    bindItemEvents(item) {
+        this.getRemoveButtonFromItem(item).addEventListener('click', this.handleRemoveItem.bind(this));
+    }
+
+    /**
      * Binds the change event to the specified item so that any file change is handled.
      *
      */
@@ -104,6 +115,92 @@ class MultiFileUpload {
     }
 
     /**
+     * Handles removal of a file, aborting the upload if the file is already uploading. If the file has already been uploaded i.e. the file
+     * has a reference, it is removed from server-side otherwise it is removed on client-side
+     */
+    handleRemoveItem(e) {
+        const target = e.target;
+        const item = target.closest(`.${this.classes.item}`);
+        const file = this.getFileFromItem(item);
+        const ref = file.dataset.multiFileUploadFileRef;
+
+        if (this.isUploading(item)) {
+            if (this.uploadData[file.id].uploadHandle) {
+                this.uploadData[file.id].uploadHandle.abort();
+            }
+        }
+
+        if (ref) {
+            this.setItemState(item, status.Removing);
+            this.requestRemoveFile(file);
+        }
+        else {
+            this.removeItem(item);
+        }
+    }
+
+    /**
+     * Requests for the file to be removed server side.
+     *
+     */
+    requestRemoveFile(file) {
+        const item = this.getItemFromFile(file);
+        fetch(this.getRemoveUrl(file.dataset.multiFileUploadFileRef), {
+            method: 'POST'
+        })
+            .then(this.requestRemoveFileCompleted.bind(this, file))
+            .catch(() => {
+                this.setItemState(item, status.Uploaded);
+            });
+    }
+
+    /**
+     * Removes the file client side
+     */
+    requestRemoveFileCompleted(file) {
+        const item = file.closest(`.${this.classes.item}`);
+
+        this.removeItem(item);
+    }
+
+    /**
+     * Removes the file locally, reindexes the new upload list, and ensures that users can add more documents where < max and that it
+     * resets to initial state if no uploads are present.
+     */
+    removeItem(item) {
+        const file = this.getFileFromItem(item);
+
+        item.remove();
+        this.updateFileNumbers();
+        this.updateButtonVisibility();
+        // TODO: implement for accessibility
+        // this.updateFormStatusVisibility();
+
+        if (this.getItems().length === 0) {
+            this.addItem();
+        }
+
+        delete this.uploadData[file.id];
+
+        this.uploadNext();
+    }
+
+    /**
+     * Re-indexes the file numbers based on amount of files uploaded.
+     */
+    updateFileNumbers() {
+        let fileNumber = 1;
+
+        this.getItems().forEach(item => {
+            Array.from(item.querySelectorAll(`.${this.classes.fileNumber}`)).forEach(span => {
+                span.textContent = fileNumber.toString();
+            });
+
+            fileNumber++;
+        });
+    }
+
+    /**
      * Gets the file name element.
      *
      */
@@ -118,7 +215,7 @@ class MultiFileUpload {
      */
     setItemState(item, uploadState) {
         const file = this.getFileFromItem(item);
-        item.classList.remove(this.classes.waiting, this.classes.uploading, this.classes.verifying, this.classes.uploaded);
+        item.classList.remove(this.classes.waiting, this.classes.uploading, this.classes.verifying, this.classes.uploaded, this.classes.removing);
 
         file.disabled = uploadState !== status.Default;
 
@@ -134,6 +231,9 @@ class MultiFileUpload {
                 break;
             case status.Uploaded:
                 item.classList.add(this.classes.uploaded);
+                break;
+            case status.Removing:
+                item.classList.add(this.classes.removing);
                 break;
         }
     }
@@ -359,6 +459,13 @@ class MultiFileUpload {
     }
 
     /**
+     * Gets the URL that removes the file server-side
+     */
+    getRemoveUrl(fileRef) {
+        return this.parseTemplate(this.config.removeUrlTpl, { fileRef: fileRef });
+    }
+
+    /**
      * Requests information from the upload service to handle the upload request.
      */
     requestProvisionUpload(file) {
@@ -439,6 +546,9 @@ class MultiFileUpload {
         }
     }
 
+    /**
+     * Creates an already uploaded item, reinitialising the state on page load.
+     */
     createUploadedItem(fileData) {
         const item = this.addItem();
         const file = this.getFileFromItem(item);
@@ -446,6 +556,7 @@ class MultiFileUpload {
 
         this.setItemState(item, status.Uploaded);
         this.getFileNameElement(item).textContent = fileName;
+        this.toggleRemoveButtons(true);
 
         file.dataset.multiFileUploadFileRef = fileData['reference'];
 
@@ -458,8 +569,9 @@ class MultiFileUpload {
     isBusy() {
         const stillUploading = this.container.querySelector(`.${this.classes.uploading}`) !== null;
         const stillVerifying = this.container.querySelector(`.${this.classes.verifying}`) !== null;
+        const stillRemoving = this.container.querySelector(`.${this.classes.removing}`) !== null;
 
-        return stillUploading || stillVerifying;
+        return stillUploading || stillVerifying || stillRemoving;
     }
 
     /**
@@ -483,6 +595,7 @@ class MultiFileUpload {
         });
 
         this.bindUploadEvents(item);
+        this.bindItemEvents(item);
         this.itemList.append(item);
 
         this.updateButtonVisibility();
@@ -538,7 +651,7 @@ class MultiFileUpload {
      */
     updateButtonVisibility() {
         const itemCount = this.getItems().length;
-
+        this.toggleRemoveButtons(itemCount > this.config.minFiles);
         this.toggleAddButton(itemCount < this.config.maxFiles);
     }
 
@@ -547,6 +660,22 @@ class MultiFileUpload {
      */
     toggleAddButton(state) {
         this.toggleElement(this.addAnotherBtn, state);
+    }
+
+    /**
+     * Shows the remove buttons when items are uploading or uploaded.
+     *
+     */
+    toggleRemoveButtons(state) {
+        this.getItems().forEach(item => {
+            const button = this.getRemoveButtonFromItem(item);
+
+            if (this.isWaiting(item) || this.isUploading(item) || this.isVerifying(item) || this.isUploaded(item)) {
+                state = true;
+            }
+
+            this.toggleElement(button, state);
+        });
     }
 
     /**
@@ -568,6 +697,41 @@ class MultiFileUpload {
      */
     getItemFromFile(file) {
         return file.closest(`.${this.classes.item}`);
+    }
+
+    /**
+     * Get the remove button for the upload item
+     */
+    getRemoveButtonFromItem(item) {
+        return item.querySelector(`.${this.classes.remove}`);
+    }
+
+    /**
+     * Checks if the file has the 'uploading' class
+     */
+    isUploading(item) {
+        return item.classList.contains(this.classes.uploading);
+    }
+
+    /**
+     * Checks if the file has the 'waiting' class
+     */
+    isWaiting(item) {
+        return item.classList.contains(this.classes.waiting);
+    }
+
+    /**
+     * Checks if the file has the 'verifying' class
+     */
+    isVerifying(item) {
+        return item.classList.contains(this.classes.verifying);
+    }
+
+    /**
+     * Checks if the file has the 'uploaded' class
+     */
+    isUploaded(item) {
+        return item.classList.contains(this.classes.uploaded);
     }
 }
 
