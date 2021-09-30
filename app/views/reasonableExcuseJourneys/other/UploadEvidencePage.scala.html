@@ -15,6 +15,7 @@
         postAction: Call,
         initiateNextFileUpload: Call,
         getStatusUrl: String => Call,
+        removeFileUrl: String => Call,
         previousUploads: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.session.get(SessionKeys.appealType)}
@@ -60,7 +61,8 @@
         (Symbol("id"), "multi-upload-form"),
         (Symbol("data-multi-file-upload-send-url-tpl"), initiateNextFileUpload.url),
         (Symbol("data-multi-file-upload-uploaded-files"), previousUploads),
-        (Symbol("data-multi-file-upload-status-url-tpl"), getStatusUrl("{fileRef}").url)) {
+        (Symbol("data-multi-file-upload-status-url-tpl"), getStatusUrl("{fileRef}").url),
+        (Symbol("data-multi-file-upload-remove-url-tpl"), removeFileUrl("{fileRef}").url)) {
             <ul class="multi-file-upload__item-list"></ul>
 
             <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.addAnother")</button>

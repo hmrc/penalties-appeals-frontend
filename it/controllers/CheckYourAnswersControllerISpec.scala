@@ -857,8 +857,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.otherRelevantInformation -> "some text",
         SessionKeys.journeyId -> "1234"
       ))
-      implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
@@ -884,8 +882,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.otherRelevantInformation -> "some text",
         SessionKeys.journeyId -> "1234"
       ))
-      implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       await(repository.collection.countDocuments().toFuture()) shouldBe 1
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       await(repository.collection.countDocuments().toFuture()) shouldBe 0

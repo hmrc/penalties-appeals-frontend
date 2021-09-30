@@ -61,6 +61,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val multiUploadFormInitiateUploadAKey = "data-multi-file-upload-send-url-tpl"
 
       val multiUploadFormGetStatusAKey = "data-multi-file-upload-status-url-tpl"
+
+      val multiUploadFormRemoveFileAKey = "data-multi-file-upload-remove-url-tpl"
     }
     val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
@@ -76,6 +78,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode),
         controllers.routes.UpscanController.initiateCallToUpscan("1234"),
         controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),
+        controllers.routes.UpscanController.removeFile("1234", _),
         previousUploadsToString(previousUploads))(request, implicitly, implicitly)
     }
 
@@ -231,9 +234,11 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       )
       val expectedInitiateString = "/penalties-appeals/upscan/call-to-upscan/1234"
       val expectedStatusString = "/penalties-appeals/upscan/upload-status/1234/%7BfileRef%7D"
+      val expectedRemovalString = "/penalties-appeals/upscan/remove-file/1234/%7BfileRef%7D"
 
       doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormInitiateUploadAKey) shouldBe expectedInitiateString
       doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormGetStatusAKey) shouldBe expectedStatusString
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormRemoveFileAKey) shouldBe expectedRemovalString
     }
   }
 }
