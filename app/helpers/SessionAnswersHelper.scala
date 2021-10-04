@@ -17,16 +17,18 @@
 package helpers
 
 import java.time.LocalDate
-
 import javax.inject.Inject
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
 import play.api.mvc.Request
+import repositories.UploadJourneyRepository
 import utils.MessageRenderer.getMessage
 import utils.SessionKeys
 import viewtils.ImplicitDateFormatter
 
-class SessionAnswersHelper @Inject()() extends ImplicitDateFormatter {
+import scala.concurrent.{ExecutionContext, Future}
+
+class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepository)(implicit ec: ExecutionContext)extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
     "bereavement" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidThePersonDie, SessionKeys.hasConfirmedDeclaration),
     "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
@@ -261,5 +263,29 @@ class SessionAnswersHelper @Inject()() extends ImplicitDateFormatter {
         controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       )
     )
+  }
+
+  def getPreviousUploadsFileNames()(implicit request: UserRequest[_]): Future[String]= {
+    for {
+      previousUploads <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
+    } yield {
+      val previousUploadsFileName = previousUploads.map(_.map(file => file.uploadDetails.map(details => details.fileName)))
+      previousUploadsFileName.getOrElse(Seq.empty).collect {
+        case Some(x) => x
+      }.mkString(", ")
+    }
+  }
+
+  def getContentWithExistingUploadFileNames(reasonableExcuse:String)(implicit request: UserRequest[_], messages: Messages): Future[Seq[(String, String, String)]]={
+    if(!reasonableExcuse.equals("other") && !request.session.get(SessionKeys.isObligationAppeal).contains("true")){
+       Future(getAllTheContentForCheckYourAnswersPage()(request,messages))
+    }
+    else {
+       for {
+         fileNames <- getPreviousUploadsFileNames()(request)
+       } yield {
+         getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))(request,messages)
+       }
+    }
   }
 }

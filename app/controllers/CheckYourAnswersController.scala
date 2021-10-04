@@ -54,12 +54,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         if(request.session.get(SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
           logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
           for {
-            previousUploads <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
+            fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(request)
           } yield {
-            val previousUploadsFileName = previousUploads.map(_.map(file => file.uploadDetails.map(details => details.fileName)))
-            val fileNames = previousUploadsFileName.getOrElse(Seq.empty).collect {
-              case Some(x) => x
-            }.mkString(", ")
             val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
             Ok(checkYourAnswersPage(answersFromSession))
           }
@@ -69,25 +65,20 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         }
       })(
         reasonableExcuse => {
-        if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
-          logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
-          for {
-            previousUploads <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
-          } yield {
-            val previousUploadsFileName = previousUploads.map(_.map(file => file.uploadDetails.map(details => details.fileName)))
-            val fileNames = previousUploadsFileName.getOrElse(Seq.empty).collect {
-              case Some(x) => x
-            }.mkString(", ")
-            val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
-            Ok(checkYourAnswersPage(answersFromSession))
+          if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
+            for {
+              content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)
+            } yield {
+                Ok(checkYourAnswersPage(content))
+              }
+          } else {
+            logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
+              s"and tried to load page with reasonable excuse: $reasonableExcuse")
+            Future(errorHandler.showInternalServerError)
           }
-        } else {
-          logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
-          logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
-            s"and tried to load page with reasonable excuse: $reasonableExcuse")
-          Future(errorHandler.showInternalServerError)
         }
-      }
       )
     }
   }

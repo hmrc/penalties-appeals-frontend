@@ -17,11 +17,22 @@
 package helpers
 
 import base.SpecBase
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
+import org.mockito.Mockito.{mock, when}
+import org.scalatest.concurrent.ScalaFutures
+import play.api.mvc.AnyContent
+import play.api.test.Helpers._
+import repositories.UploadJourneyRepository
 import utils.SessionKeys
 
-class SessionAnswersHelperSpec extends SpecBase {
-  val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
+import java.time.LocalDateTime
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, ExecutionContext, Future}
+
+class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
+  val mockRepository = mock(classOf[UploadJourneyRepository])
+  val  sessionAnswersHelper = new SessionAnswersHelper(mockRepository)
 
   "isAllAnswerPresentForReasonableExcuse" should {
     "for crime" must {
@@ -1143,6 +1154,102 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1)._1 shouldBe "Evidence to support this appeal"
         result(1)._2 shouldBe "some-file-name.txt"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+      }
+    }
+  }
+
+  "getPreviousUploadsFileNames" should{
+    "return Future[String] " in {
+      implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+      val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+        SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+        SessionKeys.whenDidBecomeUnable -> "2022-01-02",
+        SessionKeys.journeyId -> "4321"
+      ))
+      val callBackModel: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+      when(mockRepository.getUploadsForJourney(Some("4321"))).thenReturn(Future.successful(Option(Seq(callBackModel))))
+      await(sessionAnswersHelper.getPreviousUploadsFileNames()(fakeRequestForOtherJourney)) shouldBe "file1.txt"
+    }
+  }
+
+  "getContentWithExistingUploadFileNames" should {
+    "when reason is 'other' (that requires a file upload call)" should {
+      "return Future[Seq[(String, String, String)]] " in {
+        implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+        val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.journeyId -> "4321"
+        ))
+        val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForOtherJourney, messages))
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(2)._1 shouldBe "Why was the return submitted late?"
+        result(2)._2 shouldBe "This is a reason."
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(3)._1 shouldBe "Evidence to support this appeal"
+        result(3)._2 shouldBe "file1.txt"
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+      }
+    }
+
+    "when there's an Obligation Appeal Journey (that requires a file upload call) " should {
+      "return Future[Seq[(String, String, String)]] " in {
+        implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+        val fakeRequestForAppealingTheObligation : UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.journeyId -> "4321",
+          SessionKeys.isObligationAppeal -> "true",
+          SessionKeys.otherRelevantInformation -> "This is some relevant information"
+        ))
+        val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
+        result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
+        result(0)._2 shouldBe "This is some relevant information"
+        result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result(1)._1 shouldBe "Evidence to support this appeal"
+        result(1)._2 shouldBe "file1.txt"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+      }
+    }
+
+    "when reason is 'bereavement' (that doesn't require a file upload call)" should {
+      "return Future[Seq[(String, String, String)]] " in {
+        implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+        val fakeRequestWithBereavementKeysPresent = fakeRequestConverter(fakeRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "bereavement",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whenDidThePersonDie -> "2022-01-01",
+            SessionKeys.lateAppealReason -> "Lorem ipsum"
+          ))
+        val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("bereavement")(fakeRequestWithBereavementKeysPresent, messages))
+        result(0)._1 shouldBe "Reason for missing the VAT deadline"
+        result(0)._2 shouldBe "Bereavement (someone died)"
+        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result(1)._1 shouldBe "When did the person die?"
+        result(1)._2 shouldBe "1 January 2022"
+        result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
+        result(2)._1 shouldBe "Reason for appealing after 30 days"
+        result(2)._2 shouldBe "Lorem ipsum"
+        result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
     }
   }
