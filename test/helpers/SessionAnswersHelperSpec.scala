@@ -1212,6 +1212,24 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
       }
     }
 
+    "when there's an Obligation Appeal Journey (that requires a file upload call) " should {
+      "return Future[Seq[(String, String, String)]] " in {
+        implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+        val fakeRequestForAppealingTheObligation : UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.journeyId -> "4321",
+          SessionKeys.isObligationAppeal -> "true",
+          SessionKeys.otherRelevantInformation -> "This is some relevant information"
+        ))
+        val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
+        result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
+        result(0)._2 shouldBe "This is some relevant information"
+        result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result(1)._1 shouldBe "Evidence to support this appeal"
+        result(1)._2 shouldBe "file1.txt"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+      }
+    }
+
     "when reason is 'bereavement' (that doesn't require a file upload call)" should {
       "return Future[Seq[(String, String, String)]] " in {
         implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
