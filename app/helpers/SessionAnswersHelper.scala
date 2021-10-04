@@ -276,8 +276,8 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
     }
   }
 
-  def getContentWithExistingUploadFileNames(reasonableExcuse : Option[String] = None)(implicit request: UserRequest[_], messages: Messages): Future[Seq[(String, String, String)]]={
-    if(!reasonableExcuse.equals(Some("other"))){
+  def getContentWithExistingUploadFileNames(reasonableExcuse:String)(implicit request: UserRequest[_], messages: Messages): Future[Seq[(String, String, String)]]={
+    if(!reasonableExcuse.equals("other")){
        Future(getAllTheContentForCheckYourAnswersPage()(request,messages))
     }
     else {

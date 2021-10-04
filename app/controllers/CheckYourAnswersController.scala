@@ -68,7 +68,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
           if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
             logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
             for {
-              content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(Some(reasonableExcuse))
+              content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)
             } yield {
                 Ok(checkYourAnswersPage(content))
               }
