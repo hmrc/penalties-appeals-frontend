@@ -16,6 +16,8 @@
 
 package connectors
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import config.AppConfig
 import models.appeals.{AppealSubmission, CrimeAppealInformation}
@@ -248,8 +250,8 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockAppConfig.submitAppealUrl(any(), any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
       val appealSubmissionModel = AppealSubmission(
-        submittedBy = "client", reasonableExcuse = "crime", honestyDeclaration = true, agentDetails = None,  appealInformation = CrimeAppealInformation(
-          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None, whoPlannedToSubmit = None, causeOfLateSubmissionAgent = None
+        sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0), isLPP = true,appealSubmittedBy = "client", agentDetails = None,  appealInformation = CrimeAppealInformation(
+          reasonableExcuse = "crime", honestyDeclaration = true, dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false, lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
       val result = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789"))
@@ -263,8 +265,8 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockAppConfig.submitAppealUrl(any(), any(), any()))
         .thenReturn("http://url/url")
       val appealSubmissionModel = AppealSubmission(
-        submittedBy = "client", reasonableExcuse = "crime", honestyDeclaration = true, agentDetails = None, appealInformation = CrimeAppealInformation(
-          `type` = "crime", dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None, whoPlannedToSubmit = None, causeOfLateSubmissionAgent = None
+        sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0), isLPP = true, appealSubmittedBy = "client", agentDetails = None, appealInformation = CrimeAppealInformation(
+          reasonableExcuse = "crime", honestyDeclaration = true, dateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false, lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
       val result = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789")))

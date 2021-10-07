@@ -145,19 +145,23 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
     "return the response of the call" in {
       successfulAppealSubmission(isLPP = false, penaltyId = "123456789")
       val model = AppealSubmission(
-        submittedBy = "client",
-        reasonableExcuse = "crime",
-        honestyDeclaration = true,
+        sourceSystem = "MDTP",
+        taxRegime = "VAT",
+        customerReferenceNo = "VRN123456789",
+        dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+        isLPP = false,
+        appealSubmittedBy = "client",
         agentDetails = None,
         appealInformation = CrimeAppealInformation(
-          `type` = "crime",
+          reasonableExcuse = "crime",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
-          reportedIssue = true,
+          reportedIssueToPolice = true,
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       )
       val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789"))
@@ -167,19 +171,23 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
     "return the response of the call for LPP" in {
       successfulAppealSubmission(isLPP = true, penaltyId = "123456789")
       val model = AppealSubmission(
-        submittedBy = "client",
-        reasonableExcuse = "crime",
-        honestyDeclaration = true,
+        sourceSystem = "MDTP",
+        taxRegime = "VAT",
+        customerReferenceNo = "VRN123456789",
+        dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+        isLPP = true,
+        appealSubmittedBy = "client",
         agentDetails = None,
         appealInformation = CrimeAppealInformation(
-          `type` = "crime",
+          reasonableExcuse = "crime",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
-          reportedIssue = true,
+          reportedIssueToPolice = true,
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       )
       val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789"))

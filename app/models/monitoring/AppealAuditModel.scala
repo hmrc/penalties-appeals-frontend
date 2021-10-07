@@ -22,8 +22,8 @@ import models.appeals._
 import play.api.libs.json._
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.JsonUtils
 import utils.Logger.logger
+import utils.JsonUtils
 
 case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String,headerGenerator: HeaderGenerator)
                            (implicit request: UserRequest[_], headerCarrier: HeaderCarrier) extends JsonAuditModel with JsonUtils {
@@ -32,7 +32,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
   override val transactionName: String = "penalties-appeal-submitted"
   val appealPayload = appealInformationJsonObj(appealSubmission)
   override val detail: JsValue = jsonObjNoNulls(
-    "submittedBy" -> appealSubmission.submittedBy,
+    "submittedBy" -> appealSubmission.appealSubmittedBy,
     "taxIdentifier" -> request.vrn,
     "identifierType" -> "VRN",
     "agentReferenceNumber" -> request.arn,
@@ -48,7 +48,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
       case bereavement if bereavement.isInstanceOf[BereavementAppealInformation] =>
         val appealInfo = bereavement.asInstanceOf[BereavementAppealInformation]
         jsonObjNoNulls(
-          "type" -> appealInfo.`type`,
+          "type" -> appealInfo.reasonableExcuse,
           "startDateOfEvent" -> appealInfo.dateOfEvent,
         "lateAppeal" -> appealInfo.lateAppeal,
         "lateAppealReason" -> appealInfo.lateAppealReason
@@ -56,8 +56,8 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
       case crime if crime.isInstanceOf[CrimeAppealInformation] =>
         val appealInfo = crime.asInstanceOf[CrimeAppealInformation]
         jsonObjNoNulls(
-          "type" -> appealInfo.`type`,
-          "reportedIssue" -> appealInfo.reportedIssue,
+          "type" -> appealInfo.reasonableExcuse,
+          "reportedIssue" -> appealInfo.reportedIssueToPolice,
         "startDateOfEvent" -> appealInfo.dateOfEvent,
         "lateAppeal" -> appealInfo.lateAppeal,
         "lateAppealReason" -> appealInfo.lateAppealReason
@@ -65,7 +65,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
       case fireOrFlood if fireOrFlood.isInstanceOf[FireOrFloodAppealInformation] =>
         val appealInfo = fireOrFlood.asInstanceOf[FireOrFloodAppealInformation]
         jsonObjNoNulls(
-          "type" -> appealInfo.`type`,
+          "type" -> appealInfo.reasonableExcuse,
           "startDateOfEvent" -> appealInfo.dateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
           "lateAppealReason" -> appealInfo.lateAppealReason
@@ -73,7 +73,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
       case lossOfStaff if lossOfStaff.isInstanceOf[LossOfStaffAppealInformation] =>
         val appealInfo = lossOfStaff.asInstanceOf[LossOfStaffAppealInformation]
         jsonObjNoNulls(
-          "type" -> appealInfo.`type`,
+          "type" -> appealInfo.reasonableExcuse,
             "startDateOfEvent" -> appealInfo.dateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
           "lateAppealReason" -> appealInfo.lateAppealReason
@@ -81,7 +81,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
       case technicalIssues if technicalIssues.isInstanceOf[TechnicalIssuesAppealInformation] =>
         val appealInfo = technicalIssues.asInstanceOf[TechnicalIssuesAppealInformation]
         jsonObjNoNulls(
-          "type" -> appealInfo.`type`,
+          "type" -> appealInfo.reasonableExcuse,
           "startDateOfEvent" -> appealInfo.startDateOfEvent,
           "endDateOfEvent" -> appealInfo.endDateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
@@ -90,7 +90,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
       case health if health.isInstanceOf[HealthAppealInformation] =>
         val appealInfo = health.asInstanceOf[HealthAppealInformation]
         jsonObjNoNulls(
-          "type" -> appealInfo.`type`,
+          "type" -> appealInfo.reasonableExcuse,
           "hospitalStayInvolved" -> appealInfo.hospitalStayInvolved,
           "startDateOfEvent" -> {
             try appealInfo.dateOfEvent.get
@@ -114,7 +114,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
       case other if other.isInstanceOf[OtherAppealInformation] =>
         val appealInfo = other.asInstanceOf[OtherAppealInformation]
         jsonObjNoNulls(
-          "type" -> appealInfo.`type`,
+          "type" -> appealInfo.reasonableExcuse,
           "startDateOfEvent" -> appealInfo.dateOfEvent,
           "statement" -> appealInfo.statement,
           "noOfUploadedFiles" -> {
@@ -139,7 +139,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
       case obligation if obligation.isInstanceOf[ObligationAppealInformation] =>
         val appealInfo = obligation.asInstanceOf[ObligationAppealInformation]
         jsonObjNoNulls(
-          "type" -> appealInfo.`type`,
+          "type" -> appealInfo.reasonableExcuse,
           "statement" -> appealInfo.statement,
           "noOfUploadedFiles" -> {
             try appealInfo.supportingEvidence.get.noOfUploadedFiles.toString

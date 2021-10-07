@@ -16,6 +16,8 @@
 
 package models.appeals
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import models.UserRequest
 import play.api.libs.json.{JsValue, Json}
@@ -27,12 +29,13 @@ class AppealSubmissionSpec extends SpecBase {
   val crimeAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "crime",
+      |   "reasonableExcuse": "crime",
+      |   "honestyDeclaration": true,
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
-      |   "reportedIssue": true,
+      |   "reportedIssueToPolice": true,
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -40,11 +43,12 @@ class AppealSubmissionSpec extends SpecBase {
   val lossOfStaffAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "lossOfStaff",
+      |   "reasonableExcuse": "lossOfStaff",
+      |   "honestyDeclaration": true,
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -52,12 +56,13 @@ class AppealSubmissionSpec extends SpecBase {
   val technicalIssuesAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "technicalIssues",
+      |   "reasonableExcuse": "technicalIssues",
+      |   "honestyDeclaration": true,
       |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -65,11 +70,12 @@ class AppealSubmissionSpec extends SpecBase {
   val fireOrFloodAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "fireOrFlood",
+      |   "reasonableExcuse": "fireOrFlood",
+      |   "honestyDeclaration": true,
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -77,14 +83,15 @@ class AppealSubmissionSpec extends SpecBase {
   val healthAppealInformationHospitalStayNotOngoingJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "health",
+      |   "reasonableExcuse": "health",
+      |   "honestyDeclaration": true,
       |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
       |   "eventOngoing": false,
       |   "hospitalStayInvolved": true,
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -92,13 +99,14 @@ class AppealSubmissionSpec extends SpecBase {
   val healthAppealInformationHospitalStayOngoingJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "health",
+      |   "reasonableExcuse": "health",
+      |   "honestyDeclaration": true,
       |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "eventOngoing": true,
       |   "hospitalStayInvolved": true,
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -106,13 +114,14 @@ class AppealSubmissionSpec extends SpecBase {
   val healthAppealInformationNoHospitalStayJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "health",
+      |   "reasonableExcuse": "health",
+      |   "honestyDeclaration": true,
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "hospitalStayInvolved": false,
       |   "eventOngoing": false,
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -120,15 +129,16 @@ class AppealSubmissionSpec extends SpecBase {
   val otherAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "other",
+      |   "reasonableExcuse": "other",
+      |   "honestyDeclaration": true,
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "statement": "This is a statement.",
       |   "supportingEvidence": {
       |     "noOfUploadedFiles": 1
       |   },
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -136,12 +146,13 @@ class AppealSubmissionSpec extends SpecBase {
   val otherAppealInformationJsonNoEvidence: JsValue = Json.parse(
     """
       |{
-      |   "type": "other",
+      |   "reasonableExcuse": "other",
+      |   "honestyDeclaration": true,
       |   "dateOfEvent": "2021-04-23T18:25:43.511Z",
       |   "statement": "This is a statement.",
       |   "lateAppeal": false,
-      |   "whoPlannedToSubmit": "agent",
-      |   "causeOfLateSubmissionAgent": "client"
+      |   "isClientResponsibleForSubmission": false,
+      |   "isClientResponsibleForLateSubmission": true
       |}
       |""".stripMargin
   )
@@ -149,7 +160,8 @@ class AppealSubmissionSpec extends SpecBase {
   val obligationAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "type": "obligation",
+      |   "reasonableExcuse": "obligation",
+      |   "honestyDeclaration": true,
       |   "statement": "This is a statement.",
       |   "supportingEvidence":{
       |     "noOfUploadedFiles": 1
@@ -161,7 +173,8 @@ class AppealSubmissionSpec extends SpecBase {
   val obligationAppealInformationJsonNoEvidence: JsValue = Json.parse(
     """
       |{
-      |   "type": "obligation",
+      |   "reasonableExcuse": "obligation",
+      |   "honestyDeclaration": true,
       |   "statement": "This is a statement."
       |}
       |""".stripMargin
@@ -183,14 +196,15 @@ class AppealSubmissionSpec extends SpecBase {
     "for crime" must {
       "parse the appeal information model into a JsObject" in {
         val model = CrimeAppealInformation(
-          `type` = "crime",
+          reasonableExcuse = "crime",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
-          reportedIssue = true,
+          reportedIssueToPolice = true,
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe crimeAppealInformationJson
@@ -200,13 +214,14 @@ class AppealSubmissionSpec extends SpecBase {
     "for fire or flood" must {
       "parse the appeal information model into a JsObject" in {
         val model = FireOrFloodAppealInformation(
-          `type` = "fireOrFlood",
+          reasonableExcuse = "fireOrFlood",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe fireOrFloodAppealInformationJson
@@ -216,13 +231,14 @@ class AppealSubmissionSpec extends SpecBase {
     "for loss of staff" must {
       "parse the appeal information model into a JsObject" in {
         val model = LossOfStaffAppealInformation(
-          `type` = "lossOfStaff",
+          reasonableExcuse = "lossOfStaff",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe lossOfStaffAppealInformationJson
@@ -232,14 +248,15 @@ class AppealSubmissionSpec extends SpecBase {
     "for technical issues" must {
       "parse the appeal information model into a JsObject" in {
         val model = TechnicalIssuesAppealInformation(
-          `type` = "technicalIssues",
+          reasonableExcuse = "technicalIssues",
+          honestyDeclaration = true,
           startDateOfEvent = "2021-04-23T18:25:43.511Z",
           endDateOfEvent = "2021-04-24T18:25:43.511Z",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe technicalIssuesAppealInformationJson
@@ -249,7 +266,8 @@ class AppealSubmissionSpec extends SpecBase {
     "for health" must {
       "parse the appeal information model into a JsObject (when a startDateOfEvent and endDateOfEvent is present NOT dateOfEvent)" in {
         val model = HealthAppealInformation(
-          `type` = "health",
+          reasonableExcuse = "health",
+          honestyDeclaration = true,
           startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
           endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
           dateOfEvent = None,
@@ -258,8 +276,8 @@ class AppealSubmissionSpec extends SpecBase {
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe healthAppealInformationHospitalStayNotOngoingJson
@@ -268,7 +286,8 @@ class AppealSubmissionSpec extends SpecBase {
       "parse the appeal information model into a JsObject (when a startDateOfEvent is present NOT dateOfEvent AND endDateOfEvent i.e. " +
         "event ongoing hospital stay)" in {
         val model = HealthAppealInformation(
-          `type` = "health",
+          reasonableExcuse = "health",
+          honestyDeclaration = true,
           startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
           endDateOfEvent = None,
           dateOfEvent = None,
@@ -277,8 +296,8 @@ class AppealSubmissionSpec extends SpecBase {
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe healthAppealInformationHospitalStayOngoingJson
@@ -287,7 +306,8 @@ class AppealSubmissionSpec extends SpecBase {
       "parse the appeal information model into a JsObject (when a dateOfEvent is present NOT startDateOfEvent AND endDateOfEvent i.e. " +
         "no hospital stay)" in {
         val model = HealthAppealInformation(
-          `type` = "health",
+          reasonableExcuse = "health",
+          honestyDeclaration = true,
           startDateOfEvent = None,
           endDateOfEvent = None,
           dateOfEvent = Some("2021-04-23T18:25:43.511Z"),
@@ -296,8 +316,8 @@ class AppealSubmissionSpec extends SpecBase {
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe healthAppealInformationNoHospitalStayJson
@@ -307,7 +327,8 @@ class AppealSubmissionSpec extends SpecBase {
     "for other" must {
       "parse the appeal information model into a JsObject" in {
         val model = OtherAppealInformation(
-          `type` = "other",
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = Some("This is a statement."),
           supportingEvidence = Some(Evidence(
@@ -315,8 +336,8 @@ class AppealSubmissionSpec extends SpecBase {
           )),
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe otherAppealInformationJson
@@ -324,14 +345,15 @@ class AppealSubmissionSpec extends SpecBase {
 
       "parse the appeal information model into a JsObject - when no evidence provided" in {
         val model = OtherAppealInformation(
-          `type` = "other",
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = Some("This is a statement."),
           supportingEvidence = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe otherAppealInformationJsonNoEvidence
@@ -341,7 +363,8 @@ class AppealSubmissionSpec extends SpecBase {
     "for obligation" must {
       "parse the appeal information model into a JsObject" in {
         val model = ObligationAppealInformation(
-          `type` = "obligation",
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
           statement = Some("This is a statement."),
           supportingEvidence = Some(Evidence(
             noOfUploadedFiles = 1))
@@ -350,9 +373,10 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe obligationAppealInformationJson
       }
 
-      "parse the appeal information model into a JsObject - when no evidence is provided" in{
+      "parse the appeal information model into a JsObject - when no evidence is provided" in {
         val model = ObligationAppealInformation(
-          `type` = "obligation",
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
           statement = Some("This is a statement."),
           supportingEvidence = None
         )
@@ -374,14 +398,12 @@ class AppealSubmissionSpec extends SpecBase {
       )
 
       val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0, agentDetails)(fakeAgentRequestForCrimeJourney)
-      result.reasonableExcuse shouldBe "crime"
-      result.submittedBy shouldBe "agent"
-      result.honestyDeclaration shouldBe true
+      result.appealSubmittedBy shouldBe "agent"
       result.agentDetails shouldBe expectedAgentDetails
       result.appealInformation shouldBe CrimeAppealInformation(
-        `type` = "crime", dateOfEvent = "2022-01-01", reportedIssue = true, statement = None, lateAppeal = false, lateAppealReason = None,
-        whoPlannedToSubmit = Some("agent"),
-        causeOfLateSubmissionAgent = Some("client")
+        reasonableExcuse = "crime", honestyDeclaration = true, dateOfEvent = "2022-01-01", reportedIssueToPolice = true, statement = None, lateAppeal = false, lateAppealReason = None,
+        isClientResponsibleForSubmission = Some(false),
+        isClientResponsibleForLateSubmission = Some(true)
       )
     }
 
@@ -395,18 +417,17 @@ class AppealSubmissionSpec extends SpecBase {
       )
 
       val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", true, 0, None)(fakeRequestForCrimeJourney)
-      result.reasonableExcuse shouldBe "crime"
-      result.submittedBy shouldBe "client"
-      result.honestyDeclaration shouldBe true
+      result.appealSubmittedBy shouldBe "client"
       result.appealInformation shouldBe CrimeAppealInformation(
-        `type` = "crime",
+        reasonableExcuse = "crime",
+        honestyDeclaration = true,
         dateOfEvent = "2022-01-01",
-        reportedIssue = true,
+        reportedIssueToPolice = true,
         statement = None,
         lateAppeal = true,
         lateAppealReason = Some("Some Reason"),
-        whoPlannedToSubmit = None,
-        causeOfLateSubmissionAgent = None
+        isClientResponsibleForSubmission = None,
+        isClientResponsibleForLateSubmission = None
       )
     }
 
@@ -418,17 +439,16 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidThePersonDie -> "2022-01-01")
         )
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0, None)(fakeRequestForBereavementJourney)
-        result.reasonableExcuse shouldBe "bereavement"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe BereavementAppealInformation(
-          `type` = "bereavement",
+          reasonableExcuse = "bereavement",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
 
@@ -440,17 +460,16 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0, None)(fakeRequestForBereavementJourney)
-        result.reasonableExcuse shouldBe "bereavement"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe BereavementAppealInformation(
-          `type` = "bereavement",
+          reasonableExcuse = "bereavement",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("client"),
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = Some(true),
+          isClientResponsibleForLateSubmission = None
         )
       }
     }
@@ -465,18 +484,17 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0, None)(fakeRequestForCrimeJourney)
-        result.reasonableExcuse shouldBe "crime"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe CrimeAppealInformation(
-          `type` = "crime",
+          reasonableExcuse = "crime",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
-          reportedIssue = false,
+          reportedIssueToPolice = false,
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
     }
@@ -489,17 +507,16 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.dateOfFireOrFlood -> "2022-01-01")
         )
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", false, 0, None)(fakeRequestForFireOrFloodJourney)
-        result.reasonableExcuse shouldBe "fireOrFlood"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe FireOrFloodAppealInformation(
-          `type` = "fireOrFlood",
+          reasonableExcuse = "fireOrFlood",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
     }
@@ -513,17 +530,16 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0, None)(fakeRequestForLossOfStaffJourney)
-        result.reasonableExcuse shouldBe "lossOfStaff"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe LossOfStaffAppealInformation(
-          `type` = "lossOfStaff",
+          reasonableExcuse = "lossOfStaff",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
 
@@ -536,18 +552,17 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0, agentDetails)(fakeRequestForLossOfStaffJourney)
-        result.reasonableExcuse shouldBe "lossOfStaff"
-        result.submittedBy shouldBe "agent"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "agent"
         result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe LossOfStaffAppealInformation(
-          `type` = "lossOfStaff",
+          reasonableExcuse = "lossOfStaff",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("client"),
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = Some(true),
+          isClientResponsibleForLateSubmission = None
         )
       }
     }
@@ -562,18 +577,17 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0, None)(fakeRequestForTechnicalIssuesJourney)
-        result.reasonableExcuse shouldBe "technicalIssues"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
-          `type` = "technicalIssues",
+          reasonableExcuse = "technicalIssues",
+          honestyDeclaration = true,
           startDateOfEvent = "2022-01-01",
           endDateOfEvent = "2022-01-02",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
 
@@ -587,19 +601,18 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0, agentDetails)(fakeRequestForTechnicalIssuesJourney)
-        result.reasonableExcuse shouldBe "technicalIssues"
-        result.submittedBy shouldBe "agent"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "agent"
         result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
-          `type` = "technicalIssues",
+          reasonableExcuse = "technicalIssues",
+          honestyDeclaration = true,
           startDateOfEvent = "2022-01-01",
           endDateOfEvent = "2022-01-02",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = Some("client"),
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = Some(true),
+          isClientResponsibleForLateSubmission = None
         )
       }
     }
@@ -616,12 +629,11 @@ class AppealSubmissionSpec extends SpecBase {
         ))
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, agentDetails)(fakeRequestForHealthJourney)
-        result.reasonableExcuse shouldBe "health"
-        result.submittedBy shouldBe "agent"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "agent"
         result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe HealthAppealInformation(
-          `type` = "health",
+          reasonableExcuse = "health",
+          honestyDeclaration = true,
           hospitalStayInvolved = true,
           dateOfEvent = None,
           startDateOfEvent = Some("2022-01-01"),
@@ -630,8 +642,8 @@ class AppealSubmissionSpec extends SpecBase {
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
 
@@ -645,11 +657,10 @@ class AppealSubmissionSpec extends SpecBase {
         ))
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, None)(fakeRequestForHealthJourney)
-        result.reasonableExcuse shouldBe "health"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe HealthAppealInformation(
-          `type` = "health",
+          reasonableExcuse = "health",
+          honestyDeclaration = true,
           hospitalStayInvolved = true,
           dateOfEvent = None,
           startDateOfEvent = Some("2022-01-01"),
@@ -658,8 +669,8 @@ class AppealSubmissionSpec extends SpecBase {
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
 
@@ -672,11 +683,10 @@ class AppealSubmissionSpec extends SpecBase {
         ))
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, None)(fakeRequestForHealthJourney)
-        result.reasonableExcuse shouldBe "health"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe HealthAppealInformation(
-          `type` = "health",
+          reasonableExcuse = "health",
+          honestyDeclaration = true,
           hospitalStayInvolved = false,
           dateOfEvent = Some("2022-01-01"),
           startDateOfEvent = None,
@@ -685,8 +695,8 @@ class AppealSubmissionSpec extends SpecBase {
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
     }
@@ -701,18 +711,17 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 1, None)(fakeRequestForOtherJourney)
-        result.reasonableExcuse shouldBe "other"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
-          `type` = "other",
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
           statement = Some("This is a reason."),
           lateAppeal = false,
           lateAppealReason = None,
           supportingEvidence = Some(Evidence(1)),
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
 
@@ -725,18 +734,17 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 0, None)(fakeRequestForLossOfStaffJourney)
-        result.reasonableExcuse shouldBe "other"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
-          `type` = "other",
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
           statement = Some("This is a reason."),
           lateAppeal = false,
           lateAppealReason = None,
           supportingEvidence = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
 
@@ -750,18 +758,17 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", true, 1, None)(fakeRequestForLossOfStaffJourney)
-        result.reasonableExcuse shouldBe "other"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
-          `type` = "other",
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01",
           statement = Some("This is a reason."),
           lateAppeal = true,
           lateAppealReason = Some("This is a reason for appealing late."),
           supportingEvidence = Some(Evidence(1)),
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
         )
       }
     }
@@ -776,11 +783,10 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 1, None)(fakeRequestForObligationJourney)
-        result.reasonableExcuse shouldBe "obligation"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe ObligationAppealInformation(
-          `type` = "obligation",
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
           statement = Some("This is a reason."),
           supportingEvidence = Some(Evidence(1))
         )
@@ -795,11 +801,10 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 0, None)(fakeRequestForObligationJourney)
-        result.reasonableExcuse shouldBe "obligation"
-        result.submittedBy shouldBe "client"
-        result.honestyDeclaration shouldBe true
+        result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe ObligationAppealInformation(
-          `type` = "obligation",
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
           statement = Some("This is a reason."),
           supportingEvidence = None
         )
@@ -812,30 +817,38 @@ class AppealSubmissionSpec extends SpecBase {
     "for bereavement" must {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "bereavement",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = false,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = BereavementAppealInformation(
-            `type` = "bereavement",
+            reasonableExcuse = "bereavement",
+            honestyDeclaration = true,
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(true),
+            isClientResponsibleForLateSubmission = Some(true)
           )
         )
         val jsonRepresentingModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "bereavement",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> false,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "bereavement",
+            "reasonableExcuse" -> "bereavement",
+            "honestyDeclaration" -> true,
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "lateAppeal" -> false,
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> true,
+            "isClientResponsibleForLateSubmission" -> true
           )
         )
         val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -845,32 +858,40 @@ class AppealSubmissionSpec extends SpecBase {
     "for crime" must {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "crime",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = CrimeAppealInformation(
-            `type` = "crime",
+            reasonableExcuse = "crime",
+            honestyDeclaration = true,
             dateOfEvent = "2021-04-23T18:25:43.511Z",
-            reportedIssue = true,
+            reportedIssueToPolice = true,
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(true),
+            isClientResponsibleForLateSubmission = Some(true)
           )
         )
         val jsonRepresentingModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "crime",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "crime",
+            "reasonableExcuse" -> "crime",
+            "honestyDeclaration" -> true,
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "reportedIssue" -> true,
+            "reportedIssueToPolice" -> true,
             "lateAppeal" -> false,
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> true,
+            "isClientResponsibleForLateSubmission" -> true
           )
         )
 
@@ -882,31 +903,39 @@ class AppealSubmissionSpec extends SpecBase {
     "for fire or flood" must {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "fireOrFlood",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = FireOrFloodAppealInformation(
-            `type` = "fireOrFlood",
+            reasonableExcuse = "fireOrFlood",
+            honestyDeclaration = true,
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(true),
+            isClientResponsibleForLateSubmission = Some(true)
           )
         )
 
         val jsonRepresentingModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "fireOrFlood",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "fireOrFlood",
+            "reasonableExcuse" -> "fireOrFlood",
+            "honestyDeclaration" -> true,
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "lateAppeal" -> false,
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> true,
+            "isClientResponsibleForLateSubmission" -> true
           )
         )
 
@@ -918,30 +947,38 @@ class AppealSubmissionSpec extends SpecBase {
     "for loss of staff" must {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "lossOfStaff",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = LossOfStaffAppealInformation(
-            `type` = "lossOfStaff",
+            reasonableExcuse = "lossOfStaff",
+            honestyDeclaration = true,
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(true),
+            isClientResponsibleForLateSubmission = Some(true)
           )
         )
         val jsonRepresentingModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "lossOfStaff",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "lossOfStaff",
+            "reasonableExcuse" -> "lossOfStaff",
+            "honestyDeclaration" -> true,
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "lateAppeal" -> false,
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> true,
+            "isClientResponsibleForLateSubmission" -> true
           )
         )
 
@@ -953,33 +990,41 @@ class AppealSubmissionSpec extends SpecBase {
     "for technical issues" must {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "technicalIssues",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = TechnicalIssuesAppealInformation(
-            `type` = "technicalIssues",
+            reasonableExcuse = "technicalIssues",
+            honestyDeclaration = true,
             startDateOfEvent = "2021-04-23T18:25:43.511Z",
             endDateOfEvent = "2021-04-24T18:25:43.511Z",
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(true),
+            isClientResponsibleForLateSubmission = Some(true)
           )
         )
 
         val jsonRepresentingModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "technicalIssues",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "technicalIssues",
+            "reasonableExcuse" -> "technicalIssues",
+            "honestyDeclaration" -> true,
             "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
             "lateAppeal" -> false,
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> true,
+            "isClientResponsibleForLateSubmission" -> true
           )
         )
 
@@ -992,12 +1037,16 @@ class AppealSubmissionSpec extends SpecBase {
       "write the appeal to JSON" when {
         "there has been a hospital stay - and is no longer ongoing (both start and end date) - write the appeal model to JSON" in {
           val modelToConvertToJson = AppealSubmission(
-            submittedBy = "client",
-            reasonableExcuse = "health",
-            honestyDeclaration = true,
+            sourceSystem = "MDTP",
+            taxRegime = "VAT",
+            customerReferenceNo = "VRN1234567890",
+            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            isLPP = true,
+            appealSubmittedBy = "client",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
-              `type` = "health",
+              reasonableExcuse = "health",
+              honestyDeclaration = true,
               startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
               endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
               eventOngoing = false,
@@ -1006,24 +1055,28 @@ class AppealSubmissionSpec extends SpecBase {
               statement = None,
               lateAppeal = true,
               lateAppealReason = Some("Reason"),
-              whoPlannedToSubmit = Some("agent"),
-              causeOfLateSubmissionAgent = Some("client")
+              isClientResponsibleForSubmission = Some(true),
+              isClientResponsibleForLateSubmission = Some(true)
             )
           )
           val jsonRepresentingModel: JsValue = Json.obj(
-            "submittedBy" -> "client",
-            "reasonableExcuse" -> "health",
-            "honestyDeclaration" -> true,
+            "sourceSystem" -> "MDTP",
+            "taxRegime" -> "VAT",
+            "customerReferenceNo" -> "VRN1234567890",
+            "dateOfAppeal" -> "2020-01-01T00:00:00",
+            "isLPP" -> true,
+            "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
-              "type" -> "health",
+              "reasonableExcuse" -> "health",
+              "honestyDeclaration" -> true,
               "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
               "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
               "eventOngoing" -> false,
               "hospitalStayInvolved" -> true,
               "lateAppeal" -> true,
               "lateAppealReason" -> "Reason",
-              "whoPlannedToSubmit" -> "agent",
-              "causeOfLateSubmissionAgent" -> "client"
+              "isClientResponsibleForSubmission" -> true,
+              "isClientResponsibleForLateSubmission" -> true
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -1032,12 +1085,16 @@ class AppealSubmissionSpec extends SpecBase {
 
         "there has been a hospital stay AND it is ongoing (no end date) - write the appeal model to JSON" in {
           val modelToConvertToJson = AppealSubmission(
-            submittedBy = "client",
-            reasonableExcuse = "health",
-            honestyDeclaration = true,
+            sourceSystem = "MDTP",
+            taxRegime = "VAT",
+            customerReferenceNo = "VRN1234567890",
+            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            isLPP = true,
+            appealSubmittedBy = "client",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
-              `type` = "health",
+              reasonableExcuse = "health",
+              honestyDeclaration = true,
               startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
               endDateOfEvent = None,
               eventOngoing = true,
@@ -1046,23 +1103,27 @@ class AppealSubmissionSpec extends SpecBase {
               statement = None,
               lateAppeal = true,
               lateAppealReason = Some("Reason"),
-              whoPlannedToSubmit = Some("agent"),
-              causeOfLateSubmissionAgent = Some("client")
+              isClientResponsibleForSubmission = Some(true),
+              isClientResponsibleForLateSubmission = Some(true)
             )
           )
           val jsonRepresentingModel: JsValue = Json.obj(
-            "submittedBy" -> "client",
-            "reasonableExcuse" -> "health",
-            "honestyDeclaration" -> true,
+            "sourceSystem" -> "MDTP",
+            "taxRegime" -> "VAT",
+            "customerReferenceNo" -> "VRN1234567890",
+            "dateOfAppeal" -> "2020-01-01T00:00:00",
+            "isLPP" -> true,
+            "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
-              "type" -> "health",
+              "reasonableExcuse" -> "health",
+              "honestyDeclaration" -> true,
               "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
               "eventOngoing" -> true,
               "hospitalStayInvolved" -> true,
               "lateAppeal" -> true,
               "lateAppealReason" -> "Reason",
-              "whoPlannedToSubmit" -> "agent",
-              "causeOfLateSubmissionAgent" -> "client"
+              "isClientResponsibleForSubmission" -> true,
+              "isClientResponsibleForLateSubmission" -> true
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -1072,12 +1133,16 @@ class AppealSubmissionSpec extends SpecBase {
         "there has been NO hospital stay (dateOfEvent present, eventOngoing = false, hospitalStayInvolved = false) " +
           "write the appeal model to JSON" in {
           val modelToConvertToJson = AppealSubmission(
-            submittedBy = "client",
-            reasonableExcuse = "health",
-            honestyDeclaration = true,
+            sourceSystem = "MDTP",
+            taxRegime = "VAT",
+            customerReferenceNo = "VRN1234567890",
+            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            isLPP = true,
+            appealSubmittedBy = "client",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
-              `type` = "health",
+              reasonableExcuse = "health",
+              honestyDeclaration = true,
               startDateOfEvent = None,
               endDateOfEvent = None,
               eventOngoing = false,
@@ -1086,23 +1151,27 @@ class AppealSubmissionSpec extends SpecBase {
               statement = None,
               lateAppeal = true,
               lateAppealReason = Some("Reason"),
-              whoPlannedToSubmit = Some("agent"),
-              causeOfLateSubmissionAgent = Some("client")
+              isClientResponsibleForSubmission = Some(true),
+              isClientResponsibleForLateSubmission = Some(true)
             )
           )
           val jsonRepresentingModel: JsValue = Json.obj(
-            "submittedBy" -> "client",
-            "reasonableExcuse" -> "health",
-            "honestyDeclaration" -> true,
+            "sourceSystem" -> "MDTP",
+            "taxRegime" -> "VAT",
+            "customerReferenceNo" -> "VRN1234567890",
+            "dateOfAppeal" -> "2020-01-01T00:00:00",
+            "isLPP" -> true,
+            "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
-              "type" -> "health",
+              "reasonableExcuse" -> "health",
+              "honestyDeclaration" -> true,
               "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
               "eventOngoing" -> false,
               "hospitalStayInvolved" -> false,
               "lateAppeal" -> true,
               "lateAppealReason" -> "Reason",
-              "whoPlannedToSubmit" -> "agent",
-              "causeOfLateSubmissionAgent" -> "client"
+              "isClientResponsibleForSubmission" -> true,
+              "isClientResponsibleForLateSubmission" -> true
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -1114,12 +1183,16 @@ class AppealSubmissionSpec extends SpecBase {
     "for other" must {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "other",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
-            `type` = "other",
+            reasonableExcuse = "other",
+            honestyDeclaration = true,
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
@@ -1127,25 +1200,29 @@ class AppealSubmissionSpec extends SpecBase {
             )),
             lateAppeal = false,
             lateAppealReason = None,
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(true),
+            isClientResponsibleForLateSubmission = Some(true)
           )
         )
 
         val jsonRepresentingModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "other",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "other",
+            "reasonableExcuse" -> "other",
+            "honestyDeclaration" -> true,
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
               "noOfUploadedFiles" -> 1
             ),
             "lateAppeal" -> false,
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> true,
+            "isClientResponsibleForLateSubmission" -> true
           )
         )
 
@@ -1155,33 +1232,41 @@ class AppealSubmissionSpec extends SpecBase {
 
       "write the model to JSON - no evidence" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "other",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
-            `type` = "other",
+            reasonableExcuse = "other",
+            honestyDeclaration = true,
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = Some("This was the reason"),
             supportingEvidence = None,
             lateAppeal = false,
             lateAppealReason = None,
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(true),
+            isClientResponsibleForLateSubmission = Some(true)
           )
         )
 
         val jsonRepresentingModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "other",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "other",
+            "reasonableExcuse" -> "other",
+            "honestyDeclaration" -> true,
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "statement" -> "This was the reason",
             "lateAppeal" -> false,
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> true,
+            "isClientResponsibleForLateSubmission" -> true
           )
         )
 
@@ -1191,12 +1276,16 @@ class AppealSubmissionSpec extends SpecBase {
 
       "write the model to JSON - for late appeal" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "other",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
-            `type` = "other",
+            reasonableExcuse = "other",
+            honestyDeclaration = true,
             dateOfEvent = "2021-04-23T18:25:43.511Z",
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
@@ -1204,17 +1293,21 @@ class AppealSubmissionSpec extends SpecBase {
             )),
             lateAppeal = true,
             lateAppealReason = Some("Late reason"),
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(true),
+            isClientResponsibleForLateSubmission = Some(true)
           )
         )
 
         val jsonRepresentingModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "other",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "other",
+            "reasonableExcuse" -> "other",
+            "honestyDeclaration" -> true,
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
@@ -1222,8 +1315,8 @@ class AppealSubmissionSpec extends SpecBase {
             ),
             "lateAppeal" -> true,
             "lateAppealReason" -> "Late reason",
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> true,
+            "isClientResponsibleForLateSubmission" -> true
           )
         )
 
@@ -1235,12 +1328,16 @@ class AppealSubmissionSpec extends SpecBase {
     "for obligation" must {
       "write the model to JSON" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = ObligationAppealInformation(
-            `type` = "obligation",
+            reasonableExcuse = "obligation",
+            honestyDeclaration = true,
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
               noOfUploadedFiles = 1
@@ -1249,11 +1346,15 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val jsonRepresentModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "obligation",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "obligation",
+            "reasonableExcuse" -> "obligation",
+            "honestyDeclaration" -> true,
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
               "noOfUploadedFiles" -> 1
@@ -1267,23 +1368,31 @@ class AppealSubmissionSpec extends SpecBase {
 
       "write the model to JSON - no evidence" in {
         val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          submittedBy = "client",
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
+          sourceSystem = "MDTP",
+          taxRegime = "VAT",
+          customerReferenceNo = "VRN1234567890",
+          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          isLPP = true,
+          appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = ObligationAppealInformation(
-            `type` = "obligation",
+            reasonableExcuse = "obligation",
+            honestyDeclaration = true,
             statement = Some("This was the reason"),
             supportingEvidence = None
           )
         )
 
         val jsonRepresentModel: JsValue = Json.obj(
-          "submittedBy" -> "client",
-          "reasonableExcuse" -> "obligation",
-          "honestyDeclaration" -> true,
+          "sourceSystem" -> "MDTP",
+          "taxRegime" -> "VAT",
+          "customerReferenceNo" -> "VRN1234567890",
+          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "isLPP" -> true,
+          "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
-            "type" -> "obligation",
+            "reasonableExcuse" -> "obligation",
+            "honestyDeclaration" -> true,
             "statement" -> "This was the reason"
           )
         )
@@ -1298,22 +1407,24 @@ class AppealSubmissionSpec extends SpecBase {
     "bereavementAppealWrites" must {
       "write the appeal model to JSON" in {
         val model = BereavementAppealInformation(
-          `type` = "bereavement",
+          reasonableExcuse = "bereavement",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = Json.toJson(model)(BereavementAppealInformation.bereavementAppealWrites)
         result shouldBe Json.obj(
-          "type" -> "bereavement",
+          "reasonableExcuse" -> "bereavement",
+          "honestyDeclaration" -> true,
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
-          "whoPlannedToSubmit" -> "agent",
-          "causeOfLateSubmissionAgent" -> "client"
+          "isClientResponsibleForSubmission" -> false,
+          "isClientResponsibleForLateSubmission" -> true
         )
       }
     }
@@ -1323,24 +1434,26 @@ class AppealSubmissionSpec extends SpecBase {
     "crimeAppealWrites" must {
       "write the appeal model to JSON" in {
         val model = CrimeAppealInformation(
-          `type` = "crime",
+          reasonableExcuse = "crime",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
-          reportedIssue = true,
+          reportedIssueToPolice = true,
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = Json.toJson(model)(CrimeAppealInformation.crimeAppealWrites)
         result shouldBe Json.obj(
-          "type" -> "crime",
+          "reasonableExcuse" -> "crime",
+          "honestyDeclaration" -> true,
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
-          "reportedIssue" -> true,
+          "reportedIssueToPolice" -> true,
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
-          "whoPlannedToSubmit" -> "agent",
-          "causeOfLateSubmissionAgent" -> "client"
+          "isClientResponsibleForSubmission" -> false,
+          "isClientResponsibleForLateSubmission" -> true
         )
       }
     }
@@ -1350,22 +1463,24 @@ class AppealSubmissionSpec extends SpecBase {
     "fireOrFloodAppealWrites" must {
       "write the appeal model to Json" in {
         val model = FireOrFloodAppealInformation(
-          `type` = "fireOrFlood",
+          reasonableExcuse = "fireOrFlood",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = Json.toJson(model)(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
         result shouldBe Json.obj(
-          "type" -> "fireOrFlood",
+          "reasonableExcuse" -> "fireOrFlood",
+          "honestyDeclaration" -> true,
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
-          "whoPlannedToSubmit" -> "agent",
-          "causeOfLateSubmissionAgent" -> "client"
+          "isClientResponsibleForSubmission" -> false,
+          "isClientResponsibleForLateSubmission" -> true
         )
       }
     }
@@ -1375,22 +1490,24 @@ class AppealSubmissionSpec extends SpecBase {
     "lossOfStaffAppealWrites" must {
       "write the appeal model to JSON" in {
         val model = LossOfStaffAppealInformation(
-          `type` = "lossOfStaff",
+          reasonableExcuse = "lossOfStaff",
+          honestyDeclaration = true,
           dateOfEvent = "2021-04-23T18:25:43.511Z",
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = Json.toJson(model)(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
         result shouldBe Json.obj(
-          "type" -> "lossOfStaff",
+          "reasonableExcuse" -> "lossOfStaff",
+          "honestyDeclaration" -> true,
           "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
-          "whoPlannedToSubmit" -> "agent",
-          "causeOfLateSubmissionAgent" -> "client"
+          "isClientResponsibleForSubmission" -> false,
+          "isClientResponsibleForLateSubmission" -> true
         )
       }
     }
@@ -1400,24 +1517,26 @@ class AppealSubmissionSpec extends SpecBase {
     "technicalIssuesAppealWrites" must {
       "write the appeal model to JSON" in {
         val model = TechnicalIssuesAppealInformation(
-          `type` = "technicalIssues",
+          reasonableExcuse = "technicalIssues",
+          honestyDeclaration = true,
           startDateOfEvent = "2021-04-23T18:25:43.511Z",
           endDateOfEvent = "2021-04-24T18:25:43.511Z",
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
-          whoPlannedToSubmit = Some("agent"),
-          causeOfLateSubmissionAgent = Some("client")
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val result = Json.toJson(model)(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
         result shouldBe Json.obj(
-          "type" -> "technicalIssues",
+          "reasonableExcuse" -> "technicalIssues",
+          "honestyDeclaration" -> true,
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
-          "whoPlannedToSubmit" -> "agent",
-          "causeOfLateSubmissionAgent" -> "client"
+          "isClientResponsibleForSubmission" -> false,
+          "isClientResponsibleForLateSubmission" -> true
         )
       }
     }
@@ -1428,7 +1547,8 @@ class AppealSubmissionSpec extends SpecBase {
       "write the appeal to JSON" when {
         "there has been a hospital stay - and is no longer ongoing (both start and end date) - write the appeal model to JSON" in {
           val model = HealthAppealInformation(
-            `type` = "health",
+            reasonableExcuse = "health",
+            honestyDeclaration = true,
             startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
             endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
             eventOngoing = false,
@@ -1437,26 +1557,28 @@ class AppealSubmissionSpec extends SpecBase {
             statement = None,
             lateAppeal = true,
             lateAppealReason = Some("Reason"),
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(false),
+            isClientResponsibleForLateSubmission = Some(true)
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
-            "type" -> "health",
+            "reasonableExcuse" -> "health",
+            "honestyDeclaration" -> true,
             "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
             "eventOngoing" -> false,
             "hospitalStayInvolved" -> true,
             "lateAppeal" -> true,
             "lateAppealReason" -> "Reason",
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> false,
+            "isClientResponsibleForLateSubmission" -> true
           )
         }
 
         "there has been a hospital stay AND it is ongoing (no end date) - write the appeal model to JSON" in {
           val model = HealthAppealInformation(
-            `type` = "health",
+            reasonableExcuse = "health",
+            honestyDeclaration = true,
             startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
             endDateOfEvent = None,
             eventOngoing = true,
@@ -1465,26 +1587,28 @@ class AppealSubmissionSpec extends SpecBase {
             statement = None,
             lateAppeal = true,
             lateAppealReason = Some("Reason"),
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(false),
+            isClientResponsibleForLateSubmission = Some(true)
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
-            "type" -> "health",
+            "reasonableExcuse" -> "health",
+            "honestyDeclaration" -> true,
             "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "eventOngoing" -> true,
             "hospitalStayInvolved" -> true,
             "lateAppeal" -> true,
             "lateAppealReason" -> "Reason",
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> false,
+            "isClientResponsibleForLateSubmission" -> true
           )
         }
 
         "there has been NO hospital stay (dateOfEvent present, eventOngoing = false, hospitalStayInvolved = false) " +
           "write the appeal model to JSON" in {
           val model = HealthAppealInformation(
-            `type` = "health",
+            reasonableExcuse = "health",
+            honestyDeclaration = true,
             startDateOfEvent = None,
             endDateOfEvent = None,
             eventOngoing = false,
@@ -1493,19 +1617,20 @@ class AppealSubmissionSpec extends SpecBase {
             statement = None,
             lateAppeal = true,
             lateAppealReason = Some("Reason"),
-            whoPlannedToSubmit = Some("agent"),
-            causeOfLateSubmissionAgent = Some("client")
+            isClientResponsibleForSubmission = Some(false),
+            isClientResponsibleForLateSubmission = Some(true)
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
-            "type" -> "health",
+            "reasonableExcuse" -> "health",
+            "honestyDeclaration" -> true,
             "dateOfEvent" -> "2021-04-23T18:25:43.511Z",
             "eventOngoing" -> false,
             "hospitalStayInvolved" -> false,
             "lateAppeal" -> true,
             "lateAppealReason" -> "Reason",
-            "whoPlannedToSubmit" -> "agent",
-            "causeOfLateSubmissionAgent" -> "client"
+            "isClientResponsibleForSubmission" -> false,
+            "isClientResponsibleForLateSubmission" -> true
           )
         }
       }
@@ -1516,25 +1641,29 @@ class AppealSubmissionSpec extends SpecBase {
     "otherAppealInformationWrites" should {
       "write to JSON - no late appeal" in {
         val modelToConvertToJson = OtherAppealInformation(
-          `type` = "other",
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01T13:00:00.000Z",
           statement = Some("I was late. Sorry."),
           supportingEvidence = Some(Evidence(1)),
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val expectedResult = Json.parse(
           """
             |{
-            | "type": "other",
+            | "reasonableExcuse": "other",
+            | "honestyDeclaration": true,
             | "dateOfEvent": "2022-01-01T13:00:00.000Z",
             | "statement": "I was late. Sorry.",
             | "supportingEvidence": {
             |   "noOfUploadedFiles": 1
             | },
-            | "lateAppeal": false
+            | "lateAppeal": false,
+            | "isClientResponsibleForSubmission": false,
+            | "isClientResponsibleForLateSubmission": true
             |}
             |""".stripMargin)
         val result = Json.toJson(modelToConvertToJson)
@@ -1543,26 +1672,30 @@ class AppealSubmissionSpec extends SpecBase {
 
       "write to JSON - late appeal" in {
         val modelToConvertToJson = OtherAppealInformation(
-          `type` = "other",
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01T13:00:00.000Z",
           statement = Some("I was late. Sorry."),
           supportingEvidence = Some(Evidence(1)),
           lateAppeal = true,
           lateAppealReason = Some("This is a reason"),
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val expectedResult = Json.parse(
           """
             |{
-            | "type": "other",
+            | "reasonableExcuse": "other",
+            | "honestyDeclaration": true,
             | "dateOfEvent": "2022-01-01T13:00:00.000Z",
             | "statement": "I was late. Sorry.",
             | "supportingEvidence": {
             |   "noOfUploadedFiles": 1
             | },
             | "lateAppeal": true,
-            | "lateAppealReason": "This is a reason"
+            | "lateAppealReason": "This is a reason",
+            | "isClientResponsibleForSubmission": false,
+            | "isClientResponsibleForLateSubmission": true
             |}
             |""".stripMargin)
         val result = Json.toJson(modelToConvertToJson)
@@ -1571,22 +1704,26 @@ class AppealSubmissionSpec extends SpecBase {
 
       "write to JSON - no evidence" in {
         val modelToConvertToJson = OtherAppealInformation(
-          `type` = "other",
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
           dateOfEvent = "2022-01-01T13:00:00.000Z",
           statement = Some("I was late. Sorry."),
           supportingEvidence = None,
           lateAppeal = false,
           lateAppealReason = None,
-          whoPlannedToSubmit = None,
-          causeOfLateSubmissionAgent = None
+          isClientResponsibleForSubmission = Some(false),
+          isClientResponsibleForLateSubmission = Some(true)
         )
         val expectedResult = Json.parse(
           """
             |{
-            | "type": "other",
+            | "reasonableExcuse": "other",
+            | "honestyDeclaration": true,
             | "dateOfEvent": "2022-01-01T13:00:00.000Z",
             | "statement": "I was late. Sorry.",
-            | "lateAppeal": false
+            | "lateAppeal": false,
+            | "isClientResponsibleForSubmission": false,
+            | "isClientResponsibleForLateSubmission": true
             |}
             |""".stripMargin)
         val result = Json.toJson(modelToConvertToJson)
@@ -1599,17 +1736,19 @@ class AppealSubmissionSpec extends SpecBase {
     "obligationAppealInformationWrites" should {
       "write to JSON" in {
         val modelToConvertToJson = ObligationAppealInformation(
-          `type` = "obligation",
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
           statement = Some("I was late. Sorry."),
           supportingEvidence = Some(
             Evidence(
               noOfUploadedFiles = 1
             )
-        ))
+          ))
         val expectedResult = Json.parse(
           """
             |{
-            | "type": "obligation",
+            | "reasonableExcuse": "obligation",
+            | "honestyDeclaration": true,
             | "statement": "I was late. Sorry.",
             | "supportingEvidence": {
             |   "noOfUploadedFiles": 1
@@ -1622,14 +1761,16 @@ class AppealSubmissionSpec extends SpecBase {
 
       "write to JSON - no evidence" in {
         val modelToConvertToJson = ObligationAppealInformation(
-          `type` = "obligation",
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
           statement = Some("I was late. Sorry."),
           supportingEvidence = None
         )
         val expectedResult = Json.parse(
           """
             |{
-            | "type": "obligation",
+            | "reasonableExcuse": "obligation",
+            | "honestyDeclaration": true,
             | "statement": "I was late. Sorry."
             |}
             |""".stripMargin)
