@@ -16,12 +16,14 @@
 
 package models.monitoring
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import config.AppConfig
 import connectors.HeaderGenerator
 import models.UserRequest
 import models.appeals._
-import org.mockito.Mockito.{mock, when}
+import org.mockito.Mockito.{mock, mockitoSession, when}
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,101 +34,110 @@ class AppealAuditModelSpec extends SpecBase {
   "AppealAuditModel" must {
 
     def appealSubmission(appealInformation: AppealInformation): AppealSubmission = AppealSubmission(
-      submittedBy = "client",
-      reasonableExcuse = appealInformation.`type`,
-      honestyDeclaration = true,
+      sourceSystem = "MDTP",
+      taxRegime = "VAT",
+      customerReferenceNo = "VRN1234567890",
+      dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+      isLPP = true,
+      appealSubmittedBy = "client",
       agentDetails = None,
       appealInformation
     )
 
-    def appealAgentSubmission(appealInformation: AppealInformation) = appealSubmission(appealInformation).copy(submittedBy = "agent")
+    def appealAgentSubmission(appealInformation: AppealInformation) = appealSubmission(appealInformation).copy(appealSubmittedBy = "agent")
     val mockAppConfig: AppConfig = mock(classOf[AppConfig])
     val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
     val testHeaderGenerator = new HeaderGenerator(mockAppConfig,mockUUIDGenerator)
 
     val bereavementAppealInformation: BereavementAppealInformation = BereavementAppealInformation(
-        `type` = "bereavement",
-        dateOfEvent = "2021-04-23T18:25:43.511Z",
+        reasonableExcuse = "bereavement",
+        honestyDeclaration = true,
+        startDateOfEvent = "2021-04-23T18:25:43.511Z",
         statement = None,
         lateAppeal = false,
         lateAppealReason = None,
-        whoPlannedToSubmit = None,
-        causeOfLateSubmissionAgent = None
+        isClientResponsibleForSubmission = None,
+        isClientResponsibleForLateSubmission = None
     )
 
     val bereavementLateAppealInformation = bereavementAppealInformation.copy(lateAppeal = true, lateAppealReason = Some("this is a very good reason"))
 
-    val bereavementAgentAppealInformation = bereavementAppealInformation.copy(whoPlannedToSubmit = Some("agent"), causeOfLateSubmissionAgent = Some("client"))
+    val bereavementAgentAppealInformation = bereavementAppealInformation.copy(isClientResponsibleForSubmission = Some(true), isClientResponsibleForLateSubmission = Some(true))
 
     val crimeAppealInformation: CrimeAppealInformation = CrimeAppealInformation(
-      `type` = "crime",
-      dateOfEvent = "2021-04-23T18:25:43.511Z",
-      reportedIssue = true,
+      reasonableExcuse = "crime",
+      honestyDeclaration = true,
+      startDateOfEvent = "2021-04-23T18:25:43.511Z",
+      reportedIssueToPolice = true,
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
-      whoPlannedToSubmit = None,
-      causeOfLateSubmissionAgent = None
+      isClientResponsibleForSubmission = None,
+      isClientResponsibleForLateSubmission = None
     )
 
     val fireOrFloodAppealInformation: FireOrFloodAppealInformation = FireOrFloodAppealInformation(
-      `type` = "fireOrFlood",
-      dateOfEvent = "2021-04-23T18:25:43.511Z",
+      reasonableExcuse = "fireOrFlood",
+      honestyDeclaration = true,
+      startDateOfEvent = "2021-04-23T18:25:43.511Z",
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
-      whoPlannedToSubmit = None,
-      causeOfLateSubmissionAgent = None
+      isClientResponsibleForSubmission = None,
+      isClientResponsibleForLateSubmission = None
     )
 
     val lossOfStaffAppealInformation: LossOfStaffAppealInformation = LossOfStaffAppealInformation(
-      `type` = "lossOfStaff",
-      dateOfEvent = "2021-04-23T18:25:43.511Z",
+      reasonableExcuse = "lossOfStaff",
+      honestyDeclaration = true,
+      startDateOfEvent = "2021-04-23T18:25:43.511Z",
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
-      whoPlannedToSubmit = None,
-      causeOfLateSubmissionAgent = None
+      isClientResponsibleForSubmission = None,
+      isClientResponsibleForLateSubmission = None
     )
 
     val technicalIssuesAppealInformation: TechnicalIssuesAppealInformation = TechnicalIssuesAppealInformation(
-      `type` = "technicalIssues",
+      reasonableExcuse = "technicalIssues",
+      honestyDeclaration = true,
       startDateOfEvent = "2021-04-23T18:25:43.511Z",
       endDateOfEvent = "2021-04-25T18:25:43.511Z",
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
-      whoPlannedToSubmit = None,
-      causeOfLateSubmissionAgent = None
+      isClientResponsibleForSubmission = None,
+      isClientResponsibleForLateSubmission = None
     )
 
     val healthAppealInformation: HealthAppealInformation = HealthAppealInformation(
-      `type` = "health",
+      reasonableExcuse = "health",
+      honestyDeclaration = true,
       hospitalStayInvolved = true,
-      dateOfEvent = None,
       startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
       endDateOfEvent = Some("2021-04-25T18:25:43.511Z"),
       eventOngoing = false,
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
-      whoPlannedToSubmit = None,
-      causeOfLateSubmissionAgent = None
+      isClientResponsibleForSubmission = None,
+      isClientResponsibleForLateSubmission = None
     )
 
     val healthAppealInformationOngoingHospitalStay = healthAppealInformation.copy(endDateOfEvent = None, eventOngoing = true)
     val healthAppealInformationNoHospitalStay = healthAppealInformation.copy(
-      dateOfEvent = Some("2021-04-23T18:25:43.511Z"), startDateOfEvent = None, endDateOfEvent = None, eventOngoing = false, hospitalStayInvolved = false)
+      startDateOfEvent =  Some("2021-04-23T18:25:43.511Z"), endDateOfEvent = None, eventOngoing = false, hospitalStayInvolved = false)
 
     val otherAppealInformation: OtherAppealInformation = OtherAppealInformation(
-        `type` = "other",
-        dateOfEvent = "2021-04-23T18:25:43.511Z",
+        reasonableExcuse = "other",
+        honestyDeclaration = true,
+        startDateOfEvent = "2021-04-23T18:25:43.511Z",
         statement = Some("this is a reason"),
         supportingEvidence = None,
         lateAppeal = false,
         lateAppealReason = None,
-        whoPlannedToSubmit = None,
-        causeOfLateSubmissionAgent = None
+        isClientResponsibleForSubmission = None,
+        isClientResponsibleForLateSubmission = None
     )
     val otherAppealInformationWithEvidence = otherAppealInformation.copy(
       supportingEvidence = Some(Evidence(
@@ -135,7 +146,7 @@ class AppealAuditModelSpec extends SpecBase {
     )
 
     val obligationAppealInformation: ObligationAppealInformation = ObligationAppealInformation(
-      `type` = "obligation", statement = Some("this is another reason"), supportingEvidence = None
+      reasonableExcuse = "obligation", honestyDeclaration = true, statement = Some("this is another reason"), supportingEvidence = None
     )
     val obligationAppealInformationWithEvidence = obligationAppealInformation.copy(
       supportingEvidence = Some(Evidence(
@@ -143,7 +154,7 @@ class AppealAuditModelSpec extends SpecBase {
       ))
     )
 
-    implicit val userRequest: UserRequest[AnyContent] = userRequestWithCorrectKeys
+    implicit val userRequest: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeysAndHonestyDeclarationSet)
     val correlationId = "someUUID"
     when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
