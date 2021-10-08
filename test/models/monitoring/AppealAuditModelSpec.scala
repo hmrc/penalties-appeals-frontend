@@ -52,7 +52,7 @@ class AppealAuditModelSpec extends SpecBase {
     val bereavementAppealInformation: BereavementAppealInformation = BereavementAppealInformation(
         reasonableExcuse = "bereavement",
         honestyDeclaration = true,
-        dateOfEvent = "2021-04-23T18:25:43.511Z",
+        startDateOfEvent = "2021-04-23T18:25:43.511Z",
         statement = None,
         lateAppeal = false,
         lateAppealReason = None,
@@ -67,7 +67,7 @@ class AppealAuditModelSpec extends SpecBase {
     val crimeAppealInformation: CrimeAppealInformation = CrimeAppealInformation(
       reasonableExcuse = "crime",
       honestyDeclaration = true,
-      dateOfEvent = "2021-04-23T18:25:43.511Z",
+      startDateOfEvent = "2021-04-23T18:25:43.511Z",
       reportedIssueToPolice = true,
       statement = None,
       lateAppeal = false,
@@ -79,7 +79,7 @@ class AppealAuditModelSpec extends SpecBase {
     val fireOrFloodAppealInformation: FireOrFloodAppealInformation = FireOrFloodAppealInformation(
       reasonableExcuse = "fireOrFlood",
       honestyDeclaration = true,
-      dateOfEvent = "2021-04-23T18:25:43.511Z",
+      startDateOfEvent = "2021-04-23T18:25:43.511Z",
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
@@ -90,7 +90,7 @@ class AppealAuditModelSpec extends SpecBase {
     val lossOfStaffAppealInformation: LossOfStaffAppealInformation = LossOfStaffAppealInformation(
       reasonableExcuse = "lossOfStaff",
       honestyDeclaration = true,
-      dateOfEvent = "2021-04-23T18:25:43.511Z",
+      startDateOfEvent = "2021-04-23T18:25:43.511Z",
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
@@ -114,7 +114,6 @@ class AppealAuditModelSpec extends SpecBase {
       reasonableExcuse = "health",
       honestyDeclaration = true,
       hospitalStayInvolved = true,
-      dateOfEvent = None,
       startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
       endDateOfEvent = Some("2021-04-25T18:25:43.511Z"),
       eventOngoing = false,
@@ -127,12 +126,12 @@ class AppealAuditModelSpec extends SpecBase {
 
     val healthAppealInformationOngoingHospitalStay = healthAppealInformation.copy(endDateOfEvent = None, eventOngoing = true)
     val healthAppealInformationNoHospitalStay = healthAppealInformation.copy(
-      dateOfEvent = Some("2021-04-23T18:25:43.511Z"), startDateOfEvent = None, endDateOfEvent = None, eventOngoing = false, hospitalStayInvolved = false)
+      startDateOfEvent =  Some("2021-04-23T18:25:43.511Z"), endDateOfEvent = None, eventOngoing = false, hospitalStayInvolved = false)
 
     val otherAppealInformation: OtherAppealInformation = OtherAppealInformation(
         reasonableExcuse = "other",
         honestyDeclaration = true,
-        dateOfEvent = "2021-04-23T18:25:43.511Z",
+        startDateOfEvent = "2021-04-23T18:25:43.511Z",
         statement = Some("this is a reason"),
         supportingEvidence = None,
         lateAppeal = false,

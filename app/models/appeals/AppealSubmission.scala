@@ -33,7 +33,7 @@ sealed trait AppealInformation {
 case class BereavementAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         dateOfEvent: String,
+                                         startDateOfEvent: String,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -48,7 +48,7 @@ object BereavementAppealInformation {
     Json.obj(
       "reasonableExcuse" -> bereavementAppealInformation.reasonableExcuse,
       "honestyDeclaration" -> bereavementAppealInformation.honestyDeclaration,
-      "dateOfEvent" -> bereavementAppealInformation.dateOfEvent,
+      "startDateOfEvent" -> bereavementAppealInformation.startDateOfEvent,
       "lateAppeal" -> bereavementAppealInformation.lateAppeal
     ).deepMerge(
       bereavementAppealInformation.statement.fold(
@@ -81,7 +81,7 @@ object BereavementAppealInformation {
 case class CrimeAppealInformation(
                                    reasonableExcuse: String,
                                    honestyDeclaration: Boolean,
-                                   dateOfEvent: String,
+                                   startDateOfEvent: String,
                                    reportedIssueToPolice: Boolean,
                                    statement: Option[String],
                                    lateAppeal: Boolean,
@@ -97,7 +97,7 @@ object CrimeAppealInformation {
     Json.obj(
       "reasonableExcuse" -> crimeAppealInformation.reasonableExcuse,
       "honestyDeclaration" -> crimeAppealInformation.honestyDeclaration,
-      "dateOfEvent" -> crimeAppealInformation.dateOfEvent,
+      "startDateOfEvent" -> crimeAppealInformation.startDateOfEvent,
       "reportedIssueToPolice" -> crimeAppealInformation.reportedIssueToPolice,
       "lateAppeal" -> crimeAppealInformation.lateAppeal
     ).deepMerge(
@@ -131,7 +131,7 @@ object CrimeAppealInformation {
 case class FireOrFloodAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         dateOfEvent: String,
+                                         startDateOfEvent: String,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -146,7 +146,7 @@ object FireOrFloodAppealInformation {
     Json.obj(
       "reasonableExcuse" -> fireOrFloodAppealInformation.reasonableExcuse,
       "honestyDeclaration" -> fireOrFloodAppealInformation.honestyDeclaration,
-      "dateOfEvent" -> fireOrFloodAppealInformation.dateOfEvent,
+      "startDateOfEvent" -> fireOrFloodAppealInformation.startDateOfEvent,
       "lateAppeal" -> fireOrFloodAppealInformation.lateAppeal
     ).deepMerge(
       fireOrFloodAppealInformation.statement.fold(
@@ -179,7 +179,7 @@ object FireOrFloodAppealInformation {
 case class LossOfStaffAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         dateOfEvent: String,
+                                         startDateOfEvent: String,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -194,7 +194,7 @@ object LossOfStaffAppealInformation {
     Json.obj(
       "reasonableExcuse" -> lossOfStaffAppealInformation.reasonableExcuse,
       "honestyDeclaration" -> lossOfStaffAppealInformation.honestyDeclaration,
-      "dateOfEvent" -> lossOfStaffAppealInformation.dateOfEvent,
+      "startDateOfEvent" -> lossOfStaffAppealInformation.startDateOfEvent,
       "lateAppeal" -> lossOfStaffAppealInformation.lateAppeal
     ).deepMerge(
       lossOfStaffAppealInformation.statement.fold(
@@ -278,7 +278,6 @@ case class HealthAppealInformation(
                                     reasonableExcuse: String,
                                     honestyDeclaration: Boolean,
                                     hospitalStayInvolved: Boolean,
-                                    dateOfEvent: Option[String],
                                     startDateOfEvent: Option[String],
                                     endDateOfEvent: Option[String],
                                     eventOngoing: Boolean,
@@ -313,11 +312,6 @@ object HealthAppealInformation {
       )
     ).deepMerge(
       (healthAppealInformation.hospitalStayInvolved, healthAppealInformation.eventOngoing) match {
-        case (true, true) => {
-          Json.obj(
-            "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get
-          )
-        }
         case (true, false) => {
           Json.obj(
             "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get,
@@ -326,7 +320,7 @@ object HealthAppealInformation {
         }
         case _ => {
           Json.obj(
-            "dateOfEvent" -> healthAppealInformation.dateOfEvent.get
+            "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get
           )
         }
       }
@@ -349,7 +343,7 @@ object HealthAppealInformation {
 case class OtherAppealInformation(
                                    reasonableExcuse: String,
                                    honestyDeclaration: Boolean,
-                                   dateOfEvent: String,
+                                   startDateOfEvent: String,
                                    statement: Option[String],
                                    supportingEvidence: Option[Evidence],
                                    lateAppeal: Boolean,
@@ -366,7 +360,7 @@ object OtherAppealInformation {
     Json.obj(
       "reasonableExcuse" -> otherAppealInformation.reasonableExcuse,
       "honestyDeclaration" -> otherAppealInformation.honestyDeclaration,
-      "dateOfEvent" -> otherAppealInformation.dateOfEvent,
+      "startDateOfEvent" -> otherAppealInformation.startDateOfEvent,
       "statement" -> otherAppealInformation.statement.get,
       "lateAppeal" -> otherAppealInformation.lateAppeal
     ).deepMerge(
@@ -467,7 +461,7 @@ object AppealSubmission {
           appealInformation = BereavementAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            dateOfEvent = userRequest.session.get(SessionKeys.whenDidThePersonDie).get,
+            startDateOfEvent = userRequest.session.get(SessionKeys.whenDidThePersonDie).get,
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
@@ -488,7 +482,7 @@ object AppealSubmission {
           appealInformation = CrimeAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            dateOfEvent = userRequest.session.get(SessionKeys.dateOfCrime).get,
+            startDateOfEvent = userRequest.session.get(SessionKeys.dateOfCrime).get,
             reportedIssueToPolice = userRequest.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
             statement = None,
             lateAppeal = isLateAppeal,
@@ -510,7 +504,7 @@ object AppealSubmission {
           appealInformation = FireOrFloodAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            dateOfEvent = userRequest.session.get(SessionKeys.dateOfFireOrFlood).get,
+            startDateOfEvent = userRequest.session.get(SessionKeys.dateOfFireOrFlood).get,
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
@@ -532,7 +526,7 @@ object AppealSubmission {
           appealInformation = LossOfStaffAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            dateOfEvent = userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get,
+            startDateOfEvent = userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get,
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
@@ -580,8 +574,7 @@ object AppealSubmission {
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
             hospitalStayInvolved = isHospitalStay,
-            dateOfEvent = if (isHospitalStay) None else userRequest.session.get(SessionKeys.whenHealthIssueHappened),
-            startDateOfEvent = if (isHospitalStay) userRequest.session.get(SessionKeys.whenHealthIssueStarted) else None,
+            startDateOfEvent = if (isHospitalStay) userRequest.session.get(SessionKeys.whenHealthIssueStarted) else userRequest.session.get(SessionKeys.whenHealthIssueHappened),
             endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.session.get(SessionKeys.whenHealthIssueEnded),
             eventOngoing = isOngoingHospitalStay,
             statement = None,
@@ -605,7 +598,7 @@ object AppealSubmission {
           appealInformation = OtherAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            dateOfEvent = userRequest.session.get(SessionKeys.whenDidBecomeUnable).get,
+            startDateOfEvent = userRequest.session.get(SessionKeys.whenDidBecomeUnable).get,
             statement = userRequest.session.get(SessionKeys.whyReturnSubmittedLate),
             supportingEvidence = if (amountOfFileUploads > 0) Some(Evidence(amountOfFileUploads)) else None,
             lateAppeal = isLateAppeal,
