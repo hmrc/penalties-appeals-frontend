@@ -23,21 +23,25 @@ import play.api.libs.json._
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.JsonUtils
+import utils.Logger.logger
 
 case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String,headerGenerator: HeaderGenerator)
                            (implicit request: UserRequest[_], headerCarrier: HeaderCarrier) extends JsonAuditModel with JsonUtils {
 
   override val auditType: String = "PenaltyAppealSubmitted"
   override val transactionName: String = "penalties-appeal-submitted"
+  val appealPayload = appealInformationJsonObj(appealSubmission)
   override val detail: JsValue = jsonObjNoNulls(
     "submittedBy" -> appealSubmission.submittedBy,
     "taxIdentifier" -> request.vrn,
     "identifierType" -> "VRN",
     "agentReferenceNumber" -> request.arn,
     "penaltyType" -> penaltyType,
-    "appealInformation" -> appealInformationJsonObj(appealSubmission),
+    "appealInformation" -> appealPayload,
     "correlationId"-> headerGenerator.headersForPEGA().find(_._1 == "CorrelationId").map(_._2)
   )
+
+  logger.debug(s"[AppealAuditModel] [appeal Payload] $appealPayload")
 
   def appealInformationJsonObj(appealSubmission: AppealSubmission): JsObject = {
     appealSubmission.appealInformation match {
