@@ -437,16 +437,20 @@ otherPenalties.p2 = You do not need to appeal against them separately.
 # -----------------------
 youCannotAppeal.title = You cannot appeal yet
 youCannotAppeal.heading = You cannot appeal yet
-agent.youCannotAppeal.p1 = You need to submit your client’s VAT Return before we can review this penalty.
-agent.youCannotAppeal.p2 = If you have already submitted the VAT Return, it can take up to 24 hours before it shows on your client’s VAT account.
+agent.youCannotAppeal.lsp.p1 = You need to submit your client’s VAT Return before we can review this penalty.
+agent.youCannotAppeal.lsp.p2 = If you have already submitted the VAT Return, it can take up to 24 hours before it shows on your client’s VAT account.
 agent.youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your client’s VAT details.
+agent.youCannotAppeal.lpp.p1 = Your client needs to pay their VAT bill before we can review this penalty.
+agent.youCannotAppeal.lpp.p2 = If they have already paid their VAT, it can take up to 5 days to clear to HMRC’s bank account and show on their payment history.
 agent.youCannotAppeal.returnToVATDetails = Return to your client’s VAT details
-youCannotAppeal.p1 = You need to submit your VAT Return before we can review this penalty.
-youCannotAppeal.p2 = If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account.
-youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your VAT account.
 youCannotAppeal.returnToVATDetails = Return to your VAT details
 youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
-
+youCannotAppeal.lsp.p1 = You need to submit your VAT Return before we can review this penalty.
+youCannotAppeal.lsp.p2 = If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account.
+youCannotAppeal.lsp.p3 = If you need to cancel the VAT registration, you can do it through your VAT account.
+youCannotAppeal.lpp.p1 = You need to pay your VAT before we can review this penalty.
+youCannotAppeal.lpp.p2 = If you paid your VAT very recently, it can take up to 5 days to clear to HMRC’s bank account and show on your payment history.
+youCannotAppeal.lpp.p3 = If you need to cancel the VAT registration, you can do it through your VAT account.
 
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
