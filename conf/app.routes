@@ -121,6 +121,9 @@ POST       /why-return-was-submitted-late-agent/change         controllers.Agent
 GET        /multiple-penalties              controllers.OtherPenaltiesForPeriodController.onPageLoad
 POST       /multiple-penalties              controllers.OtherPenaltiesForPeriodController.onSubmit
 
+# Appeal Obligation - Unhappy path
+GET        /you-cannot-appeal              controllers.YouCannotAppealController.onPageLoad
+
 # Other Relevant Information page
 GET        /other-relevant-information                         controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = NormalMode)
 GET        /other-relevant-information/change                  controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = CheckMode)

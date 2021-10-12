@@ -555,6 +555,14 @@ class NavigationSpec extends SpecBase {
       }
     }
 
+    "redirect to YouCannotAppeal page" when {
+      "no option selected" in new Setup {
+        val result = mainNavigator.routingForCancelVATRegistrationPage(Some("no"),None)
+        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+    }
+
     "redirect to AppealStart page" when {
       "yes option selected and multiplePenalties is false" in new Setup {
         val result = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"),Some(Map("multiplePenalties" -> "false")))

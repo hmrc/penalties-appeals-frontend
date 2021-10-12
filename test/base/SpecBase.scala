@@ -121,6 +121,10 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString
   ))
 
+  val agentUserLSP: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString
+  ))
+
   val agentUserLPPAdditional: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
     SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString
   ))

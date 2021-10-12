@@ -433,6 +433,21 @@ otherPenalties.heading = Other penalties for this period
 otherPenalties.p1 = If HMRC accepts your appeal, we will remove all other late submission or late payment penalties for the same period.
 otherPenalties.p2 = You do not need to appeal against them separately.
 
+# You Cannot Appeal page
+# -----------------------
+youCannotAppeal.title = You cannot appeal yet
+youCannotAppeal.heading = You cannot appeal yet
+agent.youCannotAppeal.p1 = You need to submit your client’s VAT Return before we can review this penalty.
+agent.youCannotAppeal.p2 = If you have already submitted the VAT Return, it can take up to 24 hours before it shows on your client’s VAT account.
+agent.youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your client’s VAT details.
+agent.youCannotAppeal.returnToVATDetails = Return to your client’s VAT details
+youCannotAppeal.p1 = You need to submit your VAT Return before we can review this penalty.
+youCannotAppeal.p2 = If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account.
+youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your VAT account.
+youCannotAppeal.returnToVATDetails = Return to your VAT details
+youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
+
+
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
 otherRelevantInformation.title = Tell us why you want to appeal the penalty
