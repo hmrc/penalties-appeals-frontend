@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.LocalDateTime
-
 import models.UserRequest
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.jsoup.{Jsoup, nodes}
@@ -28,10 +26,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.{AuthStub, PenaltiesStub}
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.time.LocalDateTime
+import scala.concurrent.Future
 
 class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   val controller: CheckYourAnswersController = injector.instanceOf[CheckYourAnswersController]

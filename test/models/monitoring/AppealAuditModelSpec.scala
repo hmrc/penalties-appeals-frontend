@@ -16,18 +16,18 @@
 
 package models.monitoring
 
-import java.time.LocalDateTime
-
 import base.SpecBase
 import config.AppConfig
 import connectors.HeaderGenerator
 import models.UserRequest
 import models.appeals._
-import org.mockito.Mockito.{mock, mockitoSession, when}
+import org.mockito.Mockito.{mock, when}
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UUIDGenerator
+
+import java.time.LocalDateTime
 
 class AppealAuditModelSpec extends SpecBase {
 

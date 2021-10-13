@@ -21,7 +21,7 @@ import config.AppConfig
 import connectors.httpParsers.UpscanInitiateHttpParser.{BadRequest, UpscanInitiateResponse}
 import models.upscan.{UploadFormTemplateRequest, UpscanInitiateRequest, UpscanInitiateResponseModel}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{when, _}
+import org.mockito.Mockito._
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 

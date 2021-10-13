@@ -26,8 +26,8 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import services.AppealService
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
 import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
@@ -248,7 +248,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "the user is authorised" must {
       "redirect the user to the confirmation page on success" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-          .thenReturn(Future.successful(true))
+          .thenReturn(Future.successful(Right()))
         when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
           .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
@@ -258,7 +258,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-          .thenReturn(Future.successful(true))
+          .thenReturn(Future.successful(Right()))
         when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
           .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
@@ -270,13 +270,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
         "the appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-            .thenReturn(Future.successful(false))
+            .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
         "the obligation appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-            .thenReturn(Future.successful(false))
+            .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }

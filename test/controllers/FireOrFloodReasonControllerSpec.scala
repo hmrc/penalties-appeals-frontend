@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.{LocalDate, LocalDateTime}
-
 import base.SpecBase
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
@@ -32,6 +30,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.fireOrFlood.WhenDidFireOrFloodHappenPage
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class FireOrFloodReasonControllerSpec extends SpecBase {

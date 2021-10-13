@@ -83,7 +83,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
-  def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
+  def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
     val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
@@ -108,18 +108,18 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
           else
             auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, headerGenerator))
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
-          true
+          Right()
         }
         case _ => {
           logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
-          false
+          Left(response.status)
         }
       }
     }
   }.recover {
     case e =>
       logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
-      false
+      Left(INTERNAL_SERVER_ERROR)
   }
 
   def otherPenaltiesInTaxPeriod(penaltyId: String, isLPP: Boolean)

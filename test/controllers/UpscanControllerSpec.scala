@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.{Instant, LocalDateTime}
-
 import base.SpecBase
 import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser.InvalidJson
@@ -31,6 +29,7 @@ import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.mongo.cache.CacheItem
 
+import java.time.{Instant, LocalDateTime}
 import scala.concurrent.Future
 
 class UpscanControllerSpec extends SpecBase {

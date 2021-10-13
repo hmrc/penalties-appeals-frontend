@@ -87,14 +87,17 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
         if(request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
-          appealService.submitAppeal("obligation").flatMap {
-            case true => {
+          appealService.submitAppeal("obligation").flatMap(_.fold(
+            {
+              case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))
+              case _ => Future(errorHandler.showInternalServerError)
+            },
+            _ => {
               uploadJourneyRepository.removeUploadsForJourney(request.session.get(SessionKeys.journeyId).get).map {
                 _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
               }
             }
-            case false => Future(errorHandler.showInternalServerError)
-          }
+          ))
         } else {
           logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
           Future(errorHandler.showInternalServerError)
@@ -103,14 +106,17 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         reasonableExcuse => {
           if (sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
             logger.debug(s"[CheckYourAnswersController][onPageLoad] All keys are present for reasonable excuse: $reasonableExcuse")
-            appealService.submitAppeal(reasonableExcuse).flatMap {
-              case true => {
+            appealService.submitAppeal(reasonableExcuse).flatMap(_.fold(
+              {
+                case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))
+                case _ => Future(errorHandler.showInternalServerError)
+              },
+              _ => {
                 uploadJourneyRepository.removeUploadsForJourney(request.session.get(SessionKeys.journeyId).get).map {
                   _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
                 }
               }
-              case false => Future(errorHandler.showInternalServerError)
-            }
+            ))
           } else {
             logger.error(s"[CheckYourAnswersController][onSubmit] User did not have all answers for reasonable excuse: $reasonableExcuse")
             Future(errorHandler.showInternalServerError)
