@@ -291,6 +291,16 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
+
+      "redirect the user to the service unavailable page" when {
+        "the downstream service returns SERVICE_UNAVAILABLE" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
+            .thenReturn(Future.successful(Left(SERVICE_UNAVAILABLE)))
+          val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.ServiceUnavailableController.onPageLoad().url
+        }
+      }
     }
 
     "the user is unauthorised" when {

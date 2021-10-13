@@ -905,7 +905,27 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "show an ISE when the appeal fails" in {
+    "redirect to service unavailable page when downstream returns SERVICE_UNAVAILABLE" in {
+      PenaltiesStub.failedAppealSubmission(false, "1234", status = Some(SERVICE_UNAVAILABLE))
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
+      )
+      val request = controller.onSubmit()(fakeRequestWithCorrectKeys)
+      status(request) shouldBe SEE_OTHER
+      redirectLocation(request).get shouldBe controllers.routes.ServiceUnavailableController.onPageLoad().url
+    }
+
+      "show an ISE when the appeal fails" in {
       PenaltiesStub.failedAppealSubmission(false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",

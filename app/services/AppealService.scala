@@ -27,11 +27,11 @@ import utils.Logger.logger
 import play.api.libs.json.{JsResult, Json}
 import repositories.UploadJourneyRepository
 import services.monitoring.AuditService
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse, UpstreamErrorResponse}
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.SessionKeys
-import java.time.LocalDateTime
 
+import java.time.LocalDateTime
 import javax.inject.Inject
 import uk.gov.hmrc.auth.core.retrieve.{AgentInformation, Name}
 import uk.gov.hmrc.emailaddress.EmailAddress
@@ -117,6 +117,9 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       }
     }
   }.recover {
+    case e: UpstreamErrorResponse =>
+      logger.error(s"[AppealService][submitAppeal] - Received 5xx response, error message: ${e.getMessage}")
+      Left(e.statusCode)
     case e =>
       logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
       Left(INTERNAL_SERVER_ERROR)
