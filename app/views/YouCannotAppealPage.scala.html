@@ -49,7 +49,7 @@ isPageFullWidth = false) {
         <p class="govuk-body">@messages("youCannotAppeal.lpp.p3")</p>
         <ul class="govuk-list">
             <li>
-                <a class="govuk-link" href="#" id="check-what-you-owe-link">@messages("youCannotAppeal.checkWhatYouOwe")</a>
+                <a class="govuk-link" href="@{appConfig.whatYouOwe}" id="check-what-you-owe-link">@messages("youCannotAppeal.checkWhatYouOwe")</a>
             </li>
         </ul>
         }  @if(appealType.contains(PenaltyTypeEnum.Late_Submission.toString)){

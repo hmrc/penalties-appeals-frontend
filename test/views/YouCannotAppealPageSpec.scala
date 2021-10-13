@@ -67,7 +67,6 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
-
     "when agent is on the page with LSP Appeal" must {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLSP))
 
@@ -82,15 +81,41 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
     "when VAT trader is on the page with LSP Appeal" must {
-      implicit val agentDoc: Document = asDocument(applyView(userRequest = userRequestWithCorrectKeys))
+      implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserLSP))
 
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> headingPanelH1,
-        Selectors.p2 -> vatTraderLSPp1,
-        Selectors.p3 -> vatTraderLSPp2,
-        Selectors.p4 -> vatTraderLSPp3,
+        Selectors.p1 -> vatTraderLSPp1,
+        Selectors.p2 -> vatTraderLSPp2,
+        Selectors.p3 -> vatTraderLSPp3,
         Selectors.vatLink -> returnToVATDetails
+      )
+      behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+    }
+    "when VAT trader is on the page with LPP Appeal" must {
+      implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserLPP))
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> headingPanelH1,
+        Selectors.p1 -> vatTraderLPPp1,
+        Selectors.p2 -> vatTraderLPPp2,
+        Selectors.p3 -> vatTraderLPPp3,
+        Selectors.checkWhatYouOweLink -> checkWhatYouOwe
+      )
+      behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+    }
+    "when VAT trader is on the page with Additional Appeal" must {
+      implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserAdditional))
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> headingPanelH1,
+        Selectors.p1 -> vatTraderLPPp1,
+        Selectors.p2 -> vatTraderLPPp2,
+        Selectors.p3 -> vatTraderLPPp3,
+        Selectors.checkWhatYouOweLink -> checkWhatYouOwe
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
