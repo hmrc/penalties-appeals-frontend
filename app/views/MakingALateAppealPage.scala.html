@@ -19,7 +19,7 @@
 @this(layout: Layout,
         link: components.link,
         govukButton: GovukButton,
-        textArea: components.textArea,
+        characterCount: components.characterCount,
         formHelper: FormWithCSRF)
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
@@ -31,11 +31,13 @@
 
     @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
 
-        @textArea(form, "late-appeal-text", messages("makingALateAppeal.heading"),
-            isPageHeading = true,
-            describedBy = Some("late-appeal-text-hint"),
-            labelClasses = Some("govuk-label--l"),
-            hint = Some(Html(messages("makingALateAppeal.p1"))))
+        @characterCount(
+            form("late-appeal-text"),
+            label = messages("makingALateAppeal.heading"),
+            hint = Some(HtmlContent(messages("makingALateAppeal.p1"))),
+            maxLength = Some(5000)
+        )
+
         @govukButton(Button(content = Text(messages("common.continue"))))
     }
 }
