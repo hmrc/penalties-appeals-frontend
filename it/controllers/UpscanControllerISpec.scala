@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDateTime
+
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
@@ -26,7 +28,6 @@ import repositories.UploadJourneyRepository
 import stubs.UpscanStub._
 import utils.IntegrationSpecCommonBase
 
-import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class UpscanControllerISpec extends IntegrationSpecCommonBase {

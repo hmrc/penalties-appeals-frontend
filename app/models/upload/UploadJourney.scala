@@ -22,7 +22,8 @@ case class UploadJourney (
                            reference: String,
                            fileStatus: UploadStatusEnum.Value,
                            downloadUrl: Option[String] = None,
-                           uploadDetails: Option[UploadDetails] = None
+                           uploadDetails: Option[UploadDetails] = None,
+                           failureDetails: Option[FailureDetails] = None
                          )
 
 object UploadJourney {
@@ -34,12 +35,14 @@ object UploadJourney {
       fileStatus <- (json \ "fileStatus").validateOpt[UploadStatusEnum.Value]
       downloadUrl <- (json \ "downloadUrl").validateOpt[String]
       uploadDetails <- (json \ "uploadDetails").validateOpt[UploadDetails]
+      failureDetails <- (json \ "failureDetails").validateOpt[FailureDetails]
     } yield {
       UploadJourney(
         reference,
         fileStatus.getOrElse(UploadStatusEnum.WAITING),
         downloadUrl,
-        uploadDetails
+        uploadDetails,
+        failureDetails
       )
     }
   }
