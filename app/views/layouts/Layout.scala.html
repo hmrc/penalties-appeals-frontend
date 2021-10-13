@@ -66,6 +66,7 @@
     <script src="@controllers.routes.Assets.versioned("javascripts/backLink.js")"></script>
     @customJavaScript.map {x => <script src='@controllers.routes.Assets.versioned(s"javascripts/$x")'></script> }
     <script>window.GOVUKFrontend.initAll();</script>
+    <script>window.HMRCFrontend.initAll();</script>
 } else {
     @scriptsBlock.get
 }

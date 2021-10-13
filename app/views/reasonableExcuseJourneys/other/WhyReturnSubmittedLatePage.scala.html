@@ -20,7 +20,7 @@
 @this(layout: Layout,
         link: components.link,
         govukButton: GovukButton,
-        textArea: components.textArea,
+        characterCount: components.characterCount,
         formHelper: FormWithCSRF)
 
 @(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
@@ -40,9 +40,13 @@
 
     @formHelper(action = postAction) {
 
-        @textArea(form, "why-return-submitted-late-text", messages(pageTitleAndHeading),
-            isPageHeading = true,
-            labelClasses = Some("govuk-label--l"))
+        @characterCount(
+            form("why-return-submitted-late-text"),
+            label = messages(pageTitleAndHeading),
+            hint = None,
+            maxLength = Some(5000)
+        )
+
         @govukButton(Button(content = Text(messages("common.continue"))))
     }
 }
