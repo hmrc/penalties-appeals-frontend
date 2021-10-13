@@ -25,44 +25,29 @@ formHelper: FormWithCSRF)
 
 @layout(pageTitle = messages("youCannotAppeal.title"),
 isPageFullWidth = false) {
-<h1 class="govuk-heading-l">@messages("youCannotAppeal.heading")</h1>
-    @if(userRequest.isAgent){
-            @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)
+    <h1 class="govuk-heading-l">@messages("youCannotAppeal.heading")</h1>
+    @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)
                 || appealType.contains(PenaltyTypeEnum.Additional.toString)){
-        <p class="govuk-body">@messages("agent.youCannotAppeal.lpp.p1")</p>
-        <p class="govuk-body">@messages("agent.youCannotAppeal.lpp.p2")</p>
-        }  @if(appealType.contains(PenaltyTypeEnum.Late_Submission.toString)){
-        <p class="govuk-body">@messages("agent.youCannotAppeal.lsp.p1")</p>
-        <p class="govuk-body">@messages("agent.youCannotAppeal.lsp.p2")</p>
-            }
-        <p class="govuk-body">@messages("agent.youCannotAppeal.p3")</p>
-        <ul class="govuk-list">
-            <li>
-                <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="vat-client-details-link">@messages("agent.youCannotAppeal.returnToVATDetails")</a>
-            </li>
-        </ul>
-    }else {
-        @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)
-            || appealType.contains(PenaltyTypeEnum.Additional.toString)){
-        <p class="govuk-body">@messages("youCannotAppeal.lpp.p1")</p>
-        <p class="govuk-body">@messages("youCannotAppeal.lpp.p2")</p>
-        <p class="govuk-body">@messages("youCannotAppeal.lpp.p3")</p>
-        <ul class="govuk-list">
-            <li>
-                <a class="govuk-link" href="@{appConfig.whatYouOwe}" id="check-what-you-owe-link">@messages("youCannotAppeal.checkWhatYouOwe")</a>
-            </li>
-        </ul>
-        }  @if(appealType.contains(PenaltyTypeEnum.Late_Submission.toString)){
-        <p class="govuk-body">@messages("youCannotAppeal.lsp.p1")</p>
-        <p class="govuk-body">@messages("youCannotAppeal.lsp.p2")</p>
-        <p class="govuk-body">@messages("youCannotAppeal.lsp.p3")</p>
-            <ul class="govuk-list">
-                <li>
-                    <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="vat-details-link">@messages("youCannotAppeal.returnToVATDetails")</a>
-                </li>
-            </ul>
-            }
-        }
-}
+        <p class="govuk-body">@getMessage("youCannotAppeal.lpp.p1")</p>
+        <p class="govuk-body">@getMessage("youCannotAppeal.lpp.p2")</p>
+    }  else {
+        <p class="govuk-body">@getMessage("youCannotAppeal.lsp.p1")</p>
+        <p class="govuk-body">@getMessage("youCannotAppeal.lsp.p2")</p>
+    }
+    <p class="govuk-body">@getMessage("youCannotAppeal.p3")</p>
 
+    <ul class="govuk-list">
+        <li>
+            @if(userRequest.isAgent) {
+                <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="vat-client-details-link">@messages("agent.youCannotAppeal.returnToVATDetails")</a>
+            } else {
+                @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)|| appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+                <a class="govuk-link" href="@{appConfig.whatYouOweUrl}" id="check-what-you-owe-link">@messages("youCannotAppeal.checkWhatYouOwe")</a>
+                } else {
+                <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="vat-details-link">@messages("youCannotAppeal.returnToVATAccount")</a>
+                }
+            }
+        </li>
+    </ul>
+}
 

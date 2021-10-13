@@ -66,7 +66,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val vatOverviewUrl: String = config.get[String]("urls.vatOverview")
 
-  lazy val whatYouOwe: String = config.get[String]("urls.whatYouOwe")
+  lazy val whatYouOweUrl: String = config.get[String]("urls.whatYouOwe")
 
   lazy val feedbackUrl: String = config.get[String]("urls.feedbackUrl")
 

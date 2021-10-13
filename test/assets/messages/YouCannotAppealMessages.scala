@@ -33,7 +33,7 @@ object YouCannotAppealMessages {
 
   val returnToClientVATDetails = "Return to your client’s VAT details"
 
-  val returnToVATDetails = "Return to your VAT details"
+  val returnToVATAccount = "Return to your VAT Account"
 
   val checkWhatYouOwe = "Check and pay what you owe"
 
@@ -41,12 +41,10 @@ object YouCannotAppealMessages {
 
   val vatTraderLSPp2 = "If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account."
 
-  val vatTraderLSPp3 = "If you need to cancel the VAT registration, you can do it through your VAT account."
+  val p3 = "If you need to cancel the VAT registration, you can do it through your VAT account."
 
   val vatTraderLPPp1 = "You need to pay your VAT before we can review this penalty."
 
   val vatTraderLPPp2 = "If you paid your VAT very recently, it can take up to 5 days to clear to HMRC’s bank account and show on your payment history."
-
-  val vatTraderLPPp3 = "If you need to cancel the VAT registration, you can do it through your VAT account."
 
 }

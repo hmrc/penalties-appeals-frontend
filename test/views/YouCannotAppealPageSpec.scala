@@ -31,7 +31,6 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       val p1 = "#main-content > div > div > p:nth-child(2)"
       val p2 = "#main-content > div > div > p:nth-child(3)"
       val p3 = "#main-content > div > div > p:nth-child(4)"
-      val p4 = "#main-content > div > div > p:nth-child(5)"
       val vatClientLink = "#vat-client-details-link"
       val vatLink = "#vat-details-link"
       val checkWhatYouOweLink = "#check-what-you-owe-link"
@@ -88,8 +87,8 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
         Selectors.h1 -> headingPanelH1,
         Selectors.p1 -> vatTraderLSPp1,
         Selectors.p2 -> vatTraderLSPp2,
-        Selectors.p3 -> vatTraderLSPp3,
-        Selectors.vatLink -> returnToVATDetails
+        Selectors.p3 -> p3,
+        Selectors.vatLink -> returnToVATAccount
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
@@ -101,7 +100,7 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
         Selectors.h1 -> headingPanelH1,
         Selectors.p1 -> vatTraderLPPp1,
         Selectors.p2 -> vatTraderLPPp2,
-        Selectors.p3 -> vatTraderLPPp3,
+        Selectors.p3 -> p3,
         Selectors.checkWhatYouOweLink -> checkWhatYouOwe
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -114,7 +113,7 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
         Selectors.h1 -> headingPanelH1,
         Selectors.p1 -> vatTraderLPPp1,
         Selectors.p2 -> vatTraderLPPp2,
-        Selectors.p3 -> vatTraderLPPp3,
+        Selectors.p3 -> p3,
         Selectors.checkWhatYouOweLink -> checkWhatYouOwe
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
