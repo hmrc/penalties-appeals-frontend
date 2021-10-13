@@ -57,6 +57,19 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       |""".stripMargin
   )
 
+  val uploadJourneyWithFailureStatusAsJson: JsValue = Json.parse(
+    """
+      |{
+      | "reference": "123456789",
+      | "fileStatus": "FAILED",
+      | "failureDetails": {
+      |   "failureReason": "REJECTED",
+      |   "message": "this file was rejected"
+      | }
+      |}
+      |""".stripMargin
+  )
+
   val uploadJourneyModel: UploadJourney = UploadJourney(
     reference = "123456789",
     fileStatus = UploadStatusEnum.READY,
@@ -75,6 +88,14 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
   val uploadJourneyWithoutUrlOrUploadDetailsModel: UploadJourney = uploadJourneyModel.copy(downloadUrl = None, uploadDetails = None)
 
   val uploadJourneyWithoutUrlOrUploadWithDefaultStatusDetailsModel: UploadJourney = uploadJourneyModel.copy(downloadUrl = None, uploadDetails = None, fileStatus = UploadStatusEnum.WAITING)
+
+  val uploadJourneyWithFailureStatusModel: UploadJourney = uploadJourneyModel.copy(
+    fileStatus = UploadStatusEnum.FAILED, downloadUrl = None, uploadDetails = None,
+    failureDetails = Some(FailureDetails(
+      failureReason = FailureReasonEnum.REJECTED,
+      message = "this file was rejected"
+    ))
+  )
 
   "UploadJourneySpec" should {
     "be readable from JSON" in {
@@ -95,6 +116,12 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       result.get shouldBe uploadJourneyWithoutUrlOrUploadWithDefaultStatusDetailsModel
     }
 
+    "be readable from JSON when the upload failed" in {
+      val result = Json.fromJson(uploadJourneyWithFailureStatusAsJson)(UploadJourney.reads)
+      result.isSuccess shouldBe true
+      result.get shouldBe uploadJourneyWithFailureStatusModel
+    }
+
     "be writable to JSON" in {
       val result = Json.toJson(uploadJourneyModel)(UploadJourney.format)
       result shouldBe uploadJourneyAsJson
@@ -102,6 +129,11 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
     "be writable to JSON when there is no url or upload details" in {
       val result = Json.toJson(uploadJourneyWithoutUrlOrUploadDetailsModel)(UploadJourney.format)
       result shouldBe uploadJourneyWithoutUrlOrUploadDetailsAsJson
+    }
+
+    "be writable to JSON the upload failed" in {
+      val result = Json.toJson(uploadJourneyWithFailureStatusModel)(UploadJourney.format)
+      result shouldBe uploadJourneyWithFailureStatusAsJson
     }
   }
 }

@@ -17,12 +17,11 @@
 package controllers.internal
 
 import base.SpecBase
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload.{FailureDetails, FailureReasonEnum, FailureReasonEnumSpec, UploadDetails, UploadJourney, UploadStatusEnum}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.mongo.cache.DataKey
-
 import java.time.LocalDateTime
 
 class UpscanCallbackControllerSpec extends SpecBase {
@@ -62,6 +61,19 @@ class UpscanCallbackControllerSpec extends SpecBase {
       |""".stripMargin
   )
 
+  val callbackFromUpscanWithFailure: JsValue = Json.parse(
+    """
+      |{
+      | "reference": "ref1",
+      | "fileStatus": "FAILED",
+      | "failureDetails": {
+      |   "failureReason": "REJECTED",
+      |   "message": "this file was rejected"
+      | }
+      |}
+      |""".stripMargin
+  )
+
   val uploadJourneyModel: UploadJourney = UploadJourney(
     reference = "ref1",
     fileStatus = UploadStatusEnum.READY,
@@ -72,6 +84,14 @@ class UpscanCallbackControllerSpec extends SpecBase {
       uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
       checksum = "check12345678",
       size = 987
+    ))
+  )
+
+  val uploadJourneyModelWithFailure: UploadJourney = uploadJourneyModel.copy(
+    fileStatus = UploadStatusEnum.FAILED, downloadUrl = None, uploadDetails = None,
+    failureDetails = Some(FailureDetails(
+      failureReason = FailureReasonEnum.REJECTED,
+      message = "this file was rejected"
     ))
   )
 
@@ -89,6 +109,13 @@ class UpscanCallbackControllerSpec extends SpecBase {
         status(result) shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
         modelInRepo shouldBe uploadJourneyModel
+      }
+
+      "the file is rejected and state has been updated" in {
+        val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(callbackFromUpscanWithFailure))
+        status(result) shouldBe NO_CONTENT
+        val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
+        modelInRepo shouldBe uploadJourneyModelWithFailure
       }
     }
   }
