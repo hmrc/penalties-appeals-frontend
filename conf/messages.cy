@@ -433,6 +433,24 @@ otherPenalties.heading = Other penalties for this period
 otherPenalties.p1 = If HMRC accepts your appeal, we will remove all other late submission or late payment penalties for the same period.
 otherPenalties.p2 = You do not need to appeal against them separately.
 
+# You Cannot Appeal page
+# -----------------------
+youCannotAppeal.title = You cannot appeal yet
+youCannotAppeal.heading = You cannot appeal yet
+agent.youCannotAppeal.lsp.p1 = You need to submit your client’s VAT Return before we can review this penalty.
+agent.youCannotAppeal.lsp.p2 = If you have already submitted the VAT Return, it can take up to 24 hours before it shows on your client’s VAT account.
+agent.youCannotAppeal.lpp.p1 = Your client needs to pay their VAT bill before we can review this penalty.
+agent.youCannotAppeal.lpp.p2 = If they have already paid their VAT, it can take up to 5 days to clear to HMRC’s bank account and show on their payment history.
+agent.youCannotAppeal.returnToVATDetails = Return to your client’s VAT details
+youCannotAppeal.returnToVATAccount = Return to your VAT Account
+youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
+youCannotAppeal.lsp.p1 = You need to submit your VAT Return before we can review this penalty.
+youCannotAppeal.lsp.p2 = If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account.
+youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your VAT account.
+agent.youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your client’s VAT details.
+youCannotAppeal.lpp.p1 = You need to pay your VAT before we can review this penalty.
+youCannotAppeal.lpp.p2 = If you paid your VAT very recently, it can take up to 5 days to clear to HMRC’s bank account and show on your payment history.
+
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
 otherRelevantInformation.title = Tell us why you want to appeal the penalty

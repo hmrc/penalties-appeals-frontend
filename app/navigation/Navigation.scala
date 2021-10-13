@@ -107,8 +107,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
         routes.AppealStartController.onPageLoad()
       }
     } else {
-      //TODO: add route when option is 'no' for now it remains on same page
-      routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+      routes.YouCannotAppealController.onPageLoad()
     }
   }
 

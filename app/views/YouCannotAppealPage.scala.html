@@ -1,0 +1,53 @@
+@*
+* Copyright 2021 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
+
+@import utils.SessionKeys
+
+@this(layout: Layout,
+link: components.link,
+formHelper: FormWithCSRF)
+
+@()(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@appealType = @{userRequest.session.get(SessionKeys.appealType)}
+
+@layout(pageTitle = messages("youCannotAppeal.title"),
+isPageFullWidth = false) {
+    <h1 class="govuk-heading-l">@messages("youCannotAppeal.heading")</h1>
+    @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)
+                || appealType.contains(PenaltyTypeEnum.Additional.toString)){
+        <p class="govuk-body">@getMessage("youCannotAppeal.lpp.p1")</p>
+        <p class="govuk-body">@getMessage("youCannotAppeal.lpp.p2")</p>
+    }  else {
+        <p class="govuk-body">@getMessage("youCannotAppeal.lsp.p1")</p>
+        <p class="govuk-body">@getMessage("youCannotAppeal.lsp.p2")</p>
+    }
+    <p class="govuk-body">@getMessage("youCannotAppeal.p3")</p>
+
+    <ul class="govuk-list">
+        <li>
+            @if(userRequest.isAgent) {
+                <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="vat-client-details-link">@messages("agent.youCannotAppeal.returnToVATDetails")</a>
+            } else {
+                @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)|| appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+                <a class="govuk-link" href="@{appConfig.whatYouOweUrl}" id="check-what-you-owe-link">@messages("youCannotAppeal.checkWhatYouOwe")</a>
+                } else {
+                <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="vat-details-link">@messages("youCannotAppeal.returnToVATAccount")</a>
+                }
+            }
+        </li>
+    </ul>
+}
+
