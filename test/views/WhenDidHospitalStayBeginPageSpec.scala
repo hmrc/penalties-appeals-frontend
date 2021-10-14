@@ -18,13 +18,13 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHospitalStayBeginForm
+import messages.WhenDidHospitalStayBeginMessages._
 import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.WhenDidHospitalStayBeginPage
-import messages.WhenDidHospitalStayBeginMessages._
 
 class WhenDidHospitalStayBeginPageSpec extends SpecBase with ViewBehaviours{
   val whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginPage = injector.instanceOf[WhenDidHospitalStayBeginPage]

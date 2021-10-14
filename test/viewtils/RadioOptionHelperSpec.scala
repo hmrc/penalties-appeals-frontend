@@ -17,7 +17,7 @@
 package viewtils
 
 import base.SpecBase
-import forms.{HasCrimeBeenReportedForm, WhyReturnWasSubmittedLateAgentForm,WhoPlannedToSubmitVATReturnAgentForm}
+import forms.{HasCrimeBeenReportedForm, WhoPlannedToSubmitVATReturnAgentForm, WhyReturnWasSubmittedLateAgentForm}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 

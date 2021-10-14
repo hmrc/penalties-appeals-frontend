@@ -442,7 +442,7 @@ agent.youCannotAppeal.lsp.p2 = If you have already submitted the VAT Return, it 
 agent.youCannotAppeal.lpp.p1 = Your client needs to pay their VAT bill before we can review this penalty.
 agent.youCannotAppeal.lpp.p2 = If they have already paid their VAT, it can take up to 5 days to clear to HMRC’s bank account and show on their payment history.
 agent.youCannotAppeal.returnToVATDetails = Return to your client’s VAT details
-youCannotAppeal.returnToVATAccount = Return to your VAT Account
+youCannotAppeal.returnToVATAccount = Return to your VAT account
 youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
 youCannotAppeal.lsp.p1 = You need to submit your VAT Return before we can review this penalty.
 youCannotAppeal.lsp.p2 = If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account.
@@ -458,6 +458,18 @@ otherRelevantInformation.heading = Tell us why you want to appeal the penalty
 otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
 otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
 
+
 # Error message for characters more than 5000 in text area
 # ----------------------------------------------------------
 explainReason.charsInTextArea.error = Explain the reason in 5,000 characters or fewer
+
+# Service Unavailable Page
+# ----------------------------------------------------------
+serviceUnavailable.title = Sorry, the service is unavailable
+serviceUnavailable.heading = Sorry, the service is unavailable
+serviceUnavailable.p1 = We have not saved your answers.
+serviceUnavailable.p2 = You will be able to use the service later.
+serviceUnavailable.p3 = If you prefer, you can appeal by letter. Write to:
+serviceUnavailable.p4 = Solicitor’s Office and Legal Services
+serviceUnavailable.p5 = HMRC
+serviceUnavailable.p6 = BX9 1ZT

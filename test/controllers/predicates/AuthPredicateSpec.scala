@@ -18,11 +18,10 @@ package controllers.predicates
 
 import models.UserRequest
 import play.api.http.Status
-import play.api.mvc.{Action, AnyContent, Request, Result}
 import play.api.mvc.Results.Ok
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import play.api.test.Helpers._
 import testUtils.AuthMocks
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name}
 import utils.SessionKeys
 
 import scala.concurrent.Future

@@ -136,3 +136,6 @@ GET        /upscan/upload-status/:journeyId/:fileReference      controllers.Upsc
 POST       /upscan/call-to-upscan/:journeyId                    controllers.UpscanController.initiateCallToUpscan(journeyId: String)
 +nocsrf
 POST       /upscan/remove-file/:journeyId/:fileReference      controllers.UpscanController.removeFile(journeyId: String, fileReference: String)
+
+# Error pages
+GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()

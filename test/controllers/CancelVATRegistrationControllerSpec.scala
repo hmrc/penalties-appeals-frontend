@@ -28,8 +28,8 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.CancelVATRegistrationPage
-import java.time.LocalDateTime
 
+import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 class CancelVATRegistrationControllerSpec extends SpecBase {

@@ -33,7 +33,7 @@ object YouCannotAppealMessages {
 
   val returnToClientVATDetails = "Return to your client’s VAT details"
 
-  val returnToVATAccount = "Return to your VAT Account"
+  val returnToVATAccount = "Return to your VAT account"
 
   val checkWhatYouOwe = "Check and pay what you owe"
 

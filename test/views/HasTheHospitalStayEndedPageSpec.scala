@@ -26,7 +26,7 @@ import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.HasTheHospitalStayEndedPage
-import viewtils.{ConditionalRadioHelper, RadioOptionHelper}
+import viewtils.ConditionalRadioHelper
 
 import java.time.LocalDate
 

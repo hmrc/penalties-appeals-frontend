@@ -16,10 +16,10 @@
 
 package forms
 
-import java.time.LocalDate
-
 import base.SpecBase
 import play.api.data.{Form, FormError}
+
+import java.time.LocalDate
 
 class WhenBecomeUnableFormSpec extends SpecBase {
   val formVATTrader: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, vatTraderUser)

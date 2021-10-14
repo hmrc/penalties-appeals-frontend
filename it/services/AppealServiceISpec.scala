@@ -47,7 +47,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-      result shouldBe true
+      result shouldBe Right((): Unit)
     }
 
     "return true when the connector call succeeds for loss of staff" in {
@@ -65,7 +65,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("lossOfStaff")(userRequest, implicitly, implicitly))
-      result shouldBe true
+      result shouldBe Right((): Unit)
     }
 
     "return true when the connector call succeeds for technical issues" in {
@@ -84,7 +84,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("technicalIssues")(userRequest, implicitly, implicitly))
-      result shouldBe true
+      result shouldBe Right((): Unit)
     }
 
     "return true for hospital stay" when {
@@ -104,7 +104,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        result shouldBe true
+        result shouldBe Right((): Unit)
       }
 
       "there is a ongoing hospital stay" in {
@@ -124,7 +124,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        result shouldBe true
+        result shouldBe Right((): Unit)
       }
 
       "there has been a hospital stay that has ended" in {
@@ -145,7 +145,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        result shouldBe true
+        result shouldBe Right((): Unit)
       }
 
       "return true when the connector call succeeds for LPP" in {
@@ -164,7 +164,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        result shouldBe true
+        result shouldBe Right((): Unit)
       }
     }
 
@@ -185,7 +185,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        result shouldBe false
+        result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
 
       "the connector returns an unknown status code" in {
@@ -204,7 +204,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        result shouldBe false
+        result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
     }
 

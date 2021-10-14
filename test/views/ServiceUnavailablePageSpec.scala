@@ -17,40 +17,32 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.OtherPenaltiesForPeriodForm.otherPenaltiesForPeriodForm
-import messages.OtherPenaltiesForPeriodMessages._
+import messages.ServiceUnavailableMessages._
 import org.jsoup.nodes.Document
-import play.api.data.Form
-import play.api.test.FakeRequest
-import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.OtherPenaltiesForPeriodPage
+import views.html.errors.ServiceUnavailablePage
 
-class OtherPenaltiesForPeriodPageSpec extends SpecBase with ViewBehaviours {
-
-  "OtherPenaltiesForPeriodPage" should {
-    val otherPenaltiesForPeriodPage: OtherPenaltiesForPeriodPage = injector.instanceOf[OtherPenaltiesForPeriodPage]
-
-    object Selectors extends BaseSelectors{
+class ServiceUnavailablePageSpec extends SpecBase with ViewBehaviours {
+  "ServiceUnavailablePage" should {
+    val makingALateAppealPage: ServiceUnavailablePage = injector.instanceOf[ServiceUnavailablePage]
+    object Selectors extends BaseSelectors {
       val p1 = "#main-content > div > div > p:nth-child(2)"
       val p2 = "#main-content > div > div > p:nth-child(3)"
+      val p3 = "#main-content > div > div > p:nth-child(4)"
+      val p4 = "#main-content > div > div > p:nth-child(5)"
     }
 
-    def applyView(form: Form[_])(implicit request: FakeRequest[_]): HtmlFormat.Appendable = {
-      otherPenaltiesForPeriodPage(form)
-    }
-
-    implicit  val doc: Document = asDocument(applyView(otherPenaltiesForPeriodForm))
+    implicit val doc: Document = asDocument(makingALateAppealPage())
 
     val expectedContent = Seq(
       Selectors.title -> title,
-      Selectors.h1 -> h1,
+      Selectors.h1 -> heading,
       Selectors.p1 -> p1,
       Selectors.p2 -> p2,
-      Selectors.button -> button
+      Selectors.p3 -> p3,
+      Selectors.p4 -> p4
     )
 
     behave like pageWithExpectedMessages(expectedContent)
   }
-
 }
