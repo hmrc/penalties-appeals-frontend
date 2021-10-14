@@ -2,6 +2,7 @@
 @import config.AppConfig
 @import utils.SessionKeys
 @import views.html.components.upload.uploadItem
+@import views.html.partials.errorManager
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
@@ -70,6 +71,9 @@
             <div class="multi-file-upload__notifications govuk-visually-hidden" aria-live="polite" role="status"></div>
 
             <script type="text/x-template" id="multi-file-upload-item-tpl">@uploadItem(appConfig.acceptedFileTypes)</script>
+            <script type="text/x-template" id="error-manager-summary-tpl">@errorManager.summary(messages)</script>
+            <script type="text/x-template" id="error-manager-summary-item-tpl">@errorManager.summaryItem(messages)</script>
+            <script type="text/x-template" id="error-manager-message-tpl">@errorManager.message(messages)</script>
 
             <p>
                 @govukButton(Button(content = Text(messages("common.continue"))))
