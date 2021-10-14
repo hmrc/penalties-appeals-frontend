@@ -18,20 +18,19 @@ package controllers.predicates
 
 import config.{AppConfig, ErrorHandler}
 import models.UserRequest
-import utils.Logger.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{ActionBuilder, ActionFunction, Request, _}
+import play.api.mvc._
 import services.AuthService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.allEnrolments
-import uk.gov.hmrc.auth.core.retrieve.{AgentInformation, ItmpAddress, Name, ~}
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, ~}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 import utils.{EnrolmentKeys, SessionKeys}
 import views.html.errors.Unauthorised
-import javax.inject.{Inject, Singleton}
-import models.appeals.AgentDetails
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

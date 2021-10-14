@@ -473,7 +473,6 @@ serviceUnavailable.p4 = Solicitor’s Office and Legal Services
 serviceUnavailable.p5 = HMRC
 serviceUnavailable.p6 = BX9 1ZT
 
-
 # Problem with service page
 # ----------------------------------------------------------
 problemWithService.title = Sorry, there is a problem with the service
@@ -484,3 +483,11 @@ problemWithService.p3 = If you prefer, you can appeal by letter. Write to:
 problemWithService.p4 = Solicitor‘s Office and Legal Services
 problemWithService.p5 = HMRC
 problemWithService.p6 = BX9 1ZT
+
+# Duplicate Appeal Page
+# ----------------------------------------------------------
+duplicateAppeal.title = We have already been asked to review this penalty
+duplicateAppeal.heading = We have already been asked to review this penalty
+duplicateAppeal.p1 = You cannot submit a duplicate request for the same penalty.
+duplicateAppeal.link = View your penalties and appeals
+agent.duplicateAppeal.link = View your client’s penalties and appeals

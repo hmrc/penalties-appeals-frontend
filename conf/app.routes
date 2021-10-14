@@ -140,3 +140,4 @@ POST       /upscan/remove-file/:journeyId/:fileReference      controllers.Upscan
 # Error pages
 GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()
 GET        /problem-with-service                                controllers.ProblemWithServiceController.onPageLoad()
+GET        /duplicate-appeal                                   controllers.DuplicateAppealController.onPageLoad()

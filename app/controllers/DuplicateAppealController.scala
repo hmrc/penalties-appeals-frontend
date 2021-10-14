@@ -17,20 +17,21 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import controllers.predicates.AuthPredicate
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.YouCannotAppealPage
+import views.html.errors.DuplicateAppealPage
 
 import javax.inject.Inject
 
-class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage)(implicit mcc: MessagesControllerComponents,
-                                                                                    appConfig: AppConfig,
-                                                                                    authorise: AuthPredicate,
-                                                                                    dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) { implicit request => {
-    Ok(youCannotAppealPage())
-    }
+class DuplicateAppealController @Inject()(duplicateAppealPage: DuplicateAppealPage)
+                                         (implicit mcc: MessagesControllerComponents,
+                                             appConfig: AppConfig,
+                                             authorise: AuthPredicate) extends FrontendController(mcc) with I18nSupport {
+
+  def onPageLoad(): Action[AnyContent] = authorise {
+    implicit request => Conflict(duplicateAppealPage())
   }
+
 }
