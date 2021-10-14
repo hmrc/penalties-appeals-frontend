@@ -137,12 +137,12 @@ object PenaltiesStub {
     )
   }
 
-  def failedAppealSubmission(isLPP: Boolean, penaltyId: String): StubMapping = {
+  def failedAppealSubmission(isLPP: Boolean, penaltyId: String, status: Option[Int] = None): StubMapping = {
     stubFor(
       post(urlEqualTo(submitAppealUri(isLPP, penaltyId)))
         .willReturn(
           aResponse()
-            .withStatus(Status.INTERNAL_SERVER_ERROR)
+            .withStatus(status.fold(Status.INTERNAL_SERVER_ERROR)(identity))
         )
     )
   }

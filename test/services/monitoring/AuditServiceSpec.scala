@@ -18,15 +18,14 @@ package services.monitoring
 
 import base.SpecBase
 import config.AppConfig
-
 import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.{mock, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import org.mockito.Mockito.{mock, reset, verify, when}
-import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global

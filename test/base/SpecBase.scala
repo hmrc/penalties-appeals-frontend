@@ -36,7 +36,6 @@ import repositories.UploadJourneyRepository
 import services.AuthService
 import services.monitoring.AuditService
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name}
 import uk.gov.hmrc.emailaddress.EmailAddress
 import utils.SessionKeys
 import views.html.errors.Unauthorised

@@ -18,15 +18,15 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.ReasonableExcuseForm
+import messages.ReasonableExcuseSelectionMessages._
 import models.{PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.ReasonableExcuseSelectionPage
-import messages.ReasonableExcuseSelectionMessages._
-import utils.SessionKeys
 
 class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
   "ReasonableExcuseSelectionPage" when {

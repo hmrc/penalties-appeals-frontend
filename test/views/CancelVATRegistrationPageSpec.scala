@@ -18,14 +18,13 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.CancelVATRegistrationForm
-import models.NormalMode
+import messages.CancelVATRegistrationMessages._
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.CancelVATRegistrationPage
 import viewtils.RadioOptionHelper
-import messages.CancelVATRegistrationMessages._
 
 class CancelVATRegistrationPageSpec extends SpecBase with ViewBehaviours {
   "CancelVATRegistrationPage" should {

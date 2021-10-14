@@ -17,13 +17,13 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import org.jsoup.nodes.Document
-import play.twirl.api.HtmlFormat
-import views.behaviours.ViewBehaviours
-import views.html.AppealStartPage
 import messages.AppealStartMessages._
 import models.PenaltyTypeEnum
+import org.jsoup.nodes.Document
+import play.twirl.api.HtmlFormat
 import utils.SessionKeys
+import views.behaviours.ViewBehaviours
+import views.html.AppealStartPage
 
 class AppealStartPageSpec extends SpecBase with ViewBehaviours {
   "AppealStartPage" should {

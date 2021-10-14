@@ -457,3 +457,14 @@ otherRelevantInformation.title = Tell us why you want to appeal the penalty
 otherRelevantInformation.heading = Tell us why you want to appeal the penalty
 otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
 otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
+
+# Service Unavailable Page
+# ----------------------------------------------------------
+serviceUnavailable.title = Sorry, the service is unavailable
+serviceUnavailable.heading = Sorry, the service is unavailable
+serviceUnavailable.p1 = We have not saved your answers.
+serviceUnavailable.p2 = You will be able to use the service later.
+serviceUnavailable.p3 = If you prefer, you can appeal by letter. Write to:
+serviceUnavailable.p4 = Solicitor’s Office and Legal Services
+serviceUnavailable.p5 = HMRC
+serviceUnavailable.p6 = BX9 1ZT

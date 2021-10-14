@@ -18,13 +18,13 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.WhoPlannedToSubmitVATReturnAgentForm
+import messages.WhoPlannedToSubmitVATReturnAgentMessages._
 import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.agents.WhoPlannedToSubmitVATReturnAgentPage
-import messages.WhoPlannedToSubmitVATReturnAgentMessages._
 import viewtils.RadioOptionHelper
 
 class WhoPlannedToSubmitVATReturnAgentPageSpec extends SpecBase with ViewBehaviours {

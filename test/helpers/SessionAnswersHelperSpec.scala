@@ -28,11 +28,11 @@ import utils.SessionKeys
 
 import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
   val mockRepository = mock(classOf[UploadJourneyRepository])
-  val  sessionAnswersHelper = new SessionAnswersHelper(mockRepository)
+  val sessionAnswersHelper = new SessionAnswersHelper(mockRepository)
 
   "isAllAnswerPresentForReasonableExcuse" should {
     "for crime" must {
@@ -1160,7 +1160,6 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
 
   "getPreviousUploadsFileNames" should{
     "return Future[String] " in {
-      implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
       val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> "true",
@@ -1188,7 +1187,6 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
   "getContentWithExistingUploadFileNames" should {
     "when reason is 'other' (that requires a file upload call)" should {
       "return Future[Seq[(String, String, String)]] " in {
-        implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
         val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
@@ -1214,7 +1212,6 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
 
     "when there's an Obligation Appeal Journey (that requires a file upload call) " should {
       "return Future[Seq[(String, String, String)]] " in {
-        implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
         val fakeRequestForAppealingTheObligation : UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.journeyId -> "4321",
           SessionKeys.isObligationAppeal -> "true",
@@ -1232,7 +1229,6 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
 
     "when reason is 'bereavement' (that doesn't require a file upload call)" should {
       "return Future[Seq[(String, String, String)]] " in {
-        implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
         val fakeRequestWithBereavementKeysPresent = fakeRequestConverter(fakeRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "bereavement",

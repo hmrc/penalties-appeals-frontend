@@ -18,13 +18,13 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidThePersonDieForm
+import messages.WhenDidThePersonDiePageMessages._
 import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.bereavement.WhenDidThePersonDiePage
-import messages.WhenDidThePersonDiePageMessages._
 
 class WhenDidThePersonDiePageSpec extends SpecBase with ViewBehaviours{
   val whenDidThePersonDiePage: WhenDidThePersonDiePage = injector.instanceOf[WhenDidThePersonDiePage]

@@ -25,12 +25,12 @@ import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.obligation.OtherRelevantInformationPage
-import java.time.LocalDateTime
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class AppealAgainstObligationControllerSpec extends SpecBase {

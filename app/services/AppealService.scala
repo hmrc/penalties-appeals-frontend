@@ -27,11 +27,11 @@ import utils.Logger.logger
 import play.api.libs.json.{JsResult, Json}
 import repositories.UploadJourneyRepository
 import services.monitoring.AuditService
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse, UpstreamErrorResponse}
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.SessionKeys
-import java.time.LocalDateTime
 
+import java.time.LocalDateTime
 import javax.inject.Inject
 import uk.gov.hmrc.auth.core.retrieve.{AgentInformation, Name}
 import uk.gov.hmrc.emailaddress.EmailAddress
@@ -83,7 +83,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
-  def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
+  def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
     val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
@@ -108,18 +108,21 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
           else
             auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, headerGenerator))
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
-          true
+          Right()
         }
         case _ => {
           logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
-          false
+          Left(response.status)
         }
       }
     }
   }.recover {
+    case e: UpstreamErrorResponse =>
+      logger.error(s"[AppealService][submitAppeal] - Received 5xx response, error message: ${e.getMessage}")
+      Left(e.statusCode)
     case e =>
       logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
-      false
+      Left(INTERNAL_SERVER_ERROR)
   }
 
   def otherPenaltiesInTaxPeriod(penaltyId: String, isLPP: Boolean)

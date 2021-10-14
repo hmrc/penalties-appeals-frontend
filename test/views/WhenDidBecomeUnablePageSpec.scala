@@ -22,7 +22,6 @@ import messages.WhenDidBecomeUnableMessages._
 import models.{NormalMode, PenaltyTypeEnum, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import utils.SessionKeys
 import views.behaviours.ViewBehaviours
