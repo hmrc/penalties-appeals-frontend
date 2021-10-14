@@ -468,3 +468,15 @@ serviceUnavailable.p3 = If you prefer, you can appeal by letter. Write to:
 serviceUnavailable.p4 = Solicitor’s Office and Legal Services
 serviceUnavailable.p5 = HMRC
 serviceUnavailable.p6 = BX9 1ZT
+
+
+# Problem with service page
+# ----------------------------------------------------------
+problemWithService.title = Sorry, there is a problem with the service
+problemWithService.heading = Sorry, there is a problem with the service
+problemWithService.p1 = We have not saved your answers.
+problemWithService.p2 = You will be able to use the service later.
+problemWithService.p3 = If you prefer, you can appeal by letter. Write to:
+problemWithService.p4 = Solicitor‘s Office and Legal Services
+problemWithService.p5 = HMRC
+problemWithService.p6 = BX9 1ZT
