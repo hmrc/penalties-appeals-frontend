@@ -23,7 +23,7 @@ case class UpscanInitiateRequest(
                                 successRedirect: Option[String] = None,
                                 errorRedirect: Option[String] = None,
                                 minimumFileSize: Option[Int] = None,
-                                maximumFileSize: Option[Int] = None
+                                maximumFileSize: Option[Int] = Some(6291456)
                                 )
 object UpscanInitiateRequest {
   implicit val writes: Writes[UpscanInitiateRequest] = Json.writes[UpscanInitiateRequest]
