@@ -457,3 +457,7 @@ otherRelevantInformation.title = Tell us why you want to appeal the penalty
 otherRelevantInformation.heading = Tell us why you want to appeal the penalty
 otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
 otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
+
+# Error message for characters more than 5000 in text area
+# ----------------------------------------------------------
+explainReason.charsInTextArea.error = Explain the reason in 5,000 characters or fewer

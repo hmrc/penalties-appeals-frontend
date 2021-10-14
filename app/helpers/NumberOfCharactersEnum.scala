@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package forms
+package helpers
 
-import forms.mappings.Mappings
-import helpers.NumberOfCharactersEnum
-import play.api.data.Form
-import play.api.data.Forms.single
+object NumberOfCharactersEnum extends Enumeration {
+  val charsInTextArea: NumberOfCharactersEnum.Value = Value(5000,"charsInTextArea")
 
-
-object MakingALateAppealForm extends Mappings {
-  def makingALateAppealForm() = Form[String](
-    single(
-      "late-appeal-text" -> text(errorKey = "makingALateAppeal.error.required")
-        .verifying("explainReason.charsInTextArea.error",
-          value => value.length <= NumberOfCharactersEnum.getValueOf("charsInTextArea"))
-    )
-  )
+  def getValueOf(numberOfChars:String):Int={
+    NumberOfCharactersEnum.Value(numberOfChars).id
+  }
 }

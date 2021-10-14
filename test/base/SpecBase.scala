@@ -154,4 +154,5 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     postCode = "AAA AAA",
     agentEmailID = Some(EmailAddress("Jack@aaa.com"))
   ))
+  val moreThanFiveThousandChars: String = 'a'.toString * 5010
 }

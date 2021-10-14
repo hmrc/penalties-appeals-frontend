@@ -20,13 +20,12 @@ import base.SpecBase
 import play.api.data.FormError
 
 class MakingALateAppealFormSpec extends SpecBase with FormBehaviours {
-
+  val form = MakingALateAppealForm.makingALateAppealForm()
   "MakingALateAppealForm" should {
     "bind" when {
-      val form = MakingALateAppealForm.makingALateAppealForm()
       behave like mandatoryField(form, "late-appeal-text",
         FormError("late-appeal-text", "makingALateAppeal.error.required"))
-      "a text value entered for bereavement" in {
+      "a text value less than 5000 entered for bereavement" in {
         val result = form.bind(
           Map(
             "late-appeal-text" -> "Some reason."
@@ -34,6 +33,11 @@ class MakingALateAppealFormSpec extends SpecBase with FormBehaviours {
         )
         result.hasErrors shouldBe false
       }
+    }
+
+    "More than 5000 characters give required error and not bind" in {
+      val result = form.bind(Map("late-appeal-text" -> moreThanFiveThousandChars)).apply("late-appeal-text")
+      result.errors.headOption shouldBe Some(FormError("late-appeal-text", "explainReason.charsInTextArea.error"))
     }
   }
 }

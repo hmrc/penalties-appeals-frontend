@@ -20,11 +20,21 @@ import base.SpecBase
 import play.api.data.FormError
 
 class OtherRelevantInformationFormSpec extends SpecBase with FormBehaviours {
+
+  val form = OtherRelevantInformationForm.otherRelevantInformationForm
   "OtherRelevantInformationForm" should {
     "bind" when {
-      val form = OtherRelevantInformationForm.otherRelevantInformationForm
       behave like mandatoryField(form, "other-relevant-information-text",
         FormError("other-relevant-information-text", "otherRelevantInformation.error.required"))
     }
+      "Less than 5000 characters bind successfully and not give errors" in {
+        val result = form.bind(Map("other-relevant-information-text" -> "Valid Reason.")).apply("other-relevant-information-text")
+        result.errors shouldBe empty
+      }
+
+    "More than 5000 characters give required error and not bind" in {
+        val result = form.bind(Map("other-relevant-information-text" -> moreThanFiveThousandChars)).apply("other-relevant-information-text")
+        result.errors.headOption shouldBe Some(FormError("other-relevant-information-text", "explainReason.charsInTextArea.error"))
+      }
   }
 }

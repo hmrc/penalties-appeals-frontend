@@ -17,6 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
+import helpers.NumberOfCharactersEnum
 import play.api.data.Form
 import play.api.data.Forms.single
 
@@ -24,6 +25,8 @@ object OtherRelevantInformationForm extends Mappings {
   val otherRelevantInformationForm: Form[String] = Form[String](
     single(
       "other-relevant-information-text" -> text(errorKey = "otherRelevantInformation.error.required")
+        .verifying("explainReason.charsInTextArea.error",
+          value => value.length <= NumberOfCharactersEnum.getValueOf("charsInTextArea"))
     )
   )
 }

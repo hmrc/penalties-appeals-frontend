@@ -17,6 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
+import helpers.NumberOfCharactersEnum
 import play.api.data.Form
 import play.api.data.Forms.single
 import play.api.i18n.Messages
@@ -27,7 +28,8 @@ object WhyReturnSubmittedLateForm extends Mappings {
       single(
         "why-return-submitted-late-text" -> text(errorKey =
           "otherReason.whyReturnSubmittedLate.error.required"
-        )
+        ).verifying("explainReason.charsInTextArea.error",
+            value => value.length <= NumberOfCharactersEnum.getValueOf("charsInTextArea"))
       )
     )
 }

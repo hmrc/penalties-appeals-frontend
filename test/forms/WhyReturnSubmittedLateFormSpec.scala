@@ -22,17 +22,20 @@ import play.api.data.FormError
 class WhyReturnSubmittedLateFormSpec extends SpecBase {
   val form = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
 
-  "When no reason is given" should {
-    "give required error and not bind" in {
+  "WhyReturnSubmittedLateForm" should {
+    "give required error and not bind when empty" in {
       val result = form.bind(Map("why-return-submitted-late-text" -> "")).apply("why-return-submitted-late-text")
       result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "otherReason.whyReturnSubmittedLate.error.required"))
     }
-  }
 
-  "A valid reason is given" should {
-    "bind successfully and not give errors" in {
+    "Less than 5000 characters bind successfully and not give errors" in {
       val result = form.bind(Map("why-return-submitted-late-text" -> "Valid Reason.")).apply("why-return-submitted-late-text")
       result.errors shouldBe empty
+    }
+
+    "More than 5000 characters give required error and not bind" in {
+      val result = form.bind(Map("why-return-submitted-late-text" -> moreThanFiveThousandChars)).apply("why-return-submitted-late-text")
+      result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "explainReason.charsInTextArea.error"))
     }
   }
 }
