@@ -28,6 +28,7 @@ import utils.Logger.logger
 
 import javax.inject.Inject
 import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum, UpscanInitiateRequest, UpscanInitiateResponseModel}
+import play.api.http.HeaderNames
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -125,9 +126,14 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
               )
             )
           )
-          repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
+          repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
         }
       )
     }
   }
+
+  def preFlightUpload(journeyId: String): Action[AnyContent] = Action {
+    Created.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+  }
+
 }

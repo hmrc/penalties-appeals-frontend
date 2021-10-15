@@ -22,6 +22,7 @@ import connectors.httpParsers.UpscanInitiateHttpParser.InvalidJson
 import models.upload.{FailureReasonEnum, UploadDetails, UploadFormTemplateRequest, UploadJourney, UploadStatus, UploadStatusEnum, UpscanInitiateResponseModel}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
+import play.api.http.HeaderNames
 import play.api.libs.json._
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
@@ -209,6 +210,14 @@ class UpscanControllerSpec extends SpecBase {
           ))
           status(result) shouldBe NO_CONTENT
         }
+      }
+    }
+
+    "preFlightUpload" should {
+      "return a Created response with the CORS Allow Origin header" in {
+        val result = controller.preFlightUpload("J1234")(fakeRequest)
+        status(result) shouldBe CREATED
+        await(result).header.headers(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN) shouldBe "*"
       }
     }
   }
