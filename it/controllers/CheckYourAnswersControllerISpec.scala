@@ -266,7 +266,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
       }
 
-      "multiple file upload - no late appeal" in  {
+      "multiple file upload - no late appeal" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
           SessionKeys.journeyId -> "4321",
           SessionKeys.penaltyId -> "1234",
@@ -887,7 +887,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
 
-    "redirect the user to the InternalServerError on failure for obligation false" in  {
+    "redirect the user to the InternalServerError on failure for obligation false" in {
       PenaltiesStub.failedAppealSubmissionWithFault(false, "1234")
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
@@ -925,8 +925,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       redirectLocation(request).get shouldBe controllers.routes.ServiceUnavailableController.onPageLoad().url
     }
 
-      "show an ISE when the appeal fails" in {
-      PenaltiesStub.failedAppealSubmission(false, "1234")
+    "redirect to the ProblemWithService page when the appeal fails from a payload issue" in {
+      PenaltiesStub.failedAppealSubmission(false, "1234", status = Some(BAD_REQUEST))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -941,7 +941,28 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
+    }
+
+    "redirect to the ProblemWithService page when the appeal fails from an issue with the service" in {
+      PenaltiesStub.failedAppealSubmission(false, "1234", status = Some(INTERNAL_SERVER_ERROR))
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
+      )
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {

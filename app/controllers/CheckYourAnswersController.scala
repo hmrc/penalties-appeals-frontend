@@ -90,6 +90,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
           appealService.submitAppeal("obligation").flatMap(_.fold(
             {
               case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))
+              case INTERNAL_SERVER_ERROR | BAD_REQUEST => Future(Redirect(controllers.routes.ProblemWithServiceController.onPageLoad()))
               case _ => Future(errorHandler.showInternalServerError)
             },
             _ => {
@@ -109,6 +110,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             appealService.submitAppeal(reasonableExcuse).flatMap(_.fold(
               {
                 case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))
+                case INTERNAL_SERVER_ERROR | BAD_REQUEST => Future(Redirect(controllers.routes.ProblemWithServiceController.onPageLoad()))
                 case _ => Future(errorHandler.showInternalServerError)
               },
               _ => {

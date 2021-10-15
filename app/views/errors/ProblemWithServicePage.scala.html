@@ -1,0 +1,17 @@
+@this(layout: Layout)
+
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageTitle = messages("problemWithService.title"),
+        showPenaltyInformation = false) {
+
+    <h1 class="govuk-heading-xl">@messages("problemWithService.heading")</h1>
+    <p class="govuk-body">@messages("problemWithService.p1")</p>
+    <p class="govuk-body">@messages("problemWithService.p2")</p>
+    <p class="govuk-body">@messages("problemWithService.p3")</p>
+    <p class="govuk-body">
+        @messages("problemWithService.p4")<br>
+        @messages("problemWithService.p5")<br>
+        @messages("problemWithService.p6")
+    </p>
+}

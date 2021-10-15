@@ -199,7 +199,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
     "return a success response" when {
       "response is OK" in {
         val penaltyId = "1234"
-        successfulCallCallForOtherPenalties(penaltyId, OK)
+        successfulCallForOtherPenalties(penaltyId, OK)
         val result = await(penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId = penaltyId, isLPP = false, enrolmentKey = "123456789")
         (ExecutionContext.Implicits.global, HeaderCarrier()))
         result.status shouldBe OK
@@ -207,7 +207,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
       "response is NO_CONTENT" in {
         val penaltyId = "1234"
-        successfulCallCallForOtherPenalties(penaltyId, NO_CONTENT)
+        successfulCallForOtherPenalties(penaltyId, NO_CONTENT)
         val result = await(penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId = penaltyId, isLPP = false, enrolmentKey = "123456789")
         (ExecutionContext.Implicits.global, HeaderCarrier()))
         result.status shouldBe NO_CONTENT
