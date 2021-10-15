@@ -319,6 +319,16 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
       }
+
+      "redirect the user to the duplicate appeal page" when {
+        "the downstream service returns CONFLICT" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
+            .thenReturn(Future.successful(Left(CONFLICT)))
+          val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.DuplicateAppealController.onPageLoad().url
+        }
+      }
     }
 
     "the user is unauthorised" when {
