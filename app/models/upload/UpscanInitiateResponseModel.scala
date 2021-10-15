@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.upscan
+package models.upload
 
 import play.api.libs.json._
 

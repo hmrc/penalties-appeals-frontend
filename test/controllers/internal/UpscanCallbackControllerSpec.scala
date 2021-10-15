@@ -91,7 +91,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
     fileStatus = UploadStatusEnum.FAILED, downloadUrl = None, uploadDetails = None,
     failureDetails = Some(FailureDetails(
       failureReason = FailureReasonEnum.REJECTED,
-      message = "this file was rejected"
+      message = "upscan.invalidMimeType"
     ))
   )
 

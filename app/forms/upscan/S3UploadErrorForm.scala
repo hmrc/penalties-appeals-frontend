@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package models.upscan
+package forms.upscan
 
-import play.api.libs.json.{Json, Writes}
+import models.upload.S3UploadError
+import play.api.data.Form
+import play.api.data.Forms.{mapping, nonEmptyText, optional, text}
 
-case class UpscanInitiateRequest(
-                                callbackUrl: String,
-                                successRedirect: Option[String] = None,
-                                errorRedirect: Option[String] = None,
-                                minimumFileSize: Option[Int] = None,
-                                maximumFileSize: Option[Int] = None
-                                )
-object UpscanInitiateRequest {
-  implicit val writes: Writes[UpscanInitiateRequest] = Json.writes[UpscanInitiateRequest]
+object S3UploadErrorForm {
+  val form: Form[S3UploadError] = Form(
+      mapping(
+      "key"            -> nonEmptyText,
+      "errorCode"      -> text,
+      "errorMessage"   -> text,
+      "errorRequestId" -> optional(text),
+      "errorResource"  -> optional(text)
+    )(S3UploadError.apply)(S3UploadError.unapply)
+  )
 }

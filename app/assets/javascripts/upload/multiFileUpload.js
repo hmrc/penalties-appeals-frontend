@@ -400,8 +400,8 @@ class MultiFileUpload {
      handleRequestUploadStatusCompleted(fileRef, response) {
         const file = this.getFileByReference(fileRef);
         const data = this.uploadData[file.id];
-
-        switch (response) {
+        const fileStatus = response['status'];
+        switch (fileStatus) {
             case 'READY':
                 this.uploadData[file.id].uploaded = true;
                 this.handleFileStatusSuccessful(file);

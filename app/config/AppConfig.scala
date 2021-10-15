@@ -101,4 +101,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val acceptedFileTypes: String = config.get[String]("upscan.acceptedFileTypes")
 
+  lazy val maxFileUploadSize: Int = config.get[Int]("upscan.maxFileSize")
+
 }

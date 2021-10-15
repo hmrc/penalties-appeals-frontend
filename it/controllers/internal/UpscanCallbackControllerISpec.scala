@@ -16,7 +16,7 @@
 
 package controllers.internal
 
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.bson.collection.immutable.Document
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
@@ -47,6 +47,19 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |""".stripMargin
   )
 
+  val validFailureJsonToParse: JsValue = Json.parse(
+    """
+      |{
+      |    "reference": "ref1",
+      |    "fileStatus": "FAILED",
+      |    "failureDetails": {
+      |       "failureReason": "QUARANTINE",
+      |       "message": "e.g. This file has a virus"
+      |    }
+      |}
+      |""".stripMargin
+  )
+
   val jsonAsModel: UploadJourney = UploadJourney(
     reference = "ref1",
     fileStatus = UploadStatusEnum.READY,
@@ -58,6 +71,19 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       checksum = "check12345678",
       size = 987
     ))
+  )
+
+  val jsonAsModelForFailure: UploadJourney = UploadJourney(
+    reference = "ref1",
+    fileStatus = UploadStatusEnum.FAILED,
+    downloadUrl = None,
+    uploadDetails = None,
+    failureDetails = Some(
+      FailureDetails(
+        failureReason = FailureReasonEnum.QUARANTINE,
+        message = "upscan.fileHasVirus"
+      )
+    )
   )
 
   "POST /upscan-callback/:journeyId" should {
@@ -84,6 +110,15 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
         val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
         modelInRepository shouldBe jsonAsModel
+      }
+
+      "the body received is valid and the state is updated - failure callback" in {
+        await(repository.collection.deleteMany(filter = Document()).toFuture)
+        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(validFailureJsonToParse))
+        result.status shouldBe NO_CONTENT
+        await(repository.collection.countDocuments().toFuture()) shouldBe 1
+        val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
+        modelInRepository shouldBe jsonAsModelForFailure
       }
     }
   }

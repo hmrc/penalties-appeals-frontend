@@ -16,7 +16,7 @@
 
 package connectors.httpParsers
 
-import models.upscan.UpscanInitiateResponseModel
+import models.upload.UpscanInitiateResponseModel
 import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.json.JsSuccess
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}

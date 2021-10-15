@@ -162,7 +162,6 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
               |}
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
-        //TODO: may change based on UX
         redirectLocation(result).get shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
         await(result).session.get(SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.of(2021, 2, 1).toString
       }

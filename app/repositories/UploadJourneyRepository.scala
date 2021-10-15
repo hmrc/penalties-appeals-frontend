@@ -18,7 +18,7 @@ package repositories
 
 import config.AppConfig
 import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey}
-import models.upload.{UploadJourney, UploadStatusEnum}
+import models.upload.{UploadJourney, UploadStatus}
 import uk.gov.hmrc.mongo.cache.{CacheIdType, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 import utils.Logger.logger
@@ -45,8 +45,21 @@ class UploadJourneyRepository @Inject()(
     put(journeyId)(DataKey(callbackModel.reference), callbackModel)
   }
 
-  def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatusEnum.Value]] = {
-    get[UploadJourney](journeyId)(DataKey(fileReference)).map(_.map(_.fileStatus))
+  def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatus]] = {
+    get[UploadJourney](journeyId)(DataKey(fileReference)).map(
+      upload => {
+        if(upload.exists(_.failureDetails.isDefined)) {
+          upload.flatMap(_.failureDetails.map(
+            failureDetails => {
+              logger.warn(s"[UploadJourneyRepository][getStatusOfFileUpload] - Received failure response back from Upscan, status: ${failureDetails.failureReason} for journey: $journeyId")
+              UploadStatus(failureDetails.failureReason.toString, Some(failureDetails.message))
+            }))
+        } else {
+          logger.debug(s"[UploadJourneyRepository][getStatusOfFileUpload] - Success response returned for journey: $journeyId")
+          upload.map(file => UploadStatus(file.fileStatus.toString))
+        }
+      }
+    )
   }
 
   def getUploadsForJourney(journeyId: Option[String]): Future[Option[Seq[UploadJourney]]] = {

@@ -297,6 +297,18 @@ otherReason.uploadEvidence.status.pending = Pending
 otherReason.uploadEvidence.button.remove = Remove
 otherReason.uploadEvidence.button.removing = Removing
 
+# Upscan failure messages
+# ----------------------------------------------------------
+upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)
+upscan.fileTooLarge = The selected file must be smaller than 6MB. Remove the file and try again.
+upscan.fileEmpty = The selected file is empty. Remove the file and try again.
+upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
+upscan.passwordProtected = The selected file is password protected. Remove the file and try again.
+upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
+upscan.duplicateFile = The selected file has already been uploaded. Remove the file and choose another.
+upscan.stillUploading = The selected file has not finished uploading.
+upscan.fileNotSpecified = Select a file.
+
 # Has the hospital stay ended page
 # ----------------------------------------------------------
 healthReason.hasTheHospitalStayEnded.title = Has the hospital stay ended?
