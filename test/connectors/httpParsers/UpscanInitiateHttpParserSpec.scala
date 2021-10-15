@@ -18,7 +18,7 @@ package connectors.httpParsers
 
 import base.SpecBase
 import connectors.httpParsers.UpscanInitiateHttpParser._
-import models.upscan.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
+import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpResponse

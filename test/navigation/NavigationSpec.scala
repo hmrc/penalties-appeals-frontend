@@ -54,8 +54,6 @@ class NavigationSpec extends SpecBase {
 
       s"called with $WhenDidTechnologyIssuesBeginPage" in new Setup {
         val result = mainNavigator.nextPage(WhenDidTechnologyIssuesBeginPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"))
-
-        //TODO: may change based on UX
         result.url shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
       }
 
@@ -440,7 +438,6 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
 
-      // TODO - update when hospital stay was required journey is added, currently reloads the page
       "user answers yes" in new Setup {
         val result = mainNavigator.nextPage(WasHospitalStayRequiredPage, NormalMode, Some("yes"))(
           fakeRequestWithCorrectKeysAndReasonableExcuseSet("health")

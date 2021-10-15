@@ -16,7 +16,7 @@
 
 package repositories
 
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
 import play.api.test.Helpers._
@@ -52,6 +52,19 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     ))
   )
 
+  val callbackModelFailed = UploadJourney(
+    reference = "ref1",
+    fileStatus = UploadStatusEnum.FAILED,
+    downloadUrl = Some("download.file/url"),
+    uploadDetails = None,
+    failureDetails = Some(
+      FailureDetails(
+        failureReason = FailureReasonEnum.QUARANTINE,
+        message = "File has a virus"
+      )
+    )
+  )
+
   val callbackModel2 = UploadJourney(
     reference = "ref2",
     fileStatus = UploadStatusEnum.READY,
@@ -85,7 +98,15 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload("1234", callbackModel))
       val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
       result.isDefined shouldBe true
-      result.get shouldBe UploadStatusEnum.READY
+      result.get.status shouldBe UploadStatusEnum.READY.toString
+    }
+
+    s"return $Some when the document is in Mongo (failed upload)" in new Setup {
+      await(repository.updateStateOfFileUpload("1234", callbackModelFailed))
+      val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
+      result.isDefined shouldBe true
+      result.get.status shouldBe FailureReasonEnum.QUARANTINE.toString
+      result.get.errorMessage.get shouldBe "File has a virus"
     }
   }
 

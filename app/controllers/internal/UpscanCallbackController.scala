@@ -17,8 +17,11 @@
 package controllers.internal
 
 import config.AppConfig
+import helpers.UpscanMessageHelper
+
 import javax.inject.Inject
-import models.upload.UploadJourney
+import models.upload.{FailureReasonEnum, UploadJourney}
+import play.api.i18n.Messages
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
@@ -27,13 +30,21 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
-                                        (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+                                        (implicit appConfig: AppConfig,
+                                         mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def callbackFromUpscan(journeyId: String): Action[JsValue] =
     Action.async(parse.json) { implicit request => {
         withJsonBody[UploadJourney] { callbackModel => {
+          if(callbackModel.failureDetails.isDefined) {
+            val failureReason = callbackModel.failureDetails.get.failureReason
+            val localisedFailureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason)
+            val failureDetails = callbackModel.failureDetails.get.copy(message = localisedFailureReason)
+            repository.updateStateOfFileUpload(journeyId, callbackModel.copy(failureDetails = Some(failureDetails))).map(_ => NoContent)
+          } else {
             repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
           }
+        }
         }
       }
     }

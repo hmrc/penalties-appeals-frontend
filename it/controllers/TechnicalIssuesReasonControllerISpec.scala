@@ -144,7 +144,6 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(CheckMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      //TODO: may change based on UX
       request.header.headers("Location") shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.parse("2021-02-08").toString
     }

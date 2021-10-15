@@ -16,11 +16,7 @@
 
 package connectors
 
-import models.upscan.{
-  UploadFormTemplateRequest,
-  UpscanInitiateRequest,
-  UpscanInitiateResponseModel
-}
+import models.upload.{UploadFormTemplateRequest, UpscanInitiateRequest, UpscanInitiateResponseModel}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import stubs.UpscanStub._

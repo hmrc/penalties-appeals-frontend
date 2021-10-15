@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.upscan
+package models.upload
 
 import base.SpecBase
 import play.api.libs.json.{JsValue, Json}

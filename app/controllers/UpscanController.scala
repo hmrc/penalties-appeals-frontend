@@ -18,19 +18,23 @@ package controllers
 
 import config.AppConfig
 import connectors.UpscanConnector
+import forms.upscan.S3UploadErrorForm
+import helpers.UpscanMessageHelper
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
+
 import javax.inject.Inject
-import models.upload.{UploadJourney, UploadStatusEnum}
-import models.upscan.{UpscanInitiateRequest, UpscanInitiateResponseModel}
+import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum, UpscanInitiateRequest, UpscanInitiateResponseModel}
+import play.api.http.HeaderNames
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UpscanController @Inject()(repository: UploadJourneyRepository, connector: UpscanConnector)
+class UpscanController @Inject()(repository: UploadJourneyRepository,
+                                 connector: UpscanConnector)
                                 (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
@@ -42,8 +46,11 @@ class UpscanController @Inject()(repository: UploadJourneyRepository, connector:
           NotFound(s"File $fileReference in journey $journeyId did not exist.")
         })(
           fileStatus => {
-            logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file reference: $fileReference - returning status: $fileStatus")
-            Ok(Json.toJson(fileStatus))
+            val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_))
+            val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
+            logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
+              s"reference: $fileReference - returning status: $fileStatusWithLocalisedMessage with message: ${fileStatusWithLocalisedMessage.errorMessage}")
+            Ok(Json.toJson(fileStatusWithLocalisedMessage))
           }
         )
       )
@@ -53,7 +60,11 @@ class UpscanController @Inject()(repository: UploadJourneyRepository, connector:
   def initiateCallToUpscan(journeyId: String): Action[AnyContent] = Action.async {
     implicit request => {
       logger.debug(s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId")
-      val initiateRequest = UpscanInitiateRequest(appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url)
+      val initiateRequest = UpscanInitiateRequest(
+        callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
+        errorRedirect = Some(appConfig.upscanCallbackBaseUrl + controllers.routes.UpscanController.uploadFailure(journeyId).url),
+        minimumFileSize = Some(1),
+        maximumFileSize = Some(appConfig.maxFileUploadSize))
       connector.initiateToUpscan(initiateRequest).flatMap(
         response => {
           response.fold(
@@ -90,4 +101,39 @@ class UpscanController @Inject()(repository: UploadJourneyRepository, connector:
       }
     }
   }
+
+  def uploadFailure(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request => {
+      logger.error(s"[UpscanController][uploadFailure] - Error redirect initiated for journey: $journeyId")
+      S3UploadErrorForm.form.bindFromRequest().fold(
+        error => {
+          logger.error(s"[UpscanController][uploadFailure] - Failed to parse S3 upload error with errors: ${error.errors}")
+          Future(BadRequest(""))
+        },
+        s3UploadError => {
+          val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode)
+          val fileReference = s3UploadError.key
+          logger.debug(s"[UpscanController][uploadFailure] - Setting $messageKeyToSet as the message key for file: $fileReference")
+          val callbackModel = UploadJourney(
+            reference = fileReference,
+            fileStatus = UploadStatusEnum.FAILED,
+            downloadUrl = None,
+            uploadDetails = None,
+            failureDetails = Some(
+              FailureDetails(
+                failureReason = FailureReasonEnum.REJECTED,
+                message = messageKeyToSet
+              )
+            )
+          )
+          repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+        }
+      )
+    }
+  }
+
+  def preFlightUpload(journeyId: String): Action[AnyContent] = Action {
+    Created.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+  }
+
 }

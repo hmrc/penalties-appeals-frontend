@@ -19,10 +19,10 @@ package controllers
 import base.SpecBase
 import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser.InvalidJson
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
-import models.upscan.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
+import models.upload.{FailureReasonEnum, UploadDetails, UploadFormTemplateRequest, UploadJourney, UploadStatus, UploadStatusEnum, UpscanInitiateResponseModel}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
+import play.api.http.HeaderNames
 import play.api.libs.json._
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
@@ -60,19 +60,30 @@ class UpscanControllerSpec extends SpecBase {
     "getStatusOfFileUpload" must {
       "return OK" when {
         "the user has an upload state in the database" in {
+          val returnModel = UploadStatus(UploadStatusEnum.READY.toString, None)
           when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Some(UploadStatusEnum.WAITING)))
+            .thenReturn(Future.successful(Some(returnModel)))
           val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
           status(result) shouldBe OK
-          contentAsString(result) shouldBe "\"WAITING\""
+          contentAsJson(result) shouldBe Json.toJson(returnModel)
         }
 
         "the user has a successful file upload in the database" in {
+          val returnModel = UploadStatus(UploadStatusEnum.READY.toString, None)
           when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Some(UploadStatusEnum.READY)))
+            .thenReturn(Future.successful(Some(returnModel)))
           val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
           status(result) shouldBe OK
-          contentAsString(result) shouldBe "\"READY\""
+          contentAsJson(result) shouldBe Json.toJson(returnModel)
+        }
+
+        "the user has a failed file upload in the database" in {
+          val returnModel = UploadStatus(FailureReasonEnum.QUARANTINE.toString, Some("upscan.fileHasVirus"))
+          when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(returnModel)))
+          val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
+          status(result) shouldBe OK
+          contentAsJson(result) shouldBe Json.toJson(returnModel)
         }
       }
 
@@ -136,6 +147,77 @@ class UpscanControllerSpec extends SpecBase {
           val result = controller.removeFile("J1234", "F1234")(fakeRequest)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
+      }
+    }
+
+    "uploadFailure" should {
+      "return a BAD_REQUEST when the S3 service doesn't match the expected response model" in {
+        val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
+          Json.parse("{}")
+        ))
+        status(result) shouldBe BAD_REQUEST
+      }
+
+      "return NO_CONTENT" when {
+        "the failure is because the file is too small" in {
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+          val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
+            Json.obj(
+              "key" -> "file1",
+              "errorCode" -> "EntityTooSmall",
+              "errorMessage" -> "Some message about file"
+            )
+          ))
+          status(result) shouldBe NO_CONTENT
+        }
+
+        "the failure is because the file is too large" in {
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+          val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
+            Json.obj(
+              "key" -> "file1",
+              "errorCode" -> "EntityTooLarge",
+              "errorMessage" -> "Some message about file"
+            )
+          ))
+          status(result) shouldBe NO_CONTENT
+        }
+
+        "the failure is because the file is not specified" in {
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+          val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
+            Json.obj(
+              "key" -> "file1",
+              "errorCode" -> "InvalidArgument",
+              "errorMessage" -> "Some message about file"
+            )
+          ))
+          status(result) shouldBe NO_CONTENT
+        }
+
+        "the failure is because there is some unknown client error" in {
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+          val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
+            Json.obj(
+              "key" -> "file1",
+              "errorCode" -> "ExpiredToken",
+              "errorMessage" -> "Some message about file"
+            )
+          ))
+          status(result) shouldBe NO_CONTENT
+        }
+      }
+    }
+
+    "preFlightUpload" should {
+      "return a Created response with the CORS Allow Origin header" in {
+        val result = controller.preFlightUpload("J1234")(fakeRequest)
+        status(result) shouldBe CREATED
+        await(result).header.headers(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN) shouldBe "*"
       }
     }
   }

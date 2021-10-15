@@ -1099,11 +1099,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(fakeRequestForAppealingTheObligation, implicitly)
           result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
           result(0)._2 shouldBe "This is some relevant information"
-          //TODO: change to 'other relevant information' page
           result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
           result(1)._1 shouldBe "Evidence to support this appeal"
           result(1)._2 shouldBe "file.txt"
-          //TODO: change to file upload page
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         }
       }
