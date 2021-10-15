@@ -16,20 +16,20 @@
 
 package forms
 
+import config.AppConfig
 import forms.mappings.Mappings
-import helpers.NumberOfCharactersEnum
 import play.api.data.Form
 import play.api.data.Forms.single
 import play.api.i18n.Messages
 
 object WhyReturnSubmittedLateForm extends Mappings {
-  def whyReturnSubmittedLateForm()(implicit messages: Messages): Form[String] =
+  def whyReturnSubmittedLateForm()(implicit messages: Messages, appConfig: AppConfig): Form[String] =
     Form[String](
       single(
         "why-return-submitted-late-text" -> text(errorKey =
           "otherReason.whyReturnSubmittedLate.error.required"
         ).verifying("explainReason.charsInTextArea.error",
-            value => value.length <= NumberOfCharactersEnum.getValueOf("charsInTextArea"))
+            value => value.length <= appConfig.numberOfCharsInTextArea)
       )
     )
 }
