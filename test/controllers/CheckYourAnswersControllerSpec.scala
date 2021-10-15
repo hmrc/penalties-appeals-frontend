@@ -272,13 +272,15 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
         "the obligation appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
 
         "there is no reasonable excuse selected" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -299,6 +301,22 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ServiceUnavailableController.onPageLoad().url
+        }
+
+        "the downstream service returns INTERNAL_SERVER_ERROR" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
+            .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
+          val result = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
+        }
+
+        "the downstream service returns BAD_REQUEST" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
+            .thenReturn(Future.successful(Left(BAD_REQUEST)))
+          val result = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
       }
     }

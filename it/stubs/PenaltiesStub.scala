@@ -114,7 +114,7 @@ object PenaltiesStub {
     )
   }
 
-  def successfulCallCallForOtherPenalties(
+  def successfulCallForOtherPenalties(
                                            penaltyId: String,
                                            status: Int
                                          ): StubMapping = {
