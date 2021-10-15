@@ -16,14 +16,17 @@
 
 package forms
 
+import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.single
 
 object OtherRelevantInformationForm extends Mappings {
-  val otherRelevantInformationForm: Form[String] = Form[String](
+  def otherRelevantInformationForm()(implicit appConfig: AppConfig) = Form[String](
     single(
       "other-relevant-information-text" -> text(errorKey = "otherRelevantInformation.error.required")
+        .verifying("explainReason.charsInTextArea.error",
+          value => value.length <= appConfig.numberOfCharsInTextArea)
     )
   )
 }
