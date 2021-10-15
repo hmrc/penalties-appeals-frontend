@@ -99,6 +99,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val upscanCallbackBaseUrl: String = config.get[String]("upscan.callback.base")
 
+  lazy val upscanFailureUrl: String = config.get[String]("upscan.failureUrl")
+
   lazy val acceptedFileTypes: String = config.get[String]("upscan.acceptedFileTypes")
 
   lazy val maxFileUploadSize: Int = config.get[Int]("upscan.maxFileSize")

@@ -62,7 +62,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
       logger.debug(s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId")
       val initiateRequest = UpscanInitiateRequest(
         callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
-        errorRedirect = Some(appConfig.upscanCallbackBaseUrl + controllers.routes.UpscanController.uploadFailure(journeyId).url),
+        errorRedirect = Some(appConfig.upscanFailureUrl + journeyId),
         minimumFileSize = Some(1),
         maximumFileSize = Some(appConfig.maxFileUploadSize))
       connector.initiateToUpscan(initiateRequest).flatMap(
