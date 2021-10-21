@@ -17,10 +17,10 @@
 package forms
 
 import base.SpecBase
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class MakingALateAppealFormSpec extends SpecBase with FormBehaviours {
-  val form = MakingALateAppealForm.makingALateAppealForm()
+  val form: Form[String] = MakingALateAppealForm.makingALateAppealForm()
   "MakingALateAppealForm" should {
     "bind" when {
       behave like mandatoryField(form, "late-appeal-text",

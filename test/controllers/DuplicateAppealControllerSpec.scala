@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.errors.{DuplicateAppealPage, ServiceUnavailablePage}
+import views.html.errors.DuplicateAppealPage
 
 import scala.concurrent.Future
 

@@ -16,18 +16,18 @@
 
 package repositories
 
-import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatus, UploadStatusEnum}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey}
 import utils.IntegrationSpecCommonBase
-
 import java.time.LocalDateTime
+
 import scala.concurrent.Future
 
 class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
-  lazy val repository = injector.instanceOf[UploadJourneyRepository]
+  lazy val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
   def deleteAll(): Future[DeleteResult] =
     repository
@@ -39,7 +39,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     await(deleteAll())
   }
 
-  val callbackModel = UploadJourney(
+  val callbackModel: UploadJourney = UploadJourney(
     reference = "ref1",
     fileStatus = UploadStatusEnum.READY,
     downloadUrl = Some("download.file/url"),
@@ -52,7 +52,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     ))
   )
 
-  val callbackModelFailed = UploadJourney(
+  val callbackModelFailed: UploadJourney = UploadJourney(
     reference = "ref1",
     fileStatus = UploadStatusEnum.FAILED,
     downloadUrl = Some("download.file/url"),
@@ -65,7 +65,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     )
   )
 
-  val callbackModel2 = UploadJourney(
+  val callbackModel2: UploadJourney = UploadJourney(
     reference = "ref2",
     fileStatus = UploadStatusEnum.READY,
     downloadUrl = Some("download.file2/url"),
@@ -90,20 +90,20 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   "getStatusOfFileUpload" should {
     s"return $None when the document is not in Mongo" in new Setup {
-      val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
+      val result: Option[UploadStatus] = await(repository.getStatusOfFileUpload("1234", "ref1"))
       result.isDefined shouldBe false
     }
 
     s"return $Some when the document is in Mongo" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel))
-      val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
+      val result: Option[UploadStatus] = await(repository.getStatusOfFileUpload("1234", "ref1"))
       result.isDefined shouldBe true
       result.get.status shouldBe UploadStatusEnum.READY.toString
     }
 
     s"return $Some when the document is in Mongo (failed upload)" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModelFailed))
-      val result = await(repository.getStatusOfFileUpload("1234", "ref1"))
+      val result: Option[UploadStatus] = await(repository.getStatusOfFileUpload("1234", "ref1"))
       result.isDefined shouldBe true
       result.get.status shouldBe FailureReasonEnum.QUARANTINE.toString
       result.get.errorMessage.get shouldBe "File has a virus"
@@ -113,19 +113,19 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
   "getUploadsForJourney" should {
     s"return $None when the document is not in Mongo" in new Setup {
       await(deleteAll())
-      val result = await(repository.getUploadsForJourney(Some("1234")))
+      val result: Option[Seq[UploadJourney]] = await(repository.getUploadsForJourney(Some("1234")))
       result.isDefined shouldBe false
     }
 
     s"return $None when no Id is given" in new Setup {
       await(deleteAll())
-      val result = await(repository.getUploadsForJourney(None))
+      val result: Option[Seq[UploadJourney]] = await(repository.getUploadsForJourney(None))
       result.isDefined shouldBe false
     }
 
     s"return $Some when the document is in Mongo" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel))
-      val result = await(repository.getUploadsForJourney(Some("1234")))
+      val result: Option[Seq[UploadJourney]] = await(repository.getUploadsForJourney(Some("1234")))
       result.isDefined shouldBe true
       result.get shouldBe Seq(callbackModel)
     }

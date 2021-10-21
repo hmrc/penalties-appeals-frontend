@@ -64,7 +64,7 @@ class UpscanInitiateConnectorSpec extends SpecBase {
         )(any(), any(), any(), any())
       ).thenReturn(Future.successful(Right(sampleUpscanResponse)))
 
-      val result = connector.initiateToUpscan(upscanInitiateDataModel)
+      val result: Future[UpscanInitiateResponse] = connector.initiateToUpscan(upscanInitiateDataModel)
 
       await(result) shouldBe Right(sampleUpscanResponse)
     }
@@ -80,7 +80,7 @@ class UpscanInitiateConnectorSpec extends SpecBase {
         )(any(), any(), any(), any())
       ).thenReturn(Future.successful(Left(BadRequest)))
 
-      val result = connector.initiateToUpscan(upscanInitiateDataModel)
+      val result: Future[UpscanInitiateResponse] = connector.initiateToUpscan(upscanInitiateDataModel)
 
       await(result) shouldBe Left(BadRequest)
     }

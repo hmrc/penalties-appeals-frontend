@@ -29,14 +29,14 @@ class UpscanInitiateHttpParserSpec extends SpecBase {
 
     private val httpMethod = "POST"
     private val url = "/"
-    val httpResponse = HttpResponse(status, optJson, responseHeaders)
+    val httpResponse: AnyRef with HttpResponse = HttpResponse(status, optJson, responseHeaders)
 
     def readResponse: UpscanInitiateHttpParser.UpscanInitiateResponse = UpscanInitiateHttpParser.UpscanInitiateResponseReads.read(httpMethod, url, httpResponse)
 
   }
-  val validModel = UpscanInitiateResponseModel("foo", UploadFormTemplateRequest("bar", Map("doo" -> "dar")))
+  val validModel: UpscanInitiateResponseModel = UpscanInitiateResponseModel("foo", UploadFormTemplateRequest("bar", Map("doo" -> "dar")))
 
-  val exampleResponse = Json.parse(
+  val exampleResponse: JsValue = Json.parse(
     s"""
        |{
        |  "reference": "foo",

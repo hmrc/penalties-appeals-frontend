@@ -30,8 +30,6 @@ import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.HasTheHospitalStayEndedPage
 import viewtils.ConditionalRadioHelper
 
-import java.time.LocalDate
-
 class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
   "HasTheHospitalStayEndedPage" should {
     val conditionalRadioHelper = injector.instanceOf[ConditionalRadioHelper]

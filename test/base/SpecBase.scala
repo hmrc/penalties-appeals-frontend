@@ -99,10 +99,11 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
       (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"),
       (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"), (SessionKeys.reasonableExcuse, reasonableExcuse), (SessionKeys.journeyId, "1234")))
 
-  val fakeRequestWithCorrectKeysAndHonestyDeclarationSet = fakeRequest
-    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
-      (SessionKeys.journeyId, "1234"), (SessionKeys.hasConfirmedDeclaration, "true"))
+  val fakeRequestWithCorrectKeysAndHonestyDeclarationSet: FakeRequest[AnyContent] = fakeRequest
+    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod,
+      "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod,
+      "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"), (SessionKeys.journeyId, "1234"),
+      (SessionKeys.hasConfirmedDeclaration, "true"))
 
   lazy val authPredicate: AuthPredicate = new AuthPredicate(
     messagesApi,
@@ -144,7 +145,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   val vatTraderUserAdditional: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest
     .withSession(SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString))
 
-  val agentDetails = Some(AgentDetails(
+  val agentDetails: Option[AgentDetails] = Some(AgentDetails(
     agentReferenceNo = arn.get,
     name = "Jack",
     addressLine1 = "Flat 20",

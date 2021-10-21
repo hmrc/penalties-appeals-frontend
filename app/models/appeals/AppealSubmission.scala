@@ -436,7 +436,8 @@ object AppealSubmission {
       case "crime" => Json.toJson(payload.asInstanceOf[CrimeAppealInformation])(CrimeAppealInformation.crimeAppealWrites)
       case "fireOrFlood" => Json.toJson(payload.asInstanceOf[FireOrFloodAppealInformation])(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
       case "lossOfStaff" => Json.toJson(payload.asInstanceOf[LossOfStaffAppealInformation])(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
-      case "technicalIssues" => Json.toJson(payload.asInstanceOf[TechnicalIssuesAppealInformation])(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
+      case "technicalIssues" => Json.toJson(
+        payload.asInstanceOf[TechnicalIssuesAppealInformation])(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
       case "health" => Json.toJson(payload.asInstanceOf[HealthAppealInformation])(HealthAppealInformation.healthAppealWrites)
       case "other" => Json.toJson(payload.asInstanceOf[OtherAppealInformation])(OtherAppealInformation.otherAppealInformationWrites)
       case "obligation" => Json.toJson(payload.asInstanceOf[ObligationAppealInformation])(ObligationAppealInformation.obligationAppealInformationWrites)
@@ -447,7 +448,7 @@ object AppealSubmission {
   def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long, agentDetails: Option[AgentDetails])
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
-      case "bereavement" => {
+      case "bereavement" =>
         AppealSubmission(
           sourceSystem = "MDTP",
           taxRegime = "VAT",
@@ -467,8 +468,7 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
           )
         )
-      }
-      case "crime" => {
+      case "crime" =>
         AppealSubmission(
           sourceSystem = "MDTP",
           taxRegime = "VAT",
@@ -489,8 +489,7 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
           )
         )
-      }
-      case "fireOrFlood" => {
+      case "fireOrFlood" =>
         AppealSubmission(
           sourceSystem = "MDTP",
           taxRegime = "VAT",
@@ -510,9 +509,8 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
           )
         )
-      }
 
-      case "lossOfStaff" => {
+      case "lossOfStaff" =>
         AppealSubmission(
           sourceSystem = "MDTP",
           taxRegime = "VAT",
@@ -532,9 +530,8 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
           )
         )
-      }
 
-      case "technicalIssues" => {
+      case "technicalIssues" =>
         AppealSubmission(
           sourceSystem = "MDTP",
           taxRegime = "VAT",
@@ -555,9 +552,8 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
           )
         )
-      }
 
-      case "health" => {
+      case "health" =>
         val isHospitalStay = userRequest.session.get(SessionKeys.wasHospitalStayRequired).get == "yes"
         val isOngoingHospitalStay = userRequest.session.get(SessionKeys.hasHealthEventEnded).contains("no")
         AppealSubmission(
@@ -582,9 +578,8 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
           )
         )
-      }
 
-      case "other" => {
+      case "other" =>
         AppealSubmission(
           sourceSystem = "MDTP",
           taxRegime = "VAT",
@@ -605,8 +600,7 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
           )
         )
-      }
-      case "obligation" => {
+      case "obligation" =>
         AppealSubmission(
           sourceSystem = "MDTP",
           taxRegime = "VAT",
@@ -622,7 +616,6 @@ object AppealSubmission {
             supportingEvidence = if (amountOfFileUploads > 0) Some(Evidence(amountOfFileUploads)) else None
           )
         )
-      }
     }
   }
 

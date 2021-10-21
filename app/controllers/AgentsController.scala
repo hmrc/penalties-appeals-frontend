@@ -90,7 +90,7 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
           BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction))
         },
         vatReturnSubmittedBy => {
-          (vatReturnSubmittedBy.toLowerCase) match {
+          vatReturnSubmittedBy.toLowerCase match {
             case "agent" =>
               Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(vatReturnSubmittedBy)))
                 .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))

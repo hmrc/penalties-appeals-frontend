@@ -48,7 +48,7 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
         formWithErrors => BadRequest(makingALateAppealPage(formWithErrors)),
         lateAppealReason => {
           Redirect(routes.CheckYourAnswersController.onPageLoad())
-            .addingToSession(SessionKeys.lateAppealReason -> lateAppealReason.toString)
+            .addingToSession(SessionKeys.lateAppealReason -> lateAppealReason)
         }
       )
     }

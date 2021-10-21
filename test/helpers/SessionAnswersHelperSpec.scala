@@ -16,6 +16,8 @@
 
 package helpers
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
@@ -26,12 +28,11 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
 
-import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
-  val mockRepository = mock(classOf[UploadJourneyRepository])
+  val mockRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val sessionAnswersHelper = new SessionAnswersHelper(mockRepository)
 
   "isAllAnswerPresentForReasonableExcuse" should {
@@ -1165,7 +1166,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           .withSession(
             SessionKeys.otherRelevantInformation -> "Some Information"
           )
-        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
+        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(
+          Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "Some Information"
         result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
@@ -1213,9 +1215,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           SessionKeys.journeyId -> "4321"
         ))
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForOtherJourney, messages))
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "The reason does not fit into any of the other categories"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -1236,9 +1238,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           SessionKeys.otherRelevantInformation -> "This is some relevant information"
         ))
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
-        result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
-        result(0)._2 shouldBe "This is some relevant information"
-        result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result.head._1 shouldBe "Tell us why you want to appeal the penalty"
+        result.head._2 shouldBe "This is some relevant information"
+        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
         result(1)._1 shouldBe "Evidence to support this appeal"
         result(1)._2 shouldBe "file1.txt"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url

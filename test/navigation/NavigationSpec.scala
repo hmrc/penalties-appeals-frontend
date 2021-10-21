@@ -55,7 +55,8 @@ class NavigationSpec extends SpecBase {
       }
 
       s"called with $WhenDidTechnologyIssuesBeginPage" in new Setup {
-        val result: Call = mainNavigator.nextPage(WhenDidTechnologyIssuesBeginPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"))
+        val result: Call = mainNavigator.nextPage(WhenDidTechnologyIssuesBeginPage, CheckMode, None)(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"))
         result.url shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
       }
 
@@ -283,7 +284,8 @@ class NavigationSpec extends SpecBase {
       }
 
       s"called with $WasHospitalStayRequiredPage" in new Setup {
-        val result: Call = mainNavigator.nextPage(WasHospitalStayRequiredPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        val result: Call = mainNavigator.nextPage(WasHospitalStayRequiredPage, NormalMode, Some("no"))(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
       }
 
@@ -570,7 +572,7 @@ class NavigationSpec extends SpecBase {
 
     "redirect to YouCannotAppeal page" when {
       "no option selected" in new Setup {
-        val result = mainNavigator.routingForCancelVATRegistrationPage(Some("no"),None)
+        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("no"),None)
         result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }

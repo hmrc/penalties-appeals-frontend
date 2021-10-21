@@ -20,11 +20,10 @@ import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.single
-import play.api.i18n.Messages
 
 
 object MakingALateAppealForm extends Mappings {
-  def makingALateAppealForm()(implicit appConfig: AppConfig) = Form[String](
+  def makingALateAppealForm()(implicit appConfig: AppConfig): Form[String] = Form[String](
     single(
       "late-appeal-text" -> text(errorKey = "makingALateAppeal.error.required")
         .verifying("explainReason.charsInTextArea.error",

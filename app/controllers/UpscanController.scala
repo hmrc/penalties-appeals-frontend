@@ -42,7 +42,8 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
       logger.debug(s"[UpscanController][getStatusOfFileUpload] - File upload status requested for journey: $journeyId with file reference: $fileReference")
       repository.getStatusOfFileUpload(journeyId, fileReference).map(
         _.fold({
-          logger.error(s"[UpscanController][getStatusOfFileUpload] - File upload status was not found for journey: $journeyId with file reference: $fileReference")
+          logger.error(
+            s"[UpscanController][getStatusOfFileUpload] - File upload status was not found for journey: $journeyId with file reference: $fileReference")
           NotFound(s"File $fileReference in journey $journeyId did not exist.")
         })(
           fileStatus => {
@@ -94,10 +95,9 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
       repository.removeFileForJourney(journeyId, fileReference).map {
         _ => NoContent
       }.recover {
-        case e => {
+        case e =>
           logger.error(s"[UpscanController][initiateCallToUpscan] - Failed to delete file: $fileReference for journey: $journeyId with error: ${e.getMessage}")
           InternalServerError("An exception has occurred.")
-        }
       }
     }
   }

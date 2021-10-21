@@ -24,14 +24,13 @@ import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import uk.gov.hmrc.http.ServiceUnavailableException
 import views.html.errors.ProblemWithServicePage
 
 import scala.concurrent.Future
 
 class ProblemWithServiceControllerSpec extends SpecBase {
 
-  val problemWithServicePage = injector.instanceOf[ProblemWithServicePage]
+  val problemWithServicePage: ProblemWithServicePage = injector.instanceOf[ProblemWithServicePage]
 
   class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]) {
 

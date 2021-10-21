@@ -22,7 +22,7 @@ import models.UserRequest
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.errors.{DuplicateAppealPage, ServiceUnavailablePage}
+import views.html.errors.DuplicateAppealPage
 
 class DuplicateAppealPageSpec extends SpecBase with ViewBehaviours {
   "DuplicateAppealPage" should {
@@ -32,11 +32,13 @@ class DuplicateAppealPageSpec extends SpecBase with ViewBehaviours {
       val link = "#main-content > div > div > p:nth-child(3) > a"
     }
 
-    def applyVATTraderView(userRequest: UserRequest[_] = vatTraderUser): HtmlFormat.Appendable = duplicateAppealPage.apply()(userRequest, implicitly, implicitly)
+    def applyVATTraderView(userRequest: UserRequest[_] = vatTraderUser): HtmlFormat.Appendable =
+      duplicateAppealPage.apply()(userRequest, implicitly, implicitly)
 
     implicit val doc: Document = asDocument(applyVATTraderView())
 
-    def applyAgentView(userRequest: UserRequest[_] = agentUserSessionKeys): HtmlFormat.Appendable = duplicateAppealPage.apply()(userRequest, implicitly, implicitly)
+    def applyAgentView(userRequest: UserRequest[_] = agentUserSessionKeys): HtmlFormat.Appendable =
+      duplicateAppealPage.apply()(userRequest, implicitly, implicitly)
 
     implicit val agentDoc: Document = asDocument(applyAgentView())
 

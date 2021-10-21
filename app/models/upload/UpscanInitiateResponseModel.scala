@@ -35,19 +35,15 @@ object UpscanInitiateResponseModel {
     Json.format[UpscanInitiateResponseModel]
 
   implicit val jsonReadsForModel: Reads[UpscanInitiateResponseModel] =
-    new Reads[UpscanInitiateResponseModel] {
-      override def reads(
-          json: JsValue
-      ): JsResult[UpscanInitiateResponseModel] = {
-        for {
-          reference <- (json \ "reference").validate[String]
-          fieldsAndHref <-
-            (json \ "uploadRequest").validate[UploadFormTemplateRequest](
-              UploadFormTemplateRequest.formats
-            )
-        } yield {
-          UpscanInitiateResponseModel(reference, fieldsAndHref)
-        }
+    (json: JsValue) => {
+      for {
+        reference <- (json \ "reference").validate[String]
+        fieldsAndHref <-
+          (json \ "uploadRequest").validate[UploadFormTemplateRequest](
+            UploadFormTemplateRequest.formats
+          )
+      } yield {
+        UpscanInitiateResponseModel(reference, fieldsAndHref)
       }
     }
 }

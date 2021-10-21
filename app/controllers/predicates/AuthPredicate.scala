@@ -53,20 +53,17 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
     authService.authorised().retrieve(
       Retrievals.affinityGroup and Retrievals.allEnrolments and Retrievals.name and Retrievals.email and Retrievals.itmpAddress
     ) {
-      case Some(affinityGroup) ~ allEnrolments ~ name ~ email ~ address => {
+      case Some(affinityGroup) ~ allEnrolments ~ name ~ email ~ address =>
         logger.debug(s"$logMsgStart - User is $affinityGroup and has ${allEnrolments.enrolments.size} enrolments. " +
           s"Enrolments: ${allEnrolments.enrolments}")
         (isAgent(affinityGroup), allEnrolments, name, email, address) match {
-          case (true, _, _, _, _) => {
+          case (true, _, _, _, _) =>
             logger.debug(s"$logMsgStart - Authorising user as Agent")
             authoriseAsAgent(block, (name, email, address))
-          }
-          case (false, enrolments, _, _, _) => {
+          case (false, enrolments, _, _, _) =>
             logger.debug(s"$logMsgStart - Authorising user as Individual/Organisation")
             checkVatEnrolment(enrolments, block)
-          }
         }
-      }
       case _ =>
         logger.warn(s"$logMsgStart - Missing affinity group")
         Future.successful(errorHandler.showInternalServerError)

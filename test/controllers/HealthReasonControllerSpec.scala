@@ -30,7 +30,8 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.health.{HasTheHospitalStayEndedPage, WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
+import views.html.reasonableExcuseJourneys.health.{HasTheHospitalStayEndedPage, WasHospitalStayRequiredPage,
+  WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
 import viewtils.ConditionalRadioHelper
 
 import java.time.{LocalDate, LocalDateTime}

@@ -51,7 +51,8 @@ class UploadJourneyRepository @Inject()(
         if(upload.exists(_.failureDetails.isDefined)) {
           upload.flatMap(_.failureDetails.map(
             failureDetails => {
-              logger.warn(s"[UploadJourneyRepository][getStatusOfFileUpload] - Received failure response back from Upscan, status: ${failureDetails.failureReason} for journey: $journeyId")
+              logger.warn(s"[UploadJourneyRepository][getStatusOfFileUpload] -" +
+                s" Received failure response back from Upscan, status: ${failureDetails.failureReason} for journey: $journeyId")
               UploadStatus(failureDetails.failureReason.toString, Some(failureDetails.message))
             }))
         } else {

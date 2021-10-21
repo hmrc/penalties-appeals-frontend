@@ -63,7 +63,8 @@ class AppealAuditModelSpec extends SpecBase {
 
     val bereavementLateAppealInformation = bereavementAppealInformation.copy(lateAppeal = true, lateAppealReason = Some("this is a very good reason"))
 
-    val bereavementAgentAppealInformation = bereavementAppealInformation.copy(isClientResponsibleForSubmission = Some(true), isClientResponsibleForLateSubmission = Some(true))
+    val bereavementAgentAppealInformation = bereavementAppealInformation.copy(
+      isClientResponsibleForSubmission = Some(true), isClientResponsibleForLateSubmission = Some(true))
 
     val crimeAppealInformation: CrimeAppealInformation = CrimeAppealInformation(
       reasonableExcuse = "crime",

@@ -100,7 +100,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned for LPP additional" in {
-      implicit val fakeRequest = FakeRequest()
+      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
       val result = controller.onPageLoadForObligation("1234", isLPP = true, isAdditional = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
