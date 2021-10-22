@@ -92,7 +92,8 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
           BadRequest(hasCrimeBeenReportedPage(formHasErrors, radioOptionsToRender, postAction))
         },
         reportedAnswer => {
-          logger.debug(s"[CrimeReasonController][onSubmitForHasCrimeBeenReported] - Adding '$reportedAnswer' to session under key: ${SessionKeys.hasCrimeBeenReportedToPolice}")
+          logger.debug(
+            s"[CrimeReasonController][onSubmitForHasCrimeBeenReported] - Adding '$reportedAnswer' to session under key: ${SessionKeys.hasCrimeBeenReportedToPolice}")
           Redirect(navigation.nextPage(HasCrimeBeenReportedPage, mode))
             .addingToSession((SessionKeys.hasCrimeBeenReportedToPolice, reportedAnswer))
         }

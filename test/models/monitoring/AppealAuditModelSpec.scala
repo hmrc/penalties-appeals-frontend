@@ -44,7 +44,8 @@ class AppealAuditModelSpec extends SpecBase {
       appealInformation
     )
 
-    def appealAgentSubmission(appealInformation: AppealInformation) = appealSubmission(appealInformation).copy(appealSubmittedBy = "agent")
+    def appealAgentSubmission(appealInformation: AppealInformation): AppealSubmission = appealSubmission(appealInformation)
+      .copy(appealSubmittedBy = "agent")
     val mockAppConfig: AppConfig = mock(classOf[AppConfig])
     val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
     val testHeaderGenerator = new HeaderGenerator(mockAppConfig,mockUUIDGenerator)
@@ -62,7 +63,8 @@ class AppealAuditModelSpec extends SpecBase {
 
     val bereavementLateAppealInformation = bereavementAppealInformation.copy(lateAppeal = true, lateAppealReason = Some("this is a very good reason"))
 
-    val bereavementAgentAppealInformation = bereavementAppealInformation.copy(isClientResponsibleForSubmission = Some(true), isClientResponsibleForLateSubmission = Some(true))
+    val bereavementAgentAppealInformation = bereavementAppealInformation.copy(
+      isClientResponsibleForSubmission = Some(true), isClientResponsibleForLateSubmission = Some(true))
 
     val crimeAppealInformation: CrimeAppealInformation = CrimeAppealInformation(
       reasonableExcuse = "crime",

@@ -25,7 +25,7 @@ import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[MakingALateAppealController]
+  val controller: MakingALateAppealController = injector.instanceOf[MakingALateAppealController]
 
   "GET /making-a-late-appeal" should {
     "return 200 (OK) when the user is authorised and has the correct keys" in {

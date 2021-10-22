@@ -26,7 +26,7 @@ import stubs.PenaltiesStub._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[ReasonableExcuseController]
+  val controller: ReasonableExcuseController = injector.instanceOf[ReasonableExcuseController]
 
   "GET /reason-for-missing-deadline" should {
     "return 200 (OK) when the user is authorised and the reasonable excuses can be fetched" in {

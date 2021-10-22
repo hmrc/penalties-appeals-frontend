@@ -17,10 +17,10 @@
 package forms
 
 import base.SpecBase
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class WhyReturnSubmittedLateFormSpec extends SpecBase {
-  val form = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
+  val form: Form[String] = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
 
   "WhyReturnSubmittedLateForm" should {
     "give required error and not bind when empty" in {

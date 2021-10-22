@@ -107,7 +107,8 @@ class FormProviderHelperSpec extends SpecBase {
 
     "leave the form as is when no answers exist" in {
       val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
-      val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm, (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))
+      val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(
+        mockForm, (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))
       result shouldBe mockForm
     }
   }

@@ -41,7 +41,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
           errorHandler.showInternalServerError
         )(
           appealData => {
-            removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData, false)
+            removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData, isAppealAgainstObligation = false)
           }
         )
       }
@@ -55,7 +55,8 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
           errorHandler.showInternalServerError
         )(
           appealData => {
-            removeExistingKeysFromSessionAndRedirect(routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration(), penaltyId, appealData, true)
+            removeExistingKeysFromSessionAndRedirect(
+              routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration(), penaltyId, appealData, isAppealAgainstObligation = true)
           }
         )
       }

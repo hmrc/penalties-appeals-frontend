@@ -21,7 +21,7 @@ import org.jsoup.Jsoup
 import views.html.LanguageSelect
 
 class LanguageSelectSpec extends SpecBase {
-  val languageSelectPage = injector.instanceOf[LanguageSelect]
+  val languageSelectPage: LanguageSelect = injector.instanceOf[LanguageSelect]
 
   "LanguageSelectPage" should {
     "return HTML and have English language toggle (no link) and Welsh language toggle (link)" in {

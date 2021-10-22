@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import models.ReasonableExcuse
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
@@ -80,7 +81,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result = controller.onPageLoad()(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
@@ -91,16 +92,17 @@ class ReasonableExcuseControllerSpec extends SpecBase {
               Some(seqOfReasonableExcuses)
             ))
 
-          val result = controller.onPageLoad()(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.reasonableExcuse -> "bereavement")))
+          val result: Future[Result] = controller.onPageLoad()(
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.reasonableExcuse -> "bereavement")))
           status(result) shouldBe OK
-          val documentParsed = Jsoup.parse(contentAsString(result))
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select("#value").hasAttr("checked") shouldBe true
       }
     }
 
     "return 500" when {
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoad()(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
@@ -110,7 +112,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             None
           ))
 
-        val result = controller.onPageLoad()(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -156,7 +158,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
           Json.parse(
             """
               |{
@@ -177,7 +179,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
           Json.parse(
             """
               |{
@@ -196,7 +198,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
           Json.parse(
             """
               |{
@@ -213,7 +215,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
 
     "return 500" when {
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onSubmit()(fakeRequest.withJsonBody(
+        val result: Future[Result] = controller.onSubmit()(fakeRequest.withJsonBody(
           Json.parse(
             """
               |{
@@ -231,7 +233,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             None
           ))
 
-        val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
           Json.parse(
             """
               |{

@@ -16,10 +16,10 @@
 
 package forms
 
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class HasCrimeBeenReportedFormSpec extends FormBehaviours {
-  val form = HasCrimeBeenReportedForm.hasCrimeBeenReportedForm
+  val form: Form[String] = HasCrimeBeenReportedForm.hasCrimeBeenReportedForm
 
   behave like mandatoryField(form, "value", FormError("value", "crimeReason.hasBeenReported.required"))
 

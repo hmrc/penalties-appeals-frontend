@@ -22,7 +22,7 @@ import play.api.data.Forms.single
 
 object WhoPlannedToSubmitVATReturnAgentForm extends Mappings {
   final val options = Seq("agent", "client")
-  val whoPlannedToSubmitVATReturnForm = Form[String](
+  val whoPlannedToSubmitVATReturnForm: Form[String] = Form[String](
     single(
       "value" -> text("agents.whoPlannedToSubmitVATReturn.error.required")
         .verifying("agents.whoPlannedToSubmitVATReturn.error.required", value => options.contains(value))

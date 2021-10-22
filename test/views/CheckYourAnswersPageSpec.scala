@@ -31,11 +31,12 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
 
       val declarationH2 = "#declaration"
 
-      val descriptionListDtKey = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > dt"
+      val descriptionListDtKey: Int => String = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > dt"
 
-      val descriptionListDdValue = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__value"
+      val descriptionListDdValue: Int => String = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__value"
 
-      val descriptionListDdAction = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__actions"
+      val descriptionListDdAction: Int => String = (nthChild: Int) =>
+        s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__actions"
 
       val declarationText = s"#main-content > div > div > p"
     }

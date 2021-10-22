@@ -29,8 +29,10 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.crime.{HasCrimeBeenReportedToPolicePage, WhenDidCrimeHappenPage}
-
 import java.time.{LocalDate, LocalDateTime}
+
+import org.jsoup.nodes.Document
+
 import scala.concurrent.Future
 
 class CrimeReasonControllerSpec extends SpecBase {
@@ -51,7 +53,8 @@ class CrimeReasonControllerSpec extends SpecBase {
       mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
+      2020, 2, 1, 0, 0, 0))
   }
   
 
@@ -66,9 +69,10 @@ class CrimeReasonControllerSpec extends SpecBase {
         }
 
         "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.dateOfCrime -> "2021-01-01")))
+          val result: Future[Result] = controller.onPageLoadForWhenCrimeHappened(NormalMode)(
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.dateOfCrime -> "2021-01-01")))
           status(result) shouldBe OK
-          val documentParsed = Jsoup.parse(contentAsString(result))
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
           documentParsed.select(".govuk-date-input__input").get(1).attr("value") shouldBe "1"
           documentParsed.select(".govuk-date-input__input").get(2).attr("value") shouldBe "2021"
@@ -108,7 +112,8 @@ class CrimeReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          await(result).session.get(SessionKeys.dateOfCrime).get shouldBe LocalDate.of(2021, 2, 1).toString
+          await(result).session.get(SessionKeys.dateOfCrime).get shouldBe LocalDate.of(
+            2021, 2, 1).toString
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -194,9 +199,10 @@ class CrimeReasonControllerSpec extends SpecBase {
         }
 
         "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.hasCrimeBeenReportedToPolice -> "unknown")))
+          val result: Future[Result] = controller.onPageLoadForHasCrimeBeenReported(NormalMode)(
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.hasCrimeBeenReportedToPolice -> "unknown")))
           status(result) shouldBe OK
-          val documentParsed = Jsoup.parse(contentAsString(result))
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select("#value-3").get(0).hasAttr("checked") shouldBe true
         }
 
@@ -225,7 +231,7 @@ class CrimeReasonControllerSpec extends SpecBase {
       "user submits the form" when {
         "the validation is performed against possible values - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -242,8 +248,9 @@ class CrimeReasonControllerSpec extends SpecBase {
         "the validation is performed against possible values - redirect on success and set the session key value " +
           "- going to late appeal when appeal > 30 days late" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
-            val result = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+            when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
+              2020, 4, 1, 0, 0, 0))
+            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
               .withJsonBody(
               Json.parse(
                 """
@@ -260,7 +267,7 @@ class CrimeReasonControllerSpec extends SpecBase {
 
         "the validation is performed against possible values - value does not appear in options list" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -276,7 +283,7 @@ class CrimeReasonControllerSpec extends SpecBase {
 
         "the validation is performed against an empty value - value is an empty string" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(
                 """
                   |{
@@ -293,7 +300,7 @@ class CrimeReasonControllerSpec extends SpecBase {
 
       "return 500" when {
         "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequest.withJsonBody(
+          val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequest.withJsonBody(
             Json.parse(
               """
                 |{

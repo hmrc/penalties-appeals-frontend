@@ -16,7 +16,7 @@
 
 package forms
 
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class ReasonableExcuseFormSpec extends FormBehaviours {
   val seqOfReasonableExcuses = Seq(
@@ -29,7 +29,7 @@ class ReasonableExcuseFormSpec extends FormBehaviours {
     "reasonableExcuse7"
   )
 
-  val form = ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses)
+  val form: Form[String] = ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses)
 
   behave like mandatoryField(form, "value", FormError("value", "reasonableExcuses.error.required"))
 }

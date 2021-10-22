@@ -90,19 +90,16 @@ def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (autho
           BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction))
         },
         vatReturnSubmittedBy => {
-          (vatReturnSubmittedBy.toLowerCase) match {
-            case "agent" => {
+          vatReturnSubmittedBy.toLowerCase match {
+            case "agent" =>
               Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(vatReturnSubmittedBy)))
                 .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
-            }
-            case "client" => {
+            case "client" =>
               Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(vatReturnSubmittedBy)))
                 .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
-            }
-            case _ => {
+            case _ =>
               logger.debug("[AgentsController][onSubmitForWhoPlannedToSubmitVATReturn]- Something went wrong with 'vatReturnSubmittedBy'")
               errorHandler.showInternalServerError
-            }
           }
         }
       )

@@ -16,6 +16,8 @@
 
 package views
 
+import java.time.LocalDate
+
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidThePersonDieForm
 import messages.WhenDidThePersonDiePageMessages._
@@ -33,7 +35,7 @@ class WhenDidThePersonDiePageSpec extends SpecBase with ViewBehaviours{
   def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidThePersonDiePage.apply(form,
     controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(NormalMode))
 
-  val formProvider = WhenDidThePersonDieForm.whenDidThePersonDieForm()
+  val formProvider: Form[LocalDate] = WhenDidThePersonDieForm.whenDidThePersonDieForm()
 
   "WhenDidThePersonDiePage" should {
     implicit val doc: Document = asDocument(applyView(formProvider))

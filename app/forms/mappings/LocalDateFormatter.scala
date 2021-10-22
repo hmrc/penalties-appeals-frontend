@@ -33,7 +33,7 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
                                            futureKey: Option[String] = None,
                                            dateNotEqualOrAfterKeyAndCompareDate: Option[(String, LocalDate)] = None,
                                            args: Seq[String] = Seq.empty)
-                                          (implicit messages: Messages) extends Formatter[LocalDate] with Formatters with Constraints {
+                                          (implicit val messages: Messages) extends Formatter[LocalDate] with Formatters with Constraints {
 
   private val fieldKeys: List[String] = List("day", "month", "year")
 

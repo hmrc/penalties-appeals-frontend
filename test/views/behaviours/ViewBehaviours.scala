@@ -18,7 +18,7 @@ package views.behaviours
 
 import base.SpecBase
 import org.jsoup.nodes.Document
-import org.scalatest.MustMatchers._
+import org.scalatest.matchers.must.Matchers._
 
 trait ViewBehaviours extends SpecBase {
 

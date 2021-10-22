@@ -16,7 +16,7 @@
 
 package helpers
 
-import models.upload.{FailureReasonEnum, UploadJourney}
+import models.upload.FailureReasonEnum
 import play.api.i18n.Messages
 
 object UpscanMessageHelper {

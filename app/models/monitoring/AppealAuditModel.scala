@@ -30,7 +30,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
 
   override val auditType: String = "PenaltyAppealSubmitted"
   override val transactionName: String = "penalties-appeal-submitted"
-  val appealPayload = appealInformationJsonObj(appealSubmission)
+  val appealPayload: JsObject = appealInformationJsonObj(appealSubmission)
   override val detail: JsValue = jsonObjNoNulls(
     "submittedBy" -> appealSubmission.appealSubmittedBy,
     "taxIdentifier" -> request.vrn,
@@ -95,13 +95,13 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "startDateOfEvent" -> {
                 try appealInfo.startDateOfEvent.get
                 catch {
-                  case e: NoSuchElementException => None
+                  case _: NoSuchElementException => None
                 }
           },
           "endDateOfEvent" -> {
             try appealInfo.endDateOfEvent.get
             catch {
-              case e: NoSuchElementException => None
+              case _: NoSuchElementException => None
             }
           },
           "lateAppeal" -> appealInfo.lateAppeal,
@@ -116,7 +116,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "noOfUploadedFiles" -> {
             try appealInfo.supportingEvidence.get.noOfUploadedFiles.toString
             catch {
-              case e: NoSuchElementException => "0"
+              case _: NoSuchElementException => "0"
             }
           },
           "uploadedFiles" -> { //TODO: Implement actual checks with upscan
@@ -140,7 +140,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "noOfUploadedFiles" -> {
             try appealInfo.supportingEvidence.get.noOfUploadedFiles.toString
             catch {
-              case e: NoSuchElementException => "0"
+              case _: NoSuchElementException => "0"
             }
           },
         "uploadedFiles" -> { //TODO: Implement actual checks with upscan

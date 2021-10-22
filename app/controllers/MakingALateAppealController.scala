@@ -36,7 +36,8 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(MakingALateAppealForm.makingALateAppealForm, SessionKeys.lateAppealReason)
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
+        MakingALateAppealForm.makingALateAppealForm(), SessionKeys.lateAppealReason)
       Ok(makingALateAppealPage(formProvider))
     }
   }
@@ -47,7 +48,7 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
         formWithErrors => BadRequest(makingALateAppealPage(formWithErrors)),
         lateAppealReason => {
           Redirect(routes.CheckYourAnswersController.onPageLoad())
-            .addingToSession(SessionKeys.lateAppealReason -> lateAppealReason.toString)
+            .addingToSession(SessionKeys.lateAppealReason -> lateAppealReason)
         }
       )
     }

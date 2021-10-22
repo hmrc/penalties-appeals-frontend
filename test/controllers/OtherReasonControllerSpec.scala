@@ -31,9 +31,9 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
-
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
+import org.jsoup.nodes.Document
 
 class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
@@ -42,7 +42,8 @@ class OtherReasonControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
-  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]], previousUpload: Option[Seq[UploadJourney]] = None) {
+  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]],
+    Option[ItmpAddress]]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
@@ -60,7 +61,8 @@ class OtherReasonControllerSpec extends SpecBase {
       mockUploadJourneyRepository
     )(authPredicate, dataRequiredAction, appConfig, mcc, ec)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
+      2020, 2, 1, 0, 0, 0))
   }
 
   "OtherReasonController" should {
@@ -72,9 +74,10 @@ class OtherReasonControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoadForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whenDidBecomeUnable -> "2021-01-01")))
+        val result: Future[Result] = controller.onPageLoadForWhenDidBecomeUnable(NormalMode)(
+          fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whenDidBecomeUnable -> "2021-01-01")))
         status(result) shouldBe OK
-        val documentParsed = Jsoup.parse(contentAsString(result))
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
         documentParsed.select(".govuk-date-input__input").get(1).attr("value") shouldBe "1"
         documentParsed.select(".govuk-date-input__input").get(2).attr("value") shouldBe "2021"
@@ -113,7 +116,8 @@ class OtherReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          await(result).session.get(SessionKeys.whenDidBecomeUnable).get shouldBe LocalDate.of(2021, 2, 1).toString
+          await(result).session.get(SessionKeys.whenDidBecomeUnable).get shouldBe LocalDate.of(
+            2021, 2, 1).toString
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -128,8 +132,9 @@ class OtherReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad.url
-          await(result).session.get(SessionKeys.whenDidBecomeUnable).get shouldBe LocalDate.of(2021, 2, 1).toString
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+          await(result).session.get(SessionKeys.whenDidBecomeUnable).get shouldBe LocalDate.of(
+            2021, 2, 1).toString
         }
 
         "return 400 (BAD_REQUEST)" when {
@@ -199,7 +204,7 @@ class OtherReasonControllerSpec extends SpecBase {
       "return OK and correct view (pre-populated date when present in session)" in new Setup(
         AuthTestModels.successfulAuthResult, Some(UploadData.oneWaitingUploads)
       ) {
-        val result = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
         status(result) shouldBe OK
       }
 
@@ -227,8 +232,9 @@ class OtherReasonControllerSpec extends SpecBase {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to late appeal or CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Some(Seq(UploadJourney(
-              reference = "1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
+            .thenReturn(Future.successful(Some(Seq(UploadJourney(reference = "1234", fileStatus = UploadStatusEnum.READY,
+              downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain",
+                uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
           val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER
         }
@@ -236,8 +242,9 @@ class OtherReasonControllerSpec extends SpecBase {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Some(Seq(UploadJourney(
-              reference = "1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
+            .thenReturn(Future.successful(Some(Seq(UploadJourney(reference = "1234", fileStatus = UploadStatusEnum.READY,
+              downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain",
+                uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
 
           val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
           status(result) shouldBe SEE_OTHER

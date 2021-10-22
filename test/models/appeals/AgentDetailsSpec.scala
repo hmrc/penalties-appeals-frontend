@@ -17,12 +17,12 @@
 package models.appeals
 
 import base.SpecBase
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.emailaddress.EmailAddress
 
 class AgentDetailsSpec extends SpecBase {
 
-  val agentDetailsJson = Json.parse(
+  val agentDetailsJson: JsValue = Json.parse(
     """
       |{
       |   "agentReferenceNo": "1234567890",
@@ -36,7 +36,7 @@ class AgentDetailsSpec extends SpecBase {
       |}
       |""".stripMargin
   )
-  val agentDetailsModel = AgentDetails(
+  val agentDetailsModel: AgentDetails = AgentDetails(
     agentReferenceNo = "1234567890",
     name = "Jack",
     addressLine1 = "Flat 20",

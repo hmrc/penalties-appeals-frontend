@@ -29,8 +29,10 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.lossOfStaff.WhenDidThePersonLeaveBusinessPage
-
 import java.time.{LocalDate, LocalDateTime}
+
+import org.jsoup.nodes.Document
+
 import scala.concurrent.Future
 
 class LossOfStaffReasonControllerSpec extends SpecBase {
@@ -50,7 +52,8 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
       mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
+      2020, 2, 1, 0, 0, 0))
 
   }
 
@@ -63,9 +66,10 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoad(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whenPersonLeftTheBusiness -> "2021-01-01")))
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(
+          fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whenPersonLeftTheBusiness -> "2021-01-01")))
         status(result) shouldBe OK
-        val documentParsed = Jsoup.parse(contentAsString(result))
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
         documentParsed.select(".govuk-date-input__input").get(1).attr("value") shouldBe "1"
         documentParsed.select(".govuk-date-input__input").get(2).attr("value") shouldBe "2021"
@@ -107,7 +111,8 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        await(result).session.get(SessionKeys.whenPersonLeftTheBusiness).get shouldBe LocalDate.of(2021, 2, 1).toString
+        await(result).session.get(SessionKeys.whenPersonLeftTheBusiness).get shouldBe LocalDate.of(
+          2021, 2, 1).toString
       }
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -123,7 +128,8 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        await(result).session.get(SessionKeys.whenPersonLeftTheBusiness).get shouldBe LocalDate.of(2021, 2, 1).toString
+        await(result).session.get(SessionKeys.whenPersonLeftTheBusiness).get shouldBe LocalDate.of(
+          2021, 2, 1).toString
       }
 
       "return 400 (BAD_REQUEST)" when {

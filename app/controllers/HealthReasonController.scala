@@ -152,7 +152,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
           },
           formAnswers => {
             (formAnswers.hasStayEnded, formAnswers.stayEndDate) match {
-              case (hasStayEnded, endDate) if endDate.isDefined && hasStayEnded.contains("yes") => {
+              case (hasStayEnded, endDate) if endDate.isDefined && hasStayEnded.contains("yes") =>
                 logger.debug(s"[HealthReasonController][onSubmitForHasHospitalStayEnded] - Adding answers to session:\n" +
                   s"- '${formAnswers.hasStayEnded}' under key: ${SessionKeys.hasHealthEventEnded}\n" +
                   s"- '${formAnswers.stayEndDate.get}' under key: ${SessionKeys.whenHealthIssueEnded}")
@@ -161,16 +161,13 @@ class HealthReasonController @Inject()(navigation: Navigation,
                     (SessionKeys.hasHealthEventEnded, formAnswers.hasStayEnded),
                     (SessionKeys.whenHealthIssueEnded, formAnswers.stayEndDate.get.toString)
                   )
-              }
-              case (hasStayEnded, endDate) if hasStayEnded.contains("no") && endDate.isEmpty => {
+              case (hasStayEnded, endDate) if hasStayEnded.contains("no") && endDate.isEmpty =>
                 logger.debug(s"[HealthReasonController][onSubmitForHasHospitalStayEnded]" +
                   s" - Adding answer '${formAnswers.hasStayEnded}' to session under key ${SessionKeys.hasHealthEventEnded}")
                 Redirect(navigation.nextPage(DidHospitalStayEndPage, mode)).addingToSession((SessionKeys.hasHealthEventEnded, formAnswers.hasStayEnded))
-              }
-              case _ => {
+              case _ =>
                 logger.debug("[HealthReasonController][onSubmitForHasHospitalStayEnded]- Something went wrong with 'valid' for answers")
                 errorHandler.showInternalServerError
-              }
             }
           }
         )

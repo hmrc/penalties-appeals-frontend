@@ -16,10 +16,10 @@
 
 package forms
 
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class OtherPenaltiesForPeriodFormSpec extends FormBehaviours {
- val form = OtherPenaltiesForPeriodForm.otherPenaltiesForPeriodForm
+ val form: Form[String] = OtherPenaltiesForPeriodForm.otherPenaltiesForPeriodForm
 
  behave like mandatoryField(form, "value", FormError("value", "error.clickContinue"))
 }

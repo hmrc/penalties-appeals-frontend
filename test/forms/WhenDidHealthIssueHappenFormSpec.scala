@@ -16,13 +16,15 @@
 
 package forms
 
+import java.time.LocalDate
+
 import base.SpecBase
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class WhenDidHealthIssueHappenFormSpec extends SpecBase {
-  val formVATTrader = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderUser)
+  val formVATTrader: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderUser)
 
-  val formAgent = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserSessionKeys)
+  val formAgent: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserSessionKeys)
 
   "WhenDidHealthIssueHappenForm" should {
 

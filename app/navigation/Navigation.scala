@@ -79,13 +79,11 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, extraData: Option[Map[String, String]] = None)
               (implicit userRequest: UserRequest[_]): Call = {
     mode match {
-      case CheckMode => {
+      case CheckMode =>
         //Added answer here so that we can add custom routing to pages that require extra data when answers change
         checkingRoutes(page)(answer, userRequest, extraData)
-      }
-      case NormalMode => {
+      case NormalMode =>
         normalRoutes(page)(answer, userRequest, extraData)
-      }
     }
   }
 
@@ -113,15 +111,13 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   def routingForHospitalStay(mode: Mode, answer: Option[String], request: UserRequest[_]): Call = {
     (mode, answer) match {
-      case (CheckMode, Some(ans)) if ans.equalsIgnoreCase("no") && request.session.get(SessionKeys.whenHealthIssueHappened).isDefined => {
+      case (CheckMode, Some(ans)) if ans.equalsIgnoreCase("no") && request.session.get(SessionKeys.whenHealthIssueHappened).isDefined =>
         routes.CheckYourAnswersController.onPageLoad()
-      }
       case (_, Some(ans)) if ans.equalsIgnoreCase("no") => routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
       case (_, Some(ans)) if ans.equalsIgnoreCase("yes")=> routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(mode)
-      case _ => {
+      case _ =>
         logger.debug("[Navigation][routingForHospitalStay]: unable to get answer - reloading 'WasHospitalStayRequiredPage'")
         routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
-      }
     }
   }
 
@@ -150,7 +146,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
         s"Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
       controllers.routes.MakingALateAppealController.onPageLoad()
     } else {
-      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to CYA page")
+      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - Date now: $dateTimeNow" +
+        s" :: Date communication sent: $dateSentParsed - redirect to CYA page")
       controllers.routes.CheckYourAnswersController.onPageLoad()
     }
   }

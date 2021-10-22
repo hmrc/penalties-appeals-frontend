@@ -82,7 +82,8 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal is for a LPP" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false)(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false)(
+        fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -130,8 +131,9 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal is triggered by an agent and is not a LPP - redirect to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-        SessionKeys.agentSessionVrn -> "VRN1234"), implicitly, implicitly)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)(
+        fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          SessionKeys.agentSessionVrn -> "VRN1234"), implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -147,7 +149,8 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal does not match the special cases - redirect to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)(
+        fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 

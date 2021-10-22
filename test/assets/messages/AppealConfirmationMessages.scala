@@ -35,7 +35,8 @@ object AppealConfirmationMessages {
 
   val p4 = "If you have a confirmed email address on your VAT account, we’ll also send you a secure message."
 
-  val obligationParagraph = "Our decision will take into account all late submission or late payment penalties in the same VAT period. You do not need to appeal separately for these penalties."
+  val obligationParagraph: String = "Our decision will take into account all late submission or late payment penalties in the same VAT period." +
+    " You do not need to appeal separately for these penalties."
 
   val returnToPenalties = "Return to your VAT penalties"
 

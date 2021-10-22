@@ -23,6 +23,7 @@ import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.WasHospitalStayRequiredPage
 import viewtils.RadioOptionHelper
@@ -33,8 +34,8 @@ class WasHospitalStayRequiredPageSpec extends SpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors
 
-  val formProvider = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(vatTraderUser)
-  val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
+  val formProvider: Form[String] = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(vatTraderUser)
+  val radioOptions: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
   def applyView(form: Form[_]): HtmlFormat.Appendable = wasHospitalStayRequiredPage.apply(
     form, radioOptions, controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(NormalMode))
 

@@ -105,7 +105,7 @@ class PenaltiesConnectorSpec extends SpecBase {
   class Setup {
     reset(mockHttpClient)
     reset(mockAppConfig)
-    val mockHeaderGenerator = mock(classOf[HeaderGenerator])
+    val mockHeaderGenerator: HeaderGenerator = mock(classOf[HeaderGenerator])
     val connector = new PenaltiesConnector(
       mockHttpClient,
       mockAppConfig,
@@ -120,7 +120,7 @@ class PenaltiesConnectorSpec extends SpecBase {
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
         .thenReturn("http://wrongurl/wrongurl")
 
-      val result = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = true, isAdditional = false)
+      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = true, isAdditional = false)
       result shouldBe "http://url/url"
     }
 
@@ -130,7 +130,7 @@ class PenaltiesConnectorSpec extends SpecBase {
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
         .thenReturn("http://wrongurl/wrongurl")
 
-      val result = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = true, isAdditional = true)
+      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = true, isAdditional = true)
       result shouldBe "http://url/url"
     }
 
@@ -140,7 +140,7 @@ class PenaltiesConnectorSpec extends SpecBase {
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
         .thenReturn("http://url/url")
 
-      val result = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = false, isAdditional = false)
+      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = false, isAdditional = false)
       result shouldBe "http://url/url"
     }
   }
@@ -152,7 +152,7 @@ class PenaltiesConnectorSpec extends SpecBase {
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
       result.isDefined shouldBe true
       result.get.toString() shouldBe appealDataAsJson.toString()
     }
@@ -163,7 +163,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(),any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = false))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = false))
       result.isDefined shouldBe true
       result.get.toString() shouldBe appealDataAsJsonLPP.toString()
     }
@@ -174,7 +174,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = true))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = true))
       result.isDefined shouldBe true
       result.get.toString() shouldBe appealDataAsJsonLPPAdditional.toString()
     }
@@ -185,7 +185,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
       result.isDefined shouldBe false
     }
 
@@ -195,7 +195,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
       result.isDefined shouldBe false
     }
   }
@@ -206,7 +206,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         .thenReturn(Future.successful(HttpResponse(Status.OK, reasonableExcusesAsJson.toString())))
       when(mockAppConfig.reasonableExcuseFetchUrl)
         .thenReturn("http://url/url")
-      val result = await(connector.getListOfReasonableExcuses())
+      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
       result.isDefined shouldBe true
       result.get shouldBe reasonableExcusesAsJson
     }
@@ -216,7 +216,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
       when(mockAppConfig.reasonableExcuseFetchUrl)
         .thenReturn("http://url/url")
-      val result = await(connector.getListOfReasonableExcuses())
+      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
       result.isDefined shouldBe false
     }
 
@@ -225,7 +225,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         .thenReturn(Future.successful(HttpResponse(Status.INTERNAL_SERVER_ERROR, "")))
       when(mockAppConfig.reasonableExcuseFetchUrl)
         .thenReturn("http://url/url")
-      val result = await(connector.getListOfReasonableExcuses())
+      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
       result.isDefined shouldBe false
     }
 
@@ -234,7 +234,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         .thenReturn(Future.successful(HttpResponse(Status.IM_A_TEAPOT, "")))
       when(mockAppConfig.reasonableExcuseFetchUrl)
         .thenReturn("http://url/url")
-      val result = await(connector.getListOfReasonableExcuses())
+      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
       result.isDefined shouldBe false
     }
   }
@@ -242,18 +242,21 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
   "submitAppeal with headers" should {
     "return the HTTP response back to the caller" in new Setup {
       when(mockHeaderGenerator.headersForPEGA()).thenReturn(Seq("someHeader" -> "someHeaderValue"))
-      val mockHeaders = mockHeaderGenerator.headersForPEGA()
+      val mockHeaders: Seq[(String, String)] = mockHeaderGenerator.headersForPEGA()
       when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(),ArgumentMatchers.eq(mockHeaders))(any(),
         any(), ArgumentMatchers.eq(hc.copy(authorization = None)), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
       when(mockAppConfig.submitAppealUrl(any(), any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
-      val appealSubmissionModel = AppealSubmission(
-        sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0), isLPP = true,appealSubmittedBy = "client", agentDetails = None,  appealInformation = CrimeAppealInformation(
-          reasonableExcuse = "crime", honestyDeclaration = true, startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false, lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
+      val appealSubmissionModel: AppealSubmission = AppealSubmission(
+        sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
+          2020,1,1,0,0,0), isLPP = true, appealSubmittedBy = "client",
+        agentDetails = None,  appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
+          startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false,
+          lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
-      val result = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789"))
+      val result: HttpResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789"))
       result.status shouldBe OK
     }
 
@@ -263,12 +266,16 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         .thenReturn(Future.failed(new Exception("something went wrong.")))
       when(mockAppConfig.submitAppealUrl(any(), any(), any()))
         .thenReturn("http://url/url")
-      val appealSubmissionModel = AppealSubmission(
-        sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0), isLPP = true, appealSubmittedBy = "client", agentDetails = None, appealInformation = CrimeAppealInformation(
-          reasonableExcuse = "crime", honestyDeclaration = true, startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false, lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
+      val appealSubmissionModel: AppealSubmission = AppealSubmission(
+        sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
+          2020,1,1,0,0,0), isLPP = true, appealSubmittedBy = "client",
+        agentDetails = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
+          startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false,
+          lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
-      val result = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789")))
+      val result: Exception = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel,
+        "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789")))
       result.getMessage shouldBe "something went wrong."
     }
   }
@@ -280,7 +287,8 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockAppConfig.otherPenaltiesForPeriodUrl(any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result = await(connector.getOtherPenaltiesInTaxPeriod("1234", "HMRC-MTD-VAT~VRN~123456789", false))
+      val result: HttpResponse = await(connector.getOtherPenaltiesInTaxPeriod("1234",
+        "HMRC-MTD-VAT~VRN~123456789", isLPP = false))
       result.status shouldBe OK
     }
 
@@ -290,7 +298,8 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockAppConfig.otherPenaltiesForPeriodUrl(any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result = intercept[Exception](await(connector.getOtherPenaltiesInTaxPeriod("1234", "HMRC-MTD-VAT~VRN~123456789", false)))
+      val result: Exception = intercept[Exception](await(connector.getOtherPenaltiesInTaxPeriod("1234",
+        "HMRC-MTD-VAT~VRN~123456789", isLPP = false)))
       result.getMessage shouldBe "something went wrong."
     }
   }

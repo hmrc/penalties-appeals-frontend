@@ -22,7 +22,8 @@ import play.api.i18n.Messages
 object MessageRenderer {
 
   def getMessageKey(msgKey: String)(implicit user: UserRequest[_]): String = {
-    if (user.isAgent && (didClientCauseLateSubmission || (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).isEmpty && user.session.get(SessionKeys.causeOfLateSubmissionAgent).isEmpty))) {
+    if (user.isAgent && (didClientCauseLateSubmission || (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).isEmpty
+      && user.session.get(SessionKeys.causeOfLateSubmissionAgent).isEmpty))) {
       s"agent.$msgKey"
     } else {
       msgKey

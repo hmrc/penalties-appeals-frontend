@@ -24,7 +24,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class YouCannotAppealControllerISpec extends IntegrationSpecCommonBase {
 
-  val controller = injector.instanceOf[YouCannotAppealController]
+  val controller: YouCannotAppealController = injector.instanceOf[YouCannotAppealController]
 
   "GET /you-cannot-appeal" should {
     "return 200 (OK) when the user is authorised" in {

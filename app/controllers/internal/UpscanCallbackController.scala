@@ -18,10 +18,8 @@ package controllers.internal
 
 import config.AppConfig
 import helpers.UpscanMessageHelper
-
 import javax.inject.Inject
-import models.upload.{FailureReasonEnum, UploadJourney}
-import play.api.i18n.Messages
+import models.upload.UploadJourney
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, MessagesControllerComponents}
 import repositories.UploadJourneyRepository

@@ -22,7 +22,7 @@ import play.api.data.Form
 import play.api.data.Forms.single
 
 object OtherRelevantInformationForm extends Mappings {
-  def otherRelevantInformationForm()(implicit appConfig: AppConfig) = Form[String](
+  def otherRelevantInformationForm()(implicit appConfig: AppConfig): Form[String] = Form[String](
     single(
       "other-relevant-information-text" -> text(errorKey = "otherRelevantInformation.error.required")
         .verifying("explainReason.charsInTextArea.error",

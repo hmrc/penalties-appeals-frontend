@@ -87,7 +87,8 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
 
   val uploadJourneyWithoutUrlOrUploadDetailsModel: UploadJourney = uploadJourneyModel.copy(downloadUrl = None, uploadDetails = None)
 
-  val uploadJourneyWithoutUrlOrUploadWithDefaultStatusDetailsModel: UploadJourney = uploadJourneyModel.copy(downloadUrl = None, uploadDetails = None, fileStatus = UploadStatusEnum.WAITING)
+  val uploadJourneyWithoutUrlOrUploadWithDefaultStatusDetailsModel: UploadJourney = uploadJourneyModel.copy(
+    downloadUrl = None, uploadDetails = None, fileStatus = UploadStatusEnum.WAITING)
 
   val uploadJourneyWithFailureStatusModel: UploadJourney = uploadJourneyModel.copy(
     fileStatus = UploadStatusEnum.FAILED, downloadUrl = None, uploadDetails = None,

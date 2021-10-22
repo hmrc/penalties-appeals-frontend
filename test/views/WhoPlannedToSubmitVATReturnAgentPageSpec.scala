@@ -30,7 +30,7 @@ import viewtils.RadioOptionHelper
 class WhoPlannedToSubmitVATReturnAgentPageSpec extends SpecBase with ViewBehaviours {
   val whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnAgentPage = injector.instanceOf[WhoPlannedToSubmitVATReturnAgentPage]
   object Selectors extends BaseSelectors
-  val formProvider = WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm
+  val formProvider: Form[String] = WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm
   def applyView(form: Form[_]): HtmlFormat.Appendable = whoPlannedToSubmitVATReturnPage.apply(form,
     RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider),
     controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode))

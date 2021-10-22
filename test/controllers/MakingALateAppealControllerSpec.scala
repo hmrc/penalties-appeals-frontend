@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
@@ -47,21 +48,22 @@ class MakingALateAppealControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return 200" when {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
       "return OK and correct view (pre-populated textbox when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoad()(fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.lateAppealReason -> "This is a reason.")))
+        val result: Future[Result] = controller.onPageLoad()(
+          fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.lateAppealReason -> "This is a reason.")))
         status(result) shouldBe OK
-        val documentParsed = Jsoup.parse(contentAsString(result))
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select("#late-appeal-text").first().text() shouldBe "This is a reason."
       }
     }
 
     "return 500" when {
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.onPageLoad()(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }

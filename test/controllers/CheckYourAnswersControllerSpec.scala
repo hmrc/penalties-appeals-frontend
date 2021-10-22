@@ -40,7 +40,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val confirmationPage: AppealConfirmationPage = injector.instanceOf[AppealConfirmationPage]
   val mockAppealService: AppealService = mock(classOf[AppealService])
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
-  val uploadJourneyRespository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
+  val uploadJourneyRepository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
   val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "crime",
@@ -150,7 +150,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     mockAppealService,
     confirmationPage,
     errorHandler,
-    uploadJourneyRespository,
+    uploadJourneyRepository,
     sessionAnswersHelper
   )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction)
 
@@ -306,7 +306,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the downstream service returns INTERNAL_SERVER_ERROR" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
-          val result = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
+          val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
@@ -314,7 +314,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the downstream service returns BAD_REQUEST" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(BAD_REQUEST)))
-          val result = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
+          val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }

@@ -16,6 +16,8 @@
 
 package helpers
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
@@ -26,12 +28,11 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
 
-import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
-  val mockRepository = mock(classOf[UploadJourneyRepository])
+  val mockRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val sessionAnswersHelper = new SessionAnswersHelper(mockRepository)
 
   "isAllAnswerPresentForReasonableExcuse" should {
@@ -274,9 +275,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           ))
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Crime"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Crime"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the crime happen?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url
@@ -296,9 +297,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           ))
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Crime"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Crime"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the crime happen?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url
@@ -320,9 +321,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.hasConfirmedDeclaration -> "true",
           ))
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Fire or flood"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Fire or flood"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the fire or flood happen?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
@@ -337,9 +338,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.lateAppealReason -> "Lorem ipsum"
           ))
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Fire or flood"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Fire or flood"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the fire or flood happen?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
@@ -359,9 +360,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           ))
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Loss of staff essential to the VAT process"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Loss of staff essential to the VAT process"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the person become unavailable?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url
@@ -377,9 +378,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           ))
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Loss of staff essential to the VAT process"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Loss of staff essential to the VAT process"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the person become unavailable?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url
@@ -399,10 +400,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
           ))
 
-        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Technology issues"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Technology issues"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the technology issues begin?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url
@@ -421,10 +423,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.lateAppealReason -> "Lorem ipsum"
           ))
 
-        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Technology issues"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Technology issues"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the technology issues begin?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url
@@ -449,10 +452,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
           ))
 
-        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "The reason does not fit into any of the other categories"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -484,9 +488,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               ))
 
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
-            result(0)._1 shouldBe "Reason for missing the VAT deadline"
-            result(0)._2 shouldBe "Health"
-            result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+            result.head._1 shouldBe "Reason for missing the VAT deadline"
+            result.head._2 shouldBe "Health"
+            result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
             result(1)._1 shouldBe "Did this health issue include a hospital stay?"
             result(1)._2 shouldBe "No"
             result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
@@ -508,9 +512,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               ))
 
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
-            result(0)._1 shouldBe "Reason for missing the VAT deadline"
-            result(0)._2 shouldBe "Health"
-            result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+            result.head._1 shouldBe "Reason for missing the VAT deadline"
+            result.head._2 shouldBe "Health"
+            result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
             result(1)._1 shouldBe "Did this health issue include a hospital stay?"
             result(1)._2 shouldBe "No"
             result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
@@ -536,10 +540,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            "other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "The reason does not fit into any of the other categories"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -563,10 +568,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "The reason does not fit into any of the other categories"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -592,10 +598,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "The reason does not fit into any of the other categories"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -619,10 +626,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.causeOfLateSubmissionAgent -> "client"
             ))
 
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "The reason does not fit into any of the other categories"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -649,10 +657,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
           ))
 
-        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithLPPKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "other", Some("file.docx"))(fakeRequestWithLPPKeysPresent, implicitly)
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "The reason does not fit into any of the other categories"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -681,10 +690,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
                 SessionKeys.whenHealthIssueHappened -> "2022-01-01"
               ))
 
-            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
-            result(0)._1 shouldBe "Reason for missing the VAT deadline"
-            result(0)._2 shouldBe "Health"
-            result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+              "health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
+            result.head._1 shouldBe "Reason for missing the VAT deadline"
+            result.head._2 shouldBe "Health"
+            result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
             result(1)._1 shouldBe "Did this health issue include a hospital stay?"
             result(1)._2 shouldBe "No"
             result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
@@ -703,10 +713,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
                 SessionKeys.lateAppealReason -> "Lorem ipsum"
               ))
 
-            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
-            result(0)._1 shouldBe "Reason for missing the VAT deadline"
-            result(0)._2 shouldBe "Health"
-            result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+              "health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
+            result.head._1 shouldBe "Reason for missing the VAT deadline"
+            result.head._2 shouldBe "Health"
+            result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
             result(1)._1 shouldBe "Did this health issue include a hospital stay?"
             result(1)._2 shouldBe "No"
             result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
@@ -730,10 +741,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whenDidBecomeUnable -> "2022-01-01"
             ))
 
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            "other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "The reason does not fit into any of the other categories"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -755,10 +767,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
             ))
 
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "The reason does not fit into any of the other categories"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -782,10 +795,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whenDidBecomeUnable -> "2022-01-01"
             ))
 
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "The reason does not fit into any of the other categories"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -807,10 +821,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
             ))
 
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "The reason does not fit into any of the other categories"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -843,9 +858,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             ))
 
           val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "Health"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "Health"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "Did this health issue include a hospital stay?"
           result(1)._2 shouldBe "No"
           result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
@@ -868,9 +883,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             ))
 
           val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
-          result(0)._1 shouldBe "Reason for missing the VAT deadline"
-          result(0)._2 shouldBe "Health"
-          result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "Health"
+          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
           result(1)._1 shouldBe "Did this health issue include a hospital stay?"
           result(1)._2 shouldBe "No"
           result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
@@ -894,9 +909,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           ))
 
         val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Health"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Health"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "Did this health issue include a hospital stay?"
         result(1)._2 shouldBe "Yes"
         result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
@@ -923,9 +938,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           ))
 
         val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Health"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Health"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "Did this health issue include a hospital stay?"
         result(1)._2 shouldBe "Yes"
         result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
@@ -948,10 +963,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           SessionKeys.whenDidThePersonDie -> "2022-01-01"
         ))
 
-      val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
-      result(0)._1 shouldBe "Reason for missing the VAT deadline"
-      result(0)._2 shouldBe "Bereavement (someone died)"
-      result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+        "bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
+      result.head._1 shouldBe "Reason for missing the VAT deadline"
+      result.head._2 shouldBe "Bereavement (someone died)"
+      result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
       result(1)._1 shouldBe "When did the person die?"
       result(1)._2 shouldBe "1 January 2022"
       result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
@@ -966,10 +982,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           SessionKeys.lateAppealReason -> "Lorem ipsum"
         ))
 
-      val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
-      result(0)._1 shouldBe "Reason for missing the VAT deadline"
-      result(0)._2 shouldBe "Bereavement (someone died)"
-      result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+        "bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
+      result.head._1 shouldBe "Reason for missing the VAT deadline"
+      result.head._2 shouldBe "Bereavement (someone died)"
+      result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
       result(1)._1 shouldBe "When did the person die?"
       result(1)._2 shouldBe "1 January 2022"
       result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
@@ -988,9 +1005,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           )
 
         val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithClientPresent, implicitly)
-        result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
-        result(0)._2 shouldBe "My client did"
-        result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+        result.head._1 shouldBe "Before the deadline, who planned to submit the return?"
+        result.head._2 shouldBe "My client did"
+        result.head._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
       }
     }
 
@@ -1003,9 +1020,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           )
 
         val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
-        result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
-        result(0)._2 shouldBe "I did"
-        result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+        result.head._1 shouldBe "Before the deadline, who planned to submit the return?"
+        result.head._2 shouldBe "I did"
+        result.head._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
         result(1)._1 shouldBe "Why was the return submitted late?"
         result(1)._2 shouldBe "Something else happened to delay me"
         result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
@@ -1022,9 +1039,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           )
 
         val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
-        result(0)._1 shouldBe "Before the deadline, who planned to submit the return?"
-        result(0)._2 shouldBe "I did"
-        result(0)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+        result.head._1 shouldBe "Before the deadline, who planned to submit the return?"
+        result.head._2 shouldBe "I did"
+        result.head._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
         result(1)._1 shouldBe "Why was the return submitted late?"
         result(1)._2 shouldBe "My client did not get information to me on time"
         result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
@@ -1065,13 +1082,15 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.agentSessionVrn -> "123456789"
           ))
 
-        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
+        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "technicalIssues")(fakeRequest, implicitly)
         val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
 
         resultReasonableExcuses shouldBe resultAllContent
       }
 
-      "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage when it is a LPP appeal (Additional)" in {
+      "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage" +
+        " when it is a LPP appeal (Additional)" in {
         val fakeRequest = agentFakeRequestConverter(agentRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "technicalIssues",
@@ -1097,9 +1116,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           ))
 
           val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(fakeRequestForAppealingTheObligation, implicitly)
-          result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
-          result(0)._2 shouldBe "This is some relevant information"
-          result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+          result.head._1 shouldBe "Tell us why you want to appeal the penalty"
+          result.head._2 shouldBe "This is some relevant information"
+          result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
           result(1)._1 shouldBe "Evidence to support this appeal"
           result(1)._2 shouldBe "file.txt"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1114,8 +1133,10 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
             (SessionKeys.reasonableExcuse, reasonableExcuse)))
 
-        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
-        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
+        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "technicalIssues")(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
+        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
 
         resultReasonableExcuses shouldBe resultAllContent
 
@@ -1131,9 +1152,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.otherRelevantInformation -> "Some Information"
           )
         val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
-        result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
-        result(0)._2 shouldBe "Some Information"
-        result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result.head._1 shouldBe "Tell us why you want to appeal the penalty"
+        result.head._2 shouldBe "Some Information"
+        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
         result(1)._1 shouldBe "Evidence to support this appeal"
         result(1)._2 shouldBe "Not provided"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1145,10 +1166,11 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           .withSession(
             SessionKeys.otherRelevantInformation -> "Some Information"
           )
-        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
-        result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
-        result(0)._2 shouldBe "Some Information"
-        result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(
+          Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
+        result.head._1 shouldBe "Tell us why you want to appeal the penalty"
+        result.head._2 shouldBe "Some Information"
+        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
         result(1)._1 shouldBe "Evidence to support this appeal"
         result(1)._2 shouldBe "some-file-name.txt"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1193,9 +1215,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           SessionKeys.journeyId -> "4321"
         ))
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForOtherJourney, messages))
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "The reason does not fit into any of the other categories"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "The reason does not fit into any of the other categories"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
@@ -1216,9 +1238,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           SessionKeys.otherRelevantInformation -> "This is some relevant information"
         ))
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
-        result(0)._1 shouldBe "Tell us why you want to appeal the penalty"
-        result(0)._2 shouldBe "This is some relevant information"
-        result(0)._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result.head._1 shouldBe "Tell us why you want to appeal the penalty"
+        result.head._2 shouldBe "This is some relevant information"
+        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
         result(1)._1 shouldBe "Evidence to support this appeal"
         result(1)._2 shouldBe "file1.txt"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1235,9 +1257,9 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.lateAppealReason -> "Lorem ipsum"
           ))
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("bereavement")(fakeRequestWithBereavementKeysPresent, messages))
-        result(0)._1 shouldBe "Reason for missing the VAT deadline"
-        result(0)._2 shouldBe "Bereavement (someone died)"
-        result(0)._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._1 shouldBe "Reason for missing the VAT deadline"
+        result.head._2 shouldBe "Bereavement (someone died)"
+        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         result(1)._1 shouldBe "When did the person die?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url

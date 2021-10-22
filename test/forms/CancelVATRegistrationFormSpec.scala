@@ -16,10 +16,10 @@
 
 package forms
 
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class CancelVATRegistrationFormSpec extends FormBehaviours {
-  val form = CancelVATRegistrationForm.cancelVATRegistrationForm
+  val form: Form[String] = CancelVATRegistrationForm.cancelVATRegistrationForm
   behave like mandatoryField(form, "value", FormError("value", "cancelVATRegistration.error.required"))
 
   "the value entered does not exist in the possible, valid values" in {

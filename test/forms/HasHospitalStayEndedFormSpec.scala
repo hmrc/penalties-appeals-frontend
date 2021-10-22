@@ -17,13 +17,14 @@
 package forms
 
 import base.SpecBase
-import play.api.data.FormError
-
+import play.api.data.{Form, FormError}
 import java.time.LocalDate
 
+import models.appeals.HospitalStayEndInput
+
 class HasHospitalStayEndedFormSpec extends FormBehaviours with SpecBase {
-  val sampleStartDate = LocalDate.parse("2020-01-02")
-  val form = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
+  val sampleStartDate: LocalDate = LocalDate.parse("2020-01-02")
+  val form: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
 
   "radio field option not present" should {
     "not apply any validation on the date - fail" in {
@@ -80,7 +81,8 @@ class HasHospitalStayEndedFormSpec extends FormBehaviours with SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("stayEndDate.day", "healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate", Seq("day", "month", "year"))
+        result.errors.head shouldBe FormError(
+          "stayEndDate.day", "healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate", Seq("day", "month", "year"))
       }
 
       "the date is not valid" in {

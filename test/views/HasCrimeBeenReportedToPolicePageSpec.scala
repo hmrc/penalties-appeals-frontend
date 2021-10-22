@@ -33,7 +33,8 @@ class HasCrimeBeenReportedToPolicePageSpec extends SpecBase with ViewBehaviours 
     object Selectors extends BaseSelectors
     val formProvider = HasCrimeBeenReportedForm.hasCrimeBeenReportedForm
     val radioOptions = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(formProvider)
-    def applyView(form: Form[_]): HtmlFormat.Appendable = hasCrimeBeenReportedPage.apply(form, radioOptions, controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(NormalMode))
+    def applyView(form: Form[_]): HtmlFormat.Appendable = hasCrimeBeenReportedPage.apply(
+      form, radioOptions, controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(NormalMode))
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

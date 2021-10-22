@@ -96,20 +96,17 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
     (request.session.get(SessionKeys.reasonableExcuse), request.session.get(SessionKeys.dueDateOfPeriod),
       request.session.get(SessionKeys.startDateOfPeriod), request.session.get(SessionKeys.endDateOfPeriod),
       request.session.get(SessionKeys.isObligationAppeal).isDefined) match {
-      case (Some(reasonableExcuse), Some(dueDate), Some(startDate), Some(endDate), isObligation: Boolean) => {
+      case (Some(reasonableExcuse), Some(dueDate), Some(startDate), Some(endDate), isObligation: Boolean) =>
         fOnSuccess(reasonableExcuse, dueDate, startDate, endDate, isObligation)
-      }
-      case (None, Some(dueDate), Some(startDate), Some(endDate), isObligation: Boolean) if isObligation => {
+      case (None, Some(dueDate), Some(startDate), Some(endDate), isObligation: Boolean) if isObligation =>
         fOnSuccess("obligation", dueDate, startDate, endDate, isObligation)
-      }
-      case _ => {
+      case _ =>
         logger.error(s"[HonestyDeclarationController][tryToGetExcuseAndDueDateFromSession] - One or more session key was not in session. \n" +
           s"Reasonable excuse defined? ${request.session.get(SessionKeys.reasonableExcuse).isDefined} \n" +
           s"Due date defined? ${request.session.get(SessionKeys.dueDateOfPeriod).isDefined} \n" +
           s"Start date defined? ${request.session.get(SessionKeys.startDateOfPeriod)} \n" +
           s"End date defined? ${request.session.get(SessionKeys.endDateOfPeriod)} \n")
         errorHandler.showInternalServerError
-      }
     }
   }
 }

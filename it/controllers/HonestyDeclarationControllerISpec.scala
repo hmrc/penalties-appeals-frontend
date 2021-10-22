@@ -27,7 +27,7 @@ import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
-  val controller = injector.instanceOf[HonestyDeclarationController]
+  val controller: HonestyDeclarationController = injector.instanceOf[HonestyDeclarationController]
 
   "GET /honesty-declaration" should {
     "return 200 (OK) when the user is authorised and has the correct keys" in {
@@ -59,7 +59,8 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() shouldBe "the staff member did not return or get replaced before the due date"
+      parsedBody.select(
+        "#main-content .govuk-list--bullet > li:nth-child(2)").text() shouldBe "the staff member did not return or get replaced before the due date"
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys - and no custom no extraText when reasonable excuse is 'other'" in {
@@ -86,10 +87,10 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         (SessionKeys.reasonableExcuse, "other"),
         (SessionKeys.isObligationAppeal, "true"),
-        (SessionKeys.journeyId -> "1234")
+        SessionKeys.journeyId -> "1234"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -135,11 +136,11 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
             (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
             (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
             (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-            (SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00"),
+            SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
             (SessionKeys.reasonableExcuse, "crime"),
             (SessionKeys.whoPlannedToSubmitVATReturn, "agent"),
             (SessionKeys.causeOfLateSubmissionAgent, "client"),
-            (SessionKeys.journeyId -> "1234"))
+            SessionKeys.journeyId -> "1234")
         )
         val request = controller.onPageLoad()(agentUserSessionKeys)
         await(request).header.status shouldBe Status.OK

@@ -130,7 +130,6 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
       case "health" => getHealthReasonAnswers
 
       case "other" =>
-
         val statementOfLatenessForLPPOrLSP: String = {
           if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) || request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)) {
             messages("checkYourAnswers.other.lpp.statementOfLateness")

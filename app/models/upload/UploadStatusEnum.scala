@@ -19,9 +19,9 @@ package models.upload
 import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
 
 object UploadStatusEnum extends Enumeration {
-  val WAITING = Value
-  val READY = Value
-  val FAILED = Value
+  val WAITING: UploadStatusEnum.Value = Value
+  val READY: UploadStatusEnum.Value = Value
+  val FAILED: UploadStatusEnum.Value = Value
 
   implicit val format: Format[UploadStatusEnum.Value] = new Format[UploadStatusEnum.Value] {
     override def writes(o: UploadStatusEnum.Value): JsValue = {

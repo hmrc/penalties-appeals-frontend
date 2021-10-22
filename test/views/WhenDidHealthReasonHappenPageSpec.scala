@@ -16,6 +16,8 @@
 
 package views
 
+import java.time.LocalDate
+
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHealthIssueHappenForm
 import messages.WhenDidHealthReasonHappenMessages._
@@ -36,12 +38,12 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
   def applyVATTraderView(form: Form[_], userRequest: UserRequest[_] = vatTraderUser): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
     controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(implicitly, implicitly, userRequest)
 
-  val vatTraderFormProvider = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderUser)
+  val vatTraderFormProvider: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderUser)
 
   def applyAgentView(form: Form[_], userRequest: UserRequest[_] = agentUserSessionKeys): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
     controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(implicitly, implicitly, userRequest)
 
-  val agentFormProvider = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserSessionKeys)
+  val agentFormProvider: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserSessionKeys)
 
   "WhenDidHealthReasonHappenPage" should {
 

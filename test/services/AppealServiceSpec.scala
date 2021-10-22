@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import config.AppConfig
 import connectors.{HeaderGenerator, PenaltiesConnector}
-import models.{ReasonableExcuse, UserRequest}
+import models.{AppealData, ReasonableExcuse, UserRequest}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -29,8 +29,8 @@ import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{SessionKeys, UUIDGenerator}
-
 import java.time.LocalDateTime
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealServiceSpec extends SpecBase {
@@ -41,7 +41,7 @@ class AppealServiceSpec extends SpecBase {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
-  val fakeRequestForCrimeJourney = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "crime",
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.hasConfirmedDeclaration -> "true",
@@ -49,7 +49,7 @@ class AppealServiceSpec extends SpecBase {
     SessionKeys.journeyId -> "1234")
   )
 
-  val fakeRequestForOtherJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForOtherJourney: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "other",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.whenDidBecomeUnable -> "2022-01-01",
@@ -92,9 +92,11 @@ class AppealServiceSpec extends SpecBase {
 
   class Setup {
     reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService)
-    val service: AppealService = new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, testHeaderGenerator, mockUploadJourneyRepository)
+    val service: AppealService =
+      new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, testHeaderGenerator, mockUploadJourneyRepository)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
+      2020, 2, 1, 0, 0, 0))
   }
 
   "validatePenaltyIdForEnrolmentKey" should {
@@ -103,7 +105,8 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+          new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -112,33 +115,37 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+          new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
-    "return Some when the connector returns Json that is parseable to a model" in new Setup {
+    "return Some when the connector returns Json that is parsable to a model" in new Setup {
 
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJson)))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
 
-    "return Some when the connector returns Json that is parseable to a model for LPP" in new Setup {
+    "return Some when the connector returns Json that is parsable to a model for LPP" in new Setup {
 
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPP)))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = false)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = false)(
+        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
 
-    "return Some when the connector returns Json that is parseable to a model for LPP - Additional penalty" in new Setup {
+    "return Some when the connector returns Json that is parsable to a model for LPP - Additional penalty" in new Setup {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPPAdditional)))
 
-      val result = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true)(new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true)(
+        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
   }
@@ -170,7 +177,7 @@ class AppealServiceSpec extends SpecBase {
           Some(jsonRepresentingSeqOfReasonableExcuses)
         ))
 
-      val result = await(service.getReasonableExcuseListAndParse())
+      val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse())
       result.isDefined shouldBe true
       result.get shouldBe Seq(
         ReasonableExcuse(
@@ -218,7 +225,7 @@ class AppealServiceSpec extends SpecBase {
             Some(jsonRepresentingInvalidSeqOfReasonableExcuses)
           ))
 
-        val result = await(service.getReasonableExcuseListAndParse())
+        val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse())
         result.isDefined shouldBe false
       }
 
@@ -226,7 +233,7 @@ class AppealServiceSpec extends SpecBase {
         when(mockPenaltiesConnector.getListOfReasonableExcuses()(any(), any()))
           .thenReturn(Future.successful(None))
 
-        val result = await(service.getReasonableExcuseListAndParse())
+        val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse())
         result.isDefined shouldBe false
       }
     }
@@ -238,7 +245,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(HttpResponse(OK, "")))
       when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
         .thenReturn(Future.successful(0))
-      val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
+      val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
       result shouldBe Right((): Unit)
       verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
         ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
@@ -250,7 +257,7 @@ class AppealServiceSpec extends SpecBase {
           .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
         when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
           .thenReturn(Future.successful(0))
-        val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
+        val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe Left(BAD_GATEWAY)
       }
 
@@ -259,7 +266,7 @@ class AppealServiceSpec extends SpecBase {
           .thenReturn(Future.failed(new Exception("I failed.")))
         when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
           .thenReturn(Future.successful(0))
-        val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
+        val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
 
@@ -268,7 +275,7 @@ class AppealServiceSpec extends SpecBase {
           .thenReturn(Future.successful(HttpResponse(OK, "")))
         when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
           .thenReturn(Future.failed(new Exception("I failed.")))
-        val result = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
+        val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
     }
@@ -280,7 +287,7 @@ class AppealServiceSpec extends SpecBase {
         when(mockPenaltiesConnector.getOtherPenaltiesInTaxPeriod(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
 
-        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", false)(fakeRequestForCrimeJourney, implicitly, implicitly))
+        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", isLPP = false)(fakeRequestForCrimeJourney, implicitly, implicitly))
 
         result shouldBe true
       }
@@ -291,7 +298,7 @@ class AppealServiceSpec extends SpecBase {
         when(mockPenaltiesConnector.getOtherPenaltiesInTaxPeriod(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
-        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", false)(fakeRequestForCrimeJourney, implicitly, implicitly))
+        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", isLPP = false)(fakeRequestForCrimeJourney, implicitly, implicitly))
 
         result shouldBe false
       }
@@ -300,7 +307,7 @@ class AppealServiceSpec extends SpecBase {
         when(mockPenaltiesConnector.getOtherPenaltiesInTaxPeriod(any(), any(), any())(any(), any()))
           .thenReturn(Future.failed(new Exception("I failed.")))
 
-        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", false)(fakeRequestForCrimeJourney, implicitly, implicitly))
+        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", isLPP = false)(fakeRequestForCrimeJourney, implicitly, implicitly))
 
         result shouldBe false
       }

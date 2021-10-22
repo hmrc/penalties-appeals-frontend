@@ -22,6 +22,7 @@ import utils.Logger.logger
 import play.api.http.Status._
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import utils.EnrolmentKeys
 
 import javax.inject.Inject
@@ -44,24 +45,20 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     ).map {
       response =>
         response.status match {
-          case OK => {
+          case OK =>
             logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with ID: $penaltyId and enrolment key $enrolmentKey")
             Some(response.json)
-          }
-          case NOT_FOUND => {
+          case NOT_FOUND =>
             logger.info(s"$startOfLogMsg Returned 404 from Penalties backend - with body: ${response.body}")
             None
-          }
-          case _ => {
+          case _ =>
             logger.warn(s"$startOfLogMsg Returned unknown response ${response.status} with body: ${response.body}")
             None
-          }
         }
     }.recover {
-      case e => {
+      case e =>
         logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
         None
-      }
     }
   }
 
@@ -72,25 +69,24 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     ).map(
       response => Some(response.json)
     ).recover {
-      case notFoundException: NotFoundException => {
+      case notFoundException: NotFoundException =>
         logger.error(s"$startOfLogMsg Returned 404 from penalties. With message: ${notFoundException.getMessage}")
         None
-      }
-      case internalServerException: InternalServerException => {
+      case internalServerException: InternalServerException =>
         logger.error(s"$startOfLogMsg Returned 500 from penalties. With message: ${internalServerException.getMessage}")
         None
-      }
-      case e => {
+      case e =>
         logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
         None
-      }
     }
   }
 
-  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyId: String)
+                  (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
     val hcWithoutAuthorizationHeader: HeaderCarrier = hc.copy(authorization = None)
     val pegaHeaders = headerGenerator.headersForPEGA()
-    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyId), appealSubmission, pegaHeaders)(AppealSubmission.writes, implicitly, hcWithoutAuthorizationHeader, implicitly)
+    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyId),
+      appealSubmission, pegaHeaders)(AppealSubmission.writes, implicitly, hcWithoutAuthorizationHeader, implicitly)
   }
 
   def getOtherPenaltiesInTaxPeriod(penaltyId: String, enrolmentKey: String, isLPP: Boolean)

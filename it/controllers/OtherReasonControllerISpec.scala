@@ -261,7 +261,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
         )
-        await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY, Some("/"), Some(UploadDetails("test.png", "text/plain", LocalDateTime.now(), "check1", 1023)))))
+        await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY,
+          Some("/"), Some(UploadDetails("test.png", "text/plain", LocalDateTime.now(), "check1", 1023)))))
         val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url

@@ -42,7 +42,6 @@ class OtherPenaltiesForPeriodControllerSpec extends SpecBase {
 
     val controller: OtherPenaltiesForPeriodController = new OtherPenaltiesForPeriodController(
       otherPenaltiesForPeriodPage,
-      errorHandler,
       mainNavigator
     )(mcc, appConfig, authPredicate, dataRequiredAction)
   }
@@ -73,7 +72,7 @@ class OtherPenaltiesForPeriodControllerSpec extends SpecBase {
     "onSubmit" when {
       "the user selects 'continue'" must {
         "return 300 (SEE_OTHER) and redirect to the correct page" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
             .withJsonBody(
               Json.parse(
                 """
@@ -89,12 +88,12 @@ class OtherPenaltiesForPeriodControllerSpec extends SpecBase {
 
         "return 400 (BAD_REQUEST)" when {
           "the user has posted an empty body" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmit()(userRequestWithCorrectKeys)
+            val result: Future[Result] = controller.onSubmit()(userRequestWithCorrectKeys)
             status(result) shouldBe BAD_REQUEST
           }
 
           "the user has changed the hidden value" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
+            val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
               .withJsonBody(
                 Json.parse(
                   """

@@ -42,7 +42,8 @@ class AuthPredicateSpec extends AuthMocks {
       status(result) shouldBe Status.OK
     }
 
-    "run the block request when the user is an agent (having a principal HMRC-AS-AGENT enrolment and a delegated HMRC-MTD-VAT enrolment - with a session key)" in {
+    "run the block request when the user is an agent (having a principal HMRC-AS-AGENT enrolment and a delegated" +
+      " HMRC-MTD-VAT enrolment - with a session key)" in {
       mockAgentAuthorised()
       val result = targetAgent(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123"))
       status(result) shouldBe Status.OK

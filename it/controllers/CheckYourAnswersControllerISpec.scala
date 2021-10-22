@@ -530,7 +530,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
   "POST /check-your-answers" should {
     "redirect the user to the confirmation page on success for crime" in {
-      PenaltiesStub.successfulAppealSubmission(false, "1234")
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -550,7 +550,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for fire or flood" in {
-      PenaltiesStub.successfulAppealSubmission(false, "1234")
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -569,7 +569,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for loss of staff" in {
-      PenaltiesStub.successfulAppealSubmission(false, "1234")
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -588,7 +588,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for technical issues" in {
-      PenaltiesStub.successfulAppealSubmission(false, "1234")
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -609,7 +609,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for health" when {
       "there is no hospital stay" in {
-        PenaltiesStub.successfulAppealSubmission(false, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -629,7 +629,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "there is a ongoing hospital stay" in {
-        PenaltiesStub.successfulAppealSubmission(false, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -650,7 +650,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "there has been a hospital stay that has ended" in {
-        PenaltiesStub.successfulAppealSubmission(false, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -675,7 +675,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for other" when {
       "the user hasn't uploaded a file" in {
-        PenaltiesStub.successfulAppealSubmission(false, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -695,7 +695,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "the user has uploaded a file" in {
-        PenaltiesStub.successfulAppealSubmission(false, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -715,7 +715,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "no file upload - late appeal" in {
-        PenaltiesStub.successfulAppealSubmission(false, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -736,7 +736,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "file upload - late appeal" in {
-        PenaltiesStub.successfulAppealSubmission(false, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Submission",
@@ -757,7 +757,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "for LPP" in {
-        PenaltiesStub.successfulAppealSubmission(true, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.appealType -> "Late_Payment",
@@ -778,7 +778,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "for LPP - agent" in {
-        PenaltiesStub.successfulAppealSubmission(true, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.agentSessionVrn -> "VRN1234",
@@ -800,7 +800,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "for LPP Additional - agent" in {
-        PenaltiesStub.successfulAppealSubmission(true, "1234")
+        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",
           SessionKeys.agentSessionVrn -> "VRN1234",
@@ -823,7 +823,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for bereavement" in {
-      PenaltiesStub.successfulAppealSubmission(false, "1234")
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -842,7 +842,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for obligation true" in {
-      PenaltiesStub.successfulAppealSubmission(false, "1234")
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -861,7 +861,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page (regardless of reason) and delete all uploads for that user" in {
-      PenaltiesStub.successfulAppealSubmission(false, "1234")
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val uploadJourneyModel: UploadJourney = UploadJourney(
         reference = "file1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/upload"), uploadDetails = Some(UploadDetails(
           fileName = "file1.txt", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1024
@@ -888,7 +888,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the InternalServerError on failure for obligation false" in {
-      PenaltiesStub.failedAppealSubmissionWithFault(false, "1234")
+      PenaltiesStub.failedAppealSubmissionWithFault(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -906,7 +906,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to service unavailable page when downstream returns SERVICE_UNAVAILABLE" in {
-      PenaltiesStub.failedAppealSubmission(false, "1234", status = Some(SERVICE_UNAVAILABLE))
+      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(SERVICE_UNAVAILABLE))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -926,7 +926,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to duplicate appeal page when downstream returns CONFLICT" in {
-      PenaltiesStub.failedAppealSubmission(false, "1234", status = Some(CONFLICT))
+      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(CONFLICT))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -946,7 +946,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when the appeal fails from a payload issue" in {
-      PenaltiesStub.failedAppealSubmission(false, "1234", status = Some(BAD_REQUEST))
+      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(BAD_REQUEST))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -966,7 +966,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "show an ISE when the appeal fails" in {
-      PenaltiesStub.failedAppealSubmission(false, "1234")
+      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
@@ -986,7 +986,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when the appeal fails from an issue with the service" in {
-      PenaltiesStub.failedAppealSubmission(false, "1234", status = Some(INTERNAL_SERVER_ERROR))
+      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(INTERNAL_SERVER_ERROR))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",

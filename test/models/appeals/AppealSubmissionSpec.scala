@@ -394,13 +394,12 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.causeOfLateSubmissionAgent -> "client")
       )
 
-      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0, agentDetails)(fakeAgentRequestForCrimeJourney)
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false, 0, agentDetails)(fakeAgentRequestForCrimeJourney)
       result.appealSubmittedBy shouldBe "agent"
       result.agentDetails shouldBe expectedAgentDetails
-      result.appealInformation shouldBe CrimeAppealInformation(
-        reasonableExcuse = "crime", honestyDeclaration = true, startDateOfEvent = "2022-01-01", reportedIssueToPolice = true, statement = None, lateAppeal = false, lateAppealReason = None,
-        isClientResponsibleForSubmission = Some(false),
-        isClientResponsibleForLateSubmission = Some(true)
+      result.appealInformation shouldBe CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
+        startDateOfEvent = "2022-01-01", reportedIssueToPolice = true, statement = None, lateAppeal = false,
+        lateAppealReason = None, isClientResponsibleForSubmission = Some(false), isClientResponsibleForLateSubmission = Some(true)
       )
     }
 
@@ -413,7 +412,7 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.lateAppealReason -> "Some Reason")
       )
 
-      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", true, 0, None)(fakeRequestForCrimeJourney)
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = true, 0, None)(fakeRequestForCrimeJourney)
       result.appealSubmittedBy shouldBe "client"
       result.appealInformation shouldBe CrimeAppealInformation(
         reasonableExcuse = "crime",
@@ -435,7 +434,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidThePersonDie -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0, None)(fakeRequestForBereavementJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", isLateAppeal = false, 0, None)(fakeRequestForBereavementJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe BereavementAppealInformation(
           reasonableExcuse = "bereavement",
@@ -456,7 +455,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidThePersonDie -> "2022-01-01",
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", false, 0, None)(fakeRequestForBereavementJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", isLateAppeal = false, 0, None)(fakeRequestForBereavementJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe BereavementAppealInformation(
           reasonableExcuse = "bereavement",
@@ -480,7 +479,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.dateOfCrime -> "2022-01-01")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", false, 0, None)(fakeRequestForCrimeJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false, 0, None)(fakeRequestForCrimeJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe CrimeAppealInformation(
           reasonableExcuse = "crime",
@@ -503,7 +502,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.dateOfFireOrFlood -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", false, 0, None)(fakeRequestForFireOrFloodJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", isLateAppeal = false, 0, None)(fakeRequestForFireOrFloodJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe FireOrFloodAppealInformation(
           reasonableExcuse = "fireOrFlood",
@@ -526,7 +525,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0, None)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", isLateAppeal = false, 0, None)(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe LossOfStaffAppealInformation(
           reasonableExcuse = "lossOfStaff",
@@ -548,7 +547,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", false, 0, agentDetails)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff",
+          isLateAppeal = false, 0, agentDetails)(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "agent"
         result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe LossOfStaffAppealInformation(
@@ -573,7 +573,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0, None)(fakeRequestForTechnicalIssuesJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues",
+          isLateAppeal = false, 0, None)(fakeRequestForTechnicalIssuesJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
           reasonableExcuse = "technicalIssues",
@@ -597,7 +598,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues", false, 0, agentDetails)(fakeRequestForTechnicalIssuesJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues",
+          isLateAppeal = false, 0, agentDetails)(fakeRequestForTechnicalIssuesJourney)
         result.appealSubmittedBy shouldBe "agent"
         result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
@@ -625,7 +627,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueEnded -> "2022-01-31"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, agentDetails)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false, 0, agentDetails)(fakeRequestForHealthJourney)
         result.appealSubmittedBy shouldBe "agent"
         result.agentDetails shouldBe expectedAgentDetails
         result.appealInformation shouldBe HealthAppealInformation(
@@ -652,7 +654,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueStarted -> "2022-01-01"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, None)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false, 0, None)(fakeRequestForHealthJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe HealthAppealInformation(
           reasonableExcuse = "health",
@@ -677,7 +679,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueHappened -> "2022-01-01"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", false, 0, None)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false, 0, None)(fakeRequestForHealthJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe HealthAppealInformation(
           reasonableExcuse = "health",
@@ -704,7 +706,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 1, None)(fakeRequestForOtherJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false, 1, None)(fakeRequestForOtherJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
@@ -727,7 +729,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", false, 0, None)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false, 0, None)(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
@@ -751,7 +753,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.lateAppealReason -> "This is a reason for appealing late.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", true, 1, None)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = true, 1, None)(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
@@ -776,7 +778,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 1, None)(fakeRequestForObligationJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false, 1, None)(fakeRequestForObligationJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe ObligationAppealInformation(
           reasonableExcuse = "obligation",
@@ -794,7 +796,7 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", false, 0, None)(fakeRequestForObligationJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false, 0, None)(fakeRequestForObligationJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe ObligationAppealInformation(
           reasonableExcuse = "obligation",

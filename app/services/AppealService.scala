@@ -43,7 +43,8 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               headerGenerator: HeaderGenerator,
                               uploadJourneyRepository: UploadJourneyRepository) {
 
-  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)(implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
+                                         (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
       _.fold[Option[AppealData]](
         None
@@ -93,11 +94,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val penaltyId = userRequest.session.get(SessionKeys.penaltyId).get
     for {
       amountOfFileUploads <- uploadJourneyRepository.getNumberOfDocumentsForJourneyId(userRequest.session.get(SessionKeys.journeyId).get)
-      modelFromRequest: AppealSubmission = AppealSubmission.constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentDetails)
+      modelFromRequest: AppealSubmission = AppealSubmission
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentDetails)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId)
     } yield {
       response.status match {
-        case OK => {
+        case OK =>
           if (isLPP)
             if (appealType.contains(PenaltyTypeEnum.Late_Payment.toString))
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, headerGenerator))
@@ -107,11 +109,9 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
             auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, headerGenerator))
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
           Right((): Unit)
-        }
-        case _ => {
+        case _ =>
           logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
           Left(response.status)
-        }
       }
     }
   }.recover {
@@ -136,10 +136,9 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
           false
       }
     ).recover {
-      case e => {
+      case e =>
         logger.error(s"$startOfLogMsg unknown error occurred, error message: ${e.getMessage}")
         false
-      }
     }
   }
 

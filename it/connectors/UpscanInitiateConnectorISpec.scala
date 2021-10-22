@@ -31,7 +31,7 @@ class UpscanInitiateConnectorISpec extends IntegrationSpecCommonBase {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val upscanConnector: UpscanConnector = injector.instanceOf[UpscanConnector]
 
-  val requestModelNoUrl = UpscanInitiateRequest(
+  val requestModelNoUrl: UpscanInitiateRequest = UpscanInitiateRequest(
     callbackUrl = "",
     successRedirect = None,
     errorRedirect = None,

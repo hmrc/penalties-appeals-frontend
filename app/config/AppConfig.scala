@@ -46,9 +46,11 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional"
   }
 
-  def otherPenaltiesForPeriodUrl(penaltyId: String, enrolmentKey: String, isLPP: Boolean) = s"$penaltiesServiceBaseUrl/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=$enrolmentKey&penaltyId=$penaltyId&isLPP=$isLPP"
+  def otherPenaltiesForPeriodUrl(penaltyId: String, enrolmentKey: String, isLPP: Boolean): String =
+    s"$penaltiesServiceBaseUrl/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=$enrolmentKey&penaltyId=$penaltyId&isLPP=$isLPP"
 
-  def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyId: String) = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl") + s"?enrolmentKey=$enrolmentKey&isLPP=$isLPP&penaltyId=$penaltyId"
+  def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyId: String): String =
+    penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl") + s"?enrolmentKey=$enrolmentKey&isLPP=$isLPP&penaltyId=$penaltyId"
 
   lazy val reasonableExcuseFetchUrl: String = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.fetchUrl")
 
@@ -82,11 +84,11 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   private lazy val platformHost = servicesConfig.getString("host")
 
-  val appName = servicesConfig.getString("appName")
+  val appName: String = servicesConfig.getString("appName")
 
   private lazy val agentClientLookupRedirectUrl: String => String = uri => SafeRedirectUrl(platformHost + uri).encodedUrl
 
-  lazy val agentClientLookupStartUrl = (uri: String) =>
+  lazy val agentClientLookupStartUrl: String => String = (uri: String) =>
     agentClientLookupHost +
       servicesConfig.getConfString(vatAgentClientLookupFrontendStartUrl, "") +
       s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"

@@ -21,7 +21,7 @@ import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.{JsValue, Json}
 
 class JsonAuditModelSpec extends SpecBase with Matchers{
-  val JsonAuditModelObject = new JsonAuditModel {
+  val JsonAuditModelObject: JsonAuditModel = new JsonAuditModel {
     override val auditType: String = "PenaltyAppealSubmitted"
     override val detail: JsValue = Json.obj("detail" ->
       Json.obj("submittedBy" -> "client",

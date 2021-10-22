@@ -17,10 +17,13 @@
 package controllers
 
 import java.time.LocalDateTime
-import models.upload.{FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
+
+import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
 import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.WSResponse
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
@@ -47,7 +50,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     "return OK (200)" when {
       "the user has an upload status in the repository" in new Setup {
         await(repository.updateStateOfFileUpload("1234", UploadJourney("file-1", UploadStatusEnum.WAITING)))
-        val result = controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
+        val result: Future[Result] = controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
         status(result) shouldBe OK
         contentAsJson(result) shouldBe Json.obj("status" -> "WAITING")
       }
@@ -56,7 +59,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     "return NOT_FOUND (404)" when {
       "the user has specified a file and journey id that is not in the repository" in new Setup {
         await(deleteAll())
-        val result = controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
+        val result: Future[Result] = controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
         status(result) shouldBe NOT_FOUND
       }
     }
@@ -74,7 +77,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           | }
           |}
           |""".stripMargin)
-      val result = await(
+      val result: WSResponse = await(
         buildClientForRequestToApp(uri = "/upscan/call-to-upscan/12345")
           .post("")
       )
@@ -93,7 +96,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (Internal Server Error) when there is no upload state in the database" in new Setup {
       failedInitiateCall("asdf")
-      val result = await(buildClientForRequestToApp(uri = "/upscan/call-to-upscan/12345").post(""))
+      val result: WSResponse = await(buildClientForRequestToApp(uri = "/upscan/call-to-upscan/12345").post(""))
       result.status shouldBe INTERNAL_SERVER_ERROR
     }
   }
@@ -127,7 +130,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           ))
         )))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
-      val result = controller.removeFile("1234", "ref1")(FakeRequest())
+      val result: Future[Result] = controller.removeFile("1234", "ref1")(FakeRequest())
       status(result) shouldBe NO_CONTENT
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
     }
@@ -160,7 +163,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           ))
         )))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
-      val result = controller.removeFile("1235", "ref1")(FakeRequest())
+      val result: Future[Result] = controller.removeFile("1235", "ref1")(FakeRequest())
       status(result) shouldBe NO_CONTENT
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
     }
@@ -193,7 +196,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           ))
         )))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
-      val result = controller.removeFile("1235", "ref3")(FakeRequest())
+      val result: Future[Result] = controller.removeFile("1235", "ref3")(FakeRequest())
       status(result) shouldBe NO_CONTENT
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
     }
@@ -213,7 +216,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           ))
         )))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
-      val result = controller.removeFile("1234", "ref1")(FakeRequest())
+      val result: Future[Result] = controller.removeFile("1234", "ref1")(FakeRequest())
       status(result) shouldBe NO_CONTENT
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
     }
@@ -232,9 +235,9 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             |   "errorRequestId": "request1"
             |}
             |""".stripMargin)
-        val result = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
+        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
         status(result) shouldBe NO_CONTENT
-        val failureDetailsInRepo = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
+        val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
         failureDetailsInRepo.message shouldBe "upscan.fileEmpty"
       }
@@ -250,9 +253,9 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             |   "errorRequestId": "request1"
             |}
             |""".stripMargin)
-        val result = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
+        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
         status(result) shouldBe NO_CONTENT
-        val failureDetailsInRepo = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
+        val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
         failureDetailsInRepo.message shouldBe "upscan.fileTooLarge"
       }
@@ -268,9 +271,9 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             |   "errorRequestId": "request1"
             |}
             |""".stripMargin)
-        val result = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
+        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
         status(result) shouldBe NO_CONTENT
-        val failureDetailsInRepo = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
+        val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
         failureDetailsInRepo.message shouldBe "upscan.fileNotSpecified"
       }
@@ -286,9 +289,9 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             |   "errorRequestId": "request1"
             |}
             |""".stripMargin)
-        val result = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
+        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
         status(result) shouldBe NO_CONTENT
-        val failureDetailsInRepo = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
+        val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
         failureDetailsInRepo.message shouldBe "upscan.unableToUpload"
       }
