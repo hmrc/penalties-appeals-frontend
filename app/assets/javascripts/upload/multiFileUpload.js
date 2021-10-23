@@ -21,6 +21,8 @@ class MultiFileUpload {
         this.uploadData = {};
         this.container = form;
         this.lastFileIndex = 0;
+        this.errorMessageTpl = "";
+        this.errors = {};
         this.config = {
             startRows: parseInt(form.dataset.multiFileUploadStartRows) || 1,
             minFiles: parseInt(form.dataset.multiFileUploadMinFiles) || 1,
@@ -47,8 +49,15 @@ class MultiFileUpload {
             removing: 'multi-file-upload__item--removing',
             verifying: 'multi-file-upload__item--verifying',
             uploaded: 'multi-file-upload__item--uploaded',
-            remove: 'multi-file-upload__remove-item'
+            remove: 'multi-file-upload__remove-item',
+            inputContainer: 'govuk-form-group',
+            inputContainerError: 'govuk-form-group--error',
+            label: 'govuk-label'
         }
+
+        this.messages = {
+                      genericError: form.dataset.multiFileUploadErrorGeneric
+                    }
 
         this.cacheElements();
         this.cacheTemplates();
@@ -72,6 +81,7 @@ class MultiFileUpload {
      */
     cacheTemplates() {
         this.itemTpl = document.getElementById('multi-file-upload-item-tpl').textContent;
+        this.errorMessageTpl = document.getElementById('error-manager-message-tpl').textContent;
     }
 
     /**
@@ -324,6 +334,7 @@ class MultiFileUpload {
 
         xhr.upload.addEventListener('progress', this.handleUploadFileProgress.bind(this, item));
         xhr.addEventListener('load', this.handleUploadFileCompleted.bind(this, fileRef));
+        xhr.addEventListener('error', this.handleUploadFileError.bind(this, fileRef));
         xhr.open('POST', data.url);
         xhr.send(formData);
 
@@ -368,6 +379,65 @@ class MultiFileUpload {
         this.delayedRequestUploadStatus(fileRef);
     }
 
+    handleUploadFileError(fileRef) {
+        const file = this.getFileByReference(fileRef);
+        const item = this.getItemFromFile(file);
+        this.addError(file, "Error");
+      }
+
+    handleFileStatusFailed(file, errorMessage) {
+      const item = this.getItemFromFile(file);
+      this.addError(file.id, errorMessage);
+    }
+
+    /**
+      * Add error
+      **/
+
+      addError(inputId, message) {
+
+        const errorMessage = this.addErrorToField(inputId, message);
+
+        this.errors[inputId] = {
+          errorMessage: errorMessage
+        };
+
+        //this.updateErrorSummaryVisibility();
+      }
+
+      /**
+        * Add error to field
+       **/
+             addErrorToField(inputId, message) {
+              const input = document.getElementById(inputId);
+              const inputContainer = this.getContainer(input);
+              const label = this.getLabel(inputContainer);
+
+              const errorMessage = this.parseHtml(this.errorMessageTpl, {
+                errorMessage: message
+              });
+
+              inputContainer.classList.add(this.classes.inputContainerError);
+
+              label.after(errorMessage);
+
+              return errorMessage;
+            }
+            /**
+            *Get container
+            **/
+            getContainer(input){
+                return input.closest(`.${this.classes.inputContainer}`);
+              }
+           /**
+           * GetLabel
+           **/
+
+           getLabel(container) {
+               return container.querySelector(`.${this.classes.label}`);
+             }
+
+
     /**
      * Wait a sufficient amount of time before requesting the status of the upload.
      */
@@ -401,12 +471,19 @@ class MultiFileUpload {
         const file = this.getFileByReference(fileRef);
         const data = this.uploadData[file.id];
         const fileStatus = response['status'];
+        const error = response['errorMessage'];
         switch (fileStatus) {
             case 'READY':
                 this.uploadData[file.id].uploaded = true;
                 this.handleFileStatusSuccessful(file);
                 this.uploadNext();
                 break;
+            case 'FAILED':
+            case 'REJECTED':
+            case 'DUPLICATE':
+                 this.handleFileStatusFailed(file, error);
+                 this.uploadNext();
+                 break;
             default:
                 data.retries++;
 
