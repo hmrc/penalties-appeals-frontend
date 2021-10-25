@@ -623,7 +623,7 @@ class MultiFileUpload {
 
                 if (data.retries > this.config.maxRetries) {
                     this.uploadData[file.id].retries = 0;
-
+                    this.handleFileStatusFailed(file, this.messages.genericError);
                     this.uploadNext();
                 } else {
                     this.delayedRequestUploadStatus(fileRef);
