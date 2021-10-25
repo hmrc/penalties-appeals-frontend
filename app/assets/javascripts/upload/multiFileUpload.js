@@ -134,7 +134,7 @@ class MultiFileUpload {
         if (!file.files.length) {
             return;
         }
-
+        item.querySelector(`.${this.classes.fileName}`).style.display = null;
         this.getFileNameElement(item).textContent = this.extractFileName(file.value);
         this.setItemState(item, status.Waiting);
         this.uploadNext();
