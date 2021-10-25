@@ -20,7 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.UploadEvidenceForm
 import messages.UploadEvidenceMessages._
 import models.upload.UploadJourney
-import models.{NormalMode, PenaltyTypeEnum}
+import models.PenaltyTypeEnum
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.libs.json.Json
@@ -63,6 +63,10 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val multiUploadFormGetStatusAKey = "data-multi-file-upload-status-url-tpl"
 
       val multiUploadFormRemoveFileAKey = "data-multi-file-upload-remove-url-tpl"
+
+      val multiUploadFormStillTransferring = "data-multi-file-upload-still-transferring"
+
+      val multiUploadFormGenericError ="data-multi-file-upload-error-generic"
     }
     val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
@@ -75,7 +79,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
     def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
       uploadEvidencePage.apply(
-        controllers.routes.OtherReasonController.onSubmitForUploadEvidence(NormalMode),
+        controllers.routes.MakingALateAppealController.onPageLoad(),
         controllers.routes.UpscanController.initiateCallToUpscan("1234"),
         controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),
         controllers.routes.UpscanController.removeFile("1234", _),
@@ -228,6 +232,9 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val expectedString = Json.stringify(Json.toJson(Some(UploadData.maxWaitingUploads)))
 
       doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormFilesAKey) shouldBe expectedString
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormStillTransferring) shouldBe uploadEvidenceStillTransferring
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormGenericError) shouldBe fileUploadTryAgain
+
     }
 
     "load the correct parameters for initiating uploads and getting status of uploads" in {
