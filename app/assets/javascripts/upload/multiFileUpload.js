@@ -59,7 +59,8 @@ class MultiFileUpload {
             label: 'govuk-label',
             errorSummaryList: 'govuk-error-summary__list',
             notifications: 'multi-file-upload__notifications',
-            errorSummary: 'govuk-error-summary'
+            errorSummary: 'govuk-error-summary',
+            formStatus: 'multi-file-upload__form-status'
         }
 
         this.messages = {
@@ -170,7 +171,7 @@ class MultiFileUpload {
     handleSubmit(e) {
         e.preventDefault();
 
-        //this.updateFormStatusVisibility(this.isBusy());
+        this.updateFormStatusVisibility(this.isBusy());
 
         if (this.hasErrors()) {
             document.querySelector(`.${this.classes.errorSummary}`).focus();
@@ -248,8 +249,7 @@ class MultiFileUpload {
         item.remove();
         this.updateFileNumbers();
         this.updateButtonVisibility();
-        // TODO: implement for accessibility
-        // this.updateFormStatusVisibility();
+        this.updateFormStatusVisibility();
 
         if (this.getItems().length === 0) {
             this.addItem();
@@ -449,6 +449,7 @@ class MultiFileUpload {
         const file = this.getFileByReference(fileRef);
         const item = this.getItemFromFile(file);
         item.querySelector(`.${this.classes.fileName}`).style.display = "none";
+        this.updateFormStatusVisibility();
         this.addError(file,this.messages.genericError);
     }
 
@@ -457,6 +458,7 @@ class MultiFileUpload {
         item.querySelector(`.${this.classes.fileName}`).style.display = "none";
         this.setItemState(item,status.Default);
         this.addError(file.id, errorMessage);
+        this.updateFormStatusVisibility();
     }
 
     /**
@@ -639,11 +641,11 @@ class MultiFileUpload {
 
         this.setItemState(item, status.Uploaded);
         this.updateButtonVisibility();
-        //TODO: implement for accessibility
-        // this.updateFormStatusVisibility();
+        this.updateFormStatusVisibility();
     }
 
     updateFormStatusVisibility(forceState = undefined) {
+        console
         if (forceState !== undefined) {
             this.toggleElement(this.formStatus, forceState);
         } else if (!this.isBusy()) {
