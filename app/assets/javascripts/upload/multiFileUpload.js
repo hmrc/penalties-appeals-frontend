@@ -645,7 +645,6 @@ class MultiFileUpload {
     }
 
     updateFormStatusVisibility(forceState = undefined) {
-        console
         if (forceState !== undefined) {
             this.toggleElement(this.formStatus, forceState);
         } else if (!this.isBusy()) {
