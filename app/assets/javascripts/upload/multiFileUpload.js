@@ -58,7 +58,8 @@ class MultiFileUpload {
             inputContainerError: 'govuk-form-group--error',
             label: 'govuk-label',
             errorSummaryList: 'govuk-error-summary__list',
-            notifications: 'multi-file-upload__notifications'
+            notifications: 'multi-file-upload__notifications',
+            errorSummary: 'govuk-error-summary'
         }
 
         this.messages = {
@@ -128,6 +129,7 @@ class MultiFileUpload {
     handleFileChange(e) {
         const file = e.target;
         const item = this.getItemFromFile(file);
+        this.removeError(file.id);
 
         if (!file.files.length) {
             return;
@@ -171,7 +173,7 @@ class MultiFileUpload {
         //this.updateFormStatusVisibility(this.isBusy());
 
         if (this.hasErrors()) {
-            this.classes.errorSummary.focus();
+            document.querySelector(`.${this.classes.errorSummary}`).focus();
             return;
         }
 
@@ -242,7 +244,7 @@ class MultiFileUpload {
      */
     removeItem(item) {
         const file = this.getFileFromItem(item);
-
+        this.removeError(file.id);
         item.remove();
         this.updateFileNumbers();
         this.updateButtonVisibility();
@@ -366,6 +368,7 @@ class MultiFileUpload {
         const fileName = this.getFileName(file);
 
         this.updateButtonVisibility();
+        this.removeError(file.id);
 
         this.getFileNameElement(item).textContent = fileName;
 
@@ -445,11 +448,14 @@ class MultiFileUpload {
     handleUploadFileError(fileRef) {
         const file = this.getFileByReference(fileRef);
         const item = this.getItemFromFile(file);
-        this.addError(file, "Error");
+        item.querySelector(`.${this.classes.fileName}`).style.display = "none";
+        this.addError(file,this.messages.genericError);
     }
 
     handleFileStatusFailed(file, errorMessage) {
         const item = this.getItemFromFile(file);
+        item.querySelector(`.${this.classes.fileName}`).style.display = "none";
+        this.setItemState(item,status.Default);
         this.addError(file.id, errorMessage);
     }
 
@@ -607,6 +613,7 @@ class MultiFileUpload {
             case 'DUPLICATE':
             case 'QUARANTINE':
                 this.handleFileStatusFailed(file, error);
+
                 this.uploadNext();
                 break;
             default:

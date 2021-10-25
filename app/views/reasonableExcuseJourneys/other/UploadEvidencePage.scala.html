@@ -64,7 +64,8 @@
         (Symbol("data-multi-file-upload-uploaded-files"), previousUploads),
         (Symbol("data-multi-file-upload-status-url-tpl"), getStatusUrl("{fileRef}").url),
         (Symbol("data-multi-file-upload-remove-url-tpl"), removeFileUrl("{fileRef}").url),
-        (Symbol("data-multi-file-upload-still-transferring"), messages("otherReason.uploadEvidence.stillTransferring"))) {
+        (Symbol("data-multi-file-upload-still-transferring"), messages("otherReason.uploadEvidence.stillTransferring")),
+        (Symbol("data-multi-file-upload-error-generic"), messages("error.file-upload.try-again"))) {
             <ul class="multi-file-upload__item-list"></ul>
 
             <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.addAnother")</button>
