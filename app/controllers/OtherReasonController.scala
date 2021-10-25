@@ -111,15 +111,9 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         val initiateNextUploadUrl = controllers.routes.UpscanController.initiateCallToUpscan(request.session.get(SessionKeys.journeyId).get)
         val getStatusUrl = controllers.routes.UpscanController.getStatusOfFileUpload(request.session.get(SessionKeys.journeyId).get, _)
         val removeFileUrl = controllers.routes.UpscanController.removeFile(request.session.get(SessionKeys.journeyId).get, _)
-        val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidence(mode)
+        val postAction = navigation.nextPage(EvidencePage,mode)
         Ok(uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, previousUploads))
       }
-    }
-  }
-
-  def onSubmitForUploadEvidence(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
-    implicit request => {
-        Future(Redirect(navigation.nextPage(EvidencePage, mode)))
     }
   }
 }

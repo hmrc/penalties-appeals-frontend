@@ -22,6 +22,9 @@ class MultiFileUpload {
         this.container = form;
         this.lastFileIndex = 0;
         this.errorMessageTpl = "";
+        this.errorSummaryList = "";
+        this.errorSummaryTpl= "";
+        this.errorSummary="";
         this.errors = {};
         this.config = {
             startRows: parseInt(form.dataset.multiFileUploadStartRows) || 1,
@@ -52,11 +55,14 @@ class MultiFileUpload {
             remove: 'multi-file-upload__remove-item',
             inputContainer: 'govuk-form-group',
             inputContainerError: 'govuk-form-group--error',
-            label: 'govuk-label'
+            label: 'govuk-label',
+            errorSummaryList: 'govuk-error-summary__list',
+            notifications: 'multi-file-upload__notifications'
         }
 
         this.messages = {
-                      genericError: form.dataset.multiFileUploadErrorGeneric
+                      genericError: form.dataset.multiFileUploadErrorGeneric,
+                      stillTransferring: form.dataset.multiFileUploadStillTransferring
                     }
 
         this.cacheElements();
@@ -73,6 +79,9 @@ class MultiFileUpload {
         this.addAnotherBtn = this.container.querySelector(`.${this.classes.addAnother}`);
         this.formStatus = this.container.querySelector(`.${this.classes.formStatus}`);
         this.submitBtn = this.container.querySelector(`.${this.classes.submitBtn}`);
+        this.errorSummary = this.parseHtml(this.errorSummaryTpl, {});
+        this.errorSummaryList = this.container.querySelector(`.${this.classes.errorSummaryList}`);
+        this.notifications = this.container.querySelector(`.${this.classes.notifications}`);
     }
 
     /**
@@ -80,6 +89,7 @@ class MultiFileUpload {
      *
      */
     cacheTemplates() {
+        this.errorSummaryTpl = document.getElementById('error-manager-summary-tpl').textContent;
         this.itemTpl = document.getElementById('multi-file-upload-item-tpl').textContent;
         this.errorMessageTpl = document.getElementById('error-manager-message-tpl').textContent;
     }
@@ -90,6 +100,7 @@ class MultiFileUpload {
      */
     bindEvents() {
         this.addAnotherBtn.addEventListener('click', this.handleAddItem.bind(this));
+        this.container.addEventListener('submit', this.handleSubmit.bind(this));
     }
 
     /**
@@ -148,6 +159,55 @@ class MultiFileUpload {
             this.removeItem(item);
         }
     }
+    /**
+    * Handle Submit
+    **/
+    handleSubmit(e) {
+        e.preventDefault();
+
+        //this.updateFormStatusVisibility(this.isBusy());
+
+        if (this.hasErrors()) {
+          this.classes.errorSummary.focus();
+          return;
+        }
+
+        if (this.isInProgress()) {
+          this.addNotification(this.messages.stillTransferring);
+
+          return;
+        }
+          window.location.href = this.container.action;
+      }
+
+      /**In progess
+      **/
+
+      isInProgress() {
+          const stillWaiting = this.container.querySelector(`.${this.classes.waiting}`) !== null;
+
+          return stillWaiting || this.isBusy();
+        }
+
+        /** Add notification**/
+
+        addNotification(message) {
+            const element = document.createElement('p');
+            element.textContent = message;
+
+            this.notifications.append(element);
+
+            window.setTimeout(() => {
+              element.remove();
+            }, 1000);
+          }
+
+      /**
+      * has errors
+      **/
+      hasErrors() {
+          return Object.entries(this.errors).length > 0;
+        }
 
     /**
      * Requests for the file to be removed server side.
@@ -395,15 +455,52 @@ class MultiFileUpload {
       **/
 
       addError(inputId, message) {
+      this.removeError(inputId);
 
-        const errorMessage = this.addErrorToField(inputId, message);
+       const errorMessage = this.addErrorToField(inputId, message);
+       const errorSummaryRow = this.addErrorToSummary(inputId, message);
 
-        this.errors[inputId] = {
-          errorMessage: errorMessage
-        };
+           this.errors[inputId] = {
+             errorMessage: errorMessage,
+             errorSummaryRow: errorSummaryRow
+           };
 
-        //this.updateErrorSummaryVisibility();
+        this.updateErrorSummaryVisibility();
       }
+      /**Remove error
+      **/
+
+      removeError(inputId) {
+          if(!Object.prototype.hasOwnProperty.call(this.errors, inputId)) {
+            return;
+          }
+
+          const error = this.errors[inputId];
+          const input = document.getElementById(inputId);
+          const inputContainer = this.getContainer(input);
+
+          error.errorMessage.remove();
+          error.errorSummaryRow.remove();
+
+          inputContainer.classList.remove(this.classes.inputContainerError);
+
+          delete this.errors[inputId];
+
+          this.updateErrorSummaryVisibility();
+        }
+
+        /**
+        Update Error Summary Visibility
+        **/
+
+        updateErrorSummaryVisibility() {
+            if (this.hasErrors()) {
+             document.querySelector('h1').before(this.errorSummary);
+            }
+            else {
+              this.errorSummary.remove();
+            }
+          }
 
       /**
         * Add error to field
@@ -436,6 +533,20 @@ class MultiFileUpload {
            getLabel(container) {
                return container.querySelector(`.${this.classes.label}`);
              }
+      /**
+      * Add Summary
+      **/
+      addErrorToSummary(inputId, message) {
+          const summaryRow = this.parseHtml(this.errorSummaryItemTpl, {
+            inputId: inputId,
+            errorMessage: message
+          });
+
+          //this.bindErrorEvents(summaryRow, inputId);
+          this.errorSummaryList.append(summaryRow);
+
+          return summaryRow;
+        }
 
 
     /**
@@ -481,6 +592,7 @@ class MultiFileUpload {
             case 'FAILED':
             case 'REJECTED':
             case 'DUPLICATE':
+            case 'QUARANTINE':
                  this.handleFileStatusFailed(file, error);
                  this.uploadNext();
                  break;
