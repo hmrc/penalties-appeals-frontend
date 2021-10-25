@@ -208,11 +208,6 @@ class OtherReasonControllerSpec extends SpecBase {
         status(result) shouldBe OK
       }
 
-      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
-
       "the user is unauthorised" when {
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
@@ -222,58 +217,6 @@ class OtherReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-        }
-      }
-    }
-
-    "onSubmitForUploadEvidence" should {
-      "the user is authorised" must {
-        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-          "- routing to late appeal or CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Some(Seq(UploadJourney(reference = "1234", fileStatus = UploadStatusEnum.READY,
-              downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain",
-                uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
-          status(result) shouldBe SEE_OTHER
-        }
-
-        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-          "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Some(Seq(UploadJourney(reference = "1234", fileStatus = UploadStatusEnum.READY,
-              downloadUrl = Some("/"), uploadDetails = Some(UploadDetails(fileName = "test.png", fileMimeType = "text/plain",
-                uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1023)))))))
-
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        }
-
-        "return 303 (SEE_OTHER) adding the key to the session when the body is empty " +
-          "- routing to late appeal or CYA been reported page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
-          status(result) shouldBe SEE_OTHER
-        }
-
-        "return 303 (SEE_OTHER) adding the key to the session when the body is empty " +
-          "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        }
-      }
-
-      "the user is unauthorised" when {
-
-        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequest)
-          status(result) shouldBe FORBIDDEN
-        }
-
-        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidence(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }

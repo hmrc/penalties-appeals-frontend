@@ -249,66 +249,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
   }
 
-  "POST /upload-evidence-for-the-appeal" should {
-    "return 303 (SEE_OTHER) and add the session key to the session" when {
-      "the body is correct" in {
-        val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-for-the-appeal").withSession(
-          (SessionKeys.penaltyId, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
-          (SessionKeys.journeyId, "1234")
-        )
-        await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY,
-          Some("/"), Some(UploadDetails("test.png", "text/plain", LocalDateTime.now(), "check1", 1023)))))
-        val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
-        request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-      }
-
-      "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-for-the-appeal").withSession(
-          (SessionKeys.penaltyId, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
-          (SessionKeys.journeyId, "1234")
-        )
-        await(repository.collection.deleteMany(Document()).toFuture())
-        val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
-        request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-      }
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-for-the-appeal")
-      val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-for-the-appeal").withSession(
-        (SessionKeys.penaltyId, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
-      )
-      val request = await(controller.onSubmitForUploadEvidence(NormalMode)(fakeRequestWithIncompleteKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-evidence-for-the-appeal").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
-  }
-
 
   "GET /why-was-the-vat-late" should {
     "return 200 (OK) when the user is authorised" in {

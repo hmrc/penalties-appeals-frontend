@@ -63,10 +63,17 @@
         (Symbol("data-multi-file-upload-send-url-tpl"), initiateNextFileUpload.url),
         (Symbol("data-multi-file-upload-uploaded-files"), previousUploads),
         (Symbol("data-multi-file-upload-status-url-tpl"), getStatusUrl("{fileRef}").url),
-        (Symbol("data-multi-file-upload-remove-url-tpl"), removeFileUrl("{fileRef}").url)) {
+        (Symbol("data-multi-file-upload-remove-url-tpl"), removeFileUrl("{fileRef}").url),
+        (Symbol("data-multi-file-upload-still-transferring"), messages("otherReason.uploadEvidence.stillTransferring")),
+        (Symbol("data-multi-file-upload-error-generic"), messages("error.file-upload.try-again"))) {
             <ul class="multi-file-upload__item-list"></ul>
 
             <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.addAnother")</button>
+
+            <p class="govuk-body multi-file-upload__form-status hidden" aria-hidden="true">
+                @messages("otherReason.uploadEvidence.stillTransferring")...
+                <span class="file-upload__spinner ccms-loader"></span>
+            </p>
 
             <div class="multi-file-upload__notifications govuk-visually-hidden" aria-live="polite" role="status"></div>
 

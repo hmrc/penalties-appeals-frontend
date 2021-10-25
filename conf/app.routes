@@ -88,8 +88,6 @@ POST       /when-inability-to-manage-account-happened              controllers.O
 POST       /when-inability-to-manage-account-happened/change       controllers.OtherReasonController.onSubmitForWhenDidBecomeUnable(mode: Mode = CheckMode)
 GET        /upload-evidence-for-the-appeal                   controllers.OtherReasonController.onPageLoadForUploadEvidence(mode: Mode = NormalMode)
 GET        /upload-evidence-for-the-appeal/change            controllers.OtherReasonController.onPageLoadForUploadEvidence(mode: Mode = CheckMode)
-POST       /upload-evidence-for-the-appeal                  controllers.OtherReasonController.onSubmitForUploadEvidence(mode: Mode = NormalMode)
-POST       /upload-evidence-for-the-appeal/change            controllers.OtherReasonController.onSubmitForUploadEvidence(mode: Mode = CheckMode)
 
 # Who Planned to Submit VAT Return
 GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
