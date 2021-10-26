@@ -22,6 +22,7 @@ object FailureReasonEnum extends Enumeration {
   val QUARANTINE: FailureReasonEnum.Value = Value
   val REJECTED: FailureReasonEnum.Value = Value
   val UNKNOWN: FailureReasonEnum.Value = Value
+  val DUPLICATE: FailureReasonEnum.Value = Value
 
   implicit val format: Format[FailureReasonEnum.Value] = new Format[FailureReasonEnum.Value] {
     override def writes(o: FailureReasonEnum.Value): JsValue = {

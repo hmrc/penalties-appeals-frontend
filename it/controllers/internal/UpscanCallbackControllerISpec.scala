@@ -47,6 +47,23 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |""".stripMargin
   )
 
+  val duplicateFileAsJson: JsValue = Json.parse(
+    """
+      |{
+      |    "reference": "ref2",
+      |    "downloadUrl": "download.file",
+      |    "fileStatus": "READY",
+      |    "uploadDetails": {
+      |        "fileName": "file1.txt",
+      |        "fileMimeType": "text/plain",
+      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+      |        "checksum": "check12345678",
+      |        "size": 987
+      |    }
+      |}
+      |""".stripMargin
+  )
+
   val validFailureJsonToParse: JsValue = Json.parse(
     """
       |{
@@ -71,6 +88,19 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       checksum = "check12345678",
       size = 987
     ))
+  )
+
+  val duplicateJsonAsModel: UploadJourney = UploadJourney(
+    reference = "ref2",
+    fileStatus = UploadStatusEnum.FAILED,
+    downloadUrl = None,
+    uploadDetails = None,
+    failureDetails = Some(
+      FailureDetails(
+        failureReason = FailureReasonEnum.DUPLICATE,
+        message = "upscan.duplicateFile"
+      )
+    )
   )
 
   val jsonAsModelForFailure: UploadJourney = UploadJourney(
@@ -127,6 +157,18 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         modelInRepository.failureDetails shouldBe jsonAsModelForFailure.failureDetails
         modelInRepository.fileStatus shouldBe jsonAsModelForFailure.fileStatus
         modelInRepository.uploadDetails shouldBe jsonAsModelForFailure.uploadDetails
+      }
+
+      "the body received is valid but the file has already been uploaded - duplicate" in {
+        await(repository.collection.deleteMany(filter = Document()).toFuture)
+        await(repository.updateStateOfFileUpload("12345", jsonAsModel))
+        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(duplicateFileAsJson))
+        result.status shouldBe NO_CONTENT
+        await(repository.getUploadsForJourney(Some("12345"))).get.size shouldBe 2
+        val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
+        val duplicateModelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref2"))).get
+        modelInRepository shouldBe jsonAsModel
+        duplicateModelInRepository shouldBe duplicateJsonAsModel
       }
     }
   }
