@@ -16,14 +16,11 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 import helpers.FormProviderHelper
-import javax.inject.Inject
 import models.Mode
 import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
 import navigation.Navigation
@@ -37,7 +34,9 @@ import utils.Logger.logger
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.time.LocalDate
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
                                       whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage,

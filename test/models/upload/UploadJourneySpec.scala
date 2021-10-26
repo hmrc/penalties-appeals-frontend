@@ -23,6 +23,8 @@ import play.api.libs.json.{JsValue, Json}
 import java.time.LocalDateTime
 
 class UploadJourneySpec extends AnyWordSpec with Matchers {
+  val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+
   val uploadJourneyAsJson: JsValue = Json.parse(
     """
       |{
@@ -35,7 +37,8 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       |   "uploadTimestamp": "2018-04-24T09:30:00",
       |   "checksum": "check123456789",
       |   "size": 1
-      | }
+      | },
+      | "lastUpdated": "2020-01-01T00:00:00"
       |}
       |""".stripMargin
   )
@@ -44,7 +47,8 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
     """
       |{
       | "reference": "123456789",
-      | "fileStatus": "READY"
+      | "fileStatus": "READY",
+      | "lastUpdated": "2020-01-01T00:00:00"
       |}
       |""".stripMargin
   )
@@ -52,7 +56,8 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
   val uploadJourneyWithoutUrlOrUploadDetailsAndNoStatusAsJson: JsValue = Json.parse(
     """
       |{
-      | "reference": "123456789"
+      | "reference": "123456789",
+      | "lastUpdated": "2020-01-01T00:00:00"
       |}
       |""".stripMargin
   )
@@ -65,7 +70,8 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       | "failureDetails": {
       |   "failureReason": "REJECTED",
       |   "message": "this file was rejected"
-      | }
+      | },
+      | "lastUpdated": "2020-01-01T00:00:00"
       |}
       |""".stripMargin
   )
@@ -82,31 +88,33 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
           2018, 4, 24, 9, 30, 0),
         checksum = "check123456789",
         size = 1
-    ))
+    )),
+    lastUpdated = mockDateTime
   )
 
-  val uploadJourneyWithoutUrlOrUploadDetailsModel: UploadJourney = uploadJourneyModel.copy(downloadUrl = None, uploadDetails = None)
+  val uploadJourneyWithoutUrlOrUploadDetailsModel: UploadJourney = uploadJourneyModel.copy(downloadUrl = None, uploadDetails = None, lastUpdated = mockDateTime)
 
   val uploadJourneyWithoutUrlOrUploadWithDefaultStatusDetailsModel: UploadJourney = uploadJourneyModel.copy(
-    downloadUrl = None, uploadDetails = None, fileStatus = UploadStatusEnum.WAITING)
+    downloadUrl = None, uploadDetails = None, fileStatus = UploadStatusEnum.WAITING, lastUpdated = mockDateTime)
 
   val uploadJourneyWithFailureStatusModel: UploadJourney = uploadJourneyModel.copy(
     fileStatus = UploadStatusEnum.FAILED, downloadUrl = None, uploadDetails = None,
     failureDetails = Some(FailureDetails(
       failureReason = FailureReasonEnum.REJECTED,
       message = "this file was rejected"
-    ))
+    )),
+    lastUpdated = mockDateTime
   )
 
   "UploadJourneySpec" should {
     "be readable from JSON" in {
-      val result = Json.fromJson(uploadJourneyAsJson)(UploadJourney.format)
+      val result = Json.fromJson(uploadJourneyAsJson)(UploadJourney.reads)
       result.isSuccess shouldBe true
       result.get shouldBe uploadJourneyModel
     }
 
     "be readable from JSON when there is no url or upload details" in {
-      val result = Json.fromJson(uploadJourneyWithoutUrlOrUploadDetailsAsJson)(UploadJourney.format)
+      val result = Json.fromJson(uploadJourneyWithoutUrlOrUploadDetailsAsJson)(UploadJourney.reads)
       result.isSuccess shouldBe true
       result.get shouldBe uploadJourneyWithoutUrlOrUploadDetailsModel
     }
@@ -124,16 +132,16 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
     }
 
     "be writable to JSON" in {
-      val result = Json.toJson(uploadJourneyModel)(UploadJourney.format)
+      val result = Json.toJson(uploadJourneyModel)(UploadJourney.writes)
       result shouldBe uploadJourneyAsJson
     }
     "be writable to JSON when there is no url or upload details" in {
-      val result = Json.toJson(uploadJourneyWithoutUrlOrUploadDetailsModel)(UploadJourney.format)
+      val result = Json.toJson(uploadJourneyWithoutUrlOrUploadDetailsModel)(UploadJourney.writes)
       result shouldBe uploadJourneyWithoutUrlOrUploadDetailsAsJson
     }
 
     "be writable to JSON the upload failed" in {
-      val result = Json.toJson(uploadJourneyWithFailureStatusModel)(UploadJourney.format)
+      val result = Json.toJson(uploadJourneyWithFailureStatusModel)(UploadJourney.writes)
       result shouldBe uploadJourneyWithFailureStatusAsJson
     }
   }

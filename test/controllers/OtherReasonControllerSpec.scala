@@ -17,10 +17,10 @@
 package controllers
 
 import base.SpecBase
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload.UploadJourney
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
@@ -31,9 +31,9 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
+
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
-import org.jsoup.nodes.Document
 
 class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
