@@ -24,6 +24,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
 import play.api.http.HeaderNames
 import play.api.libs.json._
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HttpClient
@@ -107,7 +108,7 @@ class UpscanControllerSpec extends SpecBase {
               )
             )))
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(CacheItem("1234", Json.toJsObject(uploadJourneyModel)(UploadJourney.format), Instant.now(), Instant.now())))
+            .thenReturn(Future.successful(CacheItem("1234", Json.toJsObject(uploadJourneyModel)(UploadJourney.writes), Instant.now(), Instant.now())))
           val result = controller.initiateCallToUpscan("1234")(fakeRequest)
           status(result) shouldBe OK
           contentAsJson(result) shouldBe Json.obj(
@@ -218,6 +219,22 @@ class UpscanControllerSpec extends SpecBase {
         val result = controller.preFlightUpload("J1234")(fakeRequest)
         status(result) shouldBe CREATED
         await(result).header.headers(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN) shouldBe "*"
+      }
+    }
+
+    "filePosted" should {
+      "return Bad Request when the query parameters can not be bound" in {
+        val result = controller.filePosted("J1234")(fakeRequest)
+        status(result) shouldBe BAD_REQUEST
+      }
+
+      "return No Content and update the file upload when called" in {
+        when(repository.getUploadsForJourney(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+        when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+        val result = controller.filePosted("J1234")(FakeRequest("GET", "/file-posted?key=key1&bucket=bucket1"))
+        status(result) shouldBe NO_CONTENT
       }
     }
   }

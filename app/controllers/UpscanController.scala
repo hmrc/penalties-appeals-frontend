@@ -18,7 +18,7 @@ package controllers
 
 import config.AppConfig
 import connectors.UpscanConnector
-import forms.upscan.S3UploadErrorForm
+import forms.upscan.{S3UploadErrorForm, S3UploadSuccessForm}
 import helpers.UpscanMessageHelper
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,6 +30,7 @@ import javax.inject.Inject
 import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum, UpscanInitiateRequest, UpscanInitiateResponseModel}
 import play.api.http.HeaderNames
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -63,6 +64,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
       logger.debug(s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId")
       val initiateRequest = UpscanInitiateRequest(
         callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
+        successRedirect = Some(appConfig.upscanSuccessUrl + journeyId),
         errorRedirect = Some(appConfig.upscanFailureUrl + journeyId),
         minimumFileSize = Some(1),
         maximumFileSize = Some(appConfig.maxFileUploadSize))
@@ -90,15 +92,13 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   }
 
   def removeFile(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
-    implicit request => {
-      logger.debug(s"[UpscanController][initiateCallToUpscan] - Requested removal of file for journey: $journeyId and file: $fileReference")
-      repository.removeFileForJourney(journeyId, fileReference).map {
-        _ => NoContent
-      }.recover {
-        case e =>
-          logger.error(s"[UpscanController][initiateCallToUpscan] - Failed to delete file: $fileReference for journey: $journeyId with error: ${e.getMessage}")
-          InternalServerError("An exception has occurred.")
-      }
+    logger.debug(s"[UpscanController][initiateCallToUpscan] - Requested removal of file for journey: $journeyId and file: $fileReference")
+    repository.removeFileForJourney(journeyId, fileReference).map {
+      _ => NoContent
+    }.recover {
+      case e =>
+        logger.error(s"[UpscanController][initiateCallToUpscan] - Failed to delete file: $fileReference for journey: $journeyId with error: ${e.getMessage}")
+        InternalServerError("An exception has occurred.")
     }
   }
 
@@ -114,7 +114,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode)
           val fileReference = s3UploadError.key
           logger.debug(s"[UpscanController][uploadFailure] - Setting $messageKeyToSet as the message key for file: $fileReference")
-          val callbackModel = UploadJourney(
+          val callbackModel: UploadJourney = UploadJourney(
             reference = fileReference,
             fileStatus = UploadStatusEnum.FAILED,
             downloadUrl = None,
@@ -136,4 +136,32 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
     Created.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
   }
 
+  def filePosted(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request => {
+      S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
+        errors => {
+          logger.error(s"[UpscanController][filePosted] - Could not bind form based on request with errors: ${errors.errors}")
+          Future(BadRequest(""))
+        },
+        s3Upload => {
+          val uploadModel: UploadJourney = UploadJourney(
+            reference = s3Upload.key,
+            fileStatus = UploadStatusEnum.WAITING
+          )
+          repository.getUploadsForJourney(Some(journeyId)).map(_.flatMap(_.find(_.reference == s3Upload.key).map(_.lastUpdated))).flatMap(
+            lastUpdated => {
+              if (lastUpdated.isDefined && LocalDateTime.now().isAfter(lastUpdated.get.plusSeconds(1))) {
+                logger.debug(s"[UpscanController][filePosted] - Success redirect called: \n" +
+                  s"lastUpdatedTime is: $lastUpdated \n is after 1 second: true \n setting upload to WAITING")
+                repository.updateStateOfFileUpload(journeyId, uploadModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+              } else {
+                logger.debug(s"[UpscanController][filePosted] - Success redirect called - did not update state of file upload - last updated defined: ${lastUpdated.isDefined}")
+                Future(NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+              }
+            }
+          )
+        }
+      )
+    }
+  }
 }

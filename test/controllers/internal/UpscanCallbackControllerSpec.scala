@@ -105,18 +105,19 @@ class UpscanCallbackControllerSpec extends SpecBase {
     }
 
     "return NO CONTENT" when {
+      lazy val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       "the body is valid and state has been updated" in {
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan))
         status(result) shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-        modelInRepo shouldBe uploadJourneyModel
+        modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModel.copy(lastUpdated = mockDateTime)
       }
 
       "the file is rejected and state has been updated" in {
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(callbackFromUpscanWithFailure))
         status(result) shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-        modelInRepo shouldBe uploadJourneyModelWithFailure
+        modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelWithFailure.copy(lastUpdated = mockDateTime)
       }
     }
   }
