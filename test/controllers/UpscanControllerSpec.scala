@@ -108,7 +108,7 @@ class UpscanControllerSpec extends SpecBase {
               )
             )))
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(CacheItem("1234", Json.toJsObject(uploadJourneyModel)(UploadJourney.format), Instant.now(), Instant.now())))
+            .thenReturn(Future.successful(CacheItem("1234", Json.toJsObject(uploadJourneyModel)(UploadJourney.writes), Instant.now(), Instant.now())))
           val result = controller.initiateCallToUpscan("1234")(fakeRequest)
           status(result) shouldBe OK
           contentAsJson(result) shouldBe Json.obj(
@@ -229,6 +229,8 @@ class UpscanControllerSpec extends SpecBase {
       }
 
       "return No Content and update the file upload when called" in {
+        when(repository.getUploadsForJourney(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
         val result = controller.filePosted("J1234")(FakeRequest("GET", "/file-posted?key=key1&bucket=bucket1"))

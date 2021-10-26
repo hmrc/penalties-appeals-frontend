@@ -30,6 +30,7 @@ import javax.inject.Inject
 import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum, UpscanInitiateRequest, UpscanInitiateResponseModel}
 import play.api.http.HeaderNames
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -143,12 +144,21 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           Future(BadRequest(""))
         },
         s3Upload => {
-          logger.debug(s"[UpscanController][filePosted] - Success redirect called, setting state of file ${s3Upload.key} to WAITING and purging previous upload data")
           val uploadModel: UploadJourney = UploadJourney(
             reference = s3Upload.key,
             fileStatus = UploadStatusEnum.WAITING
           )
-          repository.updateStateOfFileUpload(journeyId, uploadModel).map(_ => NoContent)
+          repository.getUploadsForJourney(Some(journeyId)).map(_.flatMap(_.find(_.reference == s3Upload.key).map(_.lastUpdated))).flatMap(
+            lastUpdated => {
+              if (lastUpdated.isDefined && LocalDateTime.now().isAfter(lastUpdated.get.plusSeconds(1))) {
+                logger.debug(s"[UpscanController][filePosted] - Success redirect called: \n" +
+                  s"lastUpdatedTime is: $lastUpdated \n is after 1 second: true \n setting upload to WAITING")
+                repository.updateStateOfFileUpload(journeyId, uploadModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+              } else {
+                Future(NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+              }
+            }
+          )
         }
       )
     }

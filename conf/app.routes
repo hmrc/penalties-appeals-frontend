@@ -139,6 +139,7 @@ GET           /upscan/upload-failed/:journeyId                 controllers.Upsca
 OPTIONS       /upscan/upload-failed/:journeyId                 controllers.UpscanController.preFlightUpload(journeyId: String)
 
 GET           /upscan/file-posted/:journeyId                    controllers.UpscanController.filePosted(journeyId: String)
+OPTIONS       /upscan/file-posted/:journeyId                    controllers.UpscanController.preFlightUpload(journeyId: String)
 
 # Error pages
 GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()

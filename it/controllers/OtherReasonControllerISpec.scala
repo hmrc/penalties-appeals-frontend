@@ -17,8 +17,6 @@
 package controllers
 
 import models.NormalMode
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
-import org.mongodb.scala.Document
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
@@ -28,7 +26,7 @@ import repositories.UploadJourneyRepository
 import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: OtherReasonController = injector.instanceOf[OtherReasonController]

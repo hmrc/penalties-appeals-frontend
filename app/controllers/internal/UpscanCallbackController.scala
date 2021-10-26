@@ -31,10 +31,11 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
                                         (implicit appConfig: AppConfig,
                                          mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  def callbackFromUpscan(journeyId: String): Action[JsValue] =
-    Action.async(parse.json) { implicit request => {
-        withJsonBody[UploadJourney] { callbackModel => {
-          if(callbackModel.failureDetails.isDefined) {
+  def callbackFromUpscan(journeyId: String): Action[JsValue] = Action.async(parse.json) {
+    implicit request => {
+      withJsonBody[UploadJourney] {
+        callbackModel => {
+          if (callbackModel.failureDetails.isDefined) {
             val failureReason = callbackModel.failureDetails.get.failureReason
             val localisedFailureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason)
             val failureDetails = callbackModel.failureDetails.get.copy(message = localisedFailureReason)
@@ -43,7 +44,7 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
             repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
           }
         }
-        }
       }
     }
+  }
 }

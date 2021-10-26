@@ -109,7 +109,11 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
         val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-        modelInRepository shouldBe jsonAsModel
+        modelInRepository.downloadUrl shouldBe jsonAsModel.downloadUrl
+        modelInRepository.reference shouldBe jsonAsModel.reference
+        modelInRepository.failureDetails shouldBe jsonAsModel.failureDetails
+        modelInRepository.fileStatus shouldBe jsonAsModel.fileStatus
+        modelInRepository.uploadDetails shouldBe jsonAsModel.uploadDetails
       }
 
       "the body received is valid and the state is updated - failure callback" in {
@@ -118,7 +122,11 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
         val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-        modelInRepository shouldBe jsonAsModelForFailure
+        modelInRepository.downloadUrl shouldBe jsonAsModelForFailure.downloadUrl
+        modelInRepository.reference shouldBe jsonAsModelForFailure.reference
+        modelInRepository.failureDetails shouldBe jsonAsModelForFailure.failureDetails
+        modelInRepository.fileStatus shouldBe jsonAsModelForFailure.fileStatus
+        modelInRepository.uploadDetails shouldBe jsonAsModelForFailure.uploadDetails
       }
     }
   }
