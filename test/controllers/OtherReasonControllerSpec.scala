@@ -205,15 +205,23 @@ class OtherReasonControllerSpec extends SpecBase {
     "onPageLoadForUploadEvidence" when {
 
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
         status(result) shouldBe OK
       }
 
       "return OK and correct view (pre-populated date when present in session)" in new Setup(
         AuthTestModels.successfulAuthResult, Some(UploadData.oneWaitingUploads)
       ) {
-        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndJS))
         status(result) shouldBe OK
+      }
+
+      "the user does not have JavaScript enabled" when {
+
+        "return 303 (SEE_OTHER)" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe SEE_OTHER
+        }
       }
 
       "the user is unauthorised" when {

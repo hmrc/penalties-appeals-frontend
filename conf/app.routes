@@ -90,6 +90,7 @@ GET        /upload-evidence-for-the-appeal                         controllers.O
 GET        /upload-evidence-for-the-appeal/change                  controllers.OtherReasonController.onPageLoadForUploadEvidence(mode: Mode = CheckMode)
 GET        /upload-first-document                                   controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = NormalMode)
 GET        /upload-complete                                        controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = NormalMode)
+POST       /upload-first-document                                  controllers.OtherReasonController.onSubmitForNoJSFileUpload(mode: Mode = NormalMode)
 
 # Who Planned to Submit VAT Return
 GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)
