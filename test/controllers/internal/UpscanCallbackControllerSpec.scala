@@ -127,7 +127,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
 
   "UpscanController" should {
     "return an ISE" when {
-      s"the body can not be parsed to an $UploadJourney model" in {
+      s"the body can not be parsed to an $UploadJourney model" in new Setup {
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validJsonButInvalidModel))
         status(result) shouldBe BAD_REQUEST
       }
@@ -135,7 +135,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
 
     "return NO CONTENT" when {
       lazy val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
-      "the body is valid and state has been updated" in {
+      "the body is valid and state has been updated" in new Setup {
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan))
         status(result) shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
@@ -154,7 +154,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscanDuplicate))
         status(result) shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref2"))).get
-        modelInRepo shouldBe uploadJourneyModelDuplicate
+        modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelDuplicate.copy(lastUpdated = mockDateTime)
       }
     }
   }

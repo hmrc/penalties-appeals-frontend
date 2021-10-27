@@ -167,8 +167,16 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         await(repository.getUploadsForJourney(Some("12345"))).get.size shouldBe 2
         val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
         val duplicateModelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref2"))).get
-        modelInRepository shouldBe jsonAsModel
-        duplicateModelInRepository shouldBe duplicateJsonAsModel
+        modelInRepository.downloadUrl shouldBe jsonAsModel.downloadUrl
+        modelInRepository.reference shouldBe jsonAsModel.reference
+        modelInRepository.failureDetails shouldBe jsonAsModel.failureDetails
+        modelInRepository.fileStatus shouldBe jsonAsModel.fileStatus
+        modelInRepository.uploadDetails shouldBe jsonAsModel.uploadDetails
+        duplicateModelInRepository.downloadUrl shouldBe duplicateJsonAsModel.downloadUrl
+        duplicateModelInRepository.reference shouldBe duplicateJsonAsModel.reference
+        duplicateModelInRepository.failureDetails shouldBe duplicateJsonAsModel.failureDetails
+        duplicateModelInRepository.fileStatus shouldBe duplicateJsonAsModel.fileStatus
+        duplicateModelInRepository.uploadDetails shouldBe duplicateJsonAsModel.uploadDetails
       }
     }
   }
