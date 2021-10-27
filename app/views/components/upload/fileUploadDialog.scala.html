@@ -1,0 +1,33 @@
+@import config.AppConfig
+@import utils.SessionKeys
+@import views.html.components.upload.uploadItem
+@import views.html.partials.errorManager
+
+@this()
+
+@(form: Form[_])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@if(form.hasErrors) {
+    <div class="govuk-form-group govuk-form-group--error">
+        <label class="govuk-label govuk-label--m" for="file">
+        @messages("otherReason.uploadEvidence.noJs.uploadLabel")
+        </label>
+        <span id="file-upload-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">@messages("error.prefix")</span> @messages(form.errors.head.message)
+        </span>
+        <input class="govuk-file-upload govuk-file-upload--error" id="file" name="file" type="file"
+        accept="@appConfig.acceptedFileTypes"
+        data-max-file-size="@appConfig.maxFileUploadSize"
+        data-min-file-size="1"
+        aria-describedby="file-upload-error">
+    </div>
+} else {
+    <label class="govuk-label govuk-label--m" for="file">
+    @messages("otherReason.uploadEvidence.noJs.uploadLabel")
+    </label>
+
+    <input class="govuk-file-upload" id="file" name="file" type="file"
+    accept="@appConfig.acceptedFileTypes"
+    data-max-file-size="@appConfig.maxFileUploadSize"
+    data-min-file-size="1">
+}

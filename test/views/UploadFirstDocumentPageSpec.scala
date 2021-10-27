@@ -17,24 +17,19 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.UploadEvidenceForm
-import messages.UploadEvidenceMessages._
-import models.upload.UploadJourney
+import forms.upscan.UploadDocumentForm
+import messages.UploadFirstDocumentMessages._
 import models.PenaltyTypeEnum
 import org.jsoup.nodes.Document
-import play.api.data.Form
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import testUtils.UploadData
 import utils.SessionKeys
 import views.behaviours.ViewBehaviours
-import views.html.reasonableExcuseJourneys.other.UploadEvidencePage
+import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
 
-class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
-
-  "UploadEvidencePage" should {
-    val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
+class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
+  "UploadFirstDocumentPage" should {
+    val uploadFirstDocumentPage: UploadFirstDocumentPage = injector.instanceOf[UploadFirstDocumentPage]
     object Selectors extends BaseSelectors {
       val detailsHeading = ".govuk-details__summary-text"
 
@@ -46,43 +41,21 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       val detailsContentLi: Int => String = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
 
-      val addAnotherButton = ".multi-file-upload__add-another"
+      val continueButton = "#file-upload-form .govuk-button--secondary"
 
-      val continueButton = "#multi-upload-form > p > button"
+      val uploadButton = "#file-upload-form .govuk-button"
 
-      val multiUploadForm = "#multi-upload-form"
-
-      val multiUploadFormFilesAKey = "data-multi-file-upload-uploaded-files"
-
-      val multiUploadFormInitiateUploadAKey = "data-multi-file-upload-send-url-tpl"
-
-      val multiUploadFormGetStatusAKey = "data-multi-file-upload-status-url-tpl"
-
-      val multiUploadFormRemoveFileAKey = "data-multi-file-upload-remove-url-tpl"
-
-      val multiUploadFormStillTransferring = "data-multi-file-upload-still-transferring"
-
-      val multiUploadFormGenericError ="data-multi-file-upload-error-generic"
-    }
-    val formProvider = UploadEvidenceForm.uploadEvidenceForm
-
-    def previousUploadsToString(previousUploads:Option[Seq[UploadJourney]]):String = {
-      previousUploads match {
-        case Some(_) =>  Json.stringify(Json.toJson(previousUploads))
-        case None => ""
-      }
+      val chooseYourFirstFile = "#file-upload-form-group > label"
     }
 
-    def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
-      uploadEvidencePage.apply(
-        controllers.routes.MakingALateAppealController.onPageLoad(),
-        controllers.routes.UpscanController.initiateCallToUpscan("1234"),
-        controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),
-        controllers.routes.UpscanController.removeFile("1234", _),
-        previousUploadsToString(previousUploads))(request, implicitly, implicitly)
+    val form = UploadDocumentForm.form
+    val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSFileUpload()
+    val noUploadAction = controllers.routes.MakingALateAppealController.onPageLoad().url
+    def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
+      uploadFirstDocumentPage.apply(form, postAction, noUploadAction)(request, implicitly, implicitly)
     }
 
-    implicit val doc: Document = asDocument(applyView(formProvider))
+    implicit val doc: Document = asDocument(applyView(fakeRequest))
 
     val expectedContent = Seq(
       Selectors.title -> title,
@@ -101,14 +74,15 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentLi(5) -> detailsLi5,
       Selectors.detailsContentP2 -> detailsP2,
       Selectors.detailsContentP3 -> detailsP3,
-      Selectors.addAnotherButton -> addAnotherButton,
-      Selectors.continueButton -> continueButton
+      Selectors.chooseYourFirstFile -> chooseYourFirstFile,
+      Selectors.continueButton -> continueButton,
+      Selectors.uploadButton -> uploadButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)
 
     "display the LPP variation when the appeal is for a LPP" must {
-      implicit val lppDoc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+      implicit val lppDoc: Document = asDocument(applyView(fakeRequest.withSession(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
 
       val expectedContent = Seq(
@@ -128,15 +102,16 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
         Selectors.detailsContentP3 -> detailsP3,
-        Selectors.addAnotherButton -> addAnotherButton,
-        Selectors.continueButton -> continueButton
+        Selectors.chooseYourFirstFile -> chooseYourFirstFile,
+        Selectors.continueButton -> continueButton,
+        Selectors.uploadButton -> uploadButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)(lppDoc)
     }
 
     "display appeal against the obligation page when the appeal is for LSP" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+      implicit val doc: Document = asDocument(applyView(fakeRequest.withSession(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
         SessionKeys.isObligationAppeal -> "true")))
 
@@ -157,15 +132,16 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
         Selectors.detailsContentP3 -> detailsP3,
-        Selectors.addAnotherButton -> addAnotherButton,
-        Selectors.continueButton -> continueButton
+        Selectors.chooseYourFirstFile -> chooseYourFirstFile,
+        Selectors.continueButton -> continueButton,
+        Selectors.uploadButton -> uploadButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
     }
 
     "display the LPP variation when the appeal is for a LPP - Additional" must {
-      implicit val lppAdditionalDoc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+      implicit val lppAdditionalDoc: Document = asDocument(applyView(fakeRequest.withSession(
         SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString)))
 
       val expectedContent = Seq(
@@ -185,15 +161,16 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
         Selectors.detailsContentP3 -> detailsP3,
-        Selectors.addAnotherButton -> addAnotherButton,
-        Selectors.continueButton -> continueButton
+        Selectors.chooseYourFirstFile -> chooseYourFirstFile,
+        Selectors.continueButton -> continueButton,
+        Selectors.uploadButton -> uploadButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)(lppAdditionalDoc)
     }
 
     "display appeal against the obligation page when the appeal is for LPP" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+      implicit val doc: Document = asDocument(applyView(fakeRequest.withSession(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
         SessionKeys.isObligationAppeal -> "true")))
 
@@ -214,36 +191,12 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.detailsContentP2 -> detailsP2,
         Selectors.detailsContentP3 -> detailsP3,
-        Selectors.addAnotherButton -> addAnotherButton,
-        Selectors.continueButton -> continueButton
+        Selectors.chooseYourFirstFile -> chooseYourFirstFile,
+        Selectors.continueButton -> continueButton,
+        Selectors.uploadButton -> uploadButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
-    }
-
-    "load the correct parameters for previous uploads" in {
-      implicit val doc: Document = asDocument(
-        applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
-      )
-      val expectedString = Json.stringify(Json.toJson(Some(UploadData.maxWaitingUploads)))
-
-      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormFilesAKey) shouldBe expectedString
-      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormStillTransferring) shouldBe uploadEvidenceStillTransferring
-      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormGenericError) shouldBe fileUploadTryAgain
-
-    }
-
-    "load the correct parameters for initiating uploads and getting status of uploads" in {
-      implicit val doc: Document = asDocument(
-        applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
-      )
-      val expectedInitiateString = "/penalties-appeals/upscan/call-to-upscan/1234"
-      val expectedStatusString = "/penalties-appeals/upscan/upload-status/1234/%7BfileRef%7D"
-      val expectedRemovalString = "/penalties-appeals/upscan/remove-file/1234/%7BfileRef%7D"
-
-      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormInitiateUploadAKey) shouldBe expectedInitiateString
-      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormGetStatusAKey) shouldBe expectedStatusString
-      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormRemoveFileAKey) shouldBe expectedRemovalString
     }
   }
 }
