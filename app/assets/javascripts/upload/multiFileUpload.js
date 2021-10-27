@@ -878,7 +878,7 @@ class MultiFileUpload {
         this.getItems().forEach(item => {
             const button = this.getRemoveButtonFromItem(item);
 
-            if (this.isWaiting(item) || this.isUploading(item) || this.isVerifying(item) || this.isUploaded(item)) {
+            if (this.isWaiting(item) || this.isUploading(item) || this.isVerifying(item) || this.isUploaded(item) || this.hasErrors()) {
                 state = true;
             }
 
