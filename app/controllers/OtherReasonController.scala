@@ -20,6 +20,7 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
+import forms.upscan.UploadDocumentForm
 import helpers.FormProviderHelper
 import models.Mode
 import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
@@ -33,6 +34,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
+import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -41,6 +43,7 @@ import scala.concurrent.ExecutionContext
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
                                       whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage,
                                       uploadEvidencePage: UploadEvidencePage,
+                                      uploadFirstDocumentPage: UploadFirstDocumentPage,
                                       navigation: Navigation,
                                       uploadJourneyRepository: UploadJourneyRepository)
                                      (implicit authorise: AuthPredicate,
@@ -110,9 +113,36 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         val initiateNextUploadUrl = controllers.routes.UpscanController.initiateCallToUpscan(request.session.get(SessionKeys.journeyId).get)
         val getStatusUrl = controllers.routes.UpscanController.getStatusOfFileUpload(request.session.get(SessionKeys.journeyId).get, _)
         val removeFileUrl = controllers.routes.UpscanController.removeFile(request.session.get(SessionKeys.journeyId).get, _)
-        val postAction = navigation.nextPage(EvidencePage,mode)
+        val postAction = navigation.nextPage(EvidencePage, mode)
         Ok(uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, previousUploads))
       }
+    }
+  }
+
+  def onPageLoadForNoJSFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
+      val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSFileUpload()
+      val formProvider = UploadDocumentForm.form
+      Ok(uploadFirstDocumentPage(formProvider, postAction, nextPageIfNoUpload.url))
+    }
+  }
+
+  def onSubmitForNoJSFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
+      val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSFileUpload()
+      UploadDocumentForm.form.bindFromRequest().fold(
+        formWithErrors => {
+          logger.debug("[OtherReasonController][onSubmitForNoJSFileUpload] - User did not upload a file")
+          BadRequest(uploadFirstDocumentPage(formWithErrors, postAction, nextPageIfNoUpload.url))
+        },
+        _ => {
+          //TODO: need to change this to upload the file and do processing
+          Redirect(navigation.nextPage(EvidencePage, mode))
+        }
+      )
+
     }
   }
 }
