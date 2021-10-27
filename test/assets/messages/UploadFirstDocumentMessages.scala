@@ -16,13 +16,13 @@
 
 package messages
 
-object UploadEvidenceMessages {
+object UploadFirstDocumentMessages {
 
   val title = "Evidence to support this appeal (optional) - Appeal a VAT penalty - GOV.UK"
 
   val h1 = "Evidence to support this appeal (optional)"
 
-  val p1 = "Use this page to upload any evidence to help us review the penalty."
+  val p1 = "Use this page to upload your first document. You can upload additional documents afterwards. We will use any evidence to help us review the penalty."
 
   val p2 = "Evidence might include any documents or letters that show why the return was submitted late."
 
@@ -56,14 +56,9 @@ object UploadEvidenceMessages {
 
   val detailsP3 = "We’ll scan all files and reject any we think are suspicious."
 
-  val document1 = "Document 1"
+  val chooseYourFirstFile = "Choose your first file"
 
-  val addAnotherButton = "Add another document"
+  val continueButton = "Continue without evidence"
 
-  val continueButton = "Continue"
-
-  val fileUploadTryAgain = "The selected file could not be uploaded. Remove the file and try again."
-
-  val uploadEvidenceStillTransferring = "Files are still being transferred"
-
+  val uploadButton = "Upload selected file"
 }

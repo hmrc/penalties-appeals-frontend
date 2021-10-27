@@ -296,6 +296,14 @@ otherReason.uploadEvidence.status.uploaded = Ready to Submit
 otherReason.uploadEvidence.status.pending = Pending
 otherReason.uploadEvidence.button.remove = Remove
 otherReason.uploadEvidence.button.removing = Removing
+otherReason.uploadEvidence.stillTransferring = Files are still being transferred
+
+# Upload Evidence (No JS)
+# ----------------------------------------------------------
+otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first document. You can upload additional documents afterwards. We will use any evidence to help us review the penalty.
+otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
+otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
+otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
 
 # Upscan failure messages
 # ----------------------------------------------------------
@@ -470,7 +478,6 @@ otherRelevantInformation.heading = Tell us why you want to appeal the penalty
 otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
 otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
 
-
 # Error message for characters more than 5000 in text area
 # ----------------------------------------------------------
 explainReason.charsInTextArea.error = Explain the reason in 5,000 characters or fewer
@@ -493,9 +500,9 @@ problemWithService.heading = Sorry, there is a problem with the service
 problemWithService.p1 = We have not saved your answers.
 problemWithService.p2 = You will be able to use the service later.
 problemWithService.p3 = If you prefer, you can appeal by letter. Write to:
-problemWithService.p5 = Solicitor’s Office and Legal Services
-problemWithService.p6 = HMRC
-problemWithService.p7 = BX9 1ZT
+problemWithService.p4 = Solicitor‘s Office and Legal Services
+problemWithService.p5 = HMRC
+problemWithService.p6 = BX9 1ZT
 
 # Duplicate Appeal Page
 # ----------------------------------------------------------
@@ -504,3 +511,8 @@ duplicateAppeal.heading = We have already been asked to review this penalty
 duplicateAppeal.p1 = You cannot submit a duplicate request for the same penalty.
 duplicateAppeal.link = View your penalties and appeals
 agent.duplicateAppeal.link = View your client’s penalties and appeals
+
+# Error scenarios
+# ----------------------------------------------------------
+error.prefix = Error:
+error.summary.title = There is a problem
