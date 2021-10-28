@@ -56,7 +56,7 @@
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
     @details("otherReason.uploadEvidence.details.heading", detailsContent)
 
-    @formHelper(action = Call("POST", upscanResponse.uploadRequest.href), args = (Symbol("id"), "file-upload-form"), (Symbol("enctype"), "multipart/form-data")) {
+    <form method="POST" action="@upscanResponse.uploadRequest.href" id="file-upload-form" enctype="multipart/form-data">
         @for(field <- upscanResponse.uploadRequest.fields) {
             <input type="hidden" name="@field._1" value="@field._2"/>
         }
@@ -68,5 +68,5 @@
             @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))
             <a href="@nextPageIfNoUpload" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence")</a>
         </p>
-    }
+    </form>
 }

@@ -32,8 +32,8 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
 
   private lazy val upscanInitiateModelForSynchronousUpload: String => UpscanInitiateRequest = (journeyId: String) => UpscanInitiateRequest(
     callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
-    successRedirect = Some(appConfig.upscanCallbackBaseUrl + controllers.routes.OtherReasonController.onPageLoadForUploadComplete().url),
-    errorRedirect = Some(appConfig.upscanCallbackBaseUrl + controllers.routes.OtherReasonController.onPageLoadForNoJSFileUpload().url),
+    successRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.OtherReasonController.onPageLoadForUploadComplete().url),
+    errorRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.OtherReasonController.onPageLoadForNoJSFileUpload().url),
     minimumFileSize = Some(1),
     maximumFileSize = Some(appConfig.maxFileUploadSize)
   )
