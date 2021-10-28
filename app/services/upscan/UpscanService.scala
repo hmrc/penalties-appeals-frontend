@@ -69,6 +69,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
         Future(errorHandler.showInternalServerError)
       )(
         uploadStatus => {
+          logger.debug("waitForStatus - running")
           if(uploadStatus.status != "WAITING") {
             uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).flatMap {
               uploads => {
@@ -77,6 +78,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
               }
             }
           } else if(System.nanoTime() > timeoutNano) {
+            logger.debug("waitForStatus - skipping check")
             Future(errorHandler.showInternalServerError)
           } else {
             waitForStatus(journeyId, file, timeoutNano, block)
