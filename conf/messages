@@ -298,6 +298,13 @@ otherReason.uploadEvidence.button.remove = Remove
 otherReason.uploadEvidence.button.removing = Removing
 otherReason.uploadEvidence.stillTransferring = Files are still being transferred
 
+# Upload Evidence (No JS)
+# ----------------------------------------------------------
+otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first document. You can upload additional documents afterwards. We will use any evidence to help us review the penalty.
+otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
+otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
+otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
+
 # Upscan failure messages
 # ----------------------------------------------------------
 upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)
@@ -509,14 +516,4 @@ agent.duplicateAppeal.link = View your client’s penalties and appeals
 # ----------------------------------------------------------
 error.prefix = Error:
 error.summary.title = There is a problem
-error.file-upload.required = Select a file
-error.file-upload.invalid-size-small = The selected file is empty
-error.file-upload.invalid-size-large = The selected file must be smaller than {0}MB
-error.file-upload.invalid-type = The selected file must be a .jpg, .png, .tiff, .pdf, .txt, .msg, Open Document Format (ODF), or Microsoft Office format
-error.file-upload.quarantine = The selected file contains a virus - upload a different one
-error.file-upload.unknown = The selected file could not be uploaded
-error.file-upload.try-again = The selected file could not be uploaded - try again
-error.file-upload.remove.try-again = The selected file could not be removed - try again
-error.uploadAnotherFile.required = Select yes if you want to upload another document
-
 

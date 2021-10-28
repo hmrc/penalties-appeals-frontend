@@ -31,6 +31,7 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
+import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,6 +40,7 @@ class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
   val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
+  val uploadFirstDocumentPage: UploadFirstDocumentPage = injector.instanceOf[UploadFirstDocumentPage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
@@ -57,6 +59,7 @@ class OtherReasonControllerSpec extends SpecBase {
       whenDidYouBecomeUnablePage,
       whyReturnSubmittedLatePage,
       uploadEvidencePage,
+      uploadFirstDocumentPage,
       mainNavigator,
       mockUploadJourneyRepository
     )(authPredicate, dataRequiredAction, appConfig, mcc, ec)
@@ -273,6 +276,69 @@ class OtherReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onPageLoadForNoJSFileUpload" should {
+      "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = controller.onPageLoadForNoJSFileUpload(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForNoJSFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForNoJSFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForNoJSFileUpload" should {
+      "the user is authorised" must {
+        "return 303 (SEE_OTHER) and redirect to the successful redirect in the Upscan model" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(Json.parse(
+            """
+              |{
+              | "file": "file1.txt"
+              |}
+              |""".stripMargin)))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+        }
+
+        "return 400 (BAD_REQUEST) when the 'file' field is not present in the form" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeys)
+          status(result) shouldBe BAD_REQUEST
+        }
+
+        "return 400 (BAD_REQUEST) when the 'file' field is present but is empty in the form" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(Json.parse(
+            """
+              |{
+              | "file": ""
+              |}
+              |""".stripMargin)))
+          status(result) shouldBe BAD_REQUEST
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }
