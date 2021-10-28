@@ -48,7 +48,7 @@ class UploadJourneyRepository @Inject()(
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatus]] = {
     get[UploadJourney](journeyId)(DataKey(fileReference)).map(
       upload => {
-        if(upload.exists(_.failureDetails.isDefined)) {
+        if (upload.exists(_.failureDetails.isDefined)) {
           upload.flatMap(_.failureDetails.map(
             failureDetails => {
               logger.warn(s"[UploadJourneyRepository][getStatusOfFileUpload] -" +
@@ -67,12 +67,12 @@ class UploadJourneyRepository @Inject()(
     journeyId match {
       case Some(id) =>
         findById(id)
-        .map {
-          case Some(cacheItem) if cacheItem.data.fields.nonEmpty =>
-            val list = cacheItem.data.values
-            Some(list.map( a => a.as[UploadJourney]).toSeq)
-          case None => None
-        }
+          .map {
+            case Some(cacheItem) if cacheItem.data.fields.nonEmpty =>
+              val list = cacheItem.data.values
+              Some(list.map(a => a.as[UploadJourney]).toSeq)
+            case None => None
+          }
       case _ => Future.successful(None)
     }
   }
@@ -82,7 +82,7 @@ class UploadJourneyRepository @Inject()(
       _.map {
         item => {
           val list = item.data.values
-          list.map( a => a.as[UploadJourney]).toSeq.size
+          list.map(a => a.as[UploadJourney]).toSeq.size
         }
       }.getOrElse(0)
     }
@@ -96,12 +96,22 @@ class UploadJourneyRepository @Inject()(
   def removeFileForJourney(journeyId: String, fileReference: String): Future[Unit] = {
     getNumberOfDocumentsForJourneyId(journeyId).map {
       amountOfDocuments => {
-        if(amountOfDocuments == 1) {
+        if (amountOfDocuments == 1) {
           deleteEntity(journeyId)
         } else {
           delete(journeyId)(DataKey(fileReference))
         }
       }
     }
+  }
+
+  def getAllChecksumsForJourney(journeyId: Option[String]): Future[Seq[String]] = {
+    getUploadsForJourney(journeyId).map(
+      _.map(
+        _.map(
+          _.uploadDetails.map(
+            _.checksum)
+        ).collect { case Some(x) => x }
+      ).getOrElse(Seq.empty))
   }
 }

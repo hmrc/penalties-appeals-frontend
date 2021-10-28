@@ -16,20 +16,20 @@
 
 package controllers.internal
 
-import config.AppConfig
 import helpers.UpscanMessageHelper
+
 import javax.inject.Inject
-import models.upload.UploadJourney
+import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum}
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
-                                        (implicit appConfig: AppConfig,
-                                         mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+                                        (implicit mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def callbackFromUpscan(journeyId: String): Action[JsValue] = Action.async(parse.json) {
     implicit request => {
@@ -41,7 +41,22 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
             val failureDetails = callbackModel.failureDetails.get.copy(message = localisedFailureReason)
             repository.updateStateOfFileUpload(journeyId, callbackModel.copy(failureDetails = Some(failureDetails))).map(_ => NoContent)
           } else {
-            repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
+            repository.getAllChecksumsForJourney(Some(journeyId)).flatMap(
+              seqOfChecksums => {
+                if(seqOfChecksums.contains(callbackModel.uploadDetails.get.checksum)) {
+                  logger.debug("[UpscanCallbackController][callbackFromUpscan] - Checksum is already in Mongo. Marking file as duplicate.")
+                  val duplicateCallbackModel = callbackModel.copy(
+                    fileStatus = UploadStatusEnum.FAILED,
+                    failureDetails = Some(FailureDetails(FailureReasonEnum.DUPLICATE, "upscan.duplicateFile")),
+                    uploadDetails = None,
+                    downloadUrl = None
+                  )
+                  repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
+                } else {
+                  repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
+                }
+              }
+            )
           }
         }
       }

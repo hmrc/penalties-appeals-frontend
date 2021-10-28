@@ -17,9 +17,9 @@
 package controllers.internal
 
 import java.time.LocalDateTime
-
 import base.SpecBase
 import models.upload._
+import org.mongodb.scala.Document
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
@@ -27,7 +27,11 @@ import uk.gov.hmrc.mongo.cache.DataKey
 
 class UpscanCallbackControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
-  val controller: UpscanCallbackController = new UpscanCallbackController(repository)(implicitly, stubMessagesControllerComponents())
+  val controller: UpscanCallbackController = new UpscanCallbackController(repository)(stubMessagesControllerComponents())
+
+  class Setup {
+    await(repository.collection.deleteMany(Document()).toFuture())
+  }
 
   val invalidJsonBody: String =
     """
@@ -49,6 +53,23 @@ class UpscanCallbackControllerSpec extends SpecBase {
     """
       |{
       |    "reference": "ref1",
+      |    "downloadUrl": "download.url",
+      |    "fileStatus": "READY",
+      |    "uploadDetails": {
+      |        "fileName": "file1.txt",
+      |        "fileMimeType": "text/plain",
+      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+      |        "checksum": "check12345678",
+      |        "size": 987
+      |    }
+      |}
+      |""".stripMargin
+  )
+
+  val validCallbackFromUpscanDuplicate: JsValue = Json.parse(
+    """
+      |{
+      |    "reference": "ref2",
       |    "downloadUrl": "download.url",
       |    "fileStatus": "READY",
       |    "uploadDetails": {
@@ -88,6 +109,14 @@ class UpscanCallbackControllerSpec extends SpecBase {
     ))
   )
 
+  val uploadJourneyModelDuplicate: UploadJourney = UploadJourney(
+    reference = "ref2",
+    fileStatus = UploadStatusEnum.FAILED,
+    downloadUrl = None,
+    uploadDetails = None,
+    failureDetails = Some(FailureDetails(FailureReasonEnum.DUPLICATE, "upscan.duplicateFile"))
+  )
+
   val uploadJourneyModelWithFailure: UploadJourney = uploadJourneyModel.copy(
     fileStatus = UploadStatusEnum.FAILED, downloadUrl = None, uploadDetails = None,
     failureDetails = Some(FailureDetails(
@@ -98,7 +127,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
 
   "UpscanController" should {
     "return an ISE" when {
-      s"the body can not be parsed to an $UploadJourney model" in {
+      s"the body can not be parsed to an $UploadJourney model" in new Setup {
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validJsonButInvalidModel))
         status(result) shouldBe BAD_REQUEST
       }
@@ -106,18 +135,26 @@ class UpscanCallbackControllerSpec extends SpecBase {
 
     "return NO CONTENT" when {
       lazy val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
-      "the body is valid and state has been updated" in {
+      "the body is valid and state has been updated" in new Setup {
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan))
         status(result) shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
         modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModel.copy(lastUpdated = mockDateTime)
       }
 
-      "the file is rejected and state has been updated" in {
+      "the file is rejected and state has been updated" in new Setup {
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(callbackFromUpscanWithFailure))
         status(result) shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
         modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelWithFailure.copy(lastUpdated = mockDateTime)
+      }
+
+      "the file is accepted but the file is a duplicate" in new Setup {
+        await(repository.updateStateOfFileUpload("12345", uploadJourneyModel))
+        val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscanDuplicate))
+        status(result) shouldBe NO_CONTENT
+        val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref2"))).get
+        modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelDuplicate.copy(lastUpdated = mockDateTime)
       }
     }
   }
