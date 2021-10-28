@@ -17,15 +17,18 @@
 package controllers
 
 import base.SpecBase
-import models.upload.UploadJourney
+import connectors.httpParsers.UpscanInitiateHttpParser.UnexpectedFailure
+import models.upload.{UploadFormTemplateRequest, UploadJourney, UpscanInitiateResponseModel}
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{mock, reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
+import services.upscan.UpscanService
 import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
@@ -41,13 +44,14 @@ class OtherReasonControllerSpec extends SpecBase {
   val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
   val uploadFirstDocumentPage: UploadFirstDocumentPage = injector.instanceOf[UploadFirstDocumentPage]
+  val mockUpscanService: UpscanService = mock(classOf[UpscanService])
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
   class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]],
     Option[ItmpAddress]]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockUpscanService)
     when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
       any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
       any(), any())
@@ -61,8 +65,9 @@ class OtherReasonControllerSpec extends SpecBase {
       uploadEvidencePage,
       uploadFirstDocumentPage,
       mainNavigator,
+      mockUpscanService,
       mockUploadJourneyRepository
-    )(authPredicate, dataRequiredAction, appConfig, mcc, ec)
+    )(authPredicate, dataRequiredAction, appConfig, errorHandler, mcc, ec)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
       2020, 2, 1, 0, 0, 0))
@@ -283,10 +288,19 @@ class OtherReasonControllerSpec extends SpecBase {
 
     "onPageLoadForNoJSFileUpload" should {
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
         val result: Future[Result] = controller.onPageLoadForNoJSFileUpload(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
+      "return ISE when the call to initiate file upload fails" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
+        val result: Future[Result] = controller.onPageLoadForNoJSFileUpload(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
       "the user is unauthorised" when {
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
@@ -296,49 +310,6 @@ class OtherReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onPageLoadForNoJSFileUpload(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-        }
-      }
-    }
-
-    "onSubmitForNoJSFileUpload" should {
-      "the user is authorised" must {
-        "return 303 (SEE_OTHER) and redirect to the successful redirect in the Upscan model" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(Json.parse(
-            """
-              |{
-              | "file": "file1.txt"
-              |}
-              |""".stripMargin)))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        }
-
-        "return 400 (BAD_REQUEST) when the 'file' field is not present in the form" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeys)
-          status(result) shouldBe BAD_REQUEST
-        }
-
-        "return 400 (BAD_REQUEST) when the 'file' field is present but is empty in the form" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(Json.parse(
-            """
-              |{
-              | "file": ""
-              |}
-              |""".stripMargin)))
-          status(result) shouldBe BAD_REQUEST
-        }
-      }
-
-      "the user is unauthorised" when {
-
-        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequest)
-          status(result) shouldBe FORBIDDEN
-        }
-
-        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }

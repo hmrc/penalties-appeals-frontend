@@ -16,20 +16,21 @@
 
 package controllers
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
-import forms.upscan.UploadDocumentForm
-import helpers.FormProviderHelper
+import forms.upscan.{S3UploadSuccessForm, UploadDocumentForm}
+import helpers.{FormProviderHelper, UpscanMessageHelper}
 import models.Mode
 import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
 import navigation.Navigation
-import play.api.data.Form
+import play.api.data.{Form, FormError}
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
+import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
@@ -38,17 +39,19 @@ import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
 
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
                                       whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage,
                                       uploadEvidencePage: UploadEvidencePage,
                                       uploadFirstDocumentPage: UploadFirstDocumentPage,
                                       navigation: Navigation,
+                                      upscanService: UpscanService,
                                       uploadJourneyRepository: UploadJourneyRepository)
                                      (implicit authorise: AuthPredicate,
                                       dataRequired: DataRequiredAction,
                                       appConfig: AppConfig,
+                                      errorHandler: ErrorHandler,
                                       mcc: MessagesControllerComponents,
                                       ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
@@ -119,30 +122,42 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  def onPageLoadForNoJSFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoadForNoJSFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
-      val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSFileUpload()
       val formProvider = UploadDocumentForm.form
-      Ok(uploadFirstDocumentPage(formProvider, postAction, nextPageIfNoUpload.url))
+      val errorCode = request.getQueryString("errorCode")
+      upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get).map(
+        _.fold(
+          error => {
+            logger.error("[OtherReasonController][onPageLoadForNoJSFileUpload] - Received error back from initiate request rendering ISE.")
+            errorHandler.showInternalServerError
+          },
+          upscanResponseModel => {
+            if(errorCode.isEmpty) {
+              Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, nextPageIfNoUpload.url))
+            } else {
+              val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(errorCode.get)
+              val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
+              BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, nextPageIfNoUpload.url))
+            }
+          }
+        )
+      )
     }
   }
 
-  def onSubmitForNoJSFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
-      val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSFileUpload()
-      UploadDocumentForm.form.bindFromRequest().fold(
-        formWithErrors => {
-          logger.debug("[OtherReasonController][onSubmitForNoJSFileUpload] - User did not upload a file")
-          BadRequest(uploadFirstDocumentPage(formWithErrors, postAction, nextPageIfNoUpload.url))
+      S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
+        errors => {
+          logger.error(s"[UpscanController][filePosted] - Could not bind form based on request with errors: ${errors.errors}")
+          Future(errorHandler.showInternalServerError)
         },
-        _ => {
-          //TODO: need to change this to upload the file and do processing
-          Redirect(navigation.nextPage(EvidencePage, mode))
+        upload => {
+          Future(Ok("success"))
         }
       )
-
     }
   }
 }

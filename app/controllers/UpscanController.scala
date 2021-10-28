@@ -20,23 +20,23 @@ import config.AppConfig
 import connectors.UpscanConnector
 import forms.upscan.{S3UploadErrorForm, S3UploadSuccessForm}
 import helpers.UpscanMessageHelper
+import models.upload._
+import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 
-import javax.inject.Inject
-import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum, UpscanInitiateRequest, UpscanInitiateResponseModel}
-import play.api.http.HeaderNames
-
 import java.time.LocalDateTime
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class UpscanController @Inject()(repository: UploadJourneyRepository,
                                  connector: UpscanConnector)
-                                (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+                                (implicit appConfig: AppConfig,
+                                 mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
     implicit request => {
