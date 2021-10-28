@@ -24,6 +24,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.AuthStub
+import stubs.UpscanStub.successfulInitiateCall
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
@@ -351,6 +352,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
   "GET /upload-first-document" should {
     "return 200 (OK) when the user is authorised" in {
+      successfulInitiateCall(
+        """
+          |{
+          | "reference": "12345",
+          | "uploadRequest": {
+          |   "href": "12345",
+          |   "fields": {}
+          | }
+          |}
+          |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
@@ -362,6 +373,20 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onPageLoadForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
+    }
+
+    "return 500 (ISE) when the call to upscan fails for initiate call" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      )
+      val request = await(controller.onPageLoadForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
@@ -383,82 +408,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
       val request = await(buildClientForRequestToApp(uri = "/upload-first-document").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
-  }
-
-  "POST /upload-first-document" should {
-    //TODO: need to make some changes when synchronous upload is implemented
-    "return 303 (SEE_OTHER) and process the upload" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-first-document").withSession(
-        (SessionKeys.penaltyId, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
-        (SessionKeys.journeyId, "1234"))
-      val request = await(controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
-        """
-          |{
-          | "file": "file1.txt"
-          |}
-          |""".stripMargin))))
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-    }
-
-    "return 400 (BAD_REQUEST) when the user does not specify the 'file' field in the form" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-first-document").withSession(
-        (SessionKeys.penaltyId, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
-        (SessionKeys.journeyId, "1234"))
-      val request = await(controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
-      request.header.status shouldBe Status.BAD_REQUEST
-    }
-
-    "return 400 (BAD_REQUEST) when the user does not upload a file i.e. the 'file' field in the form is empty" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-first-document").withSession(
-        (SessionKeys.penaltyId, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
-        (SessionKeys.journeyId, "1234"))
-      val request = await(controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
-        """
-          |{
-          | "file": ""
-          |}
-          |""".stripMargin))))
-      request.header.status shouldBe Status.BAD_REQUEST
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-vat-late")
-      val request = await(controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-first-document").withSession(
-        (SessionKeys.penaltyId, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
-      )
-      val request = await(controller.onSubmitForNoJSFileUpload(NormalMode)(fakeRequestWithIncompleteKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-first-document").post(""))
       request.status shouldBe Status.SEE_OTHER
     }
   }

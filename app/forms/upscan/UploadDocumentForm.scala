@@ -17,8 +17,9 @@
 package forms.upscan
 
 import forms.mappings.Mappings
+import models.upload.UpscanInitiateResponseModel
 import play.api.data.Form
-import play.api.data.Forms.single
+import play.api.data.Forms.{mapping, single}
 
 object UploadDocumentForm extends Mappings {
   val form: Form[String] = Form[String](

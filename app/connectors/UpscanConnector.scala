@@ -19,10 +19,9 @@ package connectors
 import config.AppConfig
 import connectors.httpParsers.UpscanInitiateHttpParser.{UpscanInitiateResponse, UpscanInitiateResponseReads}
 import models.upload.UpscanInitiateRequest
-
-import javax.inject.Inject
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpscanConnector @Inject()(httpClient: HttpClient,
