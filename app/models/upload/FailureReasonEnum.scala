@@ -24,12 +24,12 @@ object FailureReasonEnum extends Enumeration {
   val UNKNOWN: FailureReasonEnum.Value = Value
   val DUPLICATE: FailureReasonEnum.Value = Value
 
+  def getEnumFromString(s: String): Option[Value] = values.find(_.toString == s)
+
   implicit val format: Format[FailureReasonEnum.Value] = new Format[FailureReasonEnum.Value] {
     override def writes(o: FailureReasonEnum.Value): JsValue = {
       JsString(o.toString.toUpperCase)
     }
-
-    private def getEnumFromString(s: String): Option[Value] = values.find(_.toString == s)
 
     override def reads(json: JsValue): JsResult[FailureReasonEnum.Value] = {
       getEnumFromString(json.as[String].toUpperCase) match {

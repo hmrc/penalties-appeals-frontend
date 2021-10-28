@@ -19,7 +19,8 @@ package services.upscan
 import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser
-import models.upload.{UploadJourney, UploadStatusEnum, UpscanInitiateRequest, UpscanInitiateResponseModel}
+import models.upload.{FailureDetails, UploadJourney, UploadStatusEnum, UpscanInitiateRequest, UpscanInitiateResponseModel}
+import play.api.mvc.{Request, Result}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logger.logger
@@ -32,8 +33,8 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
 
   private lazy val upscanInitiateModelForSynchronousUpload: String => UpscanInitiateRequest = (journeyId: String) => UpscanInitiateRequest(
     callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
-    successRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.OtherReasonController.onPageLoadForUploadComplete().url),
-    errorRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.OtherReasonController.onPageLoadForNoJSFileUpload().url),
+    successRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.fileVerification().url),
+    errorRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.preUpscanCheckFailed().url),
     minimumFileSize = Some(1),
     maximumFileSize = Some(appConfig.maxFileUploadSize)
   )
@@ -52,6 +53,33 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
           val uploadJourney = UploadJourney(responseModel.reference, UploadStatusEnum.WAITING)
           uploadJourneyRepository.updateStateOfFileUpload(journeyId, uploadJourney).map {
             _ => Right(responseModel)
+          }
+        }
+      )
+    }
+  }
+
+  def waitForStatus(journeyId: String,
+                    file: String,
+                    timeoutNano: Long,
+                    block: (Option[FailureDetails], Option[String]) => Future[Result])
+                   (implicit request: Request[_], ec: ExecutionContext): Future[Result] = {
+    uploadJourneyRepository.getStatusOfFileUpload(journeyId, file).flatMap {
+      _.fold(
+        Future(errorHandler.showInternalServerError)
+      )(
+        uploadStatus => {
+          if(uploadStatus.status != "WAITING") {
+            uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).flatMap {
+              uploads => {
+                val uploadForFile = uploads.get.find(_.reference == file).get
+                block(uploadForFile.failureDetails, uploadStatus.errorMessage)
+              }
+            }
+          } else if(System.nanoTime() > timeoutNano) {
+            Future(errorHandler.showInternalServerError)
+          } else {
+            waitForStatus(journeyId, file, timeoutNano, block)
           }
         }
       )

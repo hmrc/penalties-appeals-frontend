@@ -24,6 +24,7 @@ import forms.upscan.{S3UploadSuccessForm, UploadDocumentForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
 import models.Mode
 import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
+import models.upload.FailureReasonEnum
 import navigation.Navigation
 import play.api.data.{Form, FormError}
 import play.api.i18n.I18nSupport
@@ -126,7 +127,6 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     implicit request => {
       val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
       val formProvider = UploadDocumentForm.form
-      val errorCode = request.getQueryString("errorCode")
       upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get).map(
         _.fold(
           error => {
@@ -134,12 +134,19 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             errorHandler.showInternalServerError
           },
           upscanResponseModel => {
-            if(errorCode.isEmpty) {
+            val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
+            val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
+            if(optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
               Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, nextPageIfNoUpload.url))
-            } else {
-              val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(errorCode.get)
+            } else if(optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
+              val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
               BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, nextPageIfNoUpload.url))
+                .removingFromSession(SessionKeys.errorCodeFromUpscan)
+            } else {
+              val formWithErrors = UploadDocumentForm.form.withError(FormError("file", optFailureFromUpscan.get))
+              BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, nextPageIfNoUpload.url))
+                .removingFromSession(SessionKeys.failureMessageFromUpscan)
             }
           }
         )
@@ -147,17 +154,9 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
+  def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
-        errors => {
-          logger.error(s"[UpscanController][filePosted] - Could not bind form based on request with errors: ${errors.errors}")
-          Future(errorHandler.showInternalServerError)
-        },
-        upload => {
-          Future(Ok("success"))
-        }
-      )
+      Ok("successful upload page")
     }
   }
 }

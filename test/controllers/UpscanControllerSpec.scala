@@ -27,6 +27,7 @@ import play.api.libs.json._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
+import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.mongo.cache.CacheItem
 
@@ -37,10 +38,12 @@ class UpscanControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
   val connector: UpscanConnector = mock(classOf[UpscanConnector])
+  val service: UpscanService = mock(classOf[UpscanService])
   val controller: UpscanController = new UpscanController(
     repository,
-    connector
-  )(appConfig, stubMessagesControllerComponents())
+    connector,
+    service
+  )(appConfig, errorHandler, stubMessagesControllerComponents())
 
   val uploadJourneyModel: UploadJourney = UploadJourney(
     reference = "ref1",
