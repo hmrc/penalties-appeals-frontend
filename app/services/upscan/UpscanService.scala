@@ -97,4 +97,14 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
       )
     }
   }
+
+  def removeFileFromJourney(journeyId: String, fileReference: String): Future[Unit] = {
+    uploadJourneyRepository.removeFileForJourney(journeyId, fileReference)
+  }
+
+  def getAmountOfFilesUploadedForJourney(journeyId: String): Future[Int] = {
+    uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).map(
+      _.fold(0)(_.count(_.fileStatus == UploadStatusEnum.READY))
+    )
+  }
 }

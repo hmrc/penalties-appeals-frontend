@@ -103,4 +103,28 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
     }
   }
 
+  "removeFileFromJourney" should {
+    "remove the file from the specified journey" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1234", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1235", UploadStatusEnum.READY)))
+      await(service.removeFileFromJourney("J1234", "F1234"))
+      await(repository.getUploadsForJourney(Some("J1234"))).get.size shouldBe 1
+      await(repository.getUploadsForJourney(Some("J1234"))).get.head.reference shouldBe "F1235"
+    }
+  }
+
+  "getAmountOfFilesUploadedForJourney" should {
+    "return the amount of files uploaded" in new Setup  {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1234", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1235", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1236", UploadStatusEnum.FAILED)))
+      val result = service.getAmountOfFilesUploadedForJourney("J1234")
+      await(result) shouldBe 2
+    }
+
+    "return 0 when there is no uploads for the journey" in new Setup  {
+      val result = service.getAmountOfFilesUploadedForJourney("J1234")
+      await(result) shouldBe 0
+    }
+  }
 }

@@ -93,4 +93,42 @@ class UpscanServiceSpec extends SpecBase {
       status(result) shouldBe OK
     }
   }
+
+  "removeFileFromJourney" should {
+    "propagate the request" in new Setup {
+      when(repository.removeFileForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful((): Unit))
+      val result = service.removeFileFromJourney("J1234", "F1234")
+      await(result) shouldBe (): Unit
+    }
+  }
+
+  "getAmountOfFilesUploadedForJourney" should {
+    "return 0" when {
+      "there is no uploads in Mongo for this journey" in new Setup {
+        when(repository.getUploadsForJourney(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(Seq())))
+        val result = service.getAmountOfFilesUploadedForJourney("J1234")
+        await(result) shouldBe 0
+      }
+
+      "there is no record in Mongo for this journey" in new Setup {
+        when(repository.getUploadsForJourney(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+        val result = service.getAmountOfFilesUploadedForJourney("J1234")
+        await(result) shouldBe 0
+      }
+    }
+
+    "return the amount of uploads in Mongo for the journey" in new Setup {
+      when(repository.getUploadsForJourney(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(Seq(
+          UploadJourney("file1", UploadStatusEnum.READY),
+          UploadJourney("file2", UploadStatusEnum.READY),
+          UploadJourney("file3", UploadStatusEnum.FAILED)
+        ))))
+      val result = service.getAmountOfFilesUploadedForJourney("J1234")
+      await(result) shouldBe 2
+    }
+  }
 }
