@@ -96,6 +96,8 @@ GET        /upload-complete                                        controllers.O
 GET        /upload-first-document/change                            controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = CheckMode)
 POST       /remove-file-upload                                      controllers.OtherReasonController.removeFileUpload(mode: Mode = NormalMode)
 POST       /remove-file-upload/change                               controllers.OtherReasonController.removeFileUpload(mode: Mode = CheckMode)
+GET        /upload-another-document                                   controllers.OtherReasonController.onPageLoadForNoJSAnotherFileUpload(mode: Mode = NormalMode)
+POST       /upload-another-document                                   controllers.OtherReasonController.onSubmitForNoJSAnotherFileUpload(mode: Mode = NormalMode)
 
 # Who Planned to Submit VAT Return
 GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)

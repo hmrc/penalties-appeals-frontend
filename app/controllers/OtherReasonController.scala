@@ -40,7 +40,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
-import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
+import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage}
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -50,6 +50,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage,
                                       uploadEvidencePage: UploadEvidencePage,
                                       uploadFirstDocumentPage: UploadFirstDocumentPage,
+                                      uploadAnotherDocumentPage: UploadAnotherDocumentPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
                                       uploadJourneyRepository: UploadJourneyRepository)
@@ -173,6 +174,30 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     implicit request => {
       Ok("successful upload page")
     }
+  }
+
+  def onPageLoadForNoJSAnotherFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request =>
+      val nextPageIfCancelled = navigation.nextPage(EvidencePage, mode) // TODO: change when "You have uploaded X file(s)" page is added (PRM-720)
+      val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSAnotherFileUpload()
+      val formProvider = UploadDocumentForm.form
+      Ok(uploadAnotherDocumentPage(formProvider, postAction, nextPageIfCancelled.url))
+  }
+
+  def onSubmitForNoJSAnotherFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  implicit request =>
+    val nextPageIfCancelled = navigation.nextPage(EvidencePage, mode)
+    val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSAnotherFileUpload()
+      UploadDocumentForm.form.bindFromRequest.fold(
+        formWithErrors => {
+          logger.debug("[OtherReasonController][onSubmitForNoJSFileUpload] - User did not upload a file")
+          BadRequest(uploadAnotherDocumentPage(formWithErrors, postAction, nextPageIfCancelled.url))
+        },
+        _ => {
+          // TODO: change when "You have uploaded X file(s)" page is added (PRM-720)
+          Redirect("#")
+        }
+      )
   }
 
   def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {

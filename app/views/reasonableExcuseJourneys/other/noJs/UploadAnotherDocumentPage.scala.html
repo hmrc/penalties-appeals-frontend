@@ -1,0 +1,48 @@
+@this(layout: Layout,
+        formHelper: FormWithCSRF,
+        govukFileUpload: GovukFileUpload,
+        govukButton: GovukButton,
+        p: components.p,
+        details: components.details,
+        bullets: components.bullets,
+        fileUploadDialog: components.upload.fileUploadDialog)
+
+@(
+  form: Form[_],
+  postAction: Call,
+  cancelUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@detailsContent = {
+        @p(Html(messages("otherReason.uploadEvidence.details.p1")))
+        @bullets(
+                Seq(
+                        Html(messages("otherReason.uploadEvidence.details.li.1")),
+                        Html(messages("otherReason.uploadEvidence.details.li.2")),
+                        Html(messages("otherReason.uploadEvidence.details.li.3")),
+                        Html(messages("otherReason.uploadEvidence.details.li.4")),
+                        Html(messages("otherReason.uploadEvidence.details.li.5"))
+                )
+        )
+        @p(Html(messages("otherReason.uploadEvidence.details.p2")))
+        @p(Html(messages("otherReason.uploadEvidence.details.p3")))
+}
+
+@layout(pageTitle = messages("otherReason.uploadAnotherDocument.noJs.title"),
+        isPageFullWidth = false,
+        formHasErrors = form.errors.nonEmpty,
+        formErrors = form.errors){
+        <h1 class="govuk-heading-l">@messages("otherReason.uploadAnotherDocument.noJs.heading")</h1>
+        <p class="govuk-body">@messages("otherReason.uploadEvidence.p4")</p>
+        <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
+        @details("otherReason.uploadEvidence.details.heading", detailsContent)
+
+        @formHelper(action = postAction, args = (Symbol("id"), "file-upload-form")){
+                <div id="file-upload-form-group" class="govuk-form-group">
+                        @fileUploadDialog(form)
+                </div>
+                <span>
+                        @govukButton(Button(content = Text(messages("otherReason.uploadAnotherDocument.noJs.button.uploadFile"))))
+                        <a href="@cancelUrl" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadAnotherDocument.noJs.button.cancel")</a>
+                </span>
+        }
+}
