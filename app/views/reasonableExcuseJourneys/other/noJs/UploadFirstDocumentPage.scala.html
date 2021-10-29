@@ -3,6 +3,7 @@
 @import utils.SessionKeys
 @import views.html.components.upload.uploadItem
 @import views.html.partials.errorManager
+@import models.upload.UpscanInitiateResponseModel
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
@@ -14,8 +15,8 @@
         fileUploadDialog: components.upload.fileUploadDialog)
 
 @(
+    upscanResponse: UpscanInitiateResponseModel,
     form: Form[_],
-    postAction: Call,
     nextPageIfNoUpload: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.session.get(SessionKeys.appealType)}
@@ -55,7 +56,11 @@
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
     @details("otherReason.uploadEvidence.details.heading", detailsContent)
 
-    @formHelper(action = postAction, args = (Symbol("id"), "file-upload-form")) {
+    <form method="POST" action="@upscanResponse.uploadRequest.href" id="file-upload-form" enctype="multipart/form-data">
+        @for(field <- upscanResponse.uploadRequest.fields) {
+            <input type="hidden" name="@field._1" value="@field._2"/>
+        }
+
         <div id="file-upload-form-group" class="govuk-form-group">
             @fileUploadDialog(form)
         </div>
@@ -63,5 +68,5 @@
             @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))
             <a href="@nextPageIfNoUpload" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence")</a>
         </p>
-    }
+    </form>
 }

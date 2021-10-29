@@ -19,7 +19,7 @@ package helpers
 import base.SpecBase
 import models.upload.FailureReasonEnum
 
-class UpscanFailureHelperSpec extends SpecBase {
+class UpscanMessageHelperSpec extends SpecBase {
   "getLocalisedFailureMessageForFailure" should {
     "return virus message when status is QUARANTINE" in {
       val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE)
@@ -34,6 +34,11 @@ class UpscanFailureHelperSpec extends SpecBase {
     "return try again message when status is UNKNOWN" in {
       val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN)
       result shouldBe "upscan.unableToUpload"
+    }
+
+    "return try again message when status is DUPLICATE" in {
+      val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.DUPLICATE)
+      result shouldBe "upscan.duplicateFile"
     }
   }
 

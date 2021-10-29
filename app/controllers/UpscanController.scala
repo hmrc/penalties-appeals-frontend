@@ -16,27 +16,31 @@
 
 package controllers
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import forms.upscan.{S3UploadErrorForm, S3UploadSuccessForm}
 import helpers.UpscanMessageHelper
+import models.upload._
+import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
+import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
-
-import javax.inject.Inject
-import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum, UpscanInitiateRequest, UpscanInitiateResponseModel}
-import play.api.http.HeaderNames
+import utils.SessionKeys
 
 import java.time.LocalDateTime
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class UpscanController @Inject()(repository: UploadJourneyRepository,
-                                 connector: UpscanConnector)
-                                (implicit appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+                                 connector: UpscanConnector,
+                                 service: UpscanService)
+                                (implicit appConfig: AppConfig,
+                                 errorHandler: ErrorHandler,
+                                 mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
     implicit request => {
@@ -62,13 +66,13 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   def initiateCallToUpscan(journeyId: String): Action[AnyContent] = Action.async {
     implicit request => {
       logger.debug(s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId")
-      val initiateRequest = UpscanInitiateRequest(
+      val initiateRequestForMultiFileUpload = UpscanInitiateRequest(
         callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
         successRedirect = Some(appConfig.upscanSuccessUrl + journeyId),
         errorRedirect = Some(appConfig.upscanFailureUrl + journeyId),
         minimumFileSize = Some(1),
         maximumFileSize = Some(appConfig.maxFileUploadSize))
-      connector.initiateToUpscan(initiateRequest).flatMap(
+      connector.initiateToUpscan(initiateRequestForMultiFileUpload).flatMap(
         response => {
           response.fold(
             error => {
@@ -162,6 +166,51 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           )
         }
       )
+    }
+  }
+
+  def preUpscanCheckFailed(isAddingAnotherDocument: Boolean): Action[AnyContent] = Action {
+    implicit request => {
+      if(isAddingAnotherDocument) {
+        //TODO: add another document page redirect here
+        Ok("another document page")
+          .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
+      } else {
+        Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload())
+          .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
+      }
+    }
+  }
+
+  def fileVerification(isAddingAnotherDocument: Boolean): Action[AnyContent] = Action.async {
+    implicit request => {
+      S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
+        errors => {
+          logger.error(s"[UpscanController][filePosted] - Could not bind form based on request with errors: ${errors.errors}")
+          Future(errorHandler.showInternalServerError)
+        },
+        upload => {
+          val timeoutForCheckingStatus = System.nanoTime() + (appConfig.upscanStatusCheckTimeout * 1000000000L)
+          service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, {
+            (optFailureDetails, errorMessage) => {
+              if(errorMessage.isDefined) {
+                val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason)
+                if(isAddingAnotherDocument) {
+                  //TODO: add another document page redirect here
+                  Future(Ok("another document page failed")
+                    .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
+                } else {
+                  Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload())
+                    .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
+                }
+              } else {
+                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete()))
+              }
+            }
+          })
+        }
+      )
+
     }
   }
 }

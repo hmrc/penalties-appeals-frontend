@@ -101,6 +101,12 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val upscanCallbackBaseUrl: String = config.get[String]("upscan.callback.base")
 
+  lazy val upscanBaseUrl: String = config.get[String]("upscan.base")
+
+  lazy val upscanStatusCheckTimeout: Int = config.get[Int]("upscan.statusCheckTimeout")
+
+  lazy val upscanStatusCheckDelay: Int = config.get[Int]("upscan.statusCheckDelay")
+
   lazy val upscanSuccessUrl: String = config.get[String]("upscan.successUrl")
 
   lazy val upscanFailureUrl: String = config.get[String]("upscan.failureUrl")

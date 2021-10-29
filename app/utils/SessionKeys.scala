@@ -47,6 +47,8 @@ object SessionKeys {
   val cancelVATRegistration = "cancelVATRegistration"
   val otherRelevantInformation = "otherRelevantInformation"
   val journeyId = "journeyId"
+  val errorCodeFromUpscan = "errorCodeFromUpscan"
+  val failureMessageFromUpscan = "failureMessageFromUpscan"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -77,6 +79,8 @@ object SessionKeys {
     isObligationAppeal,
     cancelVATRegistration,
     otherRelevantInformation,
-    journeyId
+    journeyId,
+    errorCodeFromUpscan,
+    failureMessageFromUpscan
   )
 }
