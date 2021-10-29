@@ -19,6 +19,7 @@ package services.upscan
 import akka.actor.ActorSystem
 import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
+import models.NormalMode
 import models.upload.{FailureDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.Document
 import play.api.mvc.Results.Ok
@@ -53,7 +54,7 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
   "initiateSynchronousCallToUpscan" should {
     "return Left when the call to Upscan fails" in new Setup {
       failedInitiateCall("asdf")
-      val result = service.initiateSynchronousCallToUpscan("J1234", false)
+      val result = service.initiateSynchronousCallToUpscan("J1234", false, NormalMode)
       await(result).isLeft shouldBe true
     }
 
@@ -69,7 +70,7 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
           | }
           |}
           |""".stripMargin)
-      val result = service.initiateSynchronousCallToUpscan("J1234", false)
+      val result = service.initiateSynchronousCallToUpscan("J1234", false, NormalMode)
       await(result).isRight shouldBe true
       val expectedUploadJourneyModel = UploadJourney(
         reference = "12345",

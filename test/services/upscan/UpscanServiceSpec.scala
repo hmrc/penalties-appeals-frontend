@@ -20,6 +20,7 @@ import akka.actor.ActorSystem
 import base.SpecBase
 import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser.UnexpectedFailure
+import models.NormalMode
 import models.upload._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -52,7 +53,7 @@ class UpscanServiceSpec extends SpecBase {
     "return Left when the call to upscan fails" in new Setup {
       when(connector.initiateToUpscan(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, "something went wrong"))))
-      val result = await(service.initiateSynchronousCallToUpscan("J1234", false))
+      val result = await(service.initiateSynchronousCallToUpscan("J1234", false, NormalMode))
       result.isLeft shouldBe true
     }
 
@@ -61,7 +62,7 @@ class UpscanServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1", UploadFormTemplateRequest("/", Map.empty)))))
       when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(CacheItem("", Json.obj(), Instant.now(), Instant.now())))
-      val result = await(service.initiateSynchronousCallToUpscan("J1234", false))
+      val result = await(service.initiateSynchronousCallToUpscan("J1234", false, NormalMode))
       result.isRight shouldBe true
     }
   }

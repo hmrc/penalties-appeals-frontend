@@ -150,9 +150,9 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             upscanResponseModel => {
               val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
               val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
-              if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
+              if(optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
                 Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, nextPageIfNoUpload.url))
-              } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
+              } else if(optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
                 val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
                 val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
                 BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, nextPageIfNoUpload.url))

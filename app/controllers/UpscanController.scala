@@ -20,6 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import forms.upscan.{S3UploadErrorForm, S3UploadSuccessForm}
 import helpers.UpscanMessageHelper
+import models.Mode
 import models.upload._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -171,20 +172,20 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
     }
   }
 
-  def preUpscanCheckFailed(isAddingAnotherDocument: Boolean): Action[AnyContent] = Action {
+  def preUpscanCheckFailed(isAddingAnotherDocument: Boolean, mode: Mode): Action[AnyContent] = Action {
     implicit request => {
       if(isAddingAnotherDocument) {
         //TODO: add another document page redirect here
         Ok("another document page")
           .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
       } else {
-        Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode))
+        Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
           .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
       }
     }
   }
 
-  def fileVerification(isAddingAnotherDocument: Boolean): Action[AnyContent] = Action.async {
+  def fileVerification(isAddingAnotherDocument: Boolean, mode: Mode): Action[AnyContent] = Action.async {
     implicit request => {
       S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
         errors => {
@@ -202,7 +203,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                   Future(Ok("another document page failed")
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 } else {
-                  Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode))
+                  Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 }
               } else {

@@ -21,6 +21,7 @@ import akka.pattern.after
 import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser
+import models.Mode
 import models.upload._
 import play.api.mvc.{Request, Result}
 import repositories.UploadJourneyRepository
@@ -35,19 +36,19 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
                               upscanConnector: UpscanConnector,
                               scheduler: ActorSystem)(implicit appConfig: AppConfig, errorHandler: ErrorHandler) {
 
-  def upscanInitiateModelForSynchronousUpload(journeyId: String, isAddingAnotherDocument: Boolean): UpscanInitiateRequest = {
+  def upscanInitiateModelForSynchronousUpload(journeyId: String, isAddingAnotherDocument: Boolean, mode: Mode): UpscanInitiateRequest = {
     UpscanInitiateRequest(
       callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
-      successRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.fileVerification(isAddingAnotherDocument).url),
-      errorRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument).url),
+      successRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.fileVerification(isAddingAnotherDocument, mode).url),
+      errorRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument, mode).url),
       minimumFileSize = Some(1),
       maximumFileSize = Some(appConfig.maxFileUploadSize)
     )
   }
 
-  def initiateSynchronousCallToUpscan(journeyId: String, isAddingAnotherDocument: Boolean)(implicit ec: ExecutionContext,
+  def initiateSynchronousCallToUpscan(journeyId: String, isAddingAnotherDocument: Boolean, mode: Mode)(implicit ec: ExecutionContext,
                                                          hc: HeaderCarrier): Future[Either[UpscanInitiateHttpParser.ErrorResponse, UpscanInitiateResponseModel]] = {
-    val initiateRequestModel = upscanInitiateModelForSynchronousUpload(journeyId, isAddingAnotherDocument)
+    val initiateRequestModel = upscanInitiateModelForSynchronousUpload(journeyId, isAddingAnotherDocument, mode)
     upscanConnector.initiateToUpscan(initiateRequestModel).flatMap {
       _.fold(
         error => {
@@ -102,7 +103,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
     uploadJourneyRepository.removeFileForJourney(journeyId, fileReference)
   }
 
-  def getAmountOfFilesUploadedForJourney(journeyId: String): Future[Int] = {
+  def getAmountOfFilesUploadedForJourney(journeyId: String)(implicit ec: ExecutionContext): Future[Int] = {
     uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).map(
       _.fold(0)(_.count(_.fileStatus == UploadStatusEnum.READY))
     )
