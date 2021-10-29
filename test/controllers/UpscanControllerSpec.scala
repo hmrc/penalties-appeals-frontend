@@ -32,8 +32,10 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.mongo.cache.CacheItem
 import utils.SessionKeys
-
 import java.time.{Instant, LocalDateTime}
+
+import models.NormalMode
+
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -248,7 +250,7 @@ class UpscanControllerSpec extends SpecBase {
       "redirect to the non-JS file upload page" in {
         val result = controller.preUpscanCheckFailed(false)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload().url
+        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       }
 
       "redirect to the another document upload page if requesting another document" in {

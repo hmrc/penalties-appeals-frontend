@@ -17,6 +17,8 @@
 package controllers
 
 import java.time.LocalDateTime
+
+import models.NormalMode
 import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
@@ -342,7 +344,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     "redirect to the non-JS file upload page and add the errorCode to the session" in new Setup {
       val result: Future[Result] = controller.preUpscanCheckFailed(false)(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge"))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload().url
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       await(result).session(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge")).get(SessionKeys.errorCodeFromUpscan).get shouldBe "EntityTooLarge"
     }
 
@@ -372,7 +374,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
       val result: Future[Result] = controller.fileVerification(false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload().url
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
     }
 

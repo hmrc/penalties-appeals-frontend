@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
@@ -23,13 +25,13 @@ import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 import forms.upscan.UploadDocumentForm
 import helpers.{FormProviderHelper, UpscanMessageHelper}
 import javax.inject.Inject
-import models.{Mode, NormalMode, UserRequest}
 import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
+import models.{CheckMode, Mode, NormalMode}
 import navigation.Navigation
 import play.api.data.{Form, FormError}
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -37,10 +39,6 @@ import utils.Logger.logger
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
-
-import java.time.LocalDate
-
-import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -113,7 +111,10 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
   def onPageLoadForUploadEvidence(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       if(request.cookies.get("jsenabled").isEmpty) {
-        Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload()))
+        mode match {
+          case NormalMode => Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)))
+          case CheckMode => Future(Redirect(controllers.routes.OtherReasonController.removeFileUpload(mode)))
+        }
       } else {
         for {
           previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
@@ -132,7 +133,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
   def onPageLoadForFirstFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       if(request.cookies.get("jsenabled").isDefined) {
-        Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode))
+        Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
         val formProvider = UploadDocumentForm.form
@@ -170,21 +171,13 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  def onSubmitForNoJSFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  //TODO: Placeholder for non-js file list
+  def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
-      val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSFileUpload()
-      UploadDocumentForm.form.bindFromRequest().fold(
-        formWithErrors => {
-          logger.debug("[OtherReasonController][onSubmitForNoJSFileUpload] - User did not upload a file")
-          BadRequest(uploadFirstDocumentPage(formWithErrors, postAction, nextPageIfNoUpload.url))
-        },
-        _ => {
-          //TODO: need to change this to upload the file and do processing
-          Redirect(navigation.nextPage(EvidencePage, mode))
-        }
-      )
-
+      if(request.cookies.get("jsenabled").isDefined) {
+        Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
+      }
+      Ok("file list page")
     }
   }
 }

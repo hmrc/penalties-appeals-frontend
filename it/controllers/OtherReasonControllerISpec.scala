@@ -388,6 +388,30 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.OK
     }
 
+    "return 303 (SEE_OTHER) when the users has JS active" in {
+      successfulInitiateCall(
+        """
+          |{
+          | "reference": "12345",
+          | "uploadRequest": {
+          |   "href": "12345",
+          |   "fields": {}
+          | }
+          |}
+          |""".stripMargin)
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withCookies(Cookie("jsenabled", "true"))
+      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.SEE_OTHER
+    }
+
     "return 400 (BAD_REQUEST) when the users upload has failed (preflight check)" in {
       successfulInitiateCall(
         """

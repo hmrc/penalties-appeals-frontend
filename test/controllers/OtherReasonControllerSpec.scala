@@ -302,6 +302,13 @@ class OtherReasonControllerSpec extends SpecBase {
         status(result) shouldBe OK
       }
 
+      "return SEE_OTHER and correct view when JS is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
+        val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeysAndJS)
+        status(result) shouldBe SEE_OTHER
+      }
+
       "return BAD_REQUEST and correct view when there is an errorCode in the session" in new Setup(AuthTestModels.successfulAuthResult) {
         val fakeRequest = UserRequest(vrn)(fakeRequestWithCorrectKeys.withSession(SessionKeys.errorCodeFromUpscan -> "EntityTooLarge"))
         when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
