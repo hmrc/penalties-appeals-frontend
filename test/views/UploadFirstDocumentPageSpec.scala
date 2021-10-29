@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadDocumentForm
 import messages.UploadFirstDocumentMessages._
 import models.PenaltyTypeEnum
+import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import org.jsoup.nodes.Document
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
@@ -49,10 +50,16 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
     }
 
     val form = UploadDocumentForm.form
-    val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSFileUpload()
+    val mockUpscanInitiateResponseModel: UpscanInitiateResponseModel = UpscanInitiateResponseModel(
+      reference = "file1",
+      uploadRequest = UploadFormTemplateRequest(
+        href = "/link",
+        fields = Map.empty
+      )
+    )
     val noUploadAction = controllers.routes.MakingALateAppealController.onPageLoad().url
     def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
-      uploadFirstDocumentPage.apply(form, postAction, noUploadAction)(request, implicitly, implicitly)
+      uploadFirstDocumentPage.apply(mockUpscanInitiateResponseModel, form, noUploadAction)(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView(fakeRequest))

@@ -24,23 +24,29 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
 import play.api.http.HeaderNames
 import play.api.libs.json._
+import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
+import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.mongo.cache.CacheItem
+import utils.SessionKeys
 
 import java.time.{Instant, LocalDateTime}
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class UpscanControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
   val connector: UpscanConnector = mock(classOf[UpscanConnector])
+  val service: UpscanService = mock(classOf[UpscanService])
   val controller: UpscanController = new UpscanController(
     repository,
-    connector
-  )(appConfig, stubMessagesControllerComponents())
+    connector,
+    service
+  )(appConfig, errorHandler, stubMessagesControllerComponents())
 
   val uploadJourneyModel: UploadJourney = UploadJourney(
     reference = "ref1",
@@ -235,6 +241,34 @@ class UpscanControllerSpec extends SpecBase {
           .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
         val result = controller.filePosted("J1234")(FakeRequest("GET", "/file-posted?key=key1&bucket=bucket1"))
         status(result) shouldBe NO_CONTENT
+      }
+    }
+
+    "preUpscanCheckFailed" should {
+      "redirect to the non-JS file upload page" in {
+        val result = controller.preUpscanCheckFailed(false)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload().url
+      }
+
+      "redirect to the another document upload page if requesting another document" in {
+        val result = controller.preUpscanCheckFailed(true)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
+        //TODO: change to redirect and page location check
+        status(result) shouldBe OK
+      }
+    }
+
+    "fileVerification" should {
+      "show an ISE if the form fails to bind" in {
+        val result = controller.fileVerification(false)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1"))
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "run the block passed to the service if the form binds and run the result" in {
+        when(service.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future(Ok("")))
+        val result = controller.fileVerification(false)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+        status(result) shouldBe OK
       }
     }
   }
