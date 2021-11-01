@@ -141,7 +141,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       } else {
         val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
         val formProvider = UploadDocumentForm.form
-        upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = false).map(
+        upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = false, mode).map(
           _.fold(
             error => {
               logger.error("[OtherReasonController][onPageLoadForFirstFileUpload] - Received error back from initiate request rendering ISE.")

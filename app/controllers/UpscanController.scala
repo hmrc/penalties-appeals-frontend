@@ -33,7 +33,6 @@ import utils.SessionKeys
 import java.time.LocalDateTime
 
 import javax.inject.Inject
-import models.NormalMode
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

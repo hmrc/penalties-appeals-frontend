@@ -303,7 +303,7 @@ class OtherReasonControllerSpec extends SpecBase {
       }
 
       "return SEE_OTHER and correct view when JS is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
         val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeysAndJS)
         status(result) shouldBe SEE_OTHER
