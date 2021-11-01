@@ -192,7 +192,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
         },
         upload => {
           val timeoutForCheckingStatus = System.nanoTime() + (appConfig.upscanStatusCheckTimeout * 1000000000L)
-          service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, {
+          service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, mode, isAddingAnotherDocument,{
             (optFailureDetails, errorMessage) => {
               if(errorMessage.isDefined) {
                 val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason)

@@ -86,20 +86,21 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
 
     "return an ISE" when {
       "there is no upload details in Mongo" in new Setup {
-        val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, blockToDoNothing)(FakeRequest(), implicitly)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
-
-      "the recursion times out" in new Setup {
-        await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
-        val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, blockToDoNothing)(FakeRequest(), implicitly)
+        val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)(FakeRequest(), implicitly)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
+    "redirect to the 'file upload is taking longer than expected' page when the recursive call times out" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
+      val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)(FakeRequest(), implicitly)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
+    }
+
     "run the block when the file has the correct status" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY)))
-      val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, blockToDoNothing)(FakeRequest(), implicitly)
+      val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)(FakeRequest(), implicitly)
       status(result) shouldBe OK
     }
   }

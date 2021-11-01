@@ -371,12 +371,13 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
         val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
+    }
 
-      "the recursive call times out" in new Setup {
-        await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
-        val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
+    "redirect back to the 'upload taking longer than expected' page when the recursive call times out" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
+      val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
     }
 
     "redirect to the non-JS file upload page when there is an error from Upscan" in new Setup {

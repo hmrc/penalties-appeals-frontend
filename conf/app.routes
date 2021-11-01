@@ -93,6 +93,10 @@ GET        /upload-first-document/change                            controllers.
 POST       /remove-file-upload                                      controllers.OtherReasonController.removeFileUpload(mode: Mode = NormalMode)
 POST       /remove-file-upload/change                               controllers.OtherReasonController.removeFileUpload(mode: Mode = CheckMode)
 GET        /upload-complete                                        controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = NormalMode)
+GET        /upload-taking-longer-than-expected                     controllers.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(mode: Mode = NormalMode)
+GET        /upload-taking-longer-than-expected/change              controllers.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(mode: Mode = CheckMode)
+POST       /upload-taking-longer-than-expected                     controllers.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(mode: Mode = NormalMode)
+POST       /upload-taking-longer-than-expected/change              controllers.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(mode: Mode = CheckMode)
 GET        /upload-another-document                                   controllers.OtherReasonController.onPageLoadForAnotherFileUpload(mode: Mode = NormalMode)
 
 # Who Planned to Submit VAT Return

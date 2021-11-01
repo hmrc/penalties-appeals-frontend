@@ -47,6 +47,8 @@ object SessionKeys {
   val cancelVATRegistration = "cancelVATRegistration"
   val otherRelevantInformation = "otherRelevantInformation"
   val journeyId = "journeyId"
+  val fileReference = "fileReference"
+  val isAddingAnotherDocument = "isAddingAnotherDocument"
   val errorCodeFromUpscan = "errorCodeFromUpscan"
   val failureMessageFromUpscan = "failureMessageFromUpscan"
 
@@ -81,6 +83,8 @@ object SessionKeys {
     otherRelevantInformation,
     journeyId,
     errorCodeFromUpscan,
-    failureMessageFromUpscan
+    failureMessageFromUpscan,
+    fileReference,
+    isAddingAnotherDocument
   )
 }

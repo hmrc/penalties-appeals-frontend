@@ -19,6 +19,7 @@ package controllers.predicates
 import config.ErrorHandler
 import models.UserRequest
 import play.api.mvc.{ActionRefiner, Result}
+import utils.Logger.logger
 import utils.SessionKeys
 
 import javax.inject.Inject
@@ -39,6 +40,17 @@ class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val 
       case (Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_)) =>
         Future.successful(Right(request))
       case _ =>
+        logger.error("[DataRequiredAction][refine] - Some data was missing from the session - rendering ISE")
+        logger.debug(s"[DataRequiredAction][refine] - Required data from session: ${
+          Seq(
+          request.session.get(SessionKeys.penaltyId),
+          request.session.get(SessionKeys.appealType),
+          request.session.get(SessionKeys.startDateOfPeriod),
+          request.session.get(SessionKeys.endDateOfPeriod),
+          request.session.get(SessionKeys.dueDateOfPeriod),
+          request.session.get(SessionKeys.dateCommunicationSent),
+          request.session.get(SessionKeys.journeyId))
+        }")
         Future.successful(Left(errorHandler.showInternalServerError(request)))
     }
   }

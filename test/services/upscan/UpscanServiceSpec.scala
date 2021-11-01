@@ -73,16 +73,17 @@ class UpscanServiceSpec extends SpecBase {
       "the status doesn't exist in Mongo" in new Setup {
         when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        val result = service.waitForStatus("J1234", "File1234", 100000000L, blockToDoNothing)
+        val result = service.waitForStatus("J1234", "File1234", 100000000L, NormalMode, false, blockToDoNothing)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
+    }
 
-      "the recursion times out" in new Setup {
-        when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Some(UploadStatus(UploadStatusEnum.WAITING.toString))))
-        val result = service.waitForStatus("J1234", "File1234", System.nanoTime() + 1000000000L, blockToDoNothing)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
+    "redirect to the 'file upload taking too long' page - when the recursion times out" in new Setup {
+      when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(UploadStatus(UploadStatusEnum.WAITING.toString))))
+      val result = service.waitForStatus("J1234", "File1234", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
     }
 
     "run the block when a response is decision from Upscan" in new Setup {
@@ -90,7 +91,7 @@ class UpscanServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(UploadStatus(UploadStatusEnum.READY.toString))))
       when(repository.getUploadsForJourney(ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(Seq(UploadJourney("File1234", UploadStatusEnum.READY)))))
-      val result = service.waitForStatus("J1234", "File1234", System.nanoTime() + 1000000000L, blockToDoNothing)
+      val result = service.waitForStatus("J1234", "File1234", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)
       status(result) shouldBe OK
     }
   }

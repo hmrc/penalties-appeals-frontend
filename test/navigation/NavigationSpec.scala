@@ -243,7 +243,7 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
       s"called with $OtherRelevantInformationPage" in new Setup {
-        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(None , CheckMode)(fakeRequestConverter(fakeRequest))
+        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(None , CheckMode)
         result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
       }
     }
@@ -531,31 +531,31 @@ class NavigationSpec extends SpecBase {
   "getNextURLBasedOnReasonableExcuse" should{
     "in NormalMode" must {
       s"called with $WhenDidThePersonDiePage" in new Setup {
-               val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("bereavement") , NormalMode)(fakeRequestConverter(fakeRequest))
+       val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("bereavement") , NormalMode)
         result.url shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(NormalMode).url
       }
       s"called with $WhenDidCrimeHappenPage" in new Setup {
-        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("crime") , NormalMode)(fakeRequestConverter(fakeRequest))
+        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("crime") , NormalMode)
         result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
       }
       s"called with $WhenDidFireOrFloodHappenPage" in new Setup {
-        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("fireOrFlood") , NormalMode)(fakeRequestConverter(fakeRequest))
+        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("fireOrFlood") , NormalMode)
         result.url shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url
       }
       s"called with $WhenDidTechnologyIssuesBeginPage" in new Setup {
-        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("technicalIssues") , NormalMode)(fakeRequestConverter(fakeRequest))
+        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("technicalIssues") , NormalMode)
         result.url shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(NormalMode).url
       }
       s"called with $WhenDidHealthIssueHappenPage" in new Setup {
-        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("health") , NormalMode)(fakeRequestConverter(fakeRequest))
+        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("health") , NormalMode)
         result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
       }
       s"called with $WhenDidBecomeUnablePage" in new Setup {
-        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("other") , NormalMode)(fakeRequestConverter(fakeRequest))
+        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(Some("other") , NormalMode)
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode).url
       }
       s"called with $OtherRelevantInformationPage" in new Setup {
-        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(None , NormalMode)(fakeRequestConverter(fakeRequest))
+        val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(None , NormalMode)
         result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
       }
     }
