@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser.InvalidJson
+import models.{CheckMode, NormalMode}
 import models.upload.{FailureReasonEnum, UploadDetails, UploadFormTemplateRequest, UploadJourney, UploadStatus, UploadStatusEnum, UpscanInitiateResponseModel}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
@@ -248,13 +249,19 @@ class UpscanControllerSpec extends SpecBase {
 
     "preUpscanCheckFailed" should {
       "redirect to the non-JS file upload page" in {
-        val result = controller.preUpscanCheckFailed(false)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
+        val result = controller.preUpscanCheckFailed(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       }
 
+      "redirect to the non-JS file upload page - check mode" in {
+        val result = controller.preUpscanCheckFailed(false, CheckMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
+      }
+
       "redirect to the another document upload page if requesting another document" in {
-        val result = controller.preUpscanCheckFailed(true)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
+        val result = controller.preUpscanCheckFailed(true, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
         //TODO: change to redirect and page location check
         status(result) shouldBe OK
       }
@@ -262,14 +269,14 @@ class UpscanControllerSpec extends SpecBase {
 
     "fileVerification" should {
       "show an ISE if the form fails to bind" in {
-        val result = controller.fileVerification(false)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1"))
+        val result = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "run the block passed to the service if the form binds and run the result" in {
         when(service.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(Ok("")))
-        val result = controller.fileVerification(false)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+        val result = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe OK
       }
     }

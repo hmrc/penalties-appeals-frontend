@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{mock, reset, when}
+import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -51,7 +51,7 @@ class OtherReasonControllerSpec extends SpecBase {
   class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]],
     Option[ItmpAddress]]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
-    reset(mockAuthConnector, mockUpscanService)
+    reset(mockAuthConnector, mockUpscanService, mockUploadJourneyRepository)
     when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
       any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
       any(), any())
@@ -296,14 +296,14 @@ class OtherReasonControllerSpec extends SpecBase {
 
     "onPageLoadForFirstFileUpload" should {
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
         val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
       "return SEE_OTHER and correct view when JS is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
         val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeysAndJS)
         status(result) shouldBe SEE_OTHER
@@ -311,7 +311,7 @@ class OtherReasonControllerSpec extends SpecBase {
 
       "return BAD_REQUEST and correct view when there is an errorCode in the session" in new Setup(AuthTestModels.successfulAuthResult) {
         val fakeRequest = UserRequest(vrn)(fakeRequestWithCorrectKeys.withSession(SessionKeys.errorCodeFromUpscan -> "EntityTooLarge"))
-        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
         val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest)
         status(result) shouldBe BAD_REQUEST
@@ -319,14 +319,14 @@ class OtherReasonControllerSpec extends SpecBase {
 
       "return BAD_REQUEST and correct view when there is an failureMessageFromUpscan in the session" in new Setup(AuthTestModels.successfulAuthResult) {
         val fakeRequest = UserRequest(vrn)(fakeRequestWithCorrectKeys.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile"))
-        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
         val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest)
         status(result) shouldBe BAD_REQUEST
       }
 
       "return ISE when the call to initiate file upload fails" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
         val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -361,6 +361,56 @@ class OtherReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "removeFileUpload" should {
+      "the user is authorised" must {
+        "redirect to the first upload page when the files left is 0" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockUpscanService.removeFileFromJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful((): Unit))
+          when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(0))
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "fileReference": "file1"
+                |}
+                |""".stripMargin)
+          ))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+        }
+
+        "reload the upload list page when the files left is > 0" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockUpscanService.removeFileFromJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful((): Unit))
+          when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(1))
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "fileReference": "file2"
+                |}
+                |""".stripMargin)
+          ))
+          status(result) shouldBe OK
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }

@@ -22,8 +22,10 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
-import forms.upscan.UploadDocumentForm
 import helpers.{FormProviderHelper, UpscanMessageHelper}
+import forms.upscan.{RemoveFileForm, UploadDocumentForm}
+import helpers.FormProviderHelper
+import models.Mode
 import javax.inject.Inject
 import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
 import models.{CheckMode, Mode, NormalMode}
@@ -40,6 +42,8 @@ import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
@@ -137,7 +141,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       } else {
         val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
         val formProvider = UploadDocumentForm.form
-        upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = false).map(
+        upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = false, mode).map(
           _.fold(
             error => {
               logger.error("[OtherReasonController][onPageLoadForFirstFileUpload] - Received error back from initiate request rendering ISE.")
@@ -146,9 +150,9 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             upscanResponseModel => {
               val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
               val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
-              if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
+              if(optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
                 Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, nextPageIfNoUpload.url))
-              } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
+              } else if(optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
                 val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
                 val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
                 BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, nextPageIfNoUpload.url))
@@ -171,13 +175,34 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  //TODO: Placeholder for non-js file list
-  def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       if(request.cookies.get("jsenabled").isDefined) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       }
-      Ok("file list page")
+      val journeyId = request.session.get(SessionKeys.journeyId).get
+      RemoveFileForm.form.bindFromRequest.fold(
+        error => {
+          logger.error("[OtherReasonController][removeFileUpload] - Tried to remove file but fileReference was not in the request")
+          logger.debug(s"[OtherReasonController][removeFileUpload] - Form errors: ${error.errors}")
+          Future(errorHandler.showInternalServerError)
+        },
+        fileReference => {
+          upscanService.removeFileFromJourney(journeyId, fileReference).flatMap( _ => {
+            upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
+              amountOfFiles => {
+                if(amountOfFiles == 0) {
+                  logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
+                  Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+                } else {
+                  //TODO: placeholder until 'You have uploaded X files' has been implemented (PRM-796)
+                  Ok("you have uploaded X files")
+                }
+              }
+            )
+          })
+        }
+      )
     }
   }
 }

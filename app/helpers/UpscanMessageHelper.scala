@@ -20,7 +20,7 @@ import models.upload.FailureReasonEnum
 import play.api.i18n.Messages
 
 object UpscanMessageHelper {
-  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value)(implicit messages: Messages): String = {
+  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value): String = {
     failureReason match {
       case FailureReasonEnum.QUARANTINE => "upscan.fileHasVirus"
       case FailureReasonEnum.REJECTED => "upscan.invalidMimeType"
@@ -29,7 +29,7 @@ object UpscanMessageHelper {
     }
   }
 
-  def getUploadFailureMessage(errorCode: String)(implicit messages: Messages): String = {
+  def getUploadFailureMessage(errorCode: String): String = {
     errorCode match {
       case "EntityTooSmall" => "upscan.fileEmpty"
       case "EntityTooLarge" => "upscan.fileTooLarge"

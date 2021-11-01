@@ -16,6 +16,8 @@
 
 package controllers
 
+import models.{CheckMode, NormalMode}
+
 import java.time.LocalDateTime
 
 import models.NormalMode
@@ -342,14 +344,21 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
   "GET /upscan/file-verification/failed" should {
     "redirect to the non-JS file upload page and add the errorCode to the session" in new Setup {
-      val result: Future[Result] = controller.preUpscanCheckFailed(false)(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge"))
+      val result: Future[Result] = controller.preUpscanCheckFailed(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       await(result).session(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge")).get(SessionKeys.errorCodeFromUpscan).get shouldBe "EntityTooLarge"
     }
 
+    "redirect to the non-JS file upload page and add the errorCode to the session - check mode" in new Setup {
+      val result: Future[Result] = controller.preUpscanCheckFailed(false, CheckMode)(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge"))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
+      await(result).session(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge")).get(SessionKeys.errorCodeFromUpscan).get shouldBe "EntityTooLarge"
+    }
+
     "redirect to the additional file upload page and add the errorCode to the session" in new Setup {
-      val result: Future[Result] = controller.preUpscanCheckFailed(true)(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge"))
+      val result: Future[Result] = controller.preUpscanCheckFailed(true, NormalMode)(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge"))
       //TODO: change this to redirect and redirect location
       status(result) shouldBe OK
       await(result).session(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge")).get(SessionKeys.errorCodeFromUpscan).get shouldBe "EntityTooLarge"
@@ -359,35 +368,43 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
   "GET /upscan/file-verification/success" should {
     "show an ISE" when {
       "the repository doesn't have a status for this file under this journey" in new Setup {
-        val result: Future[Result] = controller.fileVerification(false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+        val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "the recursive call times out" in new Setup {
         await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
-        val result: Future[Result] = controller.fileVerification(false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+        val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
     "redirect to the non-JS file upload page when there is an error from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
-      val result: Future[Result] = controller.fileVerification(false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
     }
 
+    "redirect to the non-JS file upload page when there is an error from Upscan - check mode" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
+      val result: Future[Result] = controller.fileVerification(false, CheckMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
+      await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
+    }
+
     "redirect to the successful upload page when there is no error from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY)))
-      val result: Future[Result] = controller.fileVerification(false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete().url
     }
 
     "redirect to the additional file upload page when there is an error from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
-      val result: Future[Result] = controller.fileVerification(true)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      val result: Future[Result] = controller.fileVerification(true, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       //TODO: change this to redirect and redirect location
       status(result) shouldBe OK
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"

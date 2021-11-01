@@ -17,6 +17,7 @@
 package controllers
 
 import models.NormalMode
+import models.upload.{UploadJourney, UploadStatusEnum}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Cookie}
@@ -517,5 +518,66 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       val request = await(buildClientForRequestToApp(uri = "/upload-complete").get())
       request.status shouldBe Status.SEE_OTHER
     }
+  }
+
+  "POST /remove-file-upload" should {
+    "return an ISE when the form fails to bind" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file-upload").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"))
+      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
+        """
+          |{
+          | "file": "file1"
+          |}
+          |""".stripMargin)))
+      status(request) shouldBe INTERNAL_SERVER_ERROR
+    }
+
+    "redirect to the first document upload page when there is no uploads left" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file-upload").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"))
+      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY)))
+      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
+        """
+          |{
+          | "fileReference": "file1"
+          |}
+          |""".stripMargin)))
+      status(request) shouldBe SEE_OTHER
+      redirectLocation(request).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+    }
+
+    "reload the upload list when there is more uploads" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file-upload").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234"))
+      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("1234", UploadJourney("file2", UploadStatusEnum.READY)))
+      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
+        """
+          |{
+          | "fileReference": "file1"
+          |}
+          |""".stripMargin)))
+      status(request) shouldBe OK
+    }
+
   }
 }

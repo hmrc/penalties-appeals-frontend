@@ -89,6 +89,9 @@ POST       /when-inability-to-manage-account-happened/change       controllers.O
 GET        /upload-evidence-for-the-appeal                         controllers.OtherReasonController.onPageLoadForUploadEvidence(mode: Mode = NormalMode)
 GET        /upload-evidence-for-the-appeal/change                  controllers.OtherReasonController.onPageLoadForUploadEvidence(mode: Mode = CheckMode)
 GET        /upload-first-document                                   controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = NormalMode)
+GET        /upload-first-document/change                            controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = CheckMode)
+POST       /remove-file-upload                                      controllers.OtherReasonController.removeFileUpload(mode: Mode = NormalMode)
+POST       /remove-file-upload/change                               controllers.OtherReasonController.removeFileUpload(mode: Mode = CheckMode)
 GET        /upload-complete                                        controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = NormalMode)
 GET        /upload-first-document/change                            controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = CheckMode)
 POST       /remove-file-upload                                      controllers.OtherReasonController.removeFileUpload(mode: Mode = NormalMode)
@@ -146,10 +149,14 @@ OPTIONS       /upscan/upload-failed/:journeyId                 controllers.Upsca
 GET           /upscan/file-posted/:journeyId                    controllers.UpscanController.filePosted(journeyId: String)
 OPTIONS       /upscan/file-posted/:journeyId                    controllers.UpscanController.preFlightUpload(journeyId: String)
 
-GET           /upscan/file-verification/failed                   controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = false)
-GET           /upscan/file-verification/success                  controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = false)
-GET           /upscan/file-verification/additional/failed        controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = true)
-GET           /upscan/file-verification/additional/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true)
+GET           /upscan/file-verification/failed                   controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = false, mode: Mode = NormalMode)
+GET           /upscan/file-verification/change/failed                   controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = false, mode: Mode = CheckMode)
+GET           /upscan/file-verification/success                  controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = false, mode: Mode = NormalMode)
+GET           /upscan/file-verification/change/success                  controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = false, mode: Mode = CheckMode)
+GET           /upscan/file-verification/additional/failed        controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = true, mode: Mode = NormalMode)
+GET           /upscan/file-verification/additional/change/failed        controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode)
+GET           /upscan/file-verification/additional/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = NormalMode)
+GET           /upscan/file-verification/additional/change/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode)
 
 # Error pages
 GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()
