@@ -19,14 +19,13 @@ package controllers
 import models.NormalMode
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.AnyContent
+import play.api.mvc.{AnyContent, Cookie}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.AuthStub
 import stubs.UpscanStub.successfulInitiateCall
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
 import java.time.LocalDate
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
@@ -212,7 +211,21 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
   "GET /upload-evidence-for-the-appeal" should {
     "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+      val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withCookies(Cookie("jsenabled", "true"))
+      val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndJS))
+      request.header.status shouldBe Status.OK
+    }
+
+    "return 303 (SEE_OTHER) when the user does not have JavaScript enabled" in {
+      val fakeRequestWithCorrectKeys = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -222,7 +235,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeys))
-      request.header.status shouldBe Status.OK
+      request.header.status shouldBe Status.SEE_OTHER
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
@@ -373,6 +386,30 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
+    }
+
+    "return 303 (SEE_OTHER) when the users has JS active" in {
+      successfulInitiateCall(
+        """
+          |{
+          | "reference": "12345",
+          | "uploadRequest": {
+          |   "href": "12345",
+          |   "fields": {}
+          | }
+          |}
+          |""".stripMargin)
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withCookies(Cookie("jsenabled", "true"))
+      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.SEE_OTHER
     }
 
     "return 400 (BAD_REQUEST) when the users upload has failed (preflight check)" in {
