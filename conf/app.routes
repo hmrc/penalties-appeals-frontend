@@ -97,7 +97,8 @@ GET        /upload-taking-longer-than-expected                     controllers.O
 GET        /upload-taking-longer-than-expected/change              controllers.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(mode: Mode = CheckMode)
 POST       /upload-taking-longer-than-expected                     controllers.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(mode: Mode = NormalMode)
 POST       /upload-taking-longer-than-expected/change              controllers.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(mode: Mode = CheckMode)
-GET        /upload-another-document                                   controllers.OtherReasonController.onPageLoadForAnotherFileUpload(mode: Mode = NormalMode)
+GET        /upload-another-document                                controllers.OtherReasonController.onPageLoadForAnotherFileUpload(mode: Mode = NormalMode)
+GET        /upload-another-document/change                         controllers.OtherReasonController.onPageLoadForAnotherFileUpload(mode: Mode = CheckMode)
 
 # Who Planned to Submit VAT Return
 GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)

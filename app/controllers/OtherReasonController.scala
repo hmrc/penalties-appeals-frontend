@@ -259,8 +259,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           if(errorMessage.isDefined) {
             val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason)
             if(isAddingAnotherDocument) {
-              //TODO: add another document page redirect here
-              Future(Ok("another document page failed")
+              Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
                 .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
                 .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
             } else {

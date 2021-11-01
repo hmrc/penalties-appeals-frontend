@@ -737,8 +737,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody
         .withSession(SessionKeys.fileReference -> "file1",
           SessionKeys.isAddingAnotherDocument -> "true"))
-      //TODO: change to redirect for upload another page
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
       await(result).session(FakeRequest()).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
     }
 
