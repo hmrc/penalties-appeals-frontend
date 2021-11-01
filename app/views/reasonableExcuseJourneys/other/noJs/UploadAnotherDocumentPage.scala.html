@@ -11,7 +11,8 @@
         fileUploadDialog: components.upload.fileUploadDialog)
 
 @(upscanResponse: UpscanInitiateResponseModel,
-  form: Form[_])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+  form: Form[_],
+  fileListPage: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @detailsContent = {
         @p(Html(messages("otherReason.uploadEvidence.details.p1")))

@@ -569,7 +569,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
   }
 
-  "GET /upload-complete" should {
+  "GET /uploaded-documents" should {
     "return OK and correct view" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
         (SessionKeys.penaltyId, "1234"),
@@ -580,13 +580,13 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
       )
-      val request = await(controller.onPageLoadForUploadComplete(NormalMode)(fakeRequestWithCorrectKeys))
+      val request = await(controller.onPageLoadUploadList(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-complete").get())
+      val request = await(buildClientForRequestToApp(uri = "/uploaded-documents").get())
       request.status shouldBe Status.SEE_OTHER
     }
   }
@@ -811,7 +811,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody
         .withSession(SessionKeys.fileReference -> "file1"))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete().url
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadUploadList(NormalMode).url
     }
   }
 

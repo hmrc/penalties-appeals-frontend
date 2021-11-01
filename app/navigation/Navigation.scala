@@ -16,17 +16,17 @@
 
 package navigation
 
-import config.AppConfig
-import models.{CheckMode, Mode, NormalMode, UserRequest}
-import models.pages._
-import play.api.mvc.{Call, Request}
-import controllers.routes
-import helpers.DateTimeHelper
-import utils.Logger.logger
-import utils.{ReasonableExcuses, SessionKeys}
 import java.time.LocalDateTime
 
+import config.AppConfig
+import controllers.routes
+import helpers.DateTimeHelper
 import javax.inject.Inject
+import models.pages._
+import models.{CheckMode, Mode, NormalMode, UserRequest}
+import play.api.mvc.Call
+import utils.Logger.logger
+import utils.{ReasonableExcuses, SessionKeys}
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
                            appConfig: AppConfig) {
@@ -48,7 +48,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhyWasTheReturnSubmittedLateAgentPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     ReasonableExcuseSelectionPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    OtherRelevantInformationPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
+    OtherRelevantInformationPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadUploadList(CheckMode)),
+    UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadUploadList(CheckMode)),
+    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
@@ -74,7 +77,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
     CancelVATRegistrationPage -> ((answer, _, extraData) => routingForCancelVATRegistrationPage(answer, extraData)),
     OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
-    YouHaveUploadedFilesPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode))
+    YouHaveUploadedFilesPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode)),
+    UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadUploadList(NormalMode)),
+    UploadAnotherDocumentPage -> ((_,_,_) => routes.OtherReasonController.onPageLoadUploadList(NormalMode)),
+    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, extraData: Option[Map[String, String]] = None)
@@ -150,6 +156,16 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - Date now: $dateTimeNow" +
         s" :: Date communication sent: $dateSentParsed - redirect to CYA page")
       controllers.routes.CheckYourAnswersController.onPageLoad()
+    }
+  }
+
+  def routeForUploadList(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
+    answer match {
+      case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode)
+      case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
+      case _ =>
+        logger.debug("[Navigation][routeForUploadList]: unable to get answer - reloading 'UploadListPage'")
+        routes.OtherReasonController.onPageLoadUploadList(mode)
     }
   }
 }
