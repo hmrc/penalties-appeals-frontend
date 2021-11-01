@@ -359,9 +359,9 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to the additional file upload page and add the errorCode to the session" in new Setup {
       val result: Future[Result] = controller.preUpscanCheckFailed(true, NormalMode)(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge"))
-      //TODO: change this to redirect and redirect location
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
       await(result).session(FakeRequest("GET", "/file-verification/failed?errorCode=EntityTooLarge")).get(SessionKeys.errorCodeFromUpscan).get shouldBe "EntityTooLarge"
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload().url
     }
   }
 
@@ -405,9 +405,9 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     "redirect to the additional file upload page when there is an error from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
       val result: Future[Result] = controller.fileVerification(true, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
-      //TODO: change this to redirect and redirect location
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload().url
     }
   }
 }

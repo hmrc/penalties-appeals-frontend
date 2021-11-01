@@ -170,34 +170,39 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
+  def onPageLoadForAnotherFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
+    implicit request =>
+      val formProvider = UploadDocumentForm.form
+      upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = true).map(
+        _.fold(
+          error => {
+            logger.error("[OtherReasonController][onPageLoadForAnotherFileUpload] - Received error back from initiate request rendering ISE.")
+            errorHandler.showInternalServerError
+          },
+          upscanResponseModel => {
+            val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
+            val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
+            if(optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
+              Ok(uploadAnotherDocumentPage(upscanResponseModel, formProvider))
+            } else if(optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
+              val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
+              val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
+              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors))
+                .removingFromSession(SessionKeys.errorCodeFromUpscan)
+            } else {
+              val formWithErrors = UploadDocumentForm.form.withError(FormError("file", optFailureFromUpscan.get))
+              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors))
+                .removingFromSession(SessionKeys.failureMessageFromUpscan)
+            }
+          }
+        )
+      )
+  }
+
   def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       Ok("successful upload page")
     }
-  }
-
-  def onPageLoadForNoJSAnotherFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
-    implicit request =>
-      val nextPageIfCancelled = navigation.nextPage(EvidencePage, mode) // TODO: change when "You have uploaded X file(s)" page is added (PRM-720)
-      val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSAnotherFileUpload()
-      val formProvider = UploadDocumentForm.form
-      Ok(uploadAnotherDocumentPage(formProvider, postAction, nextPageIfCancelled.url))
-  }
-
-  def onSubmitForNoJSAnotherFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
-  implicit request =>
-    val nextPageIfCancelled = navigation.nextPage(EvidencePage, mode)
-    val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSAnotherFileUpload()
-      UploadDocumentForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          logger.debug("[OtherReasonController][onSubmitForNoJSFileUpload] - User did not upload a file")
-          BadRequest(uploadAnotherDocumentPage(formWithErrors, postAction, nextPageIfCancelled.url))
-        },
-        _ => {
-          // TODO: change when "You have uploaded X file(s)" page is added (PRM-720)
-          Redirect("#")
-        }
-      )
   }
 
   def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {

@@ -262,8 +262,8 @@ class UpscanControllerSpec extends SpecBase {
 
       "redirect to the another document upload page if requesting another document" in {
         val result = controller.preUpscanCheckFailed(true, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
-        //TODO: change to redirect and page location check
-        status(result) shouldBe OK
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload().url
       }
     }
 

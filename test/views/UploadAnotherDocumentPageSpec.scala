@@ -24,6 +24,7 @@ import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadAnotherDocumentPage
 import messages.UploadAnotherDocmuentMessages._
+import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 
 class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
 
@@ -47,10 +48,15 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
   }
 
   val form = UploadDocumentForm.form
-  val postAction = controllers.routes.OtherReasonController.onSubmitForNoJSAnotherFileUpload()
-  val cancelUrl = "#"
+  val mockUpscanInitiateResponseModel: UpscanInitiateResponseModel = UpscanInitiateResponseModel(
+    reference = "file1",
+    uploadRequest = UploadFormTemplateRequest(
+      href = "/link",
+      fields = Map.empty
+    )
+  )
   def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
-    uploadAnotherDocumentPage.apply(form, postAction, cancelUrl)(request, implicitly, implicitly)
+    uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form)(request, implicitly, implicitly)
   }
 
   implicit val doc: Document = asDocument(applyView(fakeRequest))
