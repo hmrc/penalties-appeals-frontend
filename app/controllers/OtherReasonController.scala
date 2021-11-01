@@ -173,7 +173,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
   def onPageLoadForAnotherFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request =>
       val formProvider = UploadDocumentForm.form
-      upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = true).map(
+      upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = true, mode).map(
         _.fold(
           error => {
             logger.error("[OtherReasonController][onPageLoadForAnotherFileUpload] - Received error back from initiate request rendering ISE.")
