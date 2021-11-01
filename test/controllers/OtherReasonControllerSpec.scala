@@ -348,19 +348,19 @@ class OtherReasonControllerSpec extends SpecBase {
 
     "onPageLoadForUploadComplete" should {
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoadUploadList(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
       "the user is unauthorised" when {
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoadUploadList(NormalMode)(fakeRequest)
           status(result) shouldBe FORBIDDEN
         }
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoadUploadList(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }

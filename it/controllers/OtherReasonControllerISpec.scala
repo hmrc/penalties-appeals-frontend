@@ -509,13 +509,13 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
       )
-      val request = await(controller.onPageLoadForUploadComplete(NormalMode)(fakeRequestWithCorrectKeys))
+      val request = await(controller.onPageLoadUploadList(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-complete").get())
+      val request = await(buildClientForRequestToApp(uri = "/upload-another-document").get())
       request.status shouldBe Status.SEE_OTHER
     }
   }

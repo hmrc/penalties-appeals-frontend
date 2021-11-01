@@ -19,7 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadDocumentForm
 import messages.UploadFirstDocumentMessages._
-import models.PenaltyTypeEnum
+import models.{NormalMode, PenaltyTypeEnum}
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import org.jsoup.nodes.Document
 import play.api.test.FakeRequest
@@ -58,8 +58,9 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
       )
     )
     val noUploadAction = controllers.routes.MakingALateAppealController.onPageLoad().url
+    val uploadAction = controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
     def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
-      uploadFirstDocumentPage.apply(mockUpscanInitiateResponseModel, form, noUploadAction)(request, implicitly, implicitly)
+      uploadFirstDocumentPage.apply(uploadAction, mockUpscanInitiateResponseModel, form, noUploadAction)(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView(fakeRequest))

@@ -15,6 +15,7 @@
         fileUploadDialog: components.upload.fileUploadDialog)
 
 @(
+    nextPageWithUpload: String,
     upscanResponse: UpscanInitiateResponseModel,
     form: Form[_],
     nextPageIfNoUpload: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
@@ -65,7 +66,8 @@
             @fileUploadDialog(form)
         </div>
         <p>
-            @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))
+            <a href="@nextPageWithUpload" class="govuk-button">@messages("otherReason.uploadEvidence.noJs.button.uploadFile")</a>
+<!--            @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))-->
             <a href="@nextPageIfNoUpload" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence")</a>
         </p>
     </form>
