@@ -305,6 +305,13 @@ otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
 otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
 otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
 
+# Upload Another Document (No JS)
+# ----------------------------------------------------------
+otherReason.uploadAnotherDocument.noJs.title = Add another document (optional)
+otherReason.uploadAnotherDocument.noJs.heading = Add another document (optional)
+otherReason.uploadAnotherDocument.noJs.button.uploadFile = Upload selected file
+otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
+
 # Upscan failure messages
 # ----------------------------------------------------------
 upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)

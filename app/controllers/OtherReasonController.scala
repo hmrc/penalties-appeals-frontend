@@ -40,7 +40,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
-import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
+import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage}
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -50,6 +50,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage,
                                       uploadEvidencePage: UploadEvidencePage,
                                       uploadFirstDocumentPage: UploadFirstDocumentPage,
+                                      uploadAnotherDocumentPage: UploadAnotherDocumentPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
                                       uploadJourneyRepository: UploadJourneyRepository)
@@ -167,6 +168,35 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         )
       }
     }
+  }
+
+  def onPageLoadForAnotherFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
+    implicit request =>
+      val formProvider = UploadDocumentForm.form
+      upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = true, mode).map(
+        _.fold(
+          error => {
+            logger.error("[OtherReasonController][onPageLoadForAnotherFileUpload] - Received error back from initiate request rendering ISE.")
+            errorHandler.showInternalServerError
+          },
+          upscanResponseModel => {
+            val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
+            val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
+            if(optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
+              Ok(uploadAnotherDocumentPage(upscanResponseModel, formProvider))
+            } else if(optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
+              val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
+              val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
+              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors))
+                .removingFromSession(SessionKeys.errorCodeFromUpscan)
+            } else {
+              val formWithErrors = UploadDocumentForm.form.withError(FormError("file", optFailureFromUpscan.get))
+              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors))
+                .removingFromSession(SessionKeys.failureMessageFromUpscan)
+            }
+          }
+        )
+      )
   }
 
   def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
