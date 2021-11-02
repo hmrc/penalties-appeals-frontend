@@ -90,6 +90,7 @@ GET        /upload-evidence-for-the-appeal                         controllers.O
 GET        /upload-evidence-for-the-appeal/change                  controllers.OtherReasonController.onPageLoadForUploadEvidence(mode: Mode = CheckMode)
 GET        /upload-first-document                                   controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = NormalMode)
 GET        /upload-first-document/change                            controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = CheckMode)
+POST       /upload-complete                                        controllers.OtherReasonController.onSubmitForUploadComplete(mode: Mode = NormalMode)
 POST       /remove-file-upload                                      controllers.OtherReasonController.removeFileUpload(mode: Mode = NormalMode)
 POST       /remove-file-upload/change                               controllers.OtherReasonController.removeFileUpload(mode: Mode = CheckMode)
 GET        /upload-complete                                        controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = NormalMode)

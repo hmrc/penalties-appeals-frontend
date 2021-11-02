@@ -21,7 +21,7 @@
         items: Seq[RadioItem],
         legendAsHeading: Boolean = true,
         hint: Option[Html] = None,
-        classes: String = "govuk-fieldset__legend--xl",
+        legendClasses: String = "govuk-fieldset__legend--xl",
         inline: Boolean = false,
         formFieldId: String = "value"
 )(implicit messages: Messages)
@@ -33,7 +33,7 @@
         legend = Some(Legend(
             content = Text(messages(legend)),
             isPageHeading = legendAsHeading,
-            classes = if(legendAsHeading) "govuk-label--l" else "govuk-visually-hidden"
+            classes = if(legendClasses.nonEmpty) legendClasses else if(legendAsHeading) s"govuk-label--l" else "govuk-visually-hidden"
         ))
     )),
     hint = hint.map { hint => Hint(

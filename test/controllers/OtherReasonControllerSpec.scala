@@ -34,6 +34,7 @@ import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
+import views.html.components.upload.YouHaveUploadedFilesPage
 import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs._
 
@@ -48,6 +49,7 @@ class OtherReasonControllerSpec extends SpecBase {
   val uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage = injector.instanceOf[UploadTakingLongerThanExpectedPage]
   val mockUpscanService: UpscanService = mock(classOf[UpscanService])
   val uploadAnotherDocumentPage: UploadAnotherDocumentPage = injector.instanceOf[UploadAnotherDocumentPage]
+  val youHaveUploadedFilesPage: YouHaveUploadedFilesPage = injector.instanceOf[YouHaveUploadedFilesPage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
@@ -69,6 +71,7 @@ class OtherReasonControllerSpec extends SpecBase {
       uploadFirstDocumentPage,
       uploadTakingLongerThanExpectedPage,
       uploadAnotherDocumentPage,
+      youHaveUploadedFilesPage,
       mainNavigator,
       mockUpscanService,
       mockUploadJourneyRepository
@@ -353,6 +356,8 @@ class OtherReasonControllerSpec extends SpecBase {
 
     "onPageLoadForUploadComplete" should {
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(1))
         val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
@@ -520,6 +525,34 @@ class OtherReasonControllerSpec extends SpecBase {
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForUploadComplete" should {
+      "the user is authorised" must {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing to non-JS evidence upload page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "value": "no"
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+          await(result).session.get(SessionKeys.nextFileUpload).get shouldBe "no"
+        }
+
+        "return 400 (BAD_REQUEST) when the user does not enter an option" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "value": ""
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe BAD_REQUEST
         }
       }
     }

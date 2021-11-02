@@ -73,7 +73,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     AppealStartPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
     OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
     CancelVATRegistrationPage -> ((answer, _, extraData) => routingForCancelVATRegistrationPage(answer, extraData)),
-    OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad())
+    OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
+    YouHaveUploadedFilesPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, extraData: Option[Map[String, String]] = None)

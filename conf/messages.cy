@@ -304,6 +304,10 @@ otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first document
 otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
 otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
 otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
+youHaveUploadedFiles.headingAndTitle = You have uploaded {0} files
+youHaveUploadedFile.headingAndTitle = You have uploaded {0} file
+uploadAnotherFile = Do you want to upload another file?
+uploadAnotherFile.required = Tell us if you want to upload another file
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------

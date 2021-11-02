@@ -750,4 +750,67 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete().url
     }
   }
+
+  "POST /upload-complete" should{
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-complete").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withJsonBody(Json.parse(
+        """
+          |{
+          | "value": "yes"
+          |}
+          |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.nextFileUpload).get shouldBe "yes"
+    }
+
+    "return 400 (BAD_REQUEST)" when {
+      "no body is submitted" in {
+        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-complete").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
+        )
+        val request = await(controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-complete")
+      val request = await(controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-complete").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/upload-complete").post(""))
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
 }
