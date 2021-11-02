@@ -23,10 +23,12 @@ import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser
 import models.Mode
 import models.upload._
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logger.logger
+import utils.SessionKeys
 
 import javax.inject.Inject
 import scala.concurrent.duration.FiniteDuration
@@ -69,12 +71,15 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
   def waitForStatus(journeyId: String,
                     fileReference: String,
                     timeoutNano: Long,
+                    mode: Mode,
+                    isAddingAnotherDocument: Boolean,
                     block: (Option[FailureDetails], Option[String]) => Future[Result])
                    (implicit request: Request[_], ec: ExecutionContext): Future[Result] = {
     uploadJourneyRepository.getStatusOfFileUpload(journeyId, fileReference).flatMap {
-      _.fold(
+      _.fold({
+        logger.error(s"[UpscanService][waitForStatus] - No upload found for journey: $journeyId and file: $fileReference")
         Future(errorHandler.showInternalServerError)
-      )(
+      })(
         uploadStatus => {
           logger.debug("[UpscanService][waitForStatus] - Running status check for upload")
           if(uploadStatus.status != "WAITING") {
@@ -86,12 +91,15 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
               }
             }
           } else if(System.nanoTime() > timeoutNano) {
-            logger.error("[UpscanService][waitForStatus] - Checking for completed upload status timed out - returning ISE")
-            Future(errorHandler.showInternalServerError)
+            logger.warn("[UpscanService][waitForStatus] - Checking for completed upload status timed out - rendering 'taking longer than expected' page")
+            Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(mode)).addingToSession(
+              SessionKeys.fileReference -> fileReference,
+              SessionKeys.isAddingAnotherDocument -> s"$isAddingAnotherDocument"
+            ))
           } else {
             logger.debug(s"[UpscanService][waitForStatus] - Upload still in waiting state - waiting ${appConfig.upscanStatusCheckDelay}ms before running check again")
             after(duration = FiniteDuration(appConfig.upscanStatusCheckDelay, "ms"), using = scheduler.scheduler)(
-              waitForStatus(journeyId, fileReference, timeoutNano, block)
+              waitForStatus(journeyId, fileReference, timeoutNano, mode, isAddingAnotherDocument, block)
             )
           }
         }

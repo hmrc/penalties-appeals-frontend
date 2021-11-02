@@ -52,7 +52,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
-    HonestyDeclarationPage -> ((answer, request, _) => getNextURLBasedOnReasonableExcuse(answer, NormalMode)(request)),
+    HonestyDeclarationPage -> ((answer, request, _) => getNextURLBasedOnReasonableExcuse(answer, NormalMode)),
     HasCrimeBeenReportedPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidCrimeHappenPage -> ((_, _, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode)),
     WhenDidFireOrFloodHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
@@ -121,7 +121,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def getNextURLBasedOnReasonableExcuse(reasonableExcuse: Option[String], mode: Mode)(implicit request: Request[_]): Call = {
+  def getNextURLBasedOnReasonableExcuse(reasonableExcuse: Option[String], mode: Mode): Call = {
     reasonableExcuse.fold(
       controllers.routes.AppealAgainstObligationController.onPageLoad(mode)
     ) {

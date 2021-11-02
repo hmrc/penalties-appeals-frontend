@@ -17,21 +17,28 @@
 package controllers
 
 import models.NormalMode
-import models.upload.{UploadJourney, UploadStatusEnum}
+import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum}
+import org.mongodb.scala.Document
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContent, Cookie}
+import play.api.mvc.{AnyContent, Cookie, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.AuthStub
 import stubs.UpscanStub.successfulInitiateCall
 import utils.{IntegrationSpecCommonBase, SessionKeys}
+
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: OtherReasonController = injector.instanceOf[OtherReasonController]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
+
+  class Setup {
+    await(repository.collection.deleteMany(Document()).toFuture())
+  }
 
   "GET /when-inability-to-manage-account-happened" should {
     "return 200 (OK) when the user is authorised" in {
@@ -690,5 +697,57 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       status(request) shouldBe OK
     }
 
+  }
+
+  "POST /upload-taking-longer-than-expected" should {
+    val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-taking-longer-than-expected").withSession(
+      (SessionKeys.penaltyId, "1234"),
+      (SessionKeys.appealType, "Late_Submission"),
+      (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+      (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+      (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+      (SessionKeys.journeyId, "J1234"))
+    "show an ISE" when {
+      "the repository doesn't have a status for this file under this journey" in new Setup {
+        val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withSession(SessionKeys.fileReference -> "file1"))
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "redirect back to the 'upload taking longer than expected' page when the recursive call times out" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
+      val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withSession(SessionKeys.fileReference -> "file1"))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
+    }
+
+    "redirect to the non-JS first file upload page when there is an error from Upscan" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
+      val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withSession(
+          SessionKeys.fileReference -> "file1",
+          SessionKeys.isAddingAnotherDocument -> "false"))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+      await(result).session(FakeRequest()).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
+    }
+
+    "redirect to the non-JS upload another document page when there is an error from Upscan" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
+      val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody
+        .withSession(SessionKeys.fileReference -> "file1",
+          SessionKeys.isAddingAnotherDocument -> "true"))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
+      await(result).session(FakeRequest()).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
+    }
+
+    "redirect to the successful upload page when there is no error from Upscan" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY)))
+      val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody
+        .withSession(SessionKeys.fileReference -> "file1"))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete().url
+    }
   }
 }

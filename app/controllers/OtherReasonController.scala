@@ -40,7 +40,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
-import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage}
+import views.html.reasonableExcuseJourneys.other.noJs._
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -50,6 +50,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage,
                                       uploadEvidencePage: UploadEvidencePage,
                                       uploadFirstDocumentPage: UploadFirstDocumentPage,
+                                      uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage,
                                       uploadAnotherDocumentPage: UploadAnotherDocumentPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
@@ -107,7 +108,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         whyReturnSubmittedLateReason => {
           logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable]" +
             s" - Adding '$whyReturnSubmittedLateReason' to session under key: ${SessionKeys.whyReturnSubmittedLate}")
-          Redirect(navigation.nextPage(WhyWasReturnSubmittedLatePage, mode, Some(whyReturnSubmittedLateReason)))
+            Redirect(navigation.nextPage(WhyWasReturnSubmittedLatePage, mode, Some(whyReturnSubmittedLateReason)))
             .addingToSession(SessionKeys.whyReturnSubmittedLate -> whyReturnSubmittedLateReason)
         })
     }
@@ -209,30 +210,69 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     implicit request => {
       if(request.cookies.get("jsenabled").isDefined) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
-      }
-      val journeyId = request.session.get(SessionKeys.journeyId).get
-      RemoveFileForm.form.bindFromRequest.fold(
-        error => {
-          logger.error("[OtherReasonController][removeFileUpload] - Tried to remove file but fileReference was not in the request")
-          logger.debug(s"[OtherReasonController][removeFileUpload] - Form errors: ${error.errors}")
-          Future(errorHandler.showInternalServerError)
-        },
-        fileReference => {
-          upscanService.removeFileFromJourney(journeyId, fileReference).flatMap( _ => {
-            upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
-              amountOfFiles => {
-                if(amountOfFiles == 0) {
-                  logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
-                  Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-                } else {
-                  //TODO: placeholder until 'You have uploaded X files' has been implemented (PRM-796)
-                  Ok("you have uploaded X files")
+      } else {
+        val journeyId = request.session.get(SessionKeys.journeyId).get
+        RemoveFileForm.form.bindFromRequest.fold(
+          error => {
+            logger.error("[OtherReasonController][removeFileUpload] - Tried to remove file but fileReference was not in the request")
+            logger.debug(s"[OtherReasonController][removeFileUpload] - Form errors: ${error.errors}")
+            Future(errorHandler.showInternalServerError)
+          },
+          fileReference => {
+            upscanService.removeFileFromJourney(journeyId, fileReference).flatMap(_ => {
+              upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
+                amountOfFiles => {
+                  if (amountOfFiles == 0) {
+                    logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
+                    Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+                  } else {
+                    //TODO: placeholder until 'You have uploaded X files' has been implemented (PRM-796)
+                    Ok("you have uploaded X files")
+                  }
                 }
-              }
-            )
-          })
+              )
+            })
+          }
+        )
+      }
+    }
+  }
+
+  def onPageLoadForUploadTakingLongerThanExpected(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(mode)
+      Ok(uploadTakingLongerThanExpectedPage(postAction))
+    }
+  }
+
+  def onSubmitForUploadTakingLongerThanExpected(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
+    implicit request => {
+      val isAddingAnotherDocument = request.session.get(SessionKeys.isAddingAnotherDocument).fold(false)(_ == "true")
+      val timeoutForCheckingStatus = System.nanoTime() + (appConfig.upscanStatusCheckTimeout * 1000000000L)
+      upscanService.waitForStatus(request.session.get(SessionKeys.journeyId).get,
+        request.session.get(SessionKeys.fileReference).get,
+        timeoutForCheckingStatus,
+        mode,
+        isAddingAnotherDocument,
+        {
+        (optFailureDetails, errorMessage) => {
+          if(errorMessage.isDefined) {
+            val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason)
+            if(isAddingAnotherDocument) {
+              Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
+                .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
+                .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
+            } else {
+              Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+                .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
+                .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
+            }
+          } else {
+            Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete())
+              .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
+          }
         }
-      )
+      })
     }
   }
 }

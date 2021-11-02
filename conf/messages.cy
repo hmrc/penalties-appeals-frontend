@@ -297,7 +297,6 @@ otherReason.uploadEvidence.status.pending = Pending
 otherReason.uploadEvidence.button.remove = Remove
 otherReason.uploadEvidence.button.removing = Removing
 otherReason.uploadEvidence.stillTransferring = Files are still being transferred
-otherReason.uploadEvidence.stillTransferring = Files are still being transferred
 
 # Upload Evidence (No JS)
 # ----------------------------------------------------------
@@ -306,12 +305,11 @@ otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
 otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
 otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
 
-# Upload Evidence (No JS)
+# Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
-otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first document. You can upload additional documents afterwards. We will use any evidence to help us review the penalty.
-otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
-otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
-otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
+otherReason.uploadEvidence.takingLongerThanExpected.title = It’s taking longer than expected to upload this file
+otherReason.uploadEvidence.takingLongerThanExpected.h1 = It’s taking longer than expected to upload this file
+otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Reload this page
 
 # Upload Another Document (No JS)
 # ----------------------------------------------------------
@@ -528,6 +526,7 @@ duplicateAppeal.link = View your penalties and appeals
 agent.duplicateAppeal.link = View your client’s penalties and appeals
 
 # Error scenarios
-# ----------------------------------------------------------
+# --------------- -------------------------------------------
 error.prefix = Error:
 error.summary.title = There is a problem
+

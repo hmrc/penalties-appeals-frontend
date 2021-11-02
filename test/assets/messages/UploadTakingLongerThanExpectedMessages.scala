@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package messages
 
-import config.AppConfig
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, _}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+object UploadTakingLongerThanExpectedMessages {
 
-import scala.concurrent.ExecutionContext
+  val title = "It’s taking longer than expected to upload this file - Appeal a VAT penalty - GOV.UK"
 
-@Singleton
-class SignOutController @Inject() (val mcc: MessagesControllerComponents)(
-    implicit val ec: ExecutionContext,
-    appConfig: AppConfig
-) extends FrontendController(mcc) {
+  val h1 = "It’s taking longer than expected to upload this file"
 
-  def signOut: Action[AnyContent] =
-    Action {
-      Redirect(appConfig.signOutUrl)
-    }
-
+  val button = "Reload this page"
 }

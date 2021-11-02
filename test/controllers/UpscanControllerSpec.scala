@@ -255,7 +255,7 @@ class UpscanControllerSpec extends SpecBase {
       }
 
       "redirect to the non-JS file upload page - check mode" in {
-        val result = controller.preUpscanCheckFailed(false, CheckMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
+        val result = controller.preUpscanCheckFailed(false, CheckMode)(FakeRequest("GET", "/upscan/file-verification/change/failed?errorCode=EntityTooLarge"))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
       }
@@ -263,7 +263,7 @@ class UpscanControllerSpec extends SpecBase {
       "redirect to the another document upload page if requesting another document" in {
         val result = controller.preUpscanCheckFailed(true, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload().url
+        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
       }
     }
 
@@ -274,7 +274,7 @@ class UpscanControllerSpec extends SpecBase {
       }
 
       "run the block passed to the service if the form binds and run the result" in {
-        when(service.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(service.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(Ok("")))
         val result = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe OK

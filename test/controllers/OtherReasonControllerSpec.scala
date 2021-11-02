@@ -26,7 +26,8 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import play.api.mvc.Result
+import play.api.mvc.{Cookie, Result}
+import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import services.upscan.UpscanService
 import testUtils.{AuthTestModels, UploadData}
@@ -34,7 +35,7 @@ import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
-import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage}
+import views.html.reasonableExcuseJourneys.other.noJs._
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,6 +45,7 @@ class OtherReasonControllerSpec extends SpecBase {
   val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
   val uploadFirstDocumentPage: UploadFirstDocumentPage = injector.instanceOf[UploadFirstDocumentPage]
+  val uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage = injector.instanceOf[UploadTakingLongerThanExpectedPage]
   val mockUpscanService: UpscanService = mock(classOf[UpscanService])
   val uploadAnotherDocumentPage: UploadAnotherDocumentPage = injector.instanceOf[UploadAnotherDocumentPage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
@@ -65,6 +67,7 @@ class OtherReasonControllerSpec extends SpecBase {
       whyReturnSubmittedLatePage,
       uploadEvidencePage,
       uploadFirstDocumentPage,
+      uploadTakingLongerThanExpectedPage,
       uploadAnotherDocumentPage,
       mainNavigator,
       mockUpscanService,
@@ -414,6 +417,19 @@ class OtherReasonControllerSpec extends SpecBase {
 
     "removeFileUpload" should {
       "the user is authorised" must {
+        "redirect to multi-file upload page when the JS enabled cookie is present" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "fileReference": "file1"
+                |}
+                |""".stripMargin)
+          ).withCookies(Cookie("jsenabled", "true")))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+        }
+
         "redirect to the first upload page when the files left is 0" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockUpscanService.removeFileFromJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful((): Unit))
@@ -457,6 +473,52 @@ class OtherReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onPageLoadForUploadTakingLongerThanExpected" should {
+      "the user is authorised" must {
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForUploadTakingLongerThanExpected" should {
+      "run the block" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockUpscanService.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future(Ok("")))
+        val result = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.journeyId -> "J1234",
+          SessionKeys.fileReference -> "F1234"))
+        status(result) shouldBe OK
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }
