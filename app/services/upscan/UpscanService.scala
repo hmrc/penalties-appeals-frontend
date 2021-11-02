@@ -91,7 +91,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
               }
             }
           } else if(System.nanoTime() > timeoutNano) {
-            logger.error("[UpscanService][waitForStatus] - Checking for completed upload status timed out - rendering 'taking longer than expected' page")
+            logger.warn("[UpscanService][waitForStatus] - Checking for completed upload status timed out - rendering 'taking longer than expected' page")
             Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(mode)).addingToSession(
               SessionKeys.fileReference -> fileReference,
               SessionKeys.isAddingAnotherDocument -> s"$isAddingAnotherDocument"
