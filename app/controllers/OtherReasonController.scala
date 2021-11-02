@@ -17,17 +17,14 @@
 package controllers
 
 import config.featureSwitches.{FeatureSwitching, NonJSRouting}
-import java.time.LocalDate
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
-
-import javax.inject.Inject
-import models.upload.UploadStatusEnum.READY
 import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadListForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
 import models.pages._
+import models.upload.UploadStatusEnum.READY
 import models.{CheckMode, Mode, NormalMode}
 import navigation.Navigation
 import play.api.data.{Form, FormError}
@@ -45,6 +42,8 @@ import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs._
 import viewtils.{EvidenceFileUploadsHelper, RadioOptionHelper}
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
@@ -201,6 +200,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             val fileListPage = navigation.nextPage(UploadAnotherDocumentPage, mode)
             if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
               Ok(uploadAnotherDocumentPage(upscanResponseModel, formProvider, fileListPage.url))
+
             } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
               val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
@@ -301,6 +301,20 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
+  def foo(): Action[AnyContent] = (authorise andThen dataRequired).async { implicit request =>
+    for {
+      previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
+    } yield {
+      val uploadedFileNames: Seq[String] = if (previousUploadsState.isDefined){
+        previousUploadsState.get.flatMap(_.uploadDetails.map(_.fileName))
+      }else {
+        Seq.empty
+      }
+      val uploadRows: Seq[SummaryListRow] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex)
+      Ok("some content")
+    }
+  }
+
   def onPageLoadForUploadTakingLongerThanExpected(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val postAction = controllers.routes.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(mode)
@@ -332,7 +346,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
               }
             } else {
               Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
-                .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
+               .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
             }
           }
         })

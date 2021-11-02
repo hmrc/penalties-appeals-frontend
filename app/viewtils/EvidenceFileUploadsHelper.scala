@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package viewtils
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 
 class EvidenceFileUploadsHelper {
 
   def displayContentForFileUploads(uploadedFiles: Seq[(String, Int)])(implicit messages: Messages): Seq[SummaryListRow] = {
-
     uploadedFiles.map(fileInfo => SummaryListRow(
         key = Key(
           content = Text(messages("otherReason.uploadList.rowTitle", fileInfo._2 + 1)),
