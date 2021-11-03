@@ -40,7 +40,7 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
 
     val detailsContentLi: Int => String = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
 
-    val chooseYourFirstFile = "#file-upload-form-group > label"
+    val chooseYourNextFile = "#file-upload-form-group > label"
 
     val uploadButton = "#file-upload-form .govuk-button"
 
@@ -77,7 +77,7 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
       Selectors.detailsContentLi(5) -> detailsLi5,
       Selectors.detailsContentP2 -> detailsP2,
       Selectors.detailsContentP3 -> detailsP3,
-      Selectors.chooseYourFirstFile -> chooseYourFirstFile,
+      Selectors.chooseYourNextFile -> chooseYourNextFile,
       Selectors.uploadButton -> uploadButton,
       Selectors.cancelButton -> cancelButton
     )
