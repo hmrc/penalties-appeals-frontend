@@ -46,6 +46,8 @@ object UploadAnotherDocmuentMessages {
 
   val chooseYourFirstFile = "Choose your first file"
 
+  val chooseYourNextFile = "Choose your next file"
+
   val uploadButton = "Upload selected file"
 
   val cancelButton = "Cancel"

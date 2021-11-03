@@ -302,6 +302,7 @@ otherReason.uploadEvidence.stillTransferring = Files are still being transferred
 # ----------------------------------------------------------
 otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first document. You can upload additional documents afterwards. We will use any evidence to help us review the penalty.
 otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
+otherReason.uploadEvidence.noJs.uploadAnotherLabel = Choose your next file
 otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
 otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
 
