@@ -18,13 +18,19 @@ package messages
 
 object YouHaveUploadedFilesMessages {
 
-  val titleSingleFile = "You have uploaded 1 files - Appeal a VAT penalty - GOV.UK"
+  val titleSingleFile = "You have uploaded 1 file - Appeal a VAT penalty - GOV.UK"
 
-  val h1SingleFile = "You have uploaded 1 files"
+  val h1SingleFile = "You have uploaded 1 file"
 
   val titleMultipleFiles = "You have uploaded 2 files - Appeal a VAT penalty - GOV.UK"
 
   val h1MultipleFiles = "You have uploaded 2 files"
+
+  val titleMaxFiles = "You have uploaded 5 files - Appeal a VAT penalty - GOV.UK"
+
+  val h1MaxFiles = "You have uploaded 5 files"
+
+  val uploadAnotherFile = "Do you want to upload another file?"
 
   val yesOption = "Yes"
 

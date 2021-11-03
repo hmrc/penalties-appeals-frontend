@@ -9,7 +9,7 @@
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, filesUploaded: Int)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
-@pageHeadingAndTitle = @{getPluralOrSingular(filesUploaded, filesUploaded)("youHaveUploadedFiles.headingAndTitle", "youHaveUploadedFiles.headingAndTitle").toString()}
+@pageHeadingAndTitle = @{getPluralOrSingular(filesUploaded)("otherReason.uploadList.youHaveUploadedFile.headingAndTitle", "otherReason.uploadList.youHaveUploadedFiles.headingAndTitle").toString()}
 
 @layout(pageTitle = messages(pageHeadingAndTitle),
     isPageFullWidth = false,
@@ -18,8 +18,8 @@
     @formHelper(action = postAction) {
         <h1 class="govuk-heading-l"> @messages(pageHeadingAndTitle) </h1>
         @radios(form = form,
-            legend = messages("uploadAnotherFile"),
-            items = radioOptions,
+            legend = if(filesUploaded < 5) messages("otherReason.uploadList.uploadAnotherFile") else "",
+            items = radioOptions ,
             hint = None,
             legendAsHeading = false,
             legendClasses = "govuk-fieldset__legend--m"

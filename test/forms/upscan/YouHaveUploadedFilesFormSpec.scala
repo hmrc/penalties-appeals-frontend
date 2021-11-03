@@ -22,10 +22,10 @@ import play.api.data.{Form, FormError}
 class YouHaveUploadedFilesFormSpec extends FormBehaviours {
   val form: Form[String] = YouHaveUploadedFilesForm.youHaveUploadedForm
 
-  behave like mandatoryField(form, "value", FormError("value", "uploadAnotherFile.required"))
+  behave like mandatoryField(form, "value", FormError("value", "otherReason.uploadList.uploadAnotherFile.required"))
 
   "radio option 'yes' or 'no' not selected" in {
     val result = form.bind(Map("value" -> "")).apply("value")
-    result.errors.headOption shouldBe Some(FormError("value", "uploadAnotherFile.required"))
+    result.errors.headOption shouldBe Some(FormError("value", "otherReason.uploadList.uploadAnotherFile.required"))
   }
 }

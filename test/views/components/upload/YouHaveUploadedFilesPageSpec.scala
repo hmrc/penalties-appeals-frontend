@@ -28,7 +28,9 @@ import viewtils.RadioOptionHelper
 
 class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
   val youHaveUploadedFilesPage: YouHaveUploadedFilesPage = injector.instanceOf[YouHaveUploadedFilesPage]
-  object Selectors extends BaseSelectors
+  object Selectors extends BaseSelectors {
+    val label = ".govuk-fieldset__legend--m"
+  }
   val formProvider = YouHaveUploadedFilesForm.youHaveUploadedForm
   val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
   "YouHaveUploadedFilesPage" should {
@@ -42,6 +44,7 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
         Selectors.h1 -> h1MultipleFiles,
         Selectors.labelForRadioButton(1) -> yesOption,
         Selectors.labelForRadioButton(2) -> noOption,
+        Selectors.label -> uploadAnotherFile,
         Selectors.button -> continueButton
       )
       behave like pageWithExpectedMessages(expectedContent)
@@ -56,6 +59,22 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> titleSingleFile,
       Selectors.h1 -> h1SingleFile,
+      Selectors.labelForRadioButton(1) -> yesOption,
+      Selectors.labelForRadioButton(2) -> noOption,
+      Selectors.label -> uploadAnotherFile,
+      Selectors.button -> continueButton
+    )
+    behave like pageWithExpectedMessages(expectedContent)
+  }
+
+  "return " when {
+    def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),5)(userRequestWithCorrectKeys,messages,appConfig)
+    implicit val doc: Document = asDocument(applyView(formProvider))
+
+    val expectedContent = Seq(
+      Selectors.title -> titleMaxFiles,
+      Selectors.h1 -> h1MaxFiles,
       Selectors.labelForRadioButton(1) -> yesOption,
       Selectors.labelForRadioButton(2) -> noOption,
       Selectors.button -> continueButton

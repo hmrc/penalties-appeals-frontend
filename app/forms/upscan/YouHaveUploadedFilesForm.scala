@@ -24,8 +24,8 @@ object YouHaveUploadedFilesForm extends Mappings {
   final val options = Seq("yes", "no")
   val youHaveUploadedForm: Form[String] = Form[String](
     single(
-      "value" -> text("uploadAnotherFile.required")
-        .verifying("uploadAnotherFile.required", value => options.contains(value))
+      "value" -> text("otherReason.uploadList.uploadAnotherFile.required")
+        .verifying("otherReason.uploadList.uploadAnotherFile.required", value => options.contains(value))
     )
   )
 }

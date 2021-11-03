@@ -74,13 +74,13 @@ class UpscanMessageHelperSpec extends SpecBase {
   "getPluralOrSingular" should{
     "show the singular wording" when {
       "there is only one total passed in" in {
-        val result = UpscanMessageHelper.getPluralOrSingular(1, 1)("this.is.a.message.singular", "this.is.a.message.plural")(implicitly, vatTraderUser)
+        val result = UpscanMessageHelper.getPluralOrSingular(1)("this.is.a.message.singular", "this.is.a.message.plural")(implicitly)
         result.body shouldBe "this.is.a.message.singular"
       }
     }
       "show the plural wording" when {
         "there is more than one total passed in" in {
-          val result = UpscanMessageHelper.getPluralOrSingular(2, 2)("this.is.a.message.singular", "this.is.a.message.plural")(implicitly, vatTraderUser)
+          val result = UpscanMessageHelper.getPluralOrSingular(2)("this.is.a.message.singular", "this.is.a.message.plural")(implicitly)
           result.body shouldBe "this.is.a.message.plural"
         }
       }

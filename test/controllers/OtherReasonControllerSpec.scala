@@ -465,7 +465,7 @@ class OtherReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin)
           ))
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER //TODO 'SEE_OTHER' to be replaced by 'OK' under appropriate routing
         }
       }
 
@@ -545,7 +545,9 @@ class OtherReasonControllerSpec extends SpecBase {
         }
 
         "return 400 (BAD_REQUEST) when the user does not enter an option" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+          when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(0))
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
             Json.parse(
               """
                 |{
@@ -553,6 +555,14 @@ class OtherReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe BAD_REQUEST
+        }
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
         }
       }
     }

@@ -16,15 +16,12 @@
 
 package helpers
 
-import models.UserRequest
 import models.upload.FailureReasonEnum
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import utils.MessageRenderer.getMessage
-import utils.ViewUtils
 
-object UpscanMessageHelper extends ViewUtils {
-  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value)(implicit messages: Messages): String = {
+object UpscanMessageHelper {
+  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value): String = {
     failureReason match {
       case FailureReasonEnum.QUARANTINE => "upscan.fileHasVirus"
       case FailureReasonEnum.REJECTED => "upscan.invalidMimeType"
@@ -33,7 +30,7 @@ object UpscanMessageHelper extends ViewUtils {
     }
   }
 
-  def getUploadFailureMessage(errorCode: String)(implicit messages: Messages): String = {
+  def getUploadFailureMessage(errorCode: String): String = {
     errorCode match {
       case "EntityTooSmall" => "upscan.fileEmpty"
       case "EntityTooLarge" => "upscan.fileTooLarge"
@@ -46,11 +43,11 @@ object UpscanMessageHelper extends ViewUtils {
     messages(msgKey)
   }
 
-  def getPluralOrSingular(total: Int, arg: Int)(msgForSingular: String, msgForPlural: String)(implicit messages: Messages, user: UserRequest[_]): Html = {
+  def getPluralOrSingular(total: Int)(msgForSingular: String, msgForPlural: String)(implicit messages: Messages): Html = {
     if (total == 1) {
-      stringAsHtml(getMessage(msgForSingular, arg))
+      Html(messages.apply(msgForSingular, total))
     } else {
-      stringAsHtml(getMessage(msgForPlural, arg))
+      Html(messages.apply(msgForPlural, total))
     }
   }
 }

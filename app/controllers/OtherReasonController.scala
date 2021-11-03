@@ -210,7 +210,10 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       val journeyId = request.session.get(SessionKeys.journeyId).get
       upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
         filesUploaded => {
-          Ok(youHaveUploadedFilesPage(formProvider, radioOptionsToRender, postAction, filesUploaded))
+          if (filesUploaded < 5)
+            Ok(youHaveUploadedFilesPage(formProvider, radioOptionsToRender, postAction, filesUploaded))
+          else
+            Ok(youHaveUploadedFilesPage(formProvider, Seq.empty, postAction, filesUploaded))
         }
       )
     }
@@ -265,13 +268,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                     logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
                     Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                   } else {
-                      val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-                        YouHaveUploadedFilesForm.youHaveUploadedForm,
-                        SessionKeys.nextFileUpload
-                      )
-                      val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
-                      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete()
-                        Ok(youHaveUploadedFilesPage(formProvider, radioOptionsToRender, postAction, amountOfFiles))
+                    Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete())
                   }
                 }
               )
