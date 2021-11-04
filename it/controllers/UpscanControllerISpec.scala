@@ -400,7 +400,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY)))
       val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadUploadList(NormalMode).url
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
     }
 
     "redirect to the additional file upload page when there is an error from Upscan" in new Setup {

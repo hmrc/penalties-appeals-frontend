@@ -17,18 +17,16 @@
 package controllers
 
 import config.featureSwitches.{FeatureSwitching, NonJSRouting}
+import java.time.LocalDate
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
-import forms.upscan.{RemoveFileForm, UploadDocumentForm}
-import helpers.{FormProviderHelper, UpscanMessageHelper}
 import javax.inject.Inject
-import models.pages.{UploadAnotherDocumentPage, UploadFirstDocumentPage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage, EvidencePage}
 import models.upload.UploadStatusEnum.READY
 import forms.upscan.{RemoveFileForm, UploadDocumentForm, YouHaveUploadedFilesForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
-import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage, YouHaveUploadedFilesPage}
+import models.pages.{EvidencePage, UploadAnotherDocumentPage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage, YouHaveUploadedFilesPage}
 import models.{CheckMode, Mode, NormalMode}
 import navigation.Navigation
 import play.api.data.{Form, FormError}
@@ -133,7 +131,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
               mode match {
                 case NormalMode => Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                 case CheckMode => if (previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)) {
-                  Redirect(controllers.routes.OtherReasonController.onPageLoadUploadList(mode))
+                  Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
                 } else {
                   Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                 }
@@ -215,12 +213,6 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       )
   }
 
-  def onPageLoadUploadList(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
-    implicit request => {
-      Ok("uploaded file list")
-    }
-  }
-
   def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
@@ -250,7 +242,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
               if(filesUploaded < 5) {
                 BadRequest(youHaveUploadedFilesPage(formHasErrors, radioOptionsToRender, postAction, filesUploaded))
               } else {
-                Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete()) //TODO routing to be updated
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)) //TODO routing to be updated
               }
             }
           )
@@ -290,7 +282,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                     logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
                     Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                   } else {
-                    Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete())
+                    Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
                   }
                 }
               )
@@ -331,7 +323,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                 .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
             }
           } else {
-            Future(Redirect(controllers.routes.OtherReasonController.onPageLoadUploadList(mode))
+            Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
               .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
           }
         }

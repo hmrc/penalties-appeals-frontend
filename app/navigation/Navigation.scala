@@ -49,8 +49,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     ReasonableExcuseSelectionPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     OtherRelevantInformationPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadUploadList(CheckMode)),
-    UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadUploadList(CheckMode)),
+    UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
+    UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
     FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode))
   )
 
@@ -78,8 +78,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     CancelVATRegistrationPage -> ((answer, _, extraData) => routingForCancelVATRegistrationPage(answer, extraData)),
     OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
     YouHaveUploadedFilesPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode)),
-    UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadUploadList(NormalMode)),
-    UploadAnotherDocumentPage -> ((_,_,_) => routes.OtherReasonController.onPageLoadUploadList(NormalMode)),
+    UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
+    UploadAnotherDocumentPage -> ((_,_,_) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
     FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode))
   )
 
@@ -165,7 +165,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
       case _ =>
         logger.debug("[Navigation][routeForUploadList]: unable to get answer - reloading 'UploadListPage'")
-        routes.OtherReasonController.onPageLoadUploadList(mode)
+        routes.OtherReasonController.onPageLoadForUploadComplete(mode)
     }
   }
 }

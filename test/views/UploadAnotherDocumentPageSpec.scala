@@ -58,7 +58,7 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
       fields = Map.empty
     )
   )
-  val fileListPage: Call = controllers.routes.OtherReasonController.onPageLoadUploadList(NormalMode)
+  val fileListPage: Call = controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)
   def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
     uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form, fileListPage.url)(request, implicitly, implicitly)
   }

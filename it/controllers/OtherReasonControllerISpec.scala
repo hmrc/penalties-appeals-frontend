@@ -580,7 +580,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
       )
-      val request = await(controller.onPageLoadUploadList(NormalMode)(fakeRequestWithCorrectKeys))
+      val request = await(controller.onPageLoadForUploadComplete(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
     }
 
@@ -811,7 +811,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody
         .withSession(SessionKeys.fileReference -> "file1"))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadUploadList(NormalMode).url
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
     }
   }
 

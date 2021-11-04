@@ -19,6 +19,7 @@ package views.components.upload
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.YouHaveUploadedFilesForm
 import messages.YouHaveUploadedFilesMessages._
+import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -36,7 +37,7 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
   "YouHaveUploadedFilesPage" should {
     "return multiple files header and title" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),2)(userRequestWithCorrectKeys,messages,appConfig)
+        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),2)(userRequestWithCorrectKeys,messages,appConfig)
       implicit val doc: Document = asDocument(applyView(formProvider))
 
       val expectedContent = Seq(
@@ -53,7 +54,7 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
 
   "return single file header and title added" when {
     def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),1)(userRequestWithCorrectKeys,messages,appConfig)
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),1)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(
@@ -69,7 +70,7 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
 
   "return max of 5 files added" when {
     def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),5)(userRequestWithCorrectKeys,messages,appConfig)
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),5)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(

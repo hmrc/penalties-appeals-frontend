@@ -174,7 +174,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   def preUpscanCheckFailed(isAddingAnotherDocument: Boolean, mode: Mode): Action[AnyContent] = Action {
     implicit request => {
       if(isAddingAnotherDocument) {
-        Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
+        Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
           .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
       } else {
         Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
@@ -204,7 +204,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 }
               } else {
-                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadUploadList(mode)))
+                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)))
               }
             }
           })
