@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, JSRouteCheckingPrevention}
 import models.NormalMode
 import models.upload.{FailureDetails, FailureReasonEnum, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.Document
@@ -34,6 +35,7 @@ import scala.concurrent.Future
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: OtherReasonController = injector.instanceOf[OtherReasonController]
+  val featureSwitching: FeatureSwitching = injector.instanceOf[FeatureSwitching]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
   class Setup {
@@ -232,7 +234,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.OK
     }
 
-    "return 303 (SEE_OTHER) when the user does not have JavaScript enabled" in {
+    "return 303 (SEE_OTHER) when the user does not have JavaScript enabled and the feature switch is enabled" in {
+      featureSwitching.disableFeatureSwitch(JSRouteCheckingPrevention)
       val fakeRequestWithCorrectKeys = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
@@ -244,6 +247,23 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
+      featureSwitching.enableFeatureSwitch(JSRouteCheckingPrevention)
+    }
+
+    "return 200 (OK) when the user does have JavaScript enabled and the feature switch is enabled" in {
+      featureSwitching.enableFeatureSwitch(JSRouteCheckingPrevention)
+      val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withCookies(Cookie("jsenabled", "true"))
+      val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndJS))
+      request.header.status shouldBe Status.OK
+      featureSwitching.disableFeatureSwitch(JSRouteCheckingPrevention)
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
@@ -396,7 +416,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.OK
     }
 
-    "return 303 (SEE_OTHER) when the users has JS active" in {
+    "return 303 (SEE_OTHER) when the users has JS active but the feature switch is disabled" in {
+      featureSwitching.disableFeatureSwitch(JSRouteCheckingPrevention)
       successfulInitiateCall(
         """
           |{
@@ -418,6 +439,33 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       ).withCookies(Cookie("jsenabled", "true"))
       val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
+      featureSwitching.enableFeatureSwitch(JSRouteCheckingPrevention)
+    }
+
+    "return 200 (OK) when the users has JS active and the feature switch is enabled" in {
+      featureSwitching.enableFeatureSwitch(JSRouteCheckingPrevention)
+      successfulInitiateCall(
+        """
+          |{
+          | "reference": "12345",
+          | "uploadRequest": {
+          |   "href": "12345",
+          |   "fields": {}
+          | }
+          |}
+          |""".stripMargin)
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withCookies(Cookie("jsenabled", "true"))
+      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.OK
+      featureSwitching.disableFeatureSwitch(JSRouteCheckingPrevention)
     }
 
     "return 400 (BAD_REQUEST) when the users upload has failed (preflight check)" in {
