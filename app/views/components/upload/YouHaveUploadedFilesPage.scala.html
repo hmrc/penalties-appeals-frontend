@@ -17,13 +17,15 @@
     formErrors = form.errors) {
     @formHelper(action = postAction) {
         <h1 class="govuk-heading-l"> @messages(pageHeadingAndTitle) </h1>
+    @if(filesUploaded < 5) {
         @radios(form = form,
-            legend = if(filesUploaded < 5) messages("otherReason.uploadList.uploadAnotherFile") else "",
+            legend = messages("otherReason.uploadList.uploadAnotherFile"),
             items = radioOptions ,
             hint = None,
             legendAsHeading = false,
             legendClasses = "govuk-fieldset__legend--m"
         )
+    }
         @govukButton(Button(content = Text(messages("common.continue"))))
     }
 }

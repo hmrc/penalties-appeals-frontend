@@ -210,11 +210,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       val journeyId = request.session.get(SessionKeys.journeyId).get
       upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
         filesUploaded => {
-          if (filesUploaded < 5)
             Ok(youHaveUploadedFilesPage(formProvider, radioOptionsToRender, postAction, filesUploaded))
-          else
-            Ok(youHaveUploadedFilesPage(formProvider, Seq.empty, postAction, filesUploaded))
-        }
+         }
       )
     }
   }
@@ -228,8 +225,11 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           val journeyId = request.session.get(SessionKeys.journeyId).get
           upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
             filesUploaded => {
-              BadRequest(youHaveUploadedFilesPage(formHasErrors, radioOptionsToRender,
-                postAction, filesUploaded))
+              if(filesUploaded < 5) {
+                BadRequest(youHaveUploadedFilesPage(formHasErrors, radioOptionsToRender, postAction, filesUploaded))
+              } else {
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete()) //TODO routing to be updated
+                }
             }
           )
         },

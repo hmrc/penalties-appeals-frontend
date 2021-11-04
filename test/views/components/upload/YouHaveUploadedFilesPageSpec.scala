@@ -67,7 +67,7 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
     behave like pageWithExpectedMessages(expectedContent)
   }
 
-  "return " when {
+  "return max of 5 files added" when {
     def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
       form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),5)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
@@ -75,8 +75,6 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> titleMaxFiles,
       Selectors.h1 -> h1MaxFiles,
-      Selectors.labelForRadioButton(1) -> yesOption,
-      Selectors.labelForRadioButton(2) -> noOption,
       Selectors.button -> continueButton
     )
     behave like pageWithExpectedMessages(expectedContent)

@@ -556,6 +556,20 @@ class OtherReasonControllerSpec extends SpecBase {
                 |""".stripMargin))))
           status(result) shouldBe BAD_REQUEST
         }
+
+        "return 303 (SEE_OTHER) when the files uploaded is 5" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(5))
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+            Json.parse(
+              """
+                |{
+                | "value": ""
+                |}
+                |""".stripMargin))))
+          status(result) shouldBe SEE_OTHER
+        }
+
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
           val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequest)
           status(result) shouldBe FORBIDDEN

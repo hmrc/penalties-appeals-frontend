@@ -304,6 +304,9 @@ otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first document
 otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
 otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
 otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
+
+# Upload List (No JS) page
+# ----------------------------------------------------------
 otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = You have uploaded {0} files
 otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {0} file
 otherReason.uploadList.uploadAnotherFile = Do you want to upload another file?
