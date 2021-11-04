@@ -70,4 +70,19 @@ class UpscanMessageHelperSpec extends SpecBase {
       result shouldBe "Select a file."
     }
   }
+
+  "getPluralOrSingular" should{
+    "show the singular wording" when {
+      "there is only one total passed in" in {
+        val result = UpscanMessageHelper.getPluralOrSingular(1)("this.is.a.message.singular", "this.is.a.message.plural")(implicitly)
+        result.body shouldBe "this.is.a.message.singular"
+      }
+    }
+      "show the plural wording" when {
+        "there is more than one total passed in" in {
+          val result = UpscanMessageHelper.getPluralOrSingular(2)("this.is.a.message.singular", "this.is.a.message.plural")(implicitly)
+          result.body shouldBe "this.is.a.message.plural"
+        }
+      }
+  }
 }

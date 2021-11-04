@@ -41,3 +41,4 @@ case object AppealStartPage extends Page
 case object OtherRelevantInformationPage extends Page
 case object OtherPenaltiesForPeriodPage extends Page
 case object YouCannotAppealPage extends Page
+case object YouHaveUploadedFilesPage extends Page

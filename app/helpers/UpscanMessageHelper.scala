@@ -18,6 +18,7 @@ package helpers
 
 import models.upload.FailureReasonEnum
 import play.api.i18n.Messages
+import play.twirl.api.Html
 
 object UpscanMessageHelper {
   def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value): String = {
@@ -40,5 +41,13 @@ object UpscanMessageHelper {
 
   def applyMessage(msgKey: String)(implicit messages: Messages): String = {
     messages(msgKey)
+  }
+
+  def getPluralOrSingular(total: Int)(msgForSingular: String, msgForPlural: String)(implicit messages: Messages): Html = {
+    if (total == 1) {
+      Html(messages.apply(msgForSingular, total))
+    } else {
+      Html(messages.apply(msgForPlural, total))
+    }
   }
 }

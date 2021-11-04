@@ -16,18 +16,13 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
+import forms.upscan.{RemoveFileForm, UploadDocumentForm, YouHaveUploadedFilesForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
-import forms.upscan.{RemoveFileForm, UploadDocumentForm}
-import helpers.FormProviderHelper
-import models.Mode
-import javax.inject.Inject
-import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage}
+import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage, YouHaveUploadedFilesPage}
 import models.{CheckMode, Mode, NormalMode}
 import navigation.Navigation
 import play.api.data.{Form, FormError}
@@ -36,11 +31,14 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
+import views.html.components.upload.YouHaveUploadedFilesPage
 import views.html.reasonableExcuseJourneys.other._
-import views.html.reasonableExcuseJourneys.other.noJs._
+import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage, UploadTakingLongerThanExpectedPage}
+import viewtils.RadioOptionHelper
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -52,6 +50,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       uploadFirstDocumentPage: UploadFirstDocumentPage,
                                       uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage,
                                       uploadAnotherDocumentPage: UploadAnotherDocumentPage,
+                                      youHaveUploadedFilesPage: YouHaveUploadedFilesPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
                                       uploadJourneyRepository: UploadJourneyRepository)
@@ -200,9 +199,52 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       )
   }
 
-  def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      Ok("successful upload page")
+      val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
+        YouHaveUploadedFilesForm.youHaveUploadedForm,
+        SessionKeys.nextFileUpload
+      )
+      val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
+      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete()
+      val journeyId = request.session.get(SessionKeys.journeyId).get
+      upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
+        filesUploaded => {
+            Ok(youHaveUploadedFilesPage(formProvider, radioOptionsToRender, postAction, filesUploaded))
+         }
+      )
+    }
+  }
+
+  def onSubmitForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
+    implicit request => {
+      YouHaveUploadedFilesForm.youHaveUploadedForm.bindFromRequest.fold(
+        formHasErrors => {
+          val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formHasErrors)
+          val postAction = controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)
+          val journeyId = request.session.get(SessionKeys.journeyId).get
+          upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
+            filesUploaded => {
+              if(filesUploaded < 5) {
+                BadRequest(youHaveUploadedFilesPage(formHasErrors, radioOptionsToRender, postAction, filesUploaded))
+              } else {
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete()) //TODO routing to be updated
+                }
+            }
+          )
+        },
+        nextFileUpload => {
+          logger.debug(
+            s"[YouHaveUploadedFilesController][onSubmitForNextFileUpload] - Adding '$nextFileUpload' to session under key: ${SessionKeys.nextFileUpload}")
+          Future(Redirect(
+            navigation.nextPage(
+              YouHaveUploadedFilesPage,
+              NormalMode,
+              Some(nextFileUpload)
+            ))
+            .addingToSession((SessionKeys.nextFileUpload, nextFileUpload)))
+        }
+      )
     }
   }
 
@@ -226,8 +268,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                     logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
                     Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                   } else {
-                    //TODO: placeholder until 'You have uploaded X files' has been implemented (PRM-796)
-                    Ok("you have uploaded X files")
+                    Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete())
                   }
                 }
               )

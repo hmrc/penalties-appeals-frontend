@@ -1,0 +1,31 @@
+@import config.AppConfig
+@import helpers.UpscanMessageHelper.getPluralOrSingular
+
+@this(layout: Layout,
+        formHelper: FormWithCSRF,
+        govukButton: GovukButton,
+        p: components.p,
+        radios: components.radios)
+
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, filesUploaded: Int)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
+
+@pageHeadingAndTitle = @{getPluralOrSingular(filesUploaded)("otherReason.uploadList.youHaveUploadedFile.headingAndTitle", "otherReason.uploadList.youHaveUploadedFiles.headingAndTitle").toString()}
+
+@layout(pageTitle = messages(pageHeadingAndTitle),
+    isPageFullWidth = false,
+    formHasErrors = form.errors.nonEmpty,
+    formErrors = form.errors) {
+    @formHelper(action = postAction) {
+        <h1 class="govuk-heading-l"> @messages(pageHeadingAndTitle) </h1>
+    @if(filesUploaded < 5) {
+        @radios(form = form,
+            legend = messages("otherReason.uploadList.uploadAnotherFile"),
+            items = radioOptions ,
+            hint = None,
+            legendAsHeading = false,
+            legendClasses = "govuk-fieldset__legend--m"
+        )
+    }
+        @govukButton(Button(content = Text(messages("common.continue"))))
+    }
+}

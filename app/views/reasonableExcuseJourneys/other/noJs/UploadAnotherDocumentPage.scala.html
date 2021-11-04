@@ -46,8 +46,7 @@
                 </div>
                 <span>
                         @govukButton(Button(content = Text(messages("otherReason.uploadAnotherDocument.noJs.button.uploadFile"))))
-<!--                        TODO change # to when "You have uploaded X file(s)" page is added (PRM-720) -->
-                        <a href="#" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadAnotherDocument.noJs.button.cancel")</a>
+                        <a href = upload-complete class="govuk-button govuk-button--secondary">@messages("otherReason.uploadAnotherDocument.noJs.button.cancel")</a>
                 </span>
         </form>
 }

@@ -306,6 +306,13 @@ otherReason.uploadEvidence.noJs.uploadAnotherLabel = Choose your next file
 otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
 otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
 
+# Upload List (No JS) page
+# ----------------------------------------------------------
+otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = You have uploaded {0} files
+otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {0} file
+otherReason.uploadList.uploadAnotherFile = Do you want to upload another file?
+otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another file
+
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
 otherReason.uploadEvidence.takingLongerThanExpected.title = It’s taking longer than expected to upload this file
