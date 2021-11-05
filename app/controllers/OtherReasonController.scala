@@ -25,7 +25,7 @@ import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 
 import javax.inject.Inject
 import models.upload.UploadStatusEnum.READY
-import forms.upscan.{RemoveFileForm, UploadDocumentForm, YouHaveUploadedFilesForm}
+import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadListForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
 import models.pages._
 import models.{CheckMode, Mode, NormalMode}
@@ -40,9 +40,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.components.upload.YouHaveUploadedFilesPage
 import views.html.reasonableExcuseJourneys.other._
-import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage, UploadTakingLongerThanExpectedPage}
+import views.html.reasonableExcuseJourneys.other.noJs._
 import viewtils.RadioOptionHelper
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,7 +52,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       uploadFirstDocumentPage: UploadFirstDocumentPage,
                                       uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage,
                                       uploadAnotherDocumentPage: UploadAnotherDocumentPage,
-                                      youHaveUploadedFilesPage: YouHaveUploadedFilesPage,
+                                      uploadListPage: UploadListPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
                                       featureSwitching: FeatureSwitching,
@@ -217,7 +216,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
   def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-        YouHaveUploadedFilesForm.youHaveUploadedForm,
+        UploadListForm.youHaveUploadedForm,
         SessionKeys.nextFileUpload
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
@@ -225,7 +224,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       val journeyId = request.session.get(SessionKeys.journeyId).get
       upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
         filesUploaded => {
-          Ok(youHaveUploadedFilesPage(formProvider, radioOptionsToRender, postAction, filesUploaded))
+          Ok(uploadListPage(formProvider, radioOptionsToRender, postAction, filesUploaded))
         }
       )
     }
@@ -233,7 +232,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onSubmitForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      YouHaveUploadedFilesForm.youHaveUploadedForm.bindFromRequest.fold(
+      UploadListForm.youHaveUploadedForm.bindFromRequest.fold(
         formHasErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formHasErrors)
           val postAction = controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)
@@ -241,7 +240,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
             filesUploaded => {
               if(filesUploaded < 5) {
-                BadRequest(youHaveUploadedFilesPage(formHasErrors, radioOptionsToRender, postAction, filesUploaded))
+                BadRequest(uploadListPage(formHasErrors, radioOptionsToRender, postAction, filesUploaded))
               } else {
                 logger.debug("[OtherReasonController][onSubmitForUploadComplete] - Form has errors but 5 files have been uploaded - redirecting to next page")
                 Redirect(navigation.nextPage(FileListPage, NormalMode))
