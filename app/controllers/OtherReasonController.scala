@@ -110,7 +110,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         whyReturnSubmittedLateReason => {
           logger.debug(s"[OtherReasonController][onSubmitForWhenDidBecomeUnable]" +
             s" - Adding '$whyReturnSubmittedLateReason' to session under key: ${SessionKeys.whyReturnSubmittedLate}")
-            Redirect(navigation.nextPage(WhyWasReturnSubmittedLatePage, mode, Some(whyReturnSubmittedLateReason)))
+          Redirect(navigation.nextPage(WhyWasReturnSubmittedLatePage, mode, Some(whyReturnSubmittedLateReason)))
             .addingToSession(SessionKeys.whyReturnSubmittedLate -> whyReturnSubmittedLateReason)
         })
     }
@@ -118,7 +118,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onPageLoadForUploadEvidence(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if(request.cookies.get("jsenabled").isEmpty || featureSwitching.isEnabled(NonJSRouting)) {
+      if (request.cookies.get("jsenabled").isEmpty || featureSwitching.isEnabled(NonJSRouting)) {
         mode match {
           case NormalMode => Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)))
           case CheckMode => Future(Redirect(controllers.routes.OtherReasonController.removeFileUpload(mode)))
@@ -127,15 +127,15 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         for {
           previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
         } yield {
-          if(request.cookies.get("jsenabled").isEmpty) {
-              mode match {
-                case NormalMode => Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-                case CheckMode => if (previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)) {
-                  Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
-                } else {
-                  Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-                }
+          if (request.cookies.get("jsenabled").isEmpty) {
+            mode match {
+              case NormalMode => Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+              case CheckMode => if (previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)) {
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
+              } else {
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
               }
+            }
           } else {
             val previousUploads = previousUploadsState.fold("[]")(previousUploads => Json.stringify(Json.toJson(previousUploads)))
             val initiateNextUploadUrl = controllers.routes.UpscanController.initiateCallToUpscan(request.session.get(SessionKeys.journeyId).get)
@@ -145,12 +145,13 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             Ok(uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, previousUploads))
           }
         }
+      }
     }
   }
 
   def onPageLoadForFirstFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if(request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
+      if (request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
@@ -164,9 +165,9 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             upscanResponseModel => {
               val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
               val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
-              if(optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
+              if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
                 Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, nextPageIfNoUpload.url))
-              } else if(optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
+              } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
                 val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
                 val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
                 BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, nextPageIfNoUpload.url))
@@ -196,9 +197,9 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
             val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
             val fileListPage = navigation.nextPage(UploadAnotherDocumentPage, mode)
-            if(optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
+            if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
               Ok(uploadAnotherDocumentPage(upscanResponseModel, formProvider, fileListPage.url))
-            } else if(optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
+            } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
               val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
               BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors, fileListPage.url))
@@ -239,7 +240,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           val journeyId = request.session.get(SessionKeys.journeyId).get
           upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
             filesUploaded => {
-              if(filesUploaded < 5) {
+              if (filesUploaded < 5) {
                 BadRequest(uploadListPage(formHasErrors, radioOptionsToRender, postAction, filesUploaded))
               } else {
                 logger.debug("[OtherReasonController][onSubmitForUploadComplete] - Form has errors but 5 files have been uploaded - redirecting to next page")
@@ -260,7 +261,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if(request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
+      if (request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val journeyId = request.session.get(SessionKeys.journeyId).get
@@ -306,24 +307,25 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         mode,
         isAddingAnotherDocument,
         {
-        (optFailureDetails, errorMessage) => {
-          if(errorMessage.isDefined) {
-            val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason)
-            if(isAddingAnotherDocument) {
-              Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
-                .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
-                .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
+          (optFailureDetails, errorMessage) => {
+            if (errorMessage.isDefined) {
+              val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason)
+              if (isAddingAnotherDocument) {
+                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
+                  .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
+                  .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
+              } else {
+                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+                  .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
+                  .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
+              }
             } else {
-              Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-                .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
+              Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
                 .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
             }
-          } else {
-            Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
-              .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
           }
-        }
-      })
+        })
     }
   }
 }
+
