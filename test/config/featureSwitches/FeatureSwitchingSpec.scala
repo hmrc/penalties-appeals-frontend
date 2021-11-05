@@ -21,12 +21,12 @@ import base.SpecBase
 class FeatureSwitchingSpec extends SpecBase {
   class Setup {
     val featureSwitching: FeatureSwitching = new FeatureSwitching {}
-    sys.props -= JSRouteCheckingPrevention.name
+    sys.props -= NonJSRouting.name
   }
 
   "listOfAllFeatureSwitches" should {
     "be all the featureswitches in the app" in {
-      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(JSRouteCheckingPrevention)
+      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting)
     }
   }
 
@@ -39,29 +39,29 @@ class FeatureSwitchingSpec extends SpecBase {
 
   "isEnabled" should {
     s"return true if feature switch is enabled" in new Setup {
-      featureSwitching.enableFeatureSwitch(JSRouteCheckingPrevention)
-      featureSwitching.isEnabled(JSRouteCheckingPrevention) shouldBe true
+      featureSwitching.enableFeatureSwitch(NonJSRouting)
+      featureSwitching.isEnabled(NonJSRouting) shouldBe true
     }
     s"return false if feature switch is disabled" in new Setup {
-      featureSwitching.disableFeatureSwitch(JSRouteCheckingPrevention)
-      featureSwitching.isEnabled(JSRouteCheckingPrevention) shouldBe false
+      featureSwitching.disableFeatureSwitch(NonJSRouting)
+      featureSwitching.isEnabled(NonJSRouting) shouldBe false
     }
     "return false if feature switch does not exist" in new Setup {
-      featureSwitching.isEnabled(JSRouteCheckingPrevention) shouldBe false
+      featureSwitching.isEnabled(NonJSRouting) shouldBe false
     }
   }
 
   "enableFeatureSwitch" should {
-    s"set ${JSRouteCheckingPrevention.name} property to true" in new Setup {
-      featureSwitching.enableFeatureSwitch(JSRouteCheckingPrevention)
-      (sys.props get JSRouteCheckingPrevention.name get) shouldBe "true"
+    s"set ${NonJSRouting.name} property to true" in new Setup {
+      featureSwitching.enableFeatureSwitch(NonJSRouting)
+      (sys.props get NonJSRouting.name get) shouldBe "true"
     }
   }
 
   "disableFeatureSwitch" should {
-    s"set ${JSRouteCheckingPrevention.name} property to false" in new Setup {
-      featureSwitching.disableFeatureSwitch(JSRouteCheckingPrevention)
-      (sys.props get JSRouteCheckingPrevention.name get) shouldBe "false"
+    s"set ${NonJSRouting.name} property to false" in new Setup {
+      featureSwitching.disableFeatureSwitch(NonJSRouting)
+      (sys.props get NonJSRouting.name get) shouldBe "false"
     }
   }
 }

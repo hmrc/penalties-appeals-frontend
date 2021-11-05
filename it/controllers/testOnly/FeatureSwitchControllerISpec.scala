@@ -16,29 +16,29 @@
 
 package controllers.testOnly
 
-import config.featureSwitches.JSRouteCheckingPrevention
+import config.featureSwitches.NonJSRouting
 import play.api.test.Helpers._
 import utils.IntegrationSpecCommonBase
 
 class FeatureSwitchControllerISpec extends IntegrationSpecCommonBase {
   class Setup {
-    sys.props -= JSRouteCheckingPrevention.name
-    sys.props get JSRouteCheckingPrevention.name shouldBe None
+    sys.props -= NonJSRouting.name
+    sys.props get NonJSRouting.name shouldBe None
   }
 
   s"GET /test-only/feature-switch" should {
     s"return OK and set the JSRouting feature switch to be enabled" in new Setup {
-      val result = await(buildClientForRequestToApp(baseUrl = "", uri = s"/test-only/feature-switch?name=${JSRouteCheckingPrevention.name}&enable=true").get())
+      val result = await(buildClientForRequestToApp(baseUrl = "", uri = s"/test-only/feature-switch?name=${NonJSRouting.name}&enable=true").get())
       result.status shouldBe OK
-      result.body shouldBe s"$JSRouteCheckingPrevention set to true"
-      (sys.props get JSRouteCheckingPrevention.name get) shouldBe "true"
+      result.body shouldBe s"$NonJSRouting set to true"
+      (sys.props get NonJSRouting.name get) shouldBe "true"
     }
 
     s"return OK and set the JSRouting feature switch to be disabled" in new Setup {
-      val result = await(buildClientForRequestToApp(baseUrl = "", uri = s"/test-only/feature-switch?name=${JSRouteCheckingPrevention.name}&enable=false").get())
+      val result = await(buildClientForRequestToApp(baseUrl = "", uri = s"/test-only/feature-switch?name=${NonJSRouting.name}&enable=false").get())
       result.status shouldBe OK
-      result.body shouldBe s"$JSRouteCheckingPrevention set to false"
-      (sys.props get JSRouteCheckingPrevention.name get) shouldBe "false"
+      result.body shouldBe s"$NonJSRouting set to false"
+      (sys.props get NonJSRouting.name get) shouldBe "false"
     }
 
     s"return NOT_FOUND when the feature switch does not exist" in new Setup {

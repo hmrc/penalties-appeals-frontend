@@ -23,10 +23,10 @@ sealed trait FeatureSwitch {
 
 object FeatureSwitch {
   val prefix: String = "feature.switch"
-  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(JSRouteCheckingPrevention)
+  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting)
 }
 
-case object JSRouteCheckingPrevention extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.js-routing"
+case object NonJSRouting extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.non-js-routing"
   override val displayText: String = "To enable routing to JS pages"
 }

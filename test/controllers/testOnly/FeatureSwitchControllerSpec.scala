@@ -17,7 +17,7 @@
 package controllers.testOnly
 
 import base.SpecBase
-import config.featureSwitches.{FeatureSwitching, JSRouteCheckingPrevention}
+import config.featureSwitches.{FeatureSwitching, NonJSRouting}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -32,15 +32,15 @@ class FeatureSwitchControllerSpec extends SpecBase {
     }
 
     "return OK and enable the feature switch when specified" in {
-      val result = controller.enableOrDisableFeature("feature.switch.js-routing", true)(FakeRequest())
+      val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", true)(FakeRequest())
       status(result) shouldBe OK
-      featureSwitching.isEnabled(JSRouteCheckingPrevention) shouldBe true
+      featureSwitching.isEnabled(NonJSRouting) shouldBe true
     }
 
     "return OK and disable the feature switch when specified" in {
-      val result = controller.enableOrDisableFeature("feature.switch.js-routing", false)(FakeRequest())
+      val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", false)(FakeRequest())
       status(result) shouldBe OK
-      featureSwitching.isEnabled(JSRouteCheckingPrevention) shouldBe false
+      featureSwitching.isEnabled(NonJSRouting) shouldBe false
     }
   }
 }
