@@ -174,7 +174,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   def preUpscanCheckFailed(isAddingAnotherDocument: Boolean, mode: Mode): Action[AnyContent] = Action {
     implicit request => {
       if(isAddingAnotherDocument) {
-        Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
+        Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
           .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
       } else {
         Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))

@@ -77,7 +77,6 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
     CancelVATRegistrationPage -> ((answer, _, extraData) => routingForCancelVATRegistrationPage(answer, extraData)),
     OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
-    YouHaveUploadedFilesPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode)),
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
     UploadAnotherDocumentPage -> ((_,_,_) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
     FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode))
@@ -163,6 +162,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     answer match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode)
       case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
+      case None => routeToMakingALateAppealOrCYAPage(request, mode)
       case _ =>
         logger.debug("[Navigation][routeForUploadList]: unable to get answer - reloading 'UploadListPage'")
         routes.OtherReasonController.onPageLoadForUploadComplete(mode)

@@ -22,11 +22,12 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
+
 import javax.inject.Inject
 import models.upload.UploadStatusEnum.READY
 import forms.upscan.{RemoveFileForm, UploadDocumentForm, YouHaveUploadedFilesForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
-import models.pages.{EvidencePage, UploadAnotherDocumentPage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage, YouHaveUploadedFilesPage}
+import models.pages._
 import models.{CheckMode, Mode, NormalMode}
 import navigation.Navigation
 import play.api.data.{Form, FormError}
@@ -220,7 +221,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         SessionKeys.nextFileUpload
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
-      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete()
+      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete(mode)
       val journeyId = request.session.get(SessionKeys.journeyId).get
       upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
         filesUploaded => {
@@ -242,20 +243,16 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
               if(filesUploaded < 5) {
                 BadRequest(youHaveUploadedFilesPage(formHasErrors, radioOptionsToRender, postAction, filesUploaded))
               } else {
-                Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)) //TODO routing to be updated
+                logger.debug("[OtherReasonController][onSubmitForUploadComplete] - Form has errors but 5 files have been uploaded - redirecting to next page")
+                Redirect(navigation.nextPage(FileListPage, NormalMode))
               }
             }
           )
         },
         nextFileUpload => {
           logger.debug(
-            s"[YouHaveUploadedFilesController][onSubmitForNextFileUpload] - Adding '$nextFileUpload' to session under key: ${SessionKeys.nextFileUpload}")
-          Future(Redirect(
-            navigation.nextPage(
-              YouHaveUploadedFilesPage,
-              NormalMode,
-              Some(nextFileUpload)
-            ))
+            s"[OtherReasonController][onSubmitForUploadComplete] - Adding '$nextFileUpload' to session under key: ${SessionKeys.nextFileUpload}")
+          Future(Redirect(navigation.nextPage(FileListPage, mode, Some(nextFileUpload)))
             .addingToSession((SessionKeys.nextFileUpload, nextFileUpload)))
         }
       )

@@ -90,7 +90,6 @@ GET        /upload-evidence-for-the-appeal                         controllers.O
 GET        /upload-evidence-for-the-appeal/change                  controllers.OtherReasonController.onPageLoadForUploadEvidence(mode: Mode = CheckMode)
 GET        /upload-first-document                                   controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = NormalMode)
 GET        /upload-first-document/change                            controllers.OtherReasonController.onPageLoadForFirstFileUpload(mode: Mode = CheckMode)
-POST       /upload-complete                                        controllers.OtherReasonController.onSubmitForUploadComplete(mode: Mode = NormalMode)
 POST       /remove-file-upload                                      controllers.OtherReasonController.removeFileUpload(mode: Mode = NormalMode)
 POST       /remove-file-upload/change                               controllers.OtherReasonController.removeFileUpload(mode: Mode = CheckMode)
 GET        /upload-taking-longer-than-expected                     controllers.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(mode: Mode = NormalMode)
@@ -99,8 +98,10 @@ POST       /upload-taking-longer-than-expected                     controllers.O
 POST       /upload-taking-longer-than-expected/change              controllers.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(mode: Mode = CheckMode)
 GET        /upload-another-document                                controllers.OtherReasonController.onPageLoadForAnotherFileUpload(mode: Mode = NormalMode)
 GET        /upload-another-document/change                         controllers.OtherReasonController.onPageLoadForAnotherFileUpload(mode: Mode = CheckMode)
-GET        /uploaded-documents                                      controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = NormalMode)
-GET        /uploaded-documents/change                               controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = CheckMode)
+GET        /uploaded-documents                                     controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = NormalMode)
+GET        /uploaded-documents/change                              controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = CheckMode)
+POST       /uploaded-documents                                     controllers.OtherReasonController.onSubmitForUploadComplete(mode: Mode = NormalMode)
+POST       /uploaded-documents/change                              controllers.OtherReasonController.onSubmitForUploadComplete(mode: Mode = CheckMode)
 
 # Who Planned to Submit VAT Return
 GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)

@@ -246,6 +246,31 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(None , CheckMode)
         result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
       }
+      s"called with $UploadFirstDocumentPage redirects to File Upload List Page" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadFirstDocumentPage, CheckMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
+      }
+      s"called with $UploadAnotherDocumentPage redirects to File Upload List Page" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadAnotherDocumentPage, CheckMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
+      }
+      s"called with $FileListPage redirects to $UploadAnotherDocumentPage when the user selects yes" in new Setup {
+        val result: Call = mainNavigator.nextPage(FileListPage, CheckMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(CheckMode).url
+      }
+      s"called with $FileListPage redirects to CYA page when the user selects no" in new Setup {
+        val result: Call = mainNavigator.nextPage(FileListPage, CheckMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+      s"called with $FileListPage redirects CYA page - when the user has 5 documents uploaded " in new Setup {
+        val result: Call = mainNavigator.nextPage(FileListPage, CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        ))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
     }
 
     "in NormalMode" when {
@@ -442,6 +467,43 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.nextPage(OtherPenaltiesForPeriodPage, NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
          ))
         result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
+      }
+      s"called with $UploadFirstDocumentPage redirects to File Upload List Page" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadFirstDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
+      }
+      s"called with $UploadAnotherDocumentPage redirects to File Upload List Page" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadAnotherDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
+      }
+      s"called with $FileListPage redirects to $UploadAnotherDocumentPage when the user selects yes" in new Setup {
+        val result: Call = mainNavigator.nextPage(FileListPage, NormalMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
+      }
+      s"called with $FileListPage redirect making a late appeal page - when the user has 5 documents uploaded and appeal > 30 days late and user answers no" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result: Call = mainNavigator.nextPage(FileListPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+      s"called with $FileListPage redirects CYA page - when the user has 5 documents uploaded and user answers no" in new Setup {
+        val result: Call = mainNavigator.nextPage(FileListPage, NormalMode, Some("no"))(fakeRequestConverter(fakeRequestWithCorrectKeys
+        ))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+      s"called with $FileListPage redirect making a late appeal page - when the user has 5 documents uploaded and appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result: Call = mainNavigator.nextPage(FileListPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+      s"called with $FileListPage redirects CYA page - when the user has 5 documents uploaded " in new Setup {
+        val result: Call = mainNavigator.nextPage(FileListPage, NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        ))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
     }
   }
