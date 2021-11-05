@@ -62,6 +62,7 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
     "microservice.services.auth.port" -> stubPort,
     "microservice.services.penalties.port" -> stubPort,
     "microservice.services.upscan-initiate.port" -> stubPort,
+    "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
     "auditing.enabled" -> false
   )
 

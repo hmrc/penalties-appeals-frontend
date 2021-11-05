@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, NonJSRouting}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
@@ -53,6 +54,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       youHaveUploadedFilesPage: YouHaveUploadedFilesPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
+                                      featureSwitching: FeatureSwitching,
                                       uploadJourneyRepository: UploadJourneyRepository)
                                      (implicit authorise: AuthPredicate,
                                       dataRequired: DataRequiredAction,
@@ -115,7 +117,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onPageLoadForUploadEvidence(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if(request.cookies.get("jsenabled").isEmpty) {
+      if(request.cookies.get("jsenabled").isEmpty || featureSwitching.isEnabled(NonJSRouting)) {
         mode match {
           case NormalMode => Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)))
           case CheckMode => Future(Redirect(controllers.routes.OtherReasonController.removeFileUpload(mode)))
@@ -137,7 +139,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onPageLoadForFirstFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if(request.cookies.get("jsenabled").isDefined) {
+      if(request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
@@ -250,7 +252,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if(request.cookies.get("jsenabled").isDefined) {
+      if(request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val journeyId = request.session.get(SessionKeys.journeyId).get
