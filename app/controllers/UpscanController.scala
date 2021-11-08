@@ -20,7 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import forms.upscan.{S3UploadErrorForm, S3UploadSuccessForm}
 import helpers.UpscanMessageHelper
-import models.Mode
+import models.{Mode, NormalMode}
 import models.upload._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -204,7 +204,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 }
               } else {
-                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete()))
+                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)))
               }
             }
           })

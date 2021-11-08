@@ -35,7 +35,6 @@ import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
-import views.html.components.upload.YouHaveUploadedFilesPage
 import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs._
 
@@ -50,7 +49,7 @@ class OtherReasonControllerSpec extends SpecBase {
   val uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage = injector.instanceOf[UploadTakingLongerThanExpectedPage]
   val mockUpscanService: UpscanService = mock(classOf[UpscanService])
   val uploadAnotherDocumentPage: UploadAnotherDocumentPage = injector.instanceOf[UploadAnotherDocumentPage]
-  val youHaveUploadedFilesPage: YouHaveUploadedFilesPage = injector.instanceOf[YouHaveUploadedFilesPage]
+  val uploadListPage: UploadListPage = injector.instanceOf[UploadListPage]
   val mockFeatureSwitching: FeatureSwitching = mock(classOf[FeatureSwitching])
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
@@ -73,7 +72,7 @@ class OtherReasonControllerSpec extends SpecBase {
       uploadFirstDocumentPage,
       uploadTakingLongerThanExpectedPage,
       uploadAnotherDocumentPage,
-      youHaveUploadedFilesPage,
+      uploadListPage,
       mainNavigator,
       mockUpscanService,
       mockFeatureSwitching,

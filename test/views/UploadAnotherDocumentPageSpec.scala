@@ -24,7 +24,10 @@ import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadAnotherDocumentPage
 import messages.UploadAnotherDocmuentMessages._
+import models.NormalMode
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
+import play.api.data.Form
+import play.api.mvc.Call
 
 class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
 
@@ -47,7 +50,7 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
     val cancelButton = "#file-upload-form .govuk-button--secondary"
   }
 
-  val form = UploadDocumentForm.form
+  val form: Form[String] = UploadDocumentForm.form
   val mockUpscanInitiateResponseModel: UpscanInitiateResponseModel = UpscanInitiateResponseModel(
     reference = "file1",
     uploadRequest = UploadFormTemplateRequest(
@@ -55,8 +58,9 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
       fields = Map.empty
     )
   )
+  val fileListPage: Call = controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)
   def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
-    uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form)(request, implicitly, implicitly)
+    uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form, fileListPage.url)(request, implicitly, implicitly)
   }
 
   implicit val doc: Document = asDocument(applyView(fakeRequest))

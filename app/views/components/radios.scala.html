@@ -21,7 +21,8 @@
         items: Seq[RadioItem],
         legendAsHeading: Boolean = true,
         hint: Option[Html] = None,
-        legendClasses: String = "govuk-fieldset__legend--xl",
+        classes: String = "govuk-fieldset__legend--xl",
+        legendClasses: String = "",
         inline: Boolean = false,
         formFieldId: String = "value"
 )(implicit messages: Messages)

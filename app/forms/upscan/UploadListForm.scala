@@ -16,16 +16,16 @@
 
 package forms.upscan
 
-import forms.FormBehaviours
-import play.api.data.{Form, FormError}
+import forms.mappings.Mappings
+import play.api.data.Form
+import play.api.data.Forms.single
 
-class YouHaveUploadedFilesFormSpec extends FormBehaviours {
-  val form: Form[String] = YouHaveUploadedFilesForm.youHaveUploadedForm
-
-  behave like mandatoryField(form, "value", FormError("value", "otherReason.uploadList.uploadAnotherFile.required"))
-
-  "radio option 'yes' or 'no' not selected" in {
-    val result = form.bind(Map("value" -> "")).apply("value")
-    result.errors.headOption shouldBe Some(FormError("value", "otherReason.uploadList.uploadAnotherFile.required"))
-  }
+object UploadListForm extends Mappings {
+  final val options = Seq("yes", "no")
+  val youHaveUploadedForm: Form[String] = Form[String](
+    single(
+      "value" -> text("otherReason.uploadList.uploadAnotherFile.required")
+        .verifying("otherReason.uploadList.uploadAnotherFile.required", value => options.contains(value))
+    )
+  )
 }
