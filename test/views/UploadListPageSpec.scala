@@ -14,30 +14,41 @@
  * limitations under the License.
  */
 
-package views
+package views.components.upload
 
 import base.{BaseSelectors, SpecBase}
-import forms.upscan.UploadListForm
+import forms.upscan.YouHaveUploadedFilesForm
 import messages.YouHaveUploadedFilesMessages._
-import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import views.behaviours.ViewBehaviours
-import views.html.reasonableExcuseJourneys.other.noJs.UploadListPage
+import views.html.components.upload.YouHaveUploadedFilesPage
 import viewtils.RadioOptionHelper
 
-class UploadListPageSpec extends SpecBase with ViewBehaviours {
-  val uploadListPage: UploadListPage = injector.instanceOf[UploadListPage]
+class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
+  val youHaveUploadedFilesPage: YouHaveUploadedFilesPage = injector.instanceOf[YouHaveUploadedFilesPage]
+
+  val uploadedFiles: Seq[(String, Int)] = Seq(("file1", 1), ("file2", 2), ("file3", 3))
+
+  val expected = List(uploadListRow(1),uploadListRow(2),uploadListRow(3))
+
+  val uploadSingleRow: Seq[SummaryListRow] = Seq(uploadListRow(1))
+
+  val uploadMultipleRows: Seq[SummaryListRow] = Seq(uploadListRow(1),uploadListRow(2))
+
+  val uploadMaxRow: Seq[SummaryListRow] = Seq(uploadListRow(1),uploadListRow(2),uploadListRow(3), uploadListRow(4),uploadListRow(5))
+
   object Selectors extends BaseSelectors {
     val label = ".govuk-fieldset__legend--m"
   }
-  val formProvider = UploadListForm.youHaveUploadedForm
+  val formProvider = YouHaveUploadedFilesForm.youHaveUploadedForm
   val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
-  "UploadListPage" should {
+  "YouHaveUploadedFilesPage" should {
     "return multiple files header and title" when {
-      def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),2)(userRequestWithCorrectKeys,messages,appConfig)
+      def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
+        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),uploadMultipleRows)(userRequestWithCorrectKeys,messages,appConfig)
       implicit val doc: Document = asDocument(applyView(formProvider))
 
       val expectedContent = Seq(
@@ -53,8 +64,8 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
   }
 
   "return single file header and title added" when {
-    def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),1)(userRequestWithCorrectKeys,messages,appConfig)
+    def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),uploadSingleRow)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(
@@ -69,8 +80,8 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
   }
 
   "return max of 5 files added" when {
-    def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),5)(userRequestWithCorrectKeys,messages,appConfig)
+    def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),uploadMaxRow)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(

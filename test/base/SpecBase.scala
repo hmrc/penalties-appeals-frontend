@@ -38,6 +38,8 @@ import services.AuthService
 import services.monitoring.AuditService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.emailaddress.EmailAddress
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
 import utils.SessionKeys
 import views.html.errors.Unauthorised
 
@@ -161,4 +163,10 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     agentEmailID = Some(EmailAddress("Jack@aaa.com"))
   ))
   val moreThanFiveThousandChars: String = 'a'.toString * 5010
+
+  def uploadListRow(fileIndex:Int):SummaryListRow= {
+    SummaryListRow(Key(Text(s"Document $fileIndex"),"govuk-summary-list__key"),
+      Value(HtmlContent(s"file$fileIndex"), "govuk-summary-list__value"),
+      "govuk-summary-list__row", Some(Actions("govuk-link",List(ActionItem("remove-file-upload",HtmlContent("Remove"),None)))))
+  }
 }
