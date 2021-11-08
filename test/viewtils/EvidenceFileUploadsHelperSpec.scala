@@ -17,7 +17,6 @@
 package viewtils
 
 import base.SpecBase
-import models.NormalMode
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 
 class EvidenceFileUploadsHelperSpec extends SpecBase {

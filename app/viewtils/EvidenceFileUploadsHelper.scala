@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package viewtils
 
 import play.api.i18n.Messages
@@ -20,7 +21,6 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actio
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 
 class EvidenceFileUploadsHelper {
-
   def displayContentForFileUploads(uploadedFiles: Seq[(String, Int)])(implicit messages: Messages): Seq[SummaryListRow] = {
     uploadedFiles.map(fileInfo => SummaryListRow(
         key = Key(
