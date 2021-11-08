@@ -16,14 +16,19 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, NonJSRouting}
+import java.time.LocalDate
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
-import forms.upscan.{RemoveFileForm, UploadDocumentForm, YouHaveUploadedFilesForm}
-import helpers.{FormProviderHelper, SessionAnswersHelper, UpscanMessageHelper}
-import models.pages.{EvidencePage, WhenDidBecomeUnablePage, WhyWasReturnSubmittedLatePage, YouHaveUploadedFilesPage}
-import models.{CheckMode, Mode, NormalMode, UserRequest}
+
+import javax.inject.Inject
+import models.upload.UploadStatusEnum.READY
+import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadListForm}
+import helpers.{FormProviderHelper, UpscanMessageHelper}
+import models.pages._
+import models.{CheckMode, Mode, NormalMode}
 import navigation.Navigation
 import play.api.data.{Form, FormError}
 import play.api.i18n.I18nSupport
@@ -32,18 +37,14 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.components.upload.YouHaveUploadedFilesPage
 import views.html.reasonableExcuseJourneys.other._
-import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage, UploadTakingLongerThanExpectedPage}
-import viewtils.RadioOptionHelper
-import viewtils.EvidenceFileUploadsHelper
+import views.html.reasonableExcuseJourneys.other.noJs._
+import viewtils.{EvidenceFileUploadsHelper, RadioOptionHelper}
 
-import java.time.LocalDate
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
@@ -52,11 +53,12 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       uploadFirstDocumentPage: UploadFirstDocumentPage,
                                       uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage,
                                       uploadAnotherDocumentPage: UploadAnotherDocumentPage,
-                                      youHaveUploadedFilesPage: YouHaveUploadedFilesPage,
+                                      uploadListPage: UploadListPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
-                                      uploadJourneyRepository: UploadJourneyRepository,
-                                      evidenceFileUploadsHelper: EvidenceFileUploadsHelper)
+                                      featureSwitching: FeatureSwitching,
+                                      evidenceFileUploadsHelper: EvidenceFileUploadsHelper,
+                                      uploadJourneyRepository: UploadJourneyRepository)
                                      (implicit authorise: AuthPredicate,
                                       dataRequired: DataRequiredAction,
                                       appConfig: AppConfig,
@@ -118,7 +120,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onPageLoadForUploadEvidence(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if (request.cookies.get("jsenabled").isEmpty) {
+      if (request.cookies.get("jsenabled").isEmpty || featureSwitching.isEnabled(NonJSRouting)) {
         mode match {
           case NormalMode => Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)))
           case CheckMode => Future(Redirect(controllers.routes.OtherReasonController.removeFileUpload(mode)))
@@ -127,12 +129,23 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         for {
           previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
         } yield {
-          val previousUploads = previousUploadsState.fold("[]")(previousUploads => Json.stringify(Json.toJson(previousUploads)))
-          val initiateNextUploadUrl = controllers.routes.UpscanController.initiateCallToUpscan(request.session.get(SessionKeys.journeyId).get)
-          val getStatusUrl = controllers.routes.UpscanController.getStatusOfFileUpload(request.session.get(SessionKeys.journeyId).get, _)
-          val removeFileUrl = controllers.routes.UpscanController.removeFile(request.session.get(SessionKeys.journeyId).get, _)
-          val postAction = navigation.nextPage(EvidencePage, mode)
-          Ok(uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, previousUploads))
+          if (request.cookies.get("jsenabled").isEmpty) {
+            mode match {
+              case NormalMode => Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+              case CheckMode => if (previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)) {
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
+              } else {
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+              }
+            }
+          } else {
+            val previousUploads = previousUploadsState.fold("[]")(previousUploads => Json.stringify(Json.toJson(previousUploads)))
+            val initiateNextUploadUrl = controllers.routes.UpscanController.initiateCallToUpscan(request.session.get(SessionKeys.journeyId).get)
+            val getStatusUrl = controllers.routes.UpscanController.getStatusOfFileUpload(request.session.get(SessionKeys.journeyId).get, _)
+            val removeFileUrl = controllers.routes.UpscanController.removeFile(request.session.get(SessionKeys.journeyId).get, _)
+            val postAction = navigation.nextPage(EvidencePage, mode)
+            Ok(uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, previousUploads))
+          }
         }
       }
     }
@@ -140,7 +153,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onPageLoadForFirstFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if (request.cookies.get("jsenabled").isDefined) {
+      if (request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
@@ -185,16 +198,17 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           upscanResponseModel => {
             val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
             val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
+            val fileListPage = navigation.nextPage(UploadAnotherDocumentPage, mode)
             if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
-              Ok(uploadAnotherDocumentPage(upscanResponseModel, formProvider))
+              Ok(uploadAnotherDocumentPage(upscanResponseModel, formProvider, fileListPage.url))
             } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
               val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get)
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
-              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors))
+              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors, fileListPage.url))
                 .removingFromSession(SessionKeys.errorCodeFromUpscan)
             } else {
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", optFailureFromUpscan.get))
-              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors))
+              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors, fileListPage.url))
                 .removingFromSession(SessionKeys.failureMessageFromUpscan)
             }
           }
@@ -205,11 +219,11 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
   def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-        YouHaveUploadedFilesForm.youHaveUploadedForm,
+        UploadListForm.youHaveUploadedForm,
         SessionKeys.nextFileUpload
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
-      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete()
+      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete(mode)
       for {
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
@@ -219,14 +233,14 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           Seq.empty
         }
         val uploadRows: Seq[SummaryListRow] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex)
-        Ok(youHaveUploadedFilesPage(formProvider, radioOptionsToRender, postAction, uploadRows))
+        Ok(uploadListPage(formProvider, radioOptionsToRender, postAction, uploadRows))
       }
     }
   }
 
   def onSubmitForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      YouHaveUploadedFilesForm.youHaveUploadedForm.bindFromRequest.fold(
+      UploadListForm.youHaveUploadedForm.bindFromRequest.fold(
         formHasErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formHasErrors)
           val postAction = controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)
@@ -240,21 +254,16 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             }
             val uploadRows: Seq[SummaryListRow] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex)
             if (uploadRows.length < 5) {
-              BadRequest(youHaveUploadedFilesPage(formHasErrors, radioOptionsToRender, postAction, uploadRows))
+              BadRequest(uploadListPage(formHasErrors, radioOptionsToRender, postAction, uploadRows))
             } else {
-              Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete()) //TODO routing to be updated
+              Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
             }
           }
         },
         nextFileUpload => {
           logger.debug(
-            s"[YouHaveUploadedFilesController][onSubmitForNextFileUpload] - Adding '$nextFileUpload' to session under key: ${SessionKeys.nextFileUpload}")
-          Future(Redirect(
-            navigation.nextPage(
-              YouHaveUploadedFilesPage,
-              NormalMode,
-              Some(nextFileUpload)
-            ))
+            s"[OtherReasonController][onSubmitForUploadComplete] - Adding '$nextFileUpload' to session under key: ${SessionKeys.nextFileUpload}")
+          Future(Redirect(navigation.nextPage(FileListPage, mode, Some(nextFileUpload)))
             .addingToSession((SessionKeys.nextFileUpload, nextFileUpload)))
         }
       )
@@ -263,7 +272,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if (request.cookies.get("jsenabled").isDefined) {
+      if (request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val journeyId = request.session.get(SessionKeys.journeyId).get
@@ -281,7 +290,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                     logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
                     Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                   } else {
-                    Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete())
+                    Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
                   }
                 }
               )
@@ -322,7 +331,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                   .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
               }
             } else {
-              Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete())
+              Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
                 .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
             }
           }

@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package views.components.upload
+package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.upscan.YouHaveUploadedFilesForm
+import forms.upscan.UploadListForm
 import messages.YouHaveUploadedFilesMessages._
+import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import views.behaviours.ViewBehaviours
-import views.html.components.upload.YouHaveUploadedFilesPage
+import views.html.reasonableExcuseJourneys.other.noJs.UploadListPage
 import viewtils.RadioOptionHelper
 
-class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
-  val youHaveUploadedFilesPage: YouHaveUploadedFilesPage = injector.instanceOf[YouHaveUploadedFilesPage]
-
-  val uploadedFiles: Seq[(String, Int)] = Seq(("file1", 1), ("file2", 2), ("file3", 3))
-
-  val expected = List(uploadListRow(1),uploadListRow(2),uploadListRow(3))
+class UploadListPageSpec extends SpecBase with ViewBehaviours {
+  val uploadListPage: UploadListPage = injector.instanceOf[UploadListPage]
+  object Selectors extends BaseSelectors {
+    val label = ".govuk-fieldset__legend--m"
+  }
+  val formProvider = UploadListForm.youHaveUploadedForm
+  val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
 
   val uploadSingleRow: Seq[SummaryListRow] = Seq(uploadListRow(1))
 
@@ -40,15 +42,10 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
 
   val uploadMaxRow: Seq[SummaryListRow] = Seq(uploadListRow(1),uploadListRow(2),uploadListRow(3), uploadListRow(4),uploadListRow(5))
 
-  object Selectors extends BaseSelectors {
-    val label = ".govuk-fieldset__legend--m"
-  }
-  val formProvider = YouHaveUploadedFilesForm.youHaveUploadedForm
-  val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
-  "YouHaveUploadedFilesPage" should {
+  "UploadListPage" should {
     "return multiple files header and title" when {
-      def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),uploadMultipleRows)(userRequestWithCorrectKeys,messages,appConfig)
+      def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
+        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),uploadMultipleRows)(userRequestWithCorrectKeys,messages,appConfig)
       implicit val doc: Document = asDocument(applyView(formProvider))
 
       val expectedContent = Seq(
@@ -64,8 +61,8 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
   }
 
   "return single file header and title added" when {
-    def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),uploadSingleRow)(userRequestWithCorrectKeys,messages,appConfig)
+    def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),uploadSingleRow)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(
@@ -80,8 +77,8 @@ class YouHaveUploadedFilesPageSpec extends SpecBase with ViewBehaviours {
   }
 
   "return max of 5 files added" when {
-    def applyView(form: Form[_]): HtmlFormat.Appendable = youHaveUploadedFilesPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(),uploadMaxRow)(userRequestWithCorrectKeys,messages,appConfig)
+    def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),uploadMaxRow)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(

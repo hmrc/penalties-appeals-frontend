@@ -18,11 +18,7 @@ package forms.upscan
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.Forms.{mapping, single}
-import play.api.i18n.Messages
-import uk.gov.voa.play.form.ConditionalMappings
-
-import java.time.LocalDate
+import play.api.data.Forms.single
 
 object UploadListForm extends Mappings {
   final val options = Seq("yes", "no")
