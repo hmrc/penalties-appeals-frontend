@@ -22,8 +22,7 @@ import messages.YouHaveUploadedFilesMessages._
 import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import play.twirl.api.{Html, HtmlFormat}
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadListPage
 import viewtils.RadioOptionHelper
@@ -36,11 +35,11 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
   val formProvider = UploadListForm.youHaveUploadedForm
   val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
 
-  val uploadSingleRow: Seq[SummaryListRow] = Seq(uploadListRow(1))
+  val uploadSingleRow: Seq[Html] = Seq(uploadListRow(1, "file1.txt", "ref1"))
 
-  val uploadMultipleRows: Seq[SummaryListRow] = Seq(uploadListRow(1),uploadListRow(2))
+  val uploadMultipleRows: Seq[Html] = Seq(uploadListRow(1, "file1.txt", "ref1"), uploadListRow(2, "file2.txt", "ref2"))
 
-  val uploadMaxRow: Seq[SummaryListRow] = Seq(uploadListRow(1),uploadListRow(2),uploadListRow(3), uploadListRow(4),uploadListRow(5))
+  val uploadMaxRow: Seq[Html] = Seq(uploadListRow(1, "file1.txt", "ref1"), uploadListRow(2, "file2.txt", "ref2"), uploadListRow(3, "file1.txt", "ref1"), uploadListRow(4, "file4.txt", "ref4"), uploadListRow(5, "file5.txt", "ref5"))
 
   "UploadListPage" should {
     "return multiple files header and title" when {
@@ -78,7 +77,7 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
 
   "return max of 5 files added" when {
     def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),uploadMaxRow)(userRequestWithCorrectKeys,messages,appConfig)
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(

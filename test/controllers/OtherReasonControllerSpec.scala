@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import config.featureSwitches.FeatureSwitching
 import connectors.httpParsers.UpscanInitiateHttpParser.UnexpectedFailure
-import models.upload.{UploadDetails, UploadFormTemplateRequest, UploadJourney, UploadStatusEnum, UpscanInitiateResponseModel}
+import models.upload.{FailureDetails, FailureReasonEnum, UploadFormTemplateRequest, UploadJourney, UploadStatusEnum, UpscanInitiateResponseModel}
 import models.{CheckMode, NormalMode, UserRequest}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -27,10 +27,9 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import play.api.mvc.{Cookie, Result}
 import play.api.mvc.Results.Ok
+import play.api.mvc.{Cookie, Result}
 import play.api.test.Helpers._
-import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
@@ -383,10 +382,26 @@ class OtherReasonControllerSpec extends SpecBase {
 
     "onPageLoadForUploadComplete" should {
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
-          .thenReturn(Future.successful(1))
+        when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
         val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
+      }
+
+      "redirect to first upload page" when {
+        "there is no uploads" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
+          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+        }
+
+        "there is no successful uploads" in new Setup(AuthTestModels.successfulAuthResult) {
+          val duplicateCallbackModel = UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(duplicateCallbackModel))))
+          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+        }
       }
 
       "the user is unauthorised" when {
@@ -573,6 +588,7 @@ class OtherReasonControllerSpec extends SpecBase {
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
           await(result).session.get(SessionKeys.nextFileUpload).get shouldBe "no"
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         }
 
         "return 400 (BAD_REQUEST) when the user does not enter an option" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -595,10 +611,11 @@ class OtherReasonControllerSpec extends SpecBase {
             Json.parse(
               """
                 |{
-                | "value": ""
+                | "value": "yes"
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
 
         }
 

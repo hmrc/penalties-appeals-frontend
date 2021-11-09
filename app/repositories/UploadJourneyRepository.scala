@@ -110,7 +110,8 @@ class UploadJourneyRepository @Inject()(
       _.map(
         _.map(
           _.uploadDetails.map(
-            _.checksum)
+            _.checksum
+          )
         ).collect { case Some(x) => x }
       ).getOrElse(Seq.empty))
   }
