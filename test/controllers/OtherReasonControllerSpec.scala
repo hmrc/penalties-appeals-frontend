@@ -243,8 +243,6 @@ class OtherReasonControllerSpec extends SpecBase {
         "return 303 (SEE_OTHER) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
             .thenReturn(true)
-        }
-        "return 303 (SEE_OTHER)" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
         }
@@ -342,13 +340,6 @@ class OtherReasonControllerSpec extends SpecBase {
       "return 303 (SEE_OTHER) when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
           .thenReturn(false)
-        val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeysAndJS)
-        status(result) shouldBe SEE_OTHER
-      }
-
-      "return SEE_OTHER and correct view when JS is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
         val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeysAndJS)
         status(result) shouldBe SEE_OTHER
       }
