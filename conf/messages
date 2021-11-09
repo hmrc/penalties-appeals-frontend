@@ -308,10 +308,11 @@ otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
 
 # Upload List (No JS) page
 # ----------------------------------------------------------
-otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = You have uploaded {0} files
-otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {0} file
-otherReason.uploadList.uploadAnotherFile = Do you want to upload another file?
-otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another file
+otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = You have uploaded {0} documents
+otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {0} document
+otherReason.uploadList.uploadAnotherFile = Do you want to upload another document?
+otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another document
+otherReason.uploadList.rowTitle = Document {0}
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
