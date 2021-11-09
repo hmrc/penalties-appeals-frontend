@@ -20,6 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
 import helpers.DateTimeHelper
 import models.appeals.AgentDetails
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{PenaltyTypeEnum, UserRequest}
 import navigation.Navigation
 import org.jsoup.Jsoup
@@ -43,6 +44,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actio
 import utils.SessionKeys
 import views.html.errors.Unauthorised
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
@@ -169,4 +171,17 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
       Value(HtmlContent(s"file$fileIndex"), "govuk-summary-list__value"),
       "govuk-summary-list__row", Some(Actions("govuk-link",List(ActionItem("remove-file-upload",HtmlContent("Remove"),None)))))
   }
+
+  val callBackModel: UploadJourney = UploadJourney(
+    reference = "ref1",
+    fileStatus = UploadStatusEnum.READY,
+    downloadUrl = Some("download.file/url"),
+    uploadDetails = Some(UploadDetails(
+      fileName = "file1.txt",
+      fileMimeType = "text/plain",
+      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+      checksum = "check1234",
+      size = 2
+    ))
+  )
 }
