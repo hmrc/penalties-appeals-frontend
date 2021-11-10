@@ -879,7 +879,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
-      await(result).session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.nextFileUpload).get shouldBe "yes"
     }
 
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to another file upload page when user specifies 'no'" in new Setup {
@@ -901,7 +900,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-      await(result).session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.nextFileUpload).get shouldBe "no"
     }
 
     "return 400 (BAD_REQUEST)" when {

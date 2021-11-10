@@ -212,10 +212,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onPageLoadForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-        UploadListForm.youHaveUploadedForm,
-        SessionKeys.nextFileUpload
-      )
+      val formProvider = UploadListForm.youHaveUploadedForm
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
       val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete(mode)
       for {
@@ -251,10 +248,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           }
         },
         nextFileUpload => {
-          logger.debug(
-            s"[YouHaveUploadedFilesController][onSubmitForNextFileUpload] - Adding '$nextFileUpload' to session under key: ${SessionKeys.nextFileUpload}")
-          Future(Redirect(navigation.nextPage(FileListPage, mode, Some(nextFileUpload)))
-            .addingToSession((SessionKeys.nextFileUpload, nextFileUpload)))
+          Future(Redirect(navigation.nextPage(FileListPage, mode, Some(nextFileUpload))))
         }
       )
     }

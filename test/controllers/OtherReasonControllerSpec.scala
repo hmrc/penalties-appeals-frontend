@@ -587,7 +587,6 @@ class OtherReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          await(result).session.get(SessionKeys.nextFileUpload).get shouldBe "no"
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         }
 
