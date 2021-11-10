@@ -26,23 +26,23 @@ class FeatureSwitchControllerISpec extends IntegrationSpecCommonBase {
     sys.props get NonJSRouting.name shouldBe None
   }
 
-  s"GET /test-only/feature-switch" should {
+  s"GET /penalties-appeals/test-only/feature-switch" should {
     s"return OK and set the JSRouting feature switch to be enabled" in new Setup {
-      val result = await(buildClientForRequestToApp(baseUrl = "", uri = s"/test-only/feature-switch?name=${NonJSRouting.name}&enable=true").get())
+      val result = await(buildClientForRequestToApp(uri = s"/test-only/feature-switch?name=${NonJSRouting.name}&enable=true").get())
       result.status shouldBe OK
       result.body shouldBe s"$NonJSRouting set to true"
       (sys.props get NonJSRouting.name get) shouldBe "true"
     }
 
     s"return OK and set the JSRouting feature switch to be disabled" in new Setup {
-      val result = await(buildClientForRequestToApp(baseUrl = "", uri = s"/test-only/feature-switch?name=${NonJSRouting.name}&enable=false").get())
+      val result = await(buildClientForRequestToApp(uri = s"/test-only/feature-switch?name=${NonJSRouting.name}&enable=false").get())
       result.status shouldBe OK
       result.body shouldBe s"$NonJSRouting set to false"
       (sys.props get NonJSRouting.name get) shouldBe "false"
     }
 
     s"return NOT_FOUND when the feature switch does not exist" in new Setup {
-      val result = await(buildClientForRequestToApp(baseUrl = "", uri = s"/test-only/feature-switch?name=fake&enable=true").get())
+      val result = await(buildClientForRequestToApp(uri = "/test-only/feature-switch?name=fake&enable=true").get())
       result.status shouldBe NOT_FOUND
       sys.props get "fake" shouldBe None
     }

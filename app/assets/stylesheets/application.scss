@@ -5,3 +5,12 @@ $hmrc-assets-path: "/penalties-appeals/assets/lib/hmrc-frontend/hmrc/";
 @import "lib/hmrc-frontend/hmrc/all";
 
 @import "upload/multi-file-upload";
+
+.remove-link {
+  background: none;
+  margin-bottom: 0px;
+  cursor: pointer;
+  text-decoration: underline;
+  color: #1d70b8;
+  border: none;
+}

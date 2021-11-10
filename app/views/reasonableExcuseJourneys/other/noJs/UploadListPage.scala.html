@@ -8,7 +8,7 @@
         radios: components.radios,
         govukSummaryList : GovukSummaryList)
 
-@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call,  uploadRows: Seq[SummaryListRow])(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, uploadRows: Seq[Html])(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @pageHeadingAndTitle = @{getPluralOrSingular(uploadRows.length)("otherReason.uploadList.youHaveUploadedFile.headingAndTitle", "otherReason.uploadList.youHaveUploadedFiles.headingAndTitle").toString()}
 
@@ -16,20 +16,22 @@
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
-    @formHelper(action = postAction) {
-        <h1 class="govuk-heading-l"> @messages(pageHeadingAndTitle) </h1>
+        <h1 class="govuk-heading-l">@messages(pageHeadingAndTitle)</h1>
         <div class="app-summary-card__body">
-            @govukSummaryList(SummaryList(uploadRows))
+            <dl class="govuk-summary-list">
+                @uploadRows
+            </dl>
         </div>
-    @if(uploadRows.length < 5) {
-        @radios(form = form,
-            legend = messages("otherReason.uploadList.uploadAnotherFile"),
-            items = radioOptions ,
-            hint = None,
-            legendAsHeading = false,
-            legendClasses = "govuk-fieldset__legend--m"
-        )
-    }
+    @formHelper(action = postAction) {
+        @if(uploadRows.length < 5) {
+            @radios(form = form,
+                legend = messages("otherReason.uploadList.uploadAnotherFile"),
+                items = radioOptions ,
+                hint = None,
+                legendAsHeading = false,
+                legendClasses = "govuk-fieldset__legend--m"
+            )
+        }
         @govukButton(Button(content = Text(messages("common.continue"))))
     }
 }

@@ -39,8 +39,6 @@ import services.AuthService
 import services.monitoring.AuditService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.emailaddress.EmailAddress
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
 import utils.SessionKeys
 import views.html.errors.Unauthorised
 
@@ -166,10 +164,28 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   ))
   val moreThanFiveThousandChars: String = 'a'.toString * 5010
 
-  def uploadListRow(fileIndex:Int):SummaryListRow= {
-    SummaryListRow(Key(Text(s"Document $fileIndex"),"govuk-summary-list__key"),
-      Value(HtmlContent(s"file$fileIndex"), "govuk-summary-list__value"),
-      "govuk-summary-list__row", Some(Actions("govuk-link",List(ActionItem("remove-file-upload",HtmlContent("Remove"),None)))))
+  def uploadListRow(fileNumber: Int, fileName: String, fileReference: String): Html = {
+    Html(
+      s"""
+        | <div class="govuk-summary-list__row" id="document-row-${fileNumber + 1}">
+        |   <dt class="govuk-summary-list__key">
+        |    Document ${fileNumber + 1}
+        |   </dt>
+        |   <dd class="govuk-summary-list__value">
+        |    $fileName
+        |   </dd>
+        |   <dd class="govuk-summary-list__actions">
+        |   <form action="/penalties-appeals/remove-file-upload" method="POST" novalidate>
+        |     <input type="hidden" name="fileReference" value="$fileReference">
+        |     <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-${fileNumber + 1}">
+        |       Remove
+        |       <span class="govuk-visually-hidden">Document ${fileNumber + 1}</span>
+        |     </button>
+        |   </form>
+        |</dd>
+        |</div>
+        |""".stripMargin
+    )
   }
 
   val callBackModel: UploadJourney = UploadJourney(

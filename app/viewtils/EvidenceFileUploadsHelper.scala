@@ -16,32 +16,19 @@
 
 package viewtils
 
+import models.{Mode, UserRequest}
+import models.upload.UploadJourney
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import play.twirl.api.Html
+import views.html.components.upload.uploadList
 
-class EvidenceFileUploadsHelper {
-  def displayContentForFileUploads(uploadedFiles: Seq[(String, Int)])(implicit messages: Messages): Seq[SummaryListRow] = {
-    uploadedFiles.map(fileInfo => SummaryListRow(
-        key = Key(
-          content = Text(messages("otherReason.uploadList.rowTitle", fileInfo._2 + 1)),
-          classes = "govuk-summary-list__key"
-        ),
-        value = Value(
-          content = HtmlContent(fileInfo._1),
-          classes = "govuk-summary-list__value"
-        ),
-        classes = "govuk-summary-list__row",
-        actions = Some(Actions(
-          classes = "govuk-link",
-          items = Seq(
-            ActionItem(
-              href = "remove-file-upload",
-              content = HtmlContent(messages("otherReason.uploadEvidence.button.remove"))
-            )
-          )
-        ))
-      )
+import javax.inject.Inject
+
+class EvidenceFileUploadsHelper @Inject()(uploadList: uploadList){
+
+  def displayContentForFileUploads(uploadedFiles: Seq[(UploadJourney, Int)], mode: Mode)(implicit messages: Messages, request: UserRequest[_]): Seq[Html] = {
+    uploadedFiles.map(uploadWithIndex =>
+      uploadList(uploadWithIndex._1.reference, uploadWithIndex._1.uploadDetails.get.fileName, uploadWithIndex._2 + 1, mode)
     )
   }
 }
