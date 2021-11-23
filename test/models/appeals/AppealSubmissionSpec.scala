@@ -19,7 +19,6 @@ package models.appeals
 import base.SpecBase
 import models.UserRequest
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.emailaddress.EmailAddress
 import utils.SessionKeys
 
 import java.time.LocalDateTime
