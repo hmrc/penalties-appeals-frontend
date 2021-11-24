@@ -19,20 +19,19 @@ package controllers
 import base.SpecBase
 import models.NormalMode
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.bereavement.WhenDidThePersonDiePage
+
 import java.time.{LocalDate, LocalDateTime}
-
-import org.jsoup.nodes.Document
-
 import scala.concurrent.Future
 
 class BereavementReasonControllerSpec extends SpecBase {

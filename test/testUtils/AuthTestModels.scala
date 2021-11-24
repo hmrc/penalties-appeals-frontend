@@ -18,7 +18,7 @@ package testUtils
 
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, ~}
+import uk.gov.hmrc.auth.core.retrieve.~
 
 import scala.concurrent.Future
 

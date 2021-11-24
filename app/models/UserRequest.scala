@@ -23,8 +23,7 @@ import utils.EnrolmentKeys
 
 case class UserRequest[A](vrn: String,
                           active: Boolean = true,
-                          arn: Option[String] = None,
-                          agentDetails: (Option[Name], Option[String], Option[ItmpAddress]) = (None, None, None)
+                          arn: Option[String] = None
                          )(implicit request: Request[A]) extends WrappedRequest[A](request) {
   val isAgent: Boolean = arn.isDefined
   val redirectSuffix: String = if (isAgent) "agent" else "non-agent"
