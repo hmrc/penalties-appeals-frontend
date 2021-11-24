@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import config.featureSwitches.FeatureSwitching
 import connectors.httpParsers.UpscanInitiateHttpParser.UnexpectedFailure
-import models.upload.{FailureDetails, FailureReasonEnum, UploadFormTemplateRequest, UploadJourney, UploadStatusEnum, UpscanInitiateResponseModel}
+import models.upload._
 import models.{CheckMode, NormalMode, UserRequest}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -32,7 +32,7 @@ import play.api.mvc.{Cookie, Result}
 import play.api.test.Helpers._
 import services.upscan.UpscanService
 import testUtils.{AuthTestModels, UploadData}
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other._
@@ -56,12 +56,11 @@ class OtherReasonControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
-  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]],
-    Option[ItmpAddress]]], previousUpload: Option[Seq[UploadJourney]] = None) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
     reset(mockAuthConnector, mockUpscanService, mockUploadJourneyRepository)
-    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
-      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
+    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
 

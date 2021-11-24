@@ -19,8 +19,8 @@ package controllers
 import base.SpecBase
 import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser.InvalidJson
+import models.upload._
 import models.{CheckMode, NormalMode}
-import models.upload.{FailureReasonEnum, UploadDetails, UploadFormTemplateRequest, UploadJourney, UploadStatus, UploadStatusEnum, UpscanInitiateResponseModel}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
 import play.api.http.HeaderNames
@@ -33,12 +33,10 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.mongo.cache.CacheItem
 import utils.SessionKeys
+
 import java.time.{Instant, LocalDateTime}
-
-import models.NormalMode
-
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class UpscanControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])

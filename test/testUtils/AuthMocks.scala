@@ -21,18 +21,18 @@ import controllers.predicates.AuthPredicate
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait AuthMocks extends SpecBase {
-  def setupAuthResponse(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]):
-  OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] = {
+  def setupAuthResponse(authResult: Future[~[Option[AffinityGroup], Enrolments]]):
+  OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] = {
 
-    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
-      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
+    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
   }
@@ -46,9 +46,9 @@ trait AuthMocks extends SpecBase {
       unauthorised
     )
 
-  def mockOrganisationAuthorised(): OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+  def mockOrganisationAuthorised(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
     setupAuthResponse(Future.successful(
-      new ~( new ~( new ~( new ~(
+      new ~(
         Some(AffinityGroup.Organisation),
         Enrolments(
           Set(
@@ -57,21 +57,7 @@ trait AuthMocks extends SpecBase {
               Seq(EnrolmentIdentifier("VRN", "123456789")),
               "Activated")
           )
-        )),
-        Some(Name(Some("test Name"), None))),
-        Some("testEmail@test.com")),
-        Some(
-          ItmpAddress(
-            line1 = Some("Flat 20"),
-            line2 = Some("123 Jack street"),
-            line3 = None,
-            line4 = Some("Birmingham"),
-            line5 = Some("UK"),
-            postCode = Some("AAA AAA"),
-            countryName = None,
-            countryCode = None)
-        )
-      )
+        ))
     ))
 
   def mockAgentAuthorised(): OngoingStubbing[Future[Enrolments]] = {
@@ -106,10 +92,10 @@ trait AuthMocks extends SpecBase {
   }
 
   def mockOrganisationNonActivatedMTDVATEnrolment():
-  OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+  OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
 
     setupAuthResponse(Future.successful(
-      new ~( new ~( new ~( new ~(
+      new ~(
         Some(AffinityGroup.Organisation),
         Enrolments(
           Set(
@@ -120,16 +106,13 @@ trait AuthMocks extends SpecBase {
               "Not Activated"
             )
           )
-        )),
-        None),
-        None),
-        None)
+        ))
       )
     )
 
-  def mockNoAffinityGroup(): OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+  def mockNoAffinityGroup(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
     setupAuthResponse(Future.successful(
-      new ~( new ~( new ~( new ~(
+      new ~(
         None,
         Enrolments(
           Set(
@@ -140,41 +123,35 @@ trait AuthMocks extends SpecBase {
               "Not Activated"
             )
           )
-        )),
-        None),
-        None),
-        None)
+        ))
       )
     )
 
-  def mockNoActiveSession(): OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+  def mockNoActiveSession(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
     setupAuthResponse(Future.failed(
       MissingBearerToken("No token to be found here.")
     ))
 
-  def mockAuthorisationException(): OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+  def mockAuthorisationException(): OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
     setupAuthResponse(Future.failed(
       InternalError("There has been a mystical error.")
     ))
 
-  def mockOrganisationNoEnrolments():OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+  def mockOrganisationNoEnrolments():OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
     setupAuthResponse(Future.successful(
-      new ~( new ~( new ~( new ~(
+      new ~(
         Some(AffinityGroup.Organisation),
         Enrolments(
           Set()
-        )),
-        None),
-        None),
-        None)
+        ))
       )
     )
 
   def mockOrganisationAuthorisedWithNonRelatedEnrolments():
-  OngoingStubbing[Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]] =
+  OngoingStubbing[Future[~[Option[AffinityGroup], Enrolments]]] =
 
     setupAuthResponse(Future.successful(
-      new ~( new ~( new ~( new ~(
+      new ~(
         Some(AffinityGroup.Organisation),
         Enrolments(
           Set(
@@ -194,20 +171,6 @@ trait AuthMocks extends SpecBase {
                 EnrolmentIdentifier("UTR", "123456789")
               ),
               "Activated")
-          ))),
-        Some(Name(Some("test Name"), None))),
-        Some("testEmail@test.com")),
-        Some(
-          ItmpAddress(
-            line1 = Some("Flat 20"),
-            line2 = Some("123 Jack street"),
-            line3 = None,
-            line4 = Some("Birmingham"),
-            line5 = Some("UK"),
-            postCode = Some("AAA AAA"),
-            countryName = None,
-            countryCode = None)
-        )
-      )
-    ))
+          )))
+      ))
 }
