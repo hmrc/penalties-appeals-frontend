@@ -47,10 +47,10 @@ class HealthReasonControllerSpec extends SpecBase {
   val fakeRequestWithCorrectKeysAndStartDate: FakeRequest[AnyContent] =
     fakeRequestWithCorrectKeys.withSession(SessionKeys.whenHealthIssueStarted -> "2020-01-01")
 
-  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
-    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
-      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
+    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
 

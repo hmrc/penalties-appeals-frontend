@@ -33,7 +33,7 @@ class AuthPredicateSpec extends AuthMocks {
 
   def targetAgent(request: Request[AnyContent]): Future[Result] = mockAuthPredicate.authoriseAsAgent({
     _: UserRequest[_] => Future.successful(Ok("welcome"))
-  }, agentDetails = (None, None, None))(request)
+  })(request)
 
   "AuthPredicate" should {
     "run the block request when the user has an active HMRC-MTD-VAT enrolment" in {

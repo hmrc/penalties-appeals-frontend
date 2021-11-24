@@ -56,12 +56,11 @@ class OtherReasonControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
-  class Setup(authResult: Future[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]],
-    Option[ItmpAddress]]], previousUpload: Option[Seq[UploadJourney]] = None) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
     reset(mockAuthConnector, mockUpscanService, mockUploadJourneyRepository)
-    when(mockAuthConnector.authorise[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]](
-      any(), any[Retrieval[~[~[~[~[Option[AffinityGroup], Enrolments], Option[Name]], Option[String]], Option[ItmpAddress]]]]())(
+    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
 
