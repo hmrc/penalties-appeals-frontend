@@ -20,7 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import forms.upscan.{S3UploadErrorForm, S3UploadSuccessForm}
 import helpers.UpscanMessageHelper
-import models.{Mode, NormalMode}
+import models.Mode
 import models.upload._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -30,10 +30,9 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
+
 import java.time.LocalDateTime
-
 import javax.inject.Inject
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

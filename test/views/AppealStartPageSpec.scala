@@ -157,5 +157,11 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       doc.select("#main-content a").attr("href") shouldBe "/penalties-appeals/reason-for-missing-deadline"
     }
 
+    "have a link to GOV.UK for GOV.UK logo" in {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false)
+
+      implicit val doc: Document = asDocument(applyView())
+      doc.select(".govuk-header__logo > a").attr("href") shouldBe "https://www.gov.uk/"
+    }
   }
 }

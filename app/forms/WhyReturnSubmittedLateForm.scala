@@ -20,10 +20,9 @@ import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.single
-import play.api.i18n.Messages
 
 object WhyReturnSubmittedLateForm extends Mappings {
-  def whyReturnSubmittedLateForm()(implicit messages: Messages, appConfig: AppConfig): Form[String] =
+  def whyReturnSubmittedLateForm()(implicit appConfig: AppConfig): Form[String] =
     Form[String](
       single(
         "why-return-submitted-late-text" -> text(errorKey =
