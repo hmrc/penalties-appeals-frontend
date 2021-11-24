@@ -20,16 +20,15 @@ import base.SpecBase
 import models.{AppealData, PenaltyTypeEnum}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.AppealService
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
+
 import java.time.LocalDateTime
-
-import play.api.mvc.Result
-
 import scala.concurrent.Future
 
 class InitialiseAppealControllerSpec extends SpecBase {

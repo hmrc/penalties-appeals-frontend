@@ -18,7 +18,6 @@ package models
 
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name}
 import utils.EnrolmentKeys
 
 case class UserRequest[A](vrn: String,

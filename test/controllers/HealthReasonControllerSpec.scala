@@ -27,11 +27,10 @@ import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
-import views.html.reasonableExcuseJourneys.health.{HasTheHospitalStayEndedPage, WasHospitalStayRequiredPage,
-  WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
+import views.html.reasonableExcuseJourneys.health.{HasTheHospitalStayEndedPage, WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
 import viewtils.ConditionalRadioHelper
 
 import java.time.{LocalDate, LocalDateTime}

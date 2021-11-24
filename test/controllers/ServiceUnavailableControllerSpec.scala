@@ -22,7 +22,7 @@ import org.mockito.Mockito.{reset, when}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, Name, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import views.html.errors.ServiceUnavailablePage
 
