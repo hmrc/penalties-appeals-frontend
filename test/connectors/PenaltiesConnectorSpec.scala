@@ -251,7 +251,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
           2020,1,1,0,0,0), isLPP = true, appealSubmittedBy = "client",
-        agentDetails = None,  appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
+        agentReferenceNo = None,  appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
           startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false,
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
@@ -269,7 +269,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
           2020,1,1,0,0,0), isLPP = true, appealSubmittedBy = "client",
-        agentDetails = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
+        agentReferenceNo = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
           startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false,
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )

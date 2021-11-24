@@ -19,14 +19,13 @@ package services
 import config.AppConfig
 import connectors.{HeaderGenerator, PenaltiesConnector}
 import helpers.DateTimeHelper
-import models.appeals.{AgentDetails, AppealSubmission}
+import models.appeals.AppealSubmission
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum}
 import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, Json}
 import repositories.UploadJourneyRepository
 import services.monitoring.AuditService
-import uk.gov.hmrc.emailaddress.EmailAddress
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
@@ -90,12 +89,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
     val appealType = userRequest.session.get(SessionKeys.appealType)
     val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)
-    val agentDetails = getAgentDetails
+    val agentReferenceNo = userRequest.arn
     val penaltyId = userRequest.session.get(SessionKeys.penaltyId).get
     for {
       amountOfFileUploads <- uploadJourneyRepository.getNumberOfDocumentsForJourneyId(userRequest.session.get(SessionKeys.journeyId).get)
       modelFromRequest: AppealSubmission = AppealSubmission
-        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentDetails)
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentReferenceNo)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId)
     } yield {
       response.status match {
@@ -140,23 +139,5 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         logger.error(s"$startOfLogMsg unknown error occurred, error message: ${e.getMessage}")
         false
     }
-  }
-
-  def getAgentDetails(implicit user: UserRequest[_]): Option[AgentDetails] = {
-    if (user.isAgent) {
-      val details = user.agentDetails
-      Some(AgentDetails(
-        agentReferenceNo = user.arn.getOrElse(""),
-        name = details._1.map(_.name.getOrElse("")).getOrElse(""),
-        addressLine1 = details._3.map(_.line1.getOrElse("")).getOrElse(""),
-        addressLine2 = details._3.map(_.line2.getOrElse("")),
-        addressLine3 = details._3.map(_.line3.getOrElse("")),
-        addressLine4 = details._3.map(_.line4.getOrElse("")),
-        addressLine5 = details._3.map(_.line5.getOrElse("")),
-        postCode = details._3.map(_.postCode.getOrElse("")).getOrElse(""),
-        agentEmailID = Some(EmailAddress(details._2.getOrElse("")))
-      ))
-    } else
-      None
   }
 }

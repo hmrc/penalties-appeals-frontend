@@ -425,7 +425,7 @@ case class AppealSubmission(
                              dateOfAppeal: LocalDateTime,
                              isLPP: Boolean,
                              appealSubmittedBy: String,
-                             agentDetails: Option[AgentDetails],
+                             agentReferenceNo: Option[String],
                              appealInformation: AppealInformation
                            )
 
@@ -445,7 +445,7 @@ object AppealSubmission {
   }
 
   //scalastyle:off
-  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long, agentDetails: Option[AgentDetails])
+  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long, agentReferenceNo: Option[String])
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
       case "bereavement" =>
@@ -456,7 +456,7 @@ object AppealSubmission {
           dateOfAppeal = LocalDateTime.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
-          agentDetails = agentDetails,
+          agentReferenceNo = agentReferenceNo,
           appealInformation = BereavementAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -476,7 +476,7 @@ object AppealSubmission {
           dateOfAppeal = LocalDateTime.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
-          agentDetails = agentDetails,
+          agentReferenceNo = agentReferenceNo,
           appealInformation = CrimeAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -497,7 +497,7 @@ object AppealSubmission {
           dateOfAppeal = LocalDateTime.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
-          agentDetails = agentDetails,
+          agentReferenceNo = agentReferenceNo,
           appealInformation = FireOrFloodAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -518,7 +518,7 @@ object AppealSubmission {
           dateOfAppeal = LocalDateTime.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
-          agentDetails = agentDetails,
+          agentReferenceNo = agentReferenceNo,
           appealInformation = LossOfStaffAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -539,7 +539,7 @@ object AppealSubmission {
           dateOfAppeal = LocalDateTime.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
-          agentDetails = agentDetails,
+          agentReferenceNo = agentReferenceNo,
           appealInformation = TechnicalIssuesAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -563,7 +563,7 @@ object AppealSubmission {
           dateOfAppeal = LocalDateTime.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
-          agentDetails = agentDetails,
+          agentReferenceNo = agentReferenceNo,
           appealInformation = HealthAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -587,7 +587,7 @@ object AppealSubmission {
           dateOfAppeal = LocalDateTime.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
-          agentDetails = agentDetails,
+          agentReferenceNo = agentReferenceNo,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -608,7 +608,7 @@ object AppealSubmission {
           dateOfAppeal = LocalDateTime.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
-          agentDetails = agentDetails,
+          agentReferenceNo = agentReferenceNo,
           appealInformation = ObligationAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
@@ -629,10 +629,10 @@ object AppealSubmission {
       "appealSubmittedBy" -> appealSubmission.appealSubmittedBy,
       "appealInformation" -> parseAppealInformationToJson(appealSubmission.appealInformation)
     ).deepMerge(
-      appealSubmission.agentDetails.fold(
+      appealSubmission.agentReferenceNo.fold(
         Json.obj()
       )(
-        details => Json.obj("agentDetails" -> details)
+        agentReferenceNo => Json.obj("agentReferenceNo" -> agentReferenceNo)
       )
     )
   }
