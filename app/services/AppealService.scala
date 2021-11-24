@@ -89,12 +89,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
     val appealType = userRequest.session.get(SessionKeys.appealType)
     val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)
-    val agentReferenceNo = userRequest.arn.getOrElse("")
+    val agentReferenceNo = userRequest.arn
     val penaltyId = userRequest.session.get(SessionKeys.penaltyId).get
     for {
       amountOfFileUploads <- uploadJourneyRepository.getNumberOfDocumentsForJourneyId(userRequest.session.get(SessionKeys.journeyId).get)
       modelFromRequest: AppealSubmission = AppealSubmission
-        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, Some(agentReferenceNo))
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentReferenceNo)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId)
     } yield {
       response.status match {

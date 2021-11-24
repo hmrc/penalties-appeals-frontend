@@ -632,7 +632,7 @@ object AppealSubmission {
       appealSubmission.agentReferenceNo.fold(
         Json.obj()
       )(
-        details => Json.obj("agentReferenceNo" -> details)
+        agentReferenceNo => Json.obj("agentReferenceNo" -> agentReferenceNo)
       )
     )
   }
