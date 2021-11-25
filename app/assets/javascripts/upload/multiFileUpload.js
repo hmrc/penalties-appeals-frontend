@@ -10,13 +10,7 @@ const status = {
 }
 
 class MultiFileUpload {
-    /**
-     * Constructs an object - setting all config derived from the form's attributeextractFileNames and class names to be used in functions.
-     * Caches the elements and templates to use in later functions.
-     * Binds an event listener to the 'Add another document' button to add another file.
-     *
-     * @param form Form element
-     */
+    /**  F1 */
     constructor(form) {
         this.uploadData = {};
         this.container = form;
@@ -73,10 +67,7 @@ class MultiFileUpload {
         this.bindEvents();
     }
 
-    /**
-     * Stores the current state of itemList (files uploaded), the 'add another document' button and others.
-     *
-     */
+    /** F2 */
     cacheElements() {
         this.itemList = this.container.querySelector(`.${this.classes.itemList}`);
         this.addAnotherBtn = this.container.querySelector(`.${this.classes.addAnother}`);
@@ -88,10 +79,7 @@ class MultiFileUpload {
 
     }
 
-    /**
-     * Stores the template of each upload 'row'/'item' so it can construct new items dynamically.
-     *
-     */
+    /** F3 */
     cacheTemplates() {
         this.errorSummaryTpl = document.getElementById('error-manager-summary-tpl').textContent;
         this.itemTpl = document.getElementById('multi-file-upload-item-tpl').textContent;
@@ -99,34 +87,23 @@ class MultiFileUpload {
         this.errorSummaryItemTpl = document.getElementById('error-manager-summary-item-tpl').textContent;
     }
 
-    /**
-     * Binds the click event to the 'Add another document' button to add more items when clicked.
-     *
-     */
+    /** F4 */
     bindEvents() {
         this.addAnotherBtn.addEventListener('click', this.handleAddItem.bind(this));
         this.container.addEventListener('submit', this.handleSubmit.bind(this));
     }
 
-    /**
-     * Binds events on upload items i.e. changing file and removing file
-     */
+    /** F5 */
     bindItemEvents(item) {
         this.getRemoveButtonFromItem(item).addEventListener('click', this.handleRemoveItem.bind(this));
     }
 
-    /**
-     * Binds the change event to the specified item so that any file change is handled.
-     *
-     */
+    /** F6 */
     bindUploadEvents(item) {
         this.getFileFromItem(item).addEventListener('change', this.handleFileChange.bind(this));
     }
 
-    /**
-     * Gets the item from the file (through the event), extracts the file name and attempts to upload the file.
-     *
-     */
+    /** F7 */
     handleFileChange(e) {
         const file = e.target;
         const item = this.getItemFromFile(file);
@@ -141,10 +118,7 @@ class MultiFileUpload {
         this.uploadNext();
     }
 
-    /**
-     * Handles removal of a file, aborting the upload if the file is already uploading. If the file has already been uploaded i.e. the file
-     * has a reference, it is removed from server-side otherwise it is removed on client-side
-     */
+    /** F8 */
     handleRemoveItem(e) {
         const target = e.target;
         const item = target.closest(`.${this.classes.item}`);
@@ -165,9 +139,7 @@ class MultiFileUpload {
         }
     }
 
-    /**
-     * Handle Submit
-     **/
+    /** F9 */
     handleSubmit(e) {
         e.preventDefault();
 
@@ -186,17 +158,14 @@ class MultiFileUpload {
         window.location.href = this.container.action;
     }
 
-    /**In progess
-     **/
-
+    /** F10 */
     isInProgress() {
         const stillWaiting = this.container.querySelector(`.${this.classes.waiting}`) !== null;
 
         return stillWaiting || this.isBusy();
     }
 
-    /** Add notification**/
-
+    /** F11 */
     addNotification(message) {
         const element = document.createElement('p');
         element.textContent = message;
@@ -208,17 +177,12 @@ class MultiFileUpload {
         }, 1000);
     }
 
-    /**
-     * has errors
-     **/
+    /** F12 */
     hasErrors() {
         return Object.entries(this.errors).length > 0;
     }
 
-    /**
-     * Requests for the file to be removed server side.
-     *
-     */
+    /** F13 */
     requestRemoveFile(file) {
         const item = this.getItemFromFile(file);
         fetch(this.getRemoveUrl(file.dataset.multiFileUploadFileRef), {
@@ -230,19 +194,14 @@ class MultiFileUpload {
             });
     }
 
-    /**
-     * Removes the file client side
-     */
+    /** F14 */
     requestRemoveFileCompleted(file) {
         const item = file.closest(`.${this.classes.item}`);
 
         this.removeItem(item);
     }
 
-    /**
-     * Removes the file locally, reindexes the new upload list, and ensures that users can add more documents where < max and that it
-     * resets to initial state if no uploads are present.
-     */
+    /** F15 */
     removeItem(item) {
         const file = this.getFileFromItem(item);
         this.removeError(file.id);
@@ -260,9 +219,7 @@ class MultiFileUpload {
         this.uploadNext();
     }
 
-    /**
-     * Re-indexes the file numbers based on amount of files uploaded.
-     */
+    /** F16 */
     updateFileNumbers() {
         let fileNumber = 1;
 
@@ -275,19 +232,12 @@ class MultiFileUpload {
         });
     }
 
-    /**
-     * Gets the file name element.
-     *
-     */
+    /** F17 */
     getFileNameElement(item) {
         return item.querySelector(`.${this.classes.fileName}`);
     }
 
-    /**
-     * Removes any state the item is currently in and sets the new state. Uses a specified class name to apply
-     * specific styling.
-     *
-     */
+    /** F18 */
     setItemState(item, uploadState) {
         const file = this.getFileFromItem(item);
         item.classList.remove(this.classes.waiting, this.classes.uploading, this.classes.verifying, this.classes.uploaded, this.classes.removing);
@@ -313,12 +263,7 @@ class MultiFileUpload {
         }
     }
 
-    /**
-     * Gets the next 'Waiting' item to upload and checks to make sure we aren't currently uploading.
-     * If there is no items to upload, or the system is busy, then nothing happens.
-     * Otherwise, set the items state to 'Uploading' and begin upload process.
-     *
-     */
+    /** F19 */
     uploadNext() {
         const nextItem = this.itemList.querySelector(`.${this.classes.waiting}`);
 
@@ -332,18 +277,12 @@ class MultiFileUpload {
         this.provisionUpload(file);
     }
 
-    /**
-     * Extracts the file name.
-     *
-     */
+    /** F20 */
     extractFileName(fileName) {
         return fileName.split(/([\\/])/g).pop();
     }
 
-    /**
-     * Get the file name from a specified file.
-     *
-     */
+    /** F21 */
     getFileName(file) {
         const item = this.getItemFromFile(file);
         const fileName = this.getFileNameElement(item).textContent.trim();
@@ -359,10 +298,7 @@ class MultiFileUpload {
         return null;
     }
 
-    /**
-     * Gets the item to upload from the file and sets the objects upload handle to the XHR returned.
-     *
-     */
+    /** F22 */
     prepareFileUpload(file) {
         const item = this.getItemFromFile(file);
         const fileName = this.getFileName(file);
@@ -375,6 +311,7 @@ class MultiFileUpload {
         this.uploadData[file.id].uploadHandle = this.uploadFile(file);
     }
 
+    /** F23 */
     prepareFormData(file, data) {
         const formData = new FormData();
 
@@ -387,10 +324,7 @@ class MultiFileUpload {
         return formData;
     }
 
-    /**
-     * Gets the item to upload and sends a request to the specified endpoint to upload the file.
-     *
-     */
+    /** F24 */
     uploadFile(file) {
         const xhr = new XMLHttpRequest();
         const fileRef = file.dataset.multiFileUploadFileRef;
@@ -407,36 +341,24 @@ class MultiFileUpload {
         return xhr;
     }
 
-    /**
-     *  Updates the file upload progression based on its upload state.
-     *
-     */
+    /** F25 */
     handleUploadFileProgress(item, e) {
         if (e.lengthComputable) {
             this.updateUploadProgress(item, e.loaded / e.total * 95);
         }
     }
 
-    /**
-     *  Updates the view with the current state of upload.
-     *
-     */
+    /** F26 */
     updateUploadProgress(item, value) {
         item.querySelector(`.${this.classes.progressBar}`).style.width = `${value}%`;
     }
 
-    /**
-     * Gets the file by the reference given by the upload service.
-     */
+    /** F27 */
     getFileByReference(fileRef) {
         return this.itemList.querySelector(`[data-multi-file-upload-file-ref="${fileRef}"]`);
     }
 
-
-    /**
-     * Sets the upload item's state to 'Verifying' and delays a request to check the upload status for this file.
-     *
-     */
+    /** F28 */
     handleUploadFileCompleted(fileRef) {
         const file = this.getFileByReference(fileRef);
         const item = this.getItemFromFile(file);
@@ -445,6 +367,7 @@ class MultiFileUpload {
         this.delayedRequestUploadStatus(fileRef);
     }
 
+    /** F29 */
     handleUploadFileError(fileRef) {
         const file = this.getFileByReference(fileRef);
         const item = this.getItemFromFile(file);
@@ -453,6 +376,7 @@ class MultiFileUpload {
         this.addError(file,this.messages.genericError);
     }
 
+    /** F30 */
     handleFileStatusFailed(file, errorMessage) {
         const item = this.getItemFromFile(file);
         item.querySelector(`.${this.classes.fileName}`).style.display = "none";
@@ -461,10 +385,7 @@ class MultiFileUpload {
         this.updateFormStatusVisibility();
     }
 
-    /**
-     * Add error
-     **/
-
+    /** F31 */
     addError(inputId, message) {
         this.removeError(inputId);
 
@@ -479,9 +400,7 @@ class MultiFileUpload {
         this.updateErrorSummaryVisibility();
     }
 
-    /**Remove error
-     **/
-
+    /** F32 */
     removeError(inputId) {
         if (!Object.prototype.hasOwnProperty.call(this.errors, inputId)) {
             return;
@@ -501,10 +420,7 @@ class MultiFileUpload {
         this.updateErrorSummaryVisibility();
     }
 
-    /**
-     Update Error Summary Visibility
-     **/
-
+    /** F33 */
     updateErrorSummaryVisibility() {
         if (this.hasErrors()) {
             document.querySelector('#penalty-information').before(this.errorSummary);
@@ -513,9 +429,7 @@ class MultiFileUpload {
         }
     }
 
-    /**
-     * Add error to field
-     **/
+    /** F34 */
     addErrorToField(inputId, message) {
         const input = document.getElementById(inputId);
         const inputContainer = this.getContainer(input);
@@ -532,24 +446,17 @@ class MultiFileUpload {
         return errorMessage;
     }
 
-    /**
-     *Get container
-     **/
+    /** F35 */
     getContainer(input) {
         return input.closest(`.${this.classes.inputContainer}`);
     }
 
-    /**
-     * GetLabel
-     **/
-
+    /** F36 */
     getLabel(container) {
         return container.querySelector(`.${this.classes.label}`);
     }
 
-    /**
-     * Add Summary
-     **/
+    /** F37 */
     addErrorToSummary(inputId, message) {
         const summaryRow = this.parseHtml(this.errorSummaryItemTpl, {
             inputId: inputId,
@@ -562,6 +469,7 @@ class MultiFileUpload {
         return summaryRow;
     }
 
+    /** F38 */
     bindErrorEvents(errorItem, inputId) {
         errorItem.querySelector('a').addEventListener('click', (e) => {
             e.preventDefault();
@@ -570,17 +478,12 @@ class MultiFileUpload {
         });
     }
 
-    /**
-     * Wait a sufficient amount of time before requesting the status of the upload.
-     */
+    /** F39 */
     delayedRequestUploadStatus(fileRef) {
         window.setTimeout(this.requestUploadStatus.bind(this, fileRef), this.config.retryDelayMs);
     }
 
-    /**
-     * Fetches the current state of upload from the upload service, delaying the next call if the file has not been uploaded, or handling
-     * the successful upload.
-     */
+    /** F40 */
     requestUploadStatus(fileRef) {
         const file = this.getFileByReference(fileRef);
         if (!file || !Object.prototype.hasOwnProperty.call(this.uploadData, file.id) || this.uploadData[file.id].uploaded) {
@@ -595,10 +498,7 @@ class MultiFileUpload {
             .catch(this.delayedRequestUploadStatus.bind(this, fileRef));
     }
 
-    /**
-     * Handles the response given by the upload service, it should do other things when implementing error scenarios.
-     * On success, it set the items state to uploaded and proceeds to upload the next file.
-     */
+    /** F41 */
     handleRequestUploadStatusCompleted(fileRef, response) {
         const file = this.getFileByReference(fileRef);
         const data = this.uploadData[file.id];
@@ -633,9 +533,7 @@ class MultiFileUpload {
         }
     }
 
-    /**
-     * Sets the upload item to be in a successful/completed state.
-     */
+    /** F42 */
     handleFileStatusSuccessful(file) {
         const item = this.getItemFromFile(file);
 
@@ -644,6 +542,7 @@ class MultiFileUpload {
         this.updateFormStatusVisibility();
     }
 
+    /** F43 */
     updateFormStatusVisibility(forceState = undefined) {
         if (forceState !== undefined) {
             this.toggleElement(this.formStatus, forceState);
@@ -652,30 +551,22 @@ class MultiFileUpload {
         }
     }
 
-    /**
-     * Returns the element of the file preview class selector.
-     */
+    /** F44 */
     getFilePreviewElement(item) {
         return item.querySelector(`.${this.classes.filePreview}`);
     }
 
-    /**
-     * Gets the URL to send the file to.
-     */
+    /** F45 */
     getSendUrl() {
         return this.config.sendUrlTpl;
     }
 
-    /**
-     * Gets the URL that removes the file server-side
-     */
+    /** F46 */
     getRemoveUrl(fileRef) {
         return this.parseTemplate(this.config.removeUrlTpl, {fileRef: fileRef});
     }
 
-    /**
-     * Requests information from the upload service to handle the upload request.
-     */
+    /** F47 */
     requestProvisionUpload(file) {
         return fetch(this.getSendUrl(), {
             method: 'POST'
@@ -685,16 +576,12 @@ class MultiFileUpload {
             .catch(this.delayedProvisionUpload.bind(this, file));
     }
 
-    /**
-     * Delays the upload provisioning by a specified amount of time.
-     */
+    /** F48 */
     delayedProvisionUpload(file) {
         window.setTimeout(this.provisionUpload.bind(this, file), this.config.retryDelayMs);
     }
 
-    /**
-     * Handles a successful call to provision the file to upload and extracts relevant data from the JSON.
-     */
+    /** F49 */
     handleProvisionUploadCompleted(file, response) {
         const fileRef = response['reference'];
 
@@ -706,9 +593,7 @@ class MultiFileUpload {
         this.uploadData[file.id].retries = 0;
     }
 
-    /**
-     * Provisions and prepares file for upload.
-     */
+    /** F50 */
     provisionUpload(file) {
         const item = this.getItemFromFile(file);
 
@@ -728,18 +613,14 @@ class MultiFileUpload {
         });
     }
 
-    /**
-     * Initialises the base state of the object, usually on page load.
-     */
+    /** F51 */
     init() {
         this.updateButtonVisibility();
         this.removeAllItems();
         this.createInitialRows();
     }
 
-    /**
-     * Creates the initial rows on page load.
-     */
+    /** F52 */
     createInitialRows() {
         let rowCount = 0;
         this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY').forEach(fileData => {
@@ -754,9 +635,7 @@ class MultiFileUpload {
         }
     }
 
-    /**
-     * Creates an already uploaded item, reinitialising the state on page load.
-     */
+    /** F53 */
     createUploadedItem(fileData) {
         const item = this.addItem();
         const file = this.getFileFromItem(item);
@@ -771,9 +650,7 @@ class MultiFileUpload {
         return item;
     }
 
-    /**
-     * Checks if the system is busy i.e. is there a file still uploading or is there a file still being verified.
-     */
+    /** F54 */
     isBusy() {
         const stillUploading = this.container.querySelector(`.${this.classes.uploading}`) !== null;
         const stillVerifying = this.container.querySelector(`.${this.classes.verifying}`) !== null;
@@ -782,9 +659,7 @@ class MultiFileUpload {
         return stillUploading || stillVerifying || stillRemoving;
     }
 
-    /**
-     * Creates a new file upload item and focuses on that element.
-     */
+    /** F55 */
     handleAddItem() {
         const item = this.addItem();
         const file = this.getFileFromItem(item);
@@ -792,10 +667,7 @@ class MultiFileUpload {
         file.focus();
     }
 
-    /**
-     * Adds an item to the list of upload items, specifying the current number and index of the file, and makes sure
-     * that the events are bound to it when the user wants to upload a file.
-     */
+    /** F56 */
     addItem() {
         const item = this.parseHtml(this.itemTpl, {
             fileNumber: (this.getItems().length + 1).toString(),
@@ -811,16 +683,12 @@ class MultiFileUpload {
         return item;
     }
 
-    /**
-     * Gets the URL to check on file status.
-     */
+    /** F57 */
     getStatusUrl(fileRef) {
         return this.parseTemplate(this.config.statusUrlTpl, {fileRef: fileRef});
     }
 
-    /**
-     * Parses a string to HTML.
-     */
+    /** F58 */
     parseHtml(string, model) {
         string = this.parseTemplate(string, model);
 
@@ -830,9 +698,7 @@ class MultiFileUpload {
         return doc.body.firstChild;
     }
 
-    /**
-     * Parses a template string to HTML.
-     */
+    /** F59 */
     parseTemplate(string, model) {
         for (const [key, value] of Object.entries(model)) {
             string = string.replace(new RegExp('{' + key + '}', 'g'), value.toString());
@@ -840,40 +706,29 @@ class MultiFileUpload {
         return string;
     }
 
-    /**
-     * Get all the upload items.
-     */
+    /** F60 */
     getItems() {
         return Array.from(this.itemList.querySelectorAll(`.${this.classes.item}`));
     }
 
-    /**
-     * Gets the file from the specified item.
-     */
+    /** F61 */
     getFileFromItem(item) {
         return item.querySelector(`.${this.classes.file}`);
     }
 
-    /**
-     * Shows the 'Add another document' button if there is more files that can be uploaded.
-     */
+    /** F62 */
     updateButtonVisibility() {
         const itemCount = this.getItems().length;
         this.toggleRemoveButtons(itemCount > this.config.minFiles);
         this.toggleAddButton(itemCount < this.config.maxFiles);
     }
 
-    /**
-     * Toggles the 'Add another document' button based on the state of the uploads.
-     */
+    /** F63 */
     toggleAddButton(state) {
         this.toggleElement(this.addAnotherBtn, state);
     }
 
-    /**
-     * Shows the remove buttons when items are uploading or uploaded.
-     *
-     */
+    /** F64 */
     toggleRemoveButtons(state) {
         this.getItems().forEach(item => {
             const button = this.getRemoveButtonFromItem(item);
@@ -886,58 +741,42 @@ class MultiFileUpload {
         });
     }
 
-    /**
-     * Toggle the element by the reverse of its state.
-     */
+    /** F65 */
     toggleElement(element, state) {
         element.classList.toggle('hidden', !state);
     }
 
-    /**
-     * Removes all upload items.
-     */
+    /** F66 */
     removeAllItems() {
         this.getItems().forEach(item => item.remove());
     }
 
-    /**
-     * Gets the item from a file.
-     */
+    /** F67 */
     getItemFromFile(file) {
         return file.closest(`.${this.classes.item}`);
     }
 
-    /**
-     * Get the remove button for the upload item
-     */
+    /** F68 */
     getRemoveButtonFromItem(item) {
         return item.querySelector(`.${this.classes.remove}`);
     }
 
-    /**
-     * Checks if the file has the 'uploading' class
-     */
+    /** F69 */
     isUploading(item) {
         return item.classList.contains(this.classes.uploading);
     }
 
-    /**
-     * Checks if the file has the 'waiting' class
-     */
+    /** F70 */
     isWaiting(item) {
         return item.classList.contains(this.classes.waiting);
     }
 
-    /**
-     * Checks if the file has the 'verifying' class
-     */
+    /** F71 */
     isVerifying(item) {
         return item.classList.contains(this.classes.verifying);
     }
 
-    /**
-     * Checks if the file has the 'uploaded' class
-     */
+    /** F72 */
     isUploaded(item) {
         return item.classList.contains(this.classes.uploaded);
     }
