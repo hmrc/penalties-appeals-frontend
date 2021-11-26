@@ -560,11 +560,6 @@ class MultiFileUpload {
         }
     }
 
-    /** F44 */
-    getFilePreviewElement(item) {
-        return item.querySelector(`.${this.classes.filePreview}`);
-    }
-
     /** F45 */
     getSendUrl() {
         return this.config.sendUrlTpl;
