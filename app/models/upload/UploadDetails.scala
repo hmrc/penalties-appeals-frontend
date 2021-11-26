@@ -25,7 +25,8 @@ case class UploadDetails(
                           fileMimeType: String,
                           uploadTimestamp: LocalDateTime,
                           checksum: String,
-                          size: Int
+                          size: Int,
+                          isDuplicateOf: Option[String]
 )
 
 object UploadDetails {

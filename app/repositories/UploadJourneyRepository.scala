@@ -115,4 +115,31 @@ class UploadJourneyRepository @Inject()(
         ).collect { case Some(x) => x }
       ).getOrElse(Seq.empty))
   }
+
+  def getFileNameFromChecksum(journeyId: Option[String], checkSum: String): Future[Option[Seq[Option[String]]]] = {
+    getUploadsForJourney(journeyId).map(
+      _.map(
+        _.map(
+          _.uploadDetails.map(
+            upload => {
+              if (checkSum.equals(upload.checksum)) upload.fileName else ""
+            }
+          )
+        )
+      )
+    )
+  }
+
+  def isTheChecksumAndFileNameThenSame(jounreyId: Option[String], fileName: String, checkSum: String): Future[Boolean] = {
+    getUploadsForJourney(jounreyId).map(
+      _.map(
+        _.map(
+          _.uploadDetails.map(
+            upload => {
+              if (checkSum.equals(upload.checksum) && fileName.equals(upload.fileName)) true else false
+            }
+          )
+        ).collect { case Some(x) => x}
+      ).getOrElse(Seq.empty).contains(true))
+  }
 }
