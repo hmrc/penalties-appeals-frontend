@@ -62,7 +62,7 @@ class AuthPredicateSpec extends AuthMocks {
         status(result) shouldBe Status.FORBIDDEN
       }
 
-      "the user is an agent and doesn't have the CLIENT_VRN in the session" in {
+      "the user is an agent and doesn't have the mtdVatvcClientVrn in the session" in {
         mockAgentAuthorised()
         val result = targetAgent(fakeRequest)
         status(result) shouldBe Status.SEE_OTHER

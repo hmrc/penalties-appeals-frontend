@@ -40,7 +40,7 @@ object SessionKeys {
   val whenDidBecomeUnable = "whenDidBecomeUnable"
   val whyReturnSubmittedLate = "whyReturnSubmittedLate"
   val whoPlannedToSubmitVATReturn = "whoPlannedToSubmitVATReturn"
-  val agentSessionVrn = "CLIENT_VRN"
+  val agentSessionVrn = "mtdVatvcClientVrn"
   val causeOfLateSubmissionAgent = "causeOfLateSubmissionAgent"
   val whenDidThePersonDie = "whenDidThePersonDie"
   val isObligationAppeal = "isObligationAppeal"
