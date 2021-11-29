@@ -9,7 +9,7 @@ const status = {
     Removing: "Removing"
 }
 
-class MultiFileUpload {
+export class MultiFileUpload {
     /**  F1 */
     constructor(form) {
         this.uploadData = {};
