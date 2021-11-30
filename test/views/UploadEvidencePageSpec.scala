@@ -17,12 +17,10 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.UploadEvidenceForm
 import messages.UploadEvidenceMessages._
 import models.upload.UploadJourney
 import models.PenaltyTypeEnum
 import org.jsoup.nodes.Document
-import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
@@ -64,16 +62,15 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       val multiUploadFormGenericError ="data-multi-file-upload-error-generic"
     }
-    val formProvider = UploadEvidenceForm.uploadEvidenceForm
 
-    def previousUploadsToString(previousUploads:Option[Seq[UploadJourney]]):String = {
+    def previousUploadsToString(previousUploads: Option[Seq[UploadJourney]]): String = {
       previousUploads match {
-        case Some(_) =>  Json.stringify(Json.toJson(previousUploads))
+        case Some(_) => Json.stringify(Json.toJson(previousUploads.map(_.map(_.copy(downloadUrl = None)))))
         case None => ""
       }
     }
 
-    def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
+    def applyView(request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
       uploadEvidencePage.apply(
         controllers.routes.MakingALateAppealController.onPageLoad(),
         controllers.routes.UpscanController.initiateCallToUpscan("1234"),
@@ -82,7 +79,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         previousUploadsToString(previousUploads))(request, implicitly, implicitly)
     }
 
-    implicit val doc: Document = asDocument(applyView(formProvider))
+    implicit val doc: Document = asDocument(applyView())
 
     val expectedContent = Seq(
       Selectors.title -> title,
@@ -108,7 +105,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     behave like pageWithExpectedMessages(expectedContent)
 
     "display the LPP variation when the appeal is for a LPP" must {
-      implicit val lppDoc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+      implicit val lppDoc: Document = asDocument(applyView(fakeRequest.withSession(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
 
       val expectedContent = Seq(
@@ -136,7 +133,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     }
 
     "display appeal against the obligation page when the appeal is for LSP" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+      implicit val doc: Document = asDocument(applyView(fakeRequest.withSession(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
         SessionKeys.isObligationAppeal -> "true")))
 
@@ -165,7 +162,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     }
 
     "display the LPP variation when the appeal is for a LPP - Additional" must {
-      implicit val lppAdditionalDoc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+      implicit val lppAdditionalDoc: Document = asDocument(applyView(fakeRequest.withSession(
         SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString)))
 
       val expectedContent = Seq(
@@ -193,7 +190,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     }
 
     "display appeal against the obligation page when the appeal is for LPP" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(
+      implicit val doc: Document = asDocument(applyView(fakeRequest.withSession(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
         SessionKeys.isObligationAppeal -> "true")))
 
@@ -223,7 +220,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
     "load the correct parameters for previous uploads" in {
       implicit val doc: Document = asDocument(
-        applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
+        applyView(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
       )
       val expectedString = Json.stringify(Json.toJson(Some(UploadData.maxWaitingUploads)))
 
@@ -235,7 +232,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
     "load the correct parameters for initiating uploads and getting status of uploads" in {
       implicit val doc: Document = asDocument(
-        applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
+        applyView(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), Some(UploadData.maxWaitingUploads))
       )
       val expectedInitiateString = "/penalties-appeals/upscan/call-to-upscan/1234"
       val expectedStatusString = "/penalties-appeals/upscan/upload-status/1234/%7BfileRef%7D"
