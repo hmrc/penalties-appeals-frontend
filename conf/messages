@@ -313,6 +313,11 @@ otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {
 otherReason.uploadList.uploadAnotherFile = Do you want to upload another document?
 otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another document
 otherReason.uploadList.rowTitle = Document {0}
+otherReason.uploadList.duplicateInsetText = Document {0} has the same contents as Document {1}. You can remove duplicate documents using the 'Remove' link.
+otherReason.uploadList.duplicateInsetText.2 = Document {0} has the same contents as Document {1} and {2}. You can remove duplicate documents using the 'Remove' link.
+otherReason.uploadList.duplicateInsetText.3 = Document {0} has the same contents as Document {1}, {2} and {3}. You can remove duplicate documents using the 'Remove' link.
+otherReason.uploadList.duplicateInsetText.4 = Document {0} has the same contents as Document {1}, {2}, {3} and {4}. You can remove duplicate documents using the 'Remove' link.
+otherReason.uploadList.multipleDuplicateInsetText = {0} of the documents you have uploaded have the same contents. You can remove duplicate documents using the 'Remove' link.
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
