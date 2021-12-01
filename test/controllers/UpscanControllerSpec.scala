@@ -33,8 +33,10 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.mongo.cache.CacheItem
 import utils.SessionKeys
-
 import java.time.{Instant, LocalDateTime}
+
+import viewtils.EvidenceFileUploadsHelper
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -43,10 +45,12 @@ class UpscanControllerSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
   val connector: UpscanConnector = mock(classOf[UpscanConnector])
   val service: UpscanService = mock(classOf[UpscanService])
+  val helper: EvidenceFileUploadsHelper = mock(classOf[EvidenceFileUploadsHelper])
   val controller: UpscanController = new UpscanController(
     repository,
     connector,
-    service
+    service,
+    helper
   )(appConfig, errorHandler, stubMessagesControllerComponents())
 
   val uploadJourneyModel: UploadJourney = UploadJourney(
