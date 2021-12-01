@@ -20,6 +20,7 @@ class MultiFileUpload {
         this.errorSummaryTpl = "";
         this.errorSummaryItemTpl = "";
         this.errorSummary = "";
+        this.insetText = "";
         this.errors = {};
         this.config = {
             startRows: parseInt(form.dataset.multiFileUploadStartRows) || 1,
@@ -54,7 +55,8 @@ class MultiFileUpload {
             errorSummaryList: 'govuk-error-summary__list',
             notifications: 'multi-file-upload__notifications',
             errorSummary: 'govuk-error-summary',
-            formStatus: 'multi-file-upload__form-status'
+            formStatus: 'multi-file-upload__form-status',
+            inset: 'govuk-inset-text'
         }
 
         this.messages = {
@@ -74,8 +76,10 @@ class MultiFileUpload {
         this.formStatus = this.container.querySelector(`.${this.classes.formStatus}`);
         this.submitBtn = this.container.querySelector(`.${this.classes.submitBtn}`);
         this.errorSummary = this.parseHtml(this.errorSummaryTpl, {});
+        this.insetText = this.container.querySelector(`.${this.classes.insetText}`);
         this.errorSummaryList = this.errorSummary.querySelector(`.${this.classes.errorSummaryList}`);
         this.notifications = this.container.querySelector(`.${this.classes.notifications}`);
+        this.inset = this.container.querySelector(`.${this.classes.inset}`);
 
     }
 
@@ -400,6 +404,21 @@ class MultiFileUpload {
         this.updateErrorSummaryVisibility();
     }
 
+    /** F74 */
+        addWarning(inputId, message) {
+            this.removeError(inputId);
+
+            const errorMessage = this.addErrorToField(inputId, message);
+            const errorSummaryRow = this.addErrorToSummary(inputId, message);
+
+            this.errors[inputId] = {
+                errorMessage: errorMessage,
+                errorSummaryRow: errorSummaryRow
+            };
+
+            this.updateErrorSummaryVisibility();
+        }
+
     /** F32 */
     removeError(inputId) {
         if (!Object.prototype.hasOwnProperty.call(this.errors, inputId)) {
@@ -510,9 +529,20 @@ class MultiFileUpload {
                 this.handleFileStatusSuccessful(file);
                 this.uploadNext();
                 break;
+            case 'DUPLICATE':
+                if(error == null){
+                this.uploadData[file.id].uploaded = true;
+                this.updateSpanVisibility(this.isBusy())
+                this.handleFileStatusSuccessful(file);
+                this.uploadNext();
+                break;
+                } else {
+                 this.handleFileStatusFailed(file, error);
+                  this.uploadNext();
+                  break;
+                 }
             case 'FAILED':
             case 'REJECTED':
-            case 'DUPLICATE':
             case 'QUARANTINE':
                 this.handleFileStatusFailed(file, error);
 
@@ -542,6 +572,17 @@ class MultiFileUpload {
         this.updateFormStatusVisibility();
     }
 
+    /** F73 */
+    handleFileStatusDuplicate(file,error) {
+        const item = this.getItemFromFile(file);
+        item.querySelector(`.${this.classes.fileName}`).style.display = "none";
+        this.setItemState(item, status.Uploaded);
+        this.updateButtonVisibility();
+        if(error != null)
+        this.addWarning(file.id, errorMessage);
+        this.updateFormStatusVisibility();
+    }
+
     /** F43 */
     updateFormStatusVisibility(forceState = undefined) {
         if (forceState !== undefined) {
@@ -550,6 +591,15 @@ class MultiFileUpload {
             this.toggleElement(this.formStatus, false);
         }
     }
+
+    /** F75 */
+     updateSpanVisibility(forceState = undefined) {
+            if (forceState !== undefined) {
+                this.toggleElement(this.inset, forceState);
+            } else if (!this.isBusy()) {
+                this.toggleElement(this.inset, false);
+            }
+        }
 
     /** F44 */
     getFilePreviewElement(item) {

@@ -60,6 +60,7 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
                         fileNameFound => {
                           val fileName = fileNameFound.get.head
                           val duplicateCallbackModel = callbackModel.copy(
+                            fileStatus = UploadStatusEnum.DUPLICATE,
                             uploadDetails = Some(callbackModel.uploadDetails.get.copy(
                               isDuplicateOf = fileName
                             ))
