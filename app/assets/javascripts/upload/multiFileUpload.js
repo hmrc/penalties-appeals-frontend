@@ -31,7 +31,8 @@ class MultiFileUpload {
             retryDelayMs: parseInt(form.dataset.multiFileUploadRetryDelayMs, 10) || 1000,
             sendUrlTpl: decodeURIComponent(form.dataset.multiFileUploadSendUrlTpl),
             statusUrlTpl: decodeURIComponent(form.dataset.multiFileUploadStatusUrlTpl),
-            removeUrlTpl: decodeURIComponent(form.dataset.multiFileUploadRemoveUrlTpl)
+            removeUrlTpl: decodeURIComponent(form.dataset.multiFileUploadRemoveUrlTpl),
+            getDuplicateUrlTpl: decodeURIComponent(form.dataset.multiFileUploadDuplicateUrlTpl)
         }
 
         this.classes = {
@@ -201,6 +202,8 @@ class MultiFileUpload {
     /** F14 */
     requestRemoveFileCompleted(file) {
         const item = file.closest(`.${this.classes.item}`);
+
+        this.setDuplicateInsetText();
 
         this.removeItem(item);
     }
@@ -530,17 +533,10 @@ class MultiFileUpload {
                 this.uploadNext();
                 break;
             case 'DUPLICATE':
-                if(error == null){
-                this.uploadData[file.id].uploaded = true;
-                this.updateSpanVisibility(this.isBusy())
+                this.showInsetText({'message': error});
                 this.handleFileStatusSuccessful(file);
                 this.uploadNext();
                 break;
-                } else {
-                 this.handleFileStatusFailed(file, error);
-                  this.uploadNext();
-                  break;
-                 }
             case 'FAILED':
             case 'REJECTED':
             case 'QUARANTINE':
@@ -673,15 +669,44 @@ class MultiFileUpload {
     /** F52 */
     createInitialRows() {
         let rowCount = 0;
-        this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY').forEach(fileData => {
+        this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY' || file['fileStatus'] === 'DUPLICATE').forEach(fileData => {
             this.createUploadedItem(fileData);
             rowCount++;
         });
+
+        if(this.config.uploadedFiles.filter(file => file['fileStatus'] === 'DUPLICATE').length > 0) {
+            this.setDuplicateInsetText();
+        }
 
         if (rowCount < this.config.startRows) {
             for (let a = rowCount; a < this.config.startRows; a++) {
                 this.addItem();
             }
+        }
+    }
+
+    setDuplicateInsetText() {
+        fetch(this.getDuplicateUrl(), {
+                method: 'GET'
+            })
+        .then(response => response.json())
+        .then(this.showInsetText.bind(this))
+    }
+
+    getDuplicateUrl() {
+        return this.config.getDuplicateUrlTpl;
+    }
+
+    showInsetText(response) {
+        const message = response['message'];
+        console.log(message);
+        if(message === undefined) {
+            this.container.querySelector(".govuk-inset-text").classList.add("hidden");
+            this.container.querySelector(".govuk-inset-text").ariaHidden = "true";
+        } else {
+            this.container.querySelector(".govuk-inset-text").classList.remove("hidden");
+            this.container.querySelector(".govuk-inset-text").innerHTML = message;
+            this.container.querySelector(".govuk-inset-text").ariaHidden = "false";
         }
     }
 

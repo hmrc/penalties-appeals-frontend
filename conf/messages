@@ -340,7 +340,6 @@ upscan.fileEmpty = The selected file is empty. Remove the file and try again.
 upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
 upscan.passwordProtected = The selected file is password protected. Remove the file and try again.
 upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
-upscan.duplicateFile = X of the documents you have uploaded have the same contents. You can remove duplicate documents using 'Remove' link.
 upscan.stillUploading = The selected file has not finished uploading.
 upscan.fileNotSpecified = Select a file.
 

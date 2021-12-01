@@ -23,12 +23,17 @@ import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{InsetText, Text}
 import views.html.components.upload.uploadList
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
-
 import java.io
+
 import javax.inject.Inject
+import repositories.UploadJourneyRepository
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
-                                         )(uploadList: uploadList) {
+                                          uploadJourneyRepository: UploadJourneyRepository,
+                                          uploadList: uploadList
+                                         )(implicit ec: ExecutionContext) {
 
   def displayContentForFileUploads(uploadedFiles: Seq[(UploadJourney, Int)], mode: Mode)(implicit messages: Messages, request: UserRequest[_]): Seq[Html] = {
     uploadedFiles.map(uploadWithIndex =>
@@ -59,5 +64,32 @@ class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
       Some(govukInsetText(InsetText(content = Text(insetTextMsg))))
     }
 
+  }
+
+  def getInsetTextMessage(journeyId: String)(implicit messages: Messages): Future[Option[String]] = {
+      uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).map(_.fold[Option[String]](None)(
+        uploads => {
+          val uploadedFiles: Seq[(UploadJourney, Int)] = uploads.zipWithIndex
+          val mappedDuplicates: Map[Option[String], Seq[(UploadJourney, Int)]] = uploadedFiles.groupBy(_._1.uploadDetails.map(_.checksum))
+
+          if (!mappedDuplicates.exists(_._2.size > 1)) {
+            None
+          } else if (mappedDuplicates.count(_._2.size > 1) > 1) {
+           Some(messages("otherReason.uploadList.multipleDuplicateInsetText", mappedDuplicates.map(_._2.size).sum))
+          } else {
+            val duplicates: Seq[(UploadJourney, Int)] = mappedDuplicates.filter(_._2.size > 1).head._2
+            val firstFile: Int = duplicates.head._2 + 1
+            val otherUploads: Seq[(UploadJourney, Int)] = duplicates.tail
+            val allOtherUploads: Seq[Int] = otherUploads.map(_._2 + 1)
+            val insetTextMsg: String = allOtherUploads.size match {
+              case 1 => messages("otherReason.uploadList.duplicateInsetText", firstFile, allOtherUploads.head)
+              case 2 => messages("otherReason.uploadList.duplicateInsetText.2", firstFile, allOtherUploads.head, allOtherUploads(1))
+              case 3 => messages("otherReason.uploadList.duplicateInsetText.3", firstFile, allOtherUploads.head, allOtherUploads(1), allOtherUploads(2))
+              case 4 => messages("otherReason.uploadList.duplicateInsetText.4", firstFile, allOtherUploads.head, allOtherUploads(1), allOtherUploads(2), allOtherUploads(3))
+            }
+            Some(insetTextMsg)
+          }
+        }
+    ))
   }
 }

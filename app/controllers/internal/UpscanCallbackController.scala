@@ -45,30 +45,10 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
               seqOfChecksums => {
                 if(seqOfChecksums.contains(callbackModel.uploadDetails.get.checksum)) {
                   logger.debug("[UpscanCallbackController][callbackFromUpscan] - Checksum is already in Mongo. Marking file as duplicate.")
-                  repository.isTheChecksumAndFileNameThenSame(Some(journeyId), callbackModel.uploadDetails.get.fileName,
-                    callbackModel.uploadDetails.get.checksum).flatMap(
-                    isDuplicateFilename => if(isDuplicateFilename) {
-                      val duplicateCallbackModel = callbackModel.copy(
-                        fileStatus = UploadStatusEnum.FAILED,
-                        failureDetails = Some(FailureDetails(FailureReasonEnum.DUPLICATE, "upscan.duplicateFile")),
-                        uploadDetails = None,
-                        downloadUrl = None
-                      )
-                      repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
-                    } else {
-                      repository.getFileNameFromChecksum(Some(journeyId), callbackModel.uploadDetails.get.checksum).flatMap(
-                        fileNameFound => {
-                          val fileName = fileNameFound.get.head
-                          val duplicateCallbackModel = callbackModel.copy(
-                            uploadDetails = Some(callbackModel.uploadDetails.get.copy(
-                              isDuplicateOf = fileName
-                            ))
-                          )
-                          repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
-                        }
-                      )
-                    }
+                  val duplicateCallbackModel = callbackModel.copy(
+                    fileStatus = UploadStatusEnum.DUPLICATE
                   )
+                  repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
                 } else {
                   repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
                 }

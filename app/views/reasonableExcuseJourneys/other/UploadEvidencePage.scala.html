@@ -18,7 +18,7 @@
         getStatusUrl: String => Call,
         removeFileUrl: String => Call,
         previousUploads: String,
-        containsDuplicate: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+        getDuplicatesUrl: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.session.get(SessionKeys.appealType)}
 @detailsContent = {
@@ -59,9 +59,10 @@
         (Symbol("data-multi-file-upload-uploaded-files"), previousUploads),
         (Symbol("data-multi-file-upload-status-url-tpl"), getStatusUrl("{fileRef}").url),
         (Symbol("data-multi-file-upload-remove-url-tpl"), removeFileUrl("{fileRef}").url),
+        (Symbol("data-multi-file-upload-duplicate-url-tpl"), getDuplicatesUrl.url),
         (Symbol("data-multi-file-upload-still-transferring"), messages("otherReason.uploadEvidence.stillTransferring")),
         (Symbol("data-multi-file-upload-error-generic"), messages("upscan.unableToUpload"))) {
-            <span class="govuk-inset-text hidden" aria-hidden="true">test test</span>
+            <div class="govuk-inset-text hidden" aria-hidden="true"></div>
             <p class="govuk-body">@messages("otherReason.uploadEvidence.p1")</p>
             <p class="govuk-body">@messages(lppOrLspOrObligationDynamicText)</p>
             <p class="govuk-body">@messages("otherReason.uploadEvidence.p3")</p>
