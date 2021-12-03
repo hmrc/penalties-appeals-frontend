@@ -107,22 +107,44 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
         Selectors.button -> continueButton
       )
       behave like pageWithExpectedMessages(expectedContent)
+
+      "the user has no duplicates" should {
+        "show no insetText" in {
+          doc.getElementsByClass("govuk-inset-text") shouldBe empty
+        }
+      }
     }
 
     "show the single duplicate insetText when a user uploads a duplicate document" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow, optInsetText("1", "2"))(userRequestWithCorrectKeys, messages, appConfig)
+        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow, optInsetText("1", "3"))(userRequestWithCorrectKeys, messages, appConfig)
 
       implicit val doc: Document = asDocument(applyView(formProvider))
 
       val expectedContent = Seq(
         Selectors.title -> titleMaxFiles,
         Selectors.h1 -> h1MaxFiles,
-        Selectors.insetText -> insetTextMsg("1", "2"),
+        Selectors.insetText -> insetTextMsg("1", "3"),
         Selectors.button -> continueButton
       )
 
-       behave like pageWithExpectedMessages(expectedContent)
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "show the insetText when a user uploads multiple copies of the same document" when {
+      def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
+        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow, optInsetText("1", "2, 3 and 4"))(userRequestWithCorrectKeys, messages, appConfig)
+
+      implicit val doc: Document = asDocument(applyView(formProvider))
+
+      val expectedContent = Seq(
+        Selectors.title -> titleMaxFiles,
+        Selectors.h1 -> h1MaxFiles,
+        Selectors.insetText -> insetTextMsg("1", "2, 3 and 4"),
+        Selectors.button -> continueButton
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
     }
 
     "show the multiple duplicate insetText when a user uploads multiple sets of duplicate documents" when {

@@ -35,11 +35,6 @@ class UpscanMessageHelperSpec extends SpecBase {
       val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN)
       result shouldBe "upscan.unableToUpload"
     }
-
-    "return try again message when status is DUPLICATE" in {
-      val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.DUPLICATE)
-      result shouldBe "upscan.duplicateFile"
-    }
   }
 
   "getUploadFailureMessage" should {

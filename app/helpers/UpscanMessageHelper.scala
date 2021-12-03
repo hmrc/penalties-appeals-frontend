@@ -26,7 +26,6 @@ object UpscanMessageHelper {
       case FailureReasonEnum.QUARANTINE => "upscan.fileHasVirus"
       case FailureReasonEnum.REJECTED => "upscan.invalidMimeType"
       case FailureReasonEnum.UNKNOWN => "upscan.unableToUpload"
-      case FailureReasonEnum.DUPLICATE => "upscan.duplicateFile"
     }
   }
 

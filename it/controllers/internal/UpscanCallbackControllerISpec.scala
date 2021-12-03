@@ -210,26 +210,6 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         duplicateModelInRepository.fileStatus shouldBe duplicateJsonAsModel.fileStatus
         duplicateModelInRepository.uploadDetails shouldBe duplicateJsonAsModel.uploadDetails
       }
-
-      "the body received is valid by the file has the same checksum as another file - duplicate different filename" in {
-        await(repository.collection.deleteMany(filter = Document()).toFuture)
-        await(repository.updateStateOfFileUpload("12345", jsonAsModel))
-        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(duplicateFilCheckSumAsJson))
-        result.status shouldBe NO_CONTENT
-        await(repository.getUploadsForJourney(Some("12345"))).get.size shouldBe 2
-        val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-        val duplicateCheckSumModelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref3"))).get
-        modelInRepo.downloadUrl shouldBe jsonAsModel.downloadUrl
-        modelInRepo.reference shouldBe jsonAsModel.reference
-        modelInRepo.failureDetails shouldBe jsonAsModel.failureDetails
-        modelInRepo.fileStatus shouldBe jsonAsModel.fileStatus
-        modelInRepo.uploadDetails shouldBe jsonAsModel.uploadDetails
-        duplicateCheckSumModelInRepo.downloadUrl shouldBe duplicateCheckSumJsonAsModel.downloadUrl
-        duplicateCheckSumModelInRepo.reference shouldBe duplicateCheckSumJsonAsModel.reference
-        duplicateCheckSumModelInRepo.failureDetails shouldBe duplicateCheckSumJsonAsModel.failureDetails
-        duplicateCheckSumModelInRepo.fileStatus shouldBe duplicateCheckSumJsonAsModel.fileStatus
-        duplicateCheckSumModelInRepo.uploadDetails shouldBe duplicateCheckSumJsonAsModel.uploadDetails
-      }
     }
   }
 }
