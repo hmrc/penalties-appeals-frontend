@@ -38,4 +38,6 @@ class BaseSelectors {
 
   val dateEntry: Int => String = (index: Int) => s"#date > div:nth-child($index) > div > label"
 
+  val insetText = "#main-content > div > div > div.govuk-inset-text"
+
 }

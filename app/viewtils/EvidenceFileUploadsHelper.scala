@@ -21,8 +21,8 @@ import models.upload.{UploadJourney, UploadStatusEnum}
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{InsetText, Text}
-import views.html.components.upload.uploadList
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
+import views.html.components.upload.uploadList
 
 import javax.inject.Inject
 import repositories.UploadJourneyRepository

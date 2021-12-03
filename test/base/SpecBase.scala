@@ -175,6 +175,16 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     )
   }
 
+  def insetText(message: String): Html = {
+    Html(
+      s"""
+         |<div class="govuk-inset-text">
+         |  $message
+         |</div>
+         |""".stripMargin
+    )
+  }
+
   val callBackModel: UploadJourney = UploadJourney(
     reference = "ref1",
     fileStatus = UploadStatusEnum.READY,
