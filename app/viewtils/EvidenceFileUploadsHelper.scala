@@ -16,8 +16,8 @@
 
 package viewtils
 
-import models.{Mode, UserRequest}
 import models.upload.{UploadJourney, UploadStatusEnum}
+import models.{Mode, UserRequest}
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{InsetText, Text}
