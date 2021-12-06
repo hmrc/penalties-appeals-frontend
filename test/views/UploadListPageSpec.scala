@@ -44,7 +44,8 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
   "UploadListPage" should {
     "return multiple files header and title" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),uploadMultipleRows)(userRequestWithCorrectKeys,messages,appConfig)
+        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),
+        uploadMultipleRows, None)(userRequestWithCorrectKeys,messages,appConfig)
       implicit val doc: Document = asDocument(applyView(formProvider))
 
       val expectedContent = Seq(
@@ -61,7 +62,8 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
 
   "return single file header and title added" when {
     def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),uploadSingleRow)(userRequestWithCorrectKeys,messages,appConfig)
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadSingleRow,
+      None)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(
@@ -77,7 +79,8 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
 
   "return max of 5 files added" when {
     def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow)(userRequestWithCorrectKeys,messages,appConfig)
+      form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow,
+      None)(userRequestWithCorrectKeys,messages,appConfig)
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(
