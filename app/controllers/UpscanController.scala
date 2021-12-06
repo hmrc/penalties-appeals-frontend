@@ -57,7 +57,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
         })(
           fileStatus => {
             if(fileStatus.status == "DUPLICATE") {
-              evidenceFileUploadsHelper.getInsetTextMessage(journeyId).map(
+              evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(
                 insetText => {
                   val newFileStatus = fileStatus.copy(errorMessage = insetText)
                   Ok(Json.toJson(newFileStatus))
@@ -226,6 +226,6 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   }
 
   def getDuplicateFiles(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request => evidenceFileUploadsHelper.getInsetTextMessage(journeyId).map(_.fold(Ok(Json.obj()))(message => Ok(Json.obj("message" -> message))))
+    implicit request => evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(_.fold(Ok(Json.obj()))(message => Ok(Json.obj("message" -> message))))
   }
 }

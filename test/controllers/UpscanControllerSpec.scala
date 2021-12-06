@@ -33,8 +33,8 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.mongo.cache.CacheItem
 import utils.SessionKeys
-import java.time.{Instant, LocalDateTime}
 
+import java.time.{Instant, LocalDateTime}
 import viewtils.EvidenceFileUploadsHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -96,6 +96,17 @@ class UpscanControllerSpec extends SpecBase {
           val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
           status(result) shouldBe OK
           contentAsJson(result) shouldBe Json.toJson(returnModel)
+        }
+
+        "the user has a duplicate file upload in the database - it should call to get an up-to-date inset text message" in {
+          val returnModel = UploadStatus(FailureReasonEnum.DUPLICATE.toString, Some("old text"))
+          when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(returnModel)))
+          when(helper.getInsetTextForUploadsInRepository(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some("text to display")))
+          val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
+          status(result) shouldBe OK
+          contentAsJson(result) shouldBe Json.toJson(returnModel.copy(errorMessage = Some("text to display")))
         }
       }
 
@@ -280,6 +291,24 @@ class UpscanControllerSpec extends SpecBase {
           .thenReturn(Future(Ok("")))
         val result = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe OK
+      }
+    }
+
+    "getDuplicateFiles" should {
+      "return None when there is no duplicates in the repository" in {
+        when(helper.getInsetTextForUploadsInRepository(ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+        val result = controller.getDuplicateFiles("1234567")(FakeRequest())
+        status(result) shouldBe OK
+        contentAsJson(result) shouldBe Json.obj()
+      }
+
+      "return Some when there is duplicates in the repository" in {
+        when(helper.getInsetTextForUploadsInRepository(ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some("this is some text to display")))
+        val result = controller.getDuplicateFiles("1234567")(FakeRequest())
+        status(result) shouldBe OK
+        contentAsJson(result) shouldBe Json.obj("message" -> "this is some text to display")
       }
     }
   }

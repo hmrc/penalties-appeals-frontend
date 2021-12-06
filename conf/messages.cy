@@ -313,11 +313,11 @@ otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {
 otherReason.uploadList.uploadAnotherFile = Do you want to upload another document?
 otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another document
 otherReason.uploadList.rowTitle = Document {0}
-otherReason.uploadList.duplicateInsetText = Document {0} has the same contents as Document {1}. You can remove duplicate documents using the 'Remove' link.
-otherReason.uploadList.duplicateInsetText.2 = Document {0} has the same contents as Document {1} and {2}. You can remove duplicate documents using the 'Remove' link.
-otherReason.uploadList.duplicateInsetText.3 = Document {0} has the same contents as Document {1}, {2} and {3}. You can remove duplicate documents using the 'Remove' link.
-otherReason.uploadList.duplicateInsetText.4 = Document {0} has the same contents as Document {1}, {2}, {3} and {4}. You can remove duplicate documents using the 'Remove' link.
-otherReason.uploadList.multipleDuplicateInsetText = {0} of the documents you have uploaded have the same contents. You can remove duplicate documents using the 'Remove' link.
+otherReason.uploadList.duplicateInsetText = Document {0} has the same contents as Document {1}. You can remove duplicate documents using the ’Remove’ link.
+otherReason.uploadList.duplicateInsetText.2 = Document {0} has the same contents as Document {1} and {2}. You can remove duplicate documents using the ’Remove’ link.
+otherReason.uploadList.duplicateInsetText.3 = Document {0} has the same contents as Document {1}, {2} and {3}. You can remove duplicate documents using the ’Remove’ link.
+otherReason.uploadList.duplicateInsetText.4 = Document {0} has the same contents as Document {1}, {2}, {3} and {4}. You can remove duplicate documents using the ’Remove’ link.
+otherReason.uploadList.multipleDuplicateInsetText = {0} of the documents you have uploaded have the same contents. You can remove duplicate documents using the ’Remove’ link.
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
@@ -332,7 +332,7 @@ otherReason.uploadAnotherDocument.noJs.heading = Add another document (optional)
 otherReason.uploadAnotherDocument.noJs.button.uploadFile = Upload selected file
 otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
 
-# Upscan failure messages
+# Upscan failure  messages
 # ----------------------------------------------------------
 upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)
 upscan.fileTooLarge = The selected file must be smaller than 6MB. Remove the file and try again.
@@ -340,7 +340,6 @@ upscan.fileEmpty = The selected file is empty. Remove the file and try again.
 upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
 upscan.passwordProtected = The selected file is password protected. Remove the file and try again.
 upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
-upscan.duplicateFile = The selected file has already been uploaded. Remove the file and choose another.
 upscan.stillUploading = The selected file has not finished uploading.
 upscan.fileNotSpecified = Select a file.
 

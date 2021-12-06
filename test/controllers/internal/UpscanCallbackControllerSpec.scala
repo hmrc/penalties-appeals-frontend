@@ -112,10 +112,15 @@ class UpscanCallbackControllerSpec extends SpecBase {
 
   val uploadJourneyModelDuplicate: UploadJourney = UploadJourney(
     reference = "ref2",
-    fileStatus = UploadStatusEnum.FAILED,
-    downloadUrl = None,
-    uploadDetails = None,
-    failureDetails = Some(FailureDetails(FailureReasonEnum.DUPLICATE, "upscan.duplicateFile"))
+    fileStatus = UploadStatusEnum.DUPLICATE,
+    downloadUrl = Some("download.url"),
+    uploadDetails = Some(UploadDetails(
+      fileName = "file1.txt",
+      fileMimeType = "text/plain",
+      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+      checksum = "check12345678",
+      size = 987
+    ))
   )
 
   val uploadJourneyModelWithFailure: UploadJourney = uploadJourneyModel.copy(
@@ -150,7 +155,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
         modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelWithFailure.copy(lastUpdated = mockDateTime)
       }
 
-      "the file is accepted but the file is a duplicate" in new Setup {
+      "the file is accepted but the file is a duplicate - mark as duplicate and keep the upload details (valid case)" in new Setup {
         await(repository.updateStateOfFileUpload("12345", uploadJourneyModel))
         val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscanDuplicate))
         status(result) shouldBe NO_CONTENT

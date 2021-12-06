@@ -17,13 +17,12 @@
 package viewtils
 
 import models.{Mode, UserRequest}
-import models.upload.UploadJourney
+import models.upload.{UploadJourney, UploadStatusEnum}
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{InsetText, Text}
 import views.html.components.upload.uploadList
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
-import java.io
 
 import javax.inject.Inject
 import repositories.UploadJourneyRepository
@@ -41,56 +40,38 @@ class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
     )
   }
 
-  def duplicateDocumentInset(uploadedFiles: Seq[(UploadJourney, Int)])(
-    implicit messages: Messages, request: UserRequest[_]): Option[Html] = {
+  def getInsetTextForUploadsInRepository(journeyId: String)(implicit messages: Messages): Future[Option[String]] = {
+    uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).map(_.fold[Option[String]](None)(
+      uploads => {
+        val uploadedFiles: Seq[(UploadJourney, Int)] = uploads.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE).zipWithIndex
+        getInsetTextMessage(uploadedFiles)
+      }
+    ))
+  }
 
-    val mappedDuplicates = uploadedFiles.groupBy(_._1.uploadDetails.map(_.checksum))
+  def getInsetTextForUploads(uploads: Seq[(UploadJourney, Int)])(implicit messages: Messages): Option[Html] = {
+    getInsetTextMessage(uploads).fold[Option[Html]](None)(insetText => Some(govukInsetText(InsetText(content = Text(insetText)))))
+  }
 
+  def getInsetTextMessage(uploadedFiles: Seq[(UploadJourney, Int)])(implicit messages: Messages): Option[String] = {
+    val mappedDuplicates: Map[Option[String], Seq[(UploadJourney, Int)]] = uploadedFiles.groupBy(_._1.uploadDetails.map(_.checksum))
     if (!mappedDuplicates.exists(_._2.size > 1)) {
       None
     } else if (mappedDuplicates.count(_._2.size > 1) > 1) {
-      Some(govukInsetText(InsetText(content = Text(messages("otherReason.uploadList.duplicateInsetText", mappedDuplicates.map(_._2.size).sum)))))
+      val noOfDuplicateDocs = mappedDuplicates.filter(_._2.size > 1).map(_._2.size).sum
+      Some(messages("otherReason.uploadList.multipleDuplicateInsetText", noOfDuplicateDocs))
     } else {
-      val duplicates = mappedDuplicates.head._2
+      val duplicates: Seq[(UploadJourney, Int)] = mappedDuplicates.filter(duplicate => duplicate._2.size > 1).head._2
       val firstFile: Int = duplicates.head._2 + 1
-      val otherUploads = duplicates.tail
-      val allOtherUploads = otherUploads.map(_._2 + 1)
-      val insetTextMsg = allOtherUploads.size match {
+      val otherUploads: Seq[(UploadJourney, Int)] = duplicates.tail
+      val allOtherUploads: Seq[Int] = otherUploads.map(_._2 + 1)
+      val insetTextMsg: String = allOtherUploads.size match {
         case 1 => messages("otherReason.uploadList.duplicateInsetText", firstFile, allOtherUploads.head)
         case 2 => messages("otherReason.uploadList.duplicateInsetText.2", firstFile, allOtherUploads.head, allOtherUploads(1))
         case 3 => messages("otherReason.uploadList.duplicateInsetText.3", firstFile, allOtherUploads.head, allOtherUploads(1), allOtherUploads(2))
         case 4 => messages("otherReason.uploadList.duplicateInsetText.4", firstFile, allOtherUploads.head, allOtherUploads(1), allOtherUploads(2), allOtherUploads(3))
       }
-      Some(govukInsetText(InsetText(content = Text(insetTextMsg))))
+      Some(insetTextMsg)
     }
-
-  }
-
-  def getInsetTextMessage(journeyId: String)(implicit messages: Messages): Future[Option[String]] = {
-      uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).map(_.fold[Option[String]](None)(
-        uploads => {
-          val uploadedFiles: Seq[(UploadJourney, Int)] = uploads.zipWithIndex
-          val mappedDuplicates: Map[Option[String], Seq[(UploadJourney, Int)]] = uploadedFiles.groupBy(_._1.uploadDetails.map(_.checksum))
-
-          if (!mappedDuplicates.exists(_._2.size > 1)) {
-            None
-          } else if (mappedDuplicates.count(_._2.size > 1) > 1) {
-            val noOfDuplicateDocs = mappedDuplicates.filter(_._2.size > 1).map(_._2.size).sum
-            Some(messages("otherReason.uploadList.multipleDuplicateInsetText", noOfDuplicateDocs))
-          } else {
-            val duplicates: Seq[(UploadJourney, Int)] = mappedDuplicates.filter(duplicate => duplicate._2.size > 1 && duplicate._1.isDefined).head._2
-            val firstFile: Int = duplicates.head._2 + 1
-            val otherUploads: Seq[(UploadJourney, Int)] = duplicates.tail
-            val allOtherUploads: Seq[Int] = otherUploads.map(_._2 + 1)
-            val insetTextMsg: String = allOtherUploads.size match {
-              case 1 => messages("otherReason.uploadList.duplicateInsetText", firstFile, allOtherUploads.head)
-              case 2 => messages("otherReason.uploadList.duplicateInsetText.2", firstFile, allOtherUploads.head, allOtherUploads(1))
-              case 3 => messages("otherReason.uploadList.duplicateInsetText.3", firstFile, allOtherUploads.head, allOtherUploads(1), allOtherUploads(2))
-              case 4 => messages("otherReason.uploadList.duplicateInsetText.4", firstFile, allOtherUploads.head, allOtherUploads(1), allOtherUploads(2), allOtherUploads(3))
-            }
-            Some(insetTextMsg)
-          }
-        }
-    ))
   }
 }
