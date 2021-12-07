@@ -55,10 +55,11 @@ class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
 
   def getInsetTextMessage(uploadedFiles: Seq[(UploadJourney, Int)])(implicit messages: Messages): Option[String] = {
     val mappedDuplicates: Map[Option[String], Seq[(UploadJourney, Int)]] = uploadedFiles.groupBy(_._1.uploadDetails.map(_.checksum))
-    if (!mappedDuplicates.exists(_._2.size > 1)) {
+    val multipleDuplicates = mappedDuplicates.filter(_._2.size > 1)
+    if (multipleDuplicates.isEmpty) {
       None
-    } else if (mappedDuplicates.count(_._2.size > 1) > 1) {
-      val noOfDuplicateDocs = mappedDuplicates.filter(_._2.size > 1).map(_._2.size).sum
+    } else if (multipleDuplicates.size > 1) {
+      val noOfDuplicateDocs = multipleDuplicates.map(_._2.size).sum
       Some(messages("otherReason.uploadList.multipleDuplicateInsetText", noOfDuplicateDocs))
     } else {
       val duplicates: Seq[(UploadJourney, Int)] = mappedDuplicates.filter(duplicate => duplicate._2.size > 1).head._2
