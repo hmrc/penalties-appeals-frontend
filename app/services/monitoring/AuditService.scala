@@ -17,6 +17,8 @@
 package services.monitoring
 
 import config.AppConfig
+import models.upload.UploadJourney
+import play.api.libs.json.{JsValue, Json}
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Request
@@ -33,6 +35,7 @@ class AuditService  @Inject()(appConfig: AppConfig,auditConnector: AuditConnecto
 
   def audit(dataSource: JsonAuditModel)(implicit hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Unit =
     auditConnector.sendExtendedEvent(toExtendedDataEvent(dataSource, request.path))
+
   def toExtendedDataEvent(auditModel: JsonAuditModel, path: String)(implicit hc: HeaderCarrier): ExtendedDataEvent = {
     val event = ExtendedDataEvent(
       auditSource = appConfig.appName,
@@ -42,5 +45,23 @@ class AuditService  @Inject()(appConfig: AppConfig,auditConnector: AuditConnecto
     )
     logger.debug(s"[AuditService][toExtendedDataEvent] Audit Event: $event")
     event
+  }
+
+  def getAllDuplicateUploadsForAppealSubmission(seqOfDuplicateUploads: Seq[UploadJourney]): JsValue = {
+    Json.toJson(
+      seqOfDuplicateUploads.map(
+        upload => {
+          val uploadDetails = upload.uploadDetails.get
+          Json.obj(
+            "upscanReference" -> upload.reference,
+            "uploadTimestamp" -> uploadDetails.uploadTimestamp,
+            "name" -> uploadDetails.fileName,
+            "mimeType" -> uploadDetails.fileMimeType,
+            "size" -> uploadDetails.size,
+            "checksum" -> uploadDetails.checksum
+          )
+        }
+      )
+    )
   }
 }
