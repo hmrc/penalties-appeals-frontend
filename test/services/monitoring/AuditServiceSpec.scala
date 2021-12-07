@@ -18,6 +18,7 @@ package services.monitoring
 
 import base.SpecBase
 import config.AppConfig
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -28,6 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import play.api.mvc.AnyContentAsEmpty
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -69,6 +71,49 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
             ArgumentMatchers.any[ExecutionContext]
           )
       }
+    }
+  }
+
+  "getAllDuplicateUploadsForAppealSubmission" should {
+    val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+    "return all the duplicates in a JSON array" in {
+      val uploadAsDuplicate: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.DUPLICATE,
+        downloadUrl = Some("/url"),
+        uploadDetails = Some(
+          UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = sampleDate,
+            checksum = "123456789",
+            size = 100
+          )
+        ),
+        failureDetails = None,
+        lastUpdated = LocalDateTime.now()
+      )
+      val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2")
+      val uploadsWithDuplicates = Seq(uploadAsDuplicate, uploadAsDuplicate2)
+      val result = testAuditService.getAllDuplicateUploadsForAppealSubmission(uploadsWithDuplicates)
+      result shouldBe Json.arr(
+        Json.obj(
+          "upscanReference" -> "ref1",
+          "uploadTimestamp" -> sampleDate,
+          "name" -> "file1.txt",
+          "mimeType" -> "text/plain",
+          "size" -> 100,
+          "checksum" -> "123456789"
+        ),
+        Json.obj(
+          "upscanReference" -> "ref2",
+          "uploadTimestamp" -> sampleDate,
+          "name" -> "file1.txt",
+          "mimeType" -> "text/plain",
+          "size" -> 100,
+          "checksum" -> "123456789"
+        )
+      )
     }
   }
 
