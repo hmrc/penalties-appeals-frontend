@@ -643,31 +643,6 @@ class MultiFileUpload {
         }
     }
 
-    setDuplicateInsetText() {
-        fetch(this.getDuplicateUrl(), {
-                method: 'GET'
-            })
-        .then(response => response.json())
-        .then(this.showInsetText.bind(this))
-    }
-
-    getDuplicateUrl() {
-        return this.config.getDuplicateUrlTpl;
-    }
-
-    showInsetText(response) {
-        const message = response['message'];
-        console.log(message);
-        if(message === undefined) {
-            this.container.querySelector(".govuk-inset-text").classList.add("hidden");
-            this.container.querySelector(".govuk-inset-text").ariaHidden = "true";
-        } else {
-            this.container.querySelector(".govuk-inset-text").classList.remove("hidden");
-            this.container.querySelector(".govuk-inset-text").innerHTML = message;
-            this.container.querySelector(".govuk-inset-text").ariaHidden = "false";
-        }
-    }
-
     /** F53 */
     createUploadedItem(fileData) {
         const item = this.addItem();
@@ -813,6 +788,35 @@ class MultiFileUpload {
     isUploaded(item) {
         return item.classList.contains(this.classes.uploaded);
     }
+
+    /** F73 */
+    setDuplicateInsetText() {
+        fetch(this.getDuplicateUrl(), {
+                method: 'GET'
+            })
+        .then(response => response.json())
+        .then(this.showInsetText.bind(this))
+    }
+
+    /** F74 */
+    getDuplicateUrl() {
+        return this.config.getDuplicateUrlTpl;
+    }
+
+    /** F75 */
+    showInsetText(response) {
+        const message = response['message'];
+        console.log(message);
+        if(message === undefined) {
+            this.container.querySelector(".govuk-inset-text").classList.add("hidden");
+            this.container.querySelector(".govuk-inset-text").ariaHidden = "true";
+        } else {
+            this.container.querySelector(".govuk-inset-text").classList.remove("hidden");
+            this.container.querySelector(".govuk-inset-text").innerHTML = message;
+            this.container.querySelector(".govuk-inset-text").ariaHidden = "false";
+        }
+    }
+
 }
 
 /**
