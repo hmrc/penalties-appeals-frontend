@@ -6,9 +6,10 @@
         govukButton: GovukButton,
         p: components.p,
         radios: components.radios,
-        govukSummaryList : GovukSummaryList)
+        govukSummaryList : GovukSummaryList,
+        govukInsetText : GovukInsetText)
 
-@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, uploadRows: Seq[Html])(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, uploadRows: Seq[Html], optInsetText: Option[Html])(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @pageHeadingAndTitle = @{getPluralOrSingular(uploadRows.length)("otherReason.uploadList.youHaveUploadedFile.headingAndTitle", "otherReason.uploadList.youHaveUploadedFiles.headingAndTitle").toString()}
 
@@ -17,6 +18,11 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
         <h1 class="govuk-heading-l">@messages(pageHeadingAndTitle)</h1>
+
+        @if(optInsetText.isDefined){
+            @optInsetText.get
+        }
+
         <div class="app-summary-card__body">
             <dl class="govuk-summary-list">
                 @uploadRows

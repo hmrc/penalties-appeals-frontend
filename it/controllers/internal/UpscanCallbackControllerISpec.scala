@@ -92,15 +92,15 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
 
   val duplicateJsonAsModel: UploadJourney = UploadJourney(
     reference = "ref2",
-    fileStatus = UploadStatusEnum.FAILED,
-    downloadUrl = None,
-    uploadDetails = None,
-    failureDetails = Some(
-      FailureDetails(
-        failureReason = FailureReasonEnum.DUPLICATE,
-        message = "upscan.duplicateFile"
-      )
-    )
+    fileStatus = UploadStatusEnum.DUPLICATE,
+    downloadUrl = Some("download.file"),
+    uploadDetails = Some(UploadDetails(
+      fileName = "file1.txt",
+      fileMimeType = "text/plain",
+      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+      checksum = "check12345678",
+      size = 987
+    ))
   )
 
   val jsonAsModelForFailure: UploadJourney = UploadJourney(

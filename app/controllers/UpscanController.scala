@@ -30,15 +30,18 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-
 import java.time.LocalDateTime
+
 import javax.inject.Inject
+import viewtils.EvidenceFileUploadsHelper
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class UpscanController @Inject()(repository: UploadJourneyRepository,
                                  connector: UpscanConnector,
-                                 service: UpscanService)
+                                 service: UpscanService,
+                                 evidenceFileUploadsHelper: EvidenceFileUploadsHelper)
                                 (implicit appConfig: AppConfig,
                                  errorHandler: ErrorHandler,
                                  mcc: MessagesControllerComponents) extends FrontendController(mcc) {
@@ -46,18 +49,27 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
     implicit request => {
       logger.debug(s"[UpscanController][getStatusOfFileUpload] - File upload status requested for journey: $journeyId with file reference: $fileReference")
-      repository.getStatusOfFileUpload(journeyId, fileReference).map(
+      repository.getStatusOfFileUpload(journeyId, fileReference).flatMap(
         _.fold({
           logger.error(
             s"[UpscanController][getStatusOfFileUpload] - File upload status was not found for journey: $journeyId with file reference: $fileReference")
-          NotFound(s"File $fileReference in journey $journeyId did not exist.")
+          Future(NotFound(s"File $fileReference in journey $journeyId did not exist."))
         })(
           fileStatus => {
-            val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_))
-            val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
-            logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
-              s"reference: $fileReference - returning status: $fileStatusWithLocalisedMessage with message: ${fileStatusWithLocalisedMessage.errorMessage}")
-            Ok(Json.toJson(fileStatusWithLocalisedMessage))
+            if(fileStatus.status == "DUPLICATE") {
+              evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(
+                insetText => {
+                  val newFileStatus = fileStatus.copy(errorMessage = insetText)
+                  Ok(Json.toJson(newFileStatus))
+                }
+              )
+            } else {
+              val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_))
+              val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
+              logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
+                s"reference: $fileReference - returning status: $fileStatusWithLocalisedMessage with message: ${fileStatusWithLocalisedMessage.errorMessage}")
+              Future(Ok(Json.toJson(fileStatusWithLocalisedMessage)))
+            }
           }
         )
       )
@@ -211,5 +223,9 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
       )
 
     }
+  }
+
+  def getDuplicateFiles(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request => evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(_.fold(Ok(Json.obj()))(message => Ok(Json.obj("message" -> message))))
   }
 }

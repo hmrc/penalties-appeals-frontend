@@ -76,7 +76,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         controllers.routes.UpscanController.initiateCallToUpscan("1234"),
         controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),
         controllers.routes.UpscanController.removeFile("1234", _),
-        previousUploadsToString(previousUploads))(request, implicitly, implicitly)
+        previousUploadsToString(previousUploads),
+        controllers.routes.UpscanController.getDuplicateFiles("1234"))(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView())

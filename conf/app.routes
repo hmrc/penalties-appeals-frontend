@@ -164,6 +164,8 @@ GET           /upscan/file-verification/additional/change/failed        controll
 GET           /upscan/file-verification/additional/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = NormalMode)
 GET           /upscan/file-verification/additional/change/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode)
 
+GET           /upscan/duplicate-files/:journeyId                        controllers.UpscanController.getDuplicateFiles(journeyId: String)
+
 # Error pages
 GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()
 GET        /problem-with-service                                controllers.ProblemWithServiceController.onPageLoad()
