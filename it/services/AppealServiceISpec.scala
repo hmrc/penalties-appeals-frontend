@@ -157,9 +157,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
 
     "return true when the connector call succeeds for other - file upload with duplicates" in {
       val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
-      val uploadAsDuplicate: UploadJourney = UploadJourney(
+      val uploadAsReady: UploadJourney = UploadJourney(
         reference = "ref1",
-        fileStatus = UploadStatusEnum.DUPLICATE,
+        fileStatus = UploadStatusEnum.READY,
         downloadUrl = Some("/url"),
         uploadDetails = Some(
           UploadDetails(
@@ -173,10 +173,10 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         failureDetails = None,
         lastUpdated = LocalDateTime.now()
       )
-      val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2")
+      val uploadAsDuplicate: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
       successfulAppealSubmission(isLPP = false, "1234")
+      await(repository.updateStateOfFileUpload("1234", uploadAsReady))
       await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate))
-      await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate2))
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",
