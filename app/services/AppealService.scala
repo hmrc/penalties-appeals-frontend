@@ -20,10 +20,11 @@ import config.AppConfig
 import connectors.{HeaderGenerator, PenaltiesConnector}
 import helpers.DateTimeHelper
 import models.appeals.AppealSubmission
-import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum}
+import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
+import models.upload.{UploadJourney, UploadStatusEnum}
 import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.http.Status._
-import play.api.libs.json.{JsResult, Json}
+import play.api.libs.json.{JsResult, JsValue, Json}
 import repositories.UploadJourneyRepository
 import services.monitoring.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -92,20 +93,25 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val agentReferenceNo = userRequest.arn
     val penaltyId = userRequest.session.get(SessionKeys.penaltyId).get
     for {
-      amountOfFileUploads <- uploadJourneyRepository.getNumberOfDocumentsForJourneyId(userRequest.session.get(SessionKeys.journeyId).get)
+      fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
+      readyOrDuplicateFileUploads = fileUploads.filter(_.exists(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
+      amountOfFileUploads = readyOrDuplicateFileUploads.size
       modelFromRequest: AppealSubmission = AppealSubmission
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentReferenceNo)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId)
     } yield {
       response.status match {
         case OK =>
-          if (isLPP)
-            if (appealType.contains(PenaltyTypeEnum.Late_Payment.toString))
+          if (isLPP) {
+            if (appealType.contains(PenaltyTypeEnum.Late_Payment.toString)) {
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, headerGenerator))
-            else
+            } else {
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, headerGenerator))
-          else
+            }
+          } else {
             auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, headerGenerator))
+          }
+          sendAuditIfDuplicatesExist(readyOrDuplicateFileUploads)
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
           Right((): Unit)
         case _ =>
@@ -138,6 +144,20 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       case e =>
         logger.error(s"$startOfLogMsg unknown error occurred, error message: ${e.getMessage}")
         false
+    }
+  }
+
+  def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])
+                                (implicit userRequest: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+    if(optFileUploads.isDefined) {
+      val fileUploads = optFileUploads.get
+      val checksumMapToUpload = fileUploads.groupBy(_.uploadDetails.get.checksum)
+      val onlyDuplicateFileUploads = checksumMapToUpload.filter(_._2.size > 1).values.flatten.toSeq
+      if(onlyDuplicateFileUploads.nonEmpty) {
+        logger.debug("[AppealService][sendAuditIfDuplicatesExist] - Found duplicates in repository, sending duplicate appeal event")
+        val duplicateUploadsInAuditFormat: JsValue = auditService.getAllDuplicateUploadsForAppealSubmission(onlyDuplicateFileUploads)
+        auditService.audit(DuplicateFilesAuditModel(duplicateUploadsInAuditFormat))
+      }
     }
   }
 }

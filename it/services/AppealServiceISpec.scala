@@ -17,17 +17,24 @@
 package services
 
 import models.UserRequest
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.UploadJourneyRepository
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
+import collection.JavaConverters._
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext
+import com.github.tomakehurst.wiremock.client.WireMock._
+
 
 class AppealServiceISpec extends IntegrationSpecCommonBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val appealService: AppealService = injector.instanceOf[AppealService]
 
   "submitAppeal" should {
@@ -47,6 +54,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
       result shouldBe Right((): Unit)
     }
 
@@ -65,6 +73,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("lossOfStaff")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
       result shouldBe Right((): Unit)
     }
 
@@ -84,6 +93,106 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.journeyId -> "1234"
       ))
       val result = await(appealService.submitAppeal("technicalIssues")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      result shouldBe Right((): Unit)
+    }
+
+    "return true when the connector call succeeds for fire or flood" in {
+      successfulAppealSubmission(isLPP = false, "1234")
+      val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "fireOrFlood",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
+      ))
+      val result = await(appealService.submitAppeal("fireOrFlood")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      result shouldBe Right((): Unit)
+    }
+
+    "return true when the connector call succeeds for bereavement" in {
+      successfulAppealSubmission(isLPP = false, "1234")
+      val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "bereavement",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whenDidThePersonDie -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
+      ))
+      val result = await(appealService.submitAppeal("bereavement")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      result shouldBe Right((): Unit)
+    }
+
+    "return true when the connector call succeeds for other - no file upload" in {
+      successfulAppealSubmission(isLPP = false, "1234")
+      val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whyReturnSubmittedLate -> "this is information",
+        SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
+      ))
+      val result = await(appealService.submitAppeal("other")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      result shouldBe Right((): Unit)
+    }
+
+    "return true when the connector call succeeds for other - file upload with duplicates" in {
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+      val uploadAsDuplicate: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.DUPLICATE,
+        downloadUrl = Some("/url"),
+        uploadDetails = Some(
+          UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = sampleDate,
+            checksum = "123456789",
+            size = 100
+          )
+        ),
+        failureDetails = None,
+        lastUpdated = LocalDateTime.now()
+      )
+      val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2")
+      successfulAppealSubmission(isLPP = false, "1234")
+      await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate))
+      await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate2))
+      val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whyReturnSubmittedLate -> "this is information",
+        SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
+      ))
+      val result = await(appealService.submitAppeal("other")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyDuplicateFilesSubmitted")) shouldBe true
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
       result shouldBe Right((): Unit)
     }
 
@@ -104,6 +213,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
         result shouldBe Right((): Unit)
       }
 
@@ -124,6 +234,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
         result shouldBe Right((): Unit)
       }
 
@@ -145,6 +256,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
         result shouldBe Right((): Unit)
       }
 
@@ -164,6 +276,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.journeyId -> "1234"
         ))
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
         result shouldBe Right((): Unit)
       }
     }

@@ -16,6 +16,8 @@
 
 package helpers
 
+import models.upload.UploadStatusEnum
+
 import java.time.LocalDate
 import javax.inject.Inject
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
