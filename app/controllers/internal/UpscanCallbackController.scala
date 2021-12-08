@@ -45,10 +45,10 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
               seqOfChecksums => {
                 if(seqOfChecksums.contains(callbackModel.uploadDetails.get.checksum)) {
                   logger.debug("[UpscanCallbackController][callbackFromUpscan] - Checksum is already in Mongo. Marking file as duplicate.")
-                      val duplicateCallbackModel = callbackModel.copy(
-                        fileStatus = UploadStatusEnum.DUPLICATE
-                      )
-                      repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
+                  val duplicateCallbackModel = callbackModel.copy(
+                    fileStatus = UploadStatusEnum.DUPLICATE
+                  )
+                  repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
                 } else {
                   repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
                 }

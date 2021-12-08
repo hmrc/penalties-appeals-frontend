@@ -64,23 +64,6 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |""".stripMargin
   )
 
-  val duplicateFilCheckSumAsJson: JsValue = Json.parse(
-    """
-      |{
-      |    "reference": "ref3",
-      |    "downloadUrl": "download.file",
-      |    "fileStatus": "READY",
-      |    "uploadDetails": {
-      |        "fileName": "file1Copy.txt",
-      |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
-      |        "checksum": "check12345678",
-      |        "size": 987
-      |    }
-      |}
-      |""".stripMargin
-  )
-
   val validFailureJsonToParse: JsValue = Json.parse(
     """
       |{
@@ -113,20 +96,6 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     downloadUrl = Some("download.file"),
     uploadDetails = Some(UploadDetails(
         fileName = "file1.txt",
-        fileMimeType = "text/plain",
-        uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
-        checksum = "check12345678",
-        size = 987
-      )
-    )
-  )
-
-  val duplicateCheckSumJsonAsModel: UploadJourney = UploadJourney(
-    reference = "ref3",
-    fileStatus = UploadStatusEnum.DUPLICATE,
-    downloadUrl = Some("download.file"),
-    uploadDetails = Some(UploadDetails(
-        fileName = "file1Copy.txt",
         fileMimeType = "text/plain",
         uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
         checksum = "check12345678",
