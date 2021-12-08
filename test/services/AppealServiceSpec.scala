@@ -386,4 +386,5 @@ class AppealServiceSpec extends SpecBase {
       service.sendAuditIfDuplicatesExist(Some(Seq(duplicateUpload, duplicateUpload2)))(fakeRequestForOtherJourney, implicitly, implicitly)
       verify(mockAuditService, times(1)).audit(any())(any(), any(), any())
     }
+  }
 }
