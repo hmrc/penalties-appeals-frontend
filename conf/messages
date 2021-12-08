@@ -332,7 +332,7 @@ otherReason.uploadAnotherDocument.noJs.heading = Add another document (optional)
 otherReason.uploadAnotherDocument.noJs.button.uploadFile = Upload selected file
 otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
 
-# Upscan failure  messages
+# Upscan failure messages
 # ----------------------------------------------------------
 upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)
 upscan.fileTooLarge = The selected file must be smaller than 6MB. Remove the file and try again.

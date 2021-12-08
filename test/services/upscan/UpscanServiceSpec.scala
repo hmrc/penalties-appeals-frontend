@@ -127,10 +127,11 @@ class UpscanServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(Seq(
           UploadJourney("file1", UploadStatusEnum.READY),
           UploadJourney("file2", UploadStatusEnum.READY),
-          UploadJourney("file3", UploadStatusEnum.FAILED)
+          UploadJourney("file3", UploadStatusEnum.DUPLICATE),
+          UploadJourney("file4", UploadStatusEnum.FAILED)
         ))))
       val result = service.getAmountOfFilesUploadedForJourney("J1234")
-      await(result) shouldBe 2
+      await(result) shouldBe 3
     }
   }
 }
