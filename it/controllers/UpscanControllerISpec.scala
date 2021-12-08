@@ -91,7 +91,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
           val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
           status(result) shouldBe OK
-          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "4 of the documents you have uploaded have the same contents. You can remove duplicate documents using the ’Remove’ link.")
+          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "4 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link.")
         }
 
         "there is one set of duplicates" when {
@@ -100,7 +100,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
             val result = controller.getStatusOfFileUpload("1234", "file-2")(FakeRequest())
             status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "Document 1 has the same contents as Document 2. You can remove duplicate documents using the ’Remove’ link.")
+            contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "File 1 has the same contents as File 2. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 2 duplicates" in new Setup {
@@ -109,7 +109,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3")))
             val result = controller.getStatusOfFileUpload("1234", "file-3")(FakeRequest())
             status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "Document 1 has the same contents as Document 2 and 3. You can remove duplicate documents using the ’Remove’ link.")
+            contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "File 1 has the same contents as File 2 and 3. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 3 duplicates" in new Setup {
@@ -119,7 +119,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4")))
             val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
             status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "Document 1 has the same contents as Document 2, 3 and 4. You can remove duplicate documents using the ’Remove’ link.")
+            contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "File 1 has the same contents as File 2, 3 and 4. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 4 duplicates" in new Setup {
@@ -130,7 +130,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-5")))
             val result = controller.getStatusOfFileUpload("1234", "file-5")(FakeRequest())
             status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "Document 1 has the same contents as Document 2, 3, 4 and 5. You can remove duplicate documents using the ’Remove’ link.")
+            contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "File 1 has the same contents as File 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link.")
           }
         }
       }
@@ -506,7 +506,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
           val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
           status(result) shouldBe OK
-          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "4 of the documents you have uploaded have the same contents. You can remove duplicate documents using the ’Remove’ link.")
+          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "4 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link.")
         }
 
         "there is one set of duplicates" when {
@@ -515,7 +515,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
             val result = controller.getDuplicateFiles("1234")(FakeRequest())
             status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("message" -> "Document 1 has the same contents as Document 2. You can remove duplicate documents using the ’Remove’ link.")
+            contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 2 duplicates" in new Setup {
@@ -524,7 +524,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3")))
             val result = controller.getDuplicateFiles("1234")(FakeRequest())
             status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("message" -> "Document 1 has the same contents as Document 2 and 3. You can remove duplicate documents using the ’Remove’ link.")
+            contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2 and 3. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 3 duplicates" in new Setup {
@@ -534,7 +534,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4")))
             val result = controller.getDuplicateFiles("1234")(FakeRequest())
             status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("message" -> "Document 1 has the same contents as Document 2, 3 and 4. You can remove duplicate documents using the ’Remove’ link.")
+            contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2, 3 and 4. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 4 duplicates" in new Setup {
@@ -545,7 +545,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-5")))
             val result = controller.getDuplicateFiles("1234")(FakeRequest())
             status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("message" -> "Document 1 has the same contents as Document 2, 3, 4 and 5. You can remove duplicate documents using the ’Remove’ link.")
+            contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link.")
           }
         }
       }

@@ -273,13 +273,13 @@ agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submi
 otherReason.uploadEvidence.title = Evidence to support this appeal (optional)
 otherReason.uploadEvidence.heading = Evidence to support this appeal (optional)
 otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the penalty.
-otherReason.uploadEvidence.p2 = Evidence might include any documents or letters that show why the return was submitted late.
-otherReason.uploadEvidence.lpp.p2 = Evidence might include any documents or letters that show why the VAT bill was paid late.
-otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return.
-otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include any documents or letters that show why the business did not need to submit a return and pay VAT.
+otherReason.uploadEvidence.p2 = Evidence might include documents or letters that show why the return was submitted late.
+otherReason.uploadEvidence.lpp.p2 = Evidence might include documents or letters that show why the VAT bill was paid late.
+otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include documents or letters that show why the business did not need to submit a return.
+otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT.
 otherReason.uploadEvidence.p3 = We will still review your appeal if you do not upload evidence.
-otherReason.uploadEvidence.p4 = You can upload up to 5 documents.
-otherReason.uploadEvidence.p5 = Each document must be smaller than 6MB.
+otherReason.uploadEvidence.p4 = You can upload up to 5 files.
+otherReason.uploadEvidence.p5 = Each file must be smaller than 6MB.
 otherReason.uploadEvidence.details.heading = Types of file you can upload
 otherReason.uploadEvidence.details.p1 = These file types are allowed:
 otherReason.uploadEvidence.details.li.1 = image (.jpg, .jpeg, .png or .tiff)
@@ -287,11 +287,11 @@ otherReason.uploadEvidence.details.li.2 = PDF (.pdf)
 otherReason.uploadEvidence.details.li.3 = email (.txt or .msg)
 otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel or PowerPoint)
 otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
-otherReason.uploadEvidence.details.p2 = You cannot upload zip files or documents that are password-protected.
+otherReason.uploadEvidence.details.p2 = You cannot upload zip files or documents that are protected by a password.
 otherReason.uploadEvidence.details.p3 = We’ll scan all files and reject any we think are suspicious.
 otherReason.uploadEvidence.uploadLabel = Upload Evidence
-otherReason.uploadEvidence.document = Document
-otherReason.uploadEvidence.addAnother = Add another document
+otherReason.uploadEvidence.document = File
+otherReason.uploadEvidence.addAnother = Add another file
 otherReason.uploadEvidence.status.uploaded = Ready to Submit
 otherReason.uploadEvidence.status.pending = Pending
 otherReason.uploadEvidence.button.remove = Remove
@@ -300,7 +300,7 @@ otherReason.uploadEvidence.stillTransferring = Files are still being transferred
 
 # Upload Evidence (No JS)
 # ----------------------------------------------------------
-otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first document. You can upload additional documents afterwards. We will use any evidence to help us review the penalty.
+otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first file. You can upload additional files afterwards. We will use any evidence to help us review the penalty.
 otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
 otherReason.uploadEvidence.noJs.uploadAnotherLabel = Choose your next file
 otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
@@ -308,16 +308,16 @@ otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
 
 # Upload List (No JS) page
 # ----------------------------------------------------------
-otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = You have uploaded {0} documents
-otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {0} document
-otherReason.uploadList.uploadAnotherFile = Do you want to upload another document?
-otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another document
-otherReason.uploadList.rowTitle = Document {0}
-otherReason.uploadList.duplicateInsetText = Document {0} has the same contents as Document {1}. You can remove duplicate documents using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.2 = Document {0} has the same contents as Document {1} and {2}. You can remove duplicate documents using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.3 = Document {0} has the same contents as Document {1}, {2} and {3}. You can remove duplicate documents using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.4 = Document {0} has the same contents as Document {1}, {2}, {3} and {4}. You can remove duplicate documents using the ’Remove’ link.
-otherReason.uploadList.multipleDuplicateInsetText = {0} of the documents you have uploaded have the same contents. You can remove duplicate documents using the ’Remove’ link.
+otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = You have uploaded {0} files
+otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {0} file
+otherReason.uploadList.uploadAnotherFile = Do you want to upload another file?
+otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another file
+otherReason.uploadList.rowTitle = File {0}
+otherReason.uploadList.duplicateInsetText = File {0} has the same contents as File {1}. You can remove duplicate files using the ’Remove’ link.
+otherReason.uploadList.duplicateInsetText.2 = File {0} has the same contents as File {1} and {2}. You can remove duplicate files using the ’Remove’ link.
+otherReason.uploadList.duplicateInsetText.3 = File {0} has the same contents as File {1}, {2} and {3}. You can remove duplicate files using the ’Remove’ link.
+otherReason.uploadList.duplicateInsetText.4 = File {0} has the same contents as File {1}, {2}, {3} and {4}. You can remove duplicate files using the ’Remove’ link.
+otherReason.uploadList.multipleDuplicateInsetText = {0} of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link.
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
@@ -327,8 +327,8 @@ otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Reload t
 
 # Upload Another Document (No JS)
 # ----------------------------------------------------------
-otherReason.uploadAnotherDocument.noJs.title = Add another document (optional)
-otherReason.uploadAnotherDocument.noJs.heading = Add another document (optional)
+otherReason.uploadAnotherDocument.noJs.title = Add another file (optional)
+otherReason.uploadAnotherDocument.noJs.heading = Add another file (optional)
 otherReason.uploadAnotherDocument.noJs.button.uploadFile = Upload selected file
 otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
 
