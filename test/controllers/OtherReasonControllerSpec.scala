@@ -387,7 +387,10 @@ class OtherReasonControllerSpec extends SpecBase {
         }
 
         "return OK and correct view - for duplicate uploads" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel.copy(reference = "ref2")))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(
+            callBackModel.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE),
+            callBackModel.copy(reference = "ref3", fileStatus = UploadStatusEnum.DUPLICATE)
+          ))))
           val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
