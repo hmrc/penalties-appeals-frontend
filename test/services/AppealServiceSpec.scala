@@ -19,6 +19,7 @@ package services
 import base.SpecBase
 import config.AppConfig
 import connectors.{HeaderGenerator, PenaltiesConnector}
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{AppealData, ReasonableExcuse, UserRequest}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -29,8 +30,8 @@ import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{SessionKeys, UUIDGenerator}
-import java.time.LocalDateTime
 
+import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealServiceSpec extends SpecBase {
@@ -91,7 +92,7 @@ class AppealServiceSpec extends SpecBase {
       |""".stripMargin)
 
   class Setup {
-    reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService)
+    reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService, mockUploadJourneyRepository)
     val service: AppealService =
       new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, testHeaderGenerator, mockUploadJourneyRepository)
 
@@ -243,11 +244,40 @@ class AppealServiceSpec extends SpecBase {
     "parse the session keys into a model and return true when the connector call is successful and audit the response" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
-      when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
-        .thenReturn(Future.successful(0))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(None))
       val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
       result shouldBe Right((): Unit)
       verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
+        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+    }
+
+    "parse the session keys into a model and audit the response - for duplicate file upload" in new Setup {
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+      val uploadAsDuplicate: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.DUPLICATE,
+        downloadUrl = Some("/url"),
+        uploadDetails = Some(
+          UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = sampleDate,
+            checksum = "123456789",
+            size = 100
+          )
+        ),
+        failureDetails = None,
+        lastUpdated = LocalDateTime.now()
+      )
+      val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2")
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate, uploadAsDuplicate2))))
+      val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
+      result shouldBe Right((): Unit)
+      verify(mockAuditService, times(2)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
         ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
     }
 
@@ -255,8 +285,8 @@ class AppealServiceSpec extends SpecBase {
       "the connector returns a non-200 response" in new Setup {
         when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
-        when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
-          .thenReturn(Future.successful(0))
+        when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+          .thenReturn(Future.successful(None))
         val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe Left(BAD_GATEWAY)
       }
@@ -264,8 +294,8 @@ class AppealServiceSpec extends SpecBase {
       "the connector throws an exception" in new Setup {
         when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.failed(new Exception("I failed.")))
-        when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
-          .thenReturn(Future.successful(0))
+        when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+          .thenReturn(Future.successful(None))
         val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
@@ -273,7 +303,7 @@ class AppealServiceSpec extends SpecBase {
       "the repository throws and exception" in new Setup {
         when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
-        when(mockUploadJourneyRepository.getNumberOfDocumentsForJourneyId(any()))
+        when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.failed(new Exception("I failed.")))
         val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe Left(INTERNAL_SERVER_ERROR)
@@ -313,4 +343,47 @@ class AppealServiceSpec extends SpecBase {
       }
     }
   }
+
+  "sendAuditIfDuplicatesExist" should {
+    "not send any audit if no duplicate exists" in new Setup {
+      val readyUpload: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+          checksum = "check12345678",
+          size = 987
+        ))
+      )
+      service.sendAuditIfDuplicatesExist(Some(Seq(readyUpload)))(fakeRequestForOtherJourney, implicitly, implicitly)
+      verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
+    }
+
+    "not send any audit if no uploads exist" in new Setup {
+      service.sendAuditIfDuplicatesExist(None)(fakeRequestForOtherJourney, implicitly, implicitly)
+      verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
+    }
+
+    "send an audit when duplicates exist" in new Setup {
+      val duplicateUpload: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.DUPLICATE,
+        downloadUrl = Some("download.file"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+          checksum = "check12345678",
+          size = 987
+        ))
+      )
+      val duplicateUpload2: UploadJourney = duplicateUpload.copy(reference = "ref2")
+      when(mockAuditService.getAllDuplicateUploadsForAppealSubmission(any()))
+        .thenReturn(Json.obj("mocked" -> "value"))
+      service.sendAuditIfDuplicatesExist(Some(Seq(duplicateUpload, duplicateUpload2)))(fakeRequestForOtherJourney, implicitly, implicitly)
+      verify(mockAuditService, times(1)).audit(any())(any(), any(), any())
+    }
 }

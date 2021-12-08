@@ -116,5 +116,4 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
       )
     }
   }
-
 }
