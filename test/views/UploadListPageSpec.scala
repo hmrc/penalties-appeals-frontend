@@ -97,7 +97,7 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
     "return max of 5 files added" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
         form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow,
-        None)(userRequestWithCorrectKeys,messages,appConfig)
+        None)(userRequestWithCorrectKeys, messages, appConfig)
 
       implicit val doc: Document = asDocument(applyView(formProvider))
 
@@ -161,7 +161,6 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
       )
 
       behave like pageWithExpectedMessages(expectedContent)
-    }
     }
   }
 }
