@@ -31,7 +31,7 @@ import utils.Logger.logger.logger
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class AuditService  @Inject()(appConfig: AppConfig,auditConnector: AuditConnector){
+class AuditService @Inject()(appConfig: AppConfig,auditConnector: AuditConnector) {
 
   def audit(dataSource: JsonAuditModel)(implicit hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Unit =
     auditConnector.sendExtendedEvent(toExtendedDataEvent(dataSource, request.path))
