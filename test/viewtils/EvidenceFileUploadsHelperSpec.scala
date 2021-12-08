@@ -97,8 +97,8 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
   "displayContentForFileUploads" should {
     "return all the rows of files uploaded" in {
       val actualResult: Seq[Html] = helper.displayContentForFileUploads(uploadedFiles, NormalMode)(implicitly, userRequestWithCorrectKeys)
-      val actualParsedResult = Jsoup.parse(actualResult.mkString.replaceAll(",",""))
-      val expectedResultParsed = Jsoup.parse(expected.mkString.replaceAll(",",""))
+      val actualParsedResult = Jsoup.parse(actualResult.mkString.replaceAll(",", ""))
+      val expectedResultParsed = Jsoup.parse(expected.mkString.replaceAll(",", ""))
       actualParsedResult.getElementById("document-row-1").html() shouldBe expectedResultParsed.getElementById("document-row-1").html()
       actualParsedResult.getElementById("document-row-2").html() shouldBe expectedResultParsed.getElementById("document-row-2").html()
       actualParsedResult.getElementById("document-row-3").html() shouldBe expectedResultParsed.getElementById("document-row-3").html()

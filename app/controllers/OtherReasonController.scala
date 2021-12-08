@@ -222,10 +222,12 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       for {
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
-        if(previousUploadsState.isEmpty || previousUploadsState.exists(!_.exists(_.fileStatus == UploadStatusEnum.READY))) {
+        if(previousUploadsState.isEmpty ||
+          previousUploadsState.exists(!_.exists(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))) {
           Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
         } else {
-          val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(_.fileStatus == UploadStatusEnum.READY))
+          val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(file =>
+            file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE ))
           val optDuplicateFiles: Option[Html] = evidenceFileUploadsHelper.getInsetTextForUploads(uploadedFileNames.zipWithIndex)
           val uploadRows: Seq[Html] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex, mode)
           Ok(uploadListPage(formProvider, radioOptionsToRender, postAction, uploadRows, optDuplicateFiles))
@@ -243,7 +245,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           for {
             previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
           } yield {
-            val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(_.fileStatus == UploadStatusEnum.READY))
+            val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(file =>
+              file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE ))
             val optDuplicateFiles: Option[Html] = evidenceFileUploadsHelper.getInsetTextForUploads(uploadedFileNames.zipWithIndex)
             val uploadRows: Seq[Html] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex, mode)
             if (uploadRows.length < 5) {

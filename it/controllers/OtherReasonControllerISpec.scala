@@ -19,6 +19,7 @@ package controllers
 import config.featureSwitches.{FeatureSwitching, NonJSRouting}
 import models.NormalMode
 import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
+import org.jsoup.Jsoup
 import org.mongodb.scala.Document
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Cookie, Result}
@@ -596,6 +597,89 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       status(request) shouldBe OK
     }
 
+    "return OK and the correct view - showing the inset text for duplicate uploads" in new Setup {
+      val callbackModel: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel.copy(
+        reference = "ref2",
+        fileStatus = UploadStatusEnum.DUPLICATE))
+      )
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      )
+      val request = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequestWithCorrectKeys)
+      status(request) shouldBe OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select(".govuk-inset-text").text() should startWith("Document 1 has the same contents as Document 2.")
+    }
+
+    "return OK and the correct view - showing the inset text for multiple duplicate uploads" in new Setup {
+      val callbackModel: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+      val callbackModel2: UploadJourney = UploadJourney(
+        reference = "ref2",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file2.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1235",
+          size = 3
+        ))
+      )
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      )
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.updateStateOfFileUpload("1234", callbackModel.copy(
+        reference = "ref3",
+        fileStatus = UploadStatusEnum.DUPLICATE))
+      )
+      await(repository.updateStateOfFileUpload("1234", callbackModel2.copy(
+        reference = "ref4",
+        fileStatus = UploadStatusEnum.DUPLICATE))
+      )
+      val request = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequestWithCorrectKeys)
+      status(request) shouldBe OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select(".govuk-inset-text").text() should startWith("4 of the documents you have uploaded have the same contents.")
+    }
+
     "return 303 (SEE_OTHER) when the user has no uploads" in new Setup {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
         (SessionKeys.penaltyId, "1234"),
@@ -610,7 +694,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
     }
-    
+
     "return 303 (SEE_OTHER) when the user has no successful uploads" in new Setup {
       await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
@@ -833,8 +917,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "redirect to the non-JS first file upload page when there is an error from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
       val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withSession(
-          SessionKeys.fileReference -> "file1",
-          SessionKeys.isAddingAnotherDocument -> "false"))
+        SessionKeys.fileReference -> "file1",
+        SessionKeys.isAddingAnotherDocument -> "false"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       await(result).session(FakeRequest()).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"

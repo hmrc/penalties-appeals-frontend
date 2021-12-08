@@ -95,12 +95,13 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     fileStatus = UploadStatusEnum.DUPLICATE,
     downloadUrl = Some("download.file"),
     uploadDetails = Some(UploadDetails(
-      fileName = "file1.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
-      checksum = "check12345678",
-      size = 987
-    ))
+        fileName = "file1.txt",
+        fileMimeType = "text/plain",
+        uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+        checksum = "check12345678",
+        size = 987
+      )
+    )
   )
 
   val jsonAsModelForFailure: UploadJourney = UploadJourney(

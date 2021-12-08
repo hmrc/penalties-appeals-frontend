@@ -113,7 +113,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
 
   def getAmountOfFilesUploadedForJourney(journeyId: String)(implicit ec: ExecutionContext): Future[Int] = {
     uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).map(
-      _.fold(0)(_.count(_.fileStatus == UploadStatusEnum.READY))
+      _.fold(0)(_.count(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
     )
   }
 }
