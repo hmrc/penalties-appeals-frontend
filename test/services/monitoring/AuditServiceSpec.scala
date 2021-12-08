@@ -77,9 +77,9 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
   "getAllDuplicateUploadsForAppealSubmission" should {
     val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
     "return all the duplicates in a JSON array" in {
-      val uploadAsDuplicate: UploadJourney = UploadJourney(
+      val uploadAsReady: UploadJourney = UploadJourney(
         reference = "ref1",
-        fileStatus = UploadStatusEnum.DUPLICATE,
+        fileStatus = UploadStatusEnum.READY,
         downloadUrl = Some("/url"),
         uploadDetails = Some(
           UploadDetails(
@@ -93,8 +93,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
         failureDetails = None,
         lastUpdated = LocalDateTime.now()
       )
-      val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2")
-      val uploadsWithDuplicates = Seq(uploadAsDuplicate, uploadAsDuplicate2)
+      val uploadAsDuplicate: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
+      val uploadsWithDuplicates = Seq(uploadAsReady, uploadAsDuplicate)
       val result = testAuditService.getAllDuplicateUploadsForAppealSubmission(uploadsWithDuplicates)
       result shouldBe Json.arr(
         Json.obj(
