@@ -222,7 +222,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       for {
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
-        if(previousUploadsState.isEmpty || previousUploadsState.exists(!_.exists(_.fileStatus == UploadStatusEnum.READY))) {
+        if(previousUploadsState.isEmpty ||
+          previousUploadsState.exists(!_.exists(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))) {
           Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
         } else {
           val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(file =>
