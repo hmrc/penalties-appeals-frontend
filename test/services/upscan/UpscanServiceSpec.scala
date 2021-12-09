@@ -31,8 +31,11 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.cache.CacheItem
-
 import java.time.Instant
+
+import connectors.httpParsers.UpscanInitiateHttpParser
+import play.api.mvc.Result
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -53,7 +56,8 @@ class UpscanServiceSpec extends SpecBase {
     "return Left when the call to upscan fails" in new Setup {
       when(connector.initiateToUpscan(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, "something went wrong"))))
-      val result = await(service.initiateSynchronousCallToUpscan("J1234", false, NormalMode))
+      val result: Either[UpscanInitiateHttpParser.ErrorResponse, UpscanInitiateResponseModel] =
+        await(service.initiateSynchronousCallToUpscan("J1234", isAddingAnotherDocument = false, NormalMode))
       result.isLeft shouldBe true
     }
 
@@ -62,7 +66,8 @@ class UpscanServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1", UploadFormTemplateRequest("/", Map.empty)))))
       when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(CacheItem("", Json.obj(), Instant.now(), Instant.now())))
-      val result = await(service.initiateSynchronousCallToUpscan("J1234", false, NormalMode))
+      val result: Either[UpscanInitiateHttpParser.ErrorResponse, UpscanInitiateResponseModel] =
+        await(service.initiateSynchronousCallToUpscan("J1234", isAddingAnotherDocument = false, NormalMode))
       result.isRight shouldBe true
     }
   }
@@ -73,7 +78,8 @@ class UpscanServiceSpec extends SpecBase {
       "the status doesn't exist in Mongo" in new Setup {
         when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        val result = service.waitForStatus("J1234", "File1234", 100000000L, NormalMode, false, blockToDoNothing)
+        val result: Future[Result] = service.waitForStatus(
+          "J1234", "File1234", 100000000L, NormalMode, isAddingAnotherDocument = false, blockToDoNothing)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -81,7 +87,7 @@ class UpscanServiceSpec extends SpecBase {
     "redirect to the 'file upload taking too long' page - when the recursion times out" in new Setup {
       when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(UploadStatus(UploadStatusEnum.WAITING.toString))))
-      val result = service.waitForStatus("J1234", "File1234", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)
+      val result: Future[Result] = service.waitForStatus("J1234", "File1234", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
     }
@@ -91,7 +97,8 @@ class UpscanServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(UploadStatus(UploadStatusEnum.READY.toString))))
       when(repository.getUploadsForJourney(ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(Seq(UploadJourney("File1234", UploadStatusEnum.READY)))))
-      val result = service.waitForStatus("J1234", "File1234", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)
+      val result: Future[Result] = service.waitForStatus(
+        "J1234", "File1234", System.nanoTime() + 1000000000L, NormalMode, isAddingAnotherDocument = false, blockToDoNothing)
       status(result) shouldBe OK
     }
   }
@@ -100,8 +107,8 @@ class UpscanServiceSpec extends SpecBase {
     "propagate the request" in new Setup {
       when(repository.removeFileForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful((): Unit))
-      val result = service.removeFileFromJourney("J1234", "F1234")
-      await(result) shouldBe (): Unit
+      val result: Future[Unit] = service.removeFileFromJourney("J1234", "F1234")
+      await(result) shouldBe ((): Unit)
     }
   }
 
@@ -110,14 +117,14 @@ class UpscanServiceSpec extends SpecBase {
       "there is no uploads in Mongo for this journey" in new Setup {
         when(repository.getUploadsForJourney(ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(Seq())))
-        val result = service.getAmountOfFilesUploadedForJourney("J1234")
+        val result: Future[Int] = service.getAmountOfFilesUploadedForJourney("J1234")
         await(result) shouldBe 0
       }
 
       "there is no record in Mongo for this journey" in new Setup {
         when(repository.getUploadsForJourney(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        val result = service.getAmountOfFilesUploadedForJourney("J1234")
+        val result: Future[Int] = service.getAmountOfFilesUploadedForJourney("J1234")
         await(result) shouldBe 0
       }
     }
@@ -130,7 +137,7 @@ class UpscanServiceSpec extends SpecBase {
           UploadJourney("file3", UploadStatusEnum.DUPLICATE),
           UploadJourney("file4", UploadStatusEnum.FAILED)
         ))))
-      val result = service.getAmountOfFilesUploadedForJourney("J1234")
+      val result: Future[Int] = service.getAmountOfFilesUploadedForJourney("J1234")
       await(result) shouldBe 3
     }
   }

@@ -21,12 +21,11 @@ import models.UserRequest
 import models.appeals._
 import play.api.libs.json._
 import services.monitoring.JsonAuditModel
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logger.logger
 import utils.JsonUtils
+import utils.Logger.logger
 
 case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String,headerGenerator: HeaderGenerator)
-                           (implicit request: UserRequest[_], headerCarrier: HeaderCarrier) extends JsonAuditModel with JsonUtils {
+                           (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
 
   override val auditType: String = "PenaltyAppealSubmitted"
   override val transactionName: String = "penalties-appeal-submitted"

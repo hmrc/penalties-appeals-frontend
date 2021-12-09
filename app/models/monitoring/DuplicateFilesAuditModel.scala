@@ -19,11 +19,10 @@ package models.monitoring
 import models.UserRequest
 import play.api.libs.json._
 import services.monitoring.JsonAuditModel
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.JsonUtils
 
 case class DuplicateFilesAuditModel(duplicateFiles: JsValue)
-                                   (implicit request: UserRequest[_], headerCarrier: HeaderCarrier) extends JsonAuditModel with JsonUtils {
+                                   (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
   override val auditType: String = "PenaltyDuplicateFilesSubmitted"
   override val transactionName: String = "penalties-duplicate-files-submitted"
   override val detail: JsValue = jsonObjNoNulls(

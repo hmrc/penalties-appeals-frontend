@@ -21,7 +21,6 @@ import config.AppConfig
 import org.mockito.Mockito.{mock, when}
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.HeaderNames
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.UUIDGenerator
 
 
@@ -39,7 +38,6 @@ class HeaderGeneratorSpec extends AnyWordSpec with HeaderNames with SpecBase {
     "create headers" in {
       when(mockAppConfig.pegaEnvironment) thenReturn env
       when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val headers = testHeaderGenerator.headersForPEGA().toMap
       headers("CorrelationId") shouldBe  correlationId
       headers("Environment") shouldBe env
@@ -49,7 +47,6 @@ class HeaderGeneratorSpec extends AnyWordSpec with HeaderNames with SpecBase {
       when(mockAppConfig.pegaEnvironment) thenReturn env
       when(mockAppConfig.pegaBearerToken).thenReturn(bearerToken)
       when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val headers = testHeaderGenerator.headersForPEGA().toMap
       headers("CorrelationId") shouldBe  correlationId
       headers("Environment") shouldBe env
@@ -60,7 +57,6 @@ class HeaderGeneratorSpec extends AnyWordSpec with HeaderNames with SpecBase {
       when(mockAppConfig.pegaEnvironment) thenReturn env
       when(mockAppConfig.pegaBearerToken).thenReturn("")
       when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val headers = testHeaderGenerator.headersForPEGA().toMap
       headers("CorrelationId") shouldBe  correlationId
       headers("Environment") shouldBe env
