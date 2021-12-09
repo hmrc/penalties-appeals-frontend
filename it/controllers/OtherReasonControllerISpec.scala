@@ -677,7 +677,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       val request = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequestWithCorrectKeys)
       status(request) shouldBe OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select(".govuk-inset-text").text() should startWith("4 of the documents you have uploaded have the same contents.")
+      parsedBody.select(".govuk-inset-text").text() should startWith("4 of the files you have uploaded have the same contents.")
     }
 
     "return 303 (SEE_OTHER) when the user has no uploads" in new Setup {
