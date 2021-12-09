@@ -627,7 +627,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       val request = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequestWithCorrectKeys)
       status(request) shouldBe OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select(".govuk-inset-text").text() should startWith("Document 1 has the same contents as Document 2.")
+      parsedBody.select(".govuk-inset-text").text() should startWith("File 1 has the same contents as File 2.")
     }
 
     "return OK and the correct view - showing the inset text for multiple duplicate uploads" in new Setup {
