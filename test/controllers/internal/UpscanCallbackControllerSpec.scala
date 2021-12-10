@@ -19,12 +19,14 @@ package controllers.internal
 import base.SpecBase
 import models.upload._
 import org.mongodb.scala.Document
+import org.scalatest.concurrent.Eventually.eventually
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.mongo.cache.DataKey
 
 import java.time.LocalDateTime
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class UpscanCallbackControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
@@ -142,25 +144,44 @@ class UpscanCallbackControllerSpec extends SpecBase {
     "return NO CONTENT" when {
       lazy val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       "the body is valid and state has been updated" in new Setup {
-        val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan))
-        status(result) shouldBe NO_CONTENT
-        val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-        modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModel.copy(lastUpdated = mockDateTime)
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
+        val result = await(controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan)))
+        result.header.status shouldBe NO_CONTENT
+        eventually {
+          val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
+          modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModel.copy(lastUpdated = mockDateTime)
+        }
       }
 
       "the file is rejected and state has been updated" in new Setup {
-        val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(callbackFromUpscanWithFailure))
-        status(result) shouldBe NO_CONTENT
-        val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-        modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelWithFailure.copy(lastUpdated = mockDateTime)
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
+        val result = await(controller.callbackFromUpscan("12345")(fakeRequest.withBody(callbackFromUpscanWithFailure)))
+        result.header.status shouldBe NO_CONTENT
+        eventually {
+          val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
+          modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelWithFailure.copy(lastUpdated = mockDateTime)
+        }
       }
 
       "the file is accepted but the file is a duplicate - mark as duplicate and keep the upload details (valid case)" in new Setup {
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
         await(repository.updateStateOfFileUpload("12345", uploadJourneyModel))
-        val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscanDuplicate))
-        status(result) shouldBe NO_CONTENT
+        //Used to get around a race condition
+        eventually {
+          await(repository.getUploadsForJourney(Some("12345")).map(_.get.find(_.reference == "ref1").get)).fileStatus shouldBe UploadStatusEnum.READY
+        }
+        val result = await(controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscanDuplicate)))
+        result.header.status shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref2"))).get
         modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelDuplicate.copy(lastUpdated = mockDateTime)
+      }
+
+      "a callback has been received but the user has requested for the file to be removed" in new Setup {
+        val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan))
+        status(result) shouldBe NO_CONTENT
+        val modelInRepo: Option[UploadJourney] = await(repository.get[UploadJourney]("12345")(DataKey("ref1")))
+        modelInRepo.isEmpty shouldBe true
       }
     }
   }

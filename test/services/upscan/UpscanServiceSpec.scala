@@ -64,10 +64,10 @@ class UpscanServiceSpec extends SpecBase {
     "return Right and update the journey in Mongo when the call succeeds" in new Setup {
       when(connector.initiateToUpscan(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1", UploadFormTemplateRequest("/", Map.empty)))))
-      when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(CacheItem("", Json.obj(), Instant.now(), Instant.now())))
+      when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("file1")))
       val result: Either[UpscanInitiateHttpParser.ErrorResponse, UpscanInitiateResponseModel] =
-        await(service.initiateSynchronousCallToUpscan("J1234", isAddingAnotherDocument = false, NormalMode))
+        await(service.initiateSynchronousCallToUpscan("J1234", false, NormalMode))
       result.isRight shouldBe true
     }
   }

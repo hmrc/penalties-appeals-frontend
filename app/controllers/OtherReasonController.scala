@@ -284,6 +284,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                     logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
                     Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                   } else {
+                    logger.debug("[OtherReasonController][removeFileUpload] - More documents exist - reloading the upload list page")
                     Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
                   }
                 }

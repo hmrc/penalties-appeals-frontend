@@ -136,8 +136,9 @@ class MultiFileUpload {
 
         if (ref) {
             this.setItemState(item, status.Removing);
-            this.requestRemoveFile(file);
+            this.requestRemoveFile(file, false);
         } else {
+            this.requestRemoveFile(file, false);
             this.removeItem(item);
         }
     }
@@ -186,14 +187,23 @@ class MultiFileUpload {
     }
 
     /** F13 */
-    requestRemoveFile(file) {
-        const item = this.getItemFromFile(file);
-        fetch(this.getRemoveUrl(file.dataset.multiFileUploadFileRef), {
+    requestRemoveFile(file, isInit) {
+        let item;
+        let ref;
+        if (!isInit) {
+            item = this.getItemFromFile(file);
+            ref = file.dataset.multiFileUploadFileRef;
+        } else {
+            ref = file.reference;
+        }
+        fetch(this.getRemoveUrl(ref), {
             method: 'POST'
         })
             .then(this.requestRemoveFileCompleted.bind(this, file))
             .catch(() => {
-                this.setItemState(item, status.Uploaded);
+                if (!isInit) {
+                    this.setItemState(item, status.Uploaded);
+                }
             });
     }
 
@@ -216,7 +226,7 @@ class MultiFileUpload {
         this.updateFormStatusVisibility();
 
         if (this.getItems().length === 0) {
-            this.addItem();
+            this.addItem(true, true);
         }
 
         delete this.uploadData[file.id];
@@ -279,7 +289,7 @@ class MultiFileUpload {
         const file = this.getFileFromItem(nextItem);
 
         this.setItemState(nextItem, status.Uploading);
-        this.provisionUpload(file);
+        this.provisionUpload(file, false);
     }
 
     /** F20 */
@@ -378,14 +388,14 @@ class MultiFileUpload {
         const item = this.getItemFromFile(file);
         item.querySelector(`.${this.classes.fileName}`).style.display = "none";
         this.updateFormStatusVisibility();
-        this.addError(file,this.messages.genericError);
+        this.addError(file, this.messages.genericError);
     }
 
     /** F30 */
     handleFileStatusFailed(file, errorMessage) {
         const item = this.getItemFromFile(file);
         item.querySelector(`.${this.classes.fileName}`).style.display = "none";
-        this.setItemState(item,status.Default);
+        this.setItemState(item, status.Default);
         this.addError(file.id, errorMessage);
         this.updateFormStatusVisibility();
     }
@@ -598,10 +608,10 @@ class MultiFileUpload {
     }
 
     /** F50 */
-    provisionUpload(file) {
+    provisionUpload(file, placeholder) {
         const item = this.getItemFromFile(file);
 
-        if (Object.prototype.hasOwnProperty.call(this.uploadData, file.id)) {
+        if (Object.prototype.hasOwnProperty.call(this.uploadData, file.id) && !placeholder) {
             this.prepareFileUpload(file);
 
             return;
@@ -611,7 +621,7 @@ class MultiFileUpload {
         this.uploadData[file.id].provisionPromise = this.requestProvisionUpload(file);
 
         this.uploadData[file.id].provisionPromise.then(() => {
-            if (item.parentNode !== null) {
+            if (item.parentNode !== null && !placeholder) {
                 this.prepareFileUpload(file);
             }
         });
@@ -627,25 +637,29 @@ class MultiFileUpload {
     /** F52 */
     createInitialRows() {
         let rowCount = 0;
+        this.config.uploadedFiles.filter(file => file['fileStatus'] === 'WAITING' || file['fileStatus'] === 'FAILED').forEach(fileData => {
+            this.requestRemoveFile(fileData, true);
+        });
+
         this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY' || file['fileStatus'] === 'DUPLICATE').forEach(fileData => {
             this.createUploadedItem(fileData);
             rowCount++;
         });
 
-        if(this.config.uploadedFiles.filter(file => file['fileStatus'] === 'DUPLICATE').length > 0) {
+        if (this.config.uploadedFiles.filter(file => file['fileStatus'] === 'DUPLICATE').length > 0) {
             this.setDuplicateInsetText();
         }
 
         if (rowCount < this.config.startRows) {
             for (let a = rowCount; a < this.config.startRows; a++) {
-                this.addItem();
+                this.addItem(true, this.config.uploadedFiles.length === 0);
             }
         }
     }
 
     /** F53 */
     createUploadedItem(fileData) {
-        const item = this.addItem();
+        const item = this.addItem(true, false);
         const file = this.getFileFromItem(item);
         const fileName = this.extractFileName(fileData['uploadDetails']['fileName']);
 
@@ -669,14 +683,14 @@ class MultiFileUpload {
 
     /** F55 */
     handleAddItem() {
-        const item = this.addItem();
+        const item = this.addItem(false, false);
         const file = this.getFileFromItem(item);
 
         file.focus();
     }
 
     /** F56 */
-    addItem() {
+    addItem(isInit, isNoExistingUploads) {
         const item = this.parseHtml(this.itemTpl, {
             fileNumber: (this.getItems().length + 1).toString(),
             fileIndex: (++this.lastFileIndex).toString()
@@ -685,9 +699,11 @@ class MultiFileUpload {
         this.bindUploadEvents(item);
         this.bindItemEvents(item);
         this.itemList.append(item);
-
         this.updateButtonVisibility();
-
+        if (!isInit || isNoExistingUploads) {
+            const file = this.getFileFromItem(item);
+            this.provisionUpload(file, true);
+        }
         return item;
     }
 
@@ -792,10 +808,10 @@ class MultiFileUpload {
     /** F73 */
     setDuplicateInsetText() {
         fetch(this.getDuplicateUrl(), {
-                method: 'GET'
-            })
-        .then(response => response.json())
-        .then(this.showInsetText.bind(this))
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(this.showInsetText.bind(this))
     }
 
     /** F74 */
@@ -807,7 +823,7 @@ class MultiFileUpload {
     showInsetText(response) {
         const message = response['message'];
         console.log(message);
-        if(message === undefined) {
+        if (message === undefined) {
             this.container.querySelector(".govuk-inset-text").classList.add("hidden");
             this.container.querySelector(".govuk-inset-text").ariaHidden = "true";
         } else {

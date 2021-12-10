@@ -16,14 +16,14 @@
 
 package stubs
 
-import java.time.LocalDateTime
-
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.http.Fault
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.PenaltyTypeEnum
 import play.api.http.Status
 import play.api.libs.json.Json
+
+import java.time.LocalDateTime
 
 object PenaltiesStub {
   private val appealUriForLSP = "/penalties/appeals-data/late-submissions"

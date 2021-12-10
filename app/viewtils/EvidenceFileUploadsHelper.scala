@@ -43,8 +43,10 @@ class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
   def getInsetTextForUploadsInRepository(journeyId: String)(implicit messages: Messages): Future[Option[String]] = {
     uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).map(_.fold[Option[String]](None)(
       uploads => {
-        val uploadedFiles: Seq[(UploadJourney, Int)] = uploads.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE).zipWithIndex
-        getInsetTextMessage(uploadedFiles)
+        val uploadedFiles: Seq[(UploadJourney, Int)] = uploads.zipWithIndex
+        val uploadedFilesExcludingErrorsAndWaiting: Seq[(UploadJourney, Int)] = uploadedFiles.filterNot(fileAndIndex =>
+          fileAndIndex._1.fileStatus == UploadStatusEnum.FAILED || fileAndIndex._1.fileStatus == UploadStatusEnum.WAITING)
+        getInsetTextMessage(uploadedFilesExcludingErrorsAndWaiting)
       }
     ))
   }

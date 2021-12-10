@@ -16,14 +16,14 @@
 
 package repositories
 
-import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatus, UploadStatusEnum}
+import models.upload._
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
 import play.api.test.Helpers._
-import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey}
+import uk.gov.hmrc.mongo.cache.DataKey
 import utils.IntegrationSpecCommonBase
-import java.time.LocalDateTime
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
@@ -81,10 +81,20 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   "updateStateOfFileUpload" should {
     "update the state based on the callback from Upscan" in new Setup {
-      val result: CacheItem = await(repository.updateStateOfFileUpload("1234", callbackModel))
-      result.id shouldBe "1234"
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
       val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("1234")(DataKey("ref1"))).get
       modelInRepository shouldBe callbackModel
+    }
+
+    "not update the state when the document does not exist" in new Setup {
+      val modelInRepository: Option[UploadJourney] = await(repository.get[UploadJourney]("1234")(DataKey("ref1")))
+      modelInRepository.isEmpty shouldBe true
+    }
+
+    "not update the state when the document requested to be updated is not part of the initiate call not exist" in new Setup {
+      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      val modelInRepository: Option[UploadJourney] = await(repository.get[UploadJourney]("1234")(DataKey("ref1")))
+      modelInRepository.isEmpty shouldBe true
     }
   }
 
@@ -95,14 +105,14 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     }
 
     s"return $Some when the document is in Mongo" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
       val result: Option[UploadStatus] = await(repository.getStatusOfFileUpload("1234", "ref1"))
       result.isDefined shouldBe true
       result.get.status shouldBe UploadStatusEnum.READY.toString
     }
 
     s"return $Some when the document is in Mongo (failed upload)" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModelFailed))
+      await(repository.updateStateOfFileUpload("1234", callbackModelFailed, isInitiateCall = true))
       val result: Option[UploadStatus] = await(repository.getStatusOfFileUpload("1234", "ref1"))
       result.isDefined shouldBe true
       result.get.status shouldBe FailureReasonEnum.QUARANTINE.toString
@@ -124,7 +134,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     }
 
     s"return $Some when the document is in Mongo" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
       val result: Option[Seq[UploadJourney]] = await(repository.getUploadsForJourney(Some("1234")))
       result.isDefined shouldBe true
       result.get shouldBe Seq(callbackModel)
@@ -133,8 +143,8 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   "getNumberOfDocumentsForJourneyId" should {
     "return the amount of uploads" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
-      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
     }
 
@@ -146,7 +156,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   "removeUploadsForJourney" should {
     "remove the document for the given journey ID" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
       await(repository.collection.countDocuments().toFuture()) shouldBe 1
       await(repository.removeUploadsForJourney("1234"))
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
@@ -161,8 +171,8 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   "removeFileForJourney" should {
     "remove the file in the journey if it exists" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
-      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
       await(repository.removeFileForJourney("1234", "ref1"))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
@@ -170,23 +180,23 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     }
 
     "remove the whole document if the user removes their last upload" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
       await(repository.removeFileForJourney("1234", "ref1"))
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
     }
 
     "do not remove the file in the journey if the file specified doesn't exist" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
-      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
       await(repository.removeFileForJourney("1234", "ref1234"))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
     }
 
     "do not remove the file in the journey if the journey specified doesn't exist" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
-      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
       await(repository.removeFileForJourney("1235", "ref1234"))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
@@ -195,14 +205,14 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   "getAllChecksumsForJourney" should {
     "retrieve all checksums for all READY uploads" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
-      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
       val result = await(repository.getAllChecksumsForJourney(Some("1234")))
       result.size shouldBe 2
     }
 
     "return an empty Seq if only failed uploads are present" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModelFailed))
+      await(repository.updateStateOfFileUpload("1234", callbackModelFailed, isInitiateCall = true))
       val result = await(repository.getAllChecksumsForJourney(Some("1234")))
       result.isEmpty shouldBe true
     }
