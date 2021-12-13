@@ -44,7 +44,6 @@ class UploadJourneyRepository @Inject()(
   def updateStateOfFileUpload(journeyId: String, callbackModel: UploadJourney, isInitiateCall: Boolean = false): Future[Option[String]] = {
     get[UploadJourney](journeyId)(DataKey(callbackModel.reference)).flatMap(
       document => {
-        println("running")
         if (document.isDefined || isInitiateCall) {
           put(journeyId)(DataKey(callbackModel.reference), callbackModel).map(item => {
             logger.debug(s"[UploadJourneyRepository][updateStateOfFileUpload] - updating state of file (reference: ${callbackModel.reference}) upload in repository: " +

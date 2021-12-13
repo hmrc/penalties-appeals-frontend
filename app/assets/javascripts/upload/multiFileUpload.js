@@ -199,7 +199,7 @@ class MultiFileUpload {
         fetch(this.getRemoveUrl(ref), {
             method: 'POST'
         })
-            .then(this.requestRemoveFileCompleted.bind(this, file))
+            .then(this.requestRemoveFileCompleted.bind(this, file, isInit))
             .catch(() => {
                 if (!isInit) {
                     this.setItemState(item, status.Uploaded);
@@ -208,12 +208,12 @@ class MultiFileUpload {
     }
 
     /** F14 */
-    requestRemoveFileCompleted(file) {
-        const item = file.closest(`.${this.classes.item}`);
-
+    requestRemoveFileCompleted(file, isInit) {
         this.setDuplicateInsetText();
-
-        this.removeItem(item);
+        if(!isInit) {
+            const item = file.closest(`.${this.classes.item}`);
+            this.removeItem(item);
+        }
     }
 
     /** F15 */
@@ -646,15 +646,12 @@ class MultiFileUpload {
             rowCount++;
         });
 
-        if (this.config.uploadedFiles.filter(file => file['fileStatus'] === 'DUPLICATE').length > 0) {
-            this.setDuplicateInsetText();
-        }
-
         if (rowCount < this.config.startRows) {
             for (let a = rowCount; a < this.config.startRows; a++) {
                 this.addItem(true, this.config.uploadedFiles.length === 0);
             }
         }
+        this.setDuplicateInsetText();
     }
 
     /** F53 */
@@ -822,7 +819,6 @@ class MultiFileUpload {
     /** F75 */
     showInsetText(response) {
         const message = response['message'];
-        console.log(message);
         if (message === undefined) {
             this.container.querySelector(".govuk-inset-text").classList.add("hidden");
             this.container.querySelector(".govuk-inset-text").ariaHidden = "true";
