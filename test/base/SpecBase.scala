@@ -156,7 +156,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
       s"""
         | <div class="govuk-summary-list__row" id="document-row-${fileNumber + 1}">
         |   <dt class="govuk-summary-list__key">
-        |    Document ${fileNumber + 1}
+        |    File ${fileNumber + 1}
         |   </dt>
         |   <dd class="govuk-summary-list__value">
         |    $fileName
@@ -166,7 +166,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
         |     <input type="hidden" name="fileReference" value="$fileReference">
         |     <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-${fileNumber + 1}">
         |       Remove
-        |       <span class="govuk-visually-hidden">Document ${fileNumber + 1}</span>
+        |       <span class="govuk-visually-hidden">File ${fileNumber + 1}</span>
         |     </button>
         |   </form>
         |</dd>

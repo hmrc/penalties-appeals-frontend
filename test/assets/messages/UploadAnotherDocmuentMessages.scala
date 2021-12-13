@@ -18,13 +18,13 @@ package messages
 
 object UploadAnotherDocmuentMessages {
 
-  val title = "Add another document (optional) - Appeal a VAT penalty - GOV.UK"
+  val title = "Add another file (optional) - Appeal a VAT penalty - GOV.UK"
 
-  val h1 = "Add another document (optional)"
+  val h1 = "Add another file (optional)"
 
-  val p1 = "You can upload up to 5 documents."
+  val p1 = "You can upload up to 5 files."
 
-  val p2 = "Each document must be smaller than 6MB."
+  val p2 = "Each file must be smaller than 6MB."
 
   val detailsHeading = "Types of file you can upload"
 
@@ -40,7 +40,7 @@ object UploadAnotherDocmuentMessages {
 
   val detailsLi5 = "Open Document Format (ODF)"
 
-  val detailsP2 = "You cannot upload zip files or documents that are password-protected."
+  val detailsP2 = "You cannot upload zip files or documents that are protected by a password."
 
   val detailsP3 = "We’ll scan all files and reject any we think are suspicious."
 

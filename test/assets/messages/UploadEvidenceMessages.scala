@@ -24,19 +24,19 @@ object UploadEvidenceMessages {
 
   val p1 = "Use this page to upload any evidence to help us review the penalty."
 
-  val p2 = "Evidence might include any documents or letters that show why the return was submitted late."
+  val p2 = "Evidence might include documents or letters that show why the return was submitted late."
 
-  val p2Lpp = "Evidence might include any documents or letters that show why the VAT bill was paid late."
+  val p2Lpp = "Evidence might include documents or letters that show why the VAT bill was paid late."
 
-  val p2AppealAgainstObligation = "Evidence might include any documents or letters that show why the business did not need to submit a return."
+  val p2AppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return."
 
-  val p2LPPAppealAgainstObligation = "Evidence might include any documents or letters that show why the business did not need to submit a return and pay VAT."
+  val p2LPPAppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT."
 
   val p3 = "We will still review your appeal if you do not upload evidence."
 
-  val p4 = "You can upload up to 5 documents."
+  val p4 = "You can upload up to 5 files."
 
-  val p5 = "Each document must be smaller than 6MB."
+  val p5 = "Each file must be smaller than 6MB."
 
   val detailsHeading = "Types of file you can upload"
 
@@ -52,13 +52,13 @@ object UploadEvidenceMessages {
 
   val detailsLi5 = "Open Document Format (ODF)"
 
-  val detailsP2 = "You cannot upload zip files or documents that are password-protected."
+  val detailsP2 = "You cannot upload zip files or documents that are protected by a password."
 
   val detailsP3 = "We’ll scan all files and reject any we think are suspicious."
 
-  val document1 = "Document 1"
+  val document1 = "File 1"
 
-  val addAnotherButton = "Add another document"
+  val addAnotherButton = "Add another file"
 
   val continueButton = "Continue"
 

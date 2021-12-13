@@ -42,11 +42,11 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
   val uploadMultipleRows: Seq[Html] = Seq(uploadListRow(1, "file1.txt", "ref1"), uploadListRow(2, "file2.txt", "ref2"))
 
   val optInsetTextForMultipleDuplicates: String => Option[Html] = item1 => Some(
-    insetText(s"$item1 of the documents you have uploaded have the same contents. You can remove duplicate documents using the ‘Remove‘ link.")
+    insetText(s"$item1 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link.")
   )
 
   val optInsetText: (String, String) => Option[Html] = (item1, item2) => Some(
-    insetText(s"Document $item1 has the same contents as Document $item2. You can remove duplicate documents using the ‘Remove‘ link.")
+    insetText(s"File $item1 has the same contents as File $item2. You can remove duplicate files using the ’Remove’ link.")
   )
 
   val uploadMaxRow: Seq[Html] = Seq(
