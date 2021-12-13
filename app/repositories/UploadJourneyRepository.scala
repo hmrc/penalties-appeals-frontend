@@ -17,9 +17,8 @@
 package repositories
 
 import config.AppConfig
-import uk.gov.hmrc.mongo.cache.DataKey
 import models.upload.{UploadJourney, UploadStatus}
-import uk.gov.hmrc.mongo.cache.{CacheIdType, MongoCacheRepository}
+import uk.gov.hmrc.mongo.cache.{CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 import utils.Logger.logger
 

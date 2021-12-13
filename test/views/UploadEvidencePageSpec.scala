@@ -18,8 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.UploadEvidenceMessages._
-import models.upload.UploadJourney
 import models.PenaltyTypeEnum
+import models.upload.UploadJourney
 import org.jsoup.nodes.Document
 import play.api.libs.json.Json
 import play.api.test.FakeRequest

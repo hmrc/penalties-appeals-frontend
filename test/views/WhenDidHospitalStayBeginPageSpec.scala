@@ -16,8 +16,6 @@
 
 package views
 
-import java.time.LocalDate
-
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHospitalStayBeginForm
 import messages.WhenDidHospitalStayBeginMessages._
@@ -27,6 +25,8 @@ import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.WhenDidHospitalStayBeginPage
+
+import java.time.LocalDate
 
 class WhenDidHospitalStayBeginPageSpec extends SpecBase with ViewBehaviours{
   val whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginPage = injector.instanceOf[WhenDidHospitalStayBeginPage]

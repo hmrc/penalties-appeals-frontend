@@ -18,7 +18,7 @@ package viewtils
 
 import base.SpecBase
 import models.NormalMode
-import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._

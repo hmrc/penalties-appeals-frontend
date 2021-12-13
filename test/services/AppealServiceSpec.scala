@@ -367,6 +367,27 @@ class AppealServiceSpec extends SpecBase {
       verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
     }
 
+    "send an audit and filter out WAITING documents" in new Setup {
+      val uploadAsReady: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+          checksum = "check12345678",
+          size = 987
+        ))
+      )
+      val duplicateUpload: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
+      val waitingUpload: UploadJourney = uploadAsReady.copy(reference = "ref3", fileStatus = UploadStatusEnum.WAITING, downloadUrl = None, uploadDetails = None)
+      when(mockAuditService.getAllDuplicateUploadsForAppealSubmission(any()))
+        .thenReturn(Json.obj("mocked" -> "value"))
+      service.sendAuditIfDuplicatesExist(Some(Seq(uploadAsReady, duplicateUpload, waitingUpload)))(fakeRequestForOtherJourney, implicitly, implicitly)
+      verify(mockAuditService, times(1)).audit(any())(any(), any(), any())
+    }
+
     "send an audit when duplicates exist" in new Setup {
       val uploadAsReady: UploadJourney = UploadJourney(
         reference = "ref1",

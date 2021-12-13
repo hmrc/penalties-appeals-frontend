@@ -20,11 +20,11 @@ import base.SpecBase
 import models.pages._
 import models.{CheckMode, NormalMode}
 import org.mockito.Mockito._
+import play.api.mvc.Call
 import utils.SessionKeys
 import views.html.HonestyDeclarationPage
-import java.time.LocalDateTime
 
-import play.api.mvc.Call
+import java.time.LocalDateTime
 
 class NavigationSpec extends SpecBase {
   val honestyDeclarationPage: HonestyDeclarationPage = injector.instanceOf[HonestyDeclarationPage]

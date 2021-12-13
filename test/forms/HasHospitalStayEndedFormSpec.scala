@@ -17,10 +17,10 @@
 package forms
 
 import base.SpecBase
-import play.api.data.{Form, FormError}
-import java.time.LocalDate
-
 import models.appeals.HospitalStayEndInput
+import play.api.data.{Form, FormError}
+
+import java.time.LocalDate
 
 class HasHospitalStayEndedFormSpec extends FormBehaviours with SpecBase {
   val sampleStartDate: LocalDate = LocalDate.parse("2020-01-02")

@@ -31,12 +31,10 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.mongo.cache.CacheItem
 import utils.SessionKeys
-
-import java.time.{Instant, LocalDateTime}
 import viewtils.EvidenceFileUploadsHelper
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

@@ -16,8 +16,6 @@
 
 package views
 
-import java.time.LocalDate
-
 import base.{BaseSelectors, SpecBase}
 import forms.HasHospitalStayEndedForm
 import messages.HasTheHospitalStayEndedMessages._
@@ -29,6 +27,8 @@ import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.HasTheHospitalStayEndedPage
 import viewtils.ConditionalRadioHelper
+
+import java.time.LocalDate
 
 class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
   "HasTheHospitalStayEndedPage" should {

@@ -174,9 +174,11 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         lastUpdated = LocalDateTime.now()
       )
       val uploadAsDuplicate: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
+      val uploadAsWaiting: UploadJourney = uploadAsReady.copy(reference = "ref3", fileStatus = UploadStatusEnum.WAITING, downloadUrl = None, uploadDetails = None)
       successfulAppealSubmission(isLPP = false, "1234")
       await(repository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
       await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", uploadAsWaiting, isInitiateCall = true))
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",

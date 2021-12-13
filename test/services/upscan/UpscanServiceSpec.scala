@@ -25,7 +25,6 @@ import models.upload._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository

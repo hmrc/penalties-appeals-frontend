@@ -19,7 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadDocumentForm
 import messages.UploadFirstDocumentMessages._
-import models.{NormalMode, PenaltyTypeEnum}
+import models.PenaltyTypeEnum
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import org.jsoup.nodes.Document
 import play.api.test.FakeRequest
