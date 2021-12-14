@@ -17,6 +17,7 @@
 package helpers
 
 import java.time.LocalDate
+
 import javax.inject.Inject
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages

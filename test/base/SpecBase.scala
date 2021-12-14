@@ -162,7 +162,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
         |    $fileName
         |   </dd>
         |   <dd class="govuk-summary-list__actions">
-        |   <form action="/penalties-appeals/remove-file-upload" method="POST" novalidate>
+        |   <form method="POST" novalidate action="/penalties-appeals/remove-file-upload">
         |     <input type="hidden" name="fileReference" value="$fileReference">
         |     <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-${fileNumber + 1}">
         |       Remove

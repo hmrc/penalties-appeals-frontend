@@ -16,12 +16,11 @@
 
 package models.appeals
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import models.monitoring.DuplicateFilesAuditModel
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.HeaderCarrier
-
-import java.time.LocalDateTime
 
 class DuplicateFilesAuditModelSpec  extends SpecBase {
   val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
@@ -46,17 +45,17 @@ class DuplicateFilesAuditModelSpec  extends SpecBase {
 
   "DuplicateFilesAuditModel" should {
     "the audit type should be correct" in {
-      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(userRequestWithCorrectKeys, HeaderCarrier())
+      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(userRequestWithCorrectKeys)
       model.auditType shouldBe "PenaltyDuplicateFilesSubmitted"
     }
 
     "the transaction name should be correct" in {
-      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(userRequestWithCorrectKeys, HeaderCarrier())
+      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(userRequestWithCorrectKeys)
       model.auditType shouldBe "PenaltyDuplicateFilesSubmitted"
     }
 
     "the detail section should be correct (for client)" in {
-      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(userRequestWithCorrectKeys, HeaderCarrier())
+      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(userRequestWithCorrectKeys)
       model.detail shouldBe Json.obj(
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
@@ -66,7 +65,7 @@ class DuplicateFilesAuditModelSpec  extends SpecBase {
     }
 
     "the detail section should be correct (for agent)" in {
-      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(agentUserSessionKeys, HeaderCarrier())
+      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(agentUserSessionKeys)
       model.detail shouldBe Json.obj(
         "submittedBy" -> "agent",
         "taxIdentifier" -> "123456789",

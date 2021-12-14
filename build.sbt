@@ -17,7 +17,6 @@ lazy val microservice = Project(appName, file("."))
       "play.twirl.api.HtmlFormat",
       "config.AppConfig",
       "uk.gov.hmrc.govukfrontend.views.html.components._",
-      "uk.gov.hmrc.govukfrontend.views.html.helpers._",
       "models.Mode",
       "views.html.layouts.Layout",
       "controllers.routes._",
