@@ -378,7 +378,7 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.dateOfCrime -> "2022-01-01",
         SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-        SessionKeys.causeOfLateSubmissionAgent -> "client")
+        SessionKeys.whatCausedYouToMissTheDeadline -> "client")
       )
 
       val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false, 0, agentReferenceNo = Some("1234567890"))(fakeAgentRequestForCrimeJourney)

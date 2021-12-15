@@ -430,9 +430,9 @@ checkYourAnswers.other.noFileUpload = Not provided
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn = Before the deadline, who planned to submit the return?
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.client = My client did
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = I did
-checkYourAnswers.agents.whyWasTheReturnSubmittedLate = Why was the return submitted late?
-checkYourAnswers.agents.whyWasTheReturnSubmittedLate.client = My client did not get information to me on time
-checkYourAnswers.agents.whyWasTheReturnSubmittedLate.agent = Something else happened to delay me
+checkYourAnswers.agents.whatCausedYouToMissTheDeadline = What caused you to miss the deadline?
+checkYourAnswers.agents.whatCausedYouToMissTheDeadline.client = My client did not get information to me on time
+checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Something else happened to delay me
 
 checkYourAnswers.obligation.whyYouWantToAppealPenalty = Tell us why you want to appeal the penalty
 checkYourAnswers.obligation.fileEvidence = Evidence to support this appeal
@@ -464,13 +464,13 @@ makingALateAppeal.heading = This penalty was issued more than 30 days ago
 makingALateAppeal.p1 = You usually need to appeal within 30 days of the date on the penalty notice. Tell us here why you could not appeal within 30 days.
 makingALateAppeal.error.required = You must provide some information about why you did not appeal sooner
 
-# Agents 'Why was return submitted late?'
+# Agents 'What caused you to miss the deadline?'
 # ----------------------------------------------------------
-agents.whyWasTheReturnSubmittedLate.title = Why was the return submitted late?
-agents.whyWasTheReturnSubmittedLate.heading = Why was the return submitted late?
-agents.whyWasTheReturnSubmittedLate.option.client = My client did not get information to me on time
-agents.whyWasTheReturnSubmittedLate.option.agent = Something else happened to delay me
-agents.whyWasTheReturnSubmittedLate.error.invalid = Tell us the reason the return was submitted late
+agents.whatCausedYouToMissTheDeadline.title = What caused you to miss the deadline?
+agents.whatCausedYouToMissTheDeadline.heading = What caused you to miss the deadline?
+agents.whatCausedYouToMissTheDeadline.option.client = My client did not get information to me on time
+agents.whatCausedYouToMissTheDeadline.option.agent = Something else happened to delay me
+agents.whatCausedYouToMissTheDeadline.error.invalid = Tell us what caused you to miss the deadline
 
 # Other penalties for period page - Appeal against obligation
 # ----------------------------------------------------------

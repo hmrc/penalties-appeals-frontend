@@ -125,7 +125,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
     SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-    SessionKeys.causeOfLateSubmissionAgent -> "client")
+    SessionKeys.whatCausedYouToMissTheDeadline -> "client")
   )
 
   val agentUserLPP: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(

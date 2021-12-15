@@ -17,7 +17,7 @@
 package viewtils
 
 import base.SpecBase
-import forms.{HasCrimeBeenReportedForm, WhoPlannedToSubmitVATReturnAgentForm, WhyReturnWasSubmittedLateAgentForm}
+import forms.{HasCrimeBeenReportedForm, WhoPlannedToSubmitVATReturnAgentForm, WhatCausedYouToMissTheDeadlineForm}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
@@ -72,9 +72,9 @@ class RadioOptionHelperSpec extends SpecBase {
     }
   }
   
- "radioOptionsForWhyReturnSubmittedLateAgent" should {
-    "return the correct radio options for the WhyReturnSubmittedLatePage - no option has been selected" in {
-      val form = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
+ "radioOptionsForWhatCausedAgentToMissDeadline" should {
+    "return the correct radio options for the WhatCausedYouToMisstheDeadlinePage - no option has been selected" in {
+      val form = WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm
       val expectedResult = Seq(
         RadioItem(
           value = Some("client"),
@@ -88,12 +88,12 @@ class RadioOptionHelperSpec extends SpecBase {
         )
       )
 
-      val result = RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(form)
+      val result = RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(form)
       result shouldBe expectedResult
     }
 
-    "return the correct radio options for the WhyReturnSubmittedLatePage - option has been selected" in {
-      val form = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm.fill("client")
+    "return the correct radio options for the WhatCausedYouToMisstheDeadlinePage - option has been selected" in {
+      val form = WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm.fill("client")
       val expectedResult = Seq(
         RadioItem(
           value = Some("client"),
@@ -107,7 +107,7 @@ class RadioOptionHelperSpec extends SpecBase {
         )
       )
 
-      val result = RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(form)
+      val result = RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(form)
       result shouldBe expectedResult
     }
   }

@@ -139,7 +139,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
             SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
             (SessionKeys.reasonableExcuse, "crime"),
             (SessionKeys.whoPlannedToSubmitVATReturn, "agent"),
-            (SessionKeys.causeOfLateSubmissionAgent, "client"),
+            (SessionKeys.whatCausedYouToMissTheDeadline, "client"),
             SessionKeys.journeyId -> "1234")
         )
         val request = controller.onPageLoad()(agentUserSessionKeys)

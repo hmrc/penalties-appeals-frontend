@@ -45,7 +45,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhyWasReturnSubmittedLatePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     EvidencePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request, _) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, CheckMode)),
-    WhyWasTheReturnSubmittedLateAgentPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhatCausedYouToMissTheDeadlinePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     ReasonableExcuseSelectionPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     OtherRelevantInformationPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
@@ -70,7 +70,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhyWasReturnSubmittedLatePage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
     EvidencePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request, _) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, NormalMode)),
-    WhyWasTheReturnSubmittedLateAgentPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
+    WhatCausedYouToMissTheDeadlinePage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     ReasonableExcuseSelectionPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     AppealStartPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
@@ -95,7 +95,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   def routingForWhoPlannedToSubmitVATReturnAgentPage(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
     if(answer.get.toLowerCase == "agent") {
-      routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(mode)
+      routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(mode)
     } else if(mode == NormalMode) {
       routes.ReasonableExcuseController.onPageLoad()
     } else {

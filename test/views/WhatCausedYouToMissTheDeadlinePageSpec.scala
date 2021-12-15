@@ -17,27 +17,27 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.WhyReturnWasSubmittedLateAgentForm
-import messages.WhyWasTheReturnSubmittedLateAgentMessages._
+import forms.WhatCausedYouToMissTheDeadlineForm
+import messages.WhatCausedYouToMissTheDeadlineMessages._
 import models.NormalMode
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.agents.WhyWasTheReturnSubmittedLateAgentPage
+import views.html.agents.WhatCausedYouToMissTheDeadlinePage
 import viewtils.RadioOptionHelper
 
-class WhyWasTheReturnSubmittedLateAgentPageSpec extends SpecBase with ViewBehaviours {
-  "WhyWasTheReturnSubmittedLateAgentPage" should {
-    val whyReturnSubmittedLate: WhyWasTheReturnSubmittedLateAgentPage = injector.instanceOf[WhyWasTheReturnSubmittedLateAgentPage]
-    val formProvider = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
+class WhatCausedYouToMissTheDeadlinePageSpec extends SpecBase with ViewBehaviours {
+  "WhatCausedYouToMissTheDeadlinePage" should {
+    val whatCausedYouToMissTheDeadlinePage: WhatCausedYouToMissTheDeadlinePage = injector.instanceOf[WhatCausedYouToMissTheDeadlinePage]
+    val formProvider = WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm
 
     object Selectors extends BaseSelectors
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = {
-      whyReturnSubmittedLate.apply(form,
-        RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(formProvider),
-          controllers.routes.AgentsController.onSubmitForWhyReturnSubmittedLate(NormalMode)
+      whatCausedYouToMissTheDeadlinePage.apply(form,
+        RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(formProvider),
+          controllers.routes.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)
       )
     }
 

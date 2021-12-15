@@ -484,7 +484,7 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
                 SessionKeys.wasHospitalStayRequired -> "no",
                 SessionKeys.whenHealthIssueHappened -> "2022-01-01",
                 SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-                SessionKeys.causeOfLateSubmissionAgent -> "client"
+                SessionKeys.whatCausedYouToMissTheDeadline -> "client"
               ))
 
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
@@ -508,7 +508,7 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
                 SessionKeys.whenHealthIssueHappened -> "2022-01-01",
                 SessionKeys.lateAppealReason -> "Lorem ipsum",
                 SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-                SessionKeys.causeOfLateSubmissionAgent -> "client"
+                SessionKeys.whatCausedYouToMissTheDeadline -> "client"
               ))
 
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
@@ -537,7 +537,7 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.causeOfLateSubmissionAgent -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -565,7 +565,7 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.causeOfLateSubmissionAgent -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -595,7 +595,7 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.causeOfLateSubmissionAgent -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -623,7 +623,7 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.causeOfLateSubmissionAgent -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -854,7 +854,7 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.wasHospitalStayRequired -> "no",
               SessionKeys.whenHealthIssueHappened -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.causeOfLateSubmissionAgent -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
             ))
 
           val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
@@ -1016,16 +1016,16 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
         val fakeRequestWithAgentKeysPresent = fakeRequest
           .withSession(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.causeOfLateSubmissionAgent -> "agent"
+            SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
           )
 
         val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
         result.head._1 shouldBe "Before the deadline, who planned to submit the return?"
         result.head._2 shouldBe "I did"
         result.head._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
-        result(1)._1 shouldBe "Why was the return submitted late?"
+        result(1)._1 shouldBe "What caused you to miss the deadline?"
         result(1)._2 shouldBe "Something else happened to delay me"
-        result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url
 
       }
     }
@@ -1035,16 +1035,16 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
         val fakeRequestWithAgentKeysPresent = fakeRequest
           .withSession(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.causeOfLateSubmissionAgent -> "client"
+            SessionKeys.whatCausedYouToMissTheDeadline -> "client"
           )
 
         val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
         result.head._1 shouldBe "Before the deadline, who planned to submit the return?"
         result.head._2 shouldBe "I did"
         result.head._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
-        result(1)._1 shouldBe "Why was the return submitted late?"
+        result(1)._1 shouldBe "What caused you to miss the deadline?"
         result(1)._2 shouldBe "My client did not get information to me on time"
-        result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url
 
       }
     }

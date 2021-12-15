@@ -34,7 +34,7 @@ case object WhyWasReturnSubmittedLatePage extends Page
 case object EvidencePage extends Page
 case object WhoPlannedToSubmitVATReturnAgentPage extends Page
 case object ReasonableExcuseSelectionPage extends Page
-case object WhyWasTheReturnSubmittedLateAgentPage extends Page
+case object WhatCausedYouToMissTheDeadlinePage extends Page
 case object WhenDidThePersonDiePage extends Page
 case object CancelVATRegistrationPage extends Page
 case object AppealStartPage extends Page

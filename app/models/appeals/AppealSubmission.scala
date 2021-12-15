@@ -465,7 +465,7 @@ object AppealSubmission {
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
+            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
       case "crime" =>
@@ -486,7 +486,7 @@ object AppealSubmission {
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
+            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
       case "fireOrFlood" =>
@@ -506,7 +506,7 @@ object AppealSubmission {
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
+            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
 
@@ -527,7 +527,7 @@ object AppealSubmission {
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
+            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
 
@@ -549,7 +549,7 @@ object AppealSubmission {
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
+            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
 
@@ -575,7 +575,7 @@ object AppealSubmission {
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
+            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
 
@@ -597,7 +597,7 @@ object AppealSubmission {
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.causeOfLateSubmissionAgent).map(_ == "client")
+            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
       case "obligation" =>

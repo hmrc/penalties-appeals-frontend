@@ -41,7 +41,7 @@ object SessionKeys {
   val whyReturnSubmittedLate = "whyReturnSubmittedLate"
   val whoPlannedToSubmitVATReturn = "whoPlannedToSubmitVATReturn"
   val agentSessionVrn = "mtdVatvcClientVrn"
-  val causeOfLateSubmissionAgent = "causeOfLateSubmissionAgent"
+  val whatCausedYouToMissTheDeadline = "whatCausedYouToMissTheDeadline"
   val whenDidThePersonDie = "whenDidThePersonDie"
   val isObligationAppeal = "isObligationAppeal"
   val cancelVATRegistration = "cancelVATRegistration"
@@ -76,7 +76,7 @@ object SessionKeys {
     whyReturnSubmittedLate,
     hasHealthEventEnded,
     whoPlannedToSubmitVATReturn,
-    causeOfLateSubmissionAgent,
+    whatCausedYouToMissTheDeadline,
     whenDidThePersonDie,
     isObligationAppeal,
     cancelVATRegistration,

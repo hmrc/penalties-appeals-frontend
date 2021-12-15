@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package messages
+package forms
 
-object WhyWasTheReturnSubmittedLateAgentMessages {
-  val title = "Why was the return submitted late? - Appeal a VAT penalty - GOV.UK"
+import forms.mappings.Mappings
+import play.api.data.Form
+import play.api.data.Forms.single
 
-  val heading = "Why was the return submitted late?"
+object WhatCausedYouToMissTheDeadlineForm extends Mappings {
+  final val options = Seq("agent", "client")
 
-  val clientRadioOption = "My client did not get information to me on time"
-
-  val agentRadioOption = "Something else happened to delay me"
-
-  val continueButton = "Continue"
+  val whatCausedYouToMissTheDeadlineForm: Form[String] = Form[String](
+    single(
+      "value" -> text("agents.whatCausedYouToMissTheDeadline.error.invalid")
+        .verifying("agents.whatCausedYouToMissTheDeadline.error.invalid", value => options.contains(value))
+    )
+  )
 }

@@ -40,7 +40,7 @@ class WasHospitalStayRequiredFormSpec extends FormBehaviours {
       .withSession(
         SessionKeys.agentSessionVrn -> "VRN1234",
         SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-        SessionKeys.causeOfLateSubmissionAgent -> "client")
+        SessionKeys.whatCausedYouToMissTheDeadline -> "client")
     )
 
     val agentForm = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(agentUserRequest)
