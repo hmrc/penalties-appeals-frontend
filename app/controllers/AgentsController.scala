@@ -18,7 +18,7 @@ package controllers
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.{WhoPlannedToSubmitVATReturnAgentForm, WhyReturnWasSubmittedLateAgentForm}
+import forms.{WhoPlannedToSubmitVATReturnAgentForm, WhatCausedYouToMissTheDeadlineForm}
 import helpers.FormProviderHelper
 import models.Mode
 import models.pages.{ReasonableExcuseSelectionPage, WhoPlannedToSubmitVATReturnAgentPage}
@@ -30,39 +30,39 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.agents.{WhoPlannedToSubmitVATReturnAgentPage, WhyWasTheReturnSubmittedLateAgentPage}
+import views.html.agents.{WhoPlannedToSubmitVATReturnAgentPage, WhatCausedYouToMissTheDeadlinePage}
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
 
 class AgentsController @Inject()(navigation: Navigation,
-                                          whyWasTheReturnSubmittedLatePage: WhyWasTheReturnSubmittedLateAgentPage,
+                                          whatCausedYouToMissTheDeadlinePage: WhatCausedYouToMissTheDeadlinePage,
                                           whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnAgentPage,
                                           errorHandler: ErrorHandler)
                                          (implicit mcc: MessagesControllerComponents,
                                           appConfig: AppConfig,
                                           authorise: AuthPredicate,
                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
-def onPageLoadForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+def onPageLoadForWhatCausedYouToMissTheDeadline(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit userRequest => {
-      logger.debug("[AgentsController][onPageLoadForWhyReturnSubmittedLate] - Loaded 'why was return submitted late' page as user is agent")
-      val postAction = controllers.routes.AgentsController.onSubmitForWhyReturnSubmittedLate(mode)
-      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm,
-        SessionKeys.causeOfLateSubmissionAgent)
-      Ok(whyWasTheReturnSubmittedLatePage(formProvider, RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(formProvider), postAction))
+      logger.debug("[AgentsController][onPageLoadForWhatCausedYouToMissTheDeadline] - Loaded 'what caused you to miss the deadline' page as user is agent")
+      val postAction = controllers.routes.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(mode)
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm,
+        SessionKeys.whatCausedYouToMissTheDeadline)
+      Ok(whatCausedYouToMissTheDeadlinePage(formProvider, RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(formProvider), postAction))
     }
   }
 
-  def onSubmitForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onSubmitForWhatCausedYouToMissTheDeadline(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit userRequest => {
-      val postAction = controllers.routes.AgentsController.onSubmitForWhyReturnSubmittedLate(mode)
-      WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm.bindFromRequest().fold(
+      val postAction = controllers.routes.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(mode)
+      WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm.bindFromRequest().fold(
         formWithErrors => {
-          BadRequest(whyWasTheReturnSubmittedLatePage(formWithErrors, RadioOptionHelper.radioOptionsForWhyReturnSubmittedLateAgent(formWithErrors), postAction))
+          BadRequest(whatCausedYouToMissTheDeadlinePage(formWithErrors, RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(formWithErrors), postAction))
         },
         causeOfLateSubmission => {
           Redirect(navigation.nextPage(ReasonableExcuseSelectionPage,mode))
-            .addingToSession(SessionKeys.causeOfLateSubmissionAgent -> causeOfLateSubmission)
+            .addingToSession(SessionKeys.whatCausedYouToMissTheDeadline -> causeOfLateSubmission)
         }
       )
     }

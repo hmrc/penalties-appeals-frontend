@@ -227,14 +227,14 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
         messages(s"checkYourAnswers.agents.whoPlannedToSubmitVATReturn.${request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get}"),
         controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url))
 
-    val seqWhyWasTheReturnSubmittedLate = if(request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get.equals("agent")) {
-      Seq((messages("checkYourAnswers.agents.whyWasTheReturnSubmittedLate"),
-        messages(s"checkYourAnswers.agents.whyWasTheReturnSubmittedLate.${request.session.get(SessionKeys.causeOfLateSubmissionAgent).get}"),
-        controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url))
+    val seqWhatCausedAgentToMissDeadline = if(request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get.equals("agent")) {
+      Seq((messages("checkYourAnswers.agents.whatCausedYouToMissTheDeadline"),
+        messages(s"checkYourAnswers.agents.whatCausedYouToMissTheDeadline.${request.session.get(SessionKeys.whatCausedYouToMissTheDeadline).get}"),
+        controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url))
     }
     else Seq.empty
 
-    seqWhoPlannedToSubmitVATReturn ++ seqWhyWasTheReturnSubmittedLate
+    seqWhoPlannedToSubmitVATReturn ++ seqWhatCausedAgentToMissDeadline
   }
 
   def getAllTheContentForCheckYourAnswersPage(uploadFilenames: Option[String] = None)(implicit request: UserRequest[_], messages: Messages): Seq[(String, String, String)] = {

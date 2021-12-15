@@ -19,10 +19,10 @@ package forms
 import base.SpecBase
 import play.api.data.{Form, FormError}
 
-class WhyReturnWasSubmittedLateAgentFormSpec extends SpecBase {
-  val form: Form[String] = WhyReturnWasSubmittedLateAgentForm.whyReturnWasSubmittedLateAgentForm
+class WhatCausedYouToMissTheDeadlineFormSpec extends SpecBase {
+  val form: Form[String] = WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm
 
-  "WhyReturnWasSubmittedLateAgentForm" should {
+  "WhatCausedYouToMissTheDeadlineForm" should {
     "bind" when {
       "a valid option has been selected" in {
         val result = form.bind(
@@ -42,7 +42,7 @@ class WhyReturnWasSubmittedLateAgentFormSpec extends SpecBase {
           )
         )
         result.hasErrors shouldBe true
-        result.errors.head shouldBe FormError("value", "agents.whyWasTheReturnSubmittedLate.error.invalid")
+        result.errors.head shouldBe FormError("value", "agents.whatCausedYouToMissTheDeadline.error.invalid")
       }
 
       "an invalid option is provided" in {
@@ -52,7 +52,7 @@ class WhyReturnWasSubmittedLateAgentFormSpec extends SpecBase {
           )
         )
         result.hasErrors shouldBe true
-        result.errors.head shouldBe FormError("value", "agents.whyWasTheReturnSubmittedLate.error.invalid")
+        result.errors.head shouldBe FormError("value", "agents.whatCausedYouToMissTheDeadline.error.invalid")
       }
     }
   }

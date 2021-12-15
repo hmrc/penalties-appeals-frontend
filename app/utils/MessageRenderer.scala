@@ -23,7 +23,7 @@ object MessageRenderer {
 
   def getMessageKey(msgKey: String)(implicit user: UserRequest[_]): String = {
     if (user.isAgent && (didClientCauseLateSubmission || (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).isEmpty
-      && user.session.get(SessionKeys.causeOfLateSubmissionAgent).isEmpty))) {
+      && user.session.get(SessionKeys.whatCausedYouToMissTheDeadline).isEmpty))) {
       s"agent.$msgKey"
     } else {
       msgKey
@@ -32,7 +32,7 @@ object MessageRenderer {
 
   def getMessage(msgKey: String, msgArgs: Any*)(implicit messages: Messages, user: UserRequest[_]): String = {
     if (user.isAgent && (didClientCauseLateSubmission ||
-      (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).isEmpty && user.session.get(SessionKeys.causeOfLateSubmissionAgent).isEmpty))) {
+      (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).isEmpty && user.session.get(SessionKeys.whatCausedYouToMissTheDeadline).isEmpty))) {
       messages.apply(s"agent.$msgKey", msgArgs: _*)
     } else {
       messages.apply(msgKey, msgArgs: _*)
@@ -41,7 +41,7 @@ object MessageRenderer {
 
   def didClientCauseLateSubmission()(implicit user: UserRequest[_]): Boolean = {
     val clientPlannedToSubmit = user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
-    val clientCausedLateSubmissionReturn = user.session.get(SessionKeys.causeOfLateSubmissionAgent).contains("client")
+    val clientCausedLateSubmissionReturn = user.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("client")
 
     (clientPlannedToSubmit, clientCausedLateSubmissionReturn) match {
       case (true, _) => true

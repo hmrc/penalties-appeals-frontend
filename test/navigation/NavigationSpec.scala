@@ -129,14 +129,14 @@ class NavigationSpec extends SpecBase {
           .withSession(
             SessionKeys.whoPlannedToSubmitVATReturn -> "client"
           )))
-        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url
       }
 
-      s"called with $WhyWasTheReturnSubmittedLateAgentPage" in new Setup {
-        val result: Call = mainNavigator.nextPage(WhyWasTheReturnSubmittedLateAgentPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+      s"called with $WhatCausedYouToMissTheDeadlinePage" in new Setup {
+        val result: Call = mainNavigator.nextPage(WhatCausedYouToMissTheDeadlinePage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.causeOfLateSubmissionAgent -> "agent"
+            SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
           )))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
@@ -217,11 +217,11 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
 
-      s"called with $WhyWasTheReturnSubmittedLateAgentPage when the appeal > 30 days late" in new Setup {
+      s"called with $WhatCausedYouToMissTheDeadlinePage when the appeal > 30 days late" in new Setup {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
-        val result: Call = mainNavigator.nextPage(WhyWasTheReturnSubmittedLateAgentPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+        val result: Call = mainNavigator.nextPage(WhatCausedYouToMissTheDeadlinePage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
-            SessionKeys.causeOfLateSubmissionAgent -> "agent"
+            SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
           )))
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
@@ -411,8 +411,16 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
 
-      s"called with $WhyWasTheReturnSubmittedLateAgentPage" in new Setup {
-        val result: Call = mainNavigator.nextPage(WhyWasTheReturnSubmittedLateAgentPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+      s"called with $WhatCausedYouToMissTheDeadlinePage" in new Setup {
+        val result: Call = mainNavigator.nextPage(WhatCausedYouToMissTheDeadlinePage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+          )))
+        result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      }
+
+      s"called with $WhoPlannedToSubmitVATReturnAgentPage - selects client" in new Setup {
+        val result: Call = mainNavigator.nextPage(WhoPlannedToSubmitVATReturnAgentPage, NormalMode, Some("client"))(fakeRequestConverter(fakeRequestWithCorrectKeys
           .withSession(
             SessionKeys.whoPlannedToSubmitVATReturn -> "client"
           )))
@@ -424,7 +432,7 @@ class NavigationSpec extends SpecBase {
           fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent"
           )))
-        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
+        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode).url
       }
 
       s"called with $WhenDidThePersonDiePage when the appeal > 30 days late" in new Setup {
