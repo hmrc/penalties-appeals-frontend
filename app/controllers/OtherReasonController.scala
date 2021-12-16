@@ -241,7 +241,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       UploadListForm.youHaveUploadedForm.bindFromRequest.fold(
         formHasErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formHasErrors)
-          val postAction = controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)
+          val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete(mode)
           for {
             previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
           } yield {
