@@ -16,19 +16,19 @@
 
 package services
 
+import com.github.tomakehurst.wiremock.client.WireMock._
 import models.UserRequest
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
-import utils.{IntegrationSpecCommonBase, SessionKeys}
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
-import collection.JavaConverters._
+import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDateTime
+import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
-import com.github.tomakehurst.wiremock.client.WireMock._
 
 
 class AppealServiceISpec extends IntegrationSpecCommonBase {
@@ -174,9 +174,11 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         lastUpdated = LocalDateTime.now()
       )
       val uploadAsDuplicate: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
+      val uploadAsWaiting: UploadJourney = uploadAsReady.copy(reference = "ref3", fileStatus = UploadStatusEnum.WAITING, downloadUrl = None, uploadDetails = None)
       successfulAppealSubmission(isLPP = false, "1234")
-      await(repository.updateStateOfFileUpload("1234", uploadAsReady))
-      await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate))
+      await(repository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", uploadAsWaiting, isInitiateCall = true))
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",

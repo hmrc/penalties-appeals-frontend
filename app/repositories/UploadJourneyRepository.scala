@@ -17,9 +17,8 @@
 package repositories
 
 import config.AppConfig
-import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey}
 import models.upload.{UploadJourney, UploadStatus}
-import uk.gov.hmrc.mongo.cache.{CacheIdType, MongoCacheRepository}
+import uk.gov.hmrc.mongo.cache.{CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 import utils.Logger.logger
 
@@ -41,8 +40,20 @@ class UploadJourneyRepository @Inject()(
     cacheIdType = CacheIdType.SimpleCacheId
   )(ec) {
 
-  def updateStateOfFileUpload(journeyId: String, callbackModel: UploadJourney): Future[CacheItem] = {
-    put(journeyId)(DataKey(callbackModel.reference), callbackModel)
+  def updateStateOfFileUpload(journeyId: String, callbackModel: UploadJourney, isInitiateCall: Boolean = false): Future[Option[String]] = {
+    get[UploadJourney](journeyId)(DataKey(callbackModel.reference)).flatMap(
+      document => {
+        if (document.isDefined || isInitiateCall) {
+          put(journeyId)(DataKey(callbackModel.reference), callbackModel).map(item => {
+            logger.debug(s"[UploadJourneyRepository][updateStateOfFileUpload] - updating state of file (reference: ${callbackModel.reference}) upload in repository: " +
+              s"is document defined: ${document.isDefined}, isInitiateCall: $isInitiateCall")
+            item.id
+          }).map(Some(_))
+        } else {
+          Future.successful(None)
+        }
+      }
+    )
   }
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatus]] = {
@@ -96,7 +107,7 @@ class UploadJourneyRepository @Inject()(
   def removeFileForJourney(journeyId: String, fileReference: String): Future[Unit] = {
     getNumberOfDocumentsForJourneyId(journeyId).map {
       amountOfDocuments => {
-        if (amountOfDocuments == 1) {
+        if (amountOfDocuments <= 1) {
           deleteEntity(journeyId)
         } else {
           delete(journeyId)(DataKey(fileReference))

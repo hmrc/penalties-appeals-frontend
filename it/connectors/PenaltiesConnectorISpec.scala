@@ -20,10 +20,10 @@ import models.PenaltyTypeEnum
 import models.appeals.{AppealSubmission, CrimeAppealInformation}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
+import play.api.test.Helpers._
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
-import play.api.test.Helpers._
 
 import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext

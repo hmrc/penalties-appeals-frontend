@@ -16,12 +16,8 @@
 
 package controllers
 
+import models.upload._
 import models.{CheckMode, NormalMode}
-
-import java.time.LocalDateTime
-
-import models.NormalMode
-import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
 import play.api.libs.json.{JsValue, Json}
@@ -33,6 +29,7 @@ import repositories.UploadJourneyRepository
 import stubs.UpscanStub._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class UpscanControllerISpec extends IntegrationSpecCommonBase {
@@ -59,7 +56,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       uploadTimestamp = LocalDateTime.now(),
       checksum = "123456",
       size = 200
-  )))
+    )))
 
   val duplicateFile2 = UploadJourney(
     reference = "file-2",
@@ -76,7 +73,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
   "GET /upscan/upload-status/:journeyId/:fileReference" should {
     "return OK (200)" when {
       "the user has an upload status in the repository" in new Setup {
-        await(repository.updateStateOfFileUpload("1234", UploadJourney("file-1", UploadStatusEnum.WAITING)))
+        await(repository.updateStateOfFileUpload("1234", UploadJourney("file-1", UploadStatusEnum.WAITING), isInitiateCall = true))
         val result: Future[Result] = controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
         status(result) shouldBe OK
         contentAsJson(result) shouldBe Json.obj("status" -> "WAITING")
@@ -84,10 +81,10 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
       "the user has duplicate uploads" when {
         "there is multiple sets of duplicates" in new Setup {
-          await(repository.updateStateOfFileUpload("1234", duplicateFile))
-          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-3")))
-          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-4")))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-3"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-4"), isInitiateCall = true))
 
           val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
           status(result) shouldBe OK
@@ -96,38 +93,38 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
         "there is one set of duplicates" when {
           "there is 1 duplicate" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-            val result = controller.getStatusOfFileUpload("1234", "file-2")(FakeRequest())
+            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+            val result = controller.getStatusOfFileUpload("1234", "file-1")(FakeRequest())
             status(result) shouldBe OK
             contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "File 1 has the same contents as File 2. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 2 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3")))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
             val result = controller.getStatusOfFileUpload("1234", "file-3")(FakeRequest())
             status(result) shouldBe OK
             contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "File 1 has the same contents as File 2 and 3. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 3 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4")))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4"), isInitiateCall = true))
             val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
             status(result) shouldBe OK
             contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "File 1 has the same contents as File 2, 3 and 4. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 4 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-5")))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-5"), isInitiateCall = true))
             val result = controller.getStatusOfFileUpload("1234", "file-5")(FakeRequest())
             status(result) shouldBe OK
             contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "File 1 has the same contents as File 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link.")
@@ -195,7 +192,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             checksum = "check1234",
             size = 2
           ))
-        )))
+        ), isInitiateCall = true))
       await(repository.updateStateOfFileUpload("1234",
         UploadJourney(
           reference = "ref2",
@@ -208,7 +205,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             checksum = "check1234",
             size = 2
           ))
-        )))
+        ), isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
       val result: Future[Result] = controller.removeFile("1234", "ref1")(FakeRequest())
       status(result) shouldBe NO_CONTENT
@@ -228,7 +225,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             checksum = "check1234",
             size = 2
           ))
-        )))
+        ), isInitiateCall = true))
       await(repository.updateStateOfFileUpload("1234",
         UploadJourney(
           reference = "ref2",
@@ -241,8 +238,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             checksum = "check1234",
             size = 2
           ))
-        )))
-      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
+        ), isInitiateCall = true))
       val result: Future[Result] = controller.removeFile("1235", "ref1")(FakeRequest())
       status(result) shouldBe NO_CONTENT
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
@@ -261,7 +257,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             checksum = "check1234",
             size = 2
           ))
-        )))
+        ), isInitiateCall = true))
       await(repository.updateStateOfFileUpload("1234",
         UploadJourney(
           reference = "ref2",
@@ -274,7 +270,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             checksum = "check1234",
             size = 2
           ))
-        )))
+        ), isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
       val result: Future[Result] = controller.removeFile("1235", "ref3")(FakeRequest())
       status(result) shouldBe NO_CONTENT
@@ -294,7 +290,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             checksum = "check1234",
             size = 2
           ))
-        )))
+        ), isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
       val result: Future[Result] = controller.removeFile("1234", "ref1")(FakeRequest())
       status(result) shouldBe NO_CONTENT
@@ -306,6 +302,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     "return NO_CONTENT and add the correct message" when {
       "the failure is because the file is too small" in new Setup {
         await(repository.collection.countDocuments().toFuture()) shouldBe 0
+        await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
         val jsonBody: JsValue = Json.parse(
           """
             |{
@@ -315,15 +312,16 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             |   "errorRequestId": "request1"
             |}
             |""".stripMargin)
-        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
-        status(result) shouldBe NO_CONTENT
+        val result: Result = await(controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody)))
+        result.header.status shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
         failureDetailsInRepo.message shouldBe "upscan.fileEmpty"
       }
 
-      "the failure is because the file is too large" in new Setup  {
+      "the failure is because the file is too large" in new Setup {
         await(repository.collection.countDocuments().toFuture()) shouldBe 0
+        await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
         val jsonBody: JsValue = Json.parse(
           """
             |{
@@ -340,8 +338,9 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
         failureDetailsInRepo.message shouldBe "upscan.fileTooLarge"
       }
 
-      "the failure is because the file is not specified" in new Setup  {
+      "the failure is because the file is not specified" in new Setup {
         await(repository.collection.countDocuments().toFuture()) shouldBe 0
+        await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
         val jsonBody: JsValue = Json.parse(
           """
             |{
@@ -358,8 +357,9 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
         failureDetailsInRepo.message shouldBe "upscan.fileNotSpecified"
       }
 
-      "the failure is because there is some unknown client error" in new Setup  {
+      "the failure is because there is some unknown client error" in new Setup {
         await(repository.collection.countDocuments().toFuture()) shouldBe 0
+        await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
         val jsonBody: JsValue = Json.parse(
           """
             |{
@@ -395,7 +395,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             FailureReasonEnum.REJECTED,
             "some.message"
           ))
-        )))
+        ), isInitiateCall = true))
       Thread.sleep(2000)
       val result: Future[Result] = controller.filePosted("1234")(FakeRequest("GET", "/file-posted?key=ref2"))
       status(result) shouldBe NO_CONTENT
@@ -412,7 +412,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             FailureReasonEnum.REJECTED,
             "some.message"
           ))
-        )))
+        ), isInitiateCall = true))
       val result: Future[Result] = controller.filePosted("1234")(FakeRequest("GET", "/file-posted?key=ref2"))
       status(result) shouldBe NO_CONTENT
       await(repository.getStatusOfFileUpload("1234", "ref2")).get.status shouldBe FailureReasonEnum.REJECTED.toString
@@ -451,14 +451,14 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect back to the 'upload taking longer than expected' page when the recursive call times out" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
       val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
     }
 
     "redirect to the non-JS file upload page when there is an error from Upscan" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType"))), isInitiateCall = true))
       val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
@@ -466,7 +466,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the non-JS file upload page when there is an error from Upscan - check mode" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType"))), isInitiateCall = true))
       val result: Future[Result] = controller.fileVerification(false, CheckMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
@@ -474,14 +474,14 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the successful upload page when there is no error from Upscan" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
     }
 
     "redirect to the additional file upload page when there is an error from Upscan" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType"))), isInitiateCall = true))
       val result: Future[Result] = controller.fileVerification(true, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
@@ -499,10 +499,10 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
     "return Some when there is duplicates in the repository" when {
         "there is multiple sets of duplicates" in new Setup {
-          await(repository.updateStateOfFileUpload("1234", duplicateFile))
-          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-3")))
-          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-4")))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-3"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-4"), isInitiateCall = true))
 
           val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
           status(result) shouldBe OK
@@ -511,38 +511,38 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
         "there is one set of duplicates" when {
           "there is 1 duplicate" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
             val result = controller.getDuplicateFiles("1234")(FakeRequest())
             status(result) shouldBe OK
             contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 2 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3")))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
             val result = controller.getDuplicateFiles("1234")(FakeRequest())
             status(result) shouldBe OK
             contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2 and 3. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 3 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4")))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4"), isInitiateCall = true))
             val result = controller.getDuplicateFiles("1234")(FakeRequest())
             status(result) shouldBe OK
             contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2, 3 and 4. You can remove duplicate files using the ’Remove’ link.")
           }
 
           "there is 4 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4")))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-5")))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4"), isInitiateCall = true))
+            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-5"), isInitiateCall = true))
             val result = controller.getDuplicateFiles("1234")(FakeRequest())
             status(result) shouldBe OK
             contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link.")

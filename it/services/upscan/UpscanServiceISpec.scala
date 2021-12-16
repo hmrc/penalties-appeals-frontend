@@ -92,14 +92,14 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the 'file upload is taking longer than expected' page when the recursive call times out" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
       val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)(FakeRequest(), implicitly)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
     }
 
     "run the block when the file has the correct status" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)(FakeRequest(), implicitly)
       status(result) shouldBe OK
     }
@@ -107,8 +107,8 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
 
   "removeFileFromJourney" should {
     "remove the file from the specified journey" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1234", UploadStatusEnum.READY)))
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1235", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1234", UploadStatusEnum.READY), isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1235", UploadStatusEnum.READY), isInitiateCall = true))
       await(service.removeFileFromJourney("J1234", "F1234"))
       await(repository.getUploadsForJourney(Some("J1234"))).get.size shouldBe 1
       await(repository.getUploadsForJourney(Some("J1234"))).get.head.reference shouldBe "F1235"
@@ -117,9 +117,9 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
 
   "getAmountOfFilesUploadedForJourney" should {
     "return the amount of files uploaded" in new Setup  {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1234", UploadStatusEnum.READY)))
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1235", UploadStatusEnum.READY)))
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1236", UploadStatusEnum.FAILED)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1234", UploadStatusEnum.READY), isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1235", UploadStatusEnum.READY), isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1236", UploadStatusEnum.FAILED), isInitiateCall = true))
       val result = service.getAmountOfFilesUploadedForJourney("J1234")
       await(result) shouldBe 2
     }

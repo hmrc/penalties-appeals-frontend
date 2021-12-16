@@ -20,6 +20,7 @@ import models.UserRequest
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.jsoup.{Jsoup, nodes}
 import org.mongodb.scala.Document
+import org.scalatest.concurrent.Eventually.eventually
 import play.api.http.Status
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
@@ -29,6 +30,7 @@ import stubs.{AuthStub, PenaltiesStub}
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDateTime
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
@@ -258,7 +260,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
             size = 2
           ))
         )
-        await(repository.updateStateOfFileUpload("4321", callBackModel))
+        await(repository.updateStateOfFileUpload("4321", callBackModel, isInitiateCall = true))
         val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
@@ -304,8 +306,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
             size = 2
           ))
         )
-        await(repository.updateStateOfFileUpload("4321", callBackModel))
-        await(repository.updateStateOfFileUpload("4321", callBackModel2))
+        await(repository.updateStateOfFileUpload("4321", callBackModel, isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("4321", callBackModel2, isInitiateCall = true))
+        //Used to get around a race condition
+        eventually {
+          await(repository.getUploadsForJourney(Some("4321")).map(_.get.find(_.reference == "ref1").get)).fileStatus shouldBe UploadStatusEnum.READY
+          await(repository.getUploadsForJourney(Some("4321")).map(_.get.find(_.reference == "ref2").get)).fileStatus shouldBe UploadStatusEnum.READY
+        }
         val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
@@ -364,7 +371,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
             size = 2
           ))
         )
-        await(repository.updateStateOfFileUpload("4321", callBackModel))
+        await(repository.updateStateOfFileUpload("4321", callBackModel, isInitiateCall = true))
         val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
@@ -459,7 +466,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           size = 2
         ))
       )
-      await(repository.updateStateOfFileUpload("4321", callBackModel))
+      await(repository.updateStateOfFileUpload("4321", callBackModel, isInitiateCall = true))
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
@@ -867,7 +874,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           fileName = "file1.txt", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1024
         ))
       )
-      await(repository.updateStateOfFileUpload("1234", uploadJourneyModel))
+      await(repository.updateStateOfFileUpload("1234", uploadJourneyModel, isInitiateCall = true))
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
         SessionKeys.appealType -> "Late_Submission",

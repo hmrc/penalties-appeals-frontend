@@ -18,16 +18,16 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadDocumentForm
+import messages.UploadAnotherDocmuentMessages._
+import models.NormalMode
+import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import org.jsoup.nodes.Document
+import play.api.data.Form
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadAnotherDocumentPage
-import messages.UploadAnotherDocmuentMessages._
-import models.NormalMode
-import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
-import play.api.data.Form
-import play.api.mvc.Call
 
 class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
 

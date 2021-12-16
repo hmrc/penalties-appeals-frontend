@@ -17,10 +17,10 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
+import messages.ProblemWithServiceMessages._
 import org.jsoup.nodes.Document
 import views.behaviours.ViewBehaviours
 import views.html.errors.ProblemWithServicePage
-import messages.ProblemWithServiceMessages._
 
 class ProblemWithServicePageSpec extends SpecBase with ViewBehaviours {
 

@@ -16,8 +16,6 @@
 
 package views
 
-import java.time.LocalDate
-
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidThePersonDieForm
 import messages.WhenDidThePersonDiePageMessages._
@@ -27,6 +25,8 @@ import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.bereavement.WhenDidThePersonDiePage
+
+import java.time.LocalDate
 
 class WhenDidThePersonDiePageSpec extends SpecBase with ViewBehaviours{
   val whenDidThePersonDiePage: WhenDidThePersonDiePage = injector.instanceOf[WhenDidThePersonDiePage]

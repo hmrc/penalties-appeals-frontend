@@ -96,7 +96,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
             responseModel => {
               logger.debug(s"[UpscanController][initiateCallToUpscan] - Retrieving response model for journey: $journeyId")
               val uploadJourney = UploadJourney(responseModel.reference, UploadStatusEnum.WAITING)
-              repository.updateStateOfFileUpload(journeyId, uploadJourney).map(
+              repository.updateStateOfFileUpload(journeyId, uploadJourney, isInitiateCall = true).map(
                 _ => {
                   Ok(Json.toJson(responseModel)(UpscanInitiateResponseModel.formats))
                 }
@@ -170,7 +170,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
               if (lastUpdated.isDefined && LocalDateTime.now().isAfter(lastUpdated.get.plusSeconds(1))) {
                 logger.debug(s"[UpscanController][filePosted] - Success redirect called: \n" +
                   s"lastUpdatedTime is: $lastUpdated \n is after 1 second: true \n setting upload to WAITING")
-                repository.updateStateOfFileUpload(journeyId, uploadModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+                repository.updateStateOfFileUpload(journeyId, uploadModel, isInitiateCall = true).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
               } else {
                 logger.debug(s"[UpscanController][filePosted] - Success redirect called - did not update state of file upload - last updated defined: ${lastUpdated.isDefined}")
                 Future(NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))

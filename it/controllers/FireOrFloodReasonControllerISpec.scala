@@ -16,7 +16,6 @@
 
 package controllers
 
-import java.time.{LocalDate, LocalDateTime}
 import models.NormalMode
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
@@ -25,6 +24,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
+
+import java.time.{LocalDate, LocalDateTime}
 
 class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: FireOrFloodReasonController = injector.instanceOf[FireOrFloodReasonController]

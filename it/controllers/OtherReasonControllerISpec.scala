@@ -18,7 +18,7 @@ package controllers
 
 import config.featureSwitches.{FeatureSwitching, NonJSRouting}
 import models.NormalMode
-import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload._
 import org.jsoup.Jsoup
 import org.mongodb.scala.Document
 import play.api.libs.json.{JsValue, Json}
@@ -583,7 +583,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           size = 2
         ))
       )
-      await(repository.updateStateOfFileUpload("1234", callBackModel))
+      await(repository.updateStateOfFileUpload("1234", callBackModel, isInitiateCall = true))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
@@ -610,11 +610,11 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           size = 2
         ))
       )
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
       await(repository.updateStateOfFileUpload("1234", callbackModel.copy(
         reference = "ref2",
-        fileStatus = UploadStatusEnum.DUPLICATE))
-      )
+        fileStatus = UploadStatusEnum.DUPLICATE),
+        isInitiateCall = true))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
@@ -664,15 +664,15 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
       )
-      await(repository.updateStateOfFileUpload("1234", callbackModel))
-      await(repository.updateStateOfFileUpload("1234", callbackModel2))
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
       await(repository.updateStateOfFileUpload("1234", callbackModel.copy(
         reference = "ref3",
-        fileStatus = UploadStatusEnum.DUPLICATE))
+        fileStatus = UploadStatusEnum.DUPLICATE), isInitiateCall = true)
       )
       await(repository.updateStateOfFileUpload("1234", callbackModel2.copy(
         reference = "ref4",
-        fileStatus = UploadStatusEnum.DUPLICATE))
+        fileStatus = UploadStatusEnum.DUPLICATE), isInitiateCall = true)
       )
       val request = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequestWithCorrectKeys)
       status(request) shouldBe OK
@@ -696,7 +696,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 303 (SEE_OTHER) when the user has no successful uploads" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
+      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
@@ -857,7 +857,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234"))
-      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
         """
           |{
@@ -877,8 +877,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234"))
-      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY)))
-      await(repository.updateStateOfFileUpload("1234", UploadJourney("file2", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", UploadJourney("file2", UploadStatusEnum.READY), isInitiateCall = true))
       val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
         """
           |{
@@ -908,14 +908,14 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect back to the 'upload taking longer than expected' page when the recursive call times out" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
       val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withSession(SessionKeys.fileReference -> "file1"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
     }
 
     "redirect to the non-JS first file upload page when there is an error from Upscan" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType"))), isInitiateCall = true))
       val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withSession(
         SessionKeys.fileReference -> "file1",
         SessionKeys.isAddingAnotherDocument -> "false"))
@@ -925,7 +925,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the non-JS upload another document page when there is an error from Upscan" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType"))), isInitiateCall = true))
       val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody
         .withSession(SessionKeys.fileReference -> "file1",
           SessionKeys.isAddingAnotherDocument -> "true"))
@@ -935,7 +935,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the successful upload page when there is no error from Upscan" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY)))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody
         .withSession(SessionKeys.fileReference -> "file1"))
       status(result) shouldBe SEE_OTHER

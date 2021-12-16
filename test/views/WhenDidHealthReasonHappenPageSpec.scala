@@ -16,8 +16,6 @@
 
 package views
 
-import java.time.LocalDate
-
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHealthIssueHappenForm
 import messages.WhenDidHealthReasonHappenMessages._
@@ -28,6 +26,8 @@ import play.twirl.api.HtmlFormat
 import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.WhenDidHealthReasonHappenPage
+
+import java.time.LocalDate
 
 class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
 

@@ -18,7 +18,7 @@ package viewtils
 
 import base.SpecBase
 import models.NormalMode
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -87,6 +87,21 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
       size = 2
     ))
   )
+
+  val uploadAsFailure: UploadJourney = UploadJourney(
+    reference = "ref2000",
+    fileStatus = UploadStatusEnum.FAILED,
+    uploadDetails = None,
+    failureDetails = Some(FailureDetails(FailureReasonEnum.UNKNOWN, "message.unknown"))
+  )
+
+  val uploadAsWaiting: UploadJourney = UploadJourney(
+    reference = "ref2010",
+    fileStatus = UploadStatusEnum.WAITING,
+    uploadDetails = None,
+    failureDetails = None
+  )
+
   val uploadedFiles: Seq[(UploadJourney, Int)] = Seq(
     (firstUpload, 0),
     (secondUpload, 1),
@@ -153,6 +168,22 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
         result.isDefined shouldBe true
         result.get shouldBe "File 1 has the same contents as File 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
       }
+    }
+
+    "return the correct wording for when there is file with errors (in between files that are duplicates)" in new Setup {
+      when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(Seq(firstUpload, uploadAsFailure, secondUpload, secondUpload, secondUpload))))
+      val result = await(helper.getInsetTextForUploadsInRepository("123456"))
+      result.isDefined shouldBe true
+      result.get shouldBe "File 1 has the same contents as File 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
+    }
+
+    "return the correct wording for when there is files waiting to be uploaded (in between files that are duplicates)" in new Setup {
+      when(mockUploadJourneyRepository.getUploadsForJourney(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(Seq(firstUpload, uploadAsWaiting, secondUpload, secondUpload, secondUpload))))
+      val result = await(helper.getInsetTextForUploadsInRepository("123456"))
+      result.isDefined shouldBe true
+      result.get shouldBe "File 1 has the same contents as File 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
     }
   }
 

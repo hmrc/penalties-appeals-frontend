@@ -16,8 +16,6 @@
 
 package views
 
-import java.time.LocalDate
-
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidFireOrFloodHappenForm
 import messages.WhenDidFireOrFloodHappenMessages._
@@ -27,6 +25,8 @@ import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.fireOrFlood.WhenDidFireOrFloodHappenPage
+
+import java.time.LocalDate
 
 class WhenDidFireOrFloodHappenPageSpec extends SpecBase with ViewBehaviours{
 

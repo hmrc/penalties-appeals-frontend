@@ -150,7 +150,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])
                                 (implicit userRequest: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     if(optFileUploads.isDefined) {
-      val fileUploads = optFileUploads.get
+      val fileUploads = optFileUploads.get.filter(_.uploadDetails.isDefined)
       val checksumMapToUpload = fileUploads.groupBy(_.uploadDetails.get.checksum)
       val onlyDuplicateFileUploads = checksumMapToUpload.filter(_._2.size > 1).values.flatten.toSeq
       if(onlyDuplicateFileUploads.nonEmpty) {

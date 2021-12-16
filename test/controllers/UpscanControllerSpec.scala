@@ -31,12 +31,10 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.mongo.cache.CacheItem
 import utils.SessionKeys
-
-import java.time.{Instant, LocalDateTime}
 import viewtils.EvidenceFileUploadsHelper
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -129,8 +127,8 @@ class UpscanControllerSpec extends SpecBase {
                 "1234", UploadFormTemplateRequest("1234", Map("A" -> "B"))
               )
             )))
-          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(CacheItem("1234", Json.toJsObject(uploadJourneyModel)(UploadJourney.writes), Instant.now(), Instant.now())))
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some("1234")))
           val result = controller.initiateCallToUpscan("1234")(fakeRequest)
           status(result) shouldBe OK
           contentAsJson(result) shouldBe Json.obj(
@@ -183,8 +181,8 @@ class UpscanControllerSpec extends SpecBase {
 
       "return NO_CONTENT" when {
         "the failure is because the file is too small" in {
-          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some("file1")))
           val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
             Json.obj(
               "key" -> "file1",
@@ -196,8 +194,8 @@ class UpscanControllerSpec extends SpecBase {
         }
 
         "the failure is because the file is too large" in {
-          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some("file1")))
           val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
             Json.obj(
               "key" -> "file1",
@@ -209,8 +207,8 @@ class UpscanControllerSpec extends SpecBase {
         }
 
         "the failure is because the file is not specified" in {
-          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some("file1")))
           val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
             Json.obj(
               "key" -> "file1",
@@ -222,8 +220,8 @@ class UpscanControllerSpec extends SpecBase {
         }
 
         "the failure is because there is some unknown client error" in {
-          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+          when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some("file1")))
           val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
             Json.obj(
               "key" -> "file1",
@@ -253,8 +251,8 @@ class UpscanControllerSpec extends SpecBase {
       "return No Content and update the file upload when called" in {
         when(repository.getUploadsForJourney(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(CacheItem("1234", Json.obj(), Instant.now(), Instant.now())))
+        when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some("file1")))
         val result = controller.filePosted("J1234")(FakeRequest("GET", "/file-posted?key=key1&bucket=bucket1"))
         status(result) shouldBe NO_CONTENT
       }

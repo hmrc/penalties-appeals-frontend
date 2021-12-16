@@ -17,9 +17,9 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
+import messages.YouCannotAppealMessages._
 import models.UserRequest
 import org.jsoup.nodes.Document
-import messages.YouCannotAppealMessages._
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.YouCannotAppealPage

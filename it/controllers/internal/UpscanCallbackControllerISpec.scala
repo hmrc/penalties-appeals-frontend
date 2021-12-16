@@ -16,7 +16,7 @@
 
 package controllers.internal
 
-import models.upload.{FailureDetails, FailureReasonEnum, UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload._
 import org.mongodb.scala.bson.collection.immutable.Document
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
@@ -136,6 +136,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     "return NO CONTENT" when {
       "the body received is valid and the state is updated" in {
         await(repository.collection.deleteMany(filter = Document()).toFuture)
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(validJsonToParse))
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
@@ -149,6 +150,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
 
       "the body received is valid and the state is updated - failure callback" in {
         await(repository.collection.deleteMany(filter = Document()).toFuture)
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(validFailureJsonToParse))
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
@@ -162,7 +164,8 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
 
       "the body received is valid but the file has already been uploaded - duplicate" in {
         await(repository.collection.deleteMany(filter = Document()).toFuture)
-        await(repository.updateStateOfFileUpload("12345", jsonAsModel))
+        await(repository.updateStateOfFileUpload("12345", jsonAsModel, isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING), isInitiateCall = true))
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(duplicateFileAsJson))
         result.status shouldBe NO_CONTENT
         await(repository.getUploadsForJourney(Some("12345"))).get.size shouldBe 2

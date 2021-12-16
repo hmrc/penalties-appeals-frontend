@@ -16,10 +16,10 @@
 
 package forms
 
-import java.time.LocalDate
-
 import base.SpecBase
 import play.api.data.{Form, FormError}
+
+import java.time.LocalDate
 
 class WhenDidHospitalStayBeginFormSpec extends SpecBase{
   val form: Form[LocalDate] = WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm()
