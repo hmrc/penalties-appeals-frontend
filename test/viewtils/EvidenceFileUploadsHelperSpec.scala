@@ -175,7 +175,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
         .thenReturn(Future.successful(Some(Seq(firstUpload, uploadAsFailure, secondUpload, secondUpload, secondUpload))))
       val result = await(helper.getInsetTextForUploadsInRepository("123456"))
       result.isDefined shouldBe true
-      result.get shouldBe "File 1 has the same contents as File 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
+      result.get shouldBe "File 1 has the same contents as Files 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
     }
 
     "return the correct wording for when there is files waiting to be uploaded (in between files that are duplicates)" in new Setup {
@@ -183,7 +183,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
         .thenReturn(Future.successful(Some(Seq(firstUpload, uploadAsWaiting, secondUpload, secondUpload, secondUpload))))
       val result = await(helper.getInsetTextForUploadsInRepository("123456"))
       result.isDefined shouldBe true
-      result.get shouldBe "File 1 has the same contents as File 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
+      result.get shouldBe "File 1 has the same contents as Files 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
     }
   }
 

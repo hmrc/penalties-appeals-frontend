@@ -29,8 +29,6 @@ import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mongo.cache.CacheItem
-import java.time.Instant
 
 import connectors.httpParsers.UpscanInitiateHttpParser
 import play.api.mvc.Result
