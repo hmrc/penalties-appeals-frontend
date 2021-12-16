@@ -135,7 +135,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
           .thenReturn(Future.successful(Some(Seq(firstUpload, secondUpload, secondUpload))))
         val result = await(helper.getInsetTextForUploadsInRepository("123456"))
         result.isDefined shouldBe true
-        result.get shouldBe "File 1 has the same contents as File 2 and 3. You can remove duplicate files using the ’Remove’ link."
+        result.get shouldBe "File 1 has the same contents as Files 2 and 3. You can remove duplicate files using the ’Remove’ link."
       }
 
       "there is 3 duplicates" in new Setup {
@@ -143,7 +143,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
           .thenReturn(Future.successful(Some(Seq(firstUpload, secondUpload, secondUpload, secondUpload))))
         val result = await(helper.getInsetTextForUploadsInRepository("123456"))
         result.isDefined shouldBe true
-        result.get shouldBe "File 1 has the same contents as File 2, 3 and 4. You can remove duplicate files using the ’Remove’ link."
+        result.get shouldBe "File 1 has the same contents as Files 2, 3 and 4. You can remove duplicate files using the ’Remove’ link."
       }
 
       "there is 4 duplicates" in new Setup {
@@ -151,7 +151,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
           .thenReturn(Future.successful(Some(Seq(firstUpload, secondUpload, secondUpload, secondUpload, secondUpload))))
         val result = await(helper.getInsetTextForUploadsInRepository("123456"))
         result.isDefined shouldBe true
-        result.get shouldBe "File 1 has the same contents as File 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
+        result.get shouldBe "File 1 has the same contents as Files 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
       }
     }
   }
@@ -182,21 +182,21 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
           val result = helper.getInsetTextForUploads(Seq((firstUpload, 0), (firstUpload, 1), (firstUpload, 2)))
           result.isDefined shouldBe true
           val parsedResult = Jsoup.parse(result.get.toString())
-          parsedResult.select(".govuk-inset-text").text() shouldBe "File 1 has the same contents as File 2 and 3. You can remove duplicate files using the ’Remove’ link."
+          parsedResult.select(".govuk-inset-text").text() shouldBe "File 1 has the same contents as Files 2 and 3. You can remove duplicate files using the ’Remove’ link."
         }
 
         "there is 3 duplicates" in new Setup {
           val result = helper.getInsetTextForUploads(Seq((firstUpload, 0), (firstUpload, 1), (firstUpload, 2), (firstUpload, 3)))
           result.isDefined shouldBe true
           val parsedResult = Jsoup.parse(result.get.toString())
-          parsedResult.select(".govuk-inset-text").text() shouldBe "File 1 has the same contents as File 2, 3 and 4. You can remove duplicate files using the ’Remove’ link."
+          parsedResult.select(".govuk-inset-text").text() shouldBe "File 1 has the same contents as Files 2, 3 and 4. You can remove duplicate files using the ’Remove’ link."
         }
 
         "there is 4 duplicates" in new Setup {
           val result = helper.getInsetTextForUploads(Seq((firstUpload, 0), (firstUpload, 1), (firstUpload, 2), (firstUpload, 3), (firstUpload, 4)))
           result.isDefined shouldBe true
           val parsedResult = Jsoup.parse(result.get.toString())
-          parsedResult.select(".govuk-inset-text").text() shouldBe "File 1 has the same contents as File 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
+          parsedResult.select(".govuk-inset-text").text() shouldBe "File 1 has the same contents as Files 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
         }
       }
     }
@@ -224,19 +224,19 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
           "there is 2 duplicates" in new Setup {
             val result = helper.getInsetTextMessage(Seq((firstUpload, 0), (firstUpload, 1), (firstUpload, 2)))
             result.isDefined shouldBe true
-            result.get shouldBe "File 1 has the same contents as File 2 and 3. You can remove duplicate files using the ’Remove’ link."
+            result.get shouldBe "File 1 has the same contents as Files 2 and 3. You can remove duplicate files using the ’Remove’ link."
           }
 
           "there is 3 duplicates" in new Setup {
             val result = helper.getInsetTextMessage(Seq((firstUpload, 0), (firstUpload, 1), (firstUpload, 2), (firstUpload, 3)))
             result.isDefined shouldBe true
-            result.get shouldBe "File 1 has the same contents as File 2, 3 and 4. You can remove duplicate files using the ’Remove’ link."
+            result.get shouldBe "File 1 has the same contents as Files 2, 3 and 4. You can remove duplicate files using the ’Remove’ link."
           }
 
           "there is 4 duplicates" in new Setup {
             val result = helper.getInsetTextMessage(Seq((firstUpload, 0), (firstUpload, 1), (firstUpload, 2), (firstUpload, 3), (firstUpload, 4)))
             result.isDefined shouldBe true
-            result.get shouldBe "File 1 has the same contents as File 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
+            result.get shouldBe "File 1 has the same contents as Files 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link."
           }
         }
       }
