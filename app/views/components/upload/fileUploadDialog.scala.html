@@ -26,7 +26,11 @@
 @if(form.hasErrors) {
     <div class="govuk-form-group govuk-form-group--error">
         <label class="govuk-label govuk-label--m" for="file">
-        @messages("otherReason.uploadEvidence.noJs.uploadLabel")
+        @if(!isAddingAnotherDocument) {
+            @messages("otherReason.uploadEvidence.noJs.uploadLabel")
+        } else {
+            @messages("otherReason.uploadEvidence.noJs.uploadAnotherLabel")
+        }
         </label>
         <span id="file-upload-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">@messages("error.prefix")</span> @messages(form.errors.head.message)

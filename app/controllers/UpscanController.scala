@@ -30,7 +30,6 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import java.time.LocalDateTime
 
 import javax.inject.Inject
 import viewtils.EvidenceFileUploadsHelper
@@ -109,12 +108,12 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   }
 
   def removeFile(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
-    logger.debug(s"[UpscanController][initiateCallToUpscan] - Requested removal of file for journey: $journeyId and file: $fileReference")
+    logger.debug(s"[UpscanController][removeFile] - Requested removal of file for journey: $journeyId and file: $fileReference")
     repository.removeFileForJourney(journeyId, fileReference).map {
       _ => NoContent
     }.recover {
       case e =>
-        logger.error(s"[UpscanController][initiateCallToUpscan] - Failed to delete file: $fileReference for journey: $journeyId with error: ${e.getMessage}")
+        logger.error(s"[UpscanController][removeFile] - Failed to delete file: $fileReference for journey: $journeyId with error: ${e.getMessage}")
         InternalServerError("An exception has occurred.")
     }
   }
@@ -165,14 +164,13 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
             reference = s3Upload.key,
             fileStatus = UploadStatusEnum.WAITING
           )
-          repository.getUploadsForJourney(Some(journeyId)).map(_.flatMap(_.find(_.reference == s3Upload.key).map(_.lastUpdated))).flatMap(
-            lastUpdated => {
-              if (lastUpdated.isDefined && LocalDateTime.now().isAfter(lastUpdated.get.plusSeconds(1))) {
-                logger.debug(s"[UpscanController][filePosted] - Success redirect called: \n" +
-                  s"lastUpdatedTime is: $lastUpdated \n is after 1 second: true \n setting upload to WAITING")
-                repository.updateStateOfFileUpload(journeyId, uploadModel, isInitiateCall = true).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+          repository.getUploadsForJourney(Some(journeyId)).map(_.flatMap(_.find(_.reference == s3Upload.key))).flatMap(
+            upload => {
+              if (upload.isDefined && upload.get.fileStatus == UploadStatusEnum.FAILED) {
+                logger.debug(s"[UpscanController][filePosted] - Success redirect called - file was previously in FAILED state, resetting state back to WAITING")
+                repository.updateStateOfFileUpload(journeyId, uploadModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
               } else {
-                logger.debug(s"[UpscanController][filePosted] - Success redirect called - did not update state of file upload - last updated defined: ${lastUpdated.isDefined}")
+                logger.debug(s"[UpscanController][filePosted] - Success redirect called - did not update state of file upload - existing upload was not in FAILED state")
                 Future(NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
               }
             }

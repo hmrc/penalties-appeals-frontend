@@ -200,6 +200,7 @@ class MultiFileUpload {
             method: 'POST'
         })
             .then(this.requestRemoveFileCompleted.bind(this, file, isInit))
+            .then(this.setDuplicateInsetText.bind(this))
             .catch(() => {
                 if (!isInit) {
                     this.setItemState(item, status.Uploaded);
@@ -209,7 +210,6 @@ class MultiFileUpload {
 
     /** F14 */
     requestRemoveFileCompleted(file, isInit) {
-        this.setDuplicateInsetText();
         if(!isInit) {
             const item = file.closest(`.${this.classes.item}`);
             this.removeItem(item);
@@ -640,12 +640,11 @@ class MultiFileUpload {
         this.config.uploadedFiles.filter(file => file['fileStatus'] === 'WAITING' || file['fileStatus'] === 'FAILED').forEach(fileData => {
             this.requestRemoveFile(fileData, true);
         });
-
+        this.config.uploadedFiles = this.config.uploadedFiles.filter(file => file['fileStatus'] !== 'WAITING' && file['fileStatus'] !== 'FAILED');
         this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY' || file['fileStatus'] === 'DUPLICATE').forEach(fileData => {
             this.createUploadedItem(fileData);
             rowCount++;
         });
-
         if (rowCount < this.config.startRows) {
             for (let a = rowCount; a < this.config.startRows; a++) {
                 this.addItem(true, this.config.uploadedFiles.length === 0);
