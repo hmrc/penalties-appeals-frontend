@@ -385,7 +385,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       status(result) shouldBe BAD_REQUEST
     }
 
-    "return 204 (No Content) when the form binds and update the record in Mongo (if after 1 second since last update)" in new Setup {
+    "return 204 (No Content) when the form binds and update the record in Mongo (if previous upload is in FAILED state)" in new Setup {
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
       await(repository.updateStateOfFileUpload("1234",
         UploadJourney(
@@ -396,26 +396,21 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
             "some.message"
           ))
         ), isInitiateCall = true))
-      Thread.sleep(2000)
       val result: Future[Result] = controller.filePosted("1234")(FakeRequest("GET", "/file-posted?key=ref2"))
       status(result) shouldBe NO_CONTENT
       await(repository.getStatusOfFileUpload("1234", "ref2")).get.status shouldBe UploadStatusEnum.WAITING.toString
     }
 
-    "return 204 (No Content) when the form binds and update the record in Mongo (if before 1 second since last update)" in new Setup {
+    "return 204 (No Content) when the form binds and update the record in Mongo (if file was not in FAILED state)" in new Setup {
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
       await(repository.updateStateOfFileUpload("1234",
         UploadJourney(
           reference = "ref2",
-          fileStatus = UploadStatusEnum.FAILED,
-          failureDetails = Some(FailureDetails(
-            FailureReasonEnum.REJECTED,
-            "some.message"
-          ))
+          fileStatus = UploadStatusEnum.WAITING
         ), isInitiateCall = true))
       val result: Future[Result] = controller.filePosted("1234")(FakeRequest("GET", "/file-posted?key=ref2"))
       status(result) shouldBe NO_CONTENT
-      await(repository.getStatusOfFileUpload("1234", "ref2")).get.status shouldBe FailureReasonEnum.REJECTED.toString
+      await(repository.getStatusOfFileUpload("1234", "ref2")).get.status shouldBe UploadStatusEnum.WAITING.toString
     }
   }
 
