@@ -30,7 +30,6 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import java.time.LocalDateTime
 
 import javax.inject.Inject
 import viewtils.EvidenceFileUploadsHelper
