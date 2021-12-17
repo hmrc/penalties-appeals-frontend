@@ -143,9 +143,7 @@ POST       /other-relevant-information/change                  controllers.Appea
 
 # Upscan endpoints
 GET        /upscan/upload-status/:journeyId/:fileReference      controllers.UpscanController.getStatusOfFileUpload(journeyId: String, fileReference: String)
-+nocsrf
 POST       /upscan/call-to-upscan/:journeyId                   controllers.UpscanController.initiateCallToUpscan(journeyId: String)
-+nocsrf
 POST       /upscan/remove-file/:journeyId/:fileReference         controllers.UpscanController.removeFile(journeyId: String, fileReference: String)
 
 GET           /upscan/upload-failed/:journeyId                 controllers.UpscanController.uploadFailure(journeyId: String)
