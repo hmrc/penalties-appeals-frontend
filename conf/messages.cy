@@ -236,7 +236,8 @@ otherReason.whyReturnSubmittedLate.title = Why was the return submitted late?
 otherReason.whyReturnSubmittedLate.lpp.title = Why was the VAT bill paid late?
 otherReason.whyReturnSubmittedLate.heading = Why was the return submitted late?
 otherReason.whyReturnSubmittedLate.lpp.heading = Why was the VAT bill paid late?
-otherReason.whyReturnSubmittedLate.error.required = Explain why the VAT bill was paid late
+otherReason.whyReturnSubmittedLate.lpp.error.required = Explain why the VAT bill was paid late
+otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
 
 # When did you become unable page
 # ----------------------------------------------------------

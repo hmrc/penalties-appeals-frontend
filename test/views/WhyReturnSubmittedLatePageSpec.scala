@@ -36,7 +36,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whyReturnSubmittedLate.apply(form,
       controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(NormalMode))(request, implicitly, implicitly)
 
-    val formProvider = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
+    val formProvider = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()(appConfig, userRequestWithCorrectKeys)
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

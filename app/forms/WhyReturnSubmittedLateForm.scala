@@ -18,15 +18,20 @@ package forms
 
 import config.AppConfig
 import forms.mappings.Mappings
+import models.{PenaltyTypeEnum, UserRequest}
 import play.api.data.Form
 import play.api.data.Forms.single
+import utils.SessionKeys
 
 object WhyReturnSubmittedLateForm extends Mappings {
-  def whyReturnSubmittedLateForm()(implicit appConfig: AppConfig): Form[String] =
+  def whyReturnSubmittedLateForm()(implicit appConfig: AppConfig, userRequest: UserRequest[_]): Form[String] =
     Form[String](
       single(
         "why-return-submitted-late-text" -> text(errorKey =
-          "otherReason.whyReturnSubmittedLate.error.required"
+          if(userRequest.session.get(SessionKeys.appealType).get.equals(PenaltyTypeEnum.Late_Submission.toString))
+            "otherReason.whyReturnSubmittedLate.error.required"
+          else
+            "otherReason.whyReturnSubmittedLate.lpp.error.required"
         ).verifying("explainReason.charsInTextArea.error",
             value => value.length <= appConfig.numberOfCharsInTextArea)
       )

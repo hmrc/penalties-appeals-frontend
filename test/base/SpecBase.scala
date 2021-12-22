@@ -92,9 +92,25 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
       (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
       (SessionKeys.journeyId, "1234"))
 
+  val fakeRequestLPPWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
+    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Payment"),
+      (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
+      (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
+      (SessionKeys.journeyId, "1234"))
+
+  val fakeRequestAdditionalWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
+    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Additional"),
+      (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
+      (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
+      (SessionKeys.journeyId, "1234"))
+
   val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = fakeRequestWithCorrectKeys.withCookies(Cookie("jsenabled", "true"))
 
   val userRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestWithCorrectKeys)
+
+  val userRequestLPPWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestLPPWithCorrectKeys)
+
+  val userRequestAdditionalWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestAdditionalWithCorrectKeys)
 
   val userRequestWithCorrectKeysAndJS: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestWithCorrectKeysAndJS)
 
