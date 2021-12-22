@@ -20,12 +20,28 @@ import base.SpecBase
 import play.api.data.{Form, FormError}
 
 class WhyReturnSubmittedLateFormSpec extends SpecBase {
-  val form: Form[String] = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()
+  val form: Form[String] = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()(appConfig, userRequestWithCorrectKeys)
 
   "WhyReturnSubmittedLateForm" should {
-    "give required error and not bind when empty" in {
+    "give required LSP error and not bind when empty" in {
+      val form: Form[String] = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()(appConfig,
+        userRequestWithCorrectKeys)
       val result = form.bind(Map("why-return-submitted-late-text" -> "")).apply("why-return-submitted-late-text")
       result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "otherReason.whyReturnSubmittedLate.error.required"))
+    }
+
+    "give required LPP error and not bind when empty" in {
+      val form: Form[String] = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()(appConfig,
+        userRequestLPPWithCorrectKeys)
+      val result = form.bind(Map("why-return-submitted-late-text" -> "")).apply("why-return-submitted-late-text")
+      result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "otherReason.whyReturnSubmittedLate.lpp.error.required"))
+    }
+
+    "give required Additional error and not bind when empty" in {
+      val form: Form[String] = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()(appConfig,
+        userRequestAdditionalWithCorrectKeys)
+      val result = form.bind(Map("why-return-submitted-late-text" -> "")).apply("why-return-submitted-late-text")
+      result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "otherReason.whyReturnSubmittedLate.lpp.error.required"))
     }
 
     "Less than 5000 characters bind successfully and not give errors" in {
