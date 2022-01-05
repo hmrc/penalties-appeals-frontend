@@ -17,12 +17,12 @@
 package models.monitoring
 
 import java.time.LocalDateTime
-
 import base.SpecBase
 import config.AppConfig
 import connectors.HeaderGenerator
 import models.UserRequest
 import models.appeals._
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mockito.Mockito.{mock, when}
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
@@ -36,7 +36,7 @@ class AppealAuditModelSpec extends SpecBase {
       sourceSystem = "MDTP",
       taxRegime = "VAT",
       customerReferenceNo = "VRN1234567890",
-      dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+      dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
       isLPP = true,
       appealSubmittedBy = "client",
       agentReferenceNo = None,
@@ -45,19 +45,20 @@ class AppealAuditModelSpec extends SpecBase {
 
     def appealAgentSubmission(appealInformation: AppealInformation): AppealSubmission = appealSubmission(appealInformation)
       .copy(appealSubmittedBy = "agent")
+
     val mockAppConfig: AppConfig = mock(classOf[AppConfig])
     val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
-    val testHeaderGenerator = new HeaderGenerator(mockAppConfig,mockUUIDGenerator)
+    val testHeaderGenerator = new HeaderGenerator(mockAppConfig, mockUUIDGenerator)
 
     val bereavementAppealInformation: BereavementAppealInformation = BereavementAppealInformation(
-        reasonableExcuse = "bereavement",
-        honestyDeclaration = true,
-        startDateOfEvent = "2021-04-23T18:25:43.511Z",
-        statement = None,
-        lateAppeal = false,
-        lateAppealReason = None,
-        isClientResponsibleForSubmission = None,
-        isClientResponsibleForLateSubmission = None
+      reasonableExcuse = "bereavement",
+      honestyDeclaration = true,
+      startDateOfEvent = "2021-04-23T18:25:43.511Z",
+      statement = None,
+      lateAppeal = false,
+      lateAppealReason = None,
+      isClientResponsibleForSubmission = None,
+      isClientResponsibleForLateSubmission = None
     )
 
     val bereavementLateAppealInformation = bereavementAppealInformation.copy(lateAppeal = true, lateAppealReason = Some("this is a very good reason"))
@@ -127,18 +128,18 @@ class AppealAuditModelSpec extends SpecBase {
 
     val healthAppealInformationOngoingHospitalStay = healthAppealInformation.copy(endDateOfEvent = None, eventOngoing = true)
     val healthAppealInformationNoHospitalStay = healthAppealInformation.copy(
-      startDateOfEvent =  Some("2021-04-23T18:25:43.511Z"), endDateOfEvent = None, eventOngoing = false, hospitalStayInvolved = false)
+      startDateOfEvent = Some("2021-04-23T18:25:43.511Z"), endDateOfEvent = None, eventOngoing = false, hospitalStayInvolved = false)
 
     val otherAppealInformation: OtherAppealInformation = OtherAppealInformation(
-        reasonableExcuse = "other",
-        honestyDeclaration = true,
-        startDateOfEvent = "2021-04-23T18:25:43.511Z",
-        statement = Some("this is a reason"),
-        supportingEvidence = None,
-        lateAppeal = false,
-        lateAppealReason = None,
-        isClientResponsibleForSubmission = None,
-        isClientResponsibleForLateSubmission = None
+      reasonableExcuse = "other",
+      honestyDeclaration = true,
+      startDateOfEvent = "2021-04-23T18:25:43.511Z",
+      statement = Some("this is a reason"),
+      supportingEvidence = None,
+      lateAppeal = false,
+      lateAppealReason = None,
+      isClientResponsibleForSubmission = None,
+      isClientResponsibleForLateSubmission = None
     )
     val otherAppealInformationWithEvidence = otherAppealInformation.copy(
       supportingEvidence = Some(Evidence(
@@ -155,33 +156,60 @@ class AppealAuditModelSpec extends SpecBase {
       ))
     )
 
+    val seqOfUploads: Seq[UploadJourney] = Seq(
+      UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+          checksum = "check12345678",
+          size = 987
+        ))
+      ),
+      UploadJourney(
+        reference = "ref2",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file2.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+          checksum = "check12345678",
+          size = 987
+        ))
+      )
+    )
+
     implicit val userRequest: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeysAndHonestyDeclarationSet)
     val correlationId = "someUUID"
     when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
-    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LPP",testHeaderGenerator)
-    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), "LPP",testHeaderGenerator)
-    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), "LPP",testHeaderGenerator)
-    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), "LPP",testHeaderGenerator)
-    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), "LPP",testHeaderGenerator)
-    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), "LPP",testHeaderGenerator)
-    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), "LPP",testHeaderGenerator)
-    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), "LPP",testHeaderGenerator)
-    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), "LPP",testHeaderGenerator)
-    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), "LPP",testHeaderGenerator)
-    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), "LPP",testHeaderGenerator)
-    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), "LPP",testHeaderGenerator)
+    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), "LPP", testHeaderGenerator, None)
+    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), "LPP", testHeaderGenerator, None)
+    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), "LPP", testHeaderGenerator, Some(seqOfUploads))
+    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), "LPP", testHeaderGenerator, Some(seqOfUploads))
 
-    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), "LPP",testHeaderGenerator)
-    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), "LPP",testHeaderGenerator)
+    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), "LPP", testHeaderGenerator, None)
 
-    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSP",testHeaderGenerator)
-    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSP",testHeaderGenerator)
+    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSP", testHeaderGenerator, None)
+    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSP", testHeaderGenerator, None)
 
-    val lsppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSPP",testHeaderGenerator)
-    val lsppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSPP",testHeaderGenerator)
+    val lsppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSPP", testHeaderGenerator, None)
+    val lsppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSPP", testHeaderGenerator, None)
 
-    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "Additional",testHeaderGenerator)
-    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "Additional",testHeaderGenerator)
+    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "Additional", testHeaderGenerator, None)
+    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "Additional", testHeaderGenerator, None)
 
     "have the correct auditType" in {
       lppBereavementModel.auditType shouldBe "PenaltyAppealSubmitted"
@@ -192,130 +220,130 @@ class AppealAuditModelSpec extends SpecBase {
     }
 
     "output the correct details for a lpp bereavement submission with correlationID" in {
-        lppBereavementModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "bereavement",
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "lateAppeal" -> false
-          )
+      lppBereavementModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "bereavement",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
         )
-      }
+      )
+    }
 
-      "output the correct audit details for a lpp crime submission with correlationID" in {
-        lppCrimeModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "crime",
-            "reportedIssue" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "lateAppeal" -> false
-          )
+    "output the correct audit details for a lpp crime submission with correlationID" in {
+      lppCrimeModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "crime",
+          "reportedIssue" -> true,
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
         )
-      }
+      )
+    }
 
-      "output the correct details for a lpp fireOrFlood submission with correlationID" in {
-        lppFireOrFloodModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "fireOrFlood",
-            "startDateOfEvent"-> "2021-04-23T18:25:43.511Z",
-            "lateAppeal" -> false
-          )
+    "output the correct details for a lpp fireOrFlood submission with correlationID" in {
+      lppFireOrFloodModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "fireOrFlood",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
         )
-      }
+      )
+    }
 
-      "output the correct details for a lpp lossOfStaff submission with correlationID" in {
-        lppLossOfStaffModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "lossOfStaff",
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "lateAppeal" -> false
-          )
+    "output the correct details for a lpp lossOfStaff submission with correlationID" in {
+      lppLossOfStaffModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "lossOfStaff",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
         )
-      }
+      )
+    }
 
-      "output the correct details for a lpp technicalIssues submission with correlationID" in {
-        lppTechnicalIssuesModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "technicalIssues",
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "endDateOfEvent" -> "2021-04-25T18:25:43.511Z",
-            "lateAppeal" -> false
-          )
+    "output the correct details for a lpp technicalIssues submission with correlationID" in {
+      lppTechnicalIssuesModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "technicalIssues",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "endDateOfEvent" -> "2021-04-25T18:25:43.511Z",
+          "lateAppeal" -> false
         )
-      }
+      )
+    }
 
-      "output the correct details for a lpp health with hospital stay submission with correlationID" in {
-        lppHealthModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "health",
-            "hospitalStayInvolved" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "endDateOfEvent" -> "2021-04-25T18:25:43.511Z",
-            "lateAppeal" -> false
-          )
+    "output the correct details for a lpp health with hospital stay submission with correlationID" in {
+      lppHealthModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "health",
+          "hospitalStayInvolved" -> true,
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "endDateOfEvent" -> "2021-04-25T18:25:43.511Z",
+          "lateAppeal" -> false
         )
-      }
+      )
+    }
 
-      "output the correct details for a lpp health with ongoing hospital stay submission with correlationID" in {
-        lppHealthOngoingModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "health",
-            "hospitalStayInvolved" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "lateAppeal" -> false
-          )
+    "output the correct details for a lpp health with ongoing hospital stay submission with correlationID" in {
+      lppHealthOngoingModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "health",
+          "hospitalStayInvolved" -> true,
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
         )
-      }
+      )
+    }
 
-      "output the correct details for a lpp health with no hospital stay submission with correlationID" in {
-        lppHealthNoHospitalModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "health",
-            "hospitalStayInvolved" -> false,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "lateAppeal" -> false
-          )
+    "output the correct details for a lpp health with no hospital stay submission with correlationID" in {
+      lppHealthNoHospitalModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "health",
+          "hospitalStayInvolved" -> false,
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
         )
-      }
+      )
+    }
 
     "output the correct details for a lpp other submission without evidence with correlationID" in {
       lppOtherModel.detail shouldBe Json.obj(
@@ -323,7 +351,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "LPP",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "other",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
@@ -333,68 +361,88 @@ class AppealAuditModelSpec extends SpecBase {
         )
       )
     }
-      "output the correct details for a lpp other submission with evidence with correlationID" in {
-        lppOtherModelWithEvidence.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "other",
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "statement" -> "this is a reason",
-            "noOfUploadedFiles" -> "1",
-            "uploadedFiles" -> Json.obj(
-              "upscanReference" -> "12345",
-              "uploadTimestamp" -> "2021-04-23T18:25:43.511Z",
-              "fileName" -> "certificate.png",
-              "checksum" -> "12345",
-              "fileMimeType" -> "image/png",
-              "downloadUrl" -> "www.test.com"
+    "output the correct details for a lpp other submission with evidence with correlationID" in {
+      lppOtherModelWithEvidence.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "appealInformation" -> Json.obj(
+          "type" -> "other",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "statement" -> "this is a reason",
+          "noOfUploadedFiles" -> "2",
+          "uploadedFiles" -> Json.arr(
+            Json.obj(
+              "upscanReference" -> "ref1",
+              "uploadTimestamp" -> "2018-04-24T09:30:00",
+              "fileName" -> "file1.txt",
+              "checksum" -> "check12345678",
+              "fileMimeType" -> "text/plain",
+              "downloadUrl" -> "download.file"
             ),
-            "lateAppeal" -> false
-          )
-        )
-      }
+            Json.obj(
+              "upscanReference" -> "ref2",
+              "uploadTimestamp" -> "2018-04-24T09:30:00",
+              "fileName" -> "file2.txt",
+              "checksum" -> "check12345678",
+              "fileMimeType" -> "text/plain",
+              "downloadUrl" -> "download.file"
+            )
+          ),
+          "lateAppeal" -> false
+        ),
+        "correlationId" -> "someUUID"
+      )
+    }
 
-      "output the correct details for a lpp obligation submission with correlationID" in {
-        lppObligationModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "obligation",
-            "statement" -> "this is another reason",
-            "noOfUploadedFiles" -> "0"
-          )
+    "output the correct details for a lpp obligation submission with correlationID" in {
+      lppObligationModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "obligation",
+          "statement" -> "this is another reason",
+          "noOfUploadedFiles" -> "0"
         )
-      }
+      )
+    }
 
-      "output the correct details for a lpp obligation submission with evidence with correlationID" in {
-        lppObligationWithEvidenceModel.detail shouldBe Json.obj(
-          "submittedBy" -> "client",
-          "taxIdentifier" -> "123456789",
-          "identifierType" -> "VRN",
-          "penaltyType" -> "LPP",
-          "correlationId"-> "someUUID",
-          "appealInformation" -> Json.obj(
-            "type" -> "obligation",
-            "statement" -> "this is another reason",
-            "noOfUploadedFiles" -> "1",
-            "uploadedFiles" -> Json.obj(
-              "upscanReference" -> "12345",
-              "uploadTimestamp" -> "2021-04-23T18:25:43.511Z",
-              "fileName" -> "certificate.png",
-              "checksum" -> "12345",
-              "fileMimeType" -> "image/png",
-              "downloadUrl" -> "www.test.com"
+    "output the correct details for a lpp obligation submission with evidence with correlationID" in {
+      lppObligationWithEvidenceModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "appealInformation" -> Json.obj(
+          "type" -> "obligation",
+          "statement" -> "this is another reason",
+          "noOfUploadedFiles" -> "2",
+          "uploadedFiles" -> Json.arr(
+            Json.obj(
+              "upscanReference" -> "ref1",
+              "uploadTimestamp" -> "2018-04-24T09:30:00",
+              "fileName" -> "file1.txt",
+              "checksum" -> "check12345678",
+              "fileMimeType" -> "text/plain",
+              "downloadUrl" -> "download.file"
+            ),
+            Json.obj(
+              "upscanReference" -> "ref2",
+              "uploadTimestamp" -> "2018-04-24T09:30:00",
+              "fileName" -> "file2.txt",
+              "checksum" -> "check12345678",
+              "fileMimeType" -> "text/plain",
+              "downloadUrl" -> "download.file"
             )
           )
-        )
-      }
+        ),
+        "correlationId" -> "someUUID"
+      )
+    }
 
     "output the correct details for a lpp appeal submission by an agent with correlationID" in {
       lppAgentBereavementModel.detail shouldBe Json.obj(
@@ -402,7 +450,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "LPP",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
@@ -417,7 +465,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "LPP",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
@@ -433,7 +481,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "LSP",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
@@ -448,7 +496,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "LSP",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
@@ -463,7 +511,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "LSPP",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
@@ -478,7 +526,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "LSPP",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
@@ -493,7 +541,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "Additional",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
@@ -508,7 +556,7 @@ class AppealAuditModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "penaltyType" -> "Additional",
-        "correlationId"-> "someUUID",
+        "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",

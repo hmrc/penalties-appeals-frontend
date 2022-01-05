@@ -19,12 +19,13 @@ package models.monitoring
 import connectors.HeaderGenerator
 import models.UserRequest
 import models.appeals._
+import models.upload.UploadJourney
 import play.api.libs.json._
 import services.monitoring.JsonAuditModel
 import utils.JsonUtils
 import utils.Logger.logger
 
-case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String,headerGenerator: HeaderGenerator)
+case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String, headerGenerator: HeaderGenerator, optUploads: Option[Seq[UploadJourney]])
                            (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
 
   override val auditType: String = "PenaltyAppealSubmitted"
@@ -42,6 +43,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
 
   logger.debug(s"[AppealAuditModel] [appeal Payload] $appealPayload")
 
+  //scalastyle:off
   def appealInformationJsonObj(appealSubmission: AppealSubmission): JsObject = {
     appealSubmission.appealInformation match {
       case bereavement if bereavement.isInstanceOf[BereavementAppealInformation] =>
@@ -112,21 +114,22 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "type" -> appealInfo.reasonableExcuse,
           "startDateOfEvent" -> appealInfo.startDateOfEvent,
           "statement" -> appealInfo.statement,
-          "noOfUploadedFiles" -> {
-            try appealInfo.supportingEvidence.get.noOfUploadedFiles.toString
-            catch {
-              case _: NoSuchElementException => "0"
-            }
-          },
-          "uploadedFiles" -> { //TODO: Implement actual checks with upscan
-            if(appealInfo.supportingEvidence.isDefined) Json.obj(
-              "upscanReference" -> "12345",
-              "uploadTimestamp" -> "2021-04-23T18:25:43.511Z",
-              "fileName" -> "certificate.png",
-              "checksum" -> "12345",
-              "fileMimeType" -> "image/png",
-              "downloadUrl" -> "www.test.com"
-            ) else None
+          "noOfUploadedFiles" -> s"${optUploads.map(_.size).getOrElse(0)}",
+          "uploadedFiles" -> {
+            if(optUploads.isDefined) {
+              optUploads.get.map {
+                upload => {
+                  Json.obj(
+                    "upscanReference" -> upload.reference,
+                    "uploadTimestamp" -> upload.uploadDetails.get.uploadTimestamp,
+                    "fileName" -> upload.uploadDetails.get.fileName,
+                    "checksum" -> upload.uploadDetails.get.checksum,
+                    "fileMimeType" -> upload.uploadDetails.get.fileMimeType,
+                    "downloadUrl" -> upload.downloadUrl.get
+                  )
+                }
+              }
+            } else None
           },
           "lateAppeal" -> appealInfo.lateAppeal,
           "lateAppealReason" -> appealInfo.lateAppealReason
@@ -136,22 +139,23 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
         jsonObjNoNulls(
           "type" -> appealInfo.reasonableExcuse,
           "statement" -> appealInfo.statement,
-          "noOfUploadedFiles" -> {
-            try appealInfo.supportingEvidence.get.noOfUploadedFiles.toString
-            catch {
-              case _: NoSuchElementException => "0"
-            }
-          },
-        "uploadedFiles" -> { //TODO: Implement actual checks with upscan
-          if(appealInfo.supportingEvidence.isDefined) Json.obj(
-            "upscanReference" -> "12345",
-            "uploadTimestamp" -> "2021-04-23T18:25:43.511Z",
-            "fileName" -> "certificate.png",
-            "checksum" -> "12345",
-            "fileMimeType" -> "image/png",
-            "downloadUrl" -> "www.test.com"
-          ) else None
-        }
+          "noOfUploadedFiles" -> s"${optUploads.map(_.size).getOrElse(0)}",
+          "uploadedFiles" -> {
+            if(optUploads.isDefined) {
+              optUploads.get.map {
+                upload => {
+                  Json.obj(
+                    "upscanReference" -> upload.reference,
+                    "uploadTimestamp" -> upload.uploadDetails.get.uploadTimestamp,
+                    "fileName" -> upload.uploadDetails.get.fileName,
+                    "checksum" -> upload.uploadDetails.get.checksum,
+                    "fileMimeType" -> upload.uploadDetails.get.fileMimeType,
+                    "downloadUrl" -> upload.downloadUrl.get
+                  )
+                }
+              }
+            } else None
+          }
       )
     }
   }

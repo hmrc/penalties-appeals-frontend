@@ -94,7 +94,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val penaltyId = userRequest.session.get(SessionKeys.penaltyId).get
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
-      readyOrDuplicateFileUploads = fileUploads.filter(_.exists(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
+      readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
       amountOfFileUploads = readyOrDuplicateFileUploads.size
       modelFromRequest: AppealSubmission = AppealSubmission
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentReferenceNo)
@@ -104,12 +104,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         case OK =>
           if (isLPP) {
             if (appealType.contains(PenaltyTypeEnum.Late_Payment.toString)) {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, headerGenerator))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, headerGenerator, readyOrDuplicateFileUploads))
             } else {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, headerGenerator))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, headerGenerator, readyOrDuplicateFileUploads))
             }
           } else {
-            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, headerGenerator))
+            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, headerGenerator, readyOrDuplicateFileUploads))
           }
           sendAuditIfDuplicatesExist(readyOrDuplicateFileUploads)
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
