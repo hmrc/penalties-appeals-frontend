@@ -57,6 +57,9 @@ object HonestyDeclarationMessages {
 
   val li2Obligation: (String, String) => String = (startDate: String, endDate: String) => s"there was no VAT Return due for the period $startDate to $endDate"
 
+  val li2AgentObligation: (String, String) => String = (startDate: String, endDate: String) => s"I believe there was no VAT Return due for the period " +
+    s"$startDate to $endDate"
+
   val li3 = "I will provide honest and accurate information in this appeal"
 
   val extraLiForLossOfStaff = "the staff member did not return or get replaced before the due date"

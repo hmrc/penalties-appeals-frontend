@@ -76,7 +76,11 @@
                 @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
                     @messages("honestyDeclaration.obligation.lpp.li.2", friendlyStartDate, friendlyEndDate)
                 } else {
+                    @if(userRequest.isAgent && userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("agent")){
+                    @messages("agent.honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
+                    } else {
                     @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
+                        }
                 }
             } else if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
                     @getMessage("honestyDeclaration.lpp.li.2")

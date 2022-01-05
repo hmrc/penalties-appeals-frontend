@@ -66,6 +66,44 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
 
+      "it is an appeal against an obligation and agent missed the deadline" must {
+        implicit val doc: Document = asDocument(applyAgentView(honestyDeclarationForm, "",
+          "1 January 2022", "1 January 2021", "31 January 2021",
+          Seq(), agentUserSessionKeys.copy()(agentRequest.withSession(
+            SessionKeys.whatCausedYouToMissTheDeadline -> "agent")), isObligation = true))
+
+        val expectedContent = Seq(
+          Selectors.title -> title,
+          Selectors.h1 -> h1,
+          Selectors.pElementIndex(2) -> p1,
+          Selectors.listIndexWithElementIndex(3, 1) -> li1Obligation,
+          Selectors.listIndexWithElementIndex(3, 2) -> li2AgentObligation("1 January 2021", "31 January 2021"),
+          Selectors.listIndexWithElementIndex(3, 3) -> li3,
+          Selectors.button -> acceptAndContinueButton
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)(doc)
+      }
+
+      "it is an appeal against an obligation and client missed the deadline" must {
+          implicit val doc: Document = asDocument(applyAgentView(honestyDeclarationForm, "",
+            "1 January 2022", "1 January 2021", "31 January 2021",
+            Seq(), isObligation = true))
+
+          val expectedContent = Seq(
+            Selectors.title -> title,
+            Selectors.h1 -> h1,
+            Selectors.pElementIndex(2) -> p1,
+            Selectors.listIndexWithElementIndex(3,1) -> li1Obligation,
+            Selectors.listIndexWithElementIndex(3, 2) -> li2Obligation("1 January 2021", "31 January 2021"),
+            Selectors.listIndexWithElementIndex(3, 3) -> li3,
+            Selectors.button -> acceptAndContinueButton
+          )
+
+          behave like pageWithExpectedMessages(expectedContent)(doc)
+      }
+
+
       "display the correct variation" when {
         "the option selected is 'crime'" must {
           implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.crime"),
