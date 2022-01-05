@@ -87,4 +87,33 @@ class MessageRendererSpec extends SpecBase {
       }
     }
   }
+
+  "didClientCauseLateSubmission" should {
+    "return true" when {
+      "the client planned to submit" in {
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "client"))
+        val result = MessageRenderer.didClientCauseLateSubmission()(fakeAgentRequest)
+        result shouldBe true
+      }
+
+      "the agent planned to submit but the client missed the deadline" in {
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.whatCausedYouToMissTheDeadline -> "client"))
+        val result = MessageRenderer.didClientCauseLateSubmission()(fakeAgentRequest)
+        result shouldBe true
+      }
+    }
+
+    "return false" when {
+      "when the agent planned to submit and missed the deadline" in {
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.whatCausedYouToMissTheDeadline -> "agent"))
+        val result = MessageRenderer.didClientCauseLateSubmission()(fakeAgentRequest)
+        result shouldBe false
+      }
+    }
+  }
 }
