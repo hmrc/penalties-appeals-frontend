@@ -97,7 +97,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
       amountOfFileUploads = readyOrDuplicateFileUploads.size
       modelFromRequest: AppealSubmission = AppealSubmission
-        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentReferenceNo)
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentReferenceNo, readyOrDuplicateFileUploads)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId)
     } yield {
       response.status match {

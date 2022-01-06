@@ -18,6 +18,7 @@ package models.appeals
 
 import java.time.LocalDateTime
 
+import models.upload.UploadJourney
 import models.{PenaltyTypeEnum, UserRequest}
 import play.api.libs.json._
 import utils.SessionKeys
@@ -347,7 +348,8 @@ case class OtherAppealInformation(
                                    lateAppeal: Boolean,
                                    lateAppealReason: Option[String],
                                    isClientResponsibleForSubmission: Option[Boolean],
-                                   isClientResponsibleForLateSubmission: Option[Boolean]
+                                   isClientResponsibleForLateSubmission: Option[Boolean],
+                                   uploadedFiles: Option[Seq[UploadJourney]]
                                  ) extends AppealInformation
 
 object OtherAppealInformation {
@@ -385,6 +387,12 @@ object OtherAppealInformation {
       )(
         isClientResponsibleForLateSubmission => Json.obj("isClientResponsibleForLateSubmission" -> isClientResponsibleForLateSubmission)
       )
+    ).deepMerge(
+      otherAppealInformation.uploadedFiles.fold(
+        Json.obj()
+      )(
+        uploadedFiles => Json.obj("uploadedFiles" -> uploadedFiles)
+      )
     )
   }
 }
@@ -395,7 +403,8 @@ case class ObligationAppealInformation(
                                         statement: Option[String],
                                         supportingEvidence: Option[Evidence],
                                         isClientResponsibleForSubmission: Option[Boolean] = None,
-                                        isClientResponsibleForLateSubmission: Option[Boolean] = None
+                                        isClientResponsibleForLateSubmission: Option[Boolean] = None,
+                                        uploadedFiles: Option[Seq[UploadJourney]]
                                       ) extends AppealInformation
 
 object ObligationAppealInformation {
@@ -414,6 +423,12 @@ object ObligationAppealInformation {
         supportingEvidence => Json.obj("supportingEvidence" -> supportingEvidence)
       )
 
+    ).deepMerge(
+      obligationAppealInformation.uploadedFiles.fold(
+        Json.obj()
+      )(
+        uploadedFiles => Json.obj("uploadedFiles" -> uploadedFiles)
+      )
     )
   }
 }
@@ -445,7 +460,8 @@ object AppealSubmission {
   }
 
   //scalastyle:off
-  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long, agentReferenceNo: Option[String])
+  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long, agentReferenceNo: Option[String],
+                                            uploadedFiles: Option[Seq[UploadJourney]])
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
       case "bereavement" =>
@@ -468,6 +484,7 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
+
       case "crime" =>
         AppealSubmission(
           sourceSystem = "MDTP",
@@ -489,6 +506,7 @@ object AppealSubmission {
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
           )
         )
+
       case "fireOrFlood" =>
         AppealSubmission(
           sourceSystem = "MDTP",
@@ -597,7 +615,8 @@ object AppealSubmission {
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
+            isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client"),
+            uploadedFiles
           )
         )
       case "obligation" =>
@@ -613,7 +632,10 @@ object AppealSubmission {
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
             statement = userRequest.session.get(SessionKeys.otherRelevantInformation),
-            supportingEvidence = if (amountOfFileUploads > 0) Some(Evidence(amountOfFileUploads)) else None
+            supportingEvidence = if (amountOfFileUploads > 0) Some(Evidence(amountOfFileUploads)) else None,
+            isClientResponsibleForSubmission = None,
+            isClientResponsibleForLateSubmission = None,
+            uploadedFiles
           )
         )
     }

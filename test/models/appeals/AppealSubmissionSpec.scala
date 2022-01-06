@@ -16,12 +16,13 @@
 
 package models.appeals
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import models.UserRequest
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import play.api.libs.json.{JsValue, Json}
 import utils.SessionKeys
-
-import java.time.LocalDateTime
 
 class AppealSubmissionSpec extends SpecBase {
 
@@ -137,7 +138,35 @@ class AppealSubmissionSpec extends SpecBase {
       |   },
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
-      |   "isClientResponsibleForLateSubmission": true
+      |   "isClientResponsibleForLateSubmission": true,
+      |   "uploadedFiles":[
+      |     {
+      |       "reference":"xyz",
+      |       "fileStatus":"READY",
+      |       "downloadUrl":"xyz.com",
+      |       "uploadDetails": {
+      |         "fileName":"filename.txt",
+      |         "fileMimeType":"txt",
+      |         "uploadTimestamp":"2020-01-01T01:01:00",
+      |         "checksum":"abcde",
+      |         "size":1
+      |       },
+      |       "lastUpdated":"2021-02-02T02:02:00"
+      |     },
+      |     {
+      |       "reference":"abc",
+      |       "fileStatus":"READY",
+      |       "downloadUrl":"abc.com",
+      |       "uploadDetails": {
+      |         "fileName":"filename2.pdf",
+      |         "fileMimeType":"pdf",
+      |         "uploadTimestamp":"2020-03-03T03:03:00",
+      |         "checksum":"zyxwv",
+      |         "size":1
+      |       },
+      |       "lastUpdated":"2021-04-04T04:04:00"
+      |     }
+      |    ]
       |}
       |""".stripMargin
   )
@@ -164,7 +193,35 @@ class AppealSubmissionSpec extends SpecBase {
       |   "statement": "This is a statement.",
       |   "supportingEvidence":{
       |     "noOfUploadedFiles": 1
-      |   }
+      |   },
+      |   "uploadedFiles":[
+      |     {
+      |       "reference":"xyz",
+      |       "fileStatus":"READY",
+      |       "downloadUrl":"xyz.com",
+      |       "uploadDetails": {
+      |         "fileName":"filename.txt",
+      |         "fileMimeType":"txt",
+      |         "uploadTimestamp":"2020-01-01T01:01:00",
+      |         "checksum":"abcde",
+      |         "size":1
+      |       },
+      |       "lastUpdated":"2021-02-02T02:02:00"
+      |     },
+      |     {
+      |       "reference":"abc",
+      |       "fileStatus":"READY",
+      |       "downloadUrl":"abc.com",
+      |       "uploadDetails": {
+      |         "fileName":"filename2.pdf",
+      |         "fileMimeType":"pdf",
+      |         "uploadTimestamp":"2020-03-03T03:03:00",
+      |         "checksum":"zyxwv",
+      |         "size":1
+      |       },
+      |       "lastUpdated":"2021-04-04T04:04:00"
+      |     }
+      |    ]
       |}
       |""".stripMargin
   )
@@ -178,6 +235,24 @@ class AppealSubmissionSpec extends SpecBase {
       |}
       |""".stripMargin
   )
+
+  val uploadJourneyModel: UploadJourney = UploadJourney(reference = "xyz", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("xyz.com"),
+    uploadDetails =
+      Some(UploadDetails(
+        fileName = "filename.txt",
+        fileMimeType = "txt",
+        uploadTimestamp = LocalDateTime.of(2020,1,1,1,1),
+        checksum = "abcde", size = 1)),
+    failureDetails = None, lastUpdated = LocalDateTime.of(2021,2,2,2,2))
+
+  val uploadJourneyModel2: UploadJourney = UploadJourney(reference = "abc", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("abc.com"),
+    uploadDetails =
+      Some(UploadDetails(
+        fileName = "filename2.pdf",
+        fileMimeType = "pdf",
+        uploadTimestamp = LocalDateTime.of(2020,3,3,3,3),
+        checksum = "zyxwv", size = 1)),
+    failureDetails = None, lastUpdated = LocalDateTime.of(2021,4,4,4,4))
 
   "parseAppealInformationToJson" should {
     "for crime" must {
@@ -321,7 +396,8 @@ class AppealSubmissionSpec extends SpecBase {
           lateAppeal = false,
           lateAppealReason = None,
           isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
+          isClientResponsibleForLateSubmission = Some(true),
+          Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe otherAppealInformationJson
@@ -337,7 +413,8 @@ class AppealSubmissionSpec extends SpecBase {
           lateAppeal = false,
           lateAppealReason = None,
           isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
+          isClientResponsibleForLateSubmission = Some(true),
+          uploadedFiles = None
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe otherAppealInformationJsonNoEvidence
@@ -351,7 +428,8 @@ class AppealSubmissionSpec extends SpecBase {
           honestyDeclaration = true,
           statement = Some("This is a statement."),
           supportingEvidence = Some(Evidence(
-            noOfUploadedFiles = 1))
+            noOfUploadedFiles = 1)),
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe obligationAppealInformationJson
@@ -362,7 +440,8 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
           statement = Some("This is a statement."),
-          supportingEvidence = None
+          supportingEvidence = None,
+          uploadedFiles = None
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe obligationAppealInformationJsonNoEvidence
@@ -381,7 +460,8 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.whatCausedYouToMissTheDeadline -> "client")
       )
 
-      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false, 0, agentReferenceNo = Some("1234567890"))(fakeAgentRequestForCrimeJourney)
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false,
+        0, agentReferenceNo = Some("1234567890"), None)(fakeAgentRequestForCrimeJourney)
       result.appealSubmittedBy shouldBe "agent"
       result.agentReferenceNo shouldBe Some("1234567890")
       result.appealInformation shouldBe CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
@@ -399,7 +479,8 @@ class AppealSubmissionSpec extends SpecBase {
         SessionKeys.lateAppealReason -> "Some Reason")
       )
 
-      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = true, 0, None)(fakeRequestForCrimeJourney)
+      val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = true,
+        0, None, None)(fakeRequestForCrimeJourney)
       result.appealSubmittedBy shouldBe "client"
       result.appealInformation shouldBe CrimeAppealInformation(
         reasonableExcuse = "crime",
@@ -421,7 +502,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidThePersonDie -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", isLateAppeal = false, 0, None)(fakeRequestForBereavementJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement",
+          isLateAppeal = false, 0, None, None)(fakeRequestForBereavementJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe BereavementAppealInformation(
           reasonableExcuse = "bereavement",
@@ -442,7 +524,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidThePersonDie -> "2022-01-01",
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement", isLateAppeal = false, 0, None)(fakeRequestForBereavementJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement",
+          isLateAppeal = false, 0, None, None)(fakeRequestForBereavementJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe BereavementAppealInformation(
           reasonableExcuse = "bereavement",
@@ -466,7 +549,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.dateOfCrime -> "2022-01-01")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false, 0, None)(fakeRequestForCrimeJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false,
+          0, None, None)(fakeRequestForCrimeJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe CrimeAppealInformation(
           reasonableExcuse = "crime",
@@ -489,7 +573,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.dateOfFireOrFlood -> "2022-01-01")
         )
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood", isLateAppeal = false, 0, None)(fakeRequestForFireOrFloodJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood",
+          isLateAppeal = false, 0, None, None)(fakeRequestForFireOrFloodJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe FireOrFloodAppealInformation(
           reasonableExcuse = "fireOrFlood",
@@ -512,7 +597,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", isLateAppeal = false, 0, None)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff",
+          isLateAppeal = false, 0, None, None)(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe LossOfStaffAppealInformation(
           reasonableExcuse = "lossOfStaff",
@@ -534,8 +620,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "client")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff",
-          isLateAppeal = false, 0, Some("1234567890"))(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", isLateAppeal = false,
+          0, Some("1234567890"), None)(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "agent"
         result.agentReferenceNo shouldBe Some("1234567890")
         result.appealInformation shouldBe LossOfStaffAppealInformation(
@@ -561,7 +647,7 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues",
-          isLateAppeal = false, 0, None)(fakeRequestForTechnicalIssuesJourney)
+          isLateAppeal = false, 0, None, None)(fakeRequestForTechnicalIssuesJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
           reasonableExcuse = "technicalIssues",
@@ -586,7 +672,7 @@ class AppealSubmissionSpec extends SpecBase {
         )
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues",
-          isLateAppeal = false, 0, agentReferenceNo = Some("1234567890"))(fakeRequestForTechnicalIssuesJourney)
+          isLateAppeal = false, 0, agentReferenceNo = Some("1234567890"), None)(fakeRequestForTechnicalIssuesJourney)
         result.appealSubmittedBy shouldBe "agent"
         result.agentReferenceNo shouldBe Some("1234567890")
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
@@ -614,7 +700,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueEnded -> "2022-01-31"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false, 0, agentReferenceNo = Some("1234567890"))(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false, 0,
+          agentReferenceNo = Some("1234567890"), None)(fakeRequestForHealthJourney)
         result.appealSubmittedBy shouldBe "agent"
         result.agentReferenceNo shouldBe Some("1234567890")
         result.appealInformation shouldBe HealthAppealInformation(
@@ -641,7 +728,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueStarted -> "2022-01-01"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false, 0, None)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false,
+          0, None, None)(fakeRequestForHealthJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe HealthAppealInformation(
           reasonableExcuse = "health",
@@ -666,7 +754,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenHealthIssueHappened -> "2022-01-01"
         ))
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false, 0, None)(fakeRequestForHealthJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false,
+          0, None, None)(fakeRequestForHealthJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe HealthAppealInformation(
           reasonableExcuse = "health",
@@ -693,7 +782,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false, 1, None)(fakeRequestForOtherJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false,
+          1, None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForOtherJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
@@ -704,7 +794,8 @@ class AppealSubmissionSpec extends SpecBase {
           lateAppealReason = None,
           supportingEvidence = Some(Evidence(1)),
           isClientResponsibleForSubmission = None,
-          isClientResponsibleForLateSubmission = None
+          isClientResponsibleForLateSubmission = None,
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
       }
 
@@ -716,7 +807,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false, 0, None)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false,
+          0, None, uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
@@ -727,7 +819,8 @@ class AppealSubmissionSpec extends SpecBase {
           lateAppealReason = None,
           supportingEvidence = None,
           isClientResponsibleForSubmission = None,
-          isClientResponsibleForLateSubmission = None
+          isClientResponsibleForLateSubmission = None,
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
       }
 
@@ -740,7 +833,8 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.lateAppealReason -> "This is a reason for appealing late.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = true, 1, None)(fakeRequestForLossOfStaffJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = true,
+          1, None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
@@ -751,7 +845,8 @@ class AppealSubmissionSpec extends SpecBase {
           lateAppealReason = Some("This is a reason for appealing late."),
           supportingEvidence = Some(Evidence(1)),
           isClientResponsibleForSubmission = None,
-          isClientResponsibleForLateSubmission = None
+          isClientResponsibleForLateSubmission = None,
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
       }
     }
@@ -765,13 +860,15 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false, 1, None)(fakeRequestForObligationJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false,
+          1, None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForObligationJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe ObligationAppealInformation(
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
           statement = Some("This is a reason."),
-          supportingEvidence = Some(Evidence(1))
+          supportingEvidence = Some(Evidence(1)),
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
       }
 
@@ -783,13 +880,15 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.otherRelevantInformation -> "This is a reason.")
         )
 
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false, 0, None)(fakeRequestForObligationJourney)
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false,
+          0, None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForObligationJourney)
         result.appealSubmittedBy shouldBe "client"
         result.appealInformation shouldBe ObligationAppealInformation(
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
           statement = Some("This is a reason."),
-          supportingEvidence = None
+          supportingEvidence = None,
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
       }
     }
@@ -1181,7 +1280,8 @@ class AppealSubmissionSpec extends SpecBase {
             lateAppeal = false,
             lateAppealReason = None,
             isClientResponsibleForSubmission = Some(true),
-            isClientResponsibleForLateSubmission = Some(true)
+            isClientResponsibleForLateSubmission = Some(true),
+            uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
           )
         )
 
@@ -1202,7 +1302,35 @@ class AppealSubmissionSpec extends SpecBase {
             ),
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
-            "isClientResponsibleForLateSubmission" -> true
+            "isClientResponsibleForLateSubmission" -> true,
+            "uploadedFiles" -> Seq(
+              Json.obj(
+                "reference" -> "xyz",
+                "fileStatus" -> "READY",
+                "downloadUrl" -> "xyz.com",
+                "uploadDetails" -> Json.obj(
+                  "fileName" -> "filename.txt",
+                  "fileMimeType" ->"txt",
+                  "uploadTimestamp" -> "2020-01-01T01:01:00",
+                  "checksum" -> "abcde",
+                  "size" -> 1
+                ),
+                "lastUpdated" -> "2021-02-02T02:02:00"
+              ),
+              Json.obj(
+                "reference" -> "abc",
+                "fileStatus" -> "READY",
+                "downloadUrl" -> "abc.com",
+                "uploadDetails" -> Json.obj(
+                  "fileName" -> "filename2.pdf",
+                  "fileMimeType" -> "pdf",
+                  "uploadTimestamp" -> "2020-03-03T03:03:00",
+                  "checksum" -> "zyxwv",
+                  "size" -> 1
+                ),
+                "lastUpdated" -> "2021-04-04T04:04:00"
+              )
+            )
           )
         )
 
@@ -1228,7 +1356,8 @@ class AppealSubmissionSpec extends SpecBase {
             lateAppeal = false,
             lateAppealReason = None,
             isClientResponsibleForSubmission = Some(true),
-            isClientResponsibleForLateSubmission = Some(true)
+            isClientResponsibleForLateSubmission = Some(true),
+            uploadedFiles = None
           )
         )
 
@@ -1274,7 +1403,8 @@ class AppealSubmissionSpec extends SpecBase {
             lateAppeal = true,
             lateAppealReason = Some("Late reason"),
             isClientResponsibleForSubmission = Some(true),
-            isClientResponsibleForLateSubmission = Some(true)
+            isClientResponsibleForLateSubmission = Some(true),
+            uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
           )
         )
 
@@ -1296,7 +1426,35 @@ class AppealSubmissionSpec extends SpecBase {
             "lateAppeal" -> true,
             "lateAppealReason" -> "Late reason",
             "isClientResponsibleForSubmission" -> true,
-            "isClientResponsibleForLateSubmission" -> true
+            "isClientResponsibleForLateSubmission" -> true,
+            "uploadedFiles" -> Seq(
+              Json.obj(
+                "reference" -> "xyz",
+                "fileStatus" -> "READY",
+                "downloadUrl" -> "xyz.com",
+                "uploadDetails" -> Json.obj(
+                  "fileName" -> "filename.txt",
+                  "fileMimeType" ->"txt",
+                  "uploadTimestamp" -> "2020-01-01T01:01:00",
+                  "checksum" -> "abcde",
+                  "size" -> 1
+                  ),
+                "lastUpdated" -> "2021-02-02T02:02:00"
+              ),
+              Json.obj(
+                "reference" -> "abc",
+                "fileStatus" -> "READY",
+                "downloadUrl" -> "abc.com",
+                "uploadDetails" -> Json.obj(
+                  "fileName" -> "filename2.pdf",
+                  "fileMimeType" -> "pdf",
+                  "uploadTimestamp" -> "2020-03-03T03:03:00",
+                  "checksum" -> "zyxwv",
+                  "size" -> 1
+                  ),
+                "lastUpdated" -> "2021-04-04T04:04:00"
+              )
+            )
           )
         )
 
@@ -1321,7 +1479,8 @@ class AppealSubmissionSpec extends SpecBase {
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
               noOfUploadedFiles = 1
-            ))
+            )),
+            uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
           )
         )
 
@@ -1338,6 +1497,34 @@ class AppealSubmissionSpec extends SpecBase {
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
               "noOfUploadedFiles" -> 1
+            ),
+            "uploadedFiles" -> Seq(
+              Json.obj(
+                "reference" -> "xyz",
+                "fileStatus" -> "READY",
+                "downloadUrl" -> "xyz.com",
+                "uploadDetails" -> Json.obj(
+                  "fileName" -> "filename.txt",
+                  "fileMimeType" ->"txt",
+                  "uploadTimestamp" -> "2020-01-01T01:01:00",
+                  "checksum" -> "abcde",
+                  "size" -> 1
+                ),
+                "lastUpdated" -> "2021-02-02T02:02:00"
+              ),
+              Json.obj(
+                "reference" -> "abc",
+                "fileStatus" -> "READY",
+                "downloadUrl" -> "abc.com",
+                "uploadDetails" -> Json.obj(
+                  "fileName" -> "filename2.pdf",
+                  "fileMimeType" -> "pdf",
+                  "uploadTimestamp" -> "2020-03-03T03:03:00",
+                  "checksum" -> "zyxwv",
+                  "size" -> 1
+                ),
+                "lastUpdated" -> "2021-04-04T04:04:00"
+              )
             )
           )
         )
@@ -1359,7 +1546,8 @@ class AppealSubmissionSpec extends SpecBase {
             reasonableExcuse = "obligation",
             honestyDeclaration = true,
             statement = Some("This was the reason"),
-            supportingEvidence = None
+            supportingEvidence = None,
+            uploadedFiles = None
           )
         )
 
@@ -1626,7 +1814,8 @@ class AppealSubmissionSpec extends SpecBase {
           lateAppeal = false,
           lateAppealReason = None,
           isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
+          isClientResponsibleForLateSubmission = Some(true),
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
         val expectedResult = Json.parse(
           """
@@ -1640,7 +1829,35 @@ class AppealSubmissionSpec extends SpecBase {
             | },
             | "lateAppeal": false,
             | "isClientResponsibleForSubmission": false,
-            | "isClientResponsibleForLateSubmission": true
+            | "isClientResponsibleForLateSubmission": true,
+            | "uploadedFiles": [
+            |   {
+            |     "reference": "xyz",
+            |     "fileStatus": "READY",
+            |     "downloadUrl": "xyz.com",
+            |     "uploadDetails": {
+            |         "fileName": "filename.txt",
+            |         "fileMimeType": "txt",
+            |         "uploadTimestamp": "2020-01-01T01:01:00",
+            |         "checksum": "abcde",
+            |         "size": 1
+            |       },
+            |       "lastUpdated": "2021-02-02T02:02:00"
+            |     },
+            |     {
+            |       "reference": "abc",
+            |       "fileStatus": "READY",
+            |       "downloadUrl": "abc.com",
+            |       "uploadDetails": {
+            |         "fileName": "filename2.pdf",
+            |         "fileMimeType": "pdf",
+            |         "uploadTimestamp": "2020-03-03T03:03:00",
+            |         "checksum": "zyxwv",
+            |         "size": 1
+            |       },
+            |       "lastUpdated": "2021-04-04T04:04:00"
+            |     }
+            |   ]
             |}
             |""".stripMargin)
         val result = Json.toJson(modelToConvertToJson)
@@ -1657,7 +1874,8 @@ class AppealSubmissionSpec extends SpecBase {
           lateAppeal = true,
           lateAppealReason = Some("This is a reason"),
           isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
+          isClientResponsibleForLateSubmission = Some(true),
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
         val expectedResult = Json.parse(
           """
@@ -1672,7 +1890,35 @@ class AppealSubmissionSpec extends SpecBase {
             | "lateAppeal": true,
             | "lateAppealReason": "This is a reason",
             | "isClientResponsibleForSubmission": false,
-            | "isClientResponsibleForLateSubmission": true
+            | "isClientResponsibleForLateSubmission": true,
+            | "uploadedFiles": [
+            |   {
+            |     "reference": "xyz",
+            |     "fileStatus": "READY",
+            |     "downloadUrl": "xyz.com",
+            |     "uploadDetails": {
+            |         "fileName": "filename.txt",
+            |         "fileMimeType": "txt",
+            |         "uploadTimestamp": "2020-01-01T01:01:00",
+            |         "checksum": "abcde",
+            |         "size": 1
+            |       },
+            |       "lastUpdated": "2021-02-02T02:02:00"
+            |     },
+            |     {
+            |       "reference": "abc",
+            |       "fileStatus": "READY",
+            |       "downloadUrl": "abc.com",
+            |       "uploadDetails": {
+            |         "fileName": "filename2.pdf",
+            |         "fileMimeType": "pdf",
+            |         "uploadTimestamp": "2020-03-03T03:03:00",
+            |         "checksum": "zyxwv",
+            |         "size": 1
+            |       },
+            |       "lastUpdated": "2021-04-04T04:04:00"
+            |     }
+            |   ]
             |}
             |""".stripMargin)
         val result = Json.toJson(modelToConvertToJson)
@@ -1689,7 +1935,8 @@ class AppealSubmissionSpec extends SpecBase {
           lateAppeal = false,
           lateAppealReason = None,
           isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
+          isClientResponsibleForLateSubmission = Some(true),
+          uploadedFiles = None
         )
         val expectedResult = Json.parse(
           """
@@ -1720,7 +1967,9 @@ class AppealSubmissionSpec extends SpecBase {
             Evidence(
               noOfUploadedFiles = 1
             )
-          ))
+          ),
+          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
+        )
         val expectedResult = Json.parse(
           """
             |{
@@ -1729,7 +1978,35 @@ class AppealSubmissionSpec extends SpecBase {
             | "statement": "I was late. Sorry.",
             | "supportingEvidence": {
             |   "noOfUploadedFiles": 1
-            | }
+            | },
+            | "uploadedFiles": [
+            |   {
+            |     "reference": "xyz",
+            |     "fileStatus": "READY",
+            |     "downloadUrl": "xyz.com",
+            |     "uploadDetails": {
+            |         "fileName": "filename.txt",
+            |         "fileMimeType": "txt",
+            |         "uploadTimestamp": "2020-01-01T01:01:00",
+            |         "checksum": "abcde",
+            |         "size": 1
+            |       },
+            |       "lastUpdated": "2021-02-02T02:02:00"
+            |     },
+            |     {
+            |       "reference": "abc",
+            |       "fileStatus": "READY",
+            |       "downloadUrl": "abc.com",
+            |       "uploadDetails": {
+            |         "fileName": "filename2.pdf",
+            |         "fileMimeType": "pdf",
+            |         "uploadTimestamp": "2020-03-03T03:03:00",
+            |         "checksum": "zyxwv",
+            |         "size": 1
+            |       },
+            |       "lastUpdated": "2021-04-04T04:04:00"
+            |     }
+            |   ]
             |}
             |""".stripMargin)
         val result = Json.toJson(modelToConvertToJson)
@@ -1741,7 +2018,8 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
           statement = Some("I was late. Sorry."),
-          supportingEvidence = None
+          supportingEvidence = None,
+          uploadedFiles = None
         )
         val expectedResult = Json.parse(
           """
