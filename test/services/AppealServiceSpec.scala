@@ -21,7 +21,7 @@ import config.AppConfig
 import connectors.{HeaderGenerator, PenaltiesConnector}
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{AppealData, ReasonableExcuse, UserRequest}
-import org.mockito.ArgumentMatchers
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.{JsValue, Json}
@@ -271,14 +271,47 @@ class AppealServiceSpec extends SpecBase {
         lastUpdated = LocalDateTime.now()
       )
       val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
+      val failedUpload: UploadJourney = uploadAsDuplicate.copy(reference = "ref3", fileStatus = UploadStatusEnum.FAILED)
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
-        .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate, uploadAsDuplicate2))))
+        .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate, uploadAsDuplicate2, failedUpload))))
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
       result shouldBe Right((): Unit)
+
       verify(mockAuditService, times(2)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
         ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+    }
+
+    "ignore FAILED or WAITING files for audit" in new Setup {
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+      val auditCapture:ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
+      val uploadAsDuplicate: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.FAILED,
+        downloadUrl = None,
+        uploadDetails = Some(
+          UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = sampleDate,
+            checksum = "123456789",
+            size = 100
+          )
+        ),
+        failureDetails = None,
+        lastUpdated = LocalDateTime.now()
+      )
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate))))
+      val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
+      result shouldBe Right((): Unit)
+
+      verify(mockAuditService, times(1)).audit(auditCapture.capture())(ArgumentMatchers.any[HeaderCarrier],
+        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+      (auditCapture.getValue.detail \ "appealInformation" \ "uploadedFiles").as[List[JsValue]] shouldBe Seq.empty
     }
 
     "return false" when {
