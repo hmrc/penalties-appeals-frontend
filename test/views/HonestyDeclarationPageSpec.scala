@@ -105,28 +105,83 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
 
       "display the correct variation" when {
-        "the option selected is 'crime'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.crime"),
-            "1 January 2022", "1 January 2021", "31 January 2021"))
 
-          val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
-            Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
-          )
+        "the client failed to submit" when {
 
-          behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+          "the option selected is 'crime'" must {
+            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.crime"),
+              "1 January 2022", "1 January 2021", "31 January 2021"))
+
+            val expectedContent = Seq(
+              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+            )
+
+            behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+          }
+
+          "the option selected is 'bereavement'" must {
+            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.bereavement"),
+              "1 January 2022", "1 January 2021", "31 January 2021"))
+
+            val expectedContent = Seq(
+              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+            )
+
+            behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+          }
         }
 
-        "the option selected is 'bereavement'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.bereavement"),
-            "1 January 2022", "1 January 2021", "31 January 2021"))
+        "the agent failed to submit" when {
 
-          val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
-            Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
-          )
+          "the option selected is 'fire or flood'" must {
+            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.fireOrFlood"),
+            "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
-          behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+            val expectedContent = Seq(
+              Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.fireOrFlood"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(3, 2) -> li2
+            )
+
+            behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+          }
+
+          "the option selected is 'health'" must {
+            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.health"),
+              "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
+
+            val expectedContent = Seq(
+              Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.health"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(3, 2) -> li2
+            )
+
+            behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+          }
+
+          "the option selected is 'technical issues'" must {
+            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.technicalIssues"),
+              "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
+
+            val expectedContent = Seq(
+              Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.technicalIssues"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(3, 2) -> li2
+            )
+
+            behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+          }
+
+          "the option selected is 'loss of staff'" must {
+            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, messages("agent.honestyDeclaration.lossOfStaff"),
+              "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
+
+            val expectedContent = Seq(
+              Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(3, 2) -> li2
+            )
+
+            behave like pageWithExpectedMessages(expectedContent)(agentDoc)
+          }
         }
       }
 

@@ -17,7 +17,9 @@
 package helpers
 
 import base.SpecBase
-import models.UserRequest
+import models.{PenaltyTypeEnum, UserRequest}
+import play.api.mvc.AnyContent
+import utils.SessionKeys
 
 class HonestyDeclarationHelperSpec extends SpecBase {
   "getReasonText" should {
@@ -30,13 +32,25 @@ class HonestyDeclarationHelperSpec extends SpecBase {
     }
 
     "return the correct agent message" when {
+      "the user is an agent and the client planned to submit" should {
         reasonTest("crime", "my client was affected by a crime", agentUserSessionKeys)
       }
 
-      "return the correct VAT trader message" when {
-        reasonTest("crime", "I was affected by a crime", vatTraderUser)
+      "the agent planned to submit and missed the deadline (LSP)" should {
+        val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.whatCausedYouToMissTheDeadline -> "agent",
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
+        )
+        reasonTest("crime", "my client was affected by a crime", agentUserSessionKeys)
       }
     }
+
+    "return the correct VAT trader message" when {
+      reasonTest("crime", "I was affected by a crime", vatTraderUser)
+    }
+  }
 
   "getExtraText" should {
     "return the correct message key(s) for 'loss of staff'" in {

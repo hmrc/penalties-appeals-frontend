@@ -107,9 +107,13 @@ agent.honestyDeclaration.crime = my client was affected by a crime
 honestyDeclaration.bereavement = I was affected by someone’s death
 agent.honestyDeclaration.bereavement = my client was affected by someone’s death
 honestyDeclaration.fireOrFlood = of a fire or flood
+agent.honestyDeclaration.fireOrFlood = my client was affected by a fire or flood
 honestyDeclaration.health = of a health issue
+agent.honestyDeclaration.health = my client was affected by a health issue
 honestyDeclaration.technicalIssues = of technology issues
+agent.honestyDeclaration.technicalIssues = my client was affected by technology issues
 honestyDeclaration.lossOfStaff = of loss of staff essential to the VAT process
+agent.honestyDeclaration.lossOfStaff = my client was affected by loss of staff essential to the VAT process
 honestyDeclaration.other =
 
 # Errors
