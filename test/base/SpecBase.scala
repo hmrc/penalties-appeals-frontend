@@ -144,6 +144,11 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     SessionKeys.whatCausedYouToMissTheDeadline -> "client")
   )
 
+  val agentUserAgentMissedSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+    SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+    SessionKeys.whatCausedYouToMissTheDeadline -> "agent")
+  )
+
   val agentUserLPP: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString
   ))
