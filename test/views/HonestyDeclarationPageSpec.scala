@@ -68,9 +68,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       "it is an appeal against an obligation and agent missed the deadline" must {
         implicit val doc: Document = asDocument(applyAgentView(honestyDeclarationForm, "",
-          "1 January 2022", "1 January 2021", "31 January 2021",
-          Seq(), agentUserSessionKeys.copy()(agentRequest.withSession(
-            SessionKeys.whatCausedYouToMissTheDeadline -> "agent")), isObligation = true))
+          "1 January 2022", "1 January 2021", "31 January 2021", isObligation = true))
 
         val expectedContent = Seq(
           Selectors.title -> title,
@@ -86,15 +84,15 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "it is an appeal against an obligation and client missed the deadline" must {
-          implicit val doc: Document = asDocument(applyAgentView(honestyDeclarationForm, "",
-            "1 January 2022", "1 January 2021", "31 January 2021",
-            Seq(), isObligation = true))
+        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "",
+          "1 January 2022", "1 January 2021", "31 January 2021",
+          isObligation = true))
 
           val expectedContent = Seq(
             Selectors.title -> title,
             Selectors.h1 -> h1,
             Selectors.pElementIndex(2) -> p1,
-            Selectors.listIndexWithElementIndex(3,1) -> li1Obligation,
+            Selectors.listIndexWithElementIndex(3, 1) -> li1Obligation,
             Selectors.listIndexWithElementIndex(3, 2) -> li2Obligation("1 January 2021", "31 January 2021"),
             Selectors.listIndexWithElementIndex(3, 3) -> li3,
             Selectors.button -> acceptAndContinueButton
