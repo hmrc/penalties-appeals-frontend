@@ -30,6 +30,24 @@ import utils.UUIDGenerator
 
 class AppealAuditModelSpec extends SpecBase {
 
+  val uploadJourneyModel: UploadJourney = UploadJourney(reference = "xyz", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("xyz.com"),
+    uploadDetails =
+      Some(UploadDetails(
+        fileName = "filename.txt",
+        fileMimeType = "txt",
+        uploadTimestamp = LocalDateTime.of(2020,1,1,1,1),
+        checksum = "abcde", size = 1)),
+    failureDetails = None, lastUpdated = LocalDateTime.of(2021,2,2,2,2))
+
+  val uploadJourneyModel2: UploadJourney = UploadJourney(reference = "abc", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("abc.com"),
+    uploadDetails =
+      Some(UploadDetails(
+        fileName = "filename2.pdf",
+        fileMimeType = "pdf",
+        uploadTimestamp = LocalDateTime.of(2020,3,3,3,3),
+        checksum = "zyxwv", size = 1)),
+    failureDetails = None, lastUpdated = LocalDateTime.of(2021,4,4,4,4))
+
   "AppealAuditModel" must {
 
     def appealSubmission(appealInformation: AppealInformation): AppealSubmission = AppealSubmission(
@@ -139,7 +157,8 @@ class AppealAuditModelSpec extends SpecBase {
       lateAppeal = false,
       lateAppealReason = None,
       isClientResponsibleForSubmission = None,
-      isClientResponsibleForLateSubmission = None
+      isClientResponsibleForLateSubmission = None,
+      uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
     )
     val otherAppealInformationWithEvidence = otherAppealInformation.copy(
       supportingEvidence = Some(Evidence(
@@ -148,7 +167,8 @@ class AppealAuditModelSpec extends SpecBase {
     )
 
     val obligationAppealInformation: ObligationAppealInformation = ObligationAppealInformation(
-      reasonableExcuse = "obligation", honestyDeclaration = true, statement = Some("this is another reason"), supportingEvidence = None
+      reasonableExcuse = "obligation", honestyDeclaration = true, statement = Some("this is another reason"),
+      supportingEvidence = None, None, None, Some(Seq(uploadJourneyModel, uploadJourneyModel2))
     )
     val obligationAppealInformationWithEvidence = obligationAppealInformation.copy(
       supportingEvidence = Some(Evidence(
