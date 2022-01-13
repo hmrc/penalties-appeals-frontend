@@ -54,12 +54,8 @@
                         @messages("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
                     }
                 } else {
-                    @if(userRequest.isAgent && didClientCauseLateSubmission) {
-                        @if(reasonText.contains("crime") || reasonText.contains("death")) {
-                            @getMessage("honestyDeclaration.li.1.2", friendlyDueDate)
-                        } else {
-                            @getMessage("honestyDeclaration.li.1.2.myClient", friendlyDueDate)
-                        }
+                    @if(userRequest.isAgent && !didClientCauseLateSubmission) {
+                        @getMessage("honestyDeclaration.li.1.2", friendlyDueDate)
                     } else {
                         @messages("honestyDeclaration.li.1.2", friendlyDueDate)
                     }

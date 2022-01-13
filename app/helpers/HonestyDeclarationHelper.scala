@@ -24,7 +24,7 @@ import utils.SessionKeys
 object HonestyDeclarationHelper {
   def getReasonText(reasonableExcuse: String)(implicit messages: Messages, user: UserRequest[_]): String = {
     reasonableExcuse match {
-      case _ if (user.isAgent && !didClientCauseLateSubmission &&
+      case _ if (user.isAgent && didClientCauseLateSubmission &&
         user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString) &&
         !reasonableExcuse.equals("other")) => messages(s"agent.honestyDeclaration.$reasonableExcuse")
       case excuse if excuse == "crime" || excuse == "bereavement" => getMessage(s"honestyDeclaration.$reasonableExcuse")
