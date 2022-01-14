@@ -49,6 +49,10 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
       checksum = "check1234",
       size = 2
+    )),
+    uploadFields = Some(Map(
+      "key" -> "abcxyz",
+      "algo" -> "md5"
     ))
   )
 
@@ -75,6 +79,10 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
       checksum = "check1234",
       size = 3
+    )),
+    uploadFields = Some(Map(
+      "key" -> "abcxyz",
+      "algo" -> "md5"
     ))
   )
 
@@ -98,9 +106,23 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     }
   }
 
+  "getFieldsForFileReference" should {
+    s"return $None when the uploadDetails does not exist" in new Setup {
+      val result = await(repository.getFieldsForFileReference("1234", "ref1"))
+      result.isDefined shouldBe false
+    }
+
+    s"return $Some when the uploadDetails exists" in new Setup {
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
+      val result = await(repository.getFieldsForFileReference("1234", "ref1"))
+      result.isDefined shouldBe true
+      result shouldBe callbackModel.uploadFields
+    }
+  }
+
   "getStatusOfFileUpload" should {
     s"return $None when the document is not in Mongo" in new Setup {
-      val result: Option[UploadStatus] = await(repository.getStatusOfFileUpload("1234", "ref1"))
+      val result: Option[UploadStatus] = await(repository.getStatusOfFileUpload("1234", ""))
       result.isDefined shouldBe false
     }
 

@@ -150,7 +150,10 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           | "reference": "12345",
           | "uploadRequest": {
           |   "href": "12345",
-          |   "fields": {}
+          |   "fields": {
+          |     "key": "abcxyz",
+          |     "algo": "md5"
+          |   }
           | }
           |}
           |""".stripMargin)
@@ -165,7 +168,10 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           | "reference": "12345",
           | "uploadRequest": {
           |   "href": "12345",
-          |   "fields": {}
+          |   "fields": {
+          |     "key": "abcxyz",
+          |     "algo": "md5"
+          |   }
           | }
           |}
           |""".stripMargin)

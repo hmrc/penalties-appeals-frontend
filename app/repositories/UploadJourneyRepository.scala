@@ -56,6 +56,24 @@ class UploadJourneyRepository @Inject()(
     )
   }
 
+  def getFieldsForFileReference(journeyId: String, fileReference: String): Future[Option[Map[String,String]]] = {
+    get[UploadJourney](journeyId)(DataKey(fileReference)).map(
+      upload => {
+        if(upload.exists(_.uploadFields.isDefined)) {
+          upload.flatMap(_.uploadFields.map(
+            fields => {
+              logger.debug(s"[UploadJourneyRepository][getFieldsForFileReference] -" +
+                s" Received the following upload fields, fields: $fields using file reference: $fileReference")
+              fields
+            }
+          ))
+        }else{
+          None
+        }
+      }
+    )
+  }
+
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatus]] = {
     get[UploadJourney](journeyId)(DataKey(fileReference)).map(
       upload => {

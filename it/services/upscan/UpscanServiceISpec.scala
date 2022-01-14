@@ -66,7 +66,10 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
           | "reference": "12345",
           | "uploadRequest": {
           |   "href": "12345",
-          |   "fields": {}
+          |   "fields": {
+          |     "key": "abcxyz",
+          |      "algo": "md5"
+          |   }
           | }
           |}
           |""".stripMargin)
@@ -75,7 +78,11 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
       val expectedUploadJourneyModel = UploadJourney(
         reference = "12345",
         fileStatus = UploadStatusEnum.WAITING,
-        lastUpdated = mockDateTime
+        lastUpdated = mockDateTime,
+        uploadFields = Some(Map(
+          "key" -> "abcxyz",
+          "algo" -> "md5"
+        ))
       )
       await(repository.getUploadsForJourney(Some("J1234"))).get.head.copy(lastUpdated = mockDateTime) shouldBe expectedUploadJourneyModel
     }

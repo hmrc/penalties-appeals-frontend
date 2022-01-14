@@ -64,6 +64,10 @@ class UpscanCallbackControllerSpec extends SpecBase {
       |        "uploadTimestamp": "2018-04-24T09:30:00Z",
       |        "checksum": "check12345678",
       |        "size": 987
+      |    },
+      |    "uploadFields": {
+      |       "key": "abcxyz",
+      |      "algo": "md5"
       |    }
       |}
       |""".stripMargin
@@ -81,6 +85,10 @@ class UpscanCallbackControllerSpec extends SpecBase {
       |        "uploadTimestamp": "2018-04-24T09:30:00Z",
       |        "checksum": "check12345678",
       |        "size": 987
+      |    },
+      |    "uploadFields": {
+      |         "key": "abcxyz",
+      |         "algo": "md5"
       |    }
       |}
       |""".stripMargin
@@ -109,6 +117,10 @@ class UpscanCallbackControllerSpec extends SpecBase {
       uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
       checksum = "check12345678",
       size = 987
+    )),
+    uploadFields = Some(Map(
+        "key" -> "abcxyz",
+        "algo" -> "md5"
     ))
   )
 
@@ -122,6 +134,10 @@ class UpscanCallbackControllerSpec extends SpecBase {
       uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
       checksum = "check12345678",
       size = 987
+    )),
+    uploadFields = Some(Map(
+      "key" -> "abcxyz",
+      "algo" -> "md5"
     ))
   )
 
@@ -131,6 +147,11 @@ class UpscanCallbackControllerSpec extends SpecBase {
       failureReason = FailureReasonEnum.REJECTED,
       message = "upscan.invalidMimeType"
     ))
+  )
+
+  val uploadFieldsForUpdateCall: Map[String, String] = Map(
+    "key" -> "abcxyz",
+    "algo" -> "md5"
   )
 
   "UpscanController" should {
@@ -144,7 +165,8 @@ class UpscanCallbackControllerSpec extends SpecBase {
     "return NO CONTENT" when {
       lazy val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       "the body is valid and state has been updated" in new Setup {
-        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING,
+          uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
         val result = await(controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan)))
         result.header.status shouldBe NO_CONTENT
         eventually {
@@ -159,13 +181,13 @@ class UpscanCallbackControllerSpec extends SpecBase {
         result.header.status shouldBe NO_CONTENT
         eventually {
           val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-          modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelWithFailure.copy(lastUpdated = mockDateTime)
+          modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelWithFailure.copy(lastUpdated = mockDateTime, uploadFields = None)
         }
       }
 
       "the file is accepted but the file is a duplicate - mark as duplicate and keep the upload details (valid case)" in new Setup {
-        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING), isInitiateCall = true))
-        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING, uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING, uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
         await(repository.updateStateOfFileUpload("12345", uploadJourneyModel))
         //Used to get around a race condition
         eventually {

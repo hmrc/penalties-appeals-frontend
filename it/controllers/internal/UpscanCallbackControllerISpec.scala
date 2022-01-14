@@ -42,6 +42,10 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |        "uploadTimestamp": "2018-04-24T09:30:00Z",
       |        "checksum": "check12345678",
       |        "size": 987
+      |    },
+      |    "uploadFields": {
+      |      "key": "abcxyz",
+      |      "algo": "md5"
       |    }
       |}
       |""".stripMargin
@@ -59,6 +63,10 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |        "uploadTimestamp": "2018-04-24T09:30:00Z",
       |        "checksum": "check12345678",
       |        "size": 987
+      |    },
+      |    "uploadFields": {
+      |      "key": "abcxyz",
+      |      "algo": "md5"
       |    }
       |}
       |""".stripMargin
@@ -87,6 +95,10 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
       checksum = "check12345678",
       size = 987
+    )),
+    uploadFields = Some(Map(
+      "key" -> "abcxyz",
+      "algo" -> "md5"
     ))
   )
 
@@ -101,7 +113,11 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         checksum = "check12345678",
         size = 987
       )
-    )
+    ),
+    uploadFields = Some(Map(
+      "key" -> "abcxyz",
+      "algo" -> "md5"
+    ))
   )
 
   val jsonAsModelForFailure: UploadJourney = UploadJourney(
@@ -115,6 +131,11 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         message = "upscan.fileHasVirus"
       )
     )
+  )
+
+  val uploadFieldsForUpdateCall: Map[String, String] = Map(
+    "key" -> "abcxyz",
+    "algo" -> "md5"
   )
 
   "POST /upscan-callback/:journeyId" should {
@@ -136,7 +157,8 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     "return NO CONTENT" when {
       "the body received is valid and the state is updated" in {
         await(repository.collection.deleteMany(filter = Document()).toFuture)
-        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING,
+          uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(validJsonToParse))
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
@@ -146,6 +168,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         modelInRepository.failureDetails shouldBe jsonAsModel.failureDetails
         modelInRepository.fileStatus shouldBe jsonAsModel.fileStatus
         modelInRepository.uploadDetails shouldBe jsonAsModel.uploadDetails
+        modelInRepository.uploadFields shouldBe jsonAsModel.uploadFields
       }
 
       "the body received is valid and the state is updated - failure callback" in {
@@ -165,7 +188,8 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       "the body received is valid but the file has already been uploaded - duplicate" in {
         await(repository.collection.deleteMany(filter = Document()).toFuture)
         await(repository.updateStateOfFileUpload("12345", jsonAsModel, isInitiateCall = true))
-        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING,
+          uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(duplicateFileAsJson))
         result.status shouldBe NO_CONTENT
         await(repository.getUploadsForJourney(Some("12345"))).get.size shouldBe 2
@@ -176,11 +200,13 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         modelInRepository.failureDetails shouldBe jsonAsModel.failureDetails
         modelInRepository.fileStatus shouldBe jsonAsModel.fileStatus
         modelInRepository.uploadDetails shouldBe jsonAsModel.uploadDetails
+        modelInRepository.uploadFields shouldBe jsonAsModel.uploadFields
         duplicateModelInRepository.downloadUrl shouldBe duplicateJsonAsModel.downloadUrl
         duplicateModelInRepository.reference shouldBe duplicateJsonAsModel.reference
         duplicateModelInRepository.failureDetails shouldBe duplicateJsonAsModel.failureDetails
         duplicateModelInRepository.fileStatus shouldBe duplicateJsonAsModel.fileStatus
         duplicateModelInRepository.uploadDetails shouldBe duplicateJsonAsModel.uploadDetails
+        duplicateModelInRepository.uploadFields shouldBe jsonAsModel.uploadFields
       }
     }
   }

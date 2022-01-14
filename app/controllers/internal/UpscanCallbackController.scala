@@ -17,15 +17,17 @@
 package controllers.internal
 
 import helpers.UpscanMessageHelper
+
 import javax.inject.Inject
 import models.upload.{UploadJourney, UploadStatusEnum}
 import play.api.libs.json.JsValue
-import play.api.mvc.{Action, MessagesControllerComponents}
+import play.api.mvc.{Action, MessagesControllerComponents, Result}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
                                         (implicit mcc: MessagesControllerComponents) extends FrontendController(mcc) {
@@ -43,16 +45,20 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
           } else {
             repository.getAllChecksumsForJourney(Some(journeyId)).flatMap(
               seqOfChecksums => {
-                if(seqOfChecksums.contains(callbackModel.uploadDetails.get.checksum)) {
-                  logger.debug("[UpscanCallbackController][callbackFromUpscan] - Checksum is already in Mongo. Marking file as duplicate.")
-                  val duplicateCallbackModel = callbackModel.copy(
-                    fileStatus = UploadStatusEnum.DUPLICATE
-                  )
-                  repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
-                } else {
-                  logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload was successful, marking success in repository")
-                  repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent)
-                }
+                repository.getFieldsForFileReference(journeyId, callbackModel.reference).flatMap(
+                  fields =>
+                    if (seqOfChecksums.contains(callbackModel.uploadDetails.get.checksum)) {
+                      logger.debug("[UpscanCallbackController][callbackFromUpscan] - Checksum is already in Mongo. Marking file as duplicate.")
+                      val duplicateCallbackModel = callbackModel.copy(
+                        fileStatus = UploadStatusEnum.DUPLICATE,
+                        uploadFields = fields
+                      )
+                      repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
+                    } else {
+                      logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload was successful, marking success in repository")
+                      repository.updateStateOfFileUpload(journeyId, callbackModel.copy(uploadFields = fields)).map(_ => NoContent)
+                    }
+                )
               }
             )
           }
