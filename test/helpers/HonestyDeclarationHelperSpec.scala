@@ -43,7 +43,7 @@ class HonestyDeclarationHelperSpec extends SpecBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
         )
-        reasonTest("crime", "my client was affected by a crime", agentUserSessionKeys)
+        reasonTest("crime", "I was affected by a crime", agentUserSessionKeys)
       }
     }
 

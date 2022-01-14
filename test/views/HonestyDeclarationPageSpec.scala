@@ -58,7 +58,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         Selectors.title -> title,
         Selectors.h1 -> h1,
         Selectors.pElementIndex(2) -> p1,
-        Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClient("of agent context reason", "1 January 2022"),
+        Selectors.listIndexWithElementIndex(3, 1) -> li1("of agent context reason", "1 January 2022"),
         Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText,
         Selectors.listIndexWithElementIndex(3, 3) -> li3,
         Selectors.button -> acceptAndContinueButton
@@ -111,7 +111,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021"))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
               Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
             )
 
@@ -123,7 +123,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021"))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
               Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
             )
 
