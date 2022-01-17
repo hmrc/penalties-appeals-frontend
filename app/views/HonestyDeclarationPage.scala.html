@@ -22,8 +22,7 @@
         govukButton: GovukButton,
         formHelper: FormWithCSRF)
 
-
-@(form: Form[_], reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
+@(form: Form[_], reasonableExcuse: String, reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @appealType = @{userRequest.session.get(SessionKeys.appealType)}
 
@@ -45,7 +44,7 @@
             @if(!isObligationAppeal) {
                 @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
                     @if(userRequest.isAgent) {
-                        @if(reasonText.contains("crime") || reasonText.contains("death")) {
+                        @if(reasonableExcuse.equals("crime") || reasonableExcuse.equals("bereavement")) {
                             @getMessage("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
                         } else {
                             @getMessage("honestyDeclaration.lpp.li.1.2.myClient", friendlyDueDate)
@@ -54,8 +53,16 @@
                         @messages("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
                     }
                 } else {
-                    @if(userRequest.isAgent && !didClientCauseLateSubmission) {
-                        @getMessage("honestyDeclaration.li.1.2", friendlyDueDate)
+                    @if(userRequest.isAgent) {
+                        @if(userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+                            @messages("honestyDeclaration.li.1.2", friendlyDueDate)
+                        } else {
+                            @if(reasonableExcuse.equals("crime") || reasonableExcuse.equals("bereavement")) {
+                                @messages("agent.honestyDeclaration.li.1.2", friendlyDueDate)
+                            } else {
+                                @messages("agent.honestyDeclaration.li.1.2.myClient", friendlyDueDate)
+                            }
+                        }
                     } else {
                         @messages("honestyDeclaration.li.1.2", friendlyDueDate)
                     }
