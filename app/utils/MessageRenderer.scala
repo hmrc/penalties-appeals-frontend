@@ -49,4 +49,8 @@ object MessageRenderer {
       case (false, false) => false
     }
   }
+
+  def didClientPlanToSubmit()(implicit user: UserRequest[_]): Boolean = {
+    user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
+  }
 }

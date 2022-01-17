@@ -52,7 +52,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
             val friendlyEndDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(endDate))
             val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
             val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
-            Ok(honestDeclarationPage(honestyDeclarationForm, reasonText,
+            Ok(honestDeclarationPage(honestyDeclarationForm, reasonableExcuse, reasonText,
               friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation))
           }
         }
@@ -72,7 +72,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
               val friendlyEndDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(endDate))
               val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
               val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
-              BadRequest(honestDeclarationPage(formWithErrors, reasonText,
+              BadRequest(honestDeclarationPage(formWithErrors, reasonableExcuse, reasonText,
                 friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation))
             },
             _ => {

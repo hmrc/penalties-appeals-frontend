@@ -16,17 +16,19 @@
 
 package helpers
 
-import models.{PenaltyTypeEnum, UserRequest}
+import models.UserRequest
 import play.api.i18n.Messages
-import utils.MessageRenderer.{didClientCauseLateSubmission, getMessage}
-import utils.SessionKeys
+import utils.MessageRenderer.{didClientCauseLateSubmission, didClientPlanToSubmit, getMessage}
 
 object HonestyDeclarationHelper {
+  //scalastyle:off
   def getReasonText(reasonableExcuse: String)(implicit messages: Messages, user: UserRequest[_]): String = {
     reasonableExcuse match {
-      case _ if (user.isAgent && didClientCauseLateSubmission &&
-        user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString) &&
-        !reasonableExcuse.equals("other")) => messages(s"agent.honestyDeclaration.$reasonableExcuse")
+      case _ if (user.isAgent && didClientPlanToSubmit && (reasonableExcuse.equals("crime") || reasonableExcuse.equals("bereavement"))) => {
+        messages(s"agent.honestyDeclaration.$reasonableExcuse")
+      }
+      case _ if (user.isAgent && didClientPlanToSubmit && !reasonableExcuse.equals("other")) => messages(s"honestyDeclaration.$reasonableExcuse")
+      case _ if (user.isAgent && didClientCauseLateSubmission && !reasonableExcuse.equals("other")) => messages(s"agent.honestyDeclaration.$reasonableExcuse")
       case excuse if excuse == "crime" || excuse == "bereavement" => getMessage(s"honestyDeclaration.$reasonableExcuse")
       case _ => messages(s"honestyDeclaration.$reasonableExcuse")
     }
