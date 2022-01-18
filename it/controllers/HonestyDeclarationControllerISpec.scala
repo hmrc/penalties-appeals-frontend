@@ -96,7 +96,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
       parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("HMRC has been asked to cancel the VAT registration")
-      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith("there was no VAT Return due for the period")
+      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith("I believe there was no VAT Return due for the period")
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
@@ -130,7 +130,8 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       "return 200 (OK) and the correct message - show agent context messages" in {
         AuthStub.agentAuthorised()
         val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(FakeRequest("GET", "/honesty-declaration")
-          .withSession((SessionKeys.agentSessionVrn, "VRN1234"),
+          .withSession(
+            (SessionKeys.agentSessionVrn, "VRN1234"),
             (SessionKeys.penaltyId, "1234"),
             (SessionKeys.appealType, "Late_Submission"),
             (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -146,6 +147,27 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         await(request).header.status shouldBe Status.OK
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text should startWith("because my client was affected by a crime")
+      }
+
+
+      "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the agent is appealing an obligation" in {
+        val fakeRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(FakeRequest("GET", "/honesty-declaration").withSession(
+          (SessionKeys.agentSessionVrn, "VRN1234"),
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          (SessionKeys.reasonableExcuse, "other"),
+          (SessionKeys.isObligationAppeal, "true"),
+          SessionKeys.journeyId -> "1234"
+        ))
+        val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+        await(request).header.status shouldBe Status.OK
+        val parsedBody = Jsoup.parse(contentAsString(request))
+        parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("HMRC has been asked to cancel the VAT registration")
+        parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith("I believe there was no VAT Return due for the period")
       }
     }
   }
