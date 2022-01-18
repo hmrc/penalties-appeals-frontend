@@ -88,7 +88,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
-        (SessionKeys.reasonableExcuse, "other"),
+        (SessionKeys.reasonableExcuse, "obligation"),
         (SessionKeys.isObligationAppeal, "true"),
         SessionKeys.journeyId -> "1234"
       )
@@ -159,7 +159,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
-          (SessionKeys.reasonableExcuse, "other"),
+          (SessionKeys.reasonableExcuse, "obligation"),
           (SessionKeys.isObligationAppeal, "true"),
           SessionKeys.journeyId -> "1234"
         ))
