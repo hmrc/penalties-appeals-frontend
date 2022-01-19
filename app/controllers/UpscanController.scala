@@ -150,7 +150,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   }
 
   def preFlightUpload(journeyId: String): Action[AnyContent] = Action {
-    Created.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> appConfig.originForAccessControlHeader)
+    Created.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> appConfig.originForPreFlightAccessControlHeader)
   }
 
   def filePosted(journeyId: String): Action[AnyContent] = Action.async {
