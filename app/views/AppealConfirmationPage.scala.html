@@ -58,10 +58,22 @@
 
     <ul class="govuk-list">
         <li>
-            <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">@getMessage("appealConfirmation.returnToPenalties")</a>
+            <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">
+                @if(user.isAgent) {
+                    @messages("agent.appealConfirmation.returnToPenalties")
+                } else {
+                    @messages("appealConfirmation.returnToPenalties")
+                }
+            </a>
         </li>
         <li>
-            <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="view-vat-account-link">@getMessage("appealConfirmation.returnToVatVc")</a>
+            <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="view-vat-account-link">
+                @if(user.isAgent) {
+                    @messages("agent.appealConfirmation.returnToVatVc")
+                } else {
+                    @messages("appealConfirmation.returnToVatVc")
+                }
+            </a>
         </li>
     </ul>
 
