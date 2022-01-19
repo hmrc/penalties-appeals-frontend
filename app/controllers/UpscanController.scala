@@ -143,14 +143,14 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
               )
             )
           )
-          repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+          repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> appConfig.originForAccessControlHeader))
         }
       )
     }
   }
 
   def preFlightUpload(journeyId: String): Action[AnyContent] = Action {
-    Created.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+    Created.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> appConfig.originForAccessControlHeader)
   }
 
   def filePosted(journeyId: String): Action[AnyContent] = Action.async {
@@ -169,10 +169,10 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
             upload => {
               if (upload.isDefined && upload.get.fileStatus == UploadStatusEnum.FAILED) {
                 logger.debug(s"[UpscanController][filePosted] - Success redirect called - file was previously in FAILED state, resetting state back to WAITING")
-                repository.updateStateOfFileUpload(journeyId, uploadModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+                repository.updateStateOfFileUpload(journeyId, uploadModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> appConfig.originForAccessControlHeader))
               } else {
                 logger.debug(s"[UpscanController][filePosted] - Success redirect called - did not update state of file upload - existing upload was not in FAILED state")
-                Future(NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+                Future(NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> appConfig.originForAccessControlHeader))
               }
             }
           )

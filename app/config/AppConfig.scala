@@ -115,4 +115,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val maxFileUploadSize: Int = config.get[Int]("upscan.maxFileSize")
 
+  lazy val originForAccessControlHeader: String = config.get[String]("upscan.origin")
+
 }
