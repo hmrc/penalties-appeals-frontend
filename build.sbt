@@ -8,7 +8,7 @@ val appName = "penalties-appeals-frontend"
 val silencerVersion = "1.7.1"
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtWeb)
   .settings(
     majorVersion                     := 0,
     scalaVersion                     := "2.12.11",
@@ -30,6 +30,10 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= Seq(
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
       "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+    ),
+    WebpackKeys.outputFileName in WebpackKeys.webpack := "javascripts/multiFileUpload.min.js",
+    WebpackKeys.entries in WebpackKeys.webpack := Seq(
+      "assets:javascripts/upload/multiFileUpload.js"
     ),
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;.*(BuildInfo|Routes).*",
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;" +
