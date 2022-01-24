@@ -21,6 +21,7 @@ export class MultiFileUpload {
         this.errorSummaryItemTpl = "";
         this.errorSummary = "";
         this.errors = {};
+        this.csrfToken = form.querySelector("input[name=csrfToken]").value;
         this.config = {
             startRows: parseInt(form.dataset.multiFileUploadStartRows) || 1,
             minFiles: parseInt(form.dataset.multiFileUploadMinFiles) || 1,
@@ -195,8 +196,12 @@ export class MultiFileUpload {
         } else {
             ref = file.reference;
         }
+        const formData = new FormData();
+        formData.append('csrfToken', this.csrfToken);
+
         fetch(this.getRemoveUrl(ref), {
-            method: 'POST'
+            method: 'POST',
+            body: formData
         })
             .then(this.requestRemoveFileCompleted.bind(this, file, isInit))
             .then(this.setDuplicateInsetText.bind(this))
@@ -578,8 +583,12 @@ export class MultiFileUpload {
 
     /** F47 */
     requestProvisionUpload(file) {
+        const formData = new FormData();
+        formData.append('csrfToken', this.csrfToken);
+
         return fetch(this.getSendUrl(), {
-            method: 'POST'
+            method: 'POST',
+            body: formData
         })
             .then(response => response.json())
             .then(this.handleProvisionUploadCompleted.bind(this, file))
