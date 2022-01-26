@@ -108,12 +108,8 @@ export class MultiFileUpload {
 
     /** F7 */
     handleFileChange(e) {
-        console.log('aa');
         const file = e.target;
-        console.log('a');
-        console.log(file);
         const item = this.getItemFromFile(file);
-        console.log('b');
         this.removeError(file.id);
 
         if (!file.files.length) {
@@ -196,7 +192,6 @@ export class MultiFileUpload {
         if (!isInit) {
             item = this.getItemFromFile(file);
             ref = file.dataset.multiFileUploadFileRef;
-            console.log('requestRemoveFile  ref = '+ref);
         } else {
             ref = file.reference;
         }
@@ -262,7 +257,6 @@ export class MultiFileUpload {
         item.classList.remove(this.classes.waiting, this.classes.uploading, this.classes.verifying, this.classes.uploaded, this.classes.removing);
 
         file.disabled = uploadState !== status.Default;
-        console.log('setItemState....'+uploadState);
         switch (uploadState) {
             case status.Waiting:
                 item.classList.add(this.classes.waiting);
@@ -285,14 +279,11 @@ export class MultiFileUpload {
     /** F19 */
     uploadNext() {
         const nextItem = this.itemList.querySelector(`.${this.classes.waiting}`);
-        console.log('c');
-        console.log(nextItem);
         if (!nextItem || this.isBusy()) {
             return;
         }
 
         const file = this.getFileFromItem(nextItem);
-        console.log(file);
         this.setItemState(nextItem, status.Uploading);
         this.provisionUpload(file, false);
     }
@@ -321,7 +312,6 @@ export class MultiFileUpload {
     /** F22 */
     prepareFileUpload(file) {
         const item = this.getItemFromFile(file);
-        console.log('e');
         const fileName = this.getFileName(file);
 
         this.updateButtonVisibility();
@@ -349,7 +339,6 @@ export class MultiFileUpload {
     uploadFile(file) {
         const xhr = new XMLHttpRequest();
         const fileRef = file.dataset.multiFileUploadFileRef;
-        console.log('uploadFile...fileRef'+fileRef);
         const data = this.uploadData[file.id];
         const formData = this.prepareFormData(file, data);
         const item = this.getItemFromFile(file);
@@ -383,7 +372,6 @@ export class MultiFileUpload {
     /** F28 */
     handleUploadFileCompleted(fileRef) {
         const file = this.getFileByReference(fileRef);
-        console.log('f...'+fileRef);
         const item = this.getItemFromFile(file);
 
         this.setItemState(item, status.Verifying);
@@ -426,16 +414,12 @@ export class MultiFileUpload {
     /** F32 */
     removeError(inputId) {
         if (!Object.prototype.hasOwnProperty.call(this.errors, inputId)) {
-            console.log('!!!!!!!!!');
             return;
         }
 
         const error = this.errors[inputId];
         const input = document.getElementById(inputId);
-        console.log('--------');
         const inputContainer = this.getContainer(input);
-        console.log(inputContainer);
-        console.log('+++++++');
 
         error.errorMessage.remove();
         error.errorSummaryRow.remove();
@@ -507,13 +491,11 @@ export class MultiFileUpload {
 
     /** F39 */
     delayedRequestUploadStatus(fileRef) {
-    console.log('delayedRequestUploadStatus....');
         window.setTimeout(this.requestUploadStatus.bind(this, fileRef), this.config.retryDelayMs);
     }
 
     /** F40 */
     requestUploadStatus(fileRef) {
-    console.log('HHHHH');
         const file = this.getFileByReference(fileRef);
         if (!file || !Object.prototype.hasOwnProperty.call(this.uploadData, file.id) || this.uploadData[file.id].uploaded) {
             return;
@@ -613,7 +595,6 @@ export class MultiFileUpload {
     handleProvisionUploadCompleted(file, response) {
         const fileRef = response['reference'];
 
-        console.log('handleProvisionUploadCompleted...');
         file.dataset.multiFileUploadFileRef = fileRef;
         this.uploadData[file.id].reference = fileRef;
         this.uploadData[file.id].fields = response['uploadRequest']['fields'];
@@ -676,7 +657,6 @@ export class MultiFileUpload {
         this.setItemState(item, status.Uploaded);
         this.getFileNameElement(item).textContent = fileName;
         this.toggleRemoveButtons(true);
-        console.log('createUploadedItem');
         file.dataset.multiFileUploadFileRef = fileData['reference'];
 
         return item;
@@ -719,7 +699,6 @@ export class MultiFileUpload {
 
     /** F57 */
     getStatusUrl(fileRef) {
-    console.log('g....'+fileRef);
         return this.parseTemplate(this.config.statusUrlTpl, {fileRef: fileRef});
     }
 
@@ -788,10 +767,6 @@ export class MultiFileUpload {
 
     /** F67 */
     getItemFromFile(file) {
-    console.log('==========');
-    console.log('F67  .... '+file);
-    console.log('F67 closest...'+file.closest(`.${this.classes.item}`));
-    console.log('==========');
         return file.closest(`.${this.classes.item}`);
     }
 
@@ -855,6 +830,8 @@ export class MultiFileUpload {
  */
 document.addEventListener('DOMContentLoaded', function () {
     const element = document.getElementById("multi-upload-form");
-    const uploadObj = new MultiFileUpload(element);
-    uploadObj.init();
+    if(element) {
+        const uploadObj = new MultiFileUpload(element);
+        uploadObj.init();
+    }
 });
