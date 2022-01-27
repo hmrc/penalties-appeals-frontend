@@ -25,7 +25,7 @@ object SbtWebpack extends AutoPlugin {
     object WebpackKeys {
       val webpack = TaskKey[Seq[File]]("webpack", "Run webpack")
       val binary = SettingKey[File]("webpackBinary", "The location of webpack binary")
-      val configFile = SettingKey[File]("webpackConfigFile", "The location of webpack.config.cjs")
+      val configFile = SettingKey[File]("webpackConfigFile", "The location of webpack.config.js")
       val nodeModulesPath = TaskKey[File]("webpackNodeModules", "The location of the node_modules.")
       val sourceDirs = SettingKey[Seq[File]]("webpackSourceDirs", "The directories that contains source files.")
       val entries = SettingKey[Seq[String]](
@@ -44,7 +44,7 @@ object SbtWebpack extends AutoPlugin {
 
   final val unscopedWebpackSettings = Seq(
     WebpackKeys.binary := (Assets / sourceDirectory).value / "node_modules" / ".bin" / "webpack",
-    WebpackKeys.configFile := (Assets / sourceDirectory).value / "webpack.config.cjs",
+    WebpackKeys.configFile := (Assets / sourceDirectory).value / "webpack.config.js",
     WebpackKeys.sourceDirs := Seq((Assets / sourceDirectory).value),
     WebpackKeys.nodeModulesPath := new File("./node_modules"),
     WebpackKeys.webpack := task

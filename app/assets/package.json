@@ -2,10 +2,9 @@
   "name": "penalties-appeals-frontend",
   "version": "1.0.0",
   "description": "Frontend components",
-  "type": "module",
   "scripts": {
-    "start": "webpack --config webpack.config.cjs",
-    "build": "npm test && webpack --config webpack.config.cjs",
+    "start": "webpack --config webpack.config.js",
+    "build": "npm test && webpack --config webpack.config.js",
     "test": "node_modules/karma/bin/karma start --single-run",
     "test-watch": "node_modules/karma/bin/karma start"
   },

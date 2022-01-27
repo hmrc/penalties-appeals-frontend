@@ -1,5 +1,5 @@
 const path = require('path');
-const webpackConfig = require('./webpack.config.cjs');
+const webpackConfig = require('./webpack.config.js');
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = function (config) {
@@ -25,7 +25,7 @@ module.exports = function (config) {
         specReporter: {
             suppressSkipped: true
         },
-        port: 9876,
+        port: 4444,
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
