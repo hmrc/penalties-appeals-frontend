@@ -9,7 +9,7 @@ const status = {
     Removing: "Removing"
 }
 
-class MultiFileUpload {
+export class MultiFileUpload {
     /**  F1 */
     constructor(form) {
         this.uploadData = {};
@@ -128,7 +128,6 @@ class MultiFileUpload {
         const item = target.closest(`.${this.classes.item}`);
         const file = this.getFileFromItem(item);
         const ref = file.dataset.multiFileUploadFileRef;
-
         if (this.isUploading(item)) {
             if (this.uploadData[file.id].uploadHandle) {
                 this.uploadData[file.id].uploadHandle.abort();
@@ -263,7 +262,6 @@ class MultiFileUpload {
         item.classList.remove(this.classes.waiting, this.classes.uploading, this.classes.verifying, this.classes.uploaded, this.classes.removing);
 
         file.disabled = uploadState !== status.Default;
-
         switch (uploadState) {
             case status.Waiting:
                 item.classList.add(this.classes.waiting);
@@ -286,13 +284,11 @@ class MultiFileUpload {
     /** F19 */
     uploadNext() {
         const nextItem = this.itemList.querySelector(`.${this.classes.waiting}`);
-
         if (!nextItem || this.isBusy()) {
             return;
         }
 
         const file = this.getFileFromItem(nextItem);
-
         this.setItemState(nextItem, status.Uploading);
         this.provisionUpload(file, false);
     }
@@ -609,7 +605,6 @@ class MultiFileUpload {
         const fileRef = response['reference'];
 
         file.dataset.multiFileUploadFileRef = fileRef;
-
         this.uploadData[file.id].reference = fileRef;
         this.uploadData[file.id].fields = response['uploadRequest']['fields'];
         this.uploadData[file.id].url = response['uploadRequest']['href'];
@@ -671,7 +666,6 @@ class MultiFileUpload {
         this.setItemState(item, status.Uploaded);
         this.getFileNameElement(item).textContent = fileName;
         this.toggleRemoveButtons(true);
-
         file.dataset.multiFileUploadFileRef = fileData['reference'];
 
         return item;
@@ -845,6 +839,8 @@ class MultiFileUpload {
  */
 document.addEventListener('DOMContentLoaded', function () {
     const element = document.getElementById("multi-upload-form");
-    const uploadObj = new MultiFileUpload(element);
-    uploadObj.init();
+    if(element) {
+        const uploadObj = new MultiFileUpload(element);
+        uploadObj.init();
+    }
 });

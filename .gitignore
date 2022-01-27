@@ -35,3 +35,6 @@ tmp
 bin
 .bsp
 *.scalafmt.conf
+
+node_modules/
+app/assets/build/
