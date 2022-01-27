@@ -48,6 +48,7 @@ describe('Multi File Upload component', () => {
             <span class="file-upload__spinner ccms-loader"></span>
           </p>
 
+          <input name="csrfToken" value="123"/>
           <div class="multi-file-upload__notifications govuk-visually-hidden" aria-live="polite" role="status"></div>
 
           <script type="text/x-template" id="multi-file-upload-item-tpl">
