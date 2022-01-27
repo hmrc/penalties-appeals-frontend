@@ -25,7 +25,7 @@ module.exports = function (config) {
         specReporter: {
             suppressSkipped: true
         },
-        port: 9876,
+        port: 4444,
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
