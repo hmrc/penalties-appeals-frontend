@@ -38,7 +38,7 @@ class AppealServiceSpec extends SpecBase {
   val mockPenaltiesConnector: PenaltiesConnector = mock(classOf[PenaltiesConnector])
   val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
-  val testHeaderGenerator = new HeaderGenerator(mockAppConfig,mockUUIDGenerator)
+  val testHeaderGenerator = new HeaderGenerator(mockUUIDGenerator)
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 

@@ -16,28 +16,22 @@
 
 package connectors
 
-
-import config.AppConfig
-import play.api.http.HeaderNames._
 import utils.Logger.logger
 import utils.UUIDGenerator
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class HeaderGenerator @Inject()(appConfig: AppConfig, idGenerator: UUIDGenerator) {
+class HeaderGenerator @Inject()(idGenerator: UUIDGenerator) {
 
   def headersForPEGA(): Seq[(String, String)] = {
     val correlationId = idGenerator.generateUUID
     val headers = Seq(
-      "CorrelationId" -> correlationId,
-      "Environment" -> appConfig.pegaEnvironment
+      "CorrelationId" -> correlationId
     )
-    logger.info(s"CorrelationId  $correlationId")
+
+    logger.info(s"[HeaderGenerator] [headersForPEGA] CorrelationId  $correlationId")
     logger.debug(s"[HeaderGenerator] [headersForPEGA] $headers")
-    appConfig.pegaBearerToken match {
-      case "" => headers
-      case bearerToken => headers ++ Seq(AUTHORIZATION -> s"Bearer $bearerToken")
-    }
+    headers
   }
 }

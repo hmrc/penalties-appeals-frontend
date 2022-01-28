@@ -83,8 +83,8 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
 
   def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyId: String)
                   (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val hcWithoutAuthorizationHeader: HeaderCarrier = hc.copy(authorization = None)
     val pegaHeaders = headerGenerator.headersForPEGA()
+    val hcWithoutAuthorizationHeader: HeaderCarrier = hc.copy(authorization = None, otherHeaders = hc.otherHeaders ++ pegaHeaders)
     httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyId),
       appealSubmission, pegaHeaders)(AppealSubmission.writes, implicitly, hcWithoutAuthorizationHeader, implicitly)
   }

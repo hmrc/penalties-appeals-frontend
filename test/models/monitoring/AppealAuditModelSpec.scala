@@ -66,7 +66,7 @@ class AppealAuditModelSpec extends SpecBase {
 
     val mockAppConfig: AppConfig = mock(classOf[AppConfig])
     val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
-    val testHeaderGenerator = new HeaderGenerator(mockAppConfig, mockUUIDGenerator)
+    val testHeaderGenerator = new HeaderGenerator(mockUUIDGenerator)
 
     val bereavementAppealInformation: BereavementAppealInformation = BereavementAppealInformation(
       reasonableExcuse = "bereavement",
