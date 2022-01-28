@@ -17,7 +17,6 @@
 package connectors
 
 import base.SpecBase
-import config.AppConfig
 import org.mockito.Mockito.{mock, when}
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.HeaderNames
@@ -26,41 +25,16 @@ import utils.UUIDGenerator
 
 class HeaderGeneratorSpec extends AnyWordSpec with HeaderNames with SpecBase {
 
-  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
-  val testHeaderGenerator = new HeaderGenerator(mockAppConfig,mockUUIDGenerator)
-  val bearerToken = "someToken"
+  val testHeaderGenerator = new HeaderGenerator(mockUUIDGenerator)
   val correlationId = "someUUID"
-  val env = "someEnv"
 
   "HeaderGenerator.headersForPEGA" must {
 
     "create headers" in {
-      when(mockAppConfig.pegaEnvironment) thenReturn env
       when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
       val headers = testHeaderGenerator.headersForPEGA().toMap
       headers("CorrelationId") shouldBe  correlationId
-      headers("Environment") shouldBe env
-    }
-
-    "include the Authorization header if it is supplied in AppConfig" in {
-      when(mockAppConfig.pegaEnvironment) thenReturn env
-      when(mockAppConfig.pegaBearerToken).thenReturn(bearerToken)
-      when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
-      val headers = testHeaderGenerator.headersForPEGA().toMap
-      headers("CorrelationId") shouldBe  correlationId
-      headers("Environment") shouldBe env
-      headers(AUTHORIZATION) shouldBe s"Bearer $bearerToken"
-    }
-
-    "not include the Authorization header if it is empty string in AppConfig" in {
-      when(mockAppConfig.pegaEnvironment) thenReturn env
-      when(mockAppConfig.pegaBearerToken).thenReturn("")
-      when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
-      val headers = testHeaderGenerator.headersForPEGA().toMap
-      headers("CorrelationId") shouldBe  correlationId
-      headers("Environment") shouldBe env
-      headers.contains(AUTHORIZATION) shouldBe false
     }
   }
 }

@@ -241,10 +241,10 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
 
   "submitAppeal with headers" should {
     "return the HTTP response back to the caller" in new Setup {
-      when(mockHeaderGenerator.headersForPEGA()).thenReturn(Seq("someHeader" -> "someHeaderValue"))
+      when(mockHeaderGenerator.headersForPEGA()).thenReturn(Seq("CorrelationId" -> "id"))
       val mockHeaders: Seq[(String, String)] = mockHeaderGenerator.headersForPEGA()
       when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(),ArgumentMatchers.eq(mockHeaders))(any(),
-        any(), ArgumentMatchers.eq(hc.copy(authorization = None)), any()))
+        any(), ArgumentMatchers.eq(hc.copy(authorization = None, otherHeaders = hc.otherHeaders ++ mockHeaders)), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
       when(mockAppConfig.submitAppealUrl(any(), any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
@@ -261,9 +261,9 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
     }
 
     "return an exception when something unexpected goes wrong" in new Setup {
-      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(),
-        any(), any(), any()))
+      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Exception("something went wrong.")))
+      when(mockHeaderGenerator.headersForPEGA()).thenReturn(Seq("CorrelationId" -> "id"))
       when(mockAppConfig.submitAppealUrl(any(), any(), any()))
         .thenReturn("http://url/url")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
