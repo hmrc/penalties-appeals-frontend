@@ -17,17 +17,15 @@
 package controllers.internal
 
 import helpers.UpscanMessageHelper
-
-import javax.inject.Inject
 import models.upload.{UploadJourney, UploadStatusEnum}
 import play.api.libs.json.JsValue
-import play.api.mvc.{Action, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
                                         (implicit mcc: MessagesControllerComponents) extends FrontendController(mcc) {
