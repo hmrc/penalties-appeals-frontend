@@ -17,7 +17,7 @@
 package services
 
 import config.AppConfig
-import connectors.{HeaderGenerator, PenaltiesConnector}
+import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
 import models.appeals.AppealSubmission
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
@@ -30,7 +30,7 @@ import services.monitoring.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
-import utils.SessionKeys
+import utils.{SessionKeys, UUIDGenerator}
 
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -40,7 +40,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               appConfig: AppConfig,
                               dateTimeHelper: DateTimeHelper,
                               auditService: AuditService,
-                              headerGenerator: HeaderGenerator,
+                              idGenerator: UUIDGenerator,
                               uploadJourneyRepository: UploadJourneyRepository) {
 
   def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
@@ -92,24 +92,25 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)
     val agentReferenceNo = userRequest.arn
     val penaltyId = userRequest.session.get(SessionKeys.penaltyId).get
+    val correlationId: String = idGenerator.generateUUID
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
       readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
       amountOfFileUploads = readyOrDuplicateFileUploads.size
       modelFromRequest: AppealSubmission = AppealSubmission
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentReferenceNo, readyOrDuplicateFileUploads)
-      response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId)
+      response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId, correlationId)
     } yield {
       response.status match {
         case OK =>
           if (isLPP) {
             if (appealType.contains(PenaltyTypeEnum.Late_Payment.toString)) {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, headerGenerator, readyOrDuplicateFileUploads))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, correlationId, readyOrDuplicateFileUploads))
             } else {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, headerGenerator, readyOrDuplicateFileUploads))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, correlationId, readyOrDuplicateFileUploads))
             }
           } else {
-            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, headerGenerator, readyOrDuplicateFileUploads))
+            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, correlationId, readyOrDuplicateFileUploads))
           }
           sendAuditIfDuplicatesExist(readyOrDuplicateFileUploads)
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")

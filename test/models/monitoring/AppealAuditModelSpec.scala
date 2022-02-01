@@ -16,17 +16,14 @@
 
 package models.monitoring
 
-import java.time.LocalDateTime
 import base.SpecBase
-import config.AppConfig
-import connectors.HeaderGenerator
 import models.UserRequest
 import models.appeals._
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
-import org.mockito.Mockito.{mock, when}
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
-import utils.UUIDGenerator
+
+import java.time.LocalDateTime
 
 class AppealAuditModelSpec extends SpecBase {
 
@@ -63,10 +60,6 @@ class AppealAuditModelSpec extends SpecBase {
 
     def appealAgentSubmission(appealInformation: AppealInformation): AppealSubmission = appealSubmission(appealInformation)
       .copy(appealSubmittedBy = "agent")
-
-    val mockAppConfig: AppConfig = mock(classOf[AppConfig])
-    val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
-    val testHeaderGenerator = new HeaderGenerator(mockUUIDGenerator)
 
     val bereavementAppealInformation: BereavementAppealInformation = BereavementAppealInformation(
       reasonableExcuse = "bereavement",
@@ -205,31 +198,30 @@ class AppealAuditModelSpec extends SpecBase {
 
     implicit val userRequest: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeysAndHonestyDeclarationSet)
     val correlationId = "someUUID"
-    when(mockUUIDGenerator.generateUUID).thenReturn(correlationId)
-    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), "LPP", testHeaderGenerator, None)
-    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), "LPP", testHeaderGenerator, None)
-    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), "LPP", testHeaderGenerator, Some(seqOfUploads))
-    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), "LPP", testHeaderGenerator, Some(seqOfUploads))
+    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LPP", correlationId, None)
+    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), "LPP", correlationId, None)
+    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), "LPP", correlationId, None)
+    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), "LPP", correlationId, None)
+    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), "LPP", correlationId, None)
+    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), "LPP", correlationId, None)
+    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), "LPP", correlationId, None)
+    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), "LPP", correlationId, None)
+    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), "LPP", correlationId, None)
+    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), "LPP", correlationId, Some(seqOfUploads))
+    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), "LPP", correlationId, None)
+    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), "LPP", correlationId, Some(seqOfUploads))
 
-    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), "LPP", testHeaderGenerator, None)
-    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), "LPP", testHeaderGenerator, None)
+    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), "LPP", correlationId, None)
+    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), "LPP", correlationId, None)
 
-    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSP", testHeaderGenerator, None)
-    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSP", testHeaderGenerator, None)
+    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSP", correlationId, None)
+    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSP", correlationId, None)
 
-    val lsppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSPP", testHeaderGenerator, None)
-    val lsppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSPP", testHeaderGenerator, None)
+    val lsppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSPP", correlationId, None)
+    val lsppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSPP", correlationId, None)
 
-    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "Additional", testHeaderGenerator, None)
-    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "Additional", testHeaderGenerator, None)
+    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "Additional", correlationId, None)
+    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "Additional", correlationId, None)
 
     "have the correct auditType" in {
       lppBereavementModel.auditType shouldBe "PenaltyAppealSubmitted"
