@@ -18,22 +18,29 @@ package stubs
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.http.Fault
+import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.PenaltyTypeEnum
 import play.api.http.Status
 import play.api.libs.json.Json
 
 import java.time.LocalDateTime
+import scala.collection.JavaConverters
 
 object PenaltiesStub {
   private val appealUriForLSP = "/penalties/appeals-data/late-submissions"
   private val appealUriForLPP = "/penalties/appeals-data/late-payments"
-  private val fetchReasonableExcuseUri =
-    "/penalties/appeals-data/reasonable-excuses"
-  private val submitAppealUri = (isLPP: Boolean, penaltyId: String) =>
-    s"/penalties/appeals/submit-appeal?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&isLPP=$isLPP&penaltyId=$penaltyId"
+  private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
   private val fetchOtherPenalties = (penaltyID: String) =>
     s"/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&penaltyId=$penaltyID&isLPP=false"
+
+  private val submitAppealUri = "/penalties/appeals/submit-appeal"
+  private val submitAppealQueryParams = (isLPP: Boolean, penaltyId: String) => Map[String, StringValuePattern](
+  ("enrolmentKey" -> equalTo("HMRC-MTD-VAT~VRN~123456789")),
+  ("isLPP" -> equalTo(isLPP.toString)),
+  ("penaltyId" -> equalTo(penaltyId)),
+  ("correlationId" -> matching(".*"))
+)
 
   def successfulGetAppealDataResponse(
                                        penaltyId: String,
@@ -75,6 +82,7 @@ object PenaltiesStub {
   }
 
   def successfulFetchReasonableExcuseResponse: StubMapping = {
+
     stubFor(
       get(urlEqualTo(fetchReasonableExcuseUri))
         .willReturn(
@@ -106,7 +114,7 @@ object PenaltiesStub {
 
   def successfulAppealSubmission(isLPP: Boolean, penaltyId: String): StubMapping = {
     stubFor(
-      post(urlEqualTo(submitAppealUri(isLPP, penaltyId)))
+      post(urlPathMatching(submitAppealUri)).withQueryParams(JavaConverters.mapAsJavaMap(submitAppealQueryParams(isLPP, penaltyId)))
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
@@ -129,7 +137,7 @@ object PenaltiesStub {
 
   def failedAppealSubmissionWithFault(isLPP: Boolean, penaltyId: String): StubMapping = {
     stubFor(
-      post(urlEqualTo(submitAppealUri(isLPP, penaltyId)))
+      post(urlPathMatching(submitAppealUri)).withQueryParams(JavaConverters.mapAsJavaMap(submitAppealQueryParams(isLPP, penaltyId)))
         .willReturn(
           aResponse()
             .withFault(Fault.CONNECTION_RESET_BY_PEER)
@@ -139,7 +147,7 @@ object PenaltiesStub {
 
   def failedAppealSubmission(isLPP: Boolean, penaltyId: String, status: Option[Int] = None): StubMapping = {
     stubFor(
-      post(urlEqualTo(submitAppealUri(isLPP, penaltyId)))
+      post(urlPathMatching(submitAppealUri)).withQueryParams(JavaConverters.mapAsJavaMap(submitAppealQueryParams(isLPP, penaltyId)))
         .willReturn(
           aResponse()
             .withStatus(status.fold(Status.INTERNAL_SERVER_ERROR)(identity))

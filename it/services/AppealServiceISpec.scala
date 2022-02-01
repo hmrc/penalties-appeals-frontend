@@ -35,10 +35,11 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
-  val appealService: AppealService = injector.instanceOf[AppealService]
+  val appealService = injector.instanceOf[AppealService]
+  val correlationId: String = "correlationId"
 
   "submitAppeal" should {
-    "return true when the connector call succeeds for crime" in {
+    "return true when the connector call succeeds for crime" in  {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
@@ -58,7 +59,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true when the connector call succeeds for loss of staff" in {
+    "return true when the connector call succeeds for loss of staff" in  {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
         SessionKeys.penaltyId -> "1234",
@@ -199,7 +200,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     }
 
     "return true for hospital stay" when {
-      "there is no hospital stay" in {
+      "there is no hospital stay" in  {
         successfulAppealSubmission(isLPP = false, "1234")
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
           SessionKeys.penaltyId -> "1234",

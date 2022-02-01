@@ -16,7 +16,6 @@
 
 package models.monitoring
 
-import connectors.HeaderGenerator
 import models.UserRequest
 import models.appeals._
 import models.upload.UploadJourney
@@ -25,7 +24,7 @@ import services.monitoring.JsonAuditModel
 import utils.JsonUtils
 import utils.Logger.logger
 
-case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String, headerGenerator: HeaderGenerator, optUploads: Option[Seq[UploadJourney]])
+case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: String, correlationId: String, optUploads: Option[Seq[UploadJourney]])
                            (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
 
   override val auditType: String = "PenaltyAppealSubmitted"
@@ -38,7 +37,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
     "agentReferenceNumber" -> request.arn,
     "penaltyType" -> penaltyType,
     "appealInformation" -> appealPayload,
-    "correlationId"-> headerGenerator.headersForPEGA().find(_._1 == "CorrelationId").map(_._2)
+    "correlationId"-> correlationId
   )
 
   logger.debug(s"[AppealAuditModel] [appeal Payload] $appealPayload")

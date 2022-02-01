@@ -641,7 +641,7 @@ object AppealSubmission {
     }
   }
 
-  val writes: Writes[AppealSubmission] = (appealSubmission: AppealSubmission) => {
+ implicit val writes: Writes[AppealSubmission] = (appealSubmission: AppealSubmission) => {
     Json.obj(
       "sourceSystem" -> appealSubmission.sourceSystem,
       "taxRegime" -> appealSubmission.taxRegime,

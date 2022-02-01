@@ -105,12 +105,11 @@ class PenaltiesConnectorSpec extends SpecBase {
   class Setup {
     reset(mockHttpClient)
     reset(mockAppConfig)
-    val mockHeaderGenerator: HeaderGenerator = mock(classOf[HeaderGenerator])
     val connector = new PenaltiesConnector(
       mockHttpClient,
-      mockAppConfig,
-      mockHeaderGenerator
+      mockAppConfig
     )
+    val correlationId: String = "id"
   }
 
   "getAppealUrlBasedOnPenaltyType" should {
@@ -239,14 +238,12 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
     }
   }
 
-  "submitAppeal with headers" should {
+  "submitAppeal" should {
     "return the HTTP response back to the caller" in new Setup {
-      when(mockHeaderGenerator.headersForPEGA()).thenReturn(Seq("someHeader" -> "someHeaderValue"))
-      val mockHeaders: Seq[(String, String)] = mockHeaderGenerator.headersForPEGA()
-      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(),ArgumentMatchers.eq(mockHeaders))(any(),
-        any(), ArgumentMatchers.eq(hc.copy(authorization = None)), any()))
+      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(),
+        any(), ArgumentMatchers.eq(hc.copy(authorization = None, otherHeaders = hc.otherHeaders)), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
-      when(mockAppConfig.submitAppealUrl(any(), any(), any()))
+      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
@@ -256,15 +253,14 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
-      val result: HttpResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789"))
+      val result: HttpResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId))
       result.status shouldBe OK
     }
 
     "return an exception when something unexpected goes wrong" in new Setup {
-      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(),
-        any(), any(), any()))
+      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Exception("something went wrong.")))
-      when(mockAppConfig.submitAppealUrl(any(), any(), any()))
+      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any()))
         .thenReturn("http://url/url")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
@@ -275,7 +271,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         )
       )
       val result: Exception = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel,
-        "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789")))
+        "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId)))
       result.getMessage shouldBe "something went wrong."
     }
   }

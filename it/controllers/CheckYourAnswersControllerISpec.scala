@@ -36,6 +36,7 @@ import scala.concurrent.Future
 class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   val controller: CheckYourAnswersController = injector.instanceOf[CheckYourAnswersController]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
+  val correlationId: String = "correlationId"
 
   override def beforeEach(): Unit = {
     await(repository.collection.deleteMany(Document()).toFuture())

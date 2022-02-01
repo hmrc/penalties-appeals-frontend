@@ -18,18 +18,18 @@ package connectors
 
 import config.AppConfig
 import models.appeals.AppealSubmission
-import utils.Logger.logger
 import play.api.http.Status._
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}
 import utils.EnrolmentKeys
+import utils.Logger.logger
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltiesConnector @Inject()(httpClient: HttpClient,
-                                   appConfig: AppConfig, headerGenerator: HeaderGenerator) {
+                                   appConfig: AppConfig) {
 
  def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean,isAdditional:Boolean): String = {
     if (isLPP) {
@@ -81,12 +81,10 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     }
   }
 
-  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyId: String)
+  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyId: String, correlationId: String)
                   (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val hcWithoutAuthorizationHeader: HeaderCarrier = hc.copy(authorization = None)
-    val pegaHeaders = headerGenerator.headersForPEGA()
-    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyId),
-      appealSubmission, pegaHeaders)(AppealSubmission.writes, implicitly, hcWithoutAuthorizationHeader, implicitly)
+
+    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyId, correlationId), appealSubmission)
   }
 
   def getOtherPenaltiesInTaxPeriod(penaltyId: String, enrolmentKey: String, isLPP: Boolean)
