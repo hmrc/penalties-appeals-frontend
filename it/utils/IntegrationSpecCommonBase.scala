@@ -26,7 +26,7 @@ import play.api.Application
 import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{WSClient, WSRequest}
-import stubs.AuthStub
+import stubs.{AuditStub, AuthStub}
 
 trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with
   BeforeAndAfterAll with BeforeAndAfterEach with TestSuite with WiremockHelper {
@@ -42,6 +42,8 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
   override def beforeEach(): Unit = {
     super.beforeEach()
     AuthStub.authorised()
+    AuditStub.audit()
+    AuditStub.auditMerge()
     SharedMetricRegistries.clear()
   }
 

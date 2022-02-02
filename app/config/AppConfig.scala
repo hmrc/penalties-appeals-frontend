@@ -49,8 +49,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   def otherPenaltiesForPeriodUrl(penaltyId: String, enrolmentKey: String, isLPP: Boolean): String =
     s"$penaltiesServiceBaseUrl/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=$enrolmentKey&penaltyId=$penaltyId&isLPP=$isLPP"
 
-  def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyId: String): String =
-    penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl") + s"?enrolmentKey=$enrolmentKey&isLPP=$isLPP&penaltyId=$penaltyId"
+  def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyId: String, correlationId: String): String =
+    penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl") + s"?enrolmentKey=$enrolmentKey&isLPP=$isLPP&penaltyId=$penaltyId&correlationId=$correlationId"
 
   lazy val reasonableExcuseFetchUrl: String = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.fetchUrl")
 
@@ -92,10 +92,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     agentClientLookupHost +
       servicesConfig.getConfString(vatAgentClientLookupFrontendStartUrl, "") +
       s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
-
-  lazy val pegaBearerToken: String = config.get[String]("pega.bearerToken")
-
-  lazy val pegaEnvironment: String = config.get[String]("pega.environment")
 
   lazy val upscanInitiateBaseUrl: String = servicesConfig.baseUrl("upscan-initiate")
 

@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import config.AppConfig
-import connectors.{HeaderGenerator, PenaltiesConnector}
+import connectors.PenaltiesConnector
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{AppealData, ReasonableExcuse, UserRequest}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
@@ -38,7 +38,6 @@ class AppealServiceSpec extends SpecBase {
   val mockPenaltiesConnector: PenaltiesConnector = mock(classOf[PenaltiesConnector])
   val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
-  val testHeaderGenerator = new HeaderGenerator(mockAppConfig,mockUUIDGenerator)
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
@@ -94,7 +93,7 @@ class AppealServiceSpec extends SpecBase {
   class Setup {
     reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService, mockUploadJourneyRepository)
     val service: AppealService =
-      new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, testHeaderGenerator, mockUploadJourneyRepository)
+      new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, mockUUIDGenerator, mockUploadJourneyRepository)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
       2020, 2, 1, 0, 0, 0))
@@ -242,7 +241,7 @@ class AppealServiceSpec extends SpecBase {
 
   "submitAppeal" should {
     "parse the session keys into a model and return true when the connector call is successful and audit the response" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -272,7 +271,7 @@ class AppealServiceSpec extends SpecBase {
       )
       val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
       val failedUpload: UploadJourney = uploadAsDuplicate.copy(reference = "ref3", fileStatus = UploadStatusEnum.FAILED)
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate, uploadAsDuplicate2, failedUpload))))
@@ -302,7 +301,7 @@ class AppealServiceSpec extends SpecBase {
         failureDetails = None,
         lastUpdated = LocalDateTime.now()
       )
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate))))
@@ -316,7 +315,7 @@ class AppealServiceSpec extends SpecBase {
 
     "return false" when {
       "the connector returns a non-200 response" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
@@ -325,7 +324,7 @@ class AppealServiceSpec extends SpecBase {
       }
 
       "the connector throws an exception" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.failed(new Exception("I failed.")))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
@@ -334,7 +333,7 @@ class AppealServiceSpec extends SpecBase {
       }
 
       "the repository throws and exception" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.failed(new Exception("I failed.")))
