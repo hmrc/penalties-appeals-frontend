@@ -188,7 +188,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       result.isDefined shouldBe false
     }
 
-    s"return $None when the connector returns an unknown status e.g. ISE (${Status.INTERNAL_SERVER_ERROR})" in new Setup {
+    s"return $None when the connector returns an unknown status e.g. ISE (${Status.IM_A_TEAPOT})" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.IM_A_TEAPOT, "")))
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))

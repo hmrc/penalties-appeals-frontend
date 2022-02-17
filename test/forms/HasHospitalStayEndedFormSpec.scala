@@ -121,7 +121,7 @@ class HasHospitalStayEndedFormSpec extends FormBehaviours with SpecBase {
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("stayEndDate.day", "healthReason.hasTheHospitalStayEnded.date.error.invalid", Seq())
+        result.errors.head shouldBe FormError("stayEndDate.day", "healthReason.hasTheHospitalStayEnded.date.error.invalid", Seq("day", "month", "year"))
       }
 
       "the date has no day" in {

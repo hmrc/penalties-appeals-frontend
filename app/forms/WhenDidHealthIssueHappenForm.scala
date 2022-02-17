@@ -33,7 +33,6 @@ object WhenDidHealthIssueHappenForm extends Mappings {
         allRequiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required.all"),
         twoRequiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required.two"),
         requiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required"),
-        fieldLengthKey = getMessageKey("healthReason.whenHealthIssueHappened.error.invalid"),
         futureKey = Some(getMessageKey("healthReason.whenHealthIssueHappened.error.notInFuture"))
       )
     )

@@ -30,7 +30,6 @@ object WhenDidTechnologyIssuesBeginForm extends Mappings {
         allRequiredKey = "technicalIssues.begin.error.required.all",
         twoRequiredKey = "technicalIssues.begin.error.required.two",
         requiredKey = "technicalIssues.begin.error.required",
-        fieldLengthKey = "technicalIssues.begin.error.invalid",
         futureKey = Some("technicalIssues.begin.error.notInFuture")
       )
     )

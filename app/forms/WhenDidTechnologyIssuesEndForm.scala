@@ -30,7 +30,6 @@ object WhenDidTechnologyIssuesEndForm extends Mappings {
         allRequiredKey = "technicalIssues.end.error.required.all",
         twoRequiredKey = "technicalIssues.end.error.required.two",
         requiredKey = "technicalIssues.end.error.required",
-        fieldLengthKey = "technicalIssues.end.error.invalid",
         futureKey = Some("technicalIssues.end.error.notInFuture"),
         dateNotEqualOrAfterKeyAndCompareDate = Some(("technicalIssues.end.error.endDateLessThanStartDate", startDate))
       )

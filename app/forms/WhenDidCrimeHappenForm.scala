@@ -30,7 +30,6 @@ object WhenDidCrimeHappenForm extends Mappings {
       allRequiredKey = "crimeReason.error.required.all",
       twoRequiredKey = "crimeReason.error.required.two",
       requiredKey = "crimeReason.error.required",
-      fieldLengthKey = "crimeReason.error.invalid",
       futureKey = Some("crimeReason.error.notInFuture")
       )
     )

@@ -84,7 +84,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {
@@ -231,7 +231,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {

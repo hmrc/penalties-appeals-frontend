@@ -32,7 +32,6 @@ object WhenDidHospitalStayBeginForm extends Mappings {
         allRequiredKey = "healthReason.whenDidHospitalStayBegin.error.required.all",
         twoRequiredKey = "healthReason.whenDidHospitalStayBegin.error.required.two",
         requiredKey = "healthReason.whenDidHospitalStayBegin.error.required",
-        fieldLengthKey = "healthReason.whenDidHospitalStayBegin.error.invalid",
         futureKey = Some("healthReason.whenDidHospitalStayBegin.error.notInFuture")
       )
     )
