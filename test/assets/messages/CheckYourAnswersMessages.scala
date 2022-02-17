@@ -21,7 +21,7 @@ object CheckYourAnswersMessages {
 
   val h1 = "Check your answers"
 
-  val h2YourDetails = "Your details"
+  val h2AppealDetails = "Appeal details"
 
   val changeLink = "Change"
 
