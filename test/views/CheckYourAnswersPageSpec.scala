@@ -27,7 +27,7 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
   "CheckYourAnswersPage" should {
     val checkYourAnswers: CheckYourAnswersPage = injector.instanceOf[CheckYourAnswersPage]
     object Selectors extends BaseSelectors {
-      val yourDetailsH2 = "#your-details"
+      val appealDetailsH2 = "#appeal-details"
 
       val declarationH2 = "#declaration"
 
@@ -54,7 +54,7 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> h1,
-      Selectors.yourDetailsH2 -> h2YourDetails,
+      Selectors.appealDetailsH2 -> h2AppealDetails,
       Selectors.descriptionListDtKey(1) -> "Key",
       Selectors.descriptionListDdValue(1) -> "Value",
       Selectors.descriptionListDdAction(1) -> "Change",

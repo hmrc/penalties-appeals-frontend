@@ -391,7 +391,7 @@ date.year = Year
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
-checkYourAnswers.yourDetails.h2 = Your details
+checkYourAnswers.appealDetails.h2 = Appeal details
 checkYourAnswers.declaration.h2 = Declaration
 checkYourAnswers.declaration.p1 = By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge.
 checkYourAnswers.declaration.p2 = A false declaration can result in prosecution.
