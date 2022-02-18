@@ -18,12 +18,16 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import views.html.layouts.GovUkPageLayout
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcScripts
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcHead
 
 @this(
         govukLayout: GovUkPageLayout,
         head: Head,
         hmrcTimeoutDialog: HmrcTimeoutDialog,
         header: components.Header,
+        hmrcScripts: HmrcScripts,
+        hmrcHead: HmrcHead,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
         phaseBanner: components.phaseBanner,
         govukBackLink: GovukBackLink,
@@ -32,6 +36,9 @@
 )
 @(
     pageTitle: String,
+    additionalHeadBlock: Option[Html] = None,
+    additionalScriptsBlock: Option[Html] = None,
+    nonce: Option[String] = None,
     scriptsBlock: Option[Html] = None,
     isPageFullWidth: Boolean = true,
     showPenaltyInformation: Boolean = true,
@@ -65,8 +72,6 @@
 @if(scriptsBlock.isEmpty) {
     <script src="@controllers.routes.Assets.versioned("javascripts/backLink.js")"></script>
     @customJavaScript.map {x => <script src='@controllers.routes.Assets.versioned(s"javascripts/$x")'></script> }
-    <script>window.GOVUKFrontend.initAll();</script>
-    <script>window.HMRCFrontend.initAll();</script>
 } else {
     @scriptsBlock.get
 }
@@ -75,7 +80,7 @@
 
 @govukLayout(
     pageTitle = Some(messages("common.pageTitle", pageTitle, "Appeal a VAT penalty")),
-    headBlock = Some(headBlock),
+    headBlock = Some(hmrcHead(nonce = nonce, headBlock = additionalHeadBlock)),
     headerBlock = Some(header()),
     scriptsBlock = Some(scripts),
     beforeContentBlock = Some(beforeContentBlock),
