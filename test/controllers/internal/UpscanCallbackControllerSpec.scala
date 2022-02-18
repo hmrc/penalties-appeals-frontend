@@ -157,7 +157,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
   "UpscanController" should {
     "return an ISE" when {
       s"the body can not be parsed to an $UploadJourney model" in new Setup {
-        val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validJsonButInvalidModel))
+        val result = controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(validJsonButInvalidModel))
         status(result) shouldBe BAD_REQUEST
       }
     }
@@ -167,7 +167,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
       "the body is valid and state has been updated" in new Setup {
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING,
           uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
-        val result = await(controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan)))
+        val result = await(controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(validCallbackFromUpscan)))
         result.header.status shouldBe NO_CONTENT
         eventually {
           val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
@@ -177,7 +177,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
 
       "the file is rejected and state has been updated" in new Setup {
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
-        val result = await(controller.callbackFromUpscan("12345")(fakeRequest.withBody(callbackFromUpscanWithFailure)))
+        val result = await(controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(callbackFromUpscanWithFailure)))
         result.header.status shouldBe NO_CONTENT
         eventually {
           val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
@@ -193,14 +193,14 @@ class UpscanCallbackControllerSpec extends SpecBase {
         eventually {
           await(repository.getUploadsForJourney(Some("12345")).map(_.get.find(_.reference == "ref1").get)).fileStatus shouldBe UploadStatusEnum.READY
         }
-        val result = await(controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscanDuplicate)))
+        val result = await(controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(validCallbackFromUpscanDuplicate)))
         result.header.status shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref2"))).get
         modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelDuplicate.copy(lastUpdated = mockDateTime)
       }
 
       "a callback has been received but the user has requested for the file to be removed" in new Setup {
-        val result = controller.callbackFromUpscan("12345")(fakeRequest.withBody(validCallbackFromUpscan))
+        val result = controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(validCallbackFromUpscan))
         status(result) shouldBe NO_CONTENT
         val modelInRepo: Option[UploadJourney] = await(repository.get[UploadJourney]("12345")(DataKey("ref1")))
         modelInRepo.isEmpty shouldBe true

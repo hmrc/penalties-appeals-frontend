@@ -280,14 +280,14 @@ class UpscanControllerSpec extends SpecBase {
 
     "fileVerification" should {
       "show an ISE if the form fails to bind" in {
-        val result = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1"))
+        val result = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "run the block passed to the service if the form binds and run the result" in {
         when(service.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(Ok("")))
-        val result = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+        val result = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe OK
       }
     }

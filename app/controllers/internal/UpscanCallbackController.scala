@@ -30,14 +30,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
                                         (implicit mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  def callbackFromUpscan(journeyId: String): Action[JsValue] = Action.async(parse.json) {
+  def callbackFromUpscan(journeyId: String, isJsEnabled: Boolean): Action[JsValue] = Action.async(parse.json) {
     implicit request => {
       withJsonBody[UploadJourney] {
         callbackModel => {
           if (callbackModel.failureDetails.isDefined) {
             logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload failed, marking failure in repository")
             val failureReason = callbackModel.failureDetails.get.failureReason
-            val localisedFailureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason)
+            val localisedFailureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason, isJsEnabled)
             val failureDetails = callbackModel.failureDetails.get.copy(message = localisedFailureReason)
             repository.updateStateOfFileUpload(journeyId, callbackModel.copy(failureDetails = Some(failureDetails))).map(_ => NoContent)
           } else {

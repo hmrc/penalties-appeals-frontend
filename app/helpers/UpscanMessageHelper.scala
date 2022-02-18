@@ -16,25 +16,30 @@
 
 package helpers
 
+import config.featureSwitches.FeatureSwitching
 import models.upload.FailureReasonEnum
 import play.api.i18n.Messages
 import play.twirl.api.Html
 
-object UpscanMessageHelper {
-  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value): String = {
+object UpscanMessageHelper extends FeatureSwitching {
+
+  val jsPrefix = "upscan"
+  val noJsPrefix = "upscan.noJs"
+
+  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean): String = {
     failureReason match {
-      case FailureReasonEnum.QUARANTINE => "upscan.fileHasVirus"
-      case FailureReasonEnum.REJECTED => "upscan.invalidMimeType"
-      case FailureReasonEnum.UNKNOWN => "upscan.unableToUpload"
+      case FailureReasonEnum.QUARANTINE => getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled)
+      case FailureReasonEnum.REJECTED => getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled)
+      case FailureReasonEnum.UNKNOWN => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
     }
   }
 
-  def getUploadFailureMessage(errorCode: String): String = {
+  def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean): String = {
     errorCode match {
-      case "EntityTooSmall" => "upscan.fileEmpty"
-      case "EntityTooLarge" => "upscan.fileTooLarge"
-      case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
-      case _ => "upscan.unableToUpload"
+      case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
+      case "EntityTooLarge" => getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
+      case "400" | "InvalidArgument" => getJsOrNonJsFailureMessage("fileNotSpecified", isJsEnabled)
+      case _ => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
     }
   }
 
@@ -48,5 +53,10 @@ object UpscanMessageHelper {
     } else {
       Html(messages.apply(msgForPlural, total))
     }
+  }
+
+  def getJsOrNonJsFailureMessage(errorSuffix: String, isJsEnabled: Boolean ): String = {
+    println(Console.CYAN + s"${if (isJsEnabled) s"$jsPrefix.$errorSuffix" else s"$noJsPrefix.$errorSuffix"}")
+    if (isJsEnabled) s"$jsPrefix.$errorSuffix" else s"$noJsPrefix.$errorSuffix"
   }
 }
