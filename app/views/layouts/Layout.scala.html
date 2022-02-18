@@ -82,7 +82,7 @@
     pageTitle = Some(messages("common.pageTitle", pageTitle, "Appeal a VAT penalty")),
     headBlock = Some(hmrcHead(nonce = nonce, headBlock = additionalHeadBlock)),
     headerBlock = Some(header()),
-    scriptsBlock = Some(scripts),
+    scriptsBlock = Some(hmrcScripts(nonce=nonce, scriptsBlock=Some(scripts))),
     beforeContentBlock = Some(beforeContentBlock),
     footerBlock = Some(hmrcStandardFooter()),
     isFullWidth = isPageFullWidth,
