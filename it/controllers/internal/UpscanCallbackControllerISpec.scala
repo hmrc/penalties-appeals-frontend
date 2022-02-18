@@ -138,10 +138,10 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     "algo" -> "md5"
   )
 
-  "POST /upscan-callback/:journeyId" should {
+  "POST /upscan-callback/:journeyId?isJsEnabled" should {
     "return BAD REQUEST" when {
       "the body received is valid JSON but not a valid model" in {
-        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(
+        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(
           Json.parse(
             """
               |{
@@ -159,7 +159,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         await(repository.collection.deleteMany(filter = Document()).toFuture)
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING,
           uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
-        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(validJsonToParse))
+        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(validJsonToParse))
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
         val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
@@ -174,7 +174,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       "the body received is valid and the state is updated - failure callback" in {
         await(repository.collection.deleteMany(filter = Document()).toFuture)
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
-        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(validFailureJsonToParse))
+        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(validFailureJsonToParse))
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
         val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
@@ -190,7 +190,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         await(repository.updateStateOfFileUpload("12345", jsonAsModel, isInitiateCall = true))
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING,
           uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
-        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345").post(duplicateFileAsJson))
+        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(duplicateFileAsJson))
         result.status shouldBe NO_CONTENT
         await(repository.getUploadsForJourney(Some("12345"))).get.size shouldBe 2
         val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get

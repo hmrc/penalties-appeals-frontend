@@ -23,7 +23,7 @@ import play.api.data.Forms.single
 object UploadDocumentForm extends Mappings {
   val form: Form[String] = Form[String](
     single(
-      "file" -> text("upscan.fileNotSpecified").verifying("upscan.fileNotSpecified", _.nonEmpty)
+      "file" -> text("upscan.noJs.fileNotSpecified").verifying("upscan.noJs.fileNotSpecified", _.nonEmpty)
     )
   )
 }

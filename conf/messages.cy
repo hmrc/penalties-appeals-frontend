@@ -348,6 +348,17 @@ upscan.unableToUpload = The selected file could not be uploaded. Remove the file
 upscan.stillUploading = The selected file has not finished uploading.
 upscan.fileNotSpecified = Select a file.
 
+# Upscan failure messages (NO JS)
+# ----------------------------------------------------------
+upscan.noJs.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF). Choose another file.
+upscan.noJs.fileTooLarge = The selected file must be smaller than 6MB. Choose another file.
+upscan.noJs.fileEmpty = The selected file is empty. Choose another file.
+upscan.noJs.fileHasVirus = The selected file contains a virus. Choose another file.
+upscan.noJs.unableToUpload = The selected file could not be uploaded. Choose another file.
+upscan.noJs.stillUploading = The selected file has not finished uploading.
+upscan.noJs.fileNotSpecified = Select a file.
+
+
 # Has the hospital stay ended page
 # ----------------------------------------------------------
 healthReason.hasTheHospitalStayEnded.title = Has the hospital stay ended?
