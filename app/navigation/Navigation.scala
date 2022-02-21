@@ -171,6 +171,14 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routeForUploadEvidenceQuestion(maybeString: Option[String], value: UserRequest[_], mode: Mode) :Call
-
+  def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode) :Call = {
+    isUploadEvidence match {
+      case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)
+      case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
+      case None => routeToMakingALateAppealOrCYAPage(request, mode)
+      case _ =>
+        logger.debug("[Navigation][routeForUploadEvidenceQuestion]: unable to get answer - reloading 'UploadEvidenceQuestionPage'")
+        routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)
+    }
+  }
 }

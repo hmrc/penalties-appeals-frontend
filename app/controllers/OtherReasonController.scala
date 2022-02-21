@@ -24,6 +24,7 @@ import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadEvidenceQuestionForm, UploadListForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
 import models.pages._
+import models.pages.UploadEvidenceQuestionPage
 import models.upload.{UploadJourney, UploadStatusEnum}
 import models.upload.UploadStatusEnum.READY
 import models.{CheckMode, Mode, NormalMode}
@@ -338,21 +339,27 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  def onPageLoadUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoadForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
+      val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
+        UploadEvidenceQuestionForm.uploadEvidenceQuestionForm,
+        SessionKeys.isUploadEvidence
+      )
+      val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
       val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
-      Ok
+      Ok(uploadEvidenceQuestionPage(formProvider,radioOptionsToRender,postAction))
     }
   }
   def onSubmitForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {implicit request =>
     UploadEvidenceQuestionForm.uploadEvidenceQuestionForm.bindFromRequest().fold(
       formWithErrors => {
+        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
         val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
-        BadRequest(uploadEvidenceQuestionPage(formWithErrors, postAction))
+        BadRequest(uploadEvidenceQuestionPage(formWithErrors,radioOptionsToRender, postAction))
       },
       isUploadEvidenceQuestion => {
         Redirect(navigation.nextPage(UploadEvidenceQuestionPage, mode))
-          .addingToSession((SessionKeys.isUploadEvidence, isUploadEvidenceQuestion.toString))
+          .addingToSession((SessionKeys.isUploadEvidence, isUploadEvidenceQuestion))
       }
     )
   }
