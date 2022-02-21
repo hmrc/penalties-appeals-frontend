@@ -46,16 +46,26 @@ class AppealServiceSpec extends SpecBase {
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.dateOfCrime -> "2022-01-01",
-    SessionKeys.journeyId -> "1234")
-  )
+    SessionKeys.journeyId -> "1234"
+  ))
 
   val fakeRequestForOtherJourney: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
     SessionKeys.reasonableExcuse -> "other",
     SessionKeys.hasConfirmedDeclaration -> "true",
     SessionKeys.whenDidBecomeUnable -> "2022-01-01",
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-    SessionKeys.journeyId -> "1234")
-  )
+    SessionKeys.journeyId -> "1234",
+    SessionKeys.isUploadEvidence -> "yes"
+  ))
+
+  val fakeRequestForOtherJourneyDeclinedUploads: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+    SessionKeys.reasonableExcuse -> "other",
+    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+    SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+    SessionKeys.journeyId -> "1234",
+    SessionKeys.isUploadEvidence -> "no"
+  ))
 
   val appealDataAsJson: JsValue = Json.parse(
     """
@@ -279,6 +289,35 @@ class AppealServiceSpec extends SpecBase {
       result shouldBe Right((): Unit)
 
       verify(mockAuditService, times(2)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
+        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+    }
+
+    "parse the session keys into a model and audit the response - removing file uploads if the user selected no to uploading files" in new Setup {
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+      val uploadAsDuplicate: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("/url"),
+        uploadDetails = Some(
+          UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = sampleDate,
+            checksum = "123456789",
+            size = 100
+          )
+        ),
+        failureDetails = None,
+        lastUpdated = LocalDateTime.now()
+      )
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate))))
+      val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourneyDeclinedUploads, implicitly, implicitly))
+      result shouldBe Right((): Unit)
+
+      verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
         ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
     }
 

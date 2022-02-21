@@ -460,8 +460,7 @@ object AppealSubmission {
   }
 
   //scalastyle:off
-  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, amountOfFileUploads: Long, agentReferenceNo: Option[String],
-                                            uploadedFiles: Option[Seq[UploadJourney]])
+  def constructModelBasedOnReasonableExcuse(reasonableExcuse: String, isLateAppeal: Boolean, agentReferenceNo: Option[String], uploadedFiles: Option[Seq[UploadJourney]])
                                            (implicit userRequest: UserRequest[_]): AppealSubmission = {
     reasonableExcuse match {
       case "bereavement" =>
@@ -611,12 +610,12 @@ object AppealSubmission {
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
             startDateOfEvent = userRequest.session.get(SessionKeys.whenDidBecomeUnable).get,
             statement = userRequest.session.get(SessionKeys.whyReturnSubmittedLate),
-            supportingEvidence = if (amountOfFileUploads > 0) Some(Evidence(amountOfFileUploads)) else None,
+            supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => Some(Evidence(files.size))),
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
             isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
             isClientResponsibleForLateSubmission = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client"),
-            uploadedFiles
+            uploadedFiles = if(uploadedFiles.isDefined) uploadedFiles else None
           )
         )
       case "obligation" =>
@@ -632,10 +631,10 @@ object AppealSubmission {
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
             statement = userRequest.session.get(SessionKeys.otherRelevantInformation),
-            supportingEvidence = if (amountOfFileUploads > 0) Some(Evidence(amountOfFileUploads)) else None,
+            supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => Some(Evidence(files.size))),
             isClientResponsibleForSubmission = None,
             isClientResponsibleForLateSubmission = None,
-            uploadedFiles
+            uploadedFiles = if(uploadedFiles.isDefined) uploadedFiles else None
           )
         )
     }
