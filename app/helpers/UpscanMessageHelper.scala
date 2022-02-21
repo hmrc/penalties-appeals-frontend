@@ -56,7 +56,6 @@ object UpscanMessageHelper extends FeatureSwitching {
   }
 
   def getJsOrNonJsFailureMessage(errorSuffix: String, isJsEnabled: Boolean ): String = {
-    println(Console.CYAN + s"${if (isJsEnabled) s"$jsPrefix.$errorSuffix" else s"$noJsPrefix.$errorSuffix"}")
     if (isJsEnabled) s"$jsPrefix.$errorSuffix" else s"$noJsPrefix.$errorSuffix"
   }
 }

@@ -78,7 +78,6 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   def initiateCallToUpscan(journeyId: String): Action[AnyContent] = Action.async {
     implicit request => {
       logger.debug(s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId")
-      println(Console.BLUE + s"Callback as string -> ${appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId, true).url}")
       val initiateRequestForMultiFileUpload = UpscanInitiateRequest(
         callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId, true).url,
         successRedirect = Some(appConfig.upscanSuccessUrl + journeyId),

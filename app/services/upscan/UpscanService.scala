@@ -39,7 +39,6 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
                               scheduler: ActorSystem)(implicit appConfig: AppConfig, errorHandler: ErrorHandler) {
 
   def upscanInitiateModelForSynchronousUpload(journeyId: String, isAddingAnotherDocument: Boolean, mode: Mode, isJsEnabled: Boolean = false): UpscanInitiateRequest = {
-    println(Console.CYAN + "[upscanInitiateModelForSynchronousUpload] - " + appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId, isJsEnabled).url)
     UpscanInitiateRequest(
       callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId, isJsEnabled).url,
       successRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.fileVerification(isAddingAnotherDocument, mode, isJsEnabled).url),
@@ -52,9 +51,6 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
   def initiateSynchronousCallToUpscan(journeyId: String, isAddingAnotherDocument: Boolean, mode: Mode)(implicit ec: ExecutionContext,
                                                          hc: HeaderCarrier): Future[Either[UpscanInitiateHttpParser.ErrorResponse, UpscanInitiateResponseModel]] = {
     val initiateRequestModel = upscanInitiateModelForSynchronousUpload(journeyId, isAddingAnotherDocument, mode)
-    println(Console.YELLOW + "[initiateSynchronousCallToUpscan] - callback url: " + initiateRequestModel.callbackUrl)
-    println(Console.GREEN + "[initiateSynchronousCallToUpscan] - success url: " + initiateRequestModel.successRedirect)
-    println(Console.RED + "[initiateSynchronousCallToUpscan] - failure url: " + initiateRequestModel.errorRedirect)
     upscanConnector.initiateToUpscan(initiateRequestModel).flatMap {
       _.fold(
         error => {
