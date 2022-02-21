@@ -82,7 +82,7 @@ class WhenDidThePersonDieFormSpec extends SpecBase{
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "bereavementReason.error.invalid", Seq())
+        result.errors.head shouldBe FormError("date.day", "bereavementReason.error.invalid", Seq("day", "month", "year"))
       }
 
       "the date has no day" in {

@@ -32,7 +32,6 @@ object WhenDidBecomeUnableForm extends Mappings {
       allRequiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required.all"),
       twoRequiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required.two"),
       requiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required"),
-      fieldLengthKey = getMessageKey("otherReason.whenDidBecomeUnable.error.invalid"),
       futureKey = Some(getMessageKey("otherReason.whenDidBecomeUnable.error.notInFuture"))
       )
     )

@@ -30,7 +30,6 @@ object WhenDidFireOrFloodHappenForm extends Mappings {
       allRequiredKey = "fireOrFloodReason.error.required.all",
       twoRequiredKey = "fireOrFloodReason.error.required.two",
       requiredKey = "fireOrFloodReason.error.required",
-      fieldLengthKey = "fireOrFloodReason.error.invalid",
       futureKey = Some("fireOrFloodReason.error.notInFuture")
       )
     )

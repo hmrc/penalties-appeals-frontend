@@ -30,7 +30,6 @@ object WhenDidPersonLeaveTheBusinessForm extends Mappings {
         allRequiredKey = "lossOfStaffReason.error.required.all",
         twoRequiredKey = "lossOfStaffReason.error.required.two",
         requiredKey = "lossOfStaffReason.error.required",
-        fieldLengthKey = "lossOfStaffReason.error.invalid",
         futureKey = Some("lossOfStaffReason.error.notInFuture")
       )
     )

@@ -31,7 +31,6 @@ object WhenDidThePersonDieForm extends Mappings {
         allRequiredKey = "bereavementReason.error.required.all",
         twoRequiredKey = "bereavementReason.error.required.two",
         requiredKey = "bereavementReason.error.required",
-        fieldLengthKey = "bereavementReason.error.invalid",
         futureKey = Some("bereavementReason.error.notInFuture")
       )
     )

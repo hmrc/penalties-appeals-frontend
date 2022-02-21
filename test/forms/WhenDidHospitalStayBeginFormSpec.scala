@@ -82,7 +82,7 @@ class WhenDidHospitalStayBeginFormSpec extends SpecBase{
           )
         )
         result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "healthReason.whenDidHospitalStayBegin.error.invalid", Seq())
+        result.errors.head shouldBe FormError("date.day", "healthReason.whenDidHospitalStayBegin.error.invalid", Seq("day", "month", "year"))
       }
 
       "the date has no day" in {

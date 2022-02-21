@@ -86,7 +86,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "healthReason.whenHealthIssueHappened.error.invalid", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {
@@ -233,7 +233,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.healthReason.whenHealthIssueHappened.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "agent.healthReason.whenHealthIssueHappened.error.invalid", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {

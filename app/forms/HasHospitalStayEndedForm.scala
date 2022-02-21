@@ -37,7 +37,6 @@ object HasHospitalStayEndedForm extends Mappings {
         allRequiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required.all",
         twoRequiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required.two",
         requiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required",
-        fieldLengthKey = "healthReason.hasTheHospitalStayEnded.date.error.invalid",
         futureKey = Some("healthReason.hasTheHospitalStayEnded.date.error.notInFuture"),
         dateNotEqualOrAfterKeyAndCompareDate = Some(("healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate", healthIssueStartDate))
       ))

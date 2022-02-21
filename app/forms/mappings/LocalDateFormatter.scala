@@ -29,7 +29,6 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
                                            allRequiredKey: String,
                                            twoRequiredKey: String,
                                            requiredKey: String,
-                                           fieldLengthKey: String,
                                            futureKey: Option[String] = None,
                                            dateNotEqualOrAfterKeyAndCompareDate: Option[(String, LocalDate)] = None,
                                            args: Seq[String] = Seq.empty)
@@ -37,76 +36,77 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
 
   private val fieldKeys: List[String] = List("day", "month", "year")
 
-  private val yearLengthMax = 4
-  private val dayMonthLengthMax = 2
-
-  private def toDate(key: String, day: Int, month: Int, year: Int): Either[Seq[FormError], LocalDate] =
+  //scalastyle:off
+  private def toDate(key: String, day: Int, month: Int, year: Int): Either[Seq[FormError], LocalDate] = {
     Try(LocalDate.of(year, month, day)) match {
       case Success(date) =>
         Right(date)
       case Failure(_) =>
-        Left(Seq(FormError(key, invalidKey, args)))
+        Left(Seq(FormError(s"$key.day", invalidKey, args)))
     }
+  }
+
+  private def bindIntSubfield(key: String, subKey: String, blankErrorKey: String, invalidErrorKey: String, data: Map[String, String],
+                              extraValidation: Int => Boolean): Either[Seq[FormError], Int] = {
+    intFormatter(
+      requiredKey = blankErrorKey,
+      wholeNumberKey = invalidErrorKey,
+      nonNumericKey = invalidErrorKey
+    ).bind(s"$key.$subKey", data.mapValues(_.trim))
+      .right
+      .flatMap(int =>
+        if (extraValidation(int)) Right(int) else Left(Seq(FormError(s"$key.$subKey", invalidErrorKey))))
+  }
 
   private def formatDate(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
-
-    val int = intFormatter(
-      requiredKey = invalidKey,
-      wholeNumberKey = invalidKey,
-      nonNumericKey = invalidKey,
-      args
-    )
-
-    val parseResult = for {
-      day <- int.bind(s"$key.day", data).right
-      month <- int.bind(s"$key.month", data).right
-      year <- int.bind(s"$key.year", data).right
-      date <- toDate(key, day, month, year).right
-    } yield date
-
-    parseResult.fold(Left(_),
-      date => {
-          if(futureKey.isDefined) {
-            if(dateNotEqualOrAfterKeyAndCompareDate.isDefined && dateNotEqualOrAfterKeyAndCompareDate.get._2.isAfter(date)) {
-              Left(Seq(FormError(s"$key.day", dateNotEqualOrAfterKeyAndCompareDate.get._1, Seq("day", "month", "year"))))
-            } else if (date.isEqual(LocalDate.now()) || date.isBefore(LocalDate.now())) {
-              Right(date)
-            } else {
-              Left(Seq(FormError(s"$key.day", futureKey.get, Seq("day", "month", "year"))))
-            }
+    val dayField = bindIntSubfield(key, "day", invalidKey, invalidKey, data, day => day >= 1 && day <= 31)
+    val monthField = bindIntSubfield(key, "month", invalidKey, invalidKey, data, month => month >= 1 && month <= 12)
+    val yearField = bindIntSubfield(key, "year", invalidKey, invalidKey, data, year => year >= 1 && year.toString.length == 4)
+    val parseResult = (dayField, monthField, yearField) match {
+      case (Right(day), Right(month), Right(year)) => toDate(key, day, month, year)
+      case (day, month, year) => Left(day.left.toSeq.flatten ++ month.left.toSeq.flatten ++ year.left.toSeq.flatten)
+    }
+    parseResult.fold(
+      {
+        errors =>
+          if (errors.size > 1) {
+            val focusTarget = errors.find(_.key == s"$key.day").orElse(errors.find(_.key == s"$key.month")).orElse(errors.find(_.key == s"$key.year")).map(_.key).getOrElse(s"$key.day")
+            Left(List(FormError(focusTarget, invalidKey, fieldKeys ++ args)))
           } else {
-            Right(date)
+            Left(errors)
           }
+      },
+      date => {
+        if (futureKey.isDefined) {
+          if (dateNotEqualOrAfterKeyAndCompareDate.isDefined && dateNotEqualOrAfterKeyAndCompareDate.get._2.isAfter(date)) {
+            Left(Seq(FormError(s"$key.day", dateNotEqualOrAfterKeyAndCompareDate.get._1, fieldKeys)))
+          } else if (date.isEqual(LocalDate.now()) || date.isBefore(LocalDate.now())) {
+            Right(date)
+          } else {
+            Left(Seq(FormError(s"$key.day", futureKey.get, fieldKeys)))
+          }
+        } else {
+          Right(date)
+        }
       }
     )
   }
 
   //scalastyle:off
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
-
     val fields = fieldKeys.map {
       field =>
-        field -> data.get(s"$key.$field").filter(_.nonEmpty)//.map(f => filter(f))
+        field -> data.get(s"$key.$field").filter(_.nonEmpty)
     }.toMap
-
     lazy val missingFields = fields
       .withFilter(_._2.isEmpty)
       .map(_._1)
       .toList
 
-
     fields.count(_._2.isDefined) match {
       case 3 =>
-        val lengthErrors = fields.collect {
-          case (id, value) if id.contains("year") && value.exists(_.length != yearLengthMax) => id
-          case (id, value) if !id.contains("year") && value.exists(_.length > dayMonthLengthMax) => id
-        }
-        if (lengthErrors.nonEmpty) {
-          Left(List(FormError(s"$key.${lengthErrors.head}", fieldLengthKey, lengthErrors.toSeq)))
-        } else {
-          formatDate(key, data).left.map {
-            _.map(err => err.copy(key = s"$key.day", args = err.args ++ args))
-          }
+        formatDate(key, data).left.map {
+          _.map(err => err.copy(args = err.args ++ args))
         }
       case 2 =>
         Left(List(FormError(s"$key.${missingFields.head}", requiredKey, missingFields ++ args)))
