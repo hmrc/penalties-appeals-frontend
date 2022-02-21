@@ -414,6 +414,7 @@ export class MultiFileUpload {
         };
 
         this.updateErrorSummaryVisibility();
+        document.querySelector('.govuk-error-summary').focus();
     }
 
     /** F32 */
