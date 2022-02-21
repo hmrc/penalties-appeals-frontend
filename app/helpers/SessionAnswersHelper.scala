@@ -29,7 +29,7 @@ import viewtils.ImplicitDateFormatter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepository)(implicit ec: ExecutionContext)extends ImplicitDateFormatter {
+class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository)(implicit ec: ExecutionContext) extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
     "bereavement" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidThePersonDie, SessionKeys.hasConfirmedDeclaration),
     "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
@@ -42,7 +42,7 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
       Seq(SessionKeys.reasonableExcuse, SessionKeys.whenHealthIssueStarted, SessionKeys.whenHealthIssueEnded,
         SessionKeys.hasHealthEventEnded, SessionKeys.wasHospitalStayRequired),
     "healthIssueNoHospitalStay" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.wasHospitalStayRequired, SessionKeys.whenHealthIssueHappened),
-    "other" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whyReturnSubmittedLate, SessionKeys.whenDidBecomeUnable)
+    "other" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whyReturnSubmittedLate, SessionKeys.whenDidBecomeUnable, SessionKeys.isUploadEvidence)
   )
 
   def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): Boolean = {
@@ -132,13 +132,13 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
 
       case "other" =>
         val statementOfLatenessForLPPOrLSP: String = {
-          if(request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) || request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)) {
+          if (request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) || request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)) {
             messages("checkYourAnswers.other.lpp.statementOfLateness")
           } else {
             messages("checkYourAnswers.other.statementOfLateness")
           }
         }
-        Seq(
+        val base = Seq(
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
             controllers.routes.ReasonableExcuseController.onPageLoad().url),
@@ -147,14 +147,18 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
           (statementOfLatenessForLPPOrLSP,
             request.session.get(SessionKeys.whyReturnSubmittedLate).get,
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url),
-          (messages("checkYourAnswers.other.uploadEvidenceQuestion"),
-            messages(s"common.radioOption.${request.session.get(SessionKeys.isUploadEvidence).get}"),
-            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
-            (messages("checkYourAnswers.other.fileEvidence"),
-            if(fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
-            controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url)
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url)
         )
+
+        if (request.session.get(SessionKeys.isUploadEvidence).get.equalsIgnoreCase("yes")) {
+          base :+ (
+            messages("checkYourAnswers.other.fileEvidence"),
+            if (fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          )
+        } else {
+          base
+        }
     }
 
     request.session.get(SessionKeys.lateAppealReason).fold(
@@ -230,7 +234,7 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
         messages(s"checkYourAnswers.agents.whoPlannedToSubmitVATReturn.${request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get}"),
         controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url))
 
-    val seqWhatCausedAgentToMissDeadline = if(request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get.equals("agent")) {
+    val seqWhatCausedAgentToMissDeadline = if (request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get.equals("agent")) {
       Seq((messages("checkYourAnswers.agents.whatCausedYouToMissTheDeadline"),
         messages(s"checkYourAnswers.agents.whatCausedYouToMissTheDeadline.${request.session.get(SessionKeys.whatCausedYouToMissTheDeadline).get}"),
         controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url))
@@ -257,21 +261,22 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
   }
 
   def getContentForObligationAppealCheckYourAnswersPage(fileNames: Option[String] = None)(implicit request: Request[_], messages: Messages): Seq[(String, String, String)] = {
-    Seq(
+    val base = Seq(
       (messages("checkYourAnswers.obligation.whyYouWantToAppealPenalty"),
         request.session.get(SessionKeys.otherRelevantInformation).get,
-        controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url),
-      (messages("checkYourAnswers.other.uploadEvidenceQuestion"),
-        messages(s"common.radioOption.${request.session.get(SessionKeys.isUploadEvidence).get}"),
-        controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
-      (messages("checkYourAnswers.obligation.fileEvidence"),
-        if(fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
+        controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url))
+    if (request.session.get(SessionKeys.isUploadEvidence).get.equalsIgnoreCase("yes")) {
+      base :+ (
+        messages("checkYourAnswers.obligation.fileEvidence"),
+        if (fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
         controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       )
-    )
+    } else {
+      base
+    }
   }
 
-  def getPreviousUploadsFileNames()(implicit request: UserRequest[_]): Future[String]= {
+  def getPreviousUploadsFileNames()(implicit request: UserRequest[_]): Future[String] = {
     for {
       previousUploads <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
     } yield {
@@ -282,16 +287,16 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
     }
   }
 
-  def getContentWithExistingUploadFileNames(reasonableExcuse:String)(implicit request: UserRequest[_], messages: Messages): Future[Seq[(String, String, String)]]={
-    if(!reasonableExcuse.equals("other") && !request.session.get(SessionKeys.isObligationAppeal).contains("true")){
-       Future(getAllTheContentForCheckYourAnswersPage()(request,messages))
+  def getContentWithExistingUploadFileNames(reasonableExcuse: String)(implicit request: UserRequest[_], messages: Messages): Future[Seq[(String, String, String)]] = {
+    if (!reasonableExcuse.equals("other") && !request.session.get(SessionKeys.isObligationAppeal).contains("true")) {
+      Future(getAllTheContentForCheckYourAnswersPage()(request, messages))
     }
     else {
-       for {
-         fileNames <- getPreviousUploadsFileNames()(request)
-       } yield {
-         getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))(request,messages)
-       }
+      for {
+        fileNames <- getPreviousUploadsFileNames()(request)
+      } yield {
+        getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))(request, messages)
+      }
     }
   }
 }
