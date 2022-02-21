@@ -302,6 +302,10 @@ otherReason.uploadEvidence.status.pending = Pending
 otherReason.uploadEvidence.button.remove = Remove
 otherReason.uploadEvidence.button.removing = Removing
 otherReason.uploadEvidence.stillTransferring = Files are still being transferred
+otherReason.uploadEvidence.question.title = Do you want to upload evidence to support your appeal?
+otherReason.uploadEvidence.question.heading = Do you want to upload evidence to support your appeal?
+otherReason.uploadEvidence.question.required = <TBC>
+otherReason.uploadEvidence.question.hintText = This is optional. We will still review your appeal if you do not upload evidence.
 
 # Upload Evidence (No JS)
 # ----------------------------------------------------------

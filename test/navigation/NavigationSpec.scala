@@ -336,7 +336,7 @@ class NavigationSpec extends SpecBase {
 
       s"called with $WhyWasReturnSubmittedLatePage" in new Setup {
         val result: Call = mainNavigator.nextPage(WhyWasReturnSubmittedLatePage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
-        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
       }
 
       s"called with $EvidencePage" in new Setup {

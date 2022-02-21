@@ -350,6 +350,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       Ok(uploadEvidenceQuestionPage(formProvider,radioOptionsToRender,postAction))
     }
   }
+
   def onSubmitForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {implicit request =>
     UploadEvidenceQuestionForm.uploadEvidenceQuestionForm.bindFromRequest().fold(
       formWithErrors => {
