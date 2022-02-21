@@ -51,7 +51,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     OtherRelevantInformationPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
     UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
-    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode))
+    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode)),
+    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, NormalMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
@@ -79,7 +80,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
     UploadAnotherDocumentPage -> ((_,_,_) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
-    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode))
+    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode)),
+    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, extraData: Option[Map[String, String]] = None)
@@ -168,4 +170,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
         routes.OtherReasonController.onPageLoadForUploadComplete(mode)
     }
   }
+
+  def routeForUploadEvidenceQuestion(maybeString: Option[String], value: UserRequest[_], mode: Mode) :Call
+
 }

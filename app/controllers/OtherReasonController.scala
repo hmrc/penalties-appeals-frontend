@@ -21,7 +21,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
-import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadListForm}
+import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadEvidenceQuestionForm, UploadListForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
 import models.pages._
 import models.upload.{UploadJourney, UploadStatusEnum}
@@ -54,6 +54,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage,
                                       uploadAnotherDocumentPage: UploadAnotherDocumentPage,
                                       uploadListPage: UploadListPage,
+                                      uploadEvidenceQuestionPage: UploadEvidenceQuestionPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
                                       featureSwitching: FeatureSwitching,
@@ -335,5 +336,24 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           }
         })
     }
+  }
+
+  def onPageLoadUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
+      Ok
+    }
+  }
+  def onSubmitForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {implicit request =>
+    UploadEvidenceQuestionForm.uploadEvidenceQuestionForm.bindFromRequest().fold(
+      formWithErrors => {
+        val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
+        BadRequest(uploadEvidenceQuestionPage(formWithErrors, postAction))
+      },
+      isUploadEvidenceQuestion => {
+        Redirect(navigation.nextPage(UploadEvidenceQuestionPage, mode))
+          .addingToSession((SessionKeys.isUploadEvidence, isUploadEvidenceQuestion.toString))
+      }
+    )
   }
 }
