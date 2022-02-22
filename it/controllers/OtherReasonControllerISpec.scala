@@ -1084,7 +1084,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
+      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.isUploadEvidence).get shouldBe "no"
     }
 
@@ -1107,7 +1107,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
+      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.isUploadEvidence).get shouldBe "yes"
     }
 

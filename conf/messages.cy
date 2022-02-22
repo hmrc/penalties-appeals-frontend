@@ -282,7 +282,6 @@ otherReason.uploadEvidence.p2 = Evidence might include documents or letters that
 otherReason.uploadEvidence.lpp.p2 = Evidence might include documents or letters that show why the VAT bill was paid late.
 otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include documents or letters that show why the business did not need to submit a return.
 otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT.
-otherReason.uploadEvidence.p3 = We will still review your appeal if you do not upload evidence.
 otherReason.uploadEvidence.p4 = You can upload up to 5 files.
 otherReason.uploadEvidence.p5 = Each file must be smaller than 6MB.
 otherReason.uploadEvidence.details.heading = Types of file you can upload
@@ -302,10 +301,13 @@ otherReason.uploadEvidence.status.pending = Pending
 otherReason.uploadEvidence.button.remove = Remove
 otherReason.uploadEvidence.button.removing = Removing
 otherReason.uploadEvidence.stillTransferring = Files are still being transferred
+
+# Upload Evidence Question
+# ----------------------------------------------------------
 otherReason.uploadEvidence.question.title = Do you want to upload evidence to support your appeal?
 otherReason.uploadEvidence.question.heading = Do you want to upload evidence to support your appeal?
-otherReason.uploadEvidence.question.required = <TBC>
-otherReason.uploadEvidence.question.hintText = This is optional. We will still review your appeal if you do not upload evidence.
+otherReason.uploadEvidence.question.required = Select yes if you want to upload evidence
+otherReason.uploadEvidence.question.hintText = Uploading evidence is optional. We will still review your appeal if you do not upload evidence.
 
 # Upload Evidence (No JS)
 # ----------------------------------------------------------

@@ -18,7 +18,6 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadEvidenceQuestionForm
-import messages.UploadEvidenceQuestionMessages
 import messages.UploadEvidenceQuestionMessages._
 import models.NormalMode
 import org.jsoup.nodes.Document
@@ -40,7 +39,7 @@ class UploadEvidenceQuestionPageSpec extends SpecBase with ViewBehaviours {
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(
-      Selectors.title -> UploadEvidenceQuestionMessages.title,
+      Selectors.title -> title,
       Selectors.h1 -> h1,
       Selectors.labelForRadioButton(1) -> yesOption,
       Selectors.labelForRadioButton(2) -> noOption,

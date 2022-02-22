@@ -52,7 +52,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
     UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
     FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode)),
-    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, NormalMode))
+    UploadEvidenceQuestionPage -> ((answer, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
@@ -75,7 +75,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     ReasonableExcuseSelectionPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     AppealStartPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
-    OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
+    OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
     CancelVATRegistrationPage -> ((answer, _, extraData) => routingForCancelVATRegistrationPage(answer, extraData)),
     OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
@@ -173,8 +173,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode) :Call = {
     isUploadEvidence match {
-      case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)
-      case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
+      case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
+      case Some(ans) if ans.equalsIgnoreCase("no") => routes.CheckYourAnswersController.onPageLoad()
       case _ =>
         logger.debug("[Navigation][routeForUploadEvidenceQuestion]: unable to get answer - reloading 'UploadEvidenceQuestionPage'")
         routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)

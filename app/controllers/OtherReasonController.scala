@@ -347,7 +347,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
       val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
-      Ok(uploadEvidenceQuestionPage(formProvider,radioOptionsToRender,postAction))
+      Ok(uploadEvidenceQuestionPage(formProvider, radioOptionsToRender, postAction))
     }
   }
 
@@ -356,10 +356,12 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       formWithErrors => {
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
         val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
-        BadRequest(uploadEvidenceQuestionPage(formWithErrors,radioOptionsToRender, postAction))
+        BadRequest(uploadEvidenceQuestionPage(formWithErrors, radioOptionsToRender, postAction))
       },
       isUploadEvidenceQuestion => {
-        Redirect(navigation.nextPage(UploadEvidenceQuestionPage, mode))
+        logger.debug(
+          s"[OtherReasonController][onSubmitForUploadEvidenceQuestion] - Adding '$isUploadEvidenceQuestion' to session under key: ${SessionKeys.isUploadEvidence}")
+        Redirect(navigation.nextPage(UploadEvidenceQuestionPage, mode, Some(isUploadEvidenceQuestion)))
           .addingToSession((SessionKeys.isUploadEvidence, isUploadEvidenceQuestion))
       }
     )

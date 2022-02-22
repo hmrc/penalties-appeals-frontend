@@ -25,7 +25,7 @@ object UploadEvidenceQuestionMessages {
 
   val noOption = "No"
 
-  val hintText = "This is optional. We will still review your appeal if you do not upload evidence."
+  val hintText = "Uploading evidence is optional. We will still review your appeal if you do not upload evidence."
 
   val continue = "Continue"
 }

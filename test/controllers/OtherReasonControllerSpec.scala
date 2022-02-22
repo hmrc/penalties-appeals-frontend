@@ -691,7 +691,7 @@ class OtherReasonControllerSpec extends SpecBase {
               )
             )))
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
             await(result).session.get(SessionKeys.isUploadEvidence).get shouldBe "yes"
           }
 

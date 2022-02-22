@@ -271,6 +271,10 @@ class NavigationSpec extends SpecBase {
         ))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+      s"called with $UploadEvidenceQuestionPage" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
     }
 
     "in NormalMode" when {
@@ -513,6 +517,11 @@ class NavigationSpec extends SpecBase {
         ))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+
+      s"called with $UploadEvidenceQuestionPage" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
+      }
     }
   }
 
@@ -654,6 +663,35 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
+    }
+  }
+
+  "routeForUploadEvidenceQuestion" should {
+    "redirect to Upload Evidence page in normal mode" when {
+      "user answers yes for Upload Evidence Question " in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, Some("yes"))(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+      }
+
+      "user answers no for Upload Evidence Question" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, Some("no"))(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
+
+    "redirect to the CYA page in check mode" when {
+      "user answers yes for Upload Evidence Question" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, CheckMode, Some("yes"))(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.isUploadEvidence -> "yes"
+          )))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
     }
   }
 }
