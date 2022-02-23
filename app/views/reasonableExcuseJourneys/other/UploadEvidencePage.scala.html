@@ -76,7 +76,10 @@
         (Symbol("data-multi-file-upload-remove-url-tpl"), removeFileUrl("{fileRef}").url),
         (Symbol("data-multi-file-upload-duplicate-url-tpl"), getDuplicatesUrl.url),
         (Symbol("data-multi-file-upload-still-transferring"), messages("otherReason.uploadEvidence.stillTransferring")),
-        (Symbol("data-multi-file-upload-error-generic"), messages("upscan.unableToUpload"))) {
+        (Symbol("data-multi-file-upload-error-generic"), messages("upscan.unableToUpload")),
+        (Symbol("data-multi-file-upload-file-uploading"), messages("upscan.fileUploading", "{fileNumber}", "{fileName}")),
+        (Symbol("data-multi-file-upload-file-removed"), messages("upscan.fileRemoved", "{fileNumber}", "{fileName}")),
+        (Symbol("data-multi-file-upload-file-uploaded"), messages("upscan.fileUploaded", "{fileNumber}", "{fileName}"))) {
             <div class="govuk-inset-text hidden" aria-hidden="true"></div>
             <p class="govuk-body">@messages("otherReason.uploadEvidence.p1")</p>
             <p class="govuk-body">@messages(lppOrLspOrObligationDynamicText)</p>
