@@ -148,6 +148,9 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
           (statementOfLatenessForLPPOrLSP,
             request.session.get(SessionKeys.whyReturnSubmittedLate).get,
             controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url),
+          (messages("checkYourAnswers.other.uploadEvidenceQuestion"),
+            messages(s"common.radioOption.${request.session.get(SessionKeys.isUploadEvidence).get}"),
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
           (messages("checkYourAnswers.other.fileEvidence"),
             if(fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
             controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url)

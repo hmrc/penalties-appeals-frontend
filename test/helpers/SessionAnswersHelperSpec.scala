@@ -448,7 +448,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+            SessionKeys.isUploadEvidence -> "no"
           ))
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -462,12 +463,15 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
         result(2)._1 shouldBe "Why was the VAT bill paid late?"
         result(2)._2 shouldBe "This is why my VAT payment was late."
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-        result(3)._1 shouldBe "Evidence to support this appeal"
-        result(3)._2 shouldBe "Not provided"
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-        result(4)._1 shouldBe "Reason for appealing after 30 days"
-        result(4)._2 shouldBe "This is the reason why my appeal was late."
-        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+        result(3)._2 shouldBe "No"
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(4)._1 shouldBe "Evidence to support this appeal"
+        result(4)._2 shouldBe "Not provided"
+        result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(5)._1 shouldBe "Reason for appealing after 30 days"
+        result(5)._2 shouldBe "This is the reason why my appeal was late."
+        result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
     }
 
@@ -536,7 +540,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client",
+              SessionKeys.isUploadEvidence -> "no"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -550,9 +555,12 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-          result(3)._1 shouldBe "Evidence to support this appeal"
-          result(3)._2 shouldBe "Not provided"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(3)._2 shouldBe "No"
+          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(4)._1 shouldBe "Evidence to support this appeal"
+          result(4)._2 shouldBe "Not provided"
+          result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         }
 
         "for no upload - and late appeal" in {
@@ -564,7 +572,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client",
+              SessionKeys.isUploadEvidence -> "no"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -578,12 +587,15 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-          result(3)._1 shouldBe "Evidence to support this appeal"
-          result(3)._2 shouldBe "Not provided"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-          result(4)._1 shouldBe "Reason for appealing after 30 days"
-          result(4)._2 shouldBe "This is the reason why my appeal was late."
-          result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(3)._2 shouldBe "No"
+          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(4)._1 shouldBe "Evidence to support this appeal"
+          result(4)._2 shouldBe "Not provided"
+          result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(5)._1 shouldBe "Reason for appealing after 30 days"
+          result(5)._2 shouldBe "This is the reason why my appeal was late."
+          result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
 
         "for upload" in {
@@ -594,7 +606,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client",
+              SessionKeys.isUploadEvidence -> "yes"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -608,9 +621,12 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-          result(3)._1 shouldBe "Evidence to support this appeal"
-          result(3)._2 shouldBe "file.docx"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(3)._2 shouldBe "Yes"
+          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(4)._1 shouldBe "Evidence to support this appeal"
+          result(4)._2 shouldBe "file.docx"
+          result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         }
 
         "for upload - and late appeal" in {
@@ -622,7 +638,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+              SessionKeys.whatCausedYouToMissTheDeadline -> "client",
+              SessionKeys.isUploadEvidence -> "yes"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -636,12 +653,15 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-          result(3)._1 shouldBe "Evidence to support this appeal"
-          result(3)._2 shouldBe "file.docx"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-          result(4)._1 shouldBe "Reason for appealing after 30 days"
-          result(4)._2 shouldBe "This is the reason why my appeal was late."
-          result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(3)._2 shouldBe "Yes"
+          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(4)._1 shouldBe "Evidence to support this appeal"
+          result(4)._2 shouldBe "file.docx"
+          result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(5)._1 shouldBe "Reason for appealing after 30 days"
+          result(5)._2 shouldBe "This is the reason why my appeal was late."
+          result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
       }
 
@@ -653,7 +673,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+            SessionKeys.isUploadEvidence -> "yes"
           ))
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -667,12 +688,15 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
         result(2)._1 shouldBe "Why was the VAT bill paid late?"
         result(2)._2 shouldBe "This is why my VAT bill was paid late."
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-        result(3)._1 shouldBe "Evidence to support this appeal"
-        result(3)._2 shouldBe "file.docx"
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-        result(4)._1 shouldBe "Reason for appealing after 30 days"
-        result(4)._2 shouldBe "This is the reason why my appeal was late."
-        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+        result(3)._2 shouldBe "Yes"
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(4)._1 shouldBe "Evidence to support this appeal"
+        result(4)._2 shouldBe "file.docx"
+        result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(5)._1 shouldBe "Reason for appealing after 30 days"
+        result(5)._2 shouldBe "This is the reason why my appeal was late."
+        result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
     }
 
@@ -737,7 +761,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
-              SessionKeys.whenDidBecomeUnable -> "2022-01-01"
+              SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+              SessionKeys.isUploadEvidence -> "yes"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -751,9 +776,12 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-          result(3)._1 shouldBe "Evidence to support this appeal"
-          result(3)._2 shouldBe "Not provided"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(3)._2 shouldBe "Yes"
+          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(4)._1 shouldBe "Evidence to support this appeal"
+          result(4)._2 shouldBe "Not provided"
+          result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         }
 
         "for no upload - and late appeal" in {
@@ -763,7 +791,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
+              SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+              SessionKeys.isUploadEvidence -> "no"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -777,12 +806,15 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-          result(3)._1 shouldBe "Evidence to support this appeal"
-          result(3)._2 shouldBe "Not provided"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-          result(4)._1 shouldBe "Reason for appealing after 30 days"
-          result(4)._2 shouldBe "This is the reason why my appeal was late."
-          result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(3)._2 shouldBe "No"
+          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(4)._1 shouldBe "Evidence to support this appeal"
+          result(4)._2 shouldBe "Not provided"
+          result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(5)._1 shouldBe "Reason for appealing after 30 days"
+          result(5)._2 shouldBe "This is the reason why my appeal was late."
+          result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
 
         "for upload" in {
@@ -791,7 +823,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
-              SessionKeys.whenDidBecomeUnable -> "2022-01-01"
+              SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+              SessionKeys.isUploadEvidence -> "yes"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -805,9 +838,12 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-          result(3)._1 shouldBe "Evidence to support this appeal"
-          result(3)._2 shouldBe "file.docx"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(3)._2 shouldBe "Yes"
+          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(4)._1 shouldBe "Evidence to support this appeal"
+          result(4)._2 shouldBe "file.docx"
+          result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         }
 
         "for upload - and late appeal" in {
@@ -817,7 +853,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.lateAppealReason -> "This is the reason why my appeal was late."
+              SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+              SessionKeys.isUploadEvidence -> "yes"
             ))
 
           val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
@@ -831,12 +868,15 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-          result(3)._1 shouldBe "Evidence to support this appeal"
-          result(3)._2 shouldBe "file.docx"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
-          result(4)._1 shouldBe "Reason for appealing after 30 days"
-          result(4)._2 shouldBe "This is the reason why my appeal was late."
-          result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(3)._2 shouldBe "Yes"
+          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(4)._1 shouldBe "Evidence to support this appeal"
+          result(4)._2 shouldBe "file.docx"
+          result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(5)._1 shouldBe "Reason for appealing after 30 days"
+          result(5)._2 shouldBe "This is the reason why my appeal was late."
+          result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
       }
     }
@@ -1211,7 +1251,8 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.journeyId -> "4321"
+          SessionKeys.journeyId -> "4321",
+          SessionKeys.isUploadEvidence -> "yes"
         ))
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForOtherJourney, messages))
         result.head._1 shouldBe "Reason for missing the VAT deadline"
@@ -1223,9 +1264,12 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
         result(2)._1 shouldBe "Why was the return submitted late?"
         result(2)._2 shouldBe "This is a reason."
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
-        result(3)._1 shouldBe "Evidence to support this appeal"
-        result(3)._2 shouldBe "file1.txt"
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+        result(3)._2 shouldBe "Yes"
+        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(4)._1 shouldBe "Evidence to support this appeal"
+        result(4)._2 shouldBe "file1.txt"
+        result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
     }
 

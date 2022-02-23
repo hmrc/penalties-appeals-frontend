@@ -52,7 +52,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
     UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
     FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode)),
-    UploadEvidenceQuestionPage -> ((answer, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
+    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
@@ -174,7 +174,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode) :Call = {
     isUploadEvidence match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
-      case Some(ans) if ans.equalsIgnoreCase("no") => routes.CheckYourAnswersController.onPageLoad()
+      case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
       case _ =>
         logger.debug("[Navigation][routeForUploadEvidenceQuestion]: unable to get answer - reloading 'UploadEvidenceQuestionPage'")
         routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)

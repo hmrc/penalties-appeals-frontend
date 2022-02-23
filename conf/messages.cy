@@ -447,6 +447,7 @@ agent.checkYourAnswers.other.unableToManageAccount = When did your client become
 checkYourAnswers.other.statementOfLateness = Why was the return submitted late?
 checkYourAnswers.other.lpp.statementOfLateness = Why was the VAT bill paid late?
 checkYourAnswers.other.fileEvidence = Evidence to support this appeal
+checkYourAnswers.other.uploadEvidenceQuestion = Do you want to upload evidence to support your appeal?
 checkYourAnswers.other.noFileUpload = Not provided
 
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn = Before the deadline, who planned to submit the return?

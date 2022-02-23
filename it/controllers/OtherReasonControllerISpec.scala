@@ -1065,7 +1065,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /upload-evidence-question" should{
-    "return 303 (SEE_OTHER), navigate to upload evidence question and add the session key to the session - when the user answers no" in {
+    "return 303 (SEE_OTHER), navigate to check your answer page when the user answers no" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
         (SessionKeys.penaltyId, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
@@ -1084,7 +1084,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.isUploadEvidence).get shouldBe "no"
     }
 
