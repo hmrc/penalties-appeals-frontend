@@ -343,6 +343,13 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
       }
 
+      s"called with $UploadEvidenceQuestionPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
+      }
+
       s"called with $EvidencePage" in new Setup {
         val result: Call = mainNavigator.nextPage(EvidencePage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
@@ -519,12 +526,9 @@ class NavigationSpec extends SpecBase {
       }
 
       s"called with $UploadEvidenceQuestionPage" in new Setup {
-        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys
-          .withSession(
-            SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.isUploadEvidence -> "yes"
-          )))
-        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
       }
     }
   }
