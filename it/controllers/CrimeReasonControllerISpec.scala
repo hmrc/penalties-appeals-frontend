@@ -253,7 +253,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
-        (SessionKeys.journeyId, "1234"),
+        (SessionKeys.journeyId, "1234")
       ).withJsonBody(
         Json.parse(
           """
@@ -276,7 +276,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(31).toString),
-        (SessionKeys.journeyId, "1234"),
+        (SessionKeys.journeyId, "1234")
       ).withJsonBody(
         Json.parse(
           """

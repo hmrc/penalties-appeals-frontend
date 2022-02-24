@@ -49,7 +49,7 @@ module.exports = function (config) {
             },
             output: {
                 path: path.join(__dirname, './build'),
-                filename: 'application.min.js',
+                filename: 'application.min.js'
             },
             webjars: {
                 path: path.join(__dirname, '../../target/web/web-modules/main/webjars')
