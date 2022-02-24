@@ -1151,16 +1151,20 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
         "show the obligation variation of the page" in {
           val fakeRequestForAppealingTheObligation = UserRequest(vrn)(fakeRequest.withSession(
             SessionKeys.isObligationAppeal -> "true",
-            SessionKeys.otherRelevantInformation -> "This is some relevant information"
+            SessionKeys.otherRelevantInformation -> "This is some relevant information",
+            SessionKeys.isUploadEvidence -> "yes"
           ))
 
           val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(fakeRequestForAppealingTheObligation, implicitly)
           result.head._1 shouldBe "Tell us why you want to appeal the penalty"
           result.head._2 shouldBe "This is some relevant information"
           result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
-          result(1)._1 shouldBe "Evidence to support this appeal"
-          result(1)._2 shouldBe "file.txt"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+          result(1)._2 shouldBe "Yes"
+          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(2)._1 shouldBe "Evidence to support this appeal"
+          result(2)._2 shouldBe "file.txt"
+          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         }
       }
 
@@ -1188,31 +1192,39 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
       "return a Seq[String, String, String] of answers" in {
         val fakeRequestWithObligationKeysPresent = fakeRequest
           .withSession(
-            SessionKeys.otherRelevantInformation -> "Some Information"
+            SessionKeys.otherRelevantInformation -> "Some Information",
+            SessionKeys.isUploadEvidence -> "no"
           )
         val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "Some Information"
         result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
-        result(1)._1 shouldBe "Evidence to support this appeal"
-        result(1)._2 shouldBe "Not provided"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+        result(1)._2 shouldBe "No"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(2)._1 shouldBe "Evidence to support this appeal"
+        result(2)._2 shouldBe "Not provided"
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
     }
     "when evidence file is uploaded" should{
       "return a Seq[String, String, String] of answers" in {
         val fakeRequestWithObligationKeysPresent = fakeRequest
           .withSession(
-            SessionKeys.otherRelevantInformation -> "Some Information"
+            SessionKeys.otherRelevantInformation -> "Some Information",
+            SessionKeys.isUploadEvidence -> "yes"
           )
         val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(
           Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "Some Information"
         result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
-        result(1)._1 shouldBe "Evidence to support this appeal"
-        result(1)._2 shouldBe "some-file-name.txt"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+        result(1)._2 shouldBe "Yes"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(2)._1 shouldBe "Evidence to support this appeal"
+        result(2)._2 shouldBe "some-file-name.txt"
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
     }
   }
@@ -1278,15 +1290,19 @@ class SessionAnswersHelperSpec extends SpecBase with ScalaFutures{
         val fakeRequestForAppealingTheObligation : UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.journeyId -> "4321",
           SessionKeys.isObligationAppeal -> "true",
-          SessionKeys.otherRelevantInformation -> "This is some relevant information"
+          SessionKeys.otherRelevantInformation -> "This is some relevant information",
+          SessionKeys.isUploadEvidence -> "yes"
         ))
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "This is some relevant information"
         result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
-        result(1)._1 shouldBe "Evidence to support this appeal"
-        result(1)._2 shouldBe "file1.txt"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
+        result(1)._2 shouldBe "Yes"
+        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(2)._1 shouldBe "Evidence to support this appeal"
+        result(2)._2 shouldBe "file1.txt"
+        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
       }
     }
 

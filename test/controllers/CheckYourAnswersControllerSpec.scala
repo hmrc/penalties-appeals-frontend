@@ -123,7 +123,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     .withSession(
       SessionKeys.isObligationAppeal -> "true",
       SessionKeys.otherRelevantInformation -> "This is some relevant information",
-      SessionKeys.journeyId -> "4321"
+      SessionKeys.journeyId -> "4321",
+      SessionKeys.isUploadEvidence -> "no"
     )
   )
 

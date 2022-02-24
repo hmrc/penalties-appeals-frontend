@@ -151,7 +151,7 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
           (messages("checkYourAnswers.other.uploadEvidenceQuestion"),
             messages(s"common.radioOption.${request.session.get(SessionKeys.isUploadEvidence).get}"),
             controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
-          (messages("checkYourAnswers.other.fileEvidence"),
+            (messages("checkYourAnswers.other.fileEvidence"),
             if(fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
             controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url)
         )
@@ -261,6 +261,9 @@ class SessionAnswersHelper @Inject() (uploadJourneyRepository: UploadJourneyRepo
       (messages("checkYourAnswers.obligation.whyYouWantToAppealPenalty"),
         request.session.get(SessionKeys.otherRelevantInformation).get,
         controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url),
+      (messages("checkYourAnswers.other.uploadEvidenceQuestion"),
+        messages(s"common.radioOption.${request.session.get(SessionKeys.isUploadEvidence).get}"),
+        controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
       (messages("checkYourAnswers.obligation.fileEvidence"),
         if(fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
         controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
