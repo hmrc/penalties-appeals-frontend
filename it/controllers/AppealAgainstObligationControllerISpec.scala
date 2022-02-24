@@ -85,7 +85,7 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmit(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+      request.header.headers("Location") shouldBe routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.otherRelevantInformation).get shouldBe "Other Reason"
     }
 

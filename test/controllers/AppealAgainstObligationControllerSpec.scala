@@ -101,7 +101,7 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
               |}
               |""".stripMargin))))
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+        redirectLocation(result).get shouldBe routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
         await(result).session.get(SessionKeys.otherRelevantInformation).get shouldBe "This is some information"
       }
 

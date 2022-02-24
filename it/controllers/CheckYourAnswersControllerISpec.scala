@@ -226,13 +226,17 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.journeyId -> "1234"
+          SessionKeys.journeyId -> "1234",
+          SessionKeys.isUploadEvidence -> "no"
+
         )
         val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody = Jsoup.parse(contentAsString(request))
-        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Not provided"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "No"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "Not provided"
       }
 
       "file upload - no late appeal" in {
@@ -247,7 +251,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason"
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
+          SessionKeys.isUploadEvidence -> "yes"
         )
         val callBackModel: UploadJourney = UploadJourney(
           reference = "ref1",
@@ -265,8 +270,10 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
-        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Yes"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
       }
 
       "multiple file upload - no late appeal" in {
@@ -281,7 +288,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason"
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
+          SessionKeys.isUploadEvidence -> "yes"
         )
         val callBackModel: UploadJourney = UploadJourney(
           reference = "ref1",
@@ -317,8 +325,10 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
-        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file1.txt, file2.txt"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Yes"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "file1.txt, file2.txt"
       }
 
       "no file upload - late appeal" in {
@@ -334,15 +344,18 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
           SessionKeys.lateAppealReason -> "This is why the appeal is late.",
-          SessionKeys.journeyId -> "1234"
+          SessionKeys.journeyId -> "1234",
+          SessionKeys.isUploadEvidence -> "no"
         )
         val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody = Jsoup.parse(contentAsString(request))
-        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Not provided"
-        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Reason for appealing after 30 days"
-        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "No"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "Not provided"
+        parsedBody.select("#main-content dl > div:nth-child(6) > dt").text() shouldBe "Reason for appealing after 30 days"
+        parsedBody.select("#main-content dl > div:nth-child(6) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
       }
 
       "file upload - late appeal" in {
@@ -358,7 +371,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.lateAppealReason -> "This is why the appeal is late."
+          SessionKeys.lateAppealReason -> "This is why the appeal is late.",
+          SessionKeys.isUploadEvidence -> "yes"
         )
         val callBackModel: UploadJourney = UploadJourney(
           reference = "ref1",
@@ -376,10 +390,12 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         val request: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
-        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Evidence to support this appeal"
-        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
-        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Reason for appealing after 30 days"
-        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
+        parsedBody.select("#main-content dl > div:nth-child(4) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
+        parsedBody.select("#main-content dl > div:nth-child(4) > dd.govuk-summary-list__value").text() shouldBe "Yes"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Evidence to support this appeal"
+        parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
+        parsedBody.select("#main-content dl > div:nth-child(6) > dt").text() shouldBe "Reason for appealing after 30 days"
+        parsedBody.select("#main-content dl > div:nth-child(6) > dd.govuk-summary-list__value").text() shouldBe "This is why the appeal is late."
       }
     }
 
@@ -434,7 +450,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.isObligationAppeal -> "true",
         SessionKeys.otherRelevantInformation -> "Lorem ipsum",
-        SessionKeys.journeyId -> "1234"
+        SessionKeys.journeyId -> "1234",
+        SessionKeys.isUploadEvidence -> "no"
       )
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
@@ -453,7 +470,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.isObligationAppeal -> "true",
-        SessionKeys.otherRelevantInformation -> "Lorem ipsum"
+        SessionKeys.otherRelevantInformation -> "Lorem ipsum",
+        SessionKeys.isUploadEvidence -> "yes"
       )
       val callBackModel: UploadJourney = UploadJourney(
         reference = "ref1",
@@ -473,8 +491,10 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       val parsedBody = Jsoup.parse(contentAsString(request))
       parsedBody.select("#main-content dl > div:nth-child(1) > dt").text() shouldBe "Tell us why you want to appeal the penalty"
       parsedBody.select("#main-content dl > div:nth-child(1) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
-      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "Evidence to support this appeal"
-      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
+      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
+      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "Yes"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Evidence to support this appeal"
+      parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - agent" in {

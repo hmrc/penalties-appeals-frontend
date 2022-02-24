@@ -51,7 +51,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     OtherRelevantInformationPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
     UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
-    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode))
+    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode)),
+    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
@@ -67,19 +68,20 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidHospitalStayBeginPage -> ((_, _, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode)),
     DidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidBecomeUnablePage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode)),
-    WhyWasReturnSubmittedLatePage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
+    WhyWasReturnSubmittedLatePage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
     EvidencePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request, _) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, NormalMode)),
     WhatCausedYouToMissTheDeadlinePage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     ReasonableExcuseSelectionPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     AppealStartPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
-    OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode)),
+    OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
     CancelVATRegistrationPage -> ((answer, _, extraData) => routingForCancelVATRegistrationPage(answer, extraData)),
     OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
     UploadAnotherDocumentPage -> ((_,_,_) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
-    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode))
+    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode)),
+    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, extraData: Option[Map[String, String]] = None)
@@ -166,6 +168,16 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case _ =>
         logger.debug("[Navigation][routeForUploadList]: unable to get answer - reloading 'UploadListPage'")
         routes.OtherReasonController.onPageLoadForUploadComplete(mode)
+    }
+  }
+
+  def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode) :Call = {
+    isUploadEvidence match {
+      case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
+      case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
+      case _ =>
+        logger.debug("[Navigation][routeForUploadEvidenceQuestion]: unable to get answer - reloading 'UploadEvidenceQuestionPage'")
+        routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)
     }
   }
 }

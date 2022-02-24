@@ -21,6 +21,7 @@ import models.NormalMode
 import models.upload._
 import org.jsoup.Jsoup
 import org.mongodb.scala.Document
+import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Cookie, Result}
 import play.api.test.FakeRequest
@@ -363,7 +364,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whyReturnSubmittedLate).get shouldBe "Other Reason"
     }
 
@@ -1023,6 +1024,151 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       AuthStub.unauthorised()
       val request = await(buildClientForRequestToApp(uri = "/uploaded-documents").post(""))
       request.status shouldBe SEE_OTHER
+    }
+  }
+
+  "GET /upload-evidence-question" should {
+    "return 200 (OK) when the user is authorised" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      )
+      val request = await(controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe Status.OK
+    }
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question")
+      val request = await(controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/upload-evidence-question").get())
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
+  "POST /upload-evidence-question" should{
+    "return 303 (SEE_OTHER), navigate to check your answer page when the user answers no" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "value": "no"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.isUploadEvidence).get shouldBe "no"
+    }
+
+    "return 303 (SEE_OTHER), navigate to upload evidence question and add the session key to the session - when the user answers yes" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.journeyId, "1234")
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "value": "yes"
+            |}
+            |""".stripMargin)
+      )
+      val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.isUploadEvidence).get shouldBe "yes"
+    }
+
+    "return 400 (BAD_REQUEST)" when {
+      "the value is invalid" in {
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
+        ).withJsonBody(
+          Json.parse(
+            """
+              |{
+              | "value": "fake_value"
+              |}
+              |""".stripMargin)
+        )
+        val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "no body is submitted" in {
+        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.journeyId, "1234")
+        )
+        val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question")
+      val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question").withSession(
+        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+      )
+      val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/upload-evidence-question").post(""))
+      request.status shouldBe Status.SEE_OTHER
     }
   }
 }

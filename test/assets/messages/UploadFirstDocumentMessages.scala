@@ -32,8 +32,6 @@ object UploadFirstDocumentMessages {
 
   val p2LPPAppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT."
 
-  val p3 = "We will still review your appeal if you do not upload evidence."
-
   val p4 = "You can upload up to 5 files."
 
   val p5 = "Each file must be smaller than 6MB."

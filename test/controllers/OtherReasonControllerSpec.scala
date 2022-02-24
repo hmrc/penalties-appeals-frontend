@@ -50,6 +50,7 @@ class OtherReasonControllerSpec extends SpecBase {
   val uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage = injector.instanceOf[UploadTakingLongerThanExpectedPage]
   val mockUpscanService: UpscanService = mock(classOf[UpscanService])
   val uploadAnotherDocumentPage: UploadAnotherDocumentPage = injector.instanceOf[UploadAnotherDocumentPage]
+  val uploadEvidenceQuestionPage: UploadEvidenceQuestionPage = injector.instanceOf[UploadEvidenceQuestionPage]
   val uploadListPage: UploadListPage = injector.instanceOf[UploadListPage]
   val mockFeatureSwitching: FeatureSwitching = mock(classOf[FeatureSwitching])
   val evidenceFileUploadsHelper: EvidenceFileUploadsHelper = injector.instanceOf[EvidenceFileUploadsHelper]
@@ -74,6 +75,7 @@ class OtherReasonControllerSpec extends SpecBase {
       uploadTakingLongerThanExpectedPage,
       uploadAnotherDocumentPage,
       uploadListPage,
+      uploadEvidenceQuestionPage,
       mainNavigator,
       mockUpscanService,
       mockFeatureSwitching,
@@ -272,7 +274,7 @@ class OtherReasonControllerSpec extends SpecBase {
                 |}
                 |""".stripMargin))))
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
           await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
         }
 
@@ -634,6 +636,120 @@ class OtherReasonControllerSpec extends SpecBase {
             val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequest)
             status(result) shouldBe SEE_OTHER
           }
+        }
+      }
+    }
+
+    "onPageLoadForUploadEvidenceQuestion" should{
+      "the user is authorised" must {
+
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+
+        "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.isUploadEvidence -> "no")))
+          status(result) shouldBe OK
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
+          documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
+        }
+
+        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForUploadEvidenceQuestion" should {
+
+      "user submits the form" when {
+        "the validation is performed against possible values - redirect on success and set the session key value" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "yes"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+            await(result).session.get(SessionKeys.isUploadEvidence).get shouldBe "yes"
+          }
+
+        "the validation is performed against possible values - value does not appear in options list" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": "this_is_fake"
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe BAD_REQUEST
+          }
+
+        "the validation is performed against an empty value - value is an empty string" in
+          new Setup(AuthTestModels.successfulAuthResult) {
+            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  |   "value": ""
+                  |}
+                  |""".stripMargin
+              )
+            )))
+            status(result) shouldBe BAD_REQUEST
+          }
+      }
+
+      "return 500" when {
+        "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest.withJsonBody(
+            Json.parse(
+              """
+                |{
+                |   "value": "no"
+                |}
+                |""".stripMargin
+            )
+          ))
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
         }
       }
     }

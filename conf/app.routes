@@ -101,6 +101,10 @@ GET        /uploaded-documents                                     controllers.O
 GET        /uploaded-documents/change                              controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = CheckMode)
 POST       /uploaded-documents                                     controllers.OtherReasonController.onSubmitForUploadComplete(mode: Mode = NormalMode)
 POST       /uploaded-documents/change                              controllers.OtherReasonController.onSubmitForUploadComplete(mode: Mode = CheckMode)
+GET        /upload-evidence-question                                controllers.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode: Mode = NormalMode)
+GET        /upload-evidence-question/change                         controllers.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode: Mode = CheckMode)
+POST       /upload-evidence-question                               controllers.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode: Mode = NormalMode)
+POST       /upload-evidence-question/change                        controllers.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode: Mode = CheckMode)
 
 # Who Planned to Submit VAT Return
 GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)

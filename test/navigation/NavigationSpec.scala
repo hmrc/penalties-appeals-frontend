@@ -271,6 +271,10 @@ class NavigationSpec extends SpecBase {
         ))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+      s"called with $UploadEvidenceQuestionPage" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+      }
     }
 
     "in NormalMode" when {
@@ -336,7 +340,14 @@ class NavigationSpec extends SpecBase {
 
       s"called with $WhyWasReturnSubmittedLatePage" in new Setup {
         val result: Call = mainNavigator.nextPage(WhyWasReturnSubmittedLatePage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
-        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
+      }
+
+      s"called with $UploadEvidenceQuestionPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
       }
 
       s"called with $EvidencePage" in new Setup {
@@ -513,6 +524,12 @@ class NavigationSpec extends SpecBase {
         ))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+
+      s"called with $UploadEvidenceQuestionPage" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+      }
     }
   }
 
@@ -653,6 +670,44 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"),Some(Map("multiplePenalties" -> "false")))
         result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
         reset(mockDateTimeHelper)
+      }
+    }
+  }
+
+  "routeForUploadEvidenceQuestion" should {
+    "redirect to Upload Evidence page in normal mode" when {
+      "user answers yes for Upload Evidence Question " in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, Some("yes"))(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+      }
+
+      "redirect to CYA page in Normal Mode" when {
+        "user answers no for Upload Evidence Question" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, NormalMode, Some("no"))(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
+
+    "redirect to the Upload Evidence page in Check Mode" when {
+      "user answers yes for Upload Evidence Question" in new Setup {
+        val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, CheckMode, Some("yes"))(
+          fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+        )
+        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        }
+      }
+
+      "redirect to the CYA page in Check Mode" when {
+        "user answers no for Upload Evidence Question" in new Setup {
+          val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, CheckMode, Some("no"))(
+            fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+          )
+          result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+        }
       }
     }
   }

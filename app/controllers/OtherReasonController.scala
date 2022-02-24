@@ -21,9 +21,10 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
-import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadListForm}
+import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadEvidenceQuestionForm, UploadListForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
 import models.pages._
+import models.pages.UploadEvidenceQuestionPage
 import models.upload.{UploadJourney, UploadStatusEnum}
 import models.upload.UploadStatusEnum.READY
 import models.{CheckMode, Mode, NormalMode}
@@ -54,6 +55,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage,
                                       uploadAnotherDocumentPage: UploadAnotherDocumentPage,
                                       uploadListPage: UploadListPage,
+                                      uploadEvidenceQuestionPage: UploadEvidenceQuestionPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
                                       featureSwitching: FeatureSwitching,
@@ -335,5 +337,33 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           }
         })
     }
+  }
+
+  def onPageLoadForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
+        UploadEvidenceQuestionForm.uploadEvidenceQuestionForm,
+        SessionKeys.isUploadEvidence
+      )
+      val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
+      val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
+      Ok(uploadEvidenceQuestionPage(formProvider, radioOptionsToRender, postAction))
+    }
+  }
+
+  def onSubmitForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {implicit request =>
+    UploadEvidenceQuestionForm.uploadEvidenceQuestionForm.bindFromRequest().fold(
+      formWithErrors => {
+        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
+        val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
+        BadRequest(uploadEvidenceQuestionPage(formWithErrors, radioOptionsToRender, postAction))
+      },
+      isUploadEvidenceQuestion => {
+        logger.debug(
+          s"[OtherReasonController][onSubmitForUploadEvidenceQuestion] - Adding '$isUploadEvidenceQuestion' to session under key: ${SessionKeys.isUploadEvidence}")
+        Redirect(navigation.nextPage(UploadEvidenceQuestionPage, mode, Some(isUploadEvidenceQuestion)))
+          .addingToSession((SessionKeys.isUploadEvidence, isUploadEvidenceQuestion))
+      }
+    )
   }
 }
