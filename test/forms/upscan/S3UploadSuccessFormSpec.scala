@@ -23,7 +23,7 @@ class S3UploadSuccessFormSpec extends FormBehaviours {
     "bind when all fields are present" in {
       val formFields = Map(
         "key" -> "file1",
-        "bucket" -> "bucket1",
+        "bucket" -> "bucket1"
       )
       val result = S3UploadSuccessForm.upscanUploadSuccessForm.bind(formFields)
       result.hasErrors shouldBe false
