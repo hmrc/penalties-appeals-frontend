@@ -15,6 +15,12 @@ function getStatusResponse() {
     };
 }
 
+function getStatusResponseWaiting() {
+    return {
+        status: 'WAITING'
+    };
+}
+
 function getProvisionResponse() {
     return {
         reference: '123',
@@ -36,12 +42,13 @@ describe('Multi File Upload component', () => {
         beforeEach(() => {
             document.body.insertAdjacentHTML('afterbegin', `
         <form class="multi-file-upload"
-          data-multi-file-upload-document-uploaded="Document {fileName} has been uploaded"
-          data-multi-file-upload-document-deleted="Document {fileName} has been deleted"
+          data-multi-file-upload-file-uploading="Uploading {fileNumber} {fileName}"
+          data-multi-file-upload-file-uploaded="{fileNumber} {fileName} has been uploaded"
+          data-multi-file-upload-file-removed="{fileNumber} {fileName} has been removed"
           >
           <ul class="multi-file-upload__item-list"></ul>
 
-          <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">Add another document</button>
+          <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">Add another file</button>
 
           <p class="govuk-body multi-file-upload__form-status hidden" aria-hidden="true">
             Still transferring...
@@ -54,7 +61,7 @@ describe('Multi File Upload component', () => {
           <script type="text/x-template" id="multi-file-upload-item-tpl">
             <li class="multi-file-upload__item">
               <div class="govuk-form-group">
-                <label class="govuk-label" for="file-{fileIndex}">Document <span class="multi-file-upload__number">{fileNumber}</span></label>
+                <label class="govuk-label" for="file-{fileIndex}">File <span class="multi-file-upload__number">{fileNumber}</span></label>
                 <div class="multi-file-upload__item-content">
                   <div class="multi-file-upload__file-container">
                     <input class="multi-file-upload__file govuk-file-upload" type="file" id="file-{fileIndex}">
@@ -65,14 +72,14 @@ describe('Multi File Upload component', () => {
                   <div class="multi-file-upload__meta-container">
                     <div class="multi-file-upload__status">
                       <span class="multi-file-upload__progress">
-                        <span class="multi-file-upload__progress-bar"></span>
+                        <span class="multi-file-upload__progress-bar" role="status"></span>
                       </span>
                       <span class="multi-file-upload__tag govuk-tag">Uploaded</span>
                     </div>
 
                     <button type="button" class="multi-file-upload__remove-item govuk-link">
                       Remove
-                      <span class="govuk-visually-hidden">document <span class="multi-file-upload__number">{fileNumber}</span></span>
+                      <span class="govuk-visually-hidden">File <span class="multi-file-upload__number">{fileNumber}</span></span>
                     </button>
                     <span class="multi-file-upload__removing">Removing...</span>
                   </div>
@@ -180,38 +187,49 @@ describe('Multi File Upload component', () => {
         });
 
         describe('And component is initialised', () => {
-            beforeEach(() => {
+            beforeEach((done) => {
                 instance = new MultiFileUpload(container);
+                spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
+                    const response = getProvisionResponse();
+                    const promise = Promise.resolve(response);
+
+                    promise.then(() => {
+                        instance.handleProvisionUploadCompleted(file, response);
+                        done();
+                    });
+
+                    return promise;
+                });
+
+                spyOn(instance, 'uploadFile').and.callThrough();
+                spyOn(instance, 'setUploadingMessage').and.callThrough();
+                spyOn(instance, 'requestUploadStatus').and.callFake((fileRef) => {
+                    instance.handleRequestUploadStatusCompleted(fileRef, getStatusResponseWaiting());
+                });
                 spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                 instance.init();
 
                 item = container.querySelector('.multi-file-upload__item');
                 input = container.querySelector('.multi-file-upload__file');
+                done();
             });
 
             describe('When user selects a file', () => {
-                beforeEach((done) => {
-                    spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
-                        const response = getProvisionResponse();
-                        const promise = Promise.resolve(response);
-
-                        promise.then(() => {
-                            instance.handleProvisionUploadCompleted(file, response);
-                            done();
-                        });
-
-                        return promise;
-                    });
-
-                    spyOn(instance, 'uploadFile');
+                beforeEach(() => {
 
                     input.files = createFileList([new File([''], '/path/to/test.txt')]);
                     input.dispatchEvent(new Event('change'));
-                    done();
+
                 });
 
                 it('Then item should be in "uploading" state', (done) => {
                     expect(item.classList.contains('multi-file-upload__item--uploading')).toEqual(true);
+                    done();
+                })
+
+                it('Then the progress bar should have the text "Uploading file [file number] [filename]"', (done) => {
+                    expect(instance.setUploadingMessage).toHaveBeenCalled();
+                    expect(item.querySelector(".multi-file-upload__progress-bar").textContent).toEqual('Uploading file 1 test.txt');
                     done();
                 });
 
@@ -272,12 +290,11 @@ describe('Multi File Upload component', () => {
                     done();
                 });
 
-                //TODO: add notification in JS
-                // it('Then "file uploaded" message is placed in aria live region', (done) => {
-                //     const notifications = container.querySelector('.multi-file-upload__notifications');
-                //     expect(notifications.textContent.trim()).toEqual("Document test.txt has been uploaded");
-                //     done();
-                // });
+                it('Then "file uploaded" message is placed in aria live region', (done) => {
+                    const notifications = container.querySelector('.multi-file-upload__notifications');
+                    expect(notifications.textContent.trim()).toEqual("File 1 test.txt has been uploaded");
+                    done();
+                });
             });
         });
 
@@ -372,6 +389,12 @@ describe('Multi File Upload component', () => {
 
                     it('Then item should be removed', () => {
                         expect(item.parentNode).toEqual(null);
+                    });
+
+                    it('Then "file removed" message is placed in aria live region', (done) => {
+                        const notifications = container.querySelector('.multi-file-upload__notifications');
+                        expect(notifications.textContent.trim()).toEqual("File 1 test.txt has been removed");
+                        done();
                     });
 
                     it('Then new item should be added', () => {

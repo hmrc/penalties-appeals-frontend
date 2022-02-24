@@ -62,7 +62,10 @@ export class MultiFileUpload {
 
         this.messages = {
             genericError: form.dataset.multiFileUploadErrorGeneric,
-            stillTransferring: form.dataset.multiFileUploadStillTransferring
+            stillTransferring: form.dataset.multiFileUploadStillTransferring,
+            fileUploaded: form.dataset.multiFileUploadFileUploaded,
+            fileUploading: form.dataset.multiFileUploadFileUploading,
+            fileRemoved: form.dataset.multiFileUploadFileRemoved
         }
 
         this.cacheTemplates();
@@ -216,6 +219,12 @@ export class MultiFileUpload {
     requestRemoveFileCompleted(file, isInit) {
         if(!isInit) {
             const item = file.closest(`.${this.classes.item}`);
+            if(this.getFileName(file)) {
+                this.addNotification(this.parseTemplate(this.messages.fileRemoved, {
+                    fileNumber: item.querySelector(".govuk-label").textContent,
+                    fileName: this.getFileName(file)
+                }));
+            }
             this.removeItem(item);
         }
     }
@@ -340,6 +349,12 @@ export class MultiFileUpload {
         return formData;
     }
 
+    setUploadingMessage(item, file) {
+        item.querySelector(`.${this.classes.progressBar}`).textContent = this.parseTemplate(this.messages.fileUploading, {
+            fileNumber: item.querySelector(".govuk-label").textContent.toLowerCase(),
+            fileName: this.getFileName(file)
+        });
+    }
     /** F24 */
     uploadFile(file) {
         const xhr = new XMLHttpRequest();
@@ -347,7 +362,7 @@ export class MultiFileUpload {
         const data = this.uploadData[file.id];
         const formData = this.prepareFormData(file, data);
         const item = this.getItemFromFile(file);
-
+        this.setUploadingMessage(item, file);
         xhr.upload.addEventListener('progress', this.handleUploadFileProgress.bind(this, item));
         xhr.addEventListener('load', this.handleUploadFileCompleted.bind(this, fileRef));
         xhr.addEventListener('error', this.handleUploadFileError.bind(this, fileRef));
@@ -557,7 +572,10 @@ export class MultiFileUpload {
     /** F42 */
     handleFileStatusSuccessful(file) {
         const item = this.getItemFromFile(file);
-
+        this.addNotification(this.parseTemplate(this.messages.fileUploaded, {
+            fileNumber: item.querySelector(".govuk-label").textContent,
+            fileName: this.getFileName(file)
+        }));
         this.setItemState(item, status.Uploaded);
         this.updateButtonVisibility();
         this.updateFormStatusVisibility();
