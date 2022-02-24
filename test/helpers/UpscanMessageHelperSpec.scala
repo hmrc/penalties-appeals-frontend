@@ -17,10 +17,7 @@
 package helpers
 
 import base.SpecBase
-import config.featureSwitches.FeatureSwitching
 import models.upload.FailureReasonEnum
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{mock, reset, when}
 
 class UpscanMessageHelperSpec extends SpecBase {
 

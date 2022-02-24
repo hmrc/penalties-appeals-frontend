@@ -28,7 +28,7 @@ import views.html.YouCannotAppealPage
 
 import scala.concurrent.Future
 
-class YouCannotAppealControllerSpec extends SpecBase{
+class YouCannotAppealControllerSpec extends SpecBase {
   val youCannotAppealPage:YouCannotAppealPage = injector.instanceOf[YouCannotAppealPage]
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)

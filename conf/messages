@@ -563,7 +563,13 @@ duplicateAppeal.link = View your penalties and appeals
 agent.duplicateAppeal.link = View your client’s penalties and appeals
 
 # Error scenarios
-# --------------- -------------------------------------------
+# -----------------------------------------------------------
 error.prefix = Error:
 error.summary.title = There is a problem
 
+# Timeout page
+# -----------------------------------------------------------
+timeout.title = For your security, we signed you out
+timeout.heading = For your security, we signed you out
+timeout.p1 = We did not save your answers.
+timeout.signIn = Sign in
