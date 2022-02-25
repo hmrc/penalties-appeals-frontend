@@ -349,7 +349,6 @@ upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, M
 upscan.fileTooLarge = The selected file must be smaller than 6MB. Remove the file and try again.
 upscan.fileEmpty = The selected file is empty. Remove the file and try again.
 upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
-upscan.passwordProtected = The selected file is password protected. Remove the file and try again.
 upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
 upscan.stillUploading = The selected file has not finished uploading.
 upscan.fileNotSpecified = Select a file.
@@ -363,7 +362,6 @@ upscan.noJs.fileHasVirus = The selected file contains a virus. Choose another fi
 upscan.noJs.unableToUpload = The selected file could not be uploaded. Choose another file.
 upscan.noJs.stillUploading = The selected file has not finished uploading.
 upscan.noJs.fileNotSpecified = Select a file.
-
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------
@@ -562,7 +560,13 @@ duplicateAppeal.link = View your penalties and appeals
 agent.duplicateAppeal.link = View your client’s penalties and appeals
 
 # Error scenarios
-# --------------- -------------------------------------------
+# -----------------------------------------------------------
 error.prefix = Error:
 error.summary.title = There is a problem
 
+# Timeout page
+# -----------------------------------------------------------
+timeout.title = For your security, we signed you out
+timeout.heading = For your security, we signed you out
+timeout.p1 = We did not save your answers.
+timeout.signIn = Sign in

@@ -171,3 +171,6 @@ GET           /upscan/duplicate-files/:journeyId                        controll
 GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()
 GET        /problem-with-service                                controllers.ProblemWithServiceController.onPageLoad()
 GET        /duplicate-appeal                                   controllers.DuplicateAppealController.onPageLoad()
+
+# Timeout pages
+GET        /timeout                                            controllers.TimeoutController.onPageLoad()

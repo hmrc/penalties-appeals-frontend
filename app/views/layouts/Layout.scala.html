@@ -38,6 +38,7 @@
     formHasErrors: Boolean = false,
     backLinkEnabled: Boolean = true,
     customJavaScript: Option[String] = None,
+    showSignOut: Boolean = true,
     formErrors: Seq[FormError] = Seq.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
@@ -49,13 +50,16 @@
 
 @headBlock = {
     @head(
-        Some(hmrcTimeoutDialog(TimeoutDialog(
-            timeout = Some(appConfig.timeoutPeriod),
-            countdown = Some(appConfig.timeoutCountdown),
-            signOutUrl = Some(routes.SignOutController.signOut().url),
-            keepAliveUrl = Some("#"),
-            signOutButtonText = Some(messages("base.signOut"))
-        )))
+        if(showSignOut) {
+            Some(hmrcTimeoutDialog(TimeoutDialog(
+                timeout = Some(appConfig.timeoutPeriod),
+                countdown = Some(appConfig.timeoutCountdown),
+                signOutUrl = Some(routes.SignOutController.signOut().url),
+                timeoutUrl = Some(routes.TimeoutController.onPageLoad().url),
+                keepAliveUrl = Some("#"),
+                signOutButtonText = Some(messages("base.signOut"))
+            )))
+        } else None
     )
     @hmrcTrackingConsentSnippet()
 
@@ -74,9 +78,9 @@
 }
 
 @govukLayout(
-    pageTitle = Some(messages("common.pageTitle", pageTitle, "Appeal a VAT penalty")),
+    pageTitle = Some(messages("common.pageTitle", pageTitle, messages("service.name"))),
     headBlock = Some(headBlock),
-    headerBlock = Some(header()),
+    headerBlock = Some(header(showSignOut)),
     scriptsBlock = Some(scripts),
     beforeContentBlock = Some(beforeContentBlock),
     footerBlock = Some(hmrcStandardFooter()),
