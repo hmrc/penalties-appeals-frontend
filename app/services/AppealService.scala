@@ -93,26 +93,27 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val agentReferenceNo = userRequest.arn
     val penaltyId = userRequest.session.get(SessionKeys.penaltyId).get
     val correlationId: String = idGenerator.generateUUID
+    val userHasUploadedFiles = userRequest.session.get(SessionKeys.isUploadEvidence).contains("yes")
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
       readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
-      amountOfFileUploads = readyOrDuplicateFileUploads.size
+      uploads = if(userHasUploadedFiles) readyOrDuplicateFileUploads else None
       modelFromRequest: AppealSubmission = AppealSubmission
-        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, amountOfFileUploads, agentReferenceNo, readyOrDuplicateFileUploads)
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, agentReferenceNo, uploads)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId, correlationId)
     } yield {
       response.status match {
         case OK =>
           if (isLPP) {
             if (appealType.contains(PenaltyTypeEnum.Late_Payment.toString)) {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, correlationId, readyOrDuplicateFileUploads))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, correlationId, uploads))
             } else {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, correlationId, readyOrDuplicateFileUploads))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, correlationId, uploads))
             }
           } else {
-            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, correlationId, readyOrDuplicateFileUploads))
+            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, correlationId, uploads))
           }
-          sendAuditIfDuplicatesExist(readyOrDuplicateFileUploads)
+          sendAuditIfDuplicatesExist(uploads)
           logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
           Right((): Unit)
         case _ =>

@@ -191,11 +191,55 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.hasConfirmedDeclaration -> "true",
         SessionKeys.whyReturnSubmittedLate -> "this is information",
         SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-        SessionKeys.journeyId -> "1234"
+        SessionKeys.journeyId -> "1234",
+        SessionKeys.isUploadEvidence -> "yes"
       ))
       val result = await(appealService.submitAppeal("other")(userRequest, implicitly, implicitly))
       findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyDuplicateFilesSubmitted")) shouldBe true
       findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.find(_.getBodyAsString.contains("PenaltyAppealSubmitted")).head.getBodyAsString.contains("uploadedFiles") shouldBe true
+
+      result shouldBe Right((): Unit)
+    }
+
+    "return true when the connector call succeeds for other - user selects no to uploading files (some files already uploaded)" in {
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+      val uploadAsReady: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("/url"),
+        uploadDetails = Some(
+          UploadDetails(
+            fileName = "file1.txt",
+            fileMimeType = "text/plain",
+            uploadTimestamp = sampleDate,
+            checksum = "123456789",
+            size = 100
+          )
+        ),
+        failureDetails = None,
+        lastUpdated = LocalDateTime.now()
+      )
+      successfulAppealSubmission(isLPP = false, "1234")
+      await(repository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
+      val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
+        SessionKeys.penaltyId -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whyReturnSubmittedLate -> "this is information",
+        SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+        SessionKeys.journeyId -> "1234",
+        SessionKeys.isUploadEvidence -> "no"
+      ))
+      val result = await(appealService.submitAppeal("other")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyDuplicateFilesSubmitted")) shouldBe false
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.find(_.getBodyAsString.contains("PenaltyAppealSubmitted")).head.getBodyAsString.contains("uploadedFiles") shouldBe false
       result shouldBe Right((): Unit)
     }
 
