@@ -82,7 +82,7 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
     val extractedMTDVATEnrolment: Option[String] = UserRequest.extractFirstMTDVatEnrolment(allEnrolments)
     if (extractedMTDVATEnrolment.isDefined) {
       val user: UserRequest[A] = UserRequest(extractedMTDVATEnrolment.get)
-      block(user).map(_.discardingCookies(DiscardingCookie("jsenabled", "/penalties-appeals")))
+      block(user)
     } else {
       logger.debug(s"$logMsgStart - User does not have an activated HMRC-MTD-VAT enrolment. User had these enrolments: ${allEnrolments.enrolments}")
       Future(Forbidden(unauthorisedView()))

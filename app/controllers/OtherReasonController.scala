@@ -32,7 +32,7 @@ import navigation.Navigation
 import play.api.data.{Form, FormError}
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, DiscardingCookie, MessagesControllerComponents}
 import play.twirl.api.Html
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
@@ -347,7 +347,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
       val postAction = controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode)
-      Ok(uploadEvidenceQuestionPage(formProvider, radioOptionsToRender, postAction))
+      Ok(uploadEvidenceQuestionPage(formProvider, radioOptionsToRender, postAction)).discardingCookies(DiscardingCookie("jsenabled", "/penalties-appeals"))
     }
   }
 

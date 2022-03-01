@@ -17,15 +17,15 @@
 package controllers
 
 import java.time.LocalDateTime
-
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.SessionAnswersHelper
+
 import javax.inject.Inject
 import models.PenaltyTypeEnum
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, DiscardingCookie, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
 import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -80,7 +80,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
           }
         }
       )
-    }
+    }.map(_.discardingCookies(DiscardingCookie("jsenabled", "/penalties-appeals")))
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired).async {
