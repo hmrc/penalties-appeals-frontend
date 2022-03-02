@@ -553,16 +553,6 @@ duplicateAppeal.p1 = You cannot submit a duplicate request for the same penalty.
 duplicateAppeal.link = View your penalties and appeals
 agent.duplicateAppeal.link = View your client’s penalties and appeals
 
-# Can you appeal Page
-# ----------------------------------------------------------
-youCanAppealThisPenalty.title = You can appeal this penalty online
-youCanAppealThisPenalty.heading = You can appeal this penalty online
-youCanAppealThisPenalty.p1 = If HMRC reviews this penalty and accepts your appeal, we will remove:
-youCanAppealThisPenalty.li.1 = this penalty
-youCanAppealThisPenalty.li.2 = all other VAT late submission or late payment penalties for the same period
-youCanAppealThisPenalty.p2 = Do you want to appeal this penalty?
-youCanAppealThisPenalty.error.required = Select yes if you want to appeal this penalty
-
 # Error scenarios
 # -----------------------------------------------------------
 error.prefix = Error:
