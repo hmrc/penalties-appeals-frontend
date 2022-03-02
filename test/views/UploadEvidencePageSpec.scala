@@ -61,6 +61,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val multiUploadFormStillTransferring = "data-multi-file-upload-still-transferring"
 
       val multiUploadFormGenericError ="data-multi-file-upload-error-generic"
+
+      val multiUploadFormServiceError ="data-multi-file-upload-error-url-tpl"
     }
 
     def previousUploadsToString(previousUploads: Option[Seq[UploadJourney]]): String = {
@@ -77,7 +79,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),
         controllers.routes.UpscanController.removeFile("1234", _),
         previousUploadsToString(previousUploads),
-        controllers.routes.UpscanController.getDuplicateFiles("1234"))(request, implicitly, implicitly)
+        controllers.routes.UpscanController.getDuplicateFiles("1234"),
+        controllers.routes.ProblemWithServiceController.onPageLoad())(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView())
@@ -233,10 +236,12 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val expectedInitiateString = "/penalties-appeals/upscan/call-to-upscan/1234"
       val expectedStatusString = "/penalties-appeals/upscan/upload-status/1234/%7BfileRef%7D"
       val expectedRemovalString = "/penalties-appeals/upscan/remove-file/1234/%7BfileRef%7D"
+      val expectedErrorServiceString = "/penalties-appeals/problem-with-service"
 
       doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormInitiateUploadAKey) shouldBe expectedInitiateString
       doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormGetStatusAKey) shouldBe expectedStatusString
       doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormRemoveFileAKey) shouldBe expectedRemovalString
+      doc.select(Selectors.multiUploadForm).attr(Selectors.multiUploadFormServiceError) shouldBe expectedErrorServiceString
     }
   }
 }
