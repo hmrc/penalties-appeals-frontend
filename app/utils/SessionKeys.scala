@@ -52,6 +52,7 @@ object SessionKeys {
   val errorCodeFromUpscan = "errorCodeFromUpscan"
   val failureMessageFromUpscan = "failureMessageFromUpscan"
   val isUploadEvidence = "isUploadEvidence"
+  val youCanAppealThisPenalty = "youCanAppealThisPenalty"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -87,6 +88,7 @@ object SessionKeys {
     failureMessageFromUpscan,
     fileReference,
     isAddingAnotherDocument,
-    isUploadEvidence
+    isUploadEvidence,
+    youCanAppealThisPenalty
   )
 }

@@ -29,6 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import views.html.OtherPenaltiesForPeriodPage
 
+//TODO: to remove this page and logic
 class OtherPenaltiesForPeriodController @Inject()(page: OtherPenaltiesForPeriodPage,
                                                   navigation: Navigation)(
                                                    implicit mcc: MessagesControllerComponents,

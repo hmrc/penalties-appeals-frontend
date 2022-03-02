@@ -519,6 +519,16 @@ otherRelevantInformation.heading = Tell us why you want to appeal the penalty
 otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
 otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
 
+# You can appeal this penalty
+# ----------------------------------------------------------
+youCanAppealThisPenalty.title = You can appeal this penalty online
+youCanAppealThisPenalty.heading = You can appeal this penalty online
+youCanAppealThisPenalty.p1 = If HMRC reviews this penalty and accepts your appeal, we will remove:
+youCanAppealThisPenalty.li.1 = this penalty
+youCanAppealThisPenalty.li.2 = all other VAT late submission or late payment penalties for the same period
+youCanAppealThisPenalty.p2 = Do you want to appeal this penalty?
+youCanAppealThisPenalty.error.required = Select yes if you want to appeal this penalty
+
 # Error message for characters more than 5000 in text area
 # ----------------------------------------------------------
 explainReason.charsInTextArea.error = Explain the reason in 5,000 characters or fewer
