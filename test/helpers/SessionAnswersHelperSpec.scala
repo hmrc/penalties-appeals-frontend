@@ -20,7 +20,6 @@ import base.SpecBase
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.Mockito.{mock, when}
-import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.AnyContent
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository

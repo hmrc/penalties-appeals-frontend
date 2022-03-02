@@ -45,3 +45,4 @@ case object UploadFirstDocumentPage extends Page
 case object UploadAnotherDocumentPage extends Page
 case object FileListPage extends Page
 case object UploadEvidenceQuestionPage extends Page
+case object YouCanAppealThisPenaltyPage extends Page

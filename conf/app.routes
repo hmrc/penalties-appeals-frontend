@@ -167,6 +167,10 @@ GET           /upscan/file-verification/additional/change/success       controll
 
 GET           /upscan/duplicate-files/:journeyId                        controllers.UpscanController.getDuplicateFiles(journeyId: String)
 
+# You can appeal this penalty page
+GET           /you-can-appeal-this-penalty                     controllers.YouCanAppealPenaltyController.onPageLoad()
+POST          /you-can-appeal-this-penalty                     controllers.YouCanAppealPenaltyController.onSubmit()
+
 # Error pages
 GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()
 GET        /problem-with-service                                controllers.ProblemWithServiceController.onPageLoad()
