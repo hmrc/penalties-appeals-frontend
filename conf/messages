@@ -13,8 +13,6 @@ common.radioOption.no = No
 
 app.common.back = Back
 
-error.summary.title = There is a problem
-
 # BETA Banner
 # ----------------------------------------------------------
 feedback.before = This is a new service - your
@@ -114,13 +112,6 @@ agent.honestyDeclaration.technicalIssues = my client was affected by technology 
 honestyDeclaration.lossOfStaff = of loss of staff essential to the VAT process
 agent.honestyDeclaration.lossOfStaff = my client was affected by loss of staff essential to the VAT process
 honestyDeclaration.other =
-
-# Errors
-# ----------------------------------------------------------
-error.prefix = Error:
-# Not sure if this is as per design
-error.clickAcceptAndContinue = Please click ’Accept and continue’
-error.clickContinue = Please click ’Continue’
 
 
 site.opensInNewTab = (opens in a new tab)
@@ -566,6 +557,9 @@ agent.duplicateAppeal.link = View your client’s penalties and appeals
 # -----------------------------------------------------------
 error.prefix = Error:
 error.summary.title = There is a problem
+# Not sure if this is as per design
+error.clickAcceptAndContinue = Please click ’Accept and continue’
+error.clickContinue = Please click ’Continue’
 
 # Timeout page
 # -----------------------------------------------------------
