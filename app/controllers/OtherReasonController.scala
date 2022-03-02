@@ -146,7 +146,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           val removeFileUrl = controllers.routes.UpscanController.removeFile(request.session.get(SessionKeys.journeyId).get, _)
           val postAction = navigation.nextPage(EvidencePage, mode)
           val getDuplicatesUrl = controllers.routes.UpscanController.getDuplicateFiles(request.session.get(SessionKeys.journeyId).get)
-          Ok(uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, previousUploads, getDuplicatesUrl))
+          val getErrorServiceUrl = controllers.routes.ProblemWithServiceController.onPageLoad()
+          Ok(uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, previousUploads, getDuplicatesUrl, getErrorServiceUrl))
         }
       }
     }

@@ -33,7 +33,8 @@
         getStatusUrl: String => Call,
         removeFileUrl: String => Call,
         previousUploads: String,
-        getDuplicatesUrl: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+        getDuplicatesUrl: Call,
+        getErrorServiceUrl: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.session.get(SessionKeys.appealType)}
 @detailsContent = {
@@ -75,6 +76,7 @@
         (Symbol("data-multi-file-upload-status-url-tpl"), getStatusUrl("{fileRef}").url),
         (Symbol("data-multi-file-upload-remove-url-tpl"), removeFileUrl("{fileRef}").url),
         (Symbol("data-multi-file-upload-duplicate-url-tpl"), getDuplicatesUrl.url),
+        (Symbol("data-multi-file-upload-error-url-tpl"), getErrorServiceUrl.url),
         (Symbol("data-multi-file-upload-still-transferring"), messages("otherReason.uploadEvidence.stillTransferring")),
         (Symbol("data-multi-file-upload-error-generic"), messages("upscan.unableToUpload")),
         (Symbol("data-multi-file-upload-file-uploading"), messages("upscan.fileUploading", "{fileNumber}", "{fileName}")),
