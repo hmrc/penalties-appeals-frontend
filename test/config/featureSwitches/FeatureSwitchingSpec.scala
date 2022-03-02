@@ -26,7 +26,7 @@ class FeatureSwitchingSpec extends SpecBase {
 
   "listOfAllFeatureSwitches" should {
     "be all the featureswitches in the app" in {
-      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting)
+      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, YouCanAppealThisPenaltyRouting)
     }
   }
 
@@ -56,12 +56,22 @@ class FeatureSwitchingSpec extends SpecBase {
       featureSwitching.enableFeatureSwitch(NonJSRouting)
       (sys.props get NonJSRouting.name get) shouldBe "true"
     }
+
+    s"set ${YouCanAppealThisPenaltyRouting.name} property to true" in new Setup {
+      featureSwitching.enableFeatureSwitch(YouCanAppealThisPenaltyRouting)
+      (sys.props get YouCanAppealThisPenaltyRouting.name get) shouldBe "true"
+    }
   }
 
   "disableFeatureSwitch" should {
     s"set ${NonJSRouting.name} property to false" in new Setup {
       featureSwitching.disableFeatureSwitch(NonJSRouting)
       (sys.props get NonJSRouting.name get) shouldBe "false"
+    }
+
+    s"set ${YouCanAppealThisPenaltyRouting.name} property to false" in new Setup {
+      featureSwitching.disableFeatureSwitch(YouCanAppealThisPenaltyRouting)
+      (sys.props get YouCanAppealThisPenaltyRouting.name get) shouldBe "false"
     }
   }
 }

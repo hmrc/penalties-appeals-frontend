@@ -23,10 +23,15 @@ sealed trait FeatureSwitch {
 
 object FeatureSwitch {
   val prefix: String = "feature.switch"
-  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting)
+  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting, YouCanAppealThisPenaltyRouting)
 }
 
 case object NonJSRouting extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.non-js-routing"
   override val displayText: String = "To enable routing to JS pages"
+}
+
+case object YouCanAppealThisPenaltyRouting extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.you-can-appeal-this-penalty-routing"
+  override val displayText: String = "Enable routing to 'You can appeal this penalty' page"
 }
