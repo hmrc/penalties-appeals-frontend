@@ -35,6 +35,7 @@ import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
+import views.html.errors.ServiceUnavailablePage
 import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs._
 import viewtils.EvidenceFileUploadsHelper
@@ -54,6 +55,7 @@ class OtherReasonControllerSpec extends SpecBase {
   val uploadListPage: UploadListPage = injector.instanceOf[UploadListPage]
   val mockFeatureSwitching: FeatureSwitching = mock(classOf[FeatureSwitching])
   val evidenceFileUploadsHelper: EvidenceFileUploadsHelper = injector.instanceOf[EvidenceFileUploadsHelper]
+  val serviceUnavailablePage: ServiceUnavailablePage = injector.instanceOf[ServiceUnavailablePage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
@@ -80,7 +82,8 @@ class OtherReasonControllerSpec extends SpecBase {
       mockUpscanService,
       mockFeatureSwitching,
       evidenceFileUploadsHelper,
-      mockUploadJourneyRepository
+      mockUploadJourneyRepository,
+      serviceUnavailablePage
     )(authPredicate, dataRequiredAction, appConfig, errorHandler, mcc, ec)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
@@ -364,7 +367,14 @@ class OtherReasonControllerSpec extends SpecBase {
           when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
           val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
+          val content: String = contentAsString(result)
+
           status(result) shouldBe INTERNAL_SERVER_ERROR
+          content.contains("Sorry, the service is unavailable") shouldBe true
+          content.contains("We have not saved your answers.") shouldBe true
+          content.contains("You will be able to use the service later.") shouldBe true
+          content.contains("If you prefer, you can appeal by letter. Write to:") shouldBe true
+
         }
 
         "the user is unauthorised" when {
