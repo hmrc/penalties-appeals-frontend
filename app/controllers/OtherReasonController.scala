@@ -40,6 +40,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
+import views.html.errors.ServiceUnavailablePage
 import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage, UploadListPage, UploadTakingLongerThanExpectedPage}
 import viewtils.{EvidenceFileUploadsHelper, RadioOptionHelper}
@@ -60,7 +61,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       upscanService: UpscanService,
                                       featureSwitching: FeatureSwitching,
                                       evidenceFileUploadsHelper: EvidenceFileUploadsHelper,
-                                      uploadJourneyRepository: UploadJourneyRepository)
+                                      uploadJourneyRepository: UploadJourneyRepository,
+                                      serviceUnavailablePage: ServiceUnavailablePage)
                                      (implicit authorise: AuthPredicate,
                                       dataRequired: DataRequiredAction,
                                       appConfig: AppConfig,
@@ -161,7 +163,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           _.fold(
             error => {
               logger.error("[OtherReasonController][onPageLoadForFirstFileUpload] - Received error back from initiate request rendering ISE.")
-              errorHandler.showInternalServerError
+              InternalServerError(serviceUnavailablePage())
             },
             upscanResponseModel => {
               val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
@@ -193,7 +195,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         _.fold(
           error => {
             logger.error("[OtherReasonController][onPageLoadForAnotherFileUpload] - Received error back from initiate request rendering ISE.")
-            errorHandler.showInternalServerError
+            InternalServerError(serviceUnavailablePage())
           },
           upscanResponseModel => {
             val optErrorCode: Option[String] = request.session.get(SessionKeys.errorCodeFromUpscan)
