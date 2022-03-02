@@ -13,8 +13,6 @@ common.radioOption.no = No
 
 app.common.back = Back
 
-error.summary.title = There is a problem
-
 # BETA Banner
 # ----------------------------------------------------------
 feedback.before = This is a new service - your
@@ -114,13 +112,6 @@ agent.honestyDeclaration.technicalIssues = my client was affected by technology 
 honestyDeclaration.lossOfStaff = of loss of staff essential to the VAT process
 agent.honestyDeclaration.lossOfStaff = my client was affected by loss of staff essential to the VAT process
 honestyDeclaration.other =
-
-# Errors
-# ----------------------------------------------------------
-error.prefix = Error:
-# Not sure if this is as per design
-error.clickAcceptAndContinue = Please click ’Accept and continue’
-error.clickContinue = Please click ’Continue’
 
 
 site.opensInNewTab = (opens in a new tab)
@@ -350,6 +341,9 @@ upscan.fileTooLarge = The selected file must be smaller than 6MB. Remove the fil
 upscan.fileEmpty = The selected file is empty. Remove the file and try again.
 upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
 upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
+upscan.fileUploaded = {0} {1} has been uploaded
+upscan.fileUploading = Uploading {0} {1}
+upscan.fileRemoved = {0} {1} has been removed
 upscan.stillUploading = The selected file has not finished uploading.
 upscan.fileNotSpecified = Select a file.
 
@@ -559,10 +553,23 @@ duplicateAppeal.p1 = You cannot submit a duplicate request for the same penalty.
 duplicateAppeal.link = View your penalties and appeals
 agent.duplicateAppeal.link = View your client’s penalties and appeals
 
+# Can you appeal Page
+# ----------------------------------------------------------
+youCanAppealThisPenalty.title = You can appeal this penalty online
+youCanAppealThisPenalty.heading = You can appeal this penalty online
+youCanAppealThisPenalty.p1 = If HMRC reviews this penalty and accepts your appeal, we will remove:
+youCanAppealThisPenalty.li.1 = this penalty
+youCanAppealThisPenalty.li.2 = all other VAT late submission or late payment penalties for the same period
+youCanAppealThisPenalty.p2 = Do you want to appeal this penalty?
+youCanAppealThisPenalty.error.required = Select yes if you want to appeal this penalty
+
 # Error scenarios
 # -----------------------------------------------------------
 error.prefix = Error:
 error.summary.title = There is a problem
+# Not sure if this is as per design
+error.clickAcceptAndContinue = Please click ’Accept and continue’
+error.clickContinue = Please click ’Continue’
 
 # Timeout page
 # -----------------------------------------------------------
