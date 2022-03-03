@@ -61,10 +61,7 @@ class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
         BadRequest(page(formWithErrors, radioOptionsToRender, postAction))
       },
       answer => {
-        Redirect(
-          //TODO: implement
-          //navigation.nextPage(YouCanAppealThisPenaltyPage, NormalMode)
-         "").addingToSession(SessionKeys.youCanAppealThisPenalty -> answer)
+        Redirect(navigation.nextPage(YouCanAppealThisPenaltyPage, NormalMode, Some(answer))).addingToSession(SessionKeys.youCanAppealThisPenalty -> answer)
       }
     )
   }

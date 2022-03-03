@@ -16,6 +16,7 @@
 
 package base
 
+import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
 import helpers.DateTimeHelper
@@ -50,7 +51,9 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val mockDateTimeHelper: DateTimeHelper = mock(classOf[DateTimeHelper])
 
-  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)
+  val mockFeatureSwitching = mock(classOf[FeatureSwitching])
+
+  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig, mockFeatureSwitching)
 
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 

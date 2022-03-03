@@ -17,10 +17,11 @@
 package navigation
 
 import java.time.LocalDateTime
-
 import config.AppConfig
+import config.featureSwitches.{FeatureSwitching, YouCanAppealThisPenaltyRouting}
 import controllers.routes
 import helpers.DateTimeHelper
+
 import javax.inject.Inject
 import models.pages._
 import models.{CheckMode, Mode, NormalMode, UserRequest}
@@ -29,7 +30,8 @@ import utils.Logger.logger
 import utils.{ReasonableExcuses, SessionKeys}
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
-                           appConfig: AppConfig) {
+                           appConfig: AppConfig,
+                           featureSwitching: FeatureSwitching) {
   lazy val checkingRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
     HasCrimeBeenReportedPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidCrimeHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
@@ -56,7 +58,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
-    HonestyDeclarationPage -> ((answer, request, _) => getNextURLBasedOnReasonableExcuse(answer, NormalMode)),
+    HonestyDeclarationPage -> ((answer, _, _) => getNextURLBasedOnReasonableExcuse(answer, NormalMode)),
     HasCrimeBeenReportedPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidCrimeHappenPage -> ((_, _, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode)),
     WhenDidFireOrFloodHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
@@ -79,9 +81,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     CancelVATRegistrationPage -> ((answer, _, extraData) => routingForCancelVATRegistrationPage(answer, extraData)),
     OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
-    UploadAnotherDocumentPage -> ((_,_,_) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
+    UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
     FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode)),
-    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, NormalMode))
+    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, NormalMode)),
+    YouCanAppealThisPenaltyPage -> ((answer, _, _) => routeForYouCanAppealPenalty(answer))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, extraData: Option[Map[String, String]] = None)
@@ -96,21 +99,26 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   def routingForWhoPlannedToSubmitVATReturnAgentPage(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
-    if(answer.get.toLowerCase == "agent") {
+    if (answer.get.toLowerCase == "agent") {
       routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(mode)
-    } else if(mode == NormalMode) {
+    } else if (mode == NormalMode) {
       routes.ReasonableExcuseController.onPageLoad()
     } else {
       routeToMakingALateAppealOrCYAPage(request, mode)
     }
   }
 
+  //TODO: need to remove extraData parameter once 'You can appeal this penalty page' has been implemented fully
   def routingForCancelVATRegistrationPage(answer: Option[String], extraData: Option[Map[String, String]]): Call = {
     if (answer.get.toLowerCase == "yes") {
-      if (extraData.get("multiplePenalties") == "true") {
-        routes.OtherPenaltiesForPeriodController.onPageLoad()
+      if (featureSwitching.isEnabled(YouCanAppealThisPenaltyRouting)) {
+        routes.YouCanAppealPenaltyController.onPageLoad()
       } else {
-        routes.AppealStartController.onPageLoad()
+        if (extraData.get("multiplePenalties") == "true") {
+          routes.OtherPenaltiesForPeriodController.onPageLoad()
+        } else {
+          routes.AppealStartController.onPageLoad()
+        }
       }
     } else {
       routes.YouCannotAppealController.onPageLoad()
@@ -122,7 +130,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case (CheckMode, Some(ans)) if ans.equalsIgnoreCase("no") && request.session.get(SessionKeys.whenHealthIssueHappened).isDefined =>
         routes.CheckYourAnswersController.onPageLoad()
       case (_, Some(ans)) if ans.equalsIgnoreCase("no") => routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
-      case (_, Some(ans)) if ans.equalsIgnoreCase("yes")=> routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(mode)
+      case (_, Some(ans)) if ans.equalsIgnoreCase("yes") => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(mode)
       case _ =>
         logger.debug("[Navigation][routingForHospitalStay]: unable to get answer - reloading 'WasHospitalStayRequiredPage'")
         routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
@@ -171,13 +179,23 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode) :Call = {
+  def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode): Call = {
     isUploadEvidence match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
       case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
       case _ =>
         logger.debug("[Navigation][routeForUploadEvidenceQuestion]: unable to get answer - reloading 'UploadEvidenceQuestionPage'")
         routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)
+    }
+  }
+
+  def routeForYouCanAppealPenalty(answer: Option[String]): Call = {
+    answer match {
+      case Some(ans) if ans.equalsIgnoreCase("yes") => routes.AppealStartController.onPageLoad()
+      case Some(ans) if ans.equalsIgnoreCase("no") => Call("GET", appConfig.penaltiesFrontendUrl)
+      case _ =>
+        logger.debug("[Navigation][routeForYouCanAppealPenalty]: unable to get answer - reloading 'YouCanAppealPenaltyPage'")
+        routes.YouCanAppealPenaltyController.onPageLoad()
     }
   }
 }
