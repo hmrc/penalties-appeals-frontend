@@ -17,7 +17,7 @@
 package controllers.testOnly
 
 import base.SpecBase
-import config.featureSwitches.{FeatureSwitching, NonJSRouting}
+import config.featureSwitches.{FeatureSwitching, NonJSRouting, YouCanAppealThisPenaltyRouting}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -41,6 +41,18 @@ class FeatureSwitchControllerSpec extends SpecBase {
       val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", false)(FakeRequest())
       status(result) shouldBe OK
       featureSwitching.isEnabled(NonJSRouting) shouldBe false
+    }
+
+    "return OK and enable the feature switch when specified (you can appeal this penalty fs)" in {
+      val result = controller.enableOrDisableFeature("feature.switch.you-can-appeal-this-penalty-routing", true)(FakeRequest())
+      status(result) shouldBe OK
+      featureSwitching.isEnabled(YouCanAppealThisPenaltyRouting) shouldBe true
+    }
+
+    "return OK and disable the feature switch when specified (you can appeal this penalty fs)" in {
+      val result = controller.enableOrDisableFeature("feature.switch.you-can-appeal-this-penalty-routing", false)(FakeRequest())
+      status(result) shouldBe OK
+      featureSwitching.isEnabled(YouCanAppealThisPenaltyRouting) shouldBe false
     }
   }
 }
