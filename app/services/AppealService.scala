@@ -130,25 +130,6 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       Left(INTERNAL_SERVER_ERROR)
   }
 
-  def otherPenaltiesInTaxPeriod(penaltyId: String, isLPP: Boolean)
-                               (implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
-    val startOfLogMsg: String = "[AppealService][otherPenaltiesInTaxPeriod] -"
-    penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId, userRequest.vrn, isLPP).map(
-      response => response.status match {
-        case OK =>
-          logger.debug(s"$startOfLogMsg Received OK from the other penalties call")
-          true
-        case NO_CONTENT =>
-          logger.debug(s"$startOfLogMsg Received No CONTENT from the other penalties call")
-          false
-      }
-    ).recover {
-      case e =>
-        logger.error(s"$startOfLogMsg unknown error occurred, error message: ${e.getMessage}")
-        false
-    }
-  }
-
   def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])
                                 (implicit userRequest: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     if(optFileUploads.isDefined) {

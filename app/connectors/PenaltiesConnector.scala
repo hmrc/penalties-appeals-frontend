@@ -86,9 +86,4 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
 
     httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyNumber, correlationId), appealSubmission)
   }
-
-  def getOtherPenaltiesInTaxPeriod(penaltyId: String, enrolmentKey: String, isLPP: Boolean)
-                                  (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    httpClient.GET[HttpResponse](appConfig.otherPenaltiesForPeriodUrl(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey), isLPP))
-  }
 }

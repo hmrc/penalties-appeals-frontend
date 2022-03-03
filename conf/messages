@@ -487,13 +487,6 @@ agents.whatCausedYouToMissTheDeadline.option.client = My client did not get info
 agents.whatCausedYouToMissTheDeadline.option.agent = Something else happened to delay me
 agents.whatCausedYouToMissTheDeadline.error.invalid = Tell us what caused you to miss the deadline
 
-# Other penalties for period page - Appeal against obligation
-# ----------------------------------------------------------
-otherPenalties.title = Other penalties for this period
-otherPenalties.heading = Other penalties for this period
-otherPenalties.p1 = If HMRC accepts your appeal, we will remove all other late submission or late payment penalties for the same period.
-otherPenalties.p2 = You do not need to appeal against them separately.
-
 # You Cannot Appeal page
 # -----------------------
 youCannotAppeal.title = You cannot appeal yet

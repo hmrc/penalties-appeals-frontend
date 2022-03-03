@@ -16,7 +16,7 @@
 
 package controllers.testOnly
 
-import config.featureSwitches.{NonJSRouting, YouCanAppealThisPenaltyRouting}
+import config.featureSwitches.NonJSRouting
 import play.api.test.Helpers._
 import utils.IntegrationSpecCommonBase
 
@@ -39,20 +39,6 @@ class FeatureSwitchControllerISpec extends IntegrationSpecCommonBase {
       result.status shouldBe OK
       result.body shouldBe s"$NonJSRouting set to false"
       (sys.props get NonJSRouting.name get) shouldBe "false"
-    }
-
-    s"return OK and set the YouCanAppealThisPenaltyRouting feature switch to be enabled" in new Setup {
-      val result = await(buildClientForRequestToApp(uri = s"/test-only/feature-switch?name=${YouCanAppealThisPenaltyRouting.name}&enable=true").get())
-      result.status shouldBe OK
-      result.body shouldBe s"$YouCanAppealThisPenaltyRouting set to true"
-      (sys.props get YouCanAppealThisPenaltyRouting.name get) shouldBe "true"
-    }
-
-    s"return OK and set the YouCanAppealThisPenaltyRouting feature switch to be disabled" in new Setup {
-      val result = await(buildClientForRequestToApp(uri = s"/test-only/feature-switch?name=${YouCanAppealThisPenaltyRouting.name}&enable=false").get())
-      result.status shouldBe OK
-      result.body shouldBe s"$YouCanAppealThisPenaltyRouting set to false"
-      (sys.props get YouCanAppealThisPenaltyRouting.name get) shouldBe "false"
     }
 
     s"return NOT_FOUND when the feature switch does not exist" in new Setup {

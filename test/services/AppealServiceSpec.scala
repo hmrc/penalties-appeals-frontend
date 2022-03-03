@@ -382,39 +382,6 @@ class AppealServiceSpec extends SpecBase {
     }
   }
 
-  "otherPenaltiesInTaxPeriod" should {
-    "return true" when {
-      "the connector returns a OK response" in new Setup {
-        when(mockPenaltiesConnector.getOtherPenaltiesInTaxPeriod(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(OK, "")))
-
-        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", isLPP = false)(fakeRequestForCrimeJourney, implicitly, implicitly))
-
-        result shouldBe true
-      }
-    }
-
-    "return false" when {
-      "the connector returns a NO_CONTENT response" in new Setup {
-        when(mockPenaltiesConnector.getOtherPenaltiesInTaxPeriod(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
-
-        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", isLPP = false)(fakeRequestForCrimeJourney, implicitly, implicitly))
-
-        result shouldBe false
-      }
-
-      "the connector throws an exception" in new Setup {
-        when(mockPenaltiesConnector.getOtherPenaltiesInTaxPeriod(any(), any(), any())(any(), any()))
-          .thenReturn(Future.failed(new Exception("I failed.")))
-
-        val result: Boolean = await(service.otherPenaltiesInTaxPeriod("penaltyId", isLPP = false)(fakeRequestForCrimeJourney, implicitly, implicitly))
-
-        result shouldBe false
-      }
-    }
-  }
-
   "sendAuditIfDuplicatesExist" should {
     "not send any audit if no duplicate exists" in new Setup {
       val uploadAsReady: UploadJourney = UploadJourney(

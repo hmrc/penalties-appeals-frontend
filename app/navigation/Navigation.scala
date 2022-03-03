@@ -18,7 +18,7 @@ package navigation
 
 import java.time.LocalDateTime
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, YouCanAppealThisPenaltyRouting}
+import config.featureSwitches.FeatureSwitching
 import controllers.routes
 import helpers.DateTimeHelper
 
@@ -32,69 +32,68 @@ import utils.{ReasonableExcuses, SessionKeys}
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
                            appConfig: AppConfig,
                            featureSwitching: FeatureSwitching) {
-  lazy val checkingRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
-    HasCrimeBeenReportedPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidCrimeHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidFireOrFloodHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidPersonLeaveTheBusinessPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidTechnologyIssuesBeginPage -> ((_, _, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode)),
-    WhenDidTechnologyIssuesEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WasHospitalStayRequiredPage -> ((answer, request, _) => routingForHospitalStay(CheckMode, answer, request)),
-    WhenDidHealthIssueHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidHospitalStayBeginPage -> ((_, _, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode)),
-    DidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidBecomeUnablePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhyWasReturnSubmittedLatePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    EvidencePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request, _) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, CheckMode)),
-    WhatCausedYouToMissTheDeadlinePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    ReasonableExcuseSelectionPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    OtherRelevantInformationPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
-    UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
-    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, CheckMode)),
-    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, CheckMode))
+  lazy val checkingRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
+    HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidCrimeHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidFireOrFloodHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidPersonLeaveTheBusinessPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode)),
+    WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(CheckMode, answer, request)),
+    WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidHospitalStayBeginPage -> ((_, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode)),
+    DidHospitalStayEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidBecomeUnablePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhyWasReturnSubmittedLatePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, CheckMode)),
+    WhatCausedYouToMissTheDeadlinePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    ReasonableExcuseSelectionPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    WhenDidThePersonDiePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    OtherRelevantInformationPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    UploadFirstDocumentPage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
+    UploadAnotherDocumentPage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
+    FileListPage -> ((answer, request) => routeForUploadList(answer, request, CheckMode)),
+    UploadEvidenceQuestionPage -> ((answer, request) => routeForUploadEvidenceQuestion(answer, request, CheckMode))
   )
 
-  lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Map[String, String]]) => Call] = Map(
-    HonestyDeclarationPage -> ((answer, _, _) => getNextURLBasedOnReasonableExcuse(answer, NormalMode)),
-    HasCrimeBeenReportedPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhenDidCrimeHappenPage -> ((_, _, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode)),
-    WhenDidFireOrFloodHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhenDidPersonLeaveTheBusinessPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhenDidTechnologyIssuesBeginPage -> ((_, _, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)),
-    WhenDidTechnologyIssuesEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WasHospitalStayRequiredPage -> ((answer, request, _) => routingForHospitalStay(NormalMode, answer, request)),
-    WhenDidHealthIssueHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhenDidHospitalStayBeginPage -> ((_, _, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode)),
-    DidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhenDidBecomeUnablePage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode)),
-    WhyWasReturnSubmittedLatePage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
-    EvidencePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request, _) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, NormalMode)),
-    WhatCausedYouToMissTheDeadlinePage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
-    ReasonableExcuseSelectionPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
-    WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    AppealStartPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
-    OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
-    CancelVATRegistrationPage -> ((answer, _, extraData) => routingForCancelVATRegistrationPage(answer, extraData)),
-    OtherPenaltiesForPeriodPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
-    UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
-    UploadAnotherDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
-    FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode)),
-    UploadEvidenceQuestionPage -> ((answer, request, _) => routeForUploadEvidenceQuestion(answer, request, NormalMode)),
-    YouCanAppealThisPenaltyPage -> ((answer, _, _) => routeForYouCanAppealPenalty(answer))
+  lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
+    HonestyDeclarationPage -> ((answer, _) => getNextURLBasedOnReasonableExcuse(answer, NormalMode)),
+    HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WhenDidCrimeHappenPage -> ((_, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode)),
+    WhenDidFireOrFloodHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WhenDidPersonLeaveTheBusinessPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)),
+    WhenDidTechnologyIssuesEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WasHospitalStayRequiredPage -> ((answer, request) => routingForHospitalStay(NormalMode, answer, request)),
+    WhenDidHealthIssueHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WhenDidHospitalStayBeginPage -> ((_, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode)),
+    DidHospitalStayEndPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WhenDidBecomeUnablePage -> ((_, _) => routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode)),
+    WhyWasReturnSubmittedLatePage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
+    EvidencePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    WhoPlannedToSubmitVATReturnAgentPage -> ((answer, request) => routingForWhoPlannedToSubmitVATReturnAgentPage(answer, request, NormalMode)),
+    WhatCausedYouToMissTheDeadlinePage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
+    ReasonableExcuseSelectionPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
+    WhenDidThePersonDiePage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    AppealStartPage -> ((_, _) => routes.AppealStartController.onPageLoad()),
+    OtherRelevantInformationPage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
+    CancelVATRegistrationPage -> ((answer, _) => routingForCancelVATRegistrationPage(answer)),
+    UploadFirstDocumentPage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
+    UploadAnotherDocumentPage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
+    FileListPage -> ((answer, request) => routeForUploadList(answer, request, NormalMode)),
+    UploadEvidenceQuestionPage -> ((answer, request) => routeForUploadEvidenceQuestion(answer, request, NormalMode)),
+    YouCanAppealThisPenaltyPage -> ((answer, _) => routeForYouCanAppealPenalty(answer))
   )
 
-  def nextPage(page: Page, mode: Mode, answer: Option[String] = None, extraData: Option[Map[String, String]] = None)
+  def nextPage(page: Page, mode: Mode, answer: Option[String] = None)
               (implicit userRequest: UserRequest[_]): Call = {
     mode match {
       case CheckMode =>
         //Added answer here so that we can add custom routing to pages that require extra data when answers change
-        checkingRoutes(page)(answer, userRequest, extraData)
+        checkingRoutes(page)(answer, userRequest)
       case NormalMode =>
-        normalRoutes(page)(answer, userRequest, extraData)
+        normalRoutes(page)(answer, userRequest)
     }
   }
 
@@ -108,18 +107,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  //TODO: need to remove extraData parameter once 'You can appeal this penalty page' has been implemented fully
-  def routingForCancelVATRegistrationPage(answer: Option[String], extraData: Option[Map[String, String]]): Call = {
+  def routingForCancelVATRegistrationPage(answer: Option[String]): Call = {
     if (answer.get.toLowerCase == "yes") {
-      if (featureSwitching.isEnabled(YouCanAppealThisPenaltyRouting)) {
-        routes.YouCanAppealPenaltyController.onPageLoad()
-      } else {
-        if (extraData.get("multiplePenalties") == "true") {
-          routes.OtherPenaltiesForPeriodController.onPageLoad()
-        } else {
-          routes.AppealStartController.onPageLoad()
-        }
-      }
+      routes.YouCanAppealPenaltyController.onPageLoad()
     } else {
       routes.YouCannotAppealController.onPageLoad()
     }
