@@ -28,6 +28,7 @@
         isPageFullWidth = false,
         formHasErrors = form.errors.nonEmpty,
         formErrors = form.errors) {
+        <script>document.cookie = 'jsenabled=true'</script>
         @formHelper(action = postAction) {
               @radios(
               form = form,

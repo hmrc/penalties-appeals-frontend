@@ -63,6 +63,8 @@
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
+    <script>document.cookie = 'jsenabled=true'</script>
+
     <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.heading")</h1>
     <p class="govuk-body">@messages("otherReason.uploadEvidence.noJs.p1")</p>
     <p class="govuk-body">@messages(lppOrLspOrObligationDynamicText)</p>

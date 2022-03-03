@@ -173,7 +173,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode) :Call = {
     isUploadEvidence match {
-      case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
+      case Some(ans) if ans.equalsIgnoreCase("yes") =>
+        if(request.cookies.get("jsenabled").isEmpty) routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)
+        else routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
       case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
       case _ =>
         logger.debug("[Navigation][routeForUploadEvidenceQuestion]: unable to get answer - reloading 'UploadEvidenceQuestionPage'")

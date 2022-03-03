@@ -65,6 +65,8 @@
     customJavaScript = Some("multiFileUpload.min.js")) {
     <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.heading")</h1>
 
+    <script>document.cookie = 'jsenabled=true'</script>
+
     @formHelper(action = postAction,
         args =
         (Symbol("data-multi-file-upload-start-rows"), "1"),
