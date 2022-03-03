@@ -64,7 +64,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
   }
 
   private def removeExistingKeysFromSessionAndRedirect[A](urlToRedirectTo: Call,
-                                                          penaltyId: String,
+                                                          penaltyNumber: String,
                                                           appealModel: AppealData,
                                                           isAppealAgainstObligation: Boolean)(implicit user: UserRequest[A]): Result = {
     logger.debug(s"[InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Resetting appeals session: removing keys from session" +
@@ -73,7 +73,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     logger.debug(s"InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Setting journeyId to: $journeyId")
     Redirect(urlToRedirectTo)
       .removingFromSession(SessionKeys.allKeys: _*)
-      .addingToSession((SessionKeys.penaltyId, penaltyId))
+      .addingToSession((SessionKeys.penaltyNumber, penaltyNumber))
       .addingToSession((SessionKeys.appealType, appealModel.`type`.toString))
       .addingToSession((SessionKeys.startDateOfPeriod, appealModel.startDate.toString))
       .addingToSession((SessionKeys.endDateOfPeriod, appealModel.endDate.toString))

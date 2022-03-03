@@ -33,7 +33,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
   "GET /what-caused-you-to-miss-the-deadline" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/what-caused-you-to-miss-the-deadline").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -53,7 +53,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/what-caused-you-to-miss-the-deadline").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
       )
@@ -71,7 +71,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
   "POST /what-caused-you-to-miss-the-deadline" should {
     "return 303 (SEE_OTHER) to 'reasonable excuse selection' page and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -95,7 +95,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the value is invalid" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -116,7 +116,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -137,7 +137,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
@@ -155,7 +155,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
   "GET /who-planned-to-submit-vat-return" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/who-planned-to-submit-vat-return").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -175,7 +175,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/who-planned-to-submit-vat-return").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
       )
@@ -193,7 +193,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
   "POST /who-planned-to-submit-vat-return" should {
     "return 303 (SEE_OTHER) to who planned to submit vat return page and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -217,7 +217,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the value is invalid" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -238,7 +238,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -259,7 +259,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")

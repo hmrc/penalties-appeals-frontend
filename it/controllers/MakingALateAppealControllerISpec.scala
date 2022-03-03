@@ -30,7 +30,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
   "GET /making-a-late-appeal" should {
     "return 200 (OK) when the user is authorised and has the correct keys" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/making-a-late-appeal").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -51,7 +51,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/making-a-late-appeal").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
@@ -70,7 +70,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
   "POST /making-a-late-appeal" should {
     "return 303 (SEE OTHER) when the user POSTs non-empty data -  adding the key to the session" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/making-a-late-appeal").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -93,7 +93,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
 
     "return 400 (BAD REQUEST ) when the user POSTs EMPTY data" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/making-a-late-appeal").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -121,7 +121,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/making-a-late-appeal").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")

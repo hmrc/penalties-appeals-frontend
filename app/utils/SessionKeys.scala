@@ -22,7 +22,7 @@ object SessionKeys {
   val endDateOfPeriod: String = "periodEnd"
   val dueDateOfPeriod: String = "periodDueDate"
   val dateCommunicationSent: String = "dateCommunicationSent"
-  val penaltyId: String = "penaltyId"
+  val penaltyNumber: String = "penaltyIdNumber"
   val reasonableExcuse: String = "reasonableExcuse"
   val dateOfCrime: String = "dateOfCrime"
   val dateOfFireOrFlood: String = "dateOfFireOrFlood"
@@ -59,7 +59,7 @@ object SessionKeys {
     startDateOfPeriod,
     endDateOfPeriod,
     dueDateOfPeriod,
-    penaltyId,
+    penaltyNumber,
     reasonableExcuse,
     dateOfCrime,
     dateOfFireOrFlood,

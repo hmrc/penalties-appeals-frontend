@@ -46,7 +46,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   "GET /check-your-answers" should {
     "return 200 (OK) when the user is authorised and has the correct keys in session for crime" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -69,7 +69,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for loss of staff" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -89,7 +89,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for technical issues" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -112,7 +112,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -129,7 +129,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for crime - for a late appeal" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -151,7 +151,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood - for a late appeal" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -172,7 +172,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for loss of staff - for a late appeal" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -193,7 +193,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for technical issues - for a late appeal" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -216,7 +216,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "return 200 (OK) when the user is authorised and has the correct keys in session for other" when {
       "no file upload - no late appeal" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -241,7 +241,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "file upload - no late appeal" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
           SessionKeys.journeyId -> "4321",
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -278,7 +278,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "multiple file upload - no late appeal" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
           SessionKeys.journeyId -> "4321",
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -332,7 +332,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "no file upload - late appeal" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -360,7 +360,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "file upload - late appeal" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
           SessionKeys.journeyId -> "4321",
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -400,7 +400,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "user selected to not upload a file but already has uploaded files - do not show the 'Evidence to support this appeal' row" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
           SessionKeys.journeyId -> "4321",
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -436,7 +436,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for bereavement" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -456,7 +456,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for bereavement - for a late appeal" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -477,7 +477,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -498,7 +498,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal - with file upload" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
         SessionKeys.journeyId -> "4321",
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -535,7 +535,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal - selected no to file upload" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
         SessionKeys.journeyId -> "4321",
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -569,7 +569,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - agent" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.agentSessionVrn -> "VRN1234",
         SessionKeys.appealType -> "Late_Payment",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
@@ -591,7 +591,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user hasn't selected a reasonable excuse option" in {
       val fakeRequestWithMissingReasonableExcuse: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -605,7 +605,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user has selected a reasonable excuse option but hasn't completed the journey" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -630,7 +630,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the confirmation page on success for crime" in {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -650,7 +650,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the confirmation page on success for fire or flood" in {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -669,7 +669,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the confirmation page on success for loss of staff" in {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -688,7 +688,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the confirmation page on success for technical issues" in {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -709,7 +709,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "there is no hospital stay" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -729,7 +729,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "there is a ongoing hospital stay" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -750,7 +750,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "there has been a hospital stay that has ended" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -775,7 +775,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "the user hasn't uploaded a file" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -796,7 +796,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "the user has uploaded a file" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -817,7 +817,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "no file upload - late appeal" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -839,7 +839,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "file upload - late appeal" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -861,7 +861,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "for LPP" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Payment",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -883,7 +883,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "for LPP - agent" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.agentSessionVrn -> "VRN1234",
           SessionKeys.appealType -> "Late_Payment",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
@@ -906,7 +906,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "for LPP Additional - agent" in {
         PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.agentSessionVrn -> "VRN1234",
           SessionKeys.appealType -> "Additional",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
@@ -930,7 +930,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the confirmation page on success for bereavement" in {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -949,7 +949,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the confirmation page on success for obligation appeal" in {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -975,7 +975,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       )
       await(repository.updateStateOfFileUpload("1234", uploadJourneyModel, isInitiateCall = true))
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -996,7 +996,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the InternalServerError on failure" in {
       PenaltiesStub.failedAppealSubmissionWithFault(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -1013,7 +1013,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect to service unavailable page when downstream returns SERVICE_UNAVAILABLE" in {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(SERVICE_UNAVAILABLE))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -1033,7 +1033,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect to duplicate appeal page when downstream returns CONFLICT" in {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(CONFLICT))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -1053,7 +1053,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect to the ProblemWithService page when the appeal fails from a payload issue" in {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(BAD_REQUEST))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -1073,7 +1073,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "show an ISE when the appeal fails" in {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234")
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -1093,7 +1093,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect to the ProblemWithService page when the appeal fails from an issue with the service" in {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(INTERNAL_SERVER_ERROR))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -1120,7 +1120,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   "GET /appeal-confirmation" should {
     "redirect the user to the confirmation page on success" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",

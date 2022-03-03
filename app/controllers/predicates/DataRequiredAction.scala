@@ -30,7 +30,7 @@ trait DataRequiredAction extends ActionRefiner[UserRequest, UserRequest]
 class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
 
   override protected def refine[A](request: UserRequest[A]): Future[Either[Result, UserRequest[A]]] = {
-    (request.session.get(SessionKeys.penaltyId),
+    (request.session.get(SessionKeys.penaltyNumber),
       request.session.get(SessionKeys.appealType),
       request.session.get(SessionKeys.startDateOfPeriod),
       request.session.get(SessionKeys.endDateOfPeriod),
@@ -43,7 +43,7 @@ class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val 
         logger.error("[DataRequiredAction][refine] - Some data was missing from the session - rendering ISE")
         logger.debug(s"[DataRequiredAction][refine] - Required data from session: ${
           Seq(
-          request.session.get(SessionKeys.penaltyId),
+          request.session.get(SessionKeys.penaltyNumber),
           request.session.get(SessionKeys.appealType),
           request.session.get(SessionKeys.startDateOfPeriod),
           request.session.get(SessionKeys.endDateOfPeriod),

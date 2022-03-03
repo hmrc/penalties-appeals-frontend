@@ -32,7 +32,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /was-a-hospital-stay-required" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/was-a-hospital-stay-required").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -52,7 +52,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/was-a-hospital-stay-required").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
       )
@@ -70,7 +70,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /was-a-hospital-stay-required" should {
     "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers no" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/was-a-hospital-stay-required").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -93,7 +93,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers yes" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/was-a-hospital-stay-required").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -117,7 +117,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the value is invalid" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/was-a-hospital-stay-required").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -138,7 +138,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/was-a-hospital-stay-required").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -159,7 +159,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/was-a-hospital-stay-required").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
@@ -178,7 +178,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /when-did-health-issue-happen" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-health-issue-happen").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -198,7 +198,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-health-issue-happen").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
       )
@@ -217,7 +217,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /when-did-health-issue-happen" should {
     "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -242,7 +242,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -268,7 +268,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the date submitted is in the future" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -291,7 +291,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -306,7 +306,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       "the date submitted is missing a field" in {
 
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -365,7 +365,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
@@ -384,7 +384,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /has-the-hospital-stay-ended" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -399,7 +399,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not have the start date" in {
       val fakeRequestWithNoStartDateKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -419,7 +419,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
       )
@@ -431,7 +431,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /has-the-hospital-stay-ended" should {
     "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session keys to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -459,7 +459,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -484,7 +484,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the date submitted is in the future" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -508,7 +508,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "the date submitted is before the start date" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -532,7 +532,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -548,7 +548,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
       "the date submitted is missing a field" in {
 
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -602,7 +602,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not have a start date" in {
       val fakeRequestWithNoStartDateKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -622,7 +622,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")

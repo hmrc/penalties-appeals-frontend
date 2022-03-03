@@ -30,7 +30,7 @@ class OtherPenaltiesForPeriodControllerISpec extends IntegrationSpecCommonBase {
   "GET /multiple-penalties" should {
     "return 200 (OK) when the user is authorised and has the correct keys" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/multiple-penalties").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -70,7 +70,7 @@ class OtherPenaltiesForPeriodControllerISpec extends IntegrationSpecCommonBase {
   "POST /multiple-penalties" should {
     "return 300 (SEE_OTHER) when the user posts valid data" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/multiple-penalties").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -91,7 +91,7 @@ class OtherPenaltiesForPeriodControllerISpec extends IntegrationSpecCommonBase {
 
     "return 400 (BAD_REQUEST) when the user posts invalid data" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/multiple-penalties").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),

@@ -152,7 +152,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
   "submitAppeal" should {
     "return the response of the call" in {
-      successfulAppealSubmission(isLPP = false, penaltyId = "123456789")
+      successfulAppealSubmission(isLPP = false, penaltyNumber = "123456789")
       val model = AppealSubmission(
         sourceSystem = "MDTP",
         taxRegime = "VAT",
@@ -178,7 +178,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
     }
 
     "return the response of the call for LPP" in {
-      successfulAppealSubmission(isLPP = true, penaltyId = "123456789")
+      successfulAppealSubmission(isLPP = true, penaltyNumber = "123456789")
       val model = AppealSubmission(
         sourceSystem = "MDTP",
         taxRegime = "VAT",
