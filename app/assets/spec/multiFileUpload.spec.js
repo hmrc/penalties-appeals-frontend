@@ -31,6 +31,13 @@ function getProvisionResponse() {
     };
 }
 
+function getFailedResponse() {
+    return {
+        status: 'REJECTED',
+        errorMessage: 'The selected file must be smaller than 6MB. Remove the file and try again.'
+    }
+}
+
 describe('Multi File Upload component', () => {
     let instance;
     let container;
@@ -41,10 +48,12 @@ describe('Multi File Upload component', () => {
     describe('Given multi-file-upload component and its templates are present in DOM', () => {
         beforeEach(() => {
             document.body.insertAdjacentHTML('afterbegin', `
+            <span class="govuk-caption-l" id="penalty-information"></span>
         <form class="multi-file-upload"
           data-multi-file-upload-file-uploading="Uploading {fileNumber} {fileName}"
           data-multi-file-upload-file-uploaded="{fileNumber} {fileName} has been uploaded"
           data-multi-file-upload-file-removed="{fileNumber} {fileName} has been removed"
+          data-multi-file-upload-error-prefix="Error:"
           >
           <ul class="multi-file-upload__item-list"></ul>
 
@@ -101,7 +110,7 @@ describe('Multi File Upload component', () => {
           </script>
 
           <script type="text/x-template" id="error-manager-message-tpl">
-            <span class="govuk-error-message">
+            <span id="error-message-{fileNumber}" class="govuk-error-message">
               <span class="multi-file-upload__error-message">{errorMessage}</span>
             </span>
           </script>
@@ -241,6 +250,92 @@ describe('Multi File Upload component', () => {
                 it('Then fileName should contain "test.txt"', (done) => {
                     const fileName = container.querySelector('.multi-file-upload__file-name');
                     expect(fileName.textContent).toEqual('test.txt');
+                    done();
+                });
+            });
+        });
+
+        describe('And component is initialised', () => {
+            beforeEach((done) => {
+                instance = new MultiFileUpload(container);
+                spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
+                    const response = getProvisionResponse();
+                    const promise = Promise.resolve(response);
+
+                    promise.then(() => {
+                        instance.handleProvisionUploadCompleted(file, response);
+                        done();
+                    });
+
+                    return promise;
+                });
+                spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
+                spyOn(instance, 'uploadFile').and.callFake((file) => {
+                    instance.handleUploadFileCompleted(file.dataset.multiFileUploadFileRef);
+                });
+                spyOn(instance, 'requestUploadStatus').and.callFake((fileRef) => {
+                    instance.handleRequestUploadStatusCompleted(fileRef, getFailedResponse());
+                });
+                spyOn(instance, 'delayedRequestUploadStatus').and.callFake((fileRef) => {
+                    instance.requestUploadStatus(fileRef);
+                });
+
+                instance.init();
+                item = container.querySelector('.multi-file-upload__item');
+                input = container.querySelector('.multi-file-upload__file');
+                done();
+            });
+
+            describe('When there is an error', () => {
+                beforeEach((done) => {
+
+                    input.files = createFileList([new File([''], '/path/to/test.txt')]);
+                    input.dispatchEvent(new Event('change'));
+                    done();
+                });
+
+                it('Then item should have the aria-describedby attribute', (done) => {
+                    expect(input.hasAttribute('aria-describedby')).toEqual(true);
+                    expect(input.getAttribute('aria-describedby')).toEqual('error-message-123');
+                    done();
+                });
+
+                it('Then the document title should be prefixed with "Error:"', (done) => {
+                    expect(document.title).toContain('Error:');
+                    done();
+                });
+            });
+
+            describe('When the user removes the last error', () => {
+                beforeEach((done) => {
+                    spyOn(instance, 'requestRemoveFile').and.callFake((file) => {
+                        instance.requestRemoveFileCompleted(file);
+                    });
+                    input.files = createFileList([new File([''], '/path/to/test.txt')]);
+                    input.dispatchEvent(new Event('change'));
+                    done();
+                });
+
+                it('Then the document title prefix ("Error:") should be removed', (done) => {
+                    item.querySelector('.multi-file-upload__remove-item').click();
+                    expect(document.title).not.toContain('Error:');
+                    done();
+                });
+            });
+
+            describe('When the user changes the file', () => {
+                beforeEach((done) => {
+                    input.files = createFileList([new File([''], '/path/to/test.txt')]);
+                    input.dispatchEvent(new Event('change'));
+                    done();
+                });
+
+                it('Then the input should no longer have the aria-describedby attribute', (done) => {
+                    instance.requestUploadStatus.and.callFake((fileRef) => {
+                        instance.handleRequestUploadStatusCompleted(fileRef, getStatusResponse());
+                    });
+                    input.dispatchEvent(new Event('change'));
+                    expect(input.hasAttribute('aria-describedby')).toEqual(false);
                     done();
                 });
             });

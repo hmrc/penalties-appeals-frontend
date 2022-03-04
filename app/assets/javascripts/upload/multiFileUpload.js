@@ -20,6 +20,7 @@ export class MultiFileUpload {
         this.errorSummaryTpl = "";
         this.errorSummaryItemTpl = "";
         this.errorSummary = "";
+        this.hasDisplayedErrorPrefix = false;
         this.errors = {};
         this.csrfToken = form.querySelector("input[name=csrfToken]").value;
         this.config = {
@@ -65,7 +66,8 @@ export class MultiFileUpload {
             stillTransferring: form.dataset.multiFileUploadStillTransferring,
             fileUploaded: form.dataset.multiFileUploadFileUploaded,
             fileUploading: form.dataset.multiFileUploadFileUploading,
-            fileRemoved: form.dataset.multiFileUploadFileRemoved
+            fileRemoved: form.dataset.multiFileUploadFileRemoved,
+            errorPrefix: form.dataset.multiFileUploadErrorPrefix
         }
 
         this.cacheTemplates();
@@ -349,6 +351,7 @@ export class MultiFileUpload {
         return formData;
     }
 
+    /** F77 */
     setUploadingMessage(item, file) {
         item.querySelector(`.${this.classes.progressBar}`).textContent = this.parseTemplate(this.messages.fileUploading, {
             fileNumber: item.querySelector(".govuk-label").textContent.toLowerCase(),
@@ -427,7 +430,6 @@ export class MultiFileUpload {
             errorMessage: errorMessage,
             errorSummaryRow: errorSummaryRow
         };
-
         this.updateErrorSummaryVisibility();
         document.querySelector('.govuk-error-summary').focus();
     }
@@ -441,7 +443,7 @@ export class MultiFileUpload {
         const error = this.errors[inputId];
         const input = document.getElementById(inputId);
         const inputContainer = this.getContainer(input);
-
+        input.removeAttribute('aria-describedby');
         error.errorMessage.remove();
         error.errorSummaryRow.remove();
 
@@ -456,7 +458,13 @@ export class MultiFileUpload {
     updateErrorSummaryVisibility() {
         if (this.hasErrors()) {
             document.querySelector('#penalty-information').before(this.errorSummary);
+            if(!this.hasDisplayedErrorPrefix) {
+                document.title = this.messages.errorPrefix + ' ' + document.title;
+                this.hasDisplayedErrorPrefix = true;
+            }
         } else {
+            document.title = document.title.split(": ")[1];
+            this.hasDisplayedErrorPrefix = false;
             this.errorSummary.remove();
         }
     }
@@ -466,13 +474,14 @@ export class MultiFileUpload {
         const input = document.getElementById(inputId);
         const inputContainer = this.getContainer(input);
         const label = this.getLabel(inputContainer);
-
+        const file = this.getFileFromItem(inputContainer);
+        const ref = file.dataset.multiFileUploadFileRef;
         const errorMessage = this.parseHtml(this.errorMessageTpl, {
+            fileRef: ref,
             errorMessage: message
         });
-
         inputContainer.classList.add(this.classes.inputContainerError);
-
+        input.setAttribute('aria-describedby', `error-message-${ref}`);
         label.after(errorMessage);
 
         return errorMessage;
