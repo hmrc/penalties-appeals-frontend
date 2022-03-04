@@ -91,19 +91,8 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
         val appealInfo = health.asInstanceOf[HealthAppealInformation]
         jsonObjNoNulls(
           "type" -> appealInfo.reasonableExcuse,
-          "hospitalStayInvolved" -> appealInfo.hospitalStayInvolved,
-          "startDateOfEvent" -> {
-                try appealInfo.startDateOfEvent.get
-                catch {
-                  case _: NoSuchElementException => None
-                }
-          },
-          "endDateOfEvent" -> {
-            try appealInfo.endDateOfEvent.get
-            catch {
-              case _: NoSuchElementException => None
-            }
-          },
+          "startDateOfEvent" -> appealInfo.startDateOfEvent,
+          "endDateOfEvent" -> appealInfo.endDateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
           "lateAppealReason" -> appealInfo.lateAppealReason
         )
