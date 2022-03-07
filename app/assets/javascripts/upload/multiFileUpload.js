@@ -218,9 +218,9 @@ export class MultiFileUpload {
 
     /** F14 */
     requestRemoveFileCompleted(file, isInit) {
-        if(!isInit) {
+        if (!isInit) {
             const item = file.closest(`.${this.classes.item}`);
-            if(this.getFileName(file)) {
+            if (this.getFileName(file)) {
                 this.addNotification(this.parseTemplate(this.messages.fileRemoved, {
                     fileNumber: item.querySelector(".govuk-label").textContent,
                     fileName: this.getFileName(file)
@@ -356,6 +356,7 @@ export class MultiFileUpload {
             fileName: this.getFileName(file)
         });
     }
+
     /** F24 */
     uploadFile(file) {
         const xhr = new XMLHttpRequest();
@@ -611,14 +612,18 @@ export class MultiFileUpload {
             body: formData
         })
             .then(response => {
-                              if (response.status == 500) {
-                              window.location.href = this.getErrorServiceUrl();
-                              } else {
-                                return response.json();
-                              }
-                            })
+                if (response.status == 500) {
+                    this.redirectToErrorPage();
+                } else {
+                    return response.json();
+                }
+            })
             .then(this.handleProvisionUploadCompleted.bind(this, file))
             .catch(this.delayedProvisionUpload.bind(this, file));
+    }
+
+    redirectToErrorPage() {
+        window.location.href = this.getErrorServiceUrl();
     }
 
     /** F48 */
@@ -858,9 +863,9 @@ export class MultiFileUpload {
     }
 
     /** F76 */
-        getErrorServiceUrl() {
-            return this.config.getErrorServiceUrlTpl;
-        }
+    getErrorServiceUrl() {
+        return this.config.getErrorServiceUrlTpl;
+    }
 }
 
 /**
@@ -869,7 +874,7 @@ export class MultiFileUpload {
  */
 document.addEventListener('DOMContentLoaded', function () {
     const element = document.getElementById("multi-upload-form");
-    if(element) {
+    if (element) {
         const uploadObj = new MultiFileUpload(element);
         uploadObj.init();
     }

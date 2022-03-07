@@ -1,4 +1,5 @@
 import {MultiFileUpload} from '../javascripts/upload/multiFileUpload';
+
 function createFileList(files) {
     const dt = new DataTransfer();
 
@@ -45,6 +46,7 @@ describe('Multi File Upload component', () => {
           data-multi-file-upload-file-uploading="Uploading {fileNumber} {fileName}"
           data-multi-file-upload-file-uploaded="{fileNumber} {fileName} has been uploaded"
           data-multi-file-upload-file-removed="{fileNumber} {fileName} has been removed"
+          data-multi-file-upload-send-url-tpl="/initiate"
           >
           <ul class="multi-file-upload__item-list"></ul>
 
@@ -143,11 +145,12 @@ describe('Multi File Upload component', () => {
                     done();
                 });
 
-               it('Then input should have data prop multiFileUploadFileRef="123"', (done) => {
-                   input = container.querySelector('.multi-file-upload__file');
-                   expect(input.dataset.multiFileUploadFileRef).toEqual('123');
-                   done();
-               });
+
+                it('Then input should have data prop multiFileUploadFileRef="123"', (done) => {
+                    input = container.querySelector('.multi-file-upload__file');
+                    expect(input.dataset.multiFileUploadFileRef).toEqual('123');
+                    done();
+                });
             });
 
             describe('And data-multi-file-upload-max-files is set to 5', () => {
@@ -163,26 +166,46 @@ describe('Multi File Upload component', () => {
                     });
 
                     describe('When "Add another" button is clicked', () => {
-                    beforeEach(()=>{
-                     spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse()));
-                    });
+                        beforeEach(() => {
+                            spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse()));
+                        });
 
-                         it('Then 2 rows should be present', () => {
-                        container.querySelector('.multi-file-upload__add-another').click();
-                        expect(container.querySelectorAll('.multi-file-upload__item').length).toEqual(2);
+                        it('Then 2 rows should be present', () => {
+                            container.querySelector('.multi-file-upload__add-another').click();
+                            expect(container.querySelectorAll('.multi-file-upload__item').length).toEqual(2);
                         });
 
                         it('Then "Add another" button should be hidden', () => {
-                        container.querySelector('.multi-file-upload__add-another').click();
-                        container.querySelector('.multi-file-upload__add-another').click();
-                        container.querySelector('.multi-file-upload__add-another').click();
-                        container.querySelector('.multi-file-upload__add-another').click();
-                        const addAnotherBtn = container.querySelector('.multi-file-upload__add-another');
+                            container.querySelector('.multi-file-upload__add-another').click();
+                            container.querySelector('.multi-file-upload__add-another').click();
+                            container.querySelector('.multi-file-upload__add-another').click();
+                            container.querySelector('.multi-file-upload__add-another').click();
+                            const addAnotherBtn = container.querySelector('.multi-file-upload__add-another');
 
-                        expect(addAnotherBtn.classList.contains('hidden')).toEqual(true);
+                            expect(addAnotherBtn.classList.contains('hidden')).toEqual(true);
                         });
                     });
                 });
+            });
+        });
+        describe('And component is initialised', () => {
+            beforeEach((done) => {
+                instance = new MultiFileUpload(container);
+                const iseResponse = new Response(JSON.stringify({}), { status: 500, statusText: 'Something went wrong' });
+                spyOn(window, 'fetch').and.resolveTo(iseResponse);
+                spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
+
+                spyOn(instance, 'redirectToErrorPage');
+                instance.init();
+
+                item = container.querySelector('.multi-file-upload__item');
+                input = container.querySelector('.multi-file-upload__file');
+                done();
+            });
+
+            it('Then should redirect to the service unavailable page when a 500 is returned', (done) => {
+                expect(instance.redirectToErrorPage).toHaveBeenCalled();
+                done();
             });
         });
 
@@ -250,18 +273,18 @@ describe('Multi File Upload component', () => {
             beforeEach((done) => {
                 instance = new MultiFileUpload(container);
                 spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
-                                        const response = getProvisionResponse();
-                                        const promise = Promise.resolve(response);
+                    const response = getProvisionResponse();
+                    const promise = Promise.resolve(response);
 
-                                        promise.then(() => {
-                                            instance.handleProvisionUploadCompleted(file, response);
-                                            done();
-                                        });
+                    promise.then(() => {
+                        instance.handleProvisionUploadCompleted(file, response);
+                        done();
+                    });
 
-                                        return promise;
-                                    });
+                    return promise;
+                });
                 spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
-                 spyOn(instance, 'uploadFile').and.callFake((file) => {
+                spyOn(instance, 'uploadFile').and.callFake((file) => {
                     instance.handleUploadFileCompleted(file.dataset.multiFileUploadFileRef);
                 });
                 spyOn(instance, 'requestUploadStatus').and.callFake((fileRef) => {
