@@ -317,7 +317,6 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "health",
-          "hospitalStayInvolved" -> true,
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "endDateOfEvent" -> "2021-04-25T18:25:43.511Z",
           "lateAppeal" -> false
@@ -325,23 +324,7 @@ class AppealAuditModelSpec extends SpecBase {
       )
     }
 
-    "output the correct details for a lpp health with ongoing hospital stay submission with correlationID" in {
-      lppHealthOngoingModel.detail shouldBe Json.obj(
-        "submittedBy" -> "client",
-        "taxIdentifier" -> "123456789",
-        "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
-        "correlationId" -> "someUUID",
-        "appealInformation" -> Json.obj(
-          "type" -> "health",
-          "hospitalStayInvolved" -> true,
-          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-          "lateAppeal" -> false
-        )
-      )
-    }
-
-    "output the correct details for a lpp health with no hospital stay submission with correlationID" in {
+    "output the correct details for a lpp health with no/ongoing hospital stay submission with correlationID" in {
       lppHealthNoHospitalModel.detail shouldBe Json.obj(
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
@@ -350,7 +333,6 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "health",
-          "hospitalStayInvolved" -> false,
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "lateAppeal" -> false
         )
