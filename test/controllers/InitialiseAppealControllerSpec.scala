@@ -75,7 +75,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
@@ -102,7 +102,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
@@ -130,7 +130,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.appealType).get shouldBe PenaltyTypeEnum.Additional.toString
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
@@ -166,7 +166,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
@@ -193,7 +193,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
@@ -219,7 +219,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
           await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
           await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
           await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-          await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+          await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
           await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
           await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
           await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")

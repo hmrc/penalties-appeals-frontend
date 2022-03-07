@@ -36,7 +36,7 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired).async { implicit request => {
       logger.debug(s"[AppealStartController][onPageLoad] - Session keys received: \n" +
         s"Appeal Type = ${request.session.get(SessionKeys.appealType)}, \n" +
-        s"Penalty ID = ${request.session.get(SessionKeys.penaltyId)}, \n" +
+        s"Penalty Number = ${request.session.get(SessionKeys.penaltyNumber)}, \n" +
         s"Start date of period = ${request.session.get(SessionKeys.startDateOfPeriod)}, \n" +
         s"End date of period = ${request.session.get(SessionKeys.endDateOfPeriod)}, \n" +
         s"Due date of period = ${request.session.get(SessionKeys.dueDateOfPeriod)}, \n" +

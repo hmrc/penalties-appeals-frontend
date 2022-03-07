@@ -42,7 +42,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     "return true when the connector call succeeds for crime" in  {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -62,7 +62,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     "return true when the connector call succeeds for loss of staff" in  {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -81,7 +81,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     "return true when the connector call succeeds for technical issues" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -101,7 +101,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     "return true when the connector call succeeds for fire or flood" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -120,7 +120,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     "return true when the connector call succeeds for bereavement" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -139,7 +139,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     "return true when the connector call succeeds for other - no file upload" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -181,7 +181,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate, isInitiateCall = true))
       await(repository.updateStateOfFileUpload("1234", uploadAsWaiting, isInitiateCall = true))
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -223,7 +223,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       successfulAppealSubmission(isLPP = false, "1234")
       await(repository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
       val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-        SessionKeys.penaltyId -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> "Late_Submission",
         SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
         SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -247,7 +247,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       "there is no hospital stay" in  {
         successfulAppealSubmission(isLPP = false, "1234")
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -267,7 +267,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       "there is a ongoing hospital stay" in {
         successfulAppealSubmission(isLPP = false, "1234")
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -288,7 +288,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       "there has been a hospital stay that has ended" in {
         successfulAppealSubmission(isLPP = false, "1234")
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -310,7 +310,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       "return true when the connector call succeeds for LPP" in {
         successfulAppealSubmission(isLPP = true, "1234")
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Payment",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -332,7 +332,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       "the connector returns a fault" in {
         failedAppealSubmissionWithFault(isLPP = false, "1234")
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
@@ -351,7 +351,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       "the connector returns an unknown status code" in {
         failedAppealSubmission(isLPP = false, "1234")
         val userRequest = UserRequest("123456789")(FakeRequest("POST", "/check-your-answers").withSession(
-          SessionKeys.penaltyId -> "1234",
+          SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> "Late_Submission",
           SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
           SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",

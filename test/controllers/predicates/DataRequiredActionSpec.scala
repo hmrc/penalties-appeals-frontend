@@ -50,7 +50,7 @@ class DataRequiredActionSpec extends SpecBase {
 
     s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when some of the data is missing as part of the session" in {
       val requestWithPartSessionKeys = UserRequest("123456789")(fakeRequest
-        .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "this is an appeal"), (SessionKeys.startDateOfPeriod, "date")))
+        .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "this is an appeal"), (SessionKeys.startDateOfPeriod, "date")))
       val fakeController = new Harness(
         requiredAction = new DataRequiredActionImpl(
           errorHandler

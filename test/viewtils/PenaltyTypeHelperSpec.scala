@@ -65,7 +65,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
     s"return $None when all the keys exist in the session and the enum can not be parsed" in {
       val fakeRequestWithWrongAppealType: FakeRequest[AnyContent] = fakeRequest.withSession(
         (SessionKeys.appealType, "invalid"),
-        (SessionKeys.penaltyId, "123"),
+        (SessionKeys.penaltyNumber, "123"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")
       )
@@ -76,7 +76,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
     s"return $None when some of the keys do not exist in the session" in {
       val fakeRequestWitSomeKeysNotExisting: FakeRequest[AnyContent] = fakeRequest.withSession(
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.penaltyId, "123"),
+        (SessionKeys.penaltyNumber, "123"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500")
       )
       val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWitSomeKeysNotExisting, implicitly)
@@ -86,7 +86,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
     s"return $None when the dates stored in the session can not be parsed" in {
       val fakeRequestWithInvalidDates: FakeRequest[AnyContent] = fakeRequest.withSession(
         (SessionKeys.appealType, "invalid"),
-        (SessionKeys.penaltyId, "123"),
+        (SessionKeys.penaltyNumber, "123"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00over5thousand"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")
       )

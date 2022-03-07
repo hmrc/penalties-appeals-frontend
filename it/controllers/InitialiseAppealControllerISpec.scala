@@ -35,7 +35,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
@@ -51,7 +51,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
@@ -67,7 +67,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
@@ -91,7 +91,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
@@ -108,7 +108,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
       await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyId).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true

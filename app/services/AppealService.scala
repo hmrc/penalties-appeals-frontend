@@ -91,7 +91,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val appealType = userRequest.session.get(SessionKeys.appealType)
     val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)
     val agentReferenceNo = userRequest.arn
-    val penaltyId = userRequest.session.get(SessionKeys.penaltyId).get
+    val penaltyNumber = userRequest.session.get(SessionKeys.penaltyNumber).get
     val correlationId: String = idGenerator.generateUUID
     val userHasUploadedFiles = userRequest.session.get(SessionKeys.isUploadEvidence).contains("yes")
     for {
@@ -100,7 +100,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       uploads = if(userHasUploadedFiles) readyOrDuplicateFileUploads else None
       modelFromRequest: AppealSubmission = AppealSubmission
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, agentReferenceNo, uploads)
-      response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyId, correlationId)
+      response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId)
     } yield {
       response.status match {
         case OK =>

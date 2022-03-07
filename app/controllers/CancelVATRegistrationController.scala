@@ -101,7 +101,7 @@ class CancelVATRegistrationController @Inject() (
               ) || optAppealType.contains(PenaltyTypeEnum.Additional.toString)
               appealService
                 .otherPenaltiesInTaxPeriod(
-                  userRequest.session.get(SessionKeys.penaltyId).get,
+                  userRequest.session.get(SessionKeys.penaltyNumber).get,
                   isLPP
                 )(userRequest, ec, hc)
                 .map(multiplePenalties => {

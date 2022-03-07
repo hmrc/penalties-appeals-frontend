@@ -34,7 +34,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /when-did-the-person-die" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-person-die").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -54,7 +54,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-person-die").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
       )
@@ -72,7 +72,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /when-did-the-person-die" should {
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -98,7 +98,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to 'Making a Late appeal page' when appeal is > " +
       "30 days late" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -124,7 +124,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the date submitted is in the future" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -147,7 +147,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -161,7 +161,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "the date submitted is missing a field" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -218,7 +218,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
@@ -237,7 +237,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
   "return 400 (BAD_REQUEST)" when {
     "the date submitted is in the future" in {
       val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -260,7 +260,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "no body is submitted" in {
       val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -274,7 +274,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "the date submitted is missing a field" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -332,7 +332,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
   "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
     val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-      (SessionKeys.penaltyId, "1234"),
+      (SessionKeys.penaltyNumber, "1234"),
       (SessionKeys.appealType, "Late_Submission"),
       (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
       (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
@@ -350,7 +350,7 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
   "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to 'Making a Late appeal page' when appeal is > " +
     "30 days late" in {
     val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
-      (SessionKeys.penaltyId, "1234"),
+      (SessionKeys.penaltyNumber, "1234"),
       (SessionKeys.appealType, "Late_Submission"),
       (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
       (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),

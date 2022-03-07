@@ -32,7 +32,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
   "GET /honesty-declaration" should {
     "return 200 (OK) when the user is authorised and has the correct keys" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -47,7 +47,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys - and show one more bullet when reasonable excuse is 'lossOfStaff'" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -65,7 +65,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys - and no custom no extraText when reasonable excuse is 'other'" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -82,7 +82,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the user is appealing an obligation" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -107,7 +107,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -132,7 +132,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(FakeRequest("GET", "/honesty-declaration")
           .withSession(
             (SessionKeys.agentSessionVrn, "VRN1234"),
-            (SessionKeys.penaltyId, "1234"),
+            (SessionKeys.penaltyNumber, "1234"),
             (SessionKeys.appealType, "Late_Submission"),
             (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
             (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -153,7 +153,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the agent is appealing an obligation" in {
         val fakeRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(FakeRequest("GET", "/honesty-declaration").withSession(
           (SessionKeys.agentSessionVrn, "VRN1234"),
-          (SessionKeys.penaltyId, "1234"),
+          (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
           (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -175,7 +175,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
   "POST /honesty-declaration" should {
     "return 303 (SEE OTHER) when the user POSTs valid data - and the calls succeed - adding the key to the session" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -198,7 +198,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
     "return 400 (BAD REQUEST) when the user POSTs invalid data" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
@@ -225,7 +225,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),

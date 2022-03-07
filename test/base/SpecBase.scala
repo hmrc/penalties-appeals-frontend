@@ -87,19 +87,19 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   }
 
   val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"),
+    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Late_Submission"),
       (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
       (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
       (SessionKeys.journeyId, "1234"))
 
   val fakeRequestLPPWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Payment"),
+    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Late_Payment"),
       (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
       (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
       (SessionKeys.journeyId, "1234"))
 
   val fakeRequestAdditionalWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Additional"),
+    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Additional"),
       (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
       (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
       (SessionKeys.journeyId, "1234"))
@@ -115,12 +115,12 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   val userRequestWithCorrectKeysAndJS: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestWithCorrectKeysAndJS)
 
   val fakeRequestWithCorrectKeysAndReasonableExcuseSet: String => UserRequest[AnyContent] = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
-    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
+    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
       (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"),
       (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"), (SessionKeys.reasonableExcuse, reasonableExcuse), (SessionKeys.journeyId, "1234")))
 
   val fakeRequestWithCorrectKeysAndHonestyDeclarationSet: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyId, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod,
+    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod,
       "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod,
       "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"), (SessionKeys.journeyId, "1234"),
       (SessionKeys.hasConfirmedDeclaration, "true"))
