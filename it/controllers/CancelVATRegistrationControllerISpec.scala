@@ -89,7 +89,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct (YouCanAppealThisPenaltyRouting fs enabled)" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
-        (SessionKeys.penaltyId, "1234"),
+        (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
