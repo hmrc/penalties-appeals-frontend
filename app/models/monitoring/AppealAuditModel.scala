@@ -89,8 +89,9 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
         )
       case health if health.isInstanceOf[HealthAppealInformation] =>
         val appealInfo = health.asInstanceOf[HealthAppealInformation]
+        val healthReason = if(appealInfo.hospitalStayInvolved) "unexpectedHospitalStay" else "seriousOrLifeThreateningIllHealth"
         jsonObjNoNulls(
-          "type" -> appealInfo.reasonableExcuse,
+          "type" -> healthReason,
           "startDateOfEvent" -> appealInfo.startDateOfEvent,
           "endDateOfEvent" -> appealInfo.endDateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
