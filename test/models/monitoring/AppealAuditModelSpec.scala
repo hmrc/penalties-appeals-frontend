@@ -316,7 +316,7 @@ class AppealAuditModelSpec extends SpecBase {
         "penaltyType" -> "LPP",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
-          "type" -> "health",
+          "type" -> "unexpectedHospitalStay",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "endDateOfEvent" -> "2021-04-25T18:25:43.511Z",
           "lateAppeal" -> false
@@ -332,7 +332,7 @@ class AppealAuditModelSpec extends SpecBase {
         "penaltyType" -> "LPP",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
-          "type" -> "health",
+          "type" -> "seriousOrLifeThreateningIllHealth",
           "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
           "lateAppeal" -> false
         )
