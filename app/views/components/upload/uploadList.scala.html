@@ -29,7 +29,7 @@
     <dd class="govuk-summary-list__actions">
         @formHelper(action = controllers.routes.OtherReasonController.removeFileUpload(mode)) {
             <input type="hidden" name="fileReference" value="@fileReference">
-            <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-@fileNumber">
+            <button type="submit" class="govuk-button--secondary govuk-!-margin-bottom-0 govuk-button govuk-body" id="remove-button-@fileNumber">
                 @messages("otherReason.uploadEvidence.button.remove")
                 <span class="govuk-visually-hidden">@messages("otherReason.uploadEvidence.file") @fileNumber</span>
             </button>
