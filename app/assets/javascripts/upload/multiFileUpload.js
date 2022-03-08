@@ -612,7 +612,7 @@ export class MultiFileUpload {
         })
             .then(response => {
                               if (response.status == 500) {
-                              window.location.href = this.getErrorServiceUrl();
+                              this.redirectToErrorServicePage();
                               } else {
                                 return response.json();
                               }
@@ -861,6 +861,11 @@ export class MultiFileUpload {
         getErrorServiceUrl() {
             return this.config.getErrorServiceUrlTpl;
         }
+
+    /** F77 */
+        redirectToErrorServicePage() {
+             window.location.href = this.getErrorServiceUrl();
+         }
 }
 
 /**
