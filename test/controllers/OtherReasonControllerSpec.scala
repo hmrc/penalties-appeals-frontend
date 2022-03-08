@@ -53,7 +53,6 @@ class OtherReasonControllerSpec extends SpecBase {
   val uploadAnotherDocumentPage: UploadAnotherDocumentPage = injector.instanceOf[UploadAnotherDocumentPage]
   val uploadEvidenceQuestionPage: UploadEvidenceQuestionPage = injector.instanceOf[UploadEvidenceQuestionPage]
   val uploadListPage: UploadListPage = injector.instanceOf[UploadListPage]
-  val mockFeatureSwitching: FeatureSwitching = mock(classOf[FeatureSwitching])
   val evidenceFileUploadsHelper: EvidenceFileUploadsHelper = injector.instanceOf[EvidenceFileUploadsHelper]
   val serviceUnavailablePage: ServiceUnavailablePage = injector.instanceOf[ServiceUnavailablePage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global

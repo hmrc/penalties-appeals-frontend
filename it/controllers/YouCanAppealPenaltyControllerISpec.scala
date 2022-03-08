@@ -82,8 +82,7 @@ class YouCanAppealPenaltyControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      //TODO: implement
-//      request.header.headers("Location") shouldBe routes.AppealStartController.onPageLoad().url
+      request.header.headers("Location") shouldBe routes.AppealStartController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.youCanAppealThisPenalty).get shouldBe "yes"
     }
 

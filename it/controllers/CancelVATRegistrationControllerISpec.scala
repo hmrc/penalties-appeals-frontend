@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, YouCanAppealThisPenaltyRouting}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
@@ -25,6 +26,7 @@ import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
+  val featureSwitching: FeatureSwitching = injector.instanceOf[FeatureSwitching]
   val controller: CancelVATRegistrationController = injector.instanceOf[CancelVATRegistrationController]
   "GET /cancel-vat-registration" should {
     "return 200 (OK) when the user is authorised" in {
@@ -61,6 +63,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
     }
   }
   "POST /cancel-vat-registration" should {
+    //TODO: need to remove extraData parameter once 'You can appeal this penalty page' has been implemented fully
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
         (SessionKeys.penaltyNumber, "1234"),
@@ -81,6 +84,30 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.AppealStartController.onPageLoad().url
+      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
+    }
+
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct (YouCanAppealThisPenaltyRouting fs enabled)" in {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
+        (SessionKeys.penaltyNumber, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.journeyId -> "1234"
+      ).withJsonBody(
+        Json.parse(
+          """
+            |{
+            | "value": "yes"
+            |}
+            |""".stripMargin)
+      )
+      featureSwitching.enableFeatureSwitch(YouCanAppealThisPenaltyRouting)
+      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe routes.YouCanAppealPenaltyController.onPageLoad().url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
     }
 

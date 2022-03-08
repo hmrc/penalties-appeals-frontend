@@ -79,18 +79,10 @@ class CancelVATRegistrationController @Inject() (
           .fold(
             form => {
               val postAction =
-                controllers.routes.CancelVATRegistrationController
-                  .onSubmitForCancelVATRegistration()
-              val radioOptionsToRender: Seq[RadioItem] =
-                RadioOptionHelper.yesNoRadioOptions(form)
+                controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
+              val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
               Future(
-                BadRequest(
-                  cancelVATRegistrationPage(
-                    form,
-                    radioOptionsToRender,
-                    postAction
-                  )
-                )
+                BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction))
               )
             },
             cancelVATRegistration => {
@@ -107,16 +99,8 @@ class CancelVATRegistrationController @Inject() (
                 .map(multiplePenalties => {
                   val extraData: Map[String, String] =
                     Map("multiplePenalties" -> multiplePenalties.toString)
-                  Redirect(
-                    navigation.nextPage(
-                      CancelVATRegistrationPage,
-                      NormalMode,
-                      Some(cancelVATRegistration),
-                      Some(extraData)
-                    )
-                  ).addingToSession(
-                      (SessionKeys.cancelVATRegistration, cancelVATRegistration)
-                    )
+                  Redirect(navigation.nextPage(CancelVATRegistrationPage, NormalMode, Some(cancelVATRegistration), Some(extraData))
+                  ).addingToSession(SessionKeys.cancelVATRegistration -> cancelVATRegistration)
                 })
             }
           )
