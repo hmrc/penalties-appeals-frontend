@@ -1,4 +1,5 @@
 import {MultiFileUpload} from '../javascripts/upload/multiFileUpload';
+
 function createFileList(files) {
     const dt = new DataTransfer();
 
@@ -185,6 +186,23 @@ describe('Multi File Upload component', () => {
                 });
             });
         });
+
+        describe('And component is initialised', () => {
+                    beforeEach((done) => {
+                        instance = new MultiFileUpload(container);
+                        const iseResponse = new Response(JSON.stringify({}), { status: 500, statusText: 'Something went wrong' });
+                        spyOn(window, 'fetch').and.resolveTo(iseResponse);
+                        spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
+                        spyOn(instance, 'redirectToErrorServicePage');
+                        instance.init();
+                        done();
+                    });
+
+                    it('Then should redirect to the service unavailable page when a 500 is returned', (done) => {
+                        expect(instance.redirectToErrorServicePage).toHaveBeenCalled();
+                        done();
+                    });
+                });
 
         describe('And component is initialised', () => {
             beforeEach((done) => {

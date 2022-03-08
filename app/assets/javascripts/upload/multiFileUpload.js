@@ -32,7 +32,8 @@ export class MultiFileUpload {
             sendUrlTpl: decodeURIComponent(form.dataset.multiFileUploadSendUrlTpl),
             statusUrlTpl: decodeURIComponent(form.dataset.multiFileUploadStatusUrlTpl),
             removeUrlTpl: decodeURIComponent(form.dataset.multiFileUploadRemoveUrlTpl),
-            getDuplicateUrlTpl: decodeURIComponent(form.dataset.multiFileUploadDuplicateUrlTpl)
+            getDuplicateUrlTpl: decodeURIComponent(form.dataset.multiFileUploadDuplicateUrlTpl),
+            getErrorServiceUrlTpl: decodeURIComponent(form.dataset.multiFileUploadErrorUrlTpl)
         }
 
         this.classes = {
@@ -609,7 +610,13 @@ export class MultiFileUpload {
             method: 'POST',
             body: formData
         })
-            .then(response => response.json())
+            .then(response => {
+                              if (response.status == 500) {
+                              this.redirectToErrorServicePage();
+                              } else {
+                                return response.json();
+                              }
+                            })
             .then(this.handleProvisionUploadCompleted.bind(this, file))
             .catch(this.delayedProvisionUpload.bind(this, file));
     }
@@ -850,6 +857,15 @@ export class MultiFileUpload {
         }
     }
 
+    /** F76 */
+        getErrorServiceUrl() {
+            return this.config.getErrorServiceUrlTpl;
+        }
+
+    /** F77 */
+        redirectToErrorServicePage() {
+             window.location.href = this.getErrorServiceUrl();
+         }
 }
 
 /**
