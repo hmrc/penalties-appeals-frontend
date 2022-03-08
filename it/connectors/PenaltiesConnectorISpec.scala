@@ -203,24 +203,4 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
       result.status shouldBe OK
     }
   }
-
-  "getOtherPenaltiesInTaxPeriod" should {
-    "return a success response" when {
-      "response is OK" in {
-        val penaltyId = "1234"
-        successfulCallForOtherPenalties(penaltyId, OK)
-        val result = await(penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId = penaltyId, isLPP = false, enrolmentKey = "123456789")
-        (ExecutionContext.Implicits.global, HeaderCarrier()))
-        result.status shouldBe OK
-      }
-
-      "response is NO_CONTENT" in {
-        val penaltyId = "1234"
-        successfulCallForOtherPenalties(penaltyId, NO_CONTENT)
-        val result = await(penaltiesConnector.getOtherPenaltiesInTaxPeriod(penaltyId = penaltyId, isLPP = false, enrolmentKey = "123456789")
-        (ExecutionContext.Implicits.global, HeaderCarrier()))
-        result.status shouldBe NO_CONTENT
-      }
-    }
-  }
 }

@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.FeatureSwitching
 import connectors.httpParsers.UpscanInitiateHttpParser.UnexpectedFailure
 import models.upload._
 import models.{CheckMode, NormalMode, UserRequest}

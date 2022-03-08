@@ -31,9 +31,6 @@ object PenaltiesStub {
   private val appealUriForLSP = "/penalties/appeals-data/late-submissions"
   private val appealUriForLPP = "/penalties/appeals-data/late-payments"
   private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
-  private val fetchOtherPenalties = (penaltyID: String) =>
-    s"/penalties/appeals/multiple-penalties-in-same-period?enrolmentKey=HMRC-MTD-VAT~VRN~123456789&penaltyId=$penaltyID&isLPP=false"
-
   private val submitAppealUri = "/penalties/appeals/submit-appeal"
   private val submitAppealQueryParams = (isLPP: Boolean, penaltyNumber: String) => Map[String, StringValuePattern](
   ("enrolmentKey" -> equalTo("HMRC-MTD-VAT~VRN~123456789")),
@@ -118,19 +115,6 @@ object PenaltiesStub {
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
-        )
-    )
-  }
-
-  def successfulCallForOtherPenalties(
-                                       penaltyNumber: String,
-                                       status: Int
-                                         ): StubMapping = {
-    stubFor(
-      get(urlEqualTo(fetchOtherPenalties(penaltyNumber)))
-        .willReturn(
-          aResponse()
-            .withStatus(status)
         )
     )
   }

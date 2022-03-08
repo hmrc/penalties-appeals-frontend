@@ -17,10 +17,8 @@
 package navigation
 
 import base.SpecBase
-import config.featureSwitches.YouCanAppealThisPenaltyRouting
 import models.pages._
 import models.{CheckMode, NormalMode}
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.mvc.Call
 import utils.SessionKeys
@@ -481,11 +479,6 @@ class NavigationSpec extends SpecBase {
           )))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
-      s"called with $OtherPenaltiesForPeriodPage redirects to AppealStart Page" in new Setup {
-        val result: Call = mainNavigator.nextPage(OtherPenaltiesForPeriodPage, NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
-        ))
-        result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
-      }
       s"called with $UploadFirstDocumentPage redirects to File Upload List Page" in new Setup {
         val result: Call = mainNavigator.nextPage(UploadFirstDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
@@ -673,45 +666,21 @@ class NavigationSpec extends SpecBase {
   }
 
   "routingForCancelVATRegistrationPage" when {
-    "the YouCanAppealThisPenaltyRouting feature switch is disabled" should {
-      "redirect to OtherPenaltiesForPeriod page" when {
-        "yes option selected and multiplePenalties is true" in new Setup {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.eq(YouCanAppealThisPenaltyRouting)))
-            .thenReturn(false)
-          val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), Some(Map("multiplePenalties" -> "true")))
-          result.url shouldBe controllers.routes.OtherPenaltiesForPeriodController.onPageLoad().url
-        }
-      }
 
-      "redirect to YouCannotAppeal page" when {
-        "no option selected" in new Setup {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.eq(YouCanAppealThisPenaltyRouting)))
-            .thenReturn(false)
-          val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("no"), None)
-          result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoad().url
-        }
-      }
-
-      "redirect to AppealStart page" when {
-        "yes option selected and multiplePenalties is false" in new Setup {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.eq(YouCanAppealThisPenaltyRouting)))
-            .thenReturn(false)
-          val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), Some(Map("multiplePenalties" -> "false")))
-          result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
-        }
+    "redirect to AppealStart page" when {
+      "yes option selected" in new Setup {
+        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"))
+        result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
       }
     }
 
-    "the YouCanAppealThisPenaltyRouting feature switch is enabled" should {
-      "redirect to AppealStart page" when {
-        "yes option selected" in new Setup {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.eq(YouCanAppealThisPenaltyRouting)))
-            .thenReturn(true)
-          val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), None)
-          result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
-        }
+    "redirect to YouCannotAppeal page" when {
+      "no option selected" in new Setup {
+        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("no"))
+        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoad().url
       }
     }
+
   }
 
   "routeForYouCanAppealPenalty" should {

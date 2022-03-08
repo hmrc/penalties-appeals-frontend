@@ -132,10 +132,6 @@ GET        /what-caused-you-to-miss-the-deadline/change         controllers.Agen
 POST       /what-caused-you-to-miss-the-deadline                controllers.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(mode: Mode = NormalMode)
 POST       /what-caused-you-to-miss-the-deadline/change         controllers.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(mode: Mode = CheckMode)
 
-# Appeal Obligation - Other penalties for period
-GET        /multiple-penalties              controllers.OtherPenaltiesForPeriodController.onPageLoad
-POST       /multiple-penalties              controllers.OtherPenaltiesForPeriodController.onSubmit
-
 # Appeal Obligation - Unhappy path
 GET        /you-cannot-appeal              controllers.YouCannotAppealController.onPageLoad
 

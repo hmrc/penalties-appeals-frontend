@@ -275,28 +275,4 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       result.getMessage shouldBe "something went wrong."
     }
   }
-
-  "getOtherPenaltiesInTaxPeriod" should {
-    "return the HTTP response back to the caller" in new Setup {
-      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
-      when(mockAppConfig.otherPenaltiesForPeriodUrl(any(), any(), any()))
-        .thenReturn("http://url/url")
-
-      val result: HttpResponse = await(connector.getOtherPenaltiesInTaxPeriod("1234",
-        "HMRC-MTD-VAT~VRN~123456789", isLPP = false))
-      result.status shouldBe OK
-    }
-
-    "return an exception when something unexpected goes wrong" in new Setup {
-      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.failed(new Exception("something went wrong.")))
-      when(mockAppConfig.otherPenaltiesForPeriodUrl(any(), any(), any()))
-        .thenReturn("http://url/url")
-
-      val result: Exception = intercept[Exception](await(connector.getOtherPenaltiesInTaxPeriod("1234",
-        "HMRC-MTD-VAT~VRN~123456789", isLPP = false)))
-      result.getMessage shouldBe "something went wrong."
-    }
-  }
 }
