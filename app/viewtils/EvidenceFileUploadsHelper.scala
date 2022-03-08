@@ -26,6 +26,7 @@ import views.html.components.upload.uploadList
 
 import javax.inject.Inject
 import repositories.UploadJourneyRepository
+import utils.SessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,7 +37,11 @@ class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
 
   def displayContentForFileUploads(uploadedFiles: Seq[(UploadJourney, Int)], mode: Mode)(implicit messages: Messages, request: UserRequest[_]): Seq[Html] = {
     uploadedFiles.map(uploadWithIndex =>
-      uploadList(uploadWithIndex._1.reference, uploadWithIndex._1.uploadDetails.get.fileName, uploadWithIndex._2 + 1, mode)
+      uploadList(
+        fileReference = uploadWithIndex._1.reference,
+        journeyId = request.session.get(SessionKeys.journeyId).get,
+        fileName = uploadWithIndex._1.uploadDetails.get.fileName,
+        fileNumber = uploadWithIndex._2 + 1, mode = mode)
     )
   }
 

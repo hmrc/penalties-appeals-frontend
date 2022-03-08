@@ -18,7 +18,7 @@
     formHelper: FormWithCSRF
 )
 
-@(fileReference: String, fileName: String, fileNumber: Int, mode: Mode)(implicit messages: Messages, request: UserRequest[_])
+@(fileReference: String, journeyId: String, fileName: String, fileNumber: Int, mode: Mode)(implicit messages: Messages, request: UserRequest[_])
 <div class="govuk-summary-list__row" id="document-row-@fileNumber">
     <dt class="govuk-summary-list__key">
         @messages("otherReason.uploadList.rowTitle", fileNumber)
@@ -27,12 +27,9 @@
         @fileName
     </dd>
     <dd class="govuk-summary-list__actions">
-        @formHelper(action = controllers.routes.OtherReasonController.removeFileUpload(mode)) {
-            <input type="hidden" name="fileReference" value="@fileReference">
-            <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-@fileNumber">
-                @messages("otherReason.uploadEvidence.button.remove")
-                <span class="govuk-visually-hidden">@messages("otherReason.uploadEvidence.file") @fileNumber</span>
-            </button>
-        }
+        <a href="@controllers.routes.OtherReasonController.removeFileUpload(journeyId, fileReference, mode)" class="govuk-link remove-link govuk-body" id="remove-button-@fileNumber">
+            @messages("otherReason.uploadEvidence.button.remove")
+            <span class="govuk-visually-hidden">@messages("otherReason.uploadEvidence.file") @fileNumber</span>
+        </a>
     </dd>
 </div>

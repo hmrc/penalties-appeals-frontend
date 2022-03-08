@@ -228,12 +228,12 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       for {
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
-        if(previousUploadsState.isEmpty ||
+        if (previousUploadsState.isEmpty ||
           previousUploadsState.exists(!_.exists(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))) {
           Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
         } else {
           val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(file =>
-            file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE ))
+            file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
           val optDuplicateFiles: Option[Html] = evidenceFileUploadsHelper.getInsetTextForUploads(uploadedFileNames.zipWithIndex)
           val uploadRows: Seq[Html] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex, mode)
           Ok(uploadListPage(formProvider, radioOptionsToRender, postAction, uploadRows, optDuplicateFiles))
@@ -252,7 +252,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
           } yield {
             val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(file =>
-              file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE ))
+              file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
             val optDuplicateFiles: Option[Html] = evidenceFileUploadsHelper.getInsetTextForUploads(uploadedFileNames.zipWithIndex)
             val uploadRows: Seq[Html] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex, mode)
             if (uploadRows.length < 5) {
@@ -269,35 +269,25 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
+  def removeFileUpload(journeyId: String, fileReference: String, mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       if (request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
         logger.debug(s"[OtherReasonController][removeFileUpload] - Redirecting to JS version - feature switch on: ${featureSwitching.isEnabled(NonJSRouting)} and cookie defined: ${request.cookies.get("jsenabled").isDefined}")
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
-        val journeyId = request.session.get(SessionKeys.journeyId).get
-        RemoveFileForm.form.bindFromRequest.fold(
-          error => {
-            logger.error("[OtherReasonController][removeFileUpload] - Tried to remove file but fileReference was not in the request")
-            logger.debug(s"[OtherReasonController][removeFileUpload] - Form errors: ${error.errors}")
-            Future(errorHandler.showInternalServerError)
-          },
-          fileReference => {
-            upscanService.removeFileFromJourney(journeyId, fileReference).flatMap(_ => {
-              upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
-                amountOfFiles => {
-                  if (amountOfFiles == 0) {
-                    logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
-                    Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-                  } else {
-                    logger.debug("[OtherReasonController][removeFileUpload] - More documents exist - reloading the upload list page")
-                    Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
-                  }
-                }
-              )
-            })
-          }
-        )
+        upscanService.removeFileFromJourney(journeyId, fileReference).flatMap(_ => {
+          upscanService.getAmountOfFilesUploadedForJourney(journeyId).map(
+            amountOfFiles => {
+              if (amountOfFiles == 0) {
+                logger.debug("[OtherReasonController][removeFileUpload] - No files left in journey - redirecting to first document upload page")
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+              } else {
+                logger.debug("[OtherReasonController][removeFileUpload] - More documents exist - reloading the upload list page")
+                Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
+              }
+            }
+          )
+        })
       }
     }
   }
@@ -353,7 +343,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  def onSubmitForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {implicit request =>
+  def onSubmitForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     UploadEvidenceQuestionForm.uploadEvidenceQuestionForm.bindFromRequest().fold(
       formWithErrors => {
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
