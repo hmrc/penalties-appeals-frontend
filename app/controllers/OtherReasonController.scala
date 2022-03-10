@@ -128,14 +128,9 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
         if (request.cookies.get("jsenabled").isEmpty || featureSwitching.isEnabled(NonJSRouting)) {
-          mode match {
-            case NormalMode => Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-            case CheckMode => if (previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)) {
-              Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
-            } else {
-              Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-            }
-          }
+          val hasReadyUploads: Boolean = previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)
+          if (hasReadyUploads) Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
+            else Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
         } else {
           val previousUploads = previousUploadsState.fold("[]")(previousUploads => {
             val previousUploadsWithoutDownloadURL = previousUploads.map(_.copy(downloadUrl = None))
