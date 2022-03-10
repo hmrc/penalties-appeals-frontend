@@ -128,14 +128,11 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
         if (request.cookies.get("jsenabled").isEmpty || featureSwitching.isEnabled(NonJSRouting)) {
-          mode match {
-            case NormalMode => Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-            case CheckMode => if (previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)) {
-              Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
-            } else {
-              Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-            }
-          }
+          val uploadState: Boolean = previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)
+          (mode, uploadState) match {
+            case (NormalMode | CheckMode, true) => Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
+            case (NormalMode | CheckMode, false) => Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+           }
         } else {
           val previousUploads = previousUploadsState.fold("[]")(previousUploads => {
             val previousUploadsWithoutDownloadURL = previousUploads.map(_.copy(downloadUrl = None))
@@ -362,11 +359,11 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         BadRequest(uploadEvidenceQuestionPage(formWithErrors, radioOptionsToRender, postAction))
       },
       isUploadEvidenceQuestion => {
-        logger.debug(
-          s"[OtherReasonController][onSubmitForUploadEvidenceQuestion] - Adding '$isUploadEvidenceQuestion' to session under key: ${SessionKeys.isUploadEvidence}")
-        Redirect(navigation.nextPage(UploadEvidenceQuestionPage, mode, Some(isUploadEvidenceQuestion)))
-          .addingToSession((SessionKeys.isUploadEvidence, isUploadEvidenceQuestion))
-      }
+            logger.debug(
+              s"[OtherReasonController][onSubmitForUploadEvidenceQuestion] - Adding '$isUploadEvidenceQuestion' to session under key: ${SessionKeys.isUploadEvidence}")
+            Redirect(navigation.nextPage(UploadEvidenceQuestionPage, mode, Some(isUploadEvidenceQuestion)))
+              .addingToSession((SessionKeys.isUploadEvidence, isUploadEvidenceQuestion))
+          }
     )
   }
 }

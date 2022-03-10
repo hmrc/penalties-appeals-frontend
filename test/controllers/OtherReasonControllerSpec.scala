@@ -241,6 +241,42 @@ class OtherReasonControllerSpec extends SpecBase {
           status(result) shouldBe OK
         }
 
+        "redirect to page /uploaded-documents when there are previous uploads in NormalMode" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
+            .thenReturn(true)
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
+        }
+
+        "redirect to page /upload-first-document when there are no previous upload NormalMode" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
+            .thenReturn(true)
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+        }
+
+        "redirect to page /uploaded-documents when there are previous uploads in CheckMode" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
+            .thenReturn(true)
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode)(userRequestWithCorrectKeysAndJS)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
+        }
+
+        "redirect to page /upload-first-document when there are no previous upload CheckMode" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
+            .thenReturn(true)
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode)(userRequestWithCorrectKeysAndJS)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
+        }
+
         "return 303 (SEE_OTHER) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
             .thenReturn(true)
