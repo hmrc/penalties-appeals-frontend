@@ -91,6 +91,7 @@ agent.honestyDeclaration.lpp.li.1.2 = they were unable to pay the VAT bill due o
 agent.honestyDeclaration.lpp.li.1.2.myClient = my client was unable to pay the VAT bill due on {0}
 honestyDeclaration.li.2 = no one else was available to make the submission for me
 agent.honestyDeclaration.li.2 = no one else was available to make the submission for them
+agent.honestyDeclaration.li.2.extra = no one else was available to get the information to me
 honestyDeclaration.lpp.li.2 = no one else was available to make the payment for me
 agent.honestyDeclaration.lpp.li.2 = no one else was available to make the payment for them
 honestyDeclaration.obligation.li.2 = I believe there was no VAT Return due for the period {0} to {1}

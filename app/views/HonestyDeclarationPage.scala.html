@@ -83,6 +83,8 @@
                 }
             } else if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
                     @getMessage("honestyDeclaration.lpp.li.2")
+            } else if(userRequest.isAgent && userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") && userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("client")) {
+                @messages("agent.honestyDeclaration.li.2.extra")
             } else {
                 @getMessage("honestyDeclaration.li.2")
             }
