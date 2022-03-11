@@ -1,6 +1,5 @@
 service.name = Appeal a VAT penalty
 service.homePageUrl = /penalties-appeals
-service.text = Sample text
 
 # Common
 # ----------------------------------------------------------
@@ -118,11 +117,14 @@ agent.honestyDeclaration.other = of an issue affecting my client
 
 site.opensInNewTab = (opens in a new tab)
 
+# When did event happen pages
+# ----------------------------------------------------------
+whenDidEventHappen.hint = For example, 12 3 2018
+
 # When did the crime happen page
 # ----------------------------------------------------------
 crimeReason.title = When did the crime happen?
 crimeReason.heading = When did the crime happen?
-crimeReason.hintText = For example, 12 3 2018
 crimeReason.error.required.all = Enter the date of the crime
 crimeReason.error.required.two = The date of the crime must include a {0} and a {1}
 crimeReason.error.required = The date of the crime must include a {0}
@@ -142,7 +144,6 @@ crimeReason.hasBeenReported.required = Tell us if the police have been told abou
 # ----------------------------------------------------------
 fireOrFloodReason.title = When did the fire or flood happen?
 fireOrFloodReason.heading = When did the fire or flood happen?
-fireOrFloodReason.hintText = For example, 12 3 2018
 fireOrFloodReason.error.required.all = Enter the date of the fire or flood
 fireOrFloodReason.error.required.two = The date of the fire or flood must include a {0} and a {1}
 fireOrFloodReason.error.required = The date of the fire or flood must include a {0}
@@ -153,7 +154,7 @@ fireOrFloodReason.error.notInFuture = The date of the fire or flood must be toda
 # ----------------------------------------------------------
 lossOfStaffReason.title = When did the person leave the business?
 lossOfStaffReason.heading = When did the person leave the business?
-lossOfStaffReason.hintText = This means someone essential to the tax process leaving at short notice, whether they planned to return or not.<br><br>For example, 12 3 2018
+lossOfStaffReason.hintText = This means someone essential to the tax process leaving at short notice, whether they planned to return or not.<br><br>
 lossOfStaffReason.error.required.all = Tell us the last date the person carried out work for the business
 lossOfStaffReason.error.required.two = The date the person left must include a {0} and a {1}
 lossOfStaffReason.error.required = The date the person left must include a {0}
@@ -164,7 +165,6 @@ lossOfStaffReason.error.notInFuture = The date the person left must be today or 
 # ----------------------------------------------------------
 technicalIssues.begin.title = When did the technology issues begin?
 technicalIssues.begin.heading = When did the technology issues begin?
-technicalIssues.begin.hintText = For example, 12 3 2018
 # Need to confirm that these errors are correct
 technicalIssues.begin.error.required.all = Tell us when the technology issues began
 technicalIssues.begin.error.required.two = The date the technology issues began must include a {0} and a {1}
@@ -176,7 +176,6 @@ technicalIssues.begin.error.notInFuture = The date the technology issues began m
 # ----------------------------------------------------------
 technicalIssues.end.title = When did the technology issues end?
 technicalIssues.end.heading = When did the technology issues end?
-technicalIssues.end.hintText = For example, 12 3 2018
 # Need to confirm that these errors are correct
 technicalIssues.end.error.required.all = Tell us when the technology issues ended
 technicalIssues.end.error.required.two = The date the technology issues ended must include a {0} and a {1}
@@ -189,8 +188,6 @@ technicalIssues.end.error.endDateLessThanStartDate = The date the technology iss
 # ----------------------------------------------------------
 healthReason.wasHospitalStayRequired.title = Did this health issue include a hospital stay?
 healthReason.wasHospitalStayRequired.heading = Did this health issue include a hospital stay?
-healthReason.wasHospitalStayRequired.yes = yes
-healthReason.wasHospitalStayRequired.no = no
 healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital
 agent.healthReason.wasHospitalStayRequired.error.required = Tell us if your client or someone else was admitted to hospital
 
@@ -200,10 +197,10 @@ healthReason.whenHealthIssueHappened.title = When did you become unable to manag
 agent.healthReason.whenHealthIssueHappened.title = When did your client become unable to manage the VAT account?
 healthReason.whenHealthIssueHappened.heading = When did you become unable to manage the VAT account?
 agent.healthReason.whenHealthIssueHappened.heading = When did your client become unable to manage the VAT account?
-healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>For example, 12 3 2018
-agent.healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your client’s ability to complete this submission.<br><br>For example, 12 3 2018
-agent.healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your client’s ability to make this payment.<br><br>For example, 12 3 2018
-healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your ability to make this payment.<br><br>For example, 12 3 2018
+healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>
+agent.healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your client’s ability to complete this submission.<br><br>
+agent.healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your client’s ability to make this payment.<br><br>
+healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your ability to make this payment.<br><br>
 healthReason.whenHealthIssueHappened.error.required.all = Tell us when you became unable to manage the VAT account
 agent.healthReason.whenHealthIssueHappened.error.required.all = Tell us when your client became unable to manage the VAT account
 healthReason.whenHealthIssueHappened.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
@@ -219,7 +216,6 @@ agent.healthReason.whenHealthIssueHappened.error.notInFuture = The date your cli
 # ----------------------------------------------------------
 healthReason.whenDidHospitalStayBegin.title = When did the hospital stay begin?
 healthReason.whenDidHospitalStayBegin.heading = When did the hospital stay begin?
-healthReason.whenDidHospitalStayBegin.hintText = For example, 12 3 2018
 healthReason.whenDidHospitalStayBegin.error.required.all = Enter the start date of the hospital stay
 healthReason.whenDidHospitalStayBegin.error.required.two = The date the hospital stay started must include a {0} and a {1}
 healthReason.whenDidHospitalStayBegin.error.required = The date the hospital stay started must include a {0}
@@ -231,8 +227,6 @@ healthReason.whenDidHospitalStayBegin.error.notInFuture = The date the hospital 
 # ----------------------------------------------------------
 otherReason.whyReturnSubmittedLate.title = Why was the return submitted late?
 otherReason.whyReturnSubmittedLate.lpp.title = Why was the VAT bill paid late?
-otherReason.whyReturnSubmittedLate.heading = Why was the return submitted late?
-otherReason.whyReturnSubmittedLate.lpp.heading = Why was the VAT bill paid late?
 otherReason.whyReturnSubmittedLate.lpp.error.required = Explain why the VAT bill was paid late
 otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
 
@@ -242,10 +236,10 @@ otherReason.whenDidBecomeUnable.title = When did you become unable to manage the
 agent.otherReason.whenDidBecomeUnable.title = When did your client become unable to manage the VAT account?
 otherReason.whenDidBecomeUnable.heading = When did you become unable to manage the VAT account?
 agent.otherReason.whenDidBecomeUnable.heading = When did your client become unable to manage the VAT account?
-otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>For example, 12 3 2018
-agent.otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped your client from working on or making this submission.<br><br>For example, 12 3 2018
-otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped you from making this payment.<br><br>For example, 12 3 2018
-agent.otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped your client from making this payment.<br><br>For example, 12 3 2018
+otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>
+agent.otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped your client from working on or making this submission.<br><br>
+otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped you from making this payment.<br><br>
+agent.otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped your client from making this payment.<br><br>
 otherReason.whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
 agent.otherReason.whenDidBecomeUnable.error.required.all = Tell us when your client became unable to manage the VAT account
 otherReason.whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
@@ -286,7 +280,6 @@ otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel or PowerPoint)
 otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
 otherReason.uploadEvidence.details.p2 = You cannot upload zip files or documents that are protected by a password.
 otherReason.uploadEvidence.details.p3 = We’ll scan all files and reject any we think are suspicious.
-otherReason.uploadEvidence.uploadLabel = Upload Evidence
 otherReason.uploadEvidence.file = File
 otherReason.uploadEvidence.addAnother = Add another file
 otherReason.uploadEvidence.status.uploaded = Ready to Submit
@@ -346,7 +339,6 @@ upscan.unableToUpload = The selected file could not be uploaded. Remove the file
 upscan.fileUploaded = {0} {1} has been uploaded
 upscan.fileUploading = Uploading {0} {1}
 upscan.fileRemoved = {0} {1} has been removed
-upscan.stillUploading = The selected file has not finished uploading.
 upscan.fileNotSpecified = Select a file.
 
 # Upscan failure messages (NO JS)
@@ -356,7 +348,6 @@ upscan.noJs.fileTooLarge = The selected file must be smaller than 6MB. Choose an
 upscan.noJs.fileEmpty = The selected file is empty. Choose another file.
 upscan.noJs.fileHasVirus = The selected file contains a virus. Choose another file.
 upscan.noJs.unableToUpload = The selected file could not be uploaded. Choose another file.
-upscan.noJs.stillUploading = The selected file has not finished uploading.
 upscan.noJs.fileNotSpecified = Select a file.
 
 # Has the hospital stay ended page
@@ -364,7 +355,6 @@ upscan.noJs.fileNotSpecified = Select a file.
 healthReason.hasTheHospitalStayEnded.title = Has the hospital stay ended?
 healthReason.hasTheHospitalStayEnded.heading = Has the hospital stay ended?
 healthReason.hasTheHospitalStayEnded.yes.heading = When did it end?
-healthReason.hasTheHospitalStayEnded.yes.hint = For example, 12 3 2018
 healthReason.hasTheHospitalStayEnded.error.required = Tell us if the hospital stay has now ended
 healthReason.hasTheHospitalStayEnded.date.error.required.all = Tell us when the hospital stay ended
 healthReason.hasTheHospitalStayEnded.date.error.required.two = The date the hospital stay ended must include a {0} and a {1}
@@ -377,7 +367,6 @@ healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The d
 # ----------------------------------------------------------
 bereavementReason.title = When did the person die?
 bereavementReason.heading = When did the person die?
-bereavementReason.hintText = For example, 12 3 2018
 bereavementReason.error.required.all = Enter the date when the person died
 bereavementReason.error.required.two = The date must include a {0} and {1}
 bereavementReason.error.required = The date must include a {0}
@@ -564,7 +553,6 @@ error.prefix = Error:
 error.summary.title = There is a problem
 # Not sure if this is as per design
 error.clickAcceptAndContinue = Please click ’Accept and continue’
-error.clickContinue = Please click ’Continue’
 
 # Timeout page
 # -----------------------------------------------------------

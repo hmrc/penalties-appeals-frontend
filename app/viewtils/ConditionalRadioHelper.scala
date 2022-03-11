@@ -37,7 +37,7 @@ class ConditionalRadioHelper @Inject()(dateInput: views.html.components.inputDat
           legendContent = messages(s"$messagePrefix.yes.heading"),
           legendClasses = Some("govuk-fieldset__legend govuk-label"),
           id = "stayEndDate",
-          hintText = Some(messages(s"$messagePrefix.yes.hint"))
+          hintText = Some(messages("whenDidEventHappen.hint"))
         )))
       ),
       RadioItem(
