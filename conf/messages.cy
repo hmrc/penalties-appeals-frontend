@@ -87,7 +87,6 @@ honestyDeclaration.li.1.2 = I was unable to submit the VAT Return due on {0}
 agent.honestyDeclaration.li.1.2 = they were unable to submit the VAT Return due on {0}
 agent.honestyDeclaration.li.1.2.myClient = my client was unable to submit the VAT Return due on {0}
 honestyDeclaration.lpp.li.1.2 = I was unable to pay the VAT bill due on {0}
-agent.honestyDeclaration.li.1.2.extra = because of an issue affecting my client, I was unable to submit the VAT Return due on {0}
 agent.honestyDeclaration.lpp.li.1.2 = they were unable to pay the VAT bill due on {0}
 agent.honestyDeclaration.lpp.li.1.2.myClient = my client was unable to pay the VAT bill due on {0}
 honestyDeclaration.li.2 = no one else was available to make the submission for me
@@ -114,6 +113,7 @@ agent.honestyDeclaration.technicalIssues = my client was affected by technology 
 honestyDeclaration.lossOfStaff = of loss of staff essential to the VAT process
 agent.honestyDeclaration.lossOfStaff = my client was affected by loss of staff essential to the VAT process
 honestyDeclaration.other =
+agent.honestyDeclaration.other = of an issue affecting my client
 
 
 site.opensInNewTab = (opens in a new tab)

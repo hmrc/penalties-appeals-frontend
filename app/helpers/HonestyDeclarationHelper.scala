@@ -18,7 +18,7 @@ package helpers
 
 import models.UserRequest
 import play.api.i18n.Messages
-import utils.MessageRenderer.{didClientCauseLateSubmission, didClientPlanToSubmit, getMessage}
+import utils.MessageRenderer.{didAgentPlanToSubmitAndClientMissedDeadline, didClientCauseLateSubmission, didClientPlanToSubmit, getMessage}
 
 object HonestyDeclarationHelper {
   //scalastyle:off
@@ -29,6 +29,7 @@ object HonestyDeclarationHelper {
       }
       case _ if (user.isAgent && didClientPlanToSubmit && !reasonableExcuse.equals("other")) => messages(s"honestyDeclaration.$reasonableExcuse")
       case _ if (user.isAgent && didClientCauseLateSubmission && !reasonableExcuse.equals("other")) => messages(s"agent.honestyDeclaration.$reasonableExcuse")
+      case _ if (user.isAgent && didAgentPlanToSubmitAndClientMissedDeadline && reasonableExcuse.equals("other")) => messages("agent.honestyDeclaration.other")
       case excuse if excuse == "crime" || excuse == "bereavement" => getMessage(s"honestyDeclaration.$reasonableExcuse")
       case _ => messages(s"honestyDeclaration.$reasonableExcuse")
     }
