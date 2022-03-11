@@ -250,11 +250,11 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
 
             "the option selected is 'other'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "other", messages("honestyDeclaration.other"),
+              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "other", messages("agent.honestyDeclaration.other"),
                 "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1Other("1 January 2022"),
+                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.other"), "1 January 2022"),
                 Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
               )
 

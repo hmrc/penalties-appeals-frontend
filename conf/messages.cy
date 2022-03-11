@@ -113,6 +113,7 @@ agent.honestyDeclaration.technicalIssues = my client was affected by technology 
 honestyDeclaration.lossOfStaff = of loss of staff essential to the VAT process
 agent.honestyDeclaration.lossOfStaff = my client was affected by loss of staff essential to the VAT process
 honestyDeclaration.other =
+agent.honestyDeclaration.other = of an issue affecting my client
 
 
 site.opensInNewTab = (opens in a new tab)

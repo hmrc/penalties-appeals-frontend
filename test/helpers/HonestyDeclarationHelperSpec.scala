@@ -33,6 +33,18 @@ class HonestyDeclarationHelperSpec extends SpecBase {
 
     "return the correct agent message" when {
 
+      "for other reason" should {
+        "the agent planned to submit - client missed deadline" should {
+          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+            SessionKeys.whatCausedYouToMissTheDeadline -> "client",
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
+          )
+          reasonTest("other", "of an issue affecting my client", agentUserSessionKeys)
+        }
+      }
+
       "non crime/bereavement reason" should {
 
         "the agent planned to submit - agent missed the deadline" should {

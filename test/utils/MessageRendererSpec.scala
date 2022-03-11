@@ -116,4 +116,38 @@ class MessageRendererSpec extends SpecBase {
       }
     }
   }
+
+  "didClientPlanToSubmit" should {
+    "return true when client planned to submit" in {
+      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+        SessionKeys.whoPlannedToSubmitVATReturn -> "client"))
+      val result = MessageRenderer.didClientPlanToSubmit()(fakeAgentRequest)
+      result shouldBe true
+    }
+
+    "return false when agent planned to submit" in {
+      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+        SessionKeys.whoPlannedToSubmitVATReturn -> "agent"))
+      val result = MessageRenderer.didClientPlanToSubmit()(fakeAgentRequest)
+      result shouldBe false
+    }
+  }
+
+  "didAgentPlanToSubmitAndClientMissedDeadline" should {
+    "return true when agent planned to submit and client missed deadline" in {
+      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+        SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+        SessionKeys.whatCausedYouToMissTheDeadline -> "client"))
+      val result = MessageRenderer.didAgentPlanToSubmitAndClientMissedDeadline()(fakeAgentRequest)
+      result shouldBe true
+    }
+
+    "return false for any other scenario" in {
+      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+        SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+        SessionKeys.whatCausedYouToMissTheDeadline -> "agent"))
+      val result = MessageRenderer.didAgentPlanToSubmitAndClientMissedDeadline()(fakeAgentRequest)
+      result shouldBe false
+    }
+  }
 }

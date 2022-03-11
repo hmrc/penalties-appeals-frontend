@@ -54,7 +54,7 @@
                     }
                 } else {
                     @if(userRequest.isAgent) {
-                        @if(userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+                        @if(userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")){
                             @messages("honestyDeclaration.li.1.2", friendlyDueDate)
                         } else {
                             @if(reasonableExcuse.equals("crime") || reasonableExcuse.equals("bereavement")) {

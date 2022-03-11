@@ -53,4 +53,9 @@ object MessageRenderer {
   def didClientPlanToSubmit()(implicit user: UserRequest[_]): Boolean = {
     user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
   }
+
+  def didAgentPlanToSubmitAndClientMissedDeadline()(implicit user: UserRequest[_]): Boolean = {
+    user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") &&
+      user.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("client")
+  }
 }
