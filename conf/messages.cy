@@ -290,7 +290,6 @@ otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Reload t
 # Upload Another Document (No JS)
 # ----------------------------------------------------------
 otherReason.uploadAnotherDocument.noJs.headingAndTitle = Add another file (optional)
-otherReason.uploadAnotherDocument.noJs.button.uploadFile = Upload selected file
 otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
 
 # Upscan failure messages
@@ -475,7 +474,7 @@ serviceUnavailable.headingAndTitle = Sorry, the service is unavailable
 serviceUnavailable.p1 = We have not saved your answers.
 serviceUnavailable.p2 = You will be able to use the service later.
 serviceUnavailable.p3 = If you prefer, you can appeal by letter. Write to:
-serviceUnavailable.p4 = Solicitor’s Office and Legal Services
+serviceUnavailable.p4 = Solicitor‘s Office and Legal Services
 serviceUnavailable.p5 = HMRC
 serviceUnavailable.p6 = BX9 1ZT
 
