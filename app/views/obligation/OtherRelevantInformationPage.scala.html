@@ -27,7 +27,7 @@
 @(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 
-@layout(pageTitle = messages("otherRelevantInformation.title"),
+@layout(pageTitle = messages("otherRelevantInformation.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
@@ -35,7 +35,7 @@
 
         @characterCount(
             form("other-relevant-information-text"),
-            label = messages("otherRelevantInformation.heading"),
+            label = messages("otherRelevantInformation.headingAndTitle"),
             hint = Some(HtmlContent(messages("otherRelevantInformation.hintText"))),
             maxLength = Some(5000)
         )

@@ -26,13 +26,13 @@
     messages(penaltyTypeMsgKey)
 }
 
-@layout(pageTitle = messages("appealConfirmation.title"),
+@layout(pageTitle = messages("appealConfirmation.headingAndTitle"),
     isPageFullWidth = false,
     showPenaltyInformation = false,
     backLinkEnabled = false) {
 
     <div class="govuk-panel govuk-panel--confirmation">
-        <h1 class="govuk-panel__title">@messages("appealConfirmation.heading")</h1>
+        <h1 class="govuk-panel__title">@messages("appealConfirmation.headingAndTitle")</h1>
         <div class="govuk-panel__body">
             @messages("appealConfirmation.typeAndPeriod", penaltyType, periodStart, periodEnd)
         </div>

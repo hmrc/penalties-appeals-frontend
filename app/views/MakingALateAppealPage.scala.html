@@ -24,7 +24,7 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("makingALateAppeal.title"),
+@layout(pageTitle = messages("makingALateAppeal.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
@@ -33,7 +33,7 @@
 
         @characterCount(
             form("late-appeal-text"),
-            label = messages("makingALateAppeal.heading"),
+            label = messages("makingALateAppeal.headingAndTitle"),
             hint = Some(HtmlContent(messages("makingALateAppeal.p1"))),
             maxLength = Some(5000)
         )

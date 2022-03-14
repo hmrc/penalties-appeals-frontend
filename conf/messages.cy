@@ -20,7 +20,7 @@ feedback.after = will help us to improve it.
 
 # Unauthorised
 # ----------------------------------------------------------
-unauthorised.title = You are not authorised to use this service
+unauthorised.headingAndTitle = You are not authorised to use this service
 unauthorised.signUp = You need to sign up to appeal your VAT penalties.
 unauthorised.alreadySignedUp = If you have already signed up, you need to sign in with the correct Government Gateway details.
 
@@ -28,8 +28,6 @@ base.signOut = Sign out
 
 # Appeal Start Page
 # ----------------------------------------------------------
-appealStart.title = Appeal a VAT penalty
-appealStart.header = Appeal a VAT penalty
 appealStart.p1 = To appeal a penalty about an ’indirect tax’ (for example, VAT) you can either:
 appealStart.li.1.1 = ask HMRC to review the penalty
 appealStart.li.1.2 = appeal straight to the tax tribunal
@@ -60,10 +58,8 @@ penaltyType.additional = Additional penalty
 
 # Reasonable excuse
 # ----------------------------------------------------------
-reasonableExcuses.title = What was the reason for missing the VAT deadline?
-agent.reasonableExcuses.title = What was the reason for the delay?
-reasonableExcuses.heading = What was the reason for missing the VAT deadline?
-agent.reasonableExcuses.heading = What was the reason for the delay?
+reasonableExcuses.headingAndTitle = What was the reason for missing the VAT deadline?
+agent.reasonableExcuses.headingAndTitle = What was the reason for the delay?
 reasonableExcuses.bereavementReason = Bereavement (someone died)
 reasonableExcuses.crimeReason = Crime
 reasonableExcuses.fireOrFloodReason = Fire or flood
@@ -77,8 +73,7 @@ reasonableExcuses.error.required = Select the reason for missing the VAT deadlin
 
 # Honesty declaration
 # ----------------------------------------------------------
-honestyDeclaration.title = Honesty declaration
-honestyDeclaration.heading = Honesty declaration
+honestyDeclaration.headingAndTitle = Honesty declaration
 honestyDeclaration.p1 = I confirm that:
 honestyDeclaration.li.1.1 = because {0},
 honestyDeclaration.obligation.li.1 = HMRC has been asked to cancel the VAT registration
@@ -120,11 +115,22 @@ site.opensInNewTab = (opens in a new tab)
 # When did event happen pages
 # ----------------------------------------------------------
 whenDidEventHappen.hint = For example, 12 3 2018
+whenDidBecomeUnable.headingAndTitle = When did you become unable to manage the VAT account?
+agent.whenDidBecomeUnable.headingAndTitle = When did your client become unable to manage the VAT account?
+whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
+agent.whenDidBecomeUnable.error.required.all = Tell us when your client became unable to manage the VAT account
+whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
+agent.whenDidBecomeUnable.error.required.two = The date your client became unable to manage the VAT account must include a {0} and a {1}
+whenDidBecomeUnable.error.required = The date you became unable to manage VAT must include a {0}
+agent.whenDidBecomeUnable.error.required = The date your client became unable to manage the VAT account must include a {0}
+whenDidBecomeUnable.error.invalid = The date you became unable to manage VAT must be a real date
+agent.whenDidBecomeUnable.error.invalid = The date your client became unable to manage the VAT account must be a real date
+whenDidBecomeUnable.error.notInFuture = The date you became unable to manage VAT must be today or in the past
+agent.whenDidBecomeUnable.error.notInFuture = The date your client became unable to manage the VAT account must be today or in the past
 
 # When did the crime happen page
 # ----------------------------------------------------------
-crimeReason.title = When did the crime happen?
-crimeReason.heading = When did the crime happen?
+crimeReason.headingAndTitle = When did the crime happen?
 crimeReason.error.required.all = Enter the date of the crime
 crimeReason.error.required.two = The date of the crime must include a {0} and a {1}
 crimeReason.error.required = The date of the crime must include a {0}
@@ -133,17 +139,13 @@ crimeReason.error.notInFuture = The date of the crime must be today or in the pa
 
 # Has the crime been reported page
 # ----------------------------------------------------------
-crimeReason.hasBeenReported.title = Has this crime been reported to the police?
-crimeReason.hasBeenReported.heading = Has this crime been reported to the police?
-crimeReason.hasBeenReported.yes = Yes
-crimeReason.hasBeenReported.no = No
+crimeReason.hasBeenReported.headingAndTitle = Has this crime been reported to the police?
 crimeReason.hasBeenReported.unknown = I do not know
 crimeReason.hasBeenReported.required = Tell us if the police have been told about the crime
 
 # When did the fire or flood happen page
 # ----------------------------------------------------------
-fireOrFloodReason.title = When did the fire or flood happen?
-fireOrFloodReason.heading = When did the fire or flood happen?
+fireOrFloodReason.headingAndTitle = When did the fire or flood happen?
 fireOrFloodReason.error.required.all = Enter the date of the fire or flood
 fireOrFloodReason.error.required.two = The date of the fire or flood must include a {0} and a {1}
 fireOrFloodReason.error.required = The date of the fire or flood must include a {0}
@@ -152,8 +154,7 @@ fireOrFloodReason.error.notInFuture = The date of the fire or flood must be toda
 
 # When did the person leave the business page
 # ----------------------------------------------------------
-lossOfStaffReason.title = When did the person leave the business?
-lossOfStaffReason.heading = When did the person leave the business?
+lossOfStaffReason.headingAndTitle = When did the person leave the business?
 lossOfStaffReason.hintText = This means someone essential to the tax process leaving at short notice, whether they planned to return or not.<br><br>
 lossOfStaffReason.error.required.all = Tell us the last date the person carried out work for the business
 lossOfStaffReason.error.required.two = The date the person left must include a {0} and a {1}
@@ -163,8 +164,7 @@ lossOfStaffReason.error.notInFuture = The date the person left must be today or 
 
 # When did the technology issues begin page
 # ----------------------------------------------------------
-technicalIssues.begin.title = When did the technology issues begin?
-technicalIssues.begin.heading = When did the technology issues begin?
+technicalIssues.begin.headingAndTitle = When did the technology issues begin?
 # Need to confirm that these errors are correct
 technicalIssues.begin.error.required.all = Tell us when the technology issues began
 technicalIssues.begin.error.required.two = The date the technology issues began must include a {0} and a {1}
@@ -174,8 +174,7 @@ technicalIssues.begin.error.notInFuture = The date the technology issues began m
 
 # When did the technology issues end page
 # ----------------------------------------------------------
-technicalIssues.end.title = When did the technology issues end?
-technicalIssues.end.heading = When did the technology issues end?
+technicalIssues.end.headingAndTitle = When did the technology issues end?
 # Need to confirm that these errors are correct
 technicalIssues.end.error.required.all = Tell us when the technology issues ended
 technicalIssues.end.error.required.two = The date the technology issues ended must include a {0} and a {1}
@@ -186,36 +185,20 @@ technicalIssues.end.error.endDateLessThanStartDate = The date the technology iss
 
 # Was hospital stay required page
 # ----------------------------------------------------------
-healthReason.wasHospitalStayRequired.title = Did this health issue include a hospital stay?
-healthReason.wasHospitalStayRequired.heading = Did this health issue include a hospital stay?
+healthReason.wasHospitalStayRequired.headingAndTitle = Did this health issue include a hospital stay?
 healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital
 agent.healthReason.wasHospitalStayRequired.error.required = Tell us if your client or someone else was admitted to hospital
 
 # When did the health issue happen page
 # ----------------------------------------------------------
-healthReason.whenHealthIssueHappened.title = When did you become unable to manage the VAT account?
-agent.healthReason.whenHealthIssueHappened.title = When did your client become unable to manage the VAT account?
-healthReason.whenHealthIssueHappened.heading = When did you become unable to manage the VAT account?
-agent.healthReason.whenHealthIssueHappened.heading = When did your client become unable to manage the VAT account?
 healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>
 agent.healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your client’s ability to complete this submission.<br><br>
 agent.healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your client’s ability to make this payment.<br><br>
 healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your ability to make this payment.<br><br>
-healthReason.whenHealthIssueHappened.error.required.all = Tell us when you became unable to manage the VAT account
-agent.healthReason.whenHealthIssueHappened.error.required.all = Tell us when your client became unable to manage the VAT account
-healthReason.whenHealthIssueHappened.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
-agent.healthReason.whenHealthIssueHappened.error.required.two = The date your client became unable to manage VAT must include a {0} and a {1}
-healthReason.whenHealthIssueHappened.error.required = The date you became unable to manage VAT must include a {0}
-agent.healthReason.whenHealthIssueHappened.error.required = The date your client became unable to manage VAT must include a {0}
-healthReason.whenHealthIssueHappened.error.invalid = The date you became unable to manage VAT must be a real date
-agent.healthReason.whenHealthIssueHappened.error.invalid = The date your client became unable to manage VAT must be a real date
-healthReason.whenHealthIssueHappened.error.notInFuture = The date you became unable to manage VAT must be today or in the past
-agent.healthReason.whenHealthIssueHappened.error.notInFuture = The date your client became unable to manage VAT must be today or in the past
 
 # When did the hospital stay begin page
 # ----------------------------------------------------------
-healthReason.whenDidHospitalStayBegin.title = When did the hospital stay begin?
-healthReason.whenDidHospitalStayBegin.heading = When did the hospital stay begin?
+healthReason.whenDidHospitalStayBegin.headingAndTitle = When did the hospital stay begin?
 healthReason.whenDidHospitalStayBegin.error.required.all = Enter the start date of the hospital stay
 healthReason.whenDidHospitalStayBegin.error.required.two = The date the hospital stay started must include a {0} and a {1}
 healthReason.whenDidHospitalStayBegin.error.required = The date the hospital stay started must include a {0}
@@ -225,36 +208,21 @@ healthReason.whenDidHospitalStayBegin.error.notInFuture = The date the hospital 
 
 # Why was the return submitted late page
 # ----------------------------------------------------------
-otherReason.whyReturnSubmittedLate.title = Why was the return submitted late?
-otherReason.whyReturnSubmittedLate.lpp.title = Why was the VAT bill paid late?
+otherReason.whyReturnSubmittedLate.headingAndTitle = Why was the return submitted late?
+otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Why was the VAT bill paid late?
 otherReason.whyReturnSubmittedLate.lpp.error.required = Explain why the VAT bill was paid late
 otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
 
 # When did you become unable page
 # ----------------------------------------------------------
-otherReason.whenDidBecomeUnable.title = When did you become unable to manage the VAT account?
-agent.otherReason.whenDidBecomeUnable.title = When did your client become unable to manage the VAT account?
-otherReason.whenDidBecomeUnable.heading = When did you become unable to manage the VAT account?
-agent.otherReason.whenDidBecomeUnable.heading = When did your client become unable to manage the VAT account?
 otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>
 agent.otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped your client from working on or making this submission.<br><br>
 otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped you from making this payment.<br><br>
 agent.otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped your client from making this payment.<br><br>
-otherReason.whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
-agent.otherReason.whenDidBecomeUnable.error.required.all = Tell us when your client became unable to manage the VAT account
-otherReason.whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
-agent.otherReason.whenDidBecomeUnable.error.required.two = The date your client became unable to manage the VAT account must include a {0} and a {1}
-otherReason.whenDidBecomeUnable.error.required = The date you became unable to manage VAT must include a {0}
-agent.otherReason.whenDidBecomeUnable.error.required = The date your client became unable to manage the VAT account must include a {0}
-otherReason.whenDidBecomeUnable.error.invalid = The date you became unable to manage VAT must be a real date
-agent.otherReason.whenDidBecomeUnable.error.invalid = The date your client became unable to manage the VAT account must be a real date
-otherReason.whenDidBecomeUnable.error.notInFuture = The date you became unable to manage VAT must be today or in the past
-agent.otherReason.whenDidBecomeUnable.error.notInFuture = The date your client became unable to manage the VAT account must be today or in the past
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
-agents.whoPlannedToSubmitVATReturn.title = Before the deadline, who planned to submit the return?
-agents.whoPlannedToSubmitVATReturn.heading = Before the deadline, who planned to submit the return?
+agents.whoPlannedToSubmitVATReturn.headingAndTitle = Before the deadline, who planned to submit the return?
 agents.whoPlannedToSubmitVATReturn.agent = I did
 agents.whoPlannedToSubmitVATReturn.client = My client did
 agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submit the VAT return
@@ -262,8 +230,7 @@ agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submi
 
 # Upload Evidence
 # ----------------------------------------------------------
-otherReason.uploadEvidence.title = Evidence to support this appeal (optional)
-otherReason.uploadEvidence.heading = Evidence to support this appeal (optional)
+otherReason.uploadEvidence.headingAndTitle = Evidence to support this appeal (optional)
 otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the penalty.
 otherReason.uploadEvidence.p2 = Evidence might include documents or letters that show why the return was submitted late.
 otherReason.uploadEvidence.lpp.p2 = Evidence might include documents or letters that show why the VAT bill was paid late.
@@ -290,8 +257,7 @@ otherReason.uploadEvidence.stillTransferring = Files are still being transferred
 
 # Upload Evidence Question
 # ----------------------------------------------------------
-otherReason.uploadEvidence.question.title = Do you want to upload evidence to support your appeal?
-otherReason.uploadEvidence.question.heading = Do you want to upload evidence to support your appeal?
+otherReason.uploadEvidence.question.headingAndTitle = Do you want to upload evidence to support your appeal?
 otherReason.uploadEvidence.question.required = Select yes if you want to upload evidence
 otherReason.uploadEvidence.question.hintText = Uploading evidence is optional. We will still review your appeal if you do not upload evidence.
 
@@ -318,14 +284,12 @@ otherReason.uploadList.multipleDuplicateInsetText = {0} of the files you have up
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
-otherReason.uploadEvidence.takingLongerThanExpected.title = It’s taking longer than expected to upload this file
-otherReason.uploadEvidence.takingLongerThanExpected.h1 = It’s taking longer than expected to upload this file
+otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle = It’s taking longer than expected to upload this file
 otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Reload this page
 
 # Upload Another Document (No JS)
 # ----------------------------------------------------------
-otherReason.uploadAnotherDocument.noJs.title = Add another file (optional)
-otherReason.uploadAnotherDocument.noJs.heading = Add another file (optional)
+otherReason.uploadAnotherDocument.noJs.headingAndTitle = Add another file (optional)
 otherReason.uploadAnotherDocument.noJs.button.uploadFile = Upload selected file
 otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
 
@@ -348,12 +312,10 @@ upscan.noJs.fileTooLarge = The selected file must be smaller than 6MB. Choose an
 upscan.noJs.fileEmpty = The selected file is empty. Choose another file.
 upscan.noJs.fileHasVirus = The selected file contains a virus. Choose another file.
 upscan.noJs.unableToUpload = The selected file could not be uploaded. Choose another file.
-upscan.noJs.fileNotSpecified = Select a file.
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------
-healthReason.hasTheHospitalStayEnded.title = Has the hospital stay ended?
-healthReason.hasTheHospitalStayEnded.heading = Has the hospital stay ended?
+healthReason.hasTheHospitalStayEnded.headingAndTitle = Has the hospital stay ended?
 healthReason.hasTheHospitalStayEnded.yes.heading = When did it end?
 healthReason.hasTheHospitalStayEnded.error.required = Tell us if the hospital stay has now ended
 healthReason.hasTheHospitalStayEnded.date.error.required.all = Tell us when the hospital stay ended
@@ -365,8 +327,7 @@ healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The d
 
 # When did the person die page
 # ----------------------------------------------------------
-bereavementReason.title = When did the person die?
-bereavementReason.heading = When did the person die?
+bereavementReason.headingAndTitle = When did the person die?
 bereavementReason.error.required.all = Enter the date when the person died
 bereavementReason.error.required.two = The date must include a {0} and {1}
 bereavementReason.error.required = The date must include a {0}
@@ -375,8 +336,7 @@ bereavementReason.error.notInFuture = The date must be today or in the past
 
 # Cancel VAT Registration Page
 # -----------------------------------------------------------
-cancelVATRegistration.title = Has HMRC been asked to cancel the VAT registration for this business?
-cancelVATRegistration.heading = Has HMRC been asked to cancel the VAT registration for this business?
+cancelVATRegistration.headingAndTitle = Has HMRC been asked to cancel the VAT registration for this business?
 cancelVATRegistration.hintText = A business must cancel its VAT registration if it stops trading, deregisters for VAT or if the business ownership is transferred.
 cancelVATRegistration.error.required = Tell us if HMRC has been asked to cancel the VAT registration
 
@@ -389,8 +349,7 @@ date.year = Year
 # Check your answers page
 # ----------------------------------------------------------
 
-checkYourAnswers.title = Check your answers
-checkYourAnswers.heading = Check your answers
+checkYourAnswers.headingAndTitle = Check your answers
 checkYourAnswers.appealDetails.h2 = Appeal details
 checkYourAnswers.declaration.h2 = Declaration
 checkYourAnswers.declaration.p1 = By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge.
@@ -414,8 +373,6 @@ checkYourAnswers.technicalIssues.whenDidTechIssuesEnd = When did the technology 
 checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
 checkYourAnswers.health.reasonableExcuse = Health
 checkYourAnswers.health.hospitalStay = Did this health issue include a hospital stay?
-checkYourAnswers.health.unableToManageAccount = When did you become unable to manage the VAT account?
-agent.checkYourAnswers.health.unableToManageAccount = When did your client become unable to manage the VAT account?
 checkYourAnswers.health.yes = Yes
 checkYourAnswers.health.no = No
 checkYourAnswers.health.whenDidHospitalStayBegin = When did the hospital stay begin?
@@ -425,8 +382,6 @@ checkYourAnswers.bereavement.whenDidThePersonDie = When did the person die?
 checkYourAnswers.bereavement.reasonableExcuse = Bereavement (someone died)
 
 checkYourAnswers.other.reasonableExcuse = The reason does not fit into any of the other categories
-checkYourAnswers.other.unableToManageAccount = When did you become unable to manage the VAT account?
-agent.checkYourAnswers.other.unableToManageAccount = When did your client become unable to manage the VAT account?
 checkYourAnswers.other.statementOfLateness = Why was the return submitted late?
 checkYourAnswers.other.lpp.statementOfLateness = Why was the VAT bill paid late?
 checkYourAnswers.other.fileEvidence = Evidence to support this appeal
@@ -443,11 +398,13 @@ checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Something else ha
 checkYourAnswers.obligation.whyYouWantToAppealPenalty = Tell us why you want to appeal the penalty
 checkYourAnswers.obligation.fileEvidence = Evidence to support this appeal
 
+checkYourAnswers.unableToManageAccount = When did you become unable to manage the VAT account?
+agent.checkYourAnswers.unableToManageAccount = When did your client become unable to manage the VAT account?
+
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
-appealConfirmation.title = You have asked us to review a penalty
-appealConfirmation.heading = You have asked us to review a penalty
+appealConfirmation.headingAndTitle = You have asked us to review a penalty
 appealConfirmation.typeAndPeriod = {0}: {1} to {2}
 appealConfirmation.whatHappensNext = What happens next
 appealConfirmation.p1 = We’ll make a decision about your appeal based on what you have told us.
@@ -465,23 +422,20 @@ appealConfirmation.feedbackLink.2 = (takes 30 seconds)
 
 # Making a late appeal page
 # ----------------------------------------------------------
-makingALateAppeal.title = This penalty was issued more than 30 days ago
-makingALateAppeal.heading = This penalty was issued more than 30 days ago
+makingALateAppeal.headingAndTitle = This penalty was issued more than 30 days ago
 makingALateAppeal.p1 = You usually need to appeal within 30 days of the date on the penalty notice. Tell us here why you could not appeal within 30 days.
 makingALateAppeal.error.required = You must provide some information about why you did not appeal sooner
 
 # Agents 'What caused you to miss the deadline?'
 # ----------------------------------------------------------
-agents.whatCausedYouToMissTheDeadline.title = What caused you to miss the deadline?
-agents.whatCausedYouToMissTheDeadline.heading = What caused you to miss the deadline?
+agents.whatCausedYouToMissTheDeadline.headingAndTitle = What caused you to miss the deadline?
 agents.whatCausedYouToMissTheDeadline.option.client = My client did not get information to me on time
 agents.whatCausedYouToMissTheDeadline.option.agent = Something else happened to delay me
 agents.whatCausedYouToMissTheDeadline.error.invalid = Tell us what caused you to miss the deadline
 
 # You Cannot Appeal page
 # -----------------------
-youCannotAppeal.title = You cannot appeal yet
-youCannotAppeal.heading = You cannot appeal yet
+youCannotAppeal.headingAndTitle = You cannot appeal yet
 agent.youCannotAppeal.lsp.p1 = You need to submit your client’s VAT Return before we can review this penalty.
 agent.youCannotAppeal.lsp.p2 = If you have already submitted the VAT Return, it can take up to 24 hours before it shows on your client’s VAT account.
 agent.youCannotAppeal.lpp.p1 = Your client needs to pay their VAT bill before we can review this penalty.
@@ -498,15 +452,13 @@ youCannotAppeal.lpp.p2 = If you paid your VAT very recently, it can take up to 5
 
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
-otherRelevantInformation.title = Tell us why you want to appeal the penalty
-otherRelevantInformation.heading = Tell us why you want to appeal the penalty
+otherRelevantInformation.headingAndTitle = Tell us why you want to appeal the penalty
 otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
 otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
 
 # You can appeal this penalty
 # ----------------------------------------------------------
-youCanAppealThisPenalty.title = You can appeal this penalty online
-youCanAppealThisPenalty.heading = You can appeal this penalty online
+youCanAppealThisPenalty.headingAndTitle = You can appeal this penalty online
 youCanAppealThisPenalty.p1 = If HMRC reviews this penalty and accepts your appeal, we will remove:
 youCanAppealThisPenalty.li.1 = this penalty
 youCanAppealThisPenalty.li.2 = all other VAT late submission or late payment penalties for the same period
@@ -519,8 +471,7 @@ explainReason.charsInTextArea.error = Explain the reason in 5,000 characters or 
 
 # Service Unavailable Page
 # ----------------------------------------------------------
-serviceUnavailable.title = Sorry, the service is unavailable
-serviceUnavailable.heading = Sorry, the service is unavailable
+serviceUnavailable.headingAndTitle = Sorry, the service is unavailable
 serviceUnavailable.p1 = We have not saved your answers.
 serviceUnavailable.p2 = You will be able to use the service later.
 serviceUnavailable.p3 = If you prefer, you can appeal by letter. Write to:
@@ -530,19 +481,11 @@ serviceUnavailable.p6 = BX9 1ZT
 
 # Problem with service page
 # ----------------------------------------------------------
-problemWithService.title = Sorry, there is a problem with the service
-problemWithService.heading = Sorry, there is a problem with the service
-problemWithService.p1 = We have not saved your answers.
-problemWithService.p2 = You will be able to use the service later.
-problemWithService.p3 = If you prefer, you can appeal by letter. Write to:
-problemWithService.p4 = Solicitor‘s Office and Legal Services
-problemWithService.p5 = HMRC
-problemWithService.p6 = BX9 1ZT
+problemWithService.headingAndTitle = Sorry, there is a problem with the service
 
 # Duplicate Appeal Page
 # ----------------------------------------------------------
-duplicateAppeal.title = We have already been asked to review this penalty
-duplicateAppeal.heading = We have already been asked to review this penalty
+duplicateAppeal.headingAndTitle = We have already been asked to review this penalty
 duplicateAppeal.p1 = You cannot submit a duplicate request for the same penalty.
 duplicateAppeal.link = View your penalties and appeals
 agent.duplicateAppeal.link = View your client’s penalties and appeals
@@ -550,13 +493,12 @@ agent.duplicateAppeal.link = View your client’s penalties and appeals
 # Error scenarios
 # -----------------------------------------------------------
 error.prefix = Error:
-error.summary.title = There is a problem
+error.summary.headingAndTitle = There is a problem
 # Not sure if this is as per design
 error.clickAcceptAndContinue = Please click ’Accept and continue’
 
 # Timeout page
 # -----------------------------------------------------------
-timeout.title = For your security, we signed you out
-timeout.heading = For your security, we signed you out
+timeout.headingAndTitle = For your security, we signed you out
 timeout.p1 = We did not save your answers.
 timeout.signIn = Sign in

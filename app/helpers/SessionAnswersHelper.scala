@@ -142,7 +142,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
           (messages("checkYourAnswers.reasonableExcuse"),
             messages(s"checkYourAnswers.${request.session.get(SessionKeys.reasonableExcuse).get}.reasonableExcuse"),
             controllers.routes.ReasonableExcuseController.onPageLoad().url),
-          (getMessage("checkYourAnswers.other.unableToManageAccount"),
+          (getMessage("checkYourAnswers.unableToManageAccount"),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidBecomeUnable).get)),
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url),
           (statementOfLatenessForLPPOrLSP,
@@ -188,7 +188,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
           (messages("checkYourAnswers.health.hospitalStay"),
             messages(s"checkYourAnswers.health.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
             controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url),
-          (getMessage("checkYourAnswers.health.unableToManageAccount"),
+          (getMessage("checkYourAnswers.unableToManageAccount"),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueHappened).get)),
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url)
         )

@@ -28,7 +28,7 @@
 @(form: Form[_], radioOptions: Seq[RadioItem])(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = if(request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)){
-        messages("agent.reasonableExcuses.title")}else{messages("reasonableExcuses.title")
+        messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")
     },
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
@@ -37,7 +37,7 @@
 
         @radios(
             form = form,
-            legend = if(request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)){messages("agent.reasonableExcuses.heading")}else{messages("reasonableExcuses.heading")},
+            legend = if(request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)){messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")},
             items = radioOptions,
             legendAsHeading = true
         )

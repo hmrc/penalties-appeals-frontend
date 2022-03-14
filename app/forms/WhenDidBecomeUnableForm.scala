@@ -28,11 +28,11 @@ object WhenDidBecomeUnableForm extends Mappings {
   def whenDidBecomeUnableForm()(implicit messages: Messages, user: UserRequest[_]): Form[LocalDate] = {
     Form(
       "date" -> localDate(
-      invalidKey = getMessageKey("otherReason.whenDidBecomeUnable.error.invalid"),
-      allRequiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required.all"),
-      twoRequiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required.two"),
-      requiredKey = getMessageKey("otherReason.whenDidBecomeUnable.error.required"),
-      futureKey = Some(getMessageKey("otherReason.whenDidBecomeUnable.error.notInFuture"))
+      invalidKey = getMessageKey("whenDidBecomeUnable.error.invalid"),
+      allRequiredKey = getMessageKey("whenDidBecomeUnable.error.required.all"),
+      twoRequiredKey = getMessageKey("whenDidBecomeUnable.error.required.two"),
+      requiredKey = getMessageKey("whenDidBecomeUnable.error.required"),
+      futureKey = Some(getMessageKey("whenDidBecomeUnable.error.notInFuture"))
       )
     )
   }

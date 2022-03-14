@@ -48,7 +48,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.notInFuture", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.notInFuture", Seq("day", "month", "year"))
         }
 
         "the date is not valid" in {
@@ -60,7 +60,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid", Seq())
         }
 
         "the date contains strings instead of numbers" in {
@@ -72,7 +72,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
         }
 
         "the date contains negative numbers" in {
@@ -84,7 +84,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {
@@ -96,7 +96,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.required", Seq("day"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required", Seq("day"))
         }
 
         "the date has no month" in {
@@ -108,7 +108,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "otherReason.whenDidBecomeUnable.error.required", Seq("month"))
+          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required", Seq("month"))
         }
 
         "the date has no year" in {
@@ -120,7 +120,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.year", "otherReason.whenDidBecomeUnable.error.required", Seq("year"))
+          result.errors.head shouldBe FormError("date.year", "whenDidBecomeUnable.error.required", Seq("year"))
         }
 
         "the date has a day but no month and year" in {
@@ -132,7 +132,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "otherReason.whenDidBecomeUnable.error.required.two", Seq("month", "year"))
+          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required.two", Seq("month", "year"))
         }
 
         "the date has a month but no day and year" in {
@@ -144,7 +144,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.required.two", Seq("day", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two", Seq("day", "year"))
         }
 
         "the date has a year but no day and month" in {
@@ -156,7 +156,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.required.two", Seq("day", "month"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two", Seq("day", "month"))
         }
 
         "the date has no values" in {
@@ -168,7 +168,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "otherReason.whenDidBecomeUnable.error.required.all", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.all", Seq("day", "month", "year"))
         }
       }
     }
@@ -195,7 +195,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.notInFuture", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.notInFuture", Seq("day", "month", "year"))
         }
 
         "the date is not valid" in {
@@ -207,7 +207,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid", Seq())
         }
 
         "the date contains strings instead of numbers" in {
@@ -219,7 +219,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
         }
 
         "the date contains negative numbers" in {
@@ -231,7 +231,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {
@@ -243,7 +243,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.required", Seq("day"))
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required", Seq("day"))
         }
 
         "the date has no month" in {
@@ -255,7 +255,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "agent.otherReason.whenDidBecomeUnable.error.required", Seq("month"))
+          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required", Seq("month"))
         }
 
         "the date has no year" in {
@@ -267,7 +267,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.year", "agent.otherReason.whenDidBecomeUnable.error.required", Seq("year"))
+          result.errors.head shouldBe FormError("date.year", "agent.whenDidBecomeUnable.error.required", Seq("year"))
         }
 
         "the date has a day but no month and year" in {
@@ -279,7 +279,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "agent.otherReason.whenDidBecomeUnable.error.required.two", Seq("month", "year"))
+          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required.two", Seq("month", "year"))
         }
 
         "the date has a month but no day and year" in {
@@ -291,7 +291,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.required.two", Seq("day", "year"))
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two", Seq("day", "year"))
         }
 
         "the date has a year but no day and month" in {
@@ -303,7 +303,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.required.two", Seq("day", "month"))
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two", Seq("day", "month"))
         }
 
         "the date has no values" in {
@@ -315,7 +315,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.otherReason.whenDidBecomeUnable.error.required.all", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.all", Seq("day", "month", "year"))
         }
       }
     }

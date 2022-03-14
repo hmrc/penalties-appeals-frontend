@@ -23,9 +23,9 @@ formHelper: FormWithCSRF)
 @()(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 @appealType = @{userRequest.session.get(SessionKeys.appealType)}
 
-@layout(pageTitle = messages("youCannotAppeal.title"),
+@layout(pageTitle = messages("youCannotAppeal.headingAndTitle"),
 isPageFullWidth = false) {
-    <h1 class="govuk-heading-l">@messages("youCannotAppeal.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("youCannotAppeal.headingAndTitle")</h1>
     @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)
                 || appealType.contains(PenaltyTypeEnum.Additional.toString)){
         <p class="govuk-body">@getMessage("youCannotAppeal.lpp.p1")</p>

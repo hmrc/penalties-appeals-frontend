@@ -23,7 +23,7 @@
 
 @(form: Form[_], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("healthReason.whenDidHospitalStayBegin.title"),
+@layout(pageTitle = messages("healthReason.whenDidHospitalStayBegin.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
@@ -31,7 +31,7 @@
 
         @dateInput(
             form = form,
-            legendContent = messages("healthReason.whenDidHospitalStayBegin.heading"),
+            legendContent = messages("healthReason.whenDidHospitalStayBegin.headingAndTitle"),
             legendClasses = Some("govuk-fieldset__legend govuk-fieldset__legend--l"),
             hintText = Some(messages("whenDidEventHappen.hint")),
             legendAsPageHeading = true

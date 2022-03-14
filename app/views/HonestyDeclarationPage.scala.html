@@ -26,12 +26,12 @@
 
 @appealType = @{userRequest.session.get(SessionKeys.appealType)}
 
-@layout(pageTitle = messages("honestyDeclaration.title"),
+@layout(pageTitle = messages("honestyDeclaration.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
 
-    <h1 class="govuk-heading-l">@messages("honestyDeclaration.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("honestyDeclaration.headingAndTitle")</h1>
     <p class="govuk-body">@messages("honestyDeclaration.p1")</p>
     <ul class="govuk-list govuk-list--bullet">
         <li>

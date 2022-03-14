@@ -38,7 +38,7 @@ object UpscanMessageHelper extends FeatureSwitching {
     errorCode match {
       case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
       case "EntityTooLarge" => getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
-      case "400" | "InvalidArgument" => getJsOrNonJsFailureMessage("fileNotSpecified", isJsEnabled)
+      case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
       case _ => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
     }
   }
