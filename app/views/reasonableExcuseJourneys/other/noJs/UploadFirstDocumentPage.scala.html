@@ -59,11 +59,11 @@
     } else "otherReason.uploadEvidence.p2"
 }
 
-@layout(pageTitle = messages("otherReason.uploadEvidence.title"),
+@layout(pageTitle = messages("otherReason.uploadEvidence.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
-    <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.headingAndTitle")</h1>
     <p class="govuk-body">@messages("otherReason.uploadEvidence.noJs.p1")</p>
     <p class="govuk-body">@messages(lppOrLspOrObligationDynamicText)</p>
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p4")</p>

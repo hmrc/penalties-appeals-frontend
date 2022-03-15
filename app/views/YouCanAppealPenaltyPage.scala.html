@@ -22,11 +22,11 @@
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("youCanAppealThisPenalty.title"),
+@layout(pageTitle = messages("youCanAppealThisPenalty.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
-    <h1 class="govuk-heading-l">@messages("youCanAppealThisPenalty.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("youCanAppealThisPenalty.headingAndTitle")</h1>
     <p class="govuk-body">@messages("youCanAppealThisPenalty.p1")</p>
     @bullets(
         Seq(

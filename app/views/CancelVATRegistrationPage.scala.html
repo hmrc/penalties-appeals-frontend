@@ -22,14 +22,14 @@ radios: components.radios)
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("cancelVATRegistration.title"),
+@layout(pageTitle = messages("cancelVATRegistration.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
     @formHelper(action = postAction) {
         @radios(
             form = form,
-            legend = messages("cancelVATRegistration.heading"),
+            legend = messages("cancelVATRegistration.headingAndTitle"),
             hint = Some(Html(messages("cancelVATRegistration.hintText"))),
             items = radioOptions,
             legendAsHeading = true

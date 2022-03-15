@@ -32,7 +32,7 @@
     } else "otherReason.whenDidBecomeUnable.hintText"
 }
 
-@layout(pageTitle = getMessage("otherReason.whenDidBecomeUnable.title"),
+@layout(pageTitle = getMessage("whenDidBecomeUnable.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
@@ -40,9 +40,9 @@
 
         @dateInput(
             form = form,
-            legendContent = getMessage("otherReason.whenDidBecomeUnable.heading"),
+            legendContent = getMessage("whenDidBecomeUnable.headingAndTitle"),
             legendClasses = Some("govuk-fieldset__legend govuk-fieldset__legend--l"),
-            hintText = Some(getMessage(hintText)),
+            hintText = Some(getMessage(hintText) + messages("whenDidEventHappen.hint")),
             legendAsPageHeading = true
         )
 

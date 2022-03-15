@@ -26,12 +26,12 @@ object RadioOptionHelper {
     Seq(
       RadioItem(
         value = Some("yes"),
-        content = Text(messages("crimeReason.hasBeenReported.yes")),
+        content = Text(messages("common.radioOption.yes")),
         checked = form("value").value.contains("yes")
       ),
       RadioItem(
         value = Some("no"),
-        content = Text(messages("crimeReason.hasBeenReported.no")),
+        content = Text(messages("common.radioOption.no")),
         checked = form("value").value.contains("no")
       ),
       RadioItem(

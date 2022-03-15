@@ -94,7 +94,7 @@ class UpscanMessageHelperSpec extends SpecBase {
 
       "return select a file message when errorCode is InvalidArgument" in {
         val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", false)
-        result shouldBe "upscan.noJs.fileNotSpecified"
+        result shouldBe "upscan.fileNotSpecified"
       }
 
       "return try again message when errorCode is not matched" in {

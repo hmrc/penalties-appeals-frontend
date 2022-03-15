@@ -19,11 +19,11 @@
 @()(implicit userRequest: UserRequest[_], messages: Messages, appConfig: config.AppConfig)
 
 @layout(
-    pageTitle = messages("duplicateAppeal.title"),
+    pageTitle = messages("duplicateAppeal.headingAndTitle"),
     showPenaltyInformation = false,
     isPageFullWidth = false
 ) {
-    <h1 class="govuk-heading-l">@messages("duplicateAppeal.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("duplicateAppeal.headingAndTitle")</h1>
     <p class="govuk-body"> @messages("duplicateAppeal.p1")</p>
 
     <p class="govuk-body">

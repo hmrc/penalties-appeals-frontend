@@ -31,7 +31,7 @@
     } else "healthReason.whenHealthIssueHappened.hintText"
 }
 
-@layout(pageTitle = getMessage("healthReason.whenHealthIssueHappened.title"),
+@layout(pageTitle = getMessage("whenDidBecomeUnable.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
@@ -39,9 +39,9 @@
 
         @dateInput(
             form = form,
-            legendContent = getMessage("healthReason.whenHealthIssueHappened.heading"),
+            legendContent = getMessage("whenDidBecomeUnable.headingAndTitle"),
             legendClasses = Some("govuk-fieldset__legend govuk-fieldset__legend--l"),
-            hintText = Some(getMessage(lppOrLspDynamicText)),
+            hintText = Some(getMessage(lppOrLspDynamicText) + messages("whenDidEventHappen.hint")),
             legendAsPageHeading = true
         )
 

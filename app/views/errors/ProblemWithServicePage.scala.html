@@ -19,17 +19,17 @@
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
-    pageTitle = messages("problemWithService.title"),
+    pageTitle = messages("problemWithService.headingAndTitle"),
     showPenaltyInformation = false,
     isPageFullWidth = false
 ) {
-    <h1 class="govuk-heading-l">@messages("problemWithService.heading")</h1>
-    <p class="govuk-body">@messages("problemWithService.p1")</p>
-    <p class="govuk-body">@messages("problemWithService.p2")</p>
-    <p class="govuk-body">@messages("problemWithService.p3")</p>
+    <h1 class="govuk-heading-l">@messages("problemWithService.headingAndTitle")</h1>
+    <p class="govuk-body">@messages("serviceUnavailable.p1")</p>
+    <p class="govuk-body">@messages("serviceUnavailable.p2")</p>
+    <p class="govuk-body">@messages("serviceUnavailable.p3")</p>
     <p class="govuk-body">
-        @messages("problemWithService.p4")<br>
-        @messages("problemWithService.p5")<br>
-        @messages("problemWithService.p6")
+        @messages("serviceUnavailable.p4")<br>
+        @messages("serviceUnavailable.p5")<br>
+        @messages("serviceUnavailable.p6")
     </p>
 }

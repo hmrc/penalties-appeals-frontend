@@ -29,11 +29,11 @@ object WhenDidHealthIssueHappenForm extends Mappings {
   def whenHealthIssueHappenedForm()(implicit messages: Messages, user: UserRequest[_]): Form[LocalDate] = {
     Form(
       "date" -> localDate(
-        invalidKey = getMessageKey("healthReason.whenHealthIssueHappened.error.invalid"),
-        allRequiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required.all"),
-        twoRequiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required.two"),
-        requiredKey = getMessageKey("healthReason.whenHealthIssueHappened.error.required"),
-        futureKey = Some(getMessageKey("healthReason.whenHealthIssueHappened.error.notInFuture"))
+        invalidKey = getMessageKey("whenDidBecomeUnable.error.invalid"),
+        allRequiredKey = getMessageKey("whenDidBecomeUnable.error.required.all"),
+        twoRequiredKey = getMessageKey("whenDidBecomeUnable.error.required.two"),
+        requiredKey = getMessageKey("whenDidBecomeUnable.error.required"),
+        futureKey = Some(getMessageKey("whenDidBecomeUnable.error.notInFuture"))
       )
     )
   }

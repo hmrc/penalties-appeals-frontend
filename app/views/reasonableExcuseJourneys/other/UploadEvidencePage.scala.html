@@ -61,10 +61,10 @@
     } else "otherReason.uploadEvidence.p2"
 }
 
-@layout(pageTitle = messages("otherReason.uploadEvidence.title"),
+@layout(pageTitle = messages("otherReason.uploadEvidence.headingAndTitle"),
     isPageFullWidth = false,
     customJavaScript = Some("multiFileUpload.min.js")) {
-    <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.headingAndTitle")</h1>
 
     @formHelper(action = postAction,
         args =

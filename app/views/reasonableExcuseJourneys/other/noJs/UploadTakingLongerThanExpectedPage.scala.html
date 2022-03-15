@@ -26,9 +26,9 @@
 
 @(postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("otherReason.uploadEvidence.takingLongerThanExpected.title"),
+@layout(pageTitle = messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle"),
     isPageFullWidth = false) {
-    <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.takingLongerThanExpected.h1")</h1>
+    <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle")</h1>
 
     @formHelper(action = postAction) {
         @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain"))))
