@@ -20,7 +20,7 @@ import models.{PenaltyTypeEnum, UserRequest}
 import utils.SessionKeys
 
 object WhenDidYouBecomeUnableHelper {
-  def getPageHeadingMessageKey(msgPrefix: String)(implicit userRequest: UserRequest[_]): String = {
+  def getMessageKeyForPage(msgPrefix: String)(implicit userRequest: UserRequest[_]): String = {
     val isLPPAppeal = {
       userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) ||
         userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)
@@ -31,7 +31,7 @@ object WhenDidYouBecomeUnableHelper {
     (isLPPAppeal, clientMissedDeadline, clientIntendedToSubmit, isAgent) match {
       case (true, _, _, true) => s"agent.$msgPrefix.lpp"
       case (true, _, _, false) => s"$msgPrefix.lpp"
-      case (_, false, true, true) => s"agent.$msgPrefix.clientIntendedToSubmit"
+      case (_, _, true, true) => s"agent.$msgPrefix.clientIntendedToSubmit"
       case (_, true, false, true) => s"agent.$msgPrefix.clientMissedDeadline"
       case _ => s"$msgPrefix.lsp"
     }

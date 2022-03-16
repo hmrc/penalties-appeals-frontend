@@ -23,13 +23,13 @@ import utils.SessionKeys
 
 class WhenDidYouBecomeUnableSpec extends SpecBase {
 
-  "getPageHeadingMessageKey" should {
+  "getMessageKeyForPage" should {
     "return the agent LPP text" when {
       "the agent is submitting an LPP appeal" in {
         val userRequest = UserRequest("123456789", arn = Some("1234"))(FakeRequest().withSession(
           SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString
         ))
-        val result = WhenDidYouBecomeUnableHelper.getPageHeadingMessageKey("key")(userRequest)
+        val result = WhenDidYouBecomeUnableHelper.getMessageKeyForPage("key")(userRequest)
         result shouldBe "agent.key.lpp"
       }
 
@@ -37,7 +37,7 @@ class WhenDidYouBecomeUnableSpec extends SpecBase {
         val userRequest = UserRequest("123456789", arn = Some("1234"))(FakeRequest().withSession(
           SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString
         ))
-        val result = WhenDidYouBecomeUnableHelper.getPageHeadingMessageKey("key")(userRequest)
+        val result = WhenDidYouBecomeUnableHelper.getMessageKeyForPage("key")(userRequest)
         result shouldBe "agent.key.lpp"
       }
     }
@@ -47,7 +47,7 @@ class WhenDidYouBecomeUnableSpec extends SpecBase {
         val userRequest = UserRequest("123456789", arn = None)(FakeRequest().withSession(
           SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString
         ))
-        val result = WhenDidYouBecomeUnableHelper.getPageHeadingMessageKey("key")(userRequest)
+        val result = WhenDidYouBecomeUnableHelper.getMessageKeyForPage("key")(userRequest)
         result shouldBe "key.lpp"
       }
 
@@ -55,7 +55,7 @@ class WhenDidYouBecomeUnableSpec extends SpecBase {
         val userRequest = UserRequest("123456789", arn = None)(FakeRequest().withSession(
           SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString
         ))
-        val result = WhenDidYouBecomeUnableHelper.getPageHeadingMessageKey("key")(userRequest)
+        val result = WhenDidYouBecomeUnableHelper.getMessageKeyForPage("key")(userRequest)
         result shouldBe "key.lpp"
       }
     }
@@ -66,7 +66,7 @@ class WhenDidYouBecomeUnableSpec extends SpecBase {
           SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
           SessionKeys.whoPlannedToSubmitVATReturn -> "client"
         ))
-        val result = WhenDidYouBecomeUnableHelper.getPageHeadingMessageKey("key")(userRequest)
+        val result = WhenDidYouBecomeUnableHelper.getMessageKeyForPage("key")(userRequest)
         result shouldBe "agent.key.clientIntendedToSubmit"
       }
     }
@@ -78,7 +78,7 @@ class WhenDidYouBecomeUnableSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
           SessionKeys.whatCausedYouToMissTheDeadline -> "client"
         ))
-        val result = WhenDidYouBecomeUnableHelper.getPageHeadingMessageKey("key")(userRequest)
+        val result = WhenDidYouBecomeUnableHelper.getMessageKeyForPage("key")(userRequest)
         result shouldBe "agent.key.clientMissedDeadline"
       }
     }
@@ -90,7 +90,7 @@ class WhenDidYouBecomeUnableSpec extends SpecBase {
           SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
           SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
         ))
-        val result = WhenDidYouBecomeUnableHelper.getPageHeadingMessageKey("key")(userRequest)
+        val result = WhenDidYouBecomeUnableHelper.getMessageKeyForPage("key")(userRequest)
         result shouldBe "key.lsp"
       }
 
@@ -98,7 +98,7 @@ class WhenDidYouBecomeUnableSpec extends SpecBase {
         val userRequest = UserRequest("123456789", arn = None)(FakeRequest().withSession(
           SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString
         ))
-        val result = WhenDidYouBecomeUnableHelper.getPageHeadingMessageKey("key")(userRequest)
+        val result = WhenDidYouBecomeUnableHelper.getMessageKeyForPage("key")(userRequest)
         result shouldBe "key.lsp"
       }
     }
