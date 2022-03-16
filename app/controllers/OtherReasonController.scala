@@ -23,11 +23,10 @@ import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadEvidenceQuestionForm, UploadListForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
-import models.pages._
-import models.pages.UploadEvidenceQuestionPage
-import models.upload.{UploadJourney, UploadStatusEnum}
+import models.Mode
+import models.pages.{UploadEvidenceQuestionPage, _}
 import models.upload.UploadStatusEnum.READY
-import models.{CheckMode, Mode, NormalMode}
+import models.upload.{UploadJourney, UploadStatusEnum}
 import navigation.Navigation
 import play.api.data.{Form, FormError}
 import play.api.i18n.I18nSupport

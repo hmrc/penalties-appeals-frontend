@@ -440,7 +440,7 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "for LPP on other journey" must {
-      "display the correct wording" in {
+      "display the correct wording for trader" in {
         val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
           .withSession(
             SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
@@ -457,7 +457,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
         result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-        result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(1)._1 shouldBe "When did the issue first stop you paying the VAT bill?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the VAT bill paid late?"
@@ -528,9 +528,71 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "for other" must {
+        "display the correct wording for agent" when {
+          "the client planned to submit" in {
+            val request = agentFakeRequestConverter(agentRequest
+              .withSession(
+                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+                SessionKeys.reasonableExcuse -> "other",
+                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
+                SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+                SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+                SessionKeys.isUploadEvidence -> "no",
+                SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+              ))
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+              "other")(request, implicitly)
+            result(1)._1 shouldBe "When did the issue first stop your client submitting the VAT Return?"
+            result(1)._2 shouldBe "1 January 2022"
+            result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          }
+
+          "the agent planned to submit and client missed deadline" in {
+            val request = agentFakeRequestConverter(agentRequest
+              .withSession(
+                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+                SessionKeys.reasonableExcuse -> "other",
+                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
+                SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+                SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+                SessionKeys.isUploadEvidence -> "no",
+                SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+                SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+              ))
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+              "other")(request, implicitly)
+            result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
+            result(1)._2 shouldBe "1 January 2022"
+            result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          }
+
+          "the agent planned to submit and missed deadline" in {
+            val request = agentFakeRequestConverter(agentRequest
+              .withSession(
+                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+                SessionKeys.reasonableExcuse -> "other",
+                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
+                SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+                SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+                SessionKeys.isUploadEvidence -> "no",
+                SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+                SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
+              ))
+            val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+              "other")(request, implicitly)
+            result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
+            result(1)._2 shouldBe "1 January 2022"
+            result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          }
+        }
+
         "for no upload" in {
           val fakeRequestWithOtherNoUploadKeysPresent = agentFakeRequestConverter(agentRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -545,7 +607,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -562,6 +624,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         "for no upload - and late appeal" in {
           val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = agentFakeRequestConverter(agentRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -577,7 +640,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -594,6 +657,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         "for upload" in {
           val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(agentRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -608,7 +672,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -625,6 +689,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         "for upload - and late appeal" in {
           val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(agentRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -640,7 +705,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -675,7 +740,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
         result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-        result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
+        result(1)._1 shouldBe "When did the issue first stop your client paying the VAT bill?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the VAT bill paid late?"
@@ -695,6 +760,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       "display no upload details row if the user has uploaded files but has changed their mind and selects 'no' - 'hide' the files uploaded" in {
         val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(agentRequest
           .withSession(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
             SessionKeys.reasonableExcuse -> "other",
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -710,7 +776,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
         result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-        result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
+        result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the return submitted late?"
@@ -727,6 +793,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       "display no upload details row if the user selected no to uploading files" in {
         val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(agentRequest
           .withSession(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
             SessionKeys.reasonableExcuse -> "other",
             SessionKeys.hasConfirmedDeclaration -> "true",
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -742,7 +809,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
         result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-        result(1)._1 shouldBe "When did your client become unable to manage the VAT account?"
+        result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the return submitted late?"
@@ -815,6 +882,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           val fakeRequestWithOtherNoUploadKeysPresent = fakeRequestConverter(fakeRequest
             .withSession(
               SessionKeys.reasonableExcuse -> "other",
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
@@ -826,7 +894,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -843,6 +911,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         "for no upload - and late appeal" in {
           val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -856,7 +925,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -876,6 +945,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         "for upload" in {
           val fakeRequestWithNoLateAppealButUploadPresent = fakeRequestConverter(fakeRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -888,7 +958,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -905,6 +975,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         "for upload - and late appeal" in {
           val fakeRequestWithNoLateAppealButUploadPresent = fakeRequestConverter(fakeRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -918,7 +989,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -938,6 +1009,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         "when the user clicked no to upload don't show the upload evidence row" in {
           val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -951,7 +1023,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -968,6 +1040,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         "when the user has changed their answer and does not want to upload files - but existing files have been uploaded - 'hide' the row" in {
           val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
             .withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
               SessionKeys.reasonableExcuse -> "other",
               SessionKeys.hasConfirmedDeclaration -> "true",
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
@@ -981,7 +1054,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
           result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-          result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+          result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
           result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
           result(2)._1 shouldBe "Why was the return submitted late?"
@@ -1426,6 +1499,7 @@ class SessionAnswersHelperSpec extends SpecBase {
     "when reason is 'other' (that requires a file upload call)" should {
       "return the rows for CYA page" in {
         val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
           SessionKeys.reasonableExcuse -> "other",
           SessionKeys.hasConfirmedDeclaration -> "true",
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
@@ -1437,7 +1511,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
         result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-        result(1)._1 shouldBe "When did you become unable to manage the VAT account?"
+        result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
         result(2)._1 shouldBe "Why was the return submitted late?"

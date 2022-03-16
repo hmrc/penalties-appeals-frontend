@@ -161,6 +161,12 @@ agent.whenDidBecomeUnable.error.invalid.lpp = The date when the issue first stop
 
 whenDidEventHappen.hint = For example, 12 3 2018
 
+whenDidBecomeUnable.other.lpp = When did the issue first stop you paying the VAT bill?
+agent.whenDidBecomeUnable.other.lpp = When did the issue first stop your client paying the VAT bill?
+agent.whenDidBecomeUnable.other.clientIntendedToSubmit = When did the issue first stop your client submitting the VAT Return?
+agent.whenDidBecomeUnable.other.clientMissedDeadline = When did the issue first stop your client getting information to you?
+whenDidBecomeUnable.other.lsp = When did the issue first stop you submitting the VAT Return?
+
 # When did the crime happen page
 # ----------------------------------------------------------
 crimeReason.headingAndTitle = When did the crime happen?
