@@ -17,9 +17,9 @@
 package forms
 
 import forms.mappings.Mappings
+import helpers.WhenDidYouBecomeUnableHelper.getMessageKeyForPage
 import play.api.data.Form
 import play.api.i18n.Messages
-import utils.MessageRenderer.getMessageKey
 import java.time.LocalDate
 
 import models.UserRequest
@@ -28,11 +28,14 @@ object WhenDidBecomeUnableForm extends Mappings {
   def whenDidBecomeUnableForm()(implicit messages: Messages, user: UserRequest[_]): Form[LocalDate] = {
     Form(
       "date" -> localDate(
-      invalidKey = getMessageKey("whenDidBecomeUnable.error.invalid"),
-      allRequiredKey = getMessageKey("whenDidBecomeUnable.error.required.all"),
-      twoRequiredKey = getMessageKey("whenDidBecomeUnable.error.required.two"),
-      requiredKey = getMessageKey("whenDidBecomeUnable.error.required"),
-      futureKey = Some(getMessageKey("whenDidBecomeUnable.error.notInFuture"))
+        invalidKey = getMessageKeyForPage("whenDidBecomeUnable.error.invalid"),
+        allRequiredKey = getMessageKeyForPage("whenDidBecomeUnable.error.required.all"),
+        twoRequiredKey = getMessageKeyForPage("whenDidBecomeUnable.error.required.two"),
+        requiredKey = getMessageKeyForPage("whenDidBecomeUnable.error.required"),
+        dayRequiredKey = Some(getMessageKeyForPage("whenDidBecomeUnable.error.required.day")),
+        monthRequiredKey = Some(getMessageKeyForPage("whenDidBecomeUnable.error.required.month")),
+        yearRequiredKey = Some(getMessageKeyForPage("whenDidBecomeUnable.error.required.year")),
+        futureKey = Some(getMessageKeyForPage("whenDidBecomeUnable.error.notInFuture"))
       )
     )
   }

@@ -76,13 +76,13 @@ class MessageRendererSpec extends SpecBase {
     "load the relevant message key" when {
       "the user is an agent" in {
         val fakeMessageKey = "message.key"
-        val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, agentUserSessionKeys)
+        val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, agentUserAgentSubmitButClientWasLateSessionKeys)
         result shouldBe "agent.message.key"
       }
 
       "the user is a VAT trader" in {
         val fakeMessageKey = "message.key"
-        val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, vatTraderUser)
+        val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, vatTraderLSPUserRequest)
         result shouldBe "message.key"
       }
     }

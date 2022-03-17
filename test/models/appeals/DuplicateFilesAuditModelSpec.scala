@@ -65,7 +65,7 @@ class DuplicateFilesAuditModelSpec  extends SpecBase {
     }
 
     "the detail section should be correct (for agent)" in {
-      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(agentUserSessionKeys)
+      val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(agentUserAgentSubmitButClientWasLateSessionKeys)
       model.detail shouldBe Json.obj(
         "submittedBy" -> "agent",
         "taxIdentifier" -> "123456789",
