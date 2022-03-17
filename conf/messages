@@ -231,6 +231,17 @@ agent.healthReason.whenHealthIssueHappened.hintText = Tell us the date when the 
 agent.healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your client’s ability to make this payment.<br><br>
 healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your ability to make this payment.<br><br>
 
+whenHealthIssueHappened.error.required.all = Tell us when you became unable to manage the VAT account
+agent.whenHealthIssueHappened.error.required.all = Tell us when your client became unable to manage the VAT account
+whenHealthIssueHappened.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
+agent.whenHealthIssueHappened.error.required.two = The date your client became unable to manage the VAT account must include a {0} and a {1}
+whenHealthIssueHappened.error.required = The date you became unable to manage VAT must include a {0}
+agent.whenHealthIssueHappened.error.required = The date your client became unable to manage the VAT account must include a {0}
+whenHealthIssueHappened.error.invalid = The date you became unable to manage VAT must be a real date
+agent.whenHealthIssueHappened.error.invalid = The date your client became unable to manage the VAT account must be a real date
+whenHealthIssueHappened.error.notInFuture = The date you became unable to manage VAT must be today or in the past
+agent.whenHealthIssueHappened.error.notInFuture = The date your client became unable to manage the VAT account must be today or in the past
+
 # When did the hospital stay begin page
 # ----------------------------------------------------------
 healthReason.whenDidHospitalStayBegin.headingAndTitle = When did the hospital stay begin?
