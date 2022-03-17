@@ -34,7 +34,7 @@ class WasHospitalStayRequiredPageSpec extends SpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors
 
-  val formProvider: Form[String] = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(vatTraderUser)
+  val formProvider: Form[String] = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(vatTraderLSPUserRequest)
   val radioOptions: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
   def applyView(form: Form[_]): HtmlFormat.Appendable = wasHospitalStayRequiredPage.apply(
     form, radioOptions, controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(NormalMode))

@@ -17,21 +17,25 @@
 package messages
 
 object WhenDidBecomeUnableMessages {
-  val title = "When did you become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
+  val headingLSP = "When did the issue first stop you submitting the VAT Return?"
+  val titleLSP = s"$headingLSP - Appeal a VAT penalty - GOV.UK"
 
-  val titleAgentText = "When did your client become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
+  val headingAgentSubmitClientLate = "When did the issue first stop your client getting information to you?"
+  val titleAgentSubmitClientLate = s"$headingAgentSubmitClientLate - Appeal a VAT penalty - GOV.UK"
 
-  val heading = "When did you become unable to manage the VAT account?"
+  val headingAgentSubmitLate = "When did the issue first stop your client submitting the VAT Return?"
+  val titleAgentSubmitLate = s"$headingAgentSubmitLate - Appeal a VAT penalty - GOV.UK"
 
-  val headingAgentText = "When did your client become unable to manage the VAT account?"
+  val headingAgentClientSubmit = "When did the issue first stop your client submitting the VAT Return?"
+  val titleAgentClientSubmit = s"$headingAgentClientSubmit - Appeal a VAT penalty - GOV.UK"
 
-  val hintText = "Tell us the date when this issue first stopped you from working on or making this submission. For example, 12 3 2018"
+  val headingLPP = "When did the issue first stop you paying the VAT bill?"
+  val titleLPP = s"$headingLPP - Appeal a VAT penalty - GOV.UK"
 
-  val hintTextAgentText = "Tell us the date when this issue first stopped your client from working on or making this submission. For example, 12 3 2018"
+  val headingAgentLPP = "When did the issue first stop your client paying the VAT bill?"
+  val titleAgentLPP = s"$headingAgentLPP - Appeal a VAT penalty - GOV.UK"
 
-  val hintTextLpp = "Tell us the date when this issue first stopped you from making this payment. For example, 12 3 2018"
-
-  val hintTextAgentLpp = "Tell us the date when this issue first stopped your client from making this payment. For example, 12 3 2018"
+  val hintText = "For example, 12 3 2018"
 
   val dayEntry = "Day"
 

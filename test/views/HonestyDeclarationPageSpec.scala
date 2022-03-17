@@ -35,10 +35,10 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
 
     def applyVATTraderView(form: Form[_],
-                   reasonableExcuse: String,
-                  reasonText: String,
-                  dueDate: String, startDate: String, endDate: String,
-                  extraBullets: Seq[String] = Seq.empty, userRequest: UserRequest[_] = vatTraderUser, isObligation: Boolean = false): HtmlFormat.Appendable = {
+                           reasonableExcuse: String,
+                           reasonText: String,
+                           dueDate: String, startDate: String, endDate: String,
+                           extraBullets: Seq[String] = Seq.empty, userRequest: UserRequest[_] = vatTraderLSPUserRequest, isObligation: Boolean = false): HtmlFormat.Appendable = {
       honestyDeclarationPage.apply(form, reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(implicitly, implicitly, userRequest)
     }
 
@@ -46,7 +46,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       "1 January 2022", "1 January 2021", "31 January 2021"))
 
     def applyAgentView(form: Form[_], reasonableExcuse: String, reasonText: String, dueDate: String, startDate: String, endDate: String, extraBullets: Seq[String] = Seq.empty,
-                       userRequest: UserRequest[_] = agentUserSessionKeys, isObligation: Boolean = false): HtmlFormat.Appendable = {
+                       userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys, isObligation: Boolean = false): HtmlFormat.Appendable = {
       honestyDeclarationPage.apply(form, reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(implicitly, implicitly, userRequest)
     }
 

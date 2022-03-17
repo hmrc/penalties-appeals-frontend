@@ -22,9 +22,9 @@ import play.api.data.{Form, FormError}
 import java.time.LocalDate
 
 class WhenDidHealthIssueHappenFormSpec extends SpecBase {
-  val formVATTrader: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderUser)
+  val formVATTrader: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderLSPUserRequest)
 
-  val formAgent: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserSessionKeys)
+  val formAgent: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserAgentSubmitButClientWasLateSessionKeys)
 
   "WhenDidHealthIssueHappenForm" should {
 

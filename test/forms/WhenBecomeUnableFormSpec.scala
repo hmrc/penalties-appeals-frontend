@@ -22,13 +22,22 @@ import play.api.data.{Form, FormError}
 import java.time.LocalDate
 
 class WhenBecomeUnableFormSpec extends SpecBase {
-  val formVATTrader: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, vatTraderUser)
-  val formAgent: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, agentUserSessionKeys)
+  val formVATTraderLSP: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, vatTraderLSPUserRequest)
+
+  val formVATTraderLPP: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, vatTraderLPPUserRequest)
+
+  val formAgentAgentSubmitClientLate: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, agentUserAgentSubmitButClientWasLateSessionKeys)
+
+  val formAgentAgentSubmitLate: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, agentUserAgentMissedSessionKeys)
+
+  val formAgentAgentClientSubmit: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, agentUserAgentClientPlannedToSubmitSessionKeys)
+
+  val formAgentLPP: Form[LocalDate] = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, agentUserLPP)
 
   "whenBecomeUnableForm" should {
-    "when a VAT trader" must {
+    "when a VAT trader appealing against an LSP" must {
       "bind when the date is valid" in {
-        val result = formVATTrader.bind(
+        val result = formVATTraderLSP.bind(
           Map(
             "date.day" -> "1",
             "date.month" -> "2",
@@ -40,7 +49,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
 
       "not bind" when {
         "the date is in the future" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "2",
@@ -48,11 +57,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.notInFuture", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.notInFuture.lsp", Seq("day", "month", "year"))
         }
 
         "the date is not valid" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "31",
               "date.month" -> "2",
@@ -60,11 +69,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lsp", Seq())
         }
 
         "the date contains strings instead of numbers" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "thirtyFirst",
               "date.month" -> "ofTheSecond",
@@ -72,11 +81,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lsp", Seq("day", "month", "year"))
         }
 
         "the date contains negative numbers" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "-1",
               "date.month" -> "-2",
@@ -84,11 +93,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lsp", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "2",
@@ -96,11 +105,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required", Seq("day"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.day.lsp", Seq("day"))
         }
 
         "the date has no month" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "",
@@ -108,11 +117,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required", Seq("month"))
+          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required.month.lsp", Seq("month"))
         }
 
         "the date has no year" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "2",
@@ -120,11 +129,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.year", "whenDidBecomeUnable.error.required", Seq("year"))
+          result.errors.head shouldBe FormError("date.year", "whenDidBecomeUnable.error.required.year.lsp", Seq("year"))
         }
 
         "the date has a day but no month and year" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "2",
               "date.month" -> "",
@@ -132,11 +141,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required.two", Seq("month", "year"))
+          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required.two.lsp", Seq("month", "year"))
         }
 
         "the date has a month but no day and year" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "2",
@@ -144,11 +153,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two", Seq("day", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two.lsp", Seq("day", "year"))
         }
 
         "the date has a year but no day and month" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "",
@@ -156,11 +165,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two", Seq("day", "month"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two.lsp", Seq("day", "month"))
         }
 
         "the date has no values" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "",
@@ -168,14 +177,14 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.all", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.all.lsp", Seq("day", "month", "year"))
         }
       }
     }
 
-    "when an agent user" must {
+    "when a VAT trader appealing against an LPP" must {
       "bind when the date is valid" in {
-        val result = formAgent.bind(
+        val result = formVATTraderLPP.bind(
           Map(
             "date.day" -> "1",
             "date.month" -> "2",
@@ -187,7 +196,7 @@ class WhenBecomeUnableFormSpec extends SpecBase {
 
       "not bind" when {
         "the date is in the future" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "2",
@@ -195,11 +204,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.notInFuture", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.notInFuture.lpp", Seq("day", "month", "year"))
         }
 
         "the date is not valid" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "31",
               "date.month" -> "2",
@@ -207,11 +216,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lpp", Seq())
         }
 
         "the date contains strings instead of numbers" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "thirtyFirst",
               "date.month" -> "ofTheSecond",
@@ -219,11 +228,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lpp", Seq("day", "month", "year"))
         }
 
         "the date contains negative numbers" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "-1",
               "date.month" -> "-2",
@@ -231,11 +240,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lpp", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "2",
@@ -243,11 +252,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required", Seq("day"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.day.lpp", Seq("day"))
         }
 
         "the date has no month" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "",
@@ -255,11 +264,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required", Seq("month"))
+          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required.month.lpp", Seq("month"))
         }
 
         "the date has no year" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "2",
@@ -267,11 +276,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.year", "agent.whenDidBecomeUnable.error.required", Seq("year"))
+          result.errors.head shouldBe FormError("date.year", "whenDidBecomeUnable.error.required.year.lpp", Seq("year"))
         }
 
         "the date has a day but no month and year" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "2",
               "date.month" -> "",
@@ -279,11 +288,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required.two", Seq("month", "year"))
+          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required.two.lpp", Seq("month", "year"))
         }
 
         "the date has a month but no day and year" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "2",
@@ -291,11 +300,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two", Seq("day", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two.lpp", Seq("day", "year"))
         }
 
         "the date has a year but no day and month" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "",
@@ -303,11 +312,11 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two", Seq("day", "month"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two.lpp", Seq("day", "month"))
         }
 
         "the date has no values" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "",
@@ -315,7 +324,595 @@ class WhenBecomeUnableFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.all", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.all.lpp", Seq("day", "month", "year"))
+        }
+      }
+    }
+
+    "when an agent user is appealing a LSP where the agent planned to submit but the client missed the deadline" must {
+      "bind when the date is valid" in {
+        val result = formAgentAgentSubmitClientLate.bind(
+          Map(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )
+        )
+        result.errors shouldBe List.empty
+      }
+
+      "not bind" when {
+        "the date is in the future" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2050"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.notInFuture.clientMissedDeadline", Seq("day", "month", "year"))
+        }
+
+        "the date is not valid" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.clientMissedDeadline", Seq())
+        }
+
+        "the date contains strings instead of numbers" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "thirtyFirst",
+              "date.month" -> "ofTheSecond",
+              "date.year" -> "twentyTwentyOne"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.clientMissedDeadline", Seq("day", "month", "year"))
+        }
+
+        "the date contains negative numbers" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "-1",
+              "date.month" -> "-2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.clientMissedDeadline", Seq("day", "month", "year"))
+        }
+
+        "the date has no day" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.day.clientMissedDeadline", Seq("day"))
+        }
+
+        "the date has no month" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required.month.clientMissedDeadline", Seq("month"))
+        }
+
+        "the date has no year" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.year", "agent.whenDidBecomeUnable.error.required.year.clientMissedDeadline", Seq("year"))
+        }
+
+        "the date has a day but no month and year" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "2",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required.two.clientMissedDeadline", Seq("month", "year"))
+        }
+
+        "the date has a month but no day and year" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two.clientMissedDeadline", Seq("day", "year"))
+        }
+
+        "the date has a year but no day and month" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two.clientMissedDeadline", Seq("day", "month"))
+        }
+
+        "the date has no values" in {
+          val result = formAgentAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.all.clientMissedDeadline", Seq("day", "month", "year"))
+        }
+      }
+    }
+
+    "when an agent user is appealing a LSP where the agent planned to submit but missed the deadline" must {
+      "bind when the date is valid" in {
+        val result = formAgentAgentSubmitLate.bind(
+          Map(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )
+        )
+        result.errors shouldBe List.empty
+      }
+
+      "not bind" when {
+        "the date is in the future" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2050"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.notInFuture.lsp", Seq("day", "month", "year"))
+        }
+
+        "the date is not valid" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lsp", Seq())
+        }
+
+        "the date contains strings instead of numbers" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "thirtyFirst",
+              "date.month" -> "ofTheSecond",
+              "date.year" -> "twentyTwentyOne"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lsp", Seq("day", "month", "year"))
+        }
+
+        "the date contains negative numbers" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "-1",
+              "date.month" -> "-2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.invalid.lsp", Seq("day", "month", "year"))
+        }
+
+        "the date has no day" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.day.lsp", Seq("day"))
+        }
+
+        "the date has no month" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required.month.lsp", Seq("month"))
+        }
+
+        "the date has no year" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.year", "whenDidBecomeUnable.error.required.year.lsp", Seq("year"))
+        }
+
+        "the date has a day but no month and year" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "2",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "whenDidBecomeUnable.error.required.two.lsp", Seq("month", "year"))
+        }
+
+        "the date has a month but no day and year" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two.lsp", Seq("day", "year"))
+        }
+
+        "the date has a year but no day and month" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.two.lsp", Seq("day", "month"))
+        }
+
+        "the date has no values" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "whenDidBecomeUnable.error.required.all.lsp", Seq("day", "month", "year"))
+        }
+      }
+    }
+
+    "when an agent user is appealing a LSP where the client planned to submit and missed the deadline" must {
+      "bind when the date is valid" in {
+        val result = formAgentAgentClientSubmit.bind(
+          Map(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )
+        )
+        result.errors shouldBe List.empty
+      }
+
+      "not bind" when {
+        "the date is in the future" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2050"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.notInFuture.clientIntendedToSubmit", Seq("day", "month", "year"))
+        }
+
+        "the date is not valid" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit", Seq())
+        }
+
+        "the date contains strings instead of numbers" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "thirtyFirst",
+              "date.month" -> "ofTheSecond",
+              "date.year" -> "twentyTwentyOne"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit", Seq("day", "month", "year"))
+        }
+
+        "the date contains negative numbers" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "-1",
+              "date.month" -> "-2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit", Seq("day", "month", "year"))
+        }
+
+        "the date has no day" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.day.clientIntendedToSubmit", Seq("day"))
+        }
+
+        "the date has no month" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required.month.clientIntendedToSubmit", Seq("month"))
+        }
+
+        "the date has no year" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.year", "agent.whenDidBecomeUnable.error.required.year.clientIntendedToSubmit", Seq("year"))
+        }
+
+        "the date has a day but no month and year" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "2",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit", Seq("month", "year"))
+        }
+
+        "the date has a month but no day and year" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit", Seq("day", "year"))
+        }
+
+        "the date has a year but no day and month" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit", Seq("day", "month"))
+        }
+
+        "the date has no values" in {
+          val result = formAgentAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.all.clientIntendedToSubmit", Seq("day", "month", "year"))
+        }
+      }
+    }
+
+    "when an agent user is appealing a LPP" must {
+      "bind when the date is valid" in {
+        val result = formAgentLPP.bind(
+          Map(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )
+        )
+        result.errors shouldBe List.empty
+      }
+
+      "not bind" when {
+        "the date is in the future" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2050"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.notInFuture.lpp", Seq("day", "month", "year"))
+        }
+
+        "the date is not valid" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.lpp", Seq())
+        }
+
+        "the date contains strings instead of numbers" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "thirtyFirst",
+              "date.month" -> "ofTheSecond",
+              "date.year" -> "twentyTwentyOne"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.lpp", Seq("day", "month", "year"))
+        }
+
+        "the date contains negative numbers" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "-1",
+              "date.month" -> "-2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.invalid.lpp", Seq("day", "month", "year"))
+        }
+
+        "the date has no day" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.day.lpp", Seq("day"))
+        }
+
+        "the date has no month" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required.month.lpp", Seq("month"))
+        }
+
+        "the date has no year" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.year", "agent.whenDidBecomeUnable.error.required.year.lpp", Seq("year"))
+        }
+
+        "the date has a day but no month and year" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "2",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.whenDidBecomeUnable.error.required.two.lpp", Seq("month", "year"))
+        }
+
+        "the date has a month but no day and year" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two.lpp", Seq("day", "year"))
+        }
+
+        "the date has a year but no day and month" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.two.lpp", Seq("day", "month"))
+        }
+
+        "the date has no values" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.whenDidBecomeUnable.error.required.all.lpp", Seq("day", "month", "year"))
         }
       }
     }

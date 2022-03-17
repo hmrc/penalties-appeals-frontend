@@ -111,7 +111,7 @@ class HonestyDeclarationHelperSpec extends SpecBase {
     }
 
     "return the correct VAT trader message" when {
-      reasonTest("crime", "I was affected by a crime", vatTraderUser)
+      reasonTest("crime", "I was affected by a crime", vatTraderLSPUserRequest)
     }
   }
 

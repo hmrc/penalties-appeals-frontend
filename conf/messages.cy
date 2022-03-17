@@ -114,19 +114,52 @@ site.opensInNewTab = (opens in a new tab)
 
 # When did event happen pages
 # ----------------------------------------------------------
+whenDidBecomeUnable.headingAndTitle.lsp = When did the issue first stop you submitting the VAT Return?
+whenDidBecomeUnable.error.required.all.lsp = Tell us when the issue first stopped you submitting the VAT Return
+whenDidBecomeUnable.error.notInFuture.lsp = The date the issue first stopped you submitting the VAT Return must be today or in the past
+whenDidBecomeUnable.error.required.day.lsp = The date the issue first stopped you submitting the VAT Return must include a day
+whenDidBecomeUnable.error.required.month.lsp = The date the issue first stopped you submitting the VAT Return must include a month
+whenDidBecomeUnable.error.required.year.lsp = The date the issue first stopped you submitting the VAT Return must include a year
+whenDidBecomeUnable.error.required.two.lsp = The date the issue first stopped you submitting the VAT Return must include a {0} and a {1}
+whenDidBecomeUnable.error.invalid.lsp = The date the issue first stopped you submitting the VAT Return must be a real date
+
+agent.whenDidBecomeUnable.headingAndTitle.clientMissedDeadline = When did the issue first stop your client getting information to you?
+agent.whenDidBecomeUnable.error.required.all.clientMissedDeadline = Tell us when the issue first stopped your client getting information to you
+agent.whenDidBecomeUnable.error.notInFuture.clientMissedDeadline = The date when the issue first stopped your client getting information to you must be today or in the past
+agent.whenDidBecomeUnable.error.required.day.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a day
+agent.whenDidBecomeUnable.error.required.month.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a month
+agent.whenDidBecomeUnable.error.required.year.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a year
+agent.whenDidBecomeUnable.error.required.two.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a {0} and a {1}
+agent.whenDidBecomeUnable.error.invalid.clientMissedDeadline = The date when the issue first stopped your client getting information to you must be a real date
+
+agent.whenDidBecomeUnable.headingAndTitle.clientIntendedToSubmit = When did the issue first stop your client submitting the VAT Return?
+agent.whenDidBecomeUnable.error.required.all.clientIntendedToSubmit = Tell us when the issue first stopped your client submitting the VAT Return
+agent.whenDidBecomeUnable.error.notInFuture.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must be today or in the past
+agent.whenDidBecomeUnable.error.required.day.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a day
+agent.whenDidBecomeUnable.error.required.month.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a month
+agent.whenDidBecomeUnable.error.required.year.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a year
+agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a {0} and a {1}
+agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must be a real date
+
+whenDidBecomeUnable.headingAndTitle.lpp = When did the issue first stop you paying the VAT bill?
+whenDidBecomeUnable.error.required.all.lpp = Tell us when the issue first stopped you paying the VAT bill
+whenDidBecomeUnable.error.notInFuture.lpp = The date the issue first stopped you paying the VAT bill must be today or in the past
+whenDidBecomeUnable.error.required.day.lpp = The date the issue first stopped you paying the VAT bill must include a day
+whenDidBecomeUnable.error.required.month.lpp = The date the issue first stopped you paying the VAT bill must include a month
+whenDidBecomeUnable.error.required.year.lpp = The date the issue first stopped you paying the VAT bill must include a year
+whenDidBecomeUnable.error.required.two.lpp = The date the issue first stopped you paying the VAT bill must include a {0} and a {1}
+whenDidBecomeUnable.error.invalid.lpp = The date the issue first stopped you paying the VAT bill must be a real date
+
+agent.whenDidBecomeUnable.headingAndTitle.lpp = When did the issue first stop your client paying the VAT bill?
+agent.whenDidBecomeUnable.error.required.all.lpp = Tell us when the issue first stopped your client paying the VAT bill
+agent.whenDidBecomeUnable.error.notInFuture.lpp = The date when the issue first stopped your client paying the VAT bill must be today or in the past
+agent.whenDidBecomeUnable.error.required.day.lpp = The date when the issue first stopped your client paying the VAT bill must include a day
+agent.whenDidBecomeUnable.error.required.month.lpp = The date when the issue first stopped your client paying the VAT bill must include a month
+agent.whenDidBecomeUnable.error.required.year.lpp = The date when the issue first stopped your client paying the VAT bill must include a year
+agent.whenDidBecomeUnable.error.required.two.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0} and a {1}
+agent.whenDidBecomeUnable.error.invalid.lpp = The date when the issue first stopped your client paying the VAT bill must be a real date
+
 whenDidEventHappen.hint = For example, 12 3 2018
-whenDidBecomeUnable.headingAndTitle = When did you become unable to manage the VAT account?
-agent.whenDidBecomeUnable.headingAndTitle = When did your client become unable to manage the VAT account?
-whenDidBecomeUnable.error.required.all = Tell us when you became unable to manage the VAT account
-agent.whenDidBecomeUnable.error.required.all = Tell us when your client became unable to manage the VAT account
-whenDidBecomeUnable.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
-agent.whenDidBecomeUnable.error.required.two = The date your client became unable to manage the VAT account must include a {0} and a {1}
-whenDidBecomeUnable.error.required = The date you became unable to manage VAT must include a {0}
-agent.whenDidBecomeUnable.error.required = The date your client became unable to manage the VAT account must include a {0}
-whenDidBecomeUnable.error.invalid = The date you became unable to manage VAT must be a real date
-agent.whenDidBecomeUnable.error.invalid = The date your client became unable to manage the VAT account must be a real date
-whenDidBecomeUnable.error.notInFuture = The date you became unable to manage VAT must be today or in the past
-agent.whenDidBecomeUnable.error.notInFuture = The date your client became unable to manage the VAT account must be today or in the past
 
 # When did the crime happen page
 # ----------------------------------------------------------
@@ -191,6 +224,8 @@ agent.healthReason.wasHospitalStayRequired.error.required = Tell us if your clie
 
 # When did the health issue happen page
 # ----------------------------------------------------------
+healthReason.whenHealthIssueHappened.headingAndTitle = When did you become unable to manage the VAT account?
+agent.healthReason.whenHealthIssueHappened.headingAndTitle = When did your client become unable to manage the VAT account?
 healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>
 agent.healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your client’s ability to complete this submission.<br><br>
 agent.healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your client’s ability to make this payment.<br><br>

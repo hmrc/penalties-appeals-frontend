@@ -15,7 +15,7 @@
  *@
 
 @import config.AppConfig
-@import utils.SessionKeys
+@import helpers.WhenDidYouBecomeUnableHelper.getMessageKeyForPage
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
@@ -24,15 +24,7 @@
 
 @(form: Form[_], postAction: Call)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
-@appealType = @{userRequest.session.get(SessionKeys.appealType)}
-
-@hintText = @{
-    if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
-        "otherReason.whenDidBecomeUnable.lpp.hintText"
-    } else "otherReason.whenDidBecomeUnable.hintText"
-}
-
-@layout(pageTitle = getMessage("whenDidBecomeUnable.headingAndTitle"),
+@layout(pageTitle = messages(getMessageKeyForPage("whenDidBecomeUnable.headingAndTitle")),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors) {
@@ -40,14 +32,12 @@
 
         @dateInput(
             form = form,
-            legendContent = getMessage("whenDidBecomeUnable.headingAndTitle"),
+            legendContent = getMessageKeyForPage("whenDidBecomeUnable.headingAndTitle"),
             legendClasses = Some("govuk-fieldset__legend govuk-fieldset__legend--l"),
-            hintText = Some(getMessage(hintText) + messages("whenDidEventHappen.hint")),
+            hintText = Some(messages("whenDidEventHappen.hint")),
             legendAsPageHeading = true
         )
 
         @govukButton(Button(content = Text(messages("common.continue"))))
     }
-
-
 }
