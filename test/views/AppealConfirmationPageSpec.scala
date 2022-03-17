@@ -44,14 +44,14 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                            periodStart: String,
                            periodEnd: String,
                   isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)(fakeRequest, messages, appConfig, vatTraderUser)
+      penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)(fakeRequest, messages, appConfig, vatTraderLSPUserRequest)
 
     implicit val vatTraderLateSubmissionPenaltyDoc: Document = asDocument(applyVATTraderView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023"))
 
     def applyAgentView(penaltyTypeMsgKey: String,
                        periodStart: String,
                        periodEnd: String): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      penaltyTypeMsgKey, periodStart, periodEnd)(agentRequest, messages, appConfig, agentUserSessionKeys)
+      penaltyTypeMsgKey, periodStart, periodEnd)(agentRequest, messages, appConfig, agentUserAgentSubmitButClientWasLateSessionKeys)
 
     implicit val agentDoc: Document = asDocument(applyAgentView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023"))
 

@@ -36,7 +36,7 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       val checkWhatYouOweLink = "#check-what-you-owe-link"
     }
 
-    def applyView(userRequest: UserRequest[_] = agentUserSessionKeys): HtmlFormat.Appendable = {
+    def applyView(userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = {
       youCannotAppealPage.apply()(userRequest, messages, appConfig)
     }
 

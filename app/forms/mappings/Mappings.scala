@@ -32,8 +32,11 @@ trait Mappings extends Formatters {
                            allRequiredKey: String,
                            twoRequiredKey: String,
                            requiredKey: String,
+                           dayRequiredKey: Option[String] = None,
+                           monthRequiredKey: Option[String] = None,
+                           yearRequiredKey:Option[String] = None,
                            futureKey: Option[String] = None,
                            dateNotEqualOrAfterKeyAndCompareDate: Option[(String, LocalDate)] = None,
                            args: Seq[String] = Seq.empty)(implicit messages: Messages): FieldMapping[LocalDate] =
-    of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey, requiredKey, futureKey, dateNotEqualOrAfterKeyAndCompareDate, args))
+    of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey,  requiredKey, dayRequiredKey, monthRequiredKey, yearRequiredKey, futureKey, dateNotEqualOrAfterKeyAndCompareDate, args))
 }
