@@ -18,50 +18,91 @@ package messages
 
 object UploadEvidenceMessages {
 
-  val title = "Evidence to support this appeal (optional) - Appeal a VAT penalty - GOV.UK"
+  val jsTitle = "Evidence to support this appeal (optional) - Appeal a VAT penalty - GOV.UK"
 
-  val h1 = "Evidence to support this appeal (optional)"
+  val jsH1 = "Evidence to support this appeal (optional)"
 
-  val p1 = "Use this page to upload any evidence to help us review the penalty."
+  val jsP1 = "Use this page to upload any evidence to help us review the penalty."
 
-  val p2 = "Evidence might include documents or letters that show why the return was submitted late."
+  val jsP2 = "Evidence might include documents or letters that show why the return was submitted late."
 
-  val p2Lpp = "Evidence might include documents or letters that show why the VAT bill was paid late."
+  val jsP2Lpp = "Evidence might include documents or letters that show why the VAT bill was paid late."
 
-  val p2AppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return."
+  val jsP2AppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return."
 
-  val p2LPPAppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT."
+  val jsP2LPPAppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT."
 
-  val p4 = "You can upload up to 5 files."
+  val jsP4 = "You can upload up to 5 files."
 
-  val p5 = "Each file must be smaller than 6MB."
+  val jsP5 = "Each file must be smaller than 6MB."
 
-  val detailsHeading = "Types of file you can upload"
+  val jsDetailsHeading = "Types of file you can upload"
 
-  val detailsP1 = "These file types are allowed:"
+  val jsDetailsP1 = "These file types are allowed:"
 
-  val detailsLi1 = "image (.jpg, .jpeg, .png or .tiff)"
+  val jsDetailsLi1 = "image (.jpg, .jpeg, .png or .tiff)"
 
-  val detailsLi2 = "PDF (.pdf)"
+  val jsDetailsLi2 = "PDF (.pdf)"
 
-  val detailsLi3 = "email (.txt or .msg)"
+  val jsDetailsLi3 = "email (.txt or .msg)"
 
-  val detailsLi4 = "Microsoft (Word, Excel or PowerPoint)"
+  val jsDetailsLi4 = "Microsoft (Word, Excel or PowerPoint)"
 
-  val detailsLi5 = "Open Document Format (ODF)"
+  val jsDetailsLi5 = "Open Document Format (ODF)"
 
-  val detailsP2 = "You cannot upload zip files or documents that are protected by a password."
+  val jsDetailsP2 = "You cannot upload zip files or documents that are protected by a password."
 
-  val detailsP3 = "We’ll scan all files and reject any we think are suspicious."
+  val jsDetailsP3 = "We’ll scan all files and reject any we think are suspicious."
 
-  val document1 = "File 1"
+  val jsDocument1 = "File 1"
 
-  val addAnotherButton = "Add another file"
+  val jsAddAnotherButton = "Add another file"
 
-  val continueButton = "Continue"
+  val jsContinueButton = "Continue"
 
-  val fileUploadTryAgain = "The selected file could not be uploaded. Remove the file and try again."
+  val jsFileUploadTryAgain = "The selected file could not be uploaded. Remove the file and try again."
 
-  val uploadEvidenceStillTransferring = "Files are still being transferred"
+  val jsUploadEvidenceStillTransferring = "Files are still being transferred"
 
+  val noJsTitle = "Evidence to support this appeal (optional) - Appeal a VAT penalty - GOV.UK"
+
+  val noJsH1 = "Evidence to support this appeal (optional)"
+
+  val noJsP1 = "Use this page to upload your first file. You can upload additional files afterwards. We will use any evidence to help us review the penalty."
+
+  val noJsP2 = "Evidence might include documents or letters that show why the return was submitted late."
+
+  val noJsP2Lpp = "Evidence might include documents or letters that show why the VAT bill was paid late."
+
+  val noJsP2AppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return."
+
+  val noJsP2LPPAppealAgainstObligation = "Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT."
+
+  val noJsP4 = "You can upload up to 5 files."
+
+  val noJsP5 = "Each file must be smaller than 6MB."
+
+  val noJsDetailsHeading = "Types of file you can upload"
+
+  val noJsDetailsP1 = "These file types are allowed:"
+
+  val noJsDetailsLi1 = "image (.jpg, .jpeg, .png or .tiff)"
+
+  val noJsDetailsLi2 = "PDF (.pdf)"
+
+  val noJsDetailsLi3 = "email (.txt or .msg)"
+
+  val noJsDetailsLi4 = "Microsoft (Word, Excel or PowerPoint)"
+
+  val noJsDetailsLi5 = "Open Document Format (ODF)"
+
+  val noJsDetailsP2 = "You cannot upload zip files or documents that are protected by a password."
+
+  val noJsDetailsP3 = "We’ll scan all files and reject any we think are suspicious."
+
+  val noJsChooseYourFirstFile = "Choose your first file"
+
+  val noJsContinueButton = "Continue without evidence"
+
+  val noJsUploadButton = "Upload selected file"
 }

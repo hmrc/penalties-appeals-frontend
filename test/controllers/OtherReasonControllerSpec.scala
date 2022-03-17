@@ -46,7 +46,6 @@ class OtherReasonControllerSpec extends SpecBase {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
   val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
-  val uploadFirstDocumentPage: UploadFirstDocumentPage = injector.instanceOf[UploadFirstDocumentPage]
   val uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage = injector.instanceOf[UploadTakingLongerThanExpectedPage]
   val mockUpscanService: UpscanService = mock(classOf[UpscanService])
   val uploadAnotherDocumentPage: UploadAnotherDocumentPage = injector.instanceOf[UploadAnotherDocumentPage]
@@ -71,7 +70,6 @@ class OtherReasonControllerSpec extends SpecBase {
       whenDidYouBecomeUnablePage,
       whyReturnSubmittedLatePage,
       uploadEvidencePage,
-      uploadFirstDocumentPage,
       uploadTakingLongerThanExpectedPage,
       uploadAnotherDocumentPage,
       uploadListPage,
