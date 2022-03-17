@@ -83,13 +83,14 @@
         (Symbol("data-multi-file-upload-file-removed"), messages("upscan.fileRemoved", "{fileNumber}", "{fileName}")),
         (Symbol("data-multi-file-upload-error-prefix"), messages("error.prefix")),
         (Symbol("data-multi-file-upload-file-uploaded"), messages("upscan.fileUploaded", "{fileNumber}", "{fileName}"))) {
-            <div class="govuk-inset-text hidden" aria-hidden="true"></div>
+
             <p class="govuk-body">@messages("otherReason.uploadEvidence.p1")</p>
             <p class="govuk-body">@messages(lppOrLspOrObligationDynamicText)</p>
             <p class="govuk-body">@messages("otherReason.uploadEvidence.p4")</p>
             <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
 
             @details("otherReason.uploadEvidence.details.heading", detailsContent)
+            <div class="govuk-inset-text hidden" aria-hidden="true"></div>
             <ul class="multi-file-upload__item-list"></ul>
 
             <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.addAnother")</button>
