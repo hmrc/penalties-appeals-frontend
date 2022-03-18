@@ -29,9 +29,6 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
                                            allRequiredKey: String,
                                            twoRequiredKey: String,
                                            requiredKey: String,
-                                           dayRequiredKey: Option[String],
-                                           monthRequiredKey: Option[String],
-                                           yearRequiredKey: Option[String],
                                            futureKey: Option[String] = None,
                                            dateNotEqualOrAfterKeyAndCompareDate: Option[(String, LocalDate)] = None,
                                            args: Seq[String] = Seq.empty)
@@ -112,11 +109,7 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
           _.map(err => err.copy(args = err.args ++ args))
         }
       case 2 =>
-        missingFields.head match {
-          case "day" => Left(List(FormError(s"$key.${missingFields.head}", if(dayRequiredKey.isDefined) dayRequiredKey.get else requiredKey, missingFields ++ args)))
-          case "month" => Left(List(FormError(s"$key.${missingFields.head}", if (monthRequiredKey.isDefined) monthRequiredKey.get else requiredKey, missingFields ++ args)))
-          case "year" => Left(List(FormError(s"$key.${missingFields.head}", if (yearRequiredKey.isDefined) yearRequiredKey.get else requiredKey, missingFields ++ args)))
-        }
+        Left(List(FormError(s"$key.${missingFields.head}", requiredKey, missingFields ++ args)))
       case 1 =>
         Left(List(FormError(s"$key.${missingFields.head}", twoRequiredKey, missingFields ++ args)))
       case _ =>
