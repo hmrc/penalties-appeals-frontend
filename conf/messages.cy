@@ -117,45 +117,35 @@ site.opensInNewTab = (opens in a new tab)
 whenDidBecomeUnable.headingAndTitle.lsp = When did the issue first stop you submitting the VAT Return?
 whenDidBecomeUnable.error.required.all.lsp = Tell us when the issue first stopped you submitting the VAT Return
 whenDidBecomeUnable.error.notInFuture.lsp = The date the issue first stopped you submitting the VAT Return must be today or in the past
-whenDidBecomeUnable.error.required.day.lsp = The date the issue first stopped you submitting the VAT Return must include a day
-whenDidBecomeUnable.error.required.month.lsp = The date the issue first stopped you submitting the VAT Return must include a month
-whenDidBecomeUnable.error.required.year.lsp = The date the issue first stopped you submitting the VAT Return must include a year
+whenDidBecomeUnable.error.required.lsp = The date the issue first stopped you submitting the VAT Return must include a {0}
 whenDidBecomeUnable.error.required.two.lsp = The date the issue first stopped you submitting the VAT Return must include a {0} and a {1}
 whenDidBecomeUnable.error.invalid.lsp = The date the issue first stopped you submitting the VAT Return must be a real date
 
 agent.whenDidBecomeUnable.headingAndTitle.clientMissedDeadline = When did the issue first stop your client getting information to you?
 agent.whenDidBecomeUnable.error.required.all.clientMissedDeadline = Tell us when the issue first stopped your client getting information to you
 agent.whenDidBecomeUnable.error.notInFuture.clientMissedDeadline = The date when the issue first stopped your client getting information to you must be today or in the past
-agent.whenDidBecomeUnable.error.required.day.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a day
-agent.whenDidBecomeUnable.error.required.month.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a month
-agent.whenDidBecomeUnable.error.required.year.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a year
+agent.whenDidBecomeUnable.error.required.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a {0}
 agent.whenDidBecomeUnable.error.required.two.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a {0} and a {1}
 agent.whenDidBecomeUnable.error.invalid.clientMissedDeadline = The date when the issue first stopped your client getting information to you must be a real date
 
 agent.whenDidBecomeUnable.headingAndTitle.clientIntendedToSubmit = When did the issue first stop your client submitting the VAT Return?
 agent.whenDidBecomeUnable.error.required.all.clientIntendedToSubmit = Tell us when the issue first stopped your client submitting the VAT Return
 agent.whenDidBecomeUnable.error.notInFuture.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must be today or in the past
-agent.whenDidBecomeUnable.error.required.day.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a day
-agent.whenDidBecomeUnable.error.required.month.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a month
-agent.whenDidBecomeUnable.error.required.year.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a year
+agent.whenDidBecomeUnable.error.required.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a {0}
 agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a {0} and a {1}
 agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must be a real date
 
 whenDidBecomeUnable.headingAndTitle.lpp = When did the issue first stop you paying the VAT bill?
 whenDidBecomeUnable.error.required.all.lpp = Tell us when the issue first stopped you paying the VAT bill
 whenDidBecomeUnable.error.notInFuture.lpp = The date the issue first stopped you paying the VAT bill must be today or in the past
-whenDidBecomeUnable.error.required.day.lpp = The date the issue first stopped you paying the VAT bill must include a day
-whenDidBecomeUnable.error.required.month.lpp = The date the issue first stopped you paying the VAT bill must include a month
-whenDidBecomeUnable.error.required.year.lpp = The date the issue first stopped you paying the VAT bill must include a year
+whenDidBecomeUnable.error.required.lpp = The date the issue first stopped you paying the VAT bill must include a {0}
 whenDidBecomeUnable.error.required.two.lpp = The date the issue first stopped you paying the VAT bill must include a {0} and a {1}
 whenDidBecomeUnable.error.invalid.lpp = The date the issue first stopped you paying the VAT bill must be a real date
 
 agent.whenDidBecomeUnable.headingAndTitle.lpp = When did the issue first stop your client paying the VAT bill?
 agent.whenDidBecomeUnable.error.required.all.lpp = Tell us when the issue first stopped your client paying the VAT bill
 agent.whenDidBecomeUnable.error.notInFuture.lpp = The date when the issue first stopped your client paying the VAT bill must be today or in the past
-agent.whenDidBecomeUnable.error.required.day.lpp = The date when the issue first stopped your client paying the VAT bill must include a day
-agent.whenDidBecomeUnable.error.required.month.lpp = The date when the issue first stopped your client paying the VAT bill must include a month
-agent.whenDidBecomeUnable.error.required.year.lpp = The date when the issue first stopped your client paying the VAT bill must include a year
+agent.whenDidBecomeUnable.error.required.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0}
 agent.whenDidBecomeUnable.error.required.two.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0} and a {1}
 agent.whenDidBecomeUnable.error.invalid.lpp = The date when the issue first stopped your client paying the VAT bill must be a real date
 

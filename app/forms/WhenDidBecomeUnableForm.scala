@@ -32,9 +32,6 @@ object WhenDidBecomeUnableForm extends Mappings {
         allRequiredKey = getMessageKeyForPage("whenDidBecomeUnable.error.required.all"),
         twoRequiredKey = getMessageKeyForPage("whenDidBecomeUnable.error.required.two"),
         requiredKey = getMessageKeyForPage("whenDidBecomeUnable.error.required"),
-        dayRequiredKey = Some(getMessageKeyForPage("whenDidBecomeUnable.error.required.day")),
-        monthRequiredKey = Some(getMessageKeyForPage("whenDidBecomeUnable.error.required.month")),
-        yearRequiredKey = Some(getMessageKeyForPage("whenDidBecomeUnable.error.required.year")),
         futureKey = Some(getMessageKeyForPage("whenDidBecomeUnable.error.notInFuture"))
       )
     )
