@@ -128,8 +128,9 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       } yield {
         if (request.cookies.get("jsenabled").isEmpty || featureSwitching.isEnabled(NonJSRouting)) {
           val hasReadyUploads: Boolean = previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)
-          if (hasReadyUploads) Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
-            else Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+          if (hasReadyUploads) {
+            Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)).addingToSession(SessionKeys.originatingChangePage -> FileListPage.toString)
+          } else Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode)).addingToSession(SessionKeys.originatingChangePage -> UploadFirstDocumentPage.toString)
         } else {
           val previousUploads = previousUploadsState.fold("[]")(previousUploads => {
             val previousUploadsWithoutDownloadURL = previousUploads.map(_.copy(downloadUrl = None))
@@ -142,6 +143,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           val getDuplicatesUrl = controllers.routes.UpscanController.getDuplicateFiles(request.session.get(SessionKeys.journeyId).get)
           val getErrorServiceUrl = controllers.routes.ProblemWithServiceController.onPageLoad()
           Ok(uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, previousUploads, getDuplicatesUrl, getErrorServiceUrl))
+            .addingToSession(SessionKeys.originatingChangePage -> EvidencePage.toString)
         }
       }
     }
@@ -156,7 +158,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         val formProvider = UploadDocumentForm.form
         upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = false, mode).map(
           _.fold(
-            error => {
+            _ => {
               logger.error("[OtherReasonController][onPageLoadForFirstFileUpload] - Received error back from initiate request rendering ISE.")
               InternalServerError(serviceUnavailablePage())
             },

@@ -57,7 +57,7 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
           BadRequest(otherRelevantInformationPage(formWithErrors, postAction))
         },
         otherInformationForAppealAgainstObligation => {
-          Redirect(navigation.nextPage(OtherRelevantInformationPage,mode))
+          Redirect(navigation.nextPage(OtherRelevantInformationPage, mode))
             .addingToSession(SessionKeys.otherRelevantInformation -> otherInformationForAppealAgainstObligation)
         }
       )

@@ -18,20 +18,65 @@ package navigation
 
 import java.time.LocalDateTime
 import config.AppConfig
-import config.featureSwitches.FeatureSwitching
 import controllers.routes
 import helpers.DateTimeHelper
 
 import javax.inject.Inject
 import models.pages._
-import models.{CheckMode, Mode, NormalMode, UserRequest}
+import models.{CheckMode, Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import play.api.mvc.Call
 import utils.Logger.logger
 import utils.{ReasonableExcuses, SessionKeys}
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
-                           appConfig: AppConfig,
-                           featureSwitching: FeatureSwitching) {
+                           appConfig: AppConfig) {
+
+  lazy val reverseNormalRoutes: Map[Page, UserRequest[_] => Call] = Map(
+    CancelVATRegistrationPage -> (_ => Call("GET", appConfig.penaltiesFrontendUrl)),
+    YouCannotAppealPage -> (_ => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()),
+    YouCanAppealThisPenaltyPage -> (_ => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()),
+    AppealStartPage -> (request => reverseRouteForAppealStartPage(request)),
+    HonestyDeclarationPage -> (request => reverseRouteForHonestyDeclaration(request)),
+    OtherRelevantInformationPage -> (_ => routes.HonestyDeclarationController.onPageLoad()),
+    UploadEvidenceQuestionPage -> (request => reverseRouteForUploadEvidenceQuestion(request, NormalMode)),
+    FileListPage -> (_ => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
+    UploadFirstDocumentPage -> (_ => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
+    UploadAnotherDocumentPage -> (_ => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
+    EvidencePage -> (_ => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
+    WhenDidThePersonDiePage -> (_ => routes.HonestyDeclarationController.onPageLoad()),
+    HasCrimeBeenReportedPage -> (_ => routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode)),
+    WhenDidCrimeHappenPage -> (_ => routes.HonestyDeclarationController.onPageLoad()),
+    WhenDidFireOrFloodHappenPage -> (_ => routes.HonestyDeclarationController.onPageLoad()),
+    WasHospitalStayRequiredPage -> (_ => routes.HonestyDeclarationController.onPageLoad()),
+    WhenDidHealthIssueHappenPage -> (_ => routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode)),
+    WhenDidHospitalStayBeginPage -> (_ => routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode)),
+    DidHospitalStayEndPage -> (_ => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode)),
+    WhenDidPersonLeaveTheBusinessPage -> (_ => routes.HonestyDeclarationController.onPageLoad()),
+    WhenDidTechnologyIssuesBeginPage -> (_ => routes.HonestyDeclarationController.onPageLoad()),
+    WhenDidTechnologyIssuesEndPage -> (_ => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)),
+    WhenDidBecomeUnablePage -> (_ => routes.HonestyDeclarationController.onPageLoad()),
+    WhyWasReturnSubmittedLatePage -> (_ => routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode)),
+    WhoPlannedToSubmitVATReturnAgentPage -> (_ => routes.AppealStartController.onPageLoad()),
+    WhatCausedYouToMissTheDeadlinePage -> (_ => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)),
+    ReasonableExcuseSelectionPage -> (request => reverseRouteForReasonableExcuseSelectionPage(request, NormalMode)),
+    MakingALateAppealPage -> (request => reverseRouteForMakingALateAppealPage(request, NormalMode)),
+    CheckYourAnswersPage -> (request => reverseRouteForCYAPage(request, NormalMode))
+  )
+
+  def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
+    page match {
+      case page if userRequest.session.get(SessionKeys.originatingChangePage).contains(page.toString) => routes.CheckYourAnswersController.onPageLoad()
+      case DidHospitalStayEndPage => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode)
+      case WhenDidHospitalStayBeginPage => routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode)
+      case WhenDidHealthIssueHappenPage => routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode)
+      case UploadFirstDocumentPage => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode)
+      case UploadAnotherDocumentPage => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)
+      case EvidencePage => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode)
+      case FileListPage => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode)
+      case UploadEvidenceQuestionPage => routes.CheckYourAnswersController.onPageLoad()
+    }
+  }
+
   lazy val checkingRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
     HasCrimeBeenReportedPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidCrimeHappenPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
@@ -94,6 +139,17 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
         checkingRoutes(page)(answer, userRequest)
       case NormalMode =>
         normalRoutes(page)(answer, userRequest)
+    }
+  }
+
+  def previousPage(page: Page, mode: Mode)(implicit userRequest: UserRequest[_]): Call = {
+    mode match {
+      case CheckMode =>
+        reverseCheckingRoutes(page, userRequest)
+      case NormalMode if userRequest.session.get(SessionKeys.originatingChangePage).contains(page.toString) =>
+        reverseCheckingRoutes(page, userRequest)
+      case NormalMode =>
+        reverseNormalRoutes(page)(userRequest)
     }
   }
 
@@ -186,6 +242,78 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case _ =>
         logger.debug("[Navigation][routeForYouCanAppealPenalty]: unable to get answer - reloading 'YouCanAppealPenaltyPage'")
         routes.YouCanAppealPenaltyController.onPageLoad()
+    }
+  }
+
+  private def reverseRouteForAppealStartPage(request: UserRequest[_]): Call = {
+    if(request.session.get(SessionKeys.reasonableExcuse).contains("obligation")) {
+      routes.YouCanAppealPenaltyController.onPageLoad()
+    } else {
+      Call("GET", appConfig.penaltiesFrontendUrl)
+    }
+  }
+
+  private def reverseRouteForHonestyDeclaration(request: UserRequest[_]): Call = {
+    if(request.session.get(SessionKeys.reasonableExcuse).contains("obligation")) {
+      routes.AppealStartController.onPageLoad()
+    } else {
+      routes.ReasonableExcuseController.onPageLoad()
+    }
+  }
+
+  private def reverseRouteForUploadEvidenceQuestion(request: UserRequest[_], mode: Mode): Call = {
+    if(request.session.get(SessionKeys.reasonableExcuse).contains("obligation")) {
+      routes.AppealAgainstObligationController.onPageLoad(mode)
+    } else {
+      routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode)
+    }
+  }
+
+  private def reverseRouteForMakingALateAppealPage(request: UserRequest[_], mode: Mode): Call = {
+    request.session.get(SessionKeys.reasonableExcuse).get match {
+      case "bereavement" => routes.BereavementReasonController.onPageLoadForWhenThePersonDied(mode)
+      case "crime" => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(mode)
+      case "fireOrFlood" => routes.FireOrFloodReasonController.onPageLoad(mode)
+      case "health" => if(request.session.get(SessionKeys.wasHospitalStayRequired).contains("yes")) routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode) else routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
+      case "lossOfStaff" => routes.LossOfStaffReasonController.onPageLoad(mode)
+      case "technicalIssues" => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(mode)
+      case "other" => reverseRoutingForUpload(request, mode)
+      case "obligation" => reverseRoutingForUpload(request, mode)
+    }
+  }
+
+  private def reverseRoutingForUpload(request: UserRequest[_], mode: Mode): Call = {
+    if(request.session.get(SessionKeys.isUploadEvidence).contains("yes")) {
+      routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
+    } else {
+      routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)
+    }
+  }
+
+  private def reverseRouteForReasonableExcuseSelectionPage(request: UserRequest[_], mode: Mode): Call = {
+    if(request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)) {
+      if(request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+        routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(mode)
+      } else {
+        routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode)
+      }
+    } else {
+      routes.AppealStartController.onPageLoad()
+    }
+  }
+
+  private def reverseRouteForCYAPage(request: UserRequest[_], mode: Mode): Call = {
+    val dateSentParsed: LocalDateTime = LocalDateTime.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
+    val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
+    val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
+    if (dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
+      && (request.session.get(SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)
+      && request.session.get(SessionKeys.isObligationAppeal).isEmpty) {
+      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
+        s"Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
+      controllers.routes.MakingALateAppealController.onPageLoad()
+    } else {
+      reverseRouteForMakingALateAppealPage(request, mode)
     }
   }
 }

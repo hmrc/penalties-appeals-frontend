@@ -53,7 +53,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val mockFeatureSwitching = mock(classOf[FeatureSwitching])
 
-  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig, mockFeatureSwitching)
+  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)
 
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 

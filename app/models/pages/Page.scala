@@ -45,3 +45,5 @@ case object UploadAnotherDocumentPage extends Page
 case object FileListPage extends Page
 case object UploadEvidenceQuestionPage extends Page
 case object YouCanAppealThisPenaltyPage extends Page
+case object MakingALateAppealPage extends Page
+case object CheckYourAnswersPage extends Page
