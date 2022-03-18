@@ -57,7 +57,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(request)
           } yield {
             val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
-            Ok(checkYourAnswersPage(answersFromSession))
+            Ok(checkYourAnswersPage(answersFromSession)).removingFromSession(SessionKeys.originatingChangePage)
           }
         } else {
           logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
@@ -70,8 +70,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             for {
               content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)
             } yield {
-                Ok(checkYourAnswersPage(content))
-              }
+                Ok(checkYourAnswersPage(content)).removingFromSession(SessionKeys.originatingChangePage)
+            }
           } else {
             logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
             logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
@@ -142,6 +142,12 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       val isObligationAppeal: Boolean = request.session.get(SessionKeys.isObligationAppeal).contains("true")
       Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal))
         .removingFromSession(SessionKeys.allKeys: _*)
+    }
+  }
+
+  def changeAnswer(continueUrl: String, pageName: String): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      Redirect(continueUrl).addingToSession(SessionKeys.originatingChangePage -> pageName)
     }
   }
 }

@@ -17,6 +17,7 @@
 package helpers
 
 import base.SpecBase
+import models.pages._
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.Mockito.{mock, when}
@@ -276,13 +277,22 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Crime"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the crime happen?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url,
+          WhenDidCrimeHappenPage.toString
+        ).url
         result(2)._1 shouldBe "Has this crime been reported to the police?"
         result(2)._2 shouldBe "Yes"
-        result(2)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url,
+          HasCrimeBeenReportedPage.toString
+        ).url
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -298,16 +308,28 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Crime"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the crime happen?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url,
+          WhenDidCrimeHappenPage.toString
+        ).url
         result(2)._1 shouldBe "Has this crime been reported to the police?"
         result(2)._2 shouldBe "Yes"
-        result(2)._3 shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url,
+          HasCrimeBeenReportedPage.toString
+        ).url
         result(3)._1 shouldBe "Reason for appealing after 30 days"
         result(3)._2 shouldBe "Lorem ipsum"
-        result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
     }
 
@@ -322,10 +344,16 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Fire or flood"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the fire or flood happen?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url,
+          WhenDidFireOrFloodHappenPage.toString
+        ).url
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -339,13 +367,22 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Fire or flood"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the fire or flood happen?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url,
+          WhenDidFireOrFloodHappenPage.toString
+        ).url
         result(2)._1 shouldBe "Reason for appealing after 30 days"
         result(2)._2 shouldBe "Lorem ipsum"
-        result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
     }
 
@@ -361,10 +398,16 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Loss of staff essential to the VAT process"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the person become unavailable?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url,
+          WhenDidPersonLeaveTheBusinessPage.toString
+        ).url
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -379,13 +422,22 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Loss of staff essential to the VAT process"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the person become unavailable?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url,
+          WhenDidPersonLeaveTheBusinessPage.toString
+        ).url
         result(2)._1 shouldBe "Reason for appealing after 30 days"
         result(2)._2 shouldBe "Lorem ipsum"
-        result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
     }
 
@@ -403,13 +455,22 @@ class SessionAnswersHelperSpec extends SpecBase {
           "technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Technology issues"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the technology issues begin?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url,
+          WhenDidTechnologyIssuesBeginPage.toString
+        ).url
         result(2)._1 shouldBe "When did the technology issues end?"
         result(2)._2 shouldBe "2 January 2022"
-        result(2)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url,
+          WhenDidTechnologyIssuesEndPage.toString
+        ).url
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -426,16 +487,28 @@ class SessionAnswersHelperSpec extends SpecBase {
           "technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Technology issues"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the technology issues begin?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url,
+          WhenDidTechnologyIssuesBeginPage.toString
+        ).url
         result(2)._1 shouldBe "When did the technology issues end?"
         result(2)._2 shouldBe "2 January 2022"
-        result(2)._3 shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url,
+          WhenDidTechnologyIssuesEndPage.toString
+        ).url
         result(3)._1 shouldBe "Reason for appealing after 30 days"
         result(3)._2 shouldBe "Lorem ipsum"
-        result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
     }
 
@@ -456,19 +529,34 @@ class SessionAnswersHelperSpec extends SpecBase {
           "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the issue first stop you paying the VAT bill?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
         result(2)._1 shouldBe "Why was the VAT bill paid late?"
         result(2)._2 shouldBe "This is why my VAT payment was late."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
         result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(3)._2 shouldBe "No"
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result(4)._1 shouldBe "Reason for appealing after 30 days"
         result(4)._2 shouldBe "This is the reason why my appeal was late."
-        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(4)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
     }
 
@@ -489,13 +577,22 @@ class SessionAnswersHelperSpec extends SpecBase {
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
             result.head._1 shouldBe "Reason for missing the VAT deadline"
             result.head._2 shouldBe "Health"
-            result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+            result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
             result(1)._1 shouldBe "Did this health issue include a hospital stay?"
             result(1)._2 shouldBe "No"
-            result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
+            result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+            WasHospitalStayRequiredPage.toString
+          ).url
             result(2)._1 shouldBe "When did your client become unable to manage the VAT account?"
             result(2)._2 shouldBe "1 January 2022"
-            result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
+            result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+            WhenDidHealthIssueHappenPage.toString
+          ).url
           }
 
           "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -513,16 +610,28 @@ class SessionAnswersHelperSpec extends SpecBase {
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
             result.head._1 shouldBe "Reason for missing the VAT deadline"
             result.head._2 shouldBe "Health"
-            result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+            result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
             result(1)._1 shouldBe "Did this health issue include a hospital stay?"
             result(1)._2 shouldBe "No"
-            result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
+            result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+            WasHospitalStayRequiredPage.toString
+          ).url
             result(2)._1 shouldBe "When did your client become unable to manage the VAT account?"
             result(2)._2 shouldBe "1 January 2022"
-            result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
+            result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+            WhenDidHealthIssueHappenPage.toString
+          ).url
             result(3)._1 shouldBe "Reason for appealing after 30 days"
             result(3)._2 shouldBe "Lorem ipsum"
-            result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+            result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+              controllers.routes.MakingALateAppealController.onPageLoad().url,
+              MakingALateAppealPage.toString
+            ).url
           }
         }
       }
@@ -545,7 +654,10 @@ class SessionAnswersHelperSpec extends SpecBase {
               "other")(request, implicitly)
             result(1)._1 shouldBe "When did the issue first stop your client submitting the VAT Return?"
             result(1)._2 shouldBe "1 January 2022"
-            result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+            controllers.routes.CheckYourAnswersController.changeAnswer(
+              controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+              WhenDidBecomeUnablePage.toString
+            ).url
           }
 
           "the agent planned to submit and client missed deadline" in {
@@ -565,7 +677,10 @@ class SessionAnswersHelperSpec extends SpecBase {
               "other")(request, implicitly)
             result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
             result(1)._2 shouldBe "1 January 2022"
-            result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+            controllers.routes.CheckYourAnswersController.changeAnswer(
+              controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+              WhenDidBecomeUnablePage.toString
+            ).url
           }
 
           "the agent planned to submit and missed deadline" in {
@@ -585,7 +700,10 @@ class SessionAnswersHelperSpec extends SpecBase {
               "other")(request, implicitly)
             result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
             result(1)._2 shouldBe "1 January 2022"
-            result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+            controllers.routes.CheckYourAnswersController.changeAnswer(
+              controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+              WhenDidBecomeUnablePage.toString
+            ).url
           }
         }
 
@@ -606,16 +724,28 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "Yes"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Evidence to support this appeal"
           result(4)._2 shouldBe "Not provided"
           result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -639,19 +769,34 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "No"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Reason for appealing after 30 days"
           result(4)._2 shouldBe "This is the reason why my appeal was late."
-          result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(4)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.MakingALateAppealController.onPageLoad().url,
+            MakingALateAppealPage.toString
+          ).url
         }
 
         "for upload" in {
@@ -671,16 +816,28 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "Yes"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Evidence to support this appeal"
           result(4)._2 shouldBe "file.docx"
           result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -704,22 +861,37 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "Yes"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Evidence to support this appeal"
           result(4)._2 shouldBe "file.docx"
           result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
           result(5)._1 shouldBe "Reason for appealing after 30 days"
           result(5)._2 shouldBe "This is the reason why my appeal was late."
-          result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(5)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.MakingALateAppealController.onPageLoad().url,
+            MakingALateAppealPage.toString
+          ).url
         }
       }
 
@@ -739,22 +911,37 @@ class SessionAnswersHelperSpec extends SpecBase {
           "other", Some("file.docx"))(fakeRequestWithLPPKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the issue first stop your client paying the VAT bill?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
         result(2)._1 shouldBe "Why was the VAT bill paid late?"
         result(2)._2 shouldBe "This is why my VAT bill was paid late."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
         result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(3)._2 shouldBe "Yes"
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result(4)._1 shouldBe "Evidence to support this appeal"
         result(4)._2 shouldBe "file.docx"
         result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
         result(5)._1 shouldBe "Reason for appealing after 30 days"
         result(5)._2 shouldBe "This is the reason why my appeal was late."
-        result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(5)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
 
       "display no upload details row if the user has uploaded files but has changed their mind and selects 'no' - 'hide' the files uploaded" in {
@@ -775,19 +962,34 @@ class SessionAnswersHelperSpec extends SpecBase {
           "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
         result(2)._1 shouldBe "Why was the return submitted late?"
         result(2)._2 shouldBe "This is why my VAT return was late."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
         result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(3)._2 shouldBe "No"
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result(4)._1 shouldBe "Reason for appealing after 30 days"
         result(4)._2 shouldBe "This is the reason why my appeal was late."
-        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(4)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
 
       "display no upload details row if the user selected no to uploading files" in {
@@ -808,19 +1010,34 @@ class SessionAnswersHelperSpec extends SpecBase {
           "other")(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the issue first stop your client getting information to you?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
         result(2)._1 shouldBe "Why was the return submitted late?"
         result(2)._2 shouldBe "This is why my VAT return was late."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
         result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(3)._2 shouldBe "No"
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result(4)._1 shouldBe "Reason for appealing after 30 days"
         result(4)._2 shouldBe "This is the reason why my appeal was late."
-        result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(4)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
     }
 
@@ -840,13 +1057,22 @@ class SessionAnswersHelperSpec extends SpecBase {
               "health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
             result.head._1 shouldBe "Reason for missing the VAT deadline"
             result.head._2 shouldBe "Health"
-            result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+            result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
             result(1)._1 shouldBe "Did this health issue include a hospital stay?"
             result(1)._2 shouldBe "No"
-            result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
+            result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+            WasHospitalStayRequiredPage.toString
+          ).url
             result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
             result(2)._2 shouldBe "1 January 2022"
-            result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
+            result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+            WhenDidHealthIssueHappenPage.toString
+          ).url
           }
 
           "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -863,16 +1089,28 @@ class SessionAnswersHelperSpec extends SpecBase {
               "health")(fakeRequestWithNoHospitalStayKeysPresent, implicitly)
             result.head._1 shouldBe "Reason for missing the VAT deadline"
             result.head._2 shouldBe "Health"
-            result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+            result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
             result(1)._1 shouldBe "Did this health issue include a hospital stay?"
             result(1)._2 shouldBe "No"
-            result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
+            result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+            WasHospitalStayRequiredPage.toString
+          ).url
             result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
             result(2)._2 shouldBe "1 January 2022"
-            result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
+            result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+            WhenDidHealthIssueHappenPage.toString
+          ).url
             result(3)._1 shouldBe "Reason for appealing after 30 days"
             result(3)._2 shouldBe "Lorem ipsum"
-            result(3)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+            result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+              controllers.routes.MakingALateAppealController.onPageLoad().url,
+              MakingALateAppealPage.toString
+            ).url
           }
         }
       }
@@ -893,16 +1131,28 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other")(fakeRequestWithOtherNoUploadKeysPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "Yes"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Evidence to support this appeal"
           result(4)._2 shouldBe "Not provided"
           result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -924,22 +1174,37 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "Yes"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Evidence to support this appeal"
           result(4)._2 shouldBe "Not provided"
           result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
           result(5)._1 shouldBe "Reason for appealing after 30 days"
           result(5)._2 shouldBe "This is the reason why my appeal was late."
-          result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(5)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.MakingALateAppealController.onPageLoad().url,
+            MakingALateAppealPage.toString
+          ).url
         }
 
         "for upload" in {
@@ -957,16 +1222,28 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "Yes"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Evidence to support this appeal"
           result(4)._2 shouldBe "file.docx"
           result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -988,22 +1265,37 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "Yes"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Evidence to support this appeal"
           result(4)._2 shouldBe "file.docx"
           result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
           result(5)._1 shouldBe "Reason for appealing after 30 days"
           result(5)._2 shouldBe "This is the reason why my appeal was late."
-          result(5)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(5)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.MakingALateAppealController.onPageLoad().url,
+            MakingALateAppealPage.toString
+          ).url
         }
 
         "when the user clicked no to upload don't show the upload evidence row" in {
@@ -1022,19 +1314,34 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "No"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Reason for appealing after 30 days"
           result(4)._2 shouldBe "This is the reason why my appeal was late."
-          result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(4)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.MakingALateAppealController.onPageLoad().url,
+            MakingALateAppealPage.toString
+          ).url
         }
 
         "when the user has changed their answer and does not want to upload files - but existing files have been uploaded - 'hide' the row" in {
@@ -1053,19 +1360,34 @@ class SessionAnswersHelperSpec extends SpecBase {
             "other", Some("file.docx"))(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "The reason does not fit into any of the other categories"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1)._2 shouldBe "1 January 2022"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
           result(2)._1 shouldBe "Why was the return submitted late?"
           result(2)._2 shouldBe "This is why my VAT return was late."
-          result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
           result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(3)._2 shouldBe "No"
-          result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(4)._1 shouldBe "Reason for appealing after 30 days"
           result(4)._2 shouldBe "This is the reason why my appeal was late."
-          result(4)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          result(4)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.MakingALateAppealController.onPageLoad().url,
+            MakingALateAppealPage.toString
+          ).url
         }
       }
     }
@@ -1088,13 +1410,22 @@ class SessionAnswersHelperSpec extends SpecBase {
           val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "Health"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "Did this health issue include a hospital stay?"
           result(1)._2 shouldBe "No"
-          result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+            WasHospitalStayRequiredPage.toString
+          ).url
           result(2)._1 shouldBe "When did your client become unable to manage the VAT account?"
           result(2)._2 shouldBe "1 January 2022"
-          result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+            WhenDidHealthIssueHappenPage.toString
+          ).url
         }
       }
     }
@@ -1113,13 +1444,22 @@ class SessionAnswersHelperSpec extends SpecBase {
           val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
           result.head._1 shouldBe "Reason for missing the VAT deadline"
           result.head._2 shouldBe "Health"
-          result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
           result(1)._1 shouldBe "Did this health issue include a hospital stay?"
           result(1)._2 shouldBe "No"
-          result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+            WasHospitalStayRequiredPage.toString
+          ).url
           result(2)._1 shouldBe "When did you become unable to manage the VAT account?"
           result(2)._2 shouldBe "1 January 2022"
-          result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+            WhenDidHealthIssueHappenPage.toString
+          ).url
         }
       }
     }
@@ -1139,19 +1479,34 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Health"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "Did this health issue include a hospital stay?"
         result(1)._2 shouldBe "Yes"
-        result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+          WasHospitalStayRequiredPage.toString
+        ).url
         result(2)._1 shouldBe "When did the hospital stay begin?"
         result(2)._2 shouldBe "1 January 2022"
-        result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
+          WhenDidHospitalStayBeginPage.toString
+        ).url
         result(3)._1 shouldBe "Has the hospital stay ended?"
         result(3)._2 shouldBe "Yes"
-        result(3)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
+          DidHospitalStayEndPage.toString
+        ).url
         result(4)._1 shouldBe "When did it end?"
         result(4)._2 shouldBe "2 February 2022"
-        result(4)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url
+        result(4)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
+          DidHospitalStayEndPage.toString
+        ).url
       }
     }
     "when there is hospital stay not ended" should {
@@ -1168,16 +1523,28 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Health"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "Did this health issue include a hospital stay?"
         result(1)._2 shouldBe "Yes"
-        result(1)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+          WasHospitalStayRequiredPage.toString
+        ).url
         result(2)._1 shouldBe "When did the hospital stay begin?"
         result(2)._2 shouldBe "1 January 2022"
-        result(2)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
+          WhenDidHospitalStayBeginPage.toString
+        ).url
         result(3)._1 shouldBe "Has the hospital stay ended?"
         result(3)._2 shouldBe "No"
-        result(3)._3 shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
+          DidHospitalStayEndPage.toString
+        ).url
       }
     }
   }
@@ -1195,10 +1562,16 @@ class SessionAnswersHelperSpec extends SpecBase {
         "bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
       result.head._1 shouldBe "Reason for missing the VAT deadline"
       result.head._2 shouldBe "Bereavement (someone died)"
-      result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
       result(1)._1 shouldBe "When did the person die?"
       result(1)._2 shouldBe "1 January 2022"
-      result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
+      result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
+          WhenDidThePersonDiePage.toString
+        ).url
     }
 
     "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -1214,13 +1587,22 @@ class SessionAnswersHelperSpec extends SpecBase {
         "bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
       result.head._1 shouldBe "Reason for missing the VAT deadline"
       result.head._2 shouldBe "Bereavement (someone died)"
-      result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
       result(1)._1 shouldBe "When did the person die?"
       result(1)._2 shouldBe "1 January 2022"
-      result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
+      result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
+          WhenDidThePersonDiePage.toString
+        ).url
       result(2)._1 shouldBe "Reason for appealing after 30 days"
       result(2)._2 shouldBe "Lorem ipsum"
-      result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+        controllers.routes.MakingALateAppealController.onPageLoad().url,
+        MakingALateAppealPage.toString
+      ).url
     }
   }
 
@@ -1235,7 +1617,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithClientPresent, implicitly)
         result.head._1 shouldBe "Before the deadline, who planned to submit the return?"
         result.head._2 shouldBe "My client did"
-        result.head._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url,
+          WhoPlannedToSubmitVATReturnAgentPage.toString
+        ).url
       }
     }
 
@@ -1250,10 +1635,16 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
         result.head._1 shouldBe "Before the deadline, who planned to submit the return?"
         result.head._2 shouldBe "I did"
-        result.head._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url,
+          WhoPlannedToSubmitVATReturnAgentPage.toString
+        ).url
         result(1)._1 shouldBe "What caused you to miss the deadline?"
         result(1)._2 shouldBe "Something else happened to delay me"
-        result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url,
+          WhatCausedYouToMissTheDeadlinePage.toString
+        ).url
 
       }
     }
@@ -1269,11 +1660,16 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
         result.head._1 shouldBe "Before the deadline, who planned to submit the return?"
         result.head._2 shouldBe "I did"
-        result.head._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url,
+          WhoPlannedToSubmitVATReturnAgentPage.toString
+        ).url
         result(1)._1 shouldBe "What caused you to miss the deadline?"
         result(1)._2 shouldBe "My client did not get information to me on time"
-        result(1)._3 shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url
-
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url,
+          WhatCausedYouToMissTheDeadlinePage.toString
+        ).url
       }
     }
   }
@@ -1347,10 +1743,16 @@ class SessionAnswersHelperSpec extends SpecBase {
           val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(fakeRequestForAppealingTheObligation, implicitly)
           result.head._1 shouldBe "Tell us why you want to appeal the penalty"
           result.head._2 shouldBe "This is some relevant information"
-          result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
+            OtherRelevantInformationPage.toString
+          ).url
           result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(1)._2 shouldBe "Yes"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result(2)._1 shouldBe "Evidence to support this appeal"
           result(2)._2 shouldBe "file.txt"
           result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1366,10 +1768,16 @@ class SessionAnswersHelperSpec extends SpecBase {
           val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(fakeRequestForAppealingTheObligation, implicitly)
           result.head._1 shouldBe "Tell us why you want to appeal the penalty"
           result.head._2 shouldBe "This is some relevant information"
-          result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
+            OtherRelevantInformationPage.toString
+          ).url
           result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
           result(1)._2 shouldBe "No"
-          result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+            UploadEvidenceQuestionPage.toString
+          ).url
           result.size shouldBe 2
         }
       }
@@ -1404,10 +1812,16 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "Some Information"
-        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
+          OtherRelevantInformationPage.toString
+        ).url
         result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(1)._2 shouldBe "Yes"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result(2)._1 shouldBe "Evidence to support this appeal"
         result(2)._2 shouldBe "Not provided"
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1422,10 +1836,16 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "Some Information"
-        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
+          OtherRelevantInformationPage.toString
+        ).url
         result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(1)._2 shouldBe "No"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result.size shouldBe 2
       }
     }
@@ -1441,10 +1861,16 @@ class SessionAnswersHelperSpec extends SpecBase {
           Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "Some Information"
-        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
+          OtherRelevantInformationPage.toString
+        ).url
         result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(1)._2 shouldBe "Yes"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result(2)._1 shouldBe "Evidence to support this appeal"
         result(2)._2 shouldBe "some-file-name.txt"
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1460,16 +1886,22 @@ class SessionAnswersHelperSpec extends SpecBase {
           Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "Some Information"
-        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
+          OtherRelevantInformationPage.toString
+        ).url
         result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(1)._2 shouldBe "No"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result.size shouldBe 2
       }
     }
   }
 
-  "getPreviousUploadsFileNames" should{
+  "getPreviousUploadsFileNames" should {
     "return the file names" in {
       val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
         SessionKeys.reasonableExcuse -> "other",
@@ -1510,16 +1942,28 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForOtherJourney, messages))
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "The reason does not fit into any of the other categories"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the issue first stop you submitting the VAT Return?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+            WhenDidBecomeUnablePage.toString
+          ).url
         result(2)._1 shouldBe "Why was the return submitted late?"
         result(2)._2 shouldBe "This is a reason."
-        result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+            WhyWasReturnSubmittedLatePage.toString
+          ).url
         result(3)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(3)._2 shouldBe "Yes"
-        result(3)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(3)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result(4)._1 shouldBe "Evidence to support this appeal"
         result(4)._2 shouldBe "file1.txt"
         result(4)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1528,7 +1972,7 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when there's an Obligation Appeal Journey (that requires a file upload call) " should {
       "return the rows for CYA page " in {
-        val fakeRequestForAppealingTheObligation : UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+        val fakeRequestForAppealingTheObligation: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.journeyId -> "4321",
           SessionKeys.isObligationAppeal -> "true",
           SessionKeys.otherRelevantInformation -> "This is some relevant information",
@@ -1537,10 +1981,16 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
         result.head._1 shouldBe "Tell us why you want to appeal the penalty"
         result.head._2 shouldBe "This is some relevant information"
-        result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
+          OtherRelevantInformationPage.toString
+        ).url
         result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
         result(1)._2 shouldBe "Yes"
-        result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
         result(2)._1 shouldBe "Evidence to support this appeal"
         result(2)._2 shouldBe "file1.txt"
         result(2)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -1548,7 +1998,7 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "when the user has files uploaded - but changed their mind - 'hide' the files uploaded" in {
-      val fakeRequestForAppealingTheObligation : UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+      val fakeRequestForAppealingTheObligation: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
         SessionKeys.journeyId -> "4321",
         SessionKeys.isObligationAppeal -> "true",
         SessionKeys.otherRelevantInformation -> "This is some relevant information",
@@ -1557,10 +2007,16 @@ class SessionAnswersHelperSpec extends SpecBase {
       val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
       result.head._1 shouldBe "Tell us why you want to appeal the penalty"
       result.head._2 shouldBe "This is some relevant information"
-      result.head._3 shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
+      result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+        controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
+        OtherRelevantInformationPage.toString
+      ).url
       result(1)._1 shouldBe "Do you want to upload evidence to support your appeal?"
       result(1)._2 shouldBe "No"
-      result(1)._3 shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
+      result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+        controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+        UploadEvidenceQuestionPage.toString
+      ).url
       result.size shouldBe 2
     }
 
@@ -1577,13 +2033,22 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("bereavement")(fakeRequestWithBereavementKeysPresent, messages))
         result.head._1 shouldBe "Reason for missing the VAT deadline"
         result.head._2 shouldBe "Bereavement (someone died)"
-        result.head._3 shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
         result(1)._1 shouldBe "When did the person die?"
         result(1)._2 shouldBe "1 January 2022"
-        result(1)._3 shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url
+        result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
+          WhenDidThePersonDiePage.toString
+        ).url
         result(2)._1 shouldBe "Reason for appealing after 30 days"
         result(2)._2 shouldBe "Lorem ipsum"
-        result(2)._3 shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
       }
     }
   }

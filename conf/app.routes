@@ -120,6 +120,7 @@ POST       /cancel-vat-registration              controllers.CancelVATRegistrati
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()
+GET        /change-answer                   controllers.CheckYourAnswersController.changeAnswer(continueUrl: String, page: String)
 GET        /appeal-confirmation              controllers.CheckYourAnswersController.onPageLoadForConfirmation()
 
 # Making a late appeal page

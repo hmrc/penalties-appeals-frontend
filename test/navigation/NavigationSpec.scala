@@ -18,7 +18,7 @@ package navigation
 
 import base.SpecBase
 import models.pages._
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.Mockito._
 import play.api.mvc.Call
 import utils.SessionKeys
@@ -30,6 +30,210 @@ class NavigationSpec extends SpecBase {
     reset(mockDateTimeHelper, mockFeatureSwitching)
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
       2020, 2, 1, 0, 0, 0))
+
+  }
+
+  def checkModePreviousPageTest(pagesAndUrls: Seq[(Page, String)]): Unit = {
+    pagesAndUrls.foreach { pageAndExpectedUrl =>
+      s"called with ${pageAndExpectedUrl._1} - route to the correct page" in {
+        val result: Call = mainNavigator.previousPage(pageAndExpectedUrl._1, CheckMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe pageAndExpectedUrl._2
+      }
+    }
+  }
+
+  def normalModePreviousPageTest(pagesAndUrls: Seq[(Page, String)]): Unit = {
+    pagesAndUrls.foreach { pageAndExpectedUrl =>
+      s"called with ${pageAndExpectedUrl._1} - route to the correct page" in {
+        val result: Call = mainNavigator.previousPage(pageAndExpectedUrl._1, NormalMode)(fakeRequestConverter(fakeRequest))
+        result.url shouldBe pageAndExpectedUrl._2
+      }
+    }
+  }
+
+  "previousPage" should {
+    "in CheckMode" when {
+      checkModePreviousPageTest(Seq(
+        (DidHospitalStayEndPage, controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url),
+        (WhenDidHospitalStayBeginPage, controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url),
+        (WhenDidHealthIssueHappenPage, controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url),
+        (UploadFirstDocumentPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
+        (UploadAnotherDocumentPage, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url),
+        (EvidencePage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
+        (FileListPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
+        (UploadEvidenceQuestionPage, controllers.routes.CheckYourAnswersController.onPageLoad().url)
+      ))
+
+      "the user is on the original page they were routed to - route back to CYA" in {
+        val result: Call = mainNavigator.previousPage(WhenDidHospitalStayBeginPage, CheckMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.originatingChangePage -> WhenDidHospitalStayBeginPage.toString)))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
+
+    "in NormalMode" when {
+      normalModePreviousPageTest(
+        Seq(
+          (CancelVATRegistrationPage, "http://localhost:9180/penalties"),
+          (YouCannotAppealPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
+          (YouCanAppealThisPenaltyPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
+          (OtherRelevantInformationPage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
+          (FileListPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url),
+          (UploadFirstDocumentPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url),
+          (UploadAnotherDocumentPage, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url),
+          (EvidencePage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url),
+          (WhenDidThePersonDiePage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
+          (HasCrimeBeenReportedPage, controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url),
+          (WhenDidCrimeHappenPage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
+          (WhenDidFireOrFloodHappenPage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
+          (WasHospitalStayRequiredPage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
+          (WhenDidHealthIssueHappenPage, controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url),
+          (WhenDidHospitalStayBeginPage, controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url),
+          (DidHospitalStayEndPage, controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url),
+          (WhenDidPersonLeaveTheBusinessPage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
+          (WhenDidTechnologyIssuesBeginPage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
+          (WhenDidTechnologyIssuesEndPage, controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(NormalMode).url),
+          (WhenDidBecomeUnablePage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
+          (WhyWasReturnSubmittedLatePage, controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode).url),
+          (WhoPlannedToSubmitVATReturnAgentPage, controllers.routes.AppealStartController.onPageLoad().url),
+          (WhatCausedYouToMissTheDeadlinePage, controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url)
+        )
+      )
+
+      s"the user is on the $AppealStartPage" must {
+        "route the user back to the 'You can appeal this penalty' page when appealing against obligation" in {
+          val result: Call = mainNavigator.previousPage(AppealStartPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "obligation")))
+          result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
+        }
+
+        "route back to the penalties and appeals page when its not an obligation appeal" in {
+          val result: Call = mainNavigator.previousPage(AppealStartPage, NormalMode)(fakeRequestConverter(fakeRequest))
+          result.url shouldBe "http://localhost:9180/penalties"
+        }
+      }
+
+      s"the user is on the $HonestyDeclarationPage" must {
+        "route the user back to the 'Appeal a VAT penalty' page when appealing against obligation" in {
+          val result: Call = mainNavigator.previousPage(HonestyDeclarationPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "obligation")))
+          result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
+        }
+
+        "route back to the reasonable excuse selection page when not appealing against obligation" in {
+          val result: Call = mainNavigator.previousPage(HonestyDeclarationPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "health")))
+          result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+        }
+      }
+
+      s"the user is on the $UploadEvidenceQuestionPage" must {
+        "route the user back to the 'Other relevant information' page when appealing against obligation" in {
+          val result: Call = mainNavigator.previousPage(UploadEvidenceQuestionPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "obligation")))
+          result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
+        }
+
+        "route back to the why return submitted late page when not appealing against obligation" in {
+          val result: Call = mainNavigator.previousPage(UploadEvidenceQuestionPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "health")))
+          result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
+        }
+      }
+
+      s"the user is on the $MakingALateAppealPage" must {
+        def makingALateAppealReverseNormalRouteTest(reason: String, expectedUrl: String, userRequest: UserRequest[_]): Unit = {
+          s"route the user back to the correct page when appealing with $reason reason" in {
+            val result: Call = mainNavigator.previousPage(MakingALateAppealPage, NormalMode)(userRequest)
+            result.url shouldBe expectedUrl
+          }
+        }
+        makingALateAppealReverseNormalRouteTest("bereavement",
+          controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "bereavement")))
+
+        makingALateAppealReverseNormalRouteTest("crime",
+          controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "crime")))
+
+        makingALateAppealReverseNormalRouteTest("fireOrFlood",
+          controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "fireOrFlood")))
+
+        makingALateAppealReverseNormalRouteTest("health",
+          controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.wasHospitalStayRequired -> "yes")))
+
+        makingALateAppealReverseNormalRouteTest("health - no hospital stay",
+          controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "health")))
+
+        makingALateAppealReverseNormalRouteTest("lossOfStaff",
+          controllers.routes.LossOfStaffReasonController.onPageLoad(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "lossOfStaff")))
+
+        makingALateAppealReverseNormalRouteTest("technicalIssues",
+          controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "technicalIssues")))
+
+        makingALateAppealReverseNormalRouteTest("other",
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.isUploadEvidence -> "yes")))
+
+        makingALateAppealReverseNormalRouteTest("other - no upload",
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "other")))
+
+        makingALateAppealReverseNormalRouteTest("obligation",
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url,
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "obligation")))
+
+      }
+
+      s"the user is on the $ReasonableExcuseSelectionPage" when {
+        "the user is an agent and appealing an LSP" must {
+          "route back to the 'what caused you to miss the deadline' page if the agent planned to submit" in {
+            val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode)(agentFakeRequestConverter(fakeRequest.withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+              SessionKeys.whoPlannedToSubmitVATReturn -> "agent"
+            )))
+            result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode).url
+          }
+
+          "route back to the 'who planned to submit return' page if the client planned to submit" in {
+            val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode)(agentFakeRequestConverter(fakeRequest.withSession(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+              SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+            )))
+            result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
+          }
+        }
+
+        "the user is not agent or not appealing an LSP as agent" must {
+          "route back to the landing page" in {
+            val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode)(fakeRequestConverter(fakeRequest))
+            result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
+          }
+        }
+      }
+
+      s"the user is on the $CheckYourAnswersPage" when {
+        "the user is appealing late" must {
+          "route back to the 'making a late appeal' page if the agent planned to submit" in new Setup {
+            when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(2020, 4, 1, 0, 0, 0))
+            val result: Call = mainNavigator.previousPage(CheckYourAnswersPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
+            )
+            result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+          }
+
+          "route back to the previous page before making a late appeal if the client planned to submit" in new Setup {
+            val result: Call = mainNavigator.previousPage(CheckYourAnswersPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
+            result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
+          }
+        }
+      }
+
+      "route the user back to the CYA page if they originated on this page" in {
+        val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.originatingChangePage -> ReasonableExcuseSelectionPage.toString)))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
 
   }
 
