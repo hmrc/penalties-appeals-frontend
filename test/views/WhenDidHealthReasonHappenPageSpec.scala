@@ -53,8 +53,8 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
       implicit val doc: Document = asDocument(applyVATTraderView(vatTraderFormProvider))
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> heading,
+        Selectors.title -> titleLSP,
+        Selectors.h1 -> headingLSP,
         Selectors.hintText -> hintText,
         Selectors.dateEntry(1) -> dayEntry,
         Selectors.dateEntry(2) -> monthEntry,
@@ -64,14 +64,15 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
 
       behave like pageWithExpectedMessages(expectedContent)
 
+
       "display the LPP variation when the appeal is for a LPP" must {
         val userRequest = UserRequest("123456789")(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
         implicit val doc: Document = asDocument(applyVATTraderView(vatTraderFormProvider, userRequest))
 
         val expectedContent = Seq(
-          Selectors.title -> title,
-          Selectors.h1 -> heading,
-          Selectors.hintText -> hintTextLpp,
+          Selectors.title -> titleLPP,
+          Selectors.h1 -> headingLPP,
+          Selectors.hintText -> hintText,
           Selectors.dateEntry(1) -> dayEntry,
           Selectors.dateEntry(2) -> monthEntry,
           Selectors.dateEntry(3) -> yearEntry,
@@ -83,51 +84,73 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
 
     }
 
-    "when an agent is on the page must" must {
-      implicit val doc: Document = asDocument(applyAgentView(agentFormProvider))
+    "when an agent is on the page" when {
+      "appealing a LSP" when {
+        "the client planned to submit" must {
+          implicit val doc: Document = asDocument(applyAgentView(agentFormProvider, agentUserAgentClientPlannedToSubmitSessionKeys))
 
-      val expectedContent = Seq(
-        Selectors.title -> titleAgentText,
-        Selectors.h1 -> headingAgentText,
-        Selectors.hintText -> hintTextAgentText,
-        Selectors.dateEntry(1) -> dayEntry,
-        Selectors.dateEntry(2) -> monthEntry,
-        Selectors.dateEntry(3) -> yearEntry,
-        Selectors.button -> continueButton
-      )
+          val expectedContent = Seq(
+            Selectors.title -> titleAgentClientSubmit,
+            Selectors.h1 -> headingAgentClientSubmit,
+            Selectors.hintText -> hintText,
+            Selectors.dateEntry(1) -> dayEntry,
+            Selectors.dateEntry(2) -> monthEntry,
+            Selectors.dateEntry(3) -> yearEntry,
+            Selectors.button -> continueButton
+          )
 
-      behave like pageWithExpectedMessages(expectedContent)
+          behave like pageWithExpectedMessages(expectedContent)(doc)
+        }
 
-      "display the LPP variation when the appeal is for a LPP" must {
+        "the agent planned to submit" when {
+          "the client didn't get the information on time" must {
+            implicit val doc: Document = asDocument(applyAgentView(agentFormProvider, agentUserAgentSubmitButClientWasLateSessionKeys))
+
+            val expectedContent = Seq(
+              Selectors.title -> titleAgentSubmitClientLate,
+              Selectors.h1 -> headingAgentSubmitClientLate,
+              Selectors.hintText -> hintText,
+              Selectors.dateEntry(1) -> dayEntry,
+              Selectors.dateEntry(2) -> monthEntry,
+              Selectors.dateEntry(3) -> yearEntry,
+              Selectors.button -> continueButton
+            )
+
+            behave like pageWithExpectedMessages(expectedContent)(doc)
+          }
+
+          "the agent missed the deadline" must {
+            implicit val doc: Document = asDocument(applyAgentView(agentFormProvider, agentUserAgentMissedSessionKeys))
+
+            val expectedContent = Seq(
+              Selectors.title -> titleLSP,
+              Selectors.h1 -> headingLSP,
+              Selectors.hintText -> hintText,
+              Selectors.dateEntry(1) -> dayEntry,
+              Selectors.dateEntry(2) -> monthEntry,
+              Selectors.dateEntry(3) -> yearEntry,
+              Selectors.button -> continueButton
+            )
+
+            behave like pageWithExpectedMessages(expectedContent)(doc)
+          }
+        }
+      }
+
+      "appealing a LPP" must {
         implicit val doc: Document = asDocument(applyAgentView(agentFormProvider, agentUserLPP))
 
         val expectedContent = Seq(
-          Selectors.title -> titleAgentText,
-          Selectors.h1 -> headingAgentText,
-          Selectors.hintText -> hintTextAgentLpp,
+          Selectors.title -> titleAgentLPP,
+          Selectors.h1 -> headingAgentLPP,
+          Selectors.hintText -> hintText,
           Selectors.dateEntry(1) -> dayEntry,
           Selectors.dateEntry(2) -> monthEntry,
           Selectors.dateEntry(3) -> yearEntry,
           Selectors.button -> continueButton
         )
 
-        behave like pageWithExpectedMessages(expectedContent)
-      }
-
-      "display the LPP variation when the appeal is for a LPP - Additional" must {
-        implicit val doc: Document = asDocument(applyAgentView(agentFormProvider, agentUserLPPAdditional))
-
-        val expectedContent = Seq(
-          Selectors.title -> titleAgentText,
-          Selectors.h1 -> headingAgentText,
-          Selectors.hintText -> hintTextAgentLpp,
-          Selectors.dateEntry(1) -> dayEntry,
-          Selectors.dateEntry(2) -> monthEntry,
-          Selectors.dateEntry(3) -> yearEntry,
-          Selectors.button -> continueButton
-        )
-
-        behave like pageWithExpectedMessages(expectedContent)
+        behave like pageWithExpectedMessages(expectedContent)(doc)
       }
     }
   }

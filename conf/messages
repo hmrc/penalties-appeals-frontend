@@ -204,7 +204,6 @@ technicalIssues.begin.error.notInFuture = The date the technology issues began m
 # When did the technology issues end page
 # ----------------------------------------------------------
 technicalIssues.end.headingAndTitle = When did the technology issues end?
-# Need to confirm that these errors are correct
 technicalIssues.end.error.required.all = Tell us when the technology issues ended
 technicalIssues.end.error.required.two = The date the technology issues ended must include a {0} and a {1}
 technicalIssues.end.error.required = The date the technology issues ended must include a {0}
@@ -218,25 +217,42 @@ healthReason.wasHospitalStayRequired.headingAndTitle = Did this health issue inc
 healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital
 agent.healthReason.wasHospitalStayRequired.error.required = Tell us if your client or someone else was admitted to hospital
 
-# When did the health issue happen page
+# When did health event happen page
 # ----------------------------------------------------------
-healthReason.whenHealthIssueHappened.headingAndTitle = When did you become unable to manage the VAT account?
-agent.healthReason.whenHealthIssueHappened.headingAndTitle = When did your client become unable to manage the VAT account?
-healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your ability to complete this submission.<br><br>
-agent.healthReason.whenHealthIssueHappened.hintText = Tell us the date when the health issue started to affect your client’s ability to complete this submission.<br><br>
-agent.healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your client’s ability to make this payment.<br><br>
-healthReason.whenHealthIssueHappened.lpp.hintText = Tell us the date when the health issue started to affect your ability to make this payment.<br><br>
+health.whenHealthIssueHappened.headingAndTitle.lsp = When did the health issue first stop you submitting the VAT Return?
+health.whenHealthIssueHappened.error.required.all.lsp = Tell us when the health issue first stopped you submitting the VAT Return
+health.whenHealthIssueHappened.error.notInFuture.lsp = The date the health issue first stopped you submitting the VAT Return must be today or in the past
+health.whenHealthIssueHappened.error.required.lsp = The date the health issue first stopped you submitting the VAT Return must include a {0}
+health.whenHealthIssueHappened.error.required.two.lsp = The date the health issue first stopped you submitting the VAT Return must include a {0} and a {1}
+health.whenHealthIssueHappened.error.invalid.lsp = The date the health issue first stopped you submitting the VAT Return must be a real date
 
-whenHealthIssueHappened.error.required.all = Tell us when you became unable to manage the VAT account
-agent.whenHealthIssueHappened.error.required.all = Tell us when your client became unable to manage the VAT account
-whenHealthIssueHappened.error.required.two = The date you became unable to manage VAT must include a {0} and a {1}
-agent.whenHealthIssueHappened.error.required.two = The date your client became unable to manage the VAT account must include a {0} and a {1}
-whenHealthIssueHappened.error.required = The date you became unable to manage VAT must include a {0}
-agent.whenHealthIssueHappened.error.required = The date your client became unable to manage the VAT account must include a {0}
-whenHealthIssueHappened.error.invalid = The date you became unable to manage VAT must be a real date
-agent.whenHealthIssueHappened.error.invalid = The date your client became unable to manage the VAT account must be a real date
-whenHealthIssueHappened.error.notInFuture = The date you became unable to manage VAT must be today or in the past
-agent.whenHealthIssueHappened.error.notInFuture = The date your client became unable to manage the VAT account must be today or in the past
+agent.health.whenHealthIssueHappened.headingAndTitle.clientMissedDeadline = When did the health issue first stop your client getting information to you?
+agent.health.whenHealthIssueHappened.error.required.all.clientMissedDeadline = Tell us the date the health issue first stopped your client getting information to you
+agent.health.whenHealthIssueHappened.error.notInFuture.clientMissedDeadline = The date the health issue first stopped your client getting information to you must be today or in the past
+agent.health.whenHealthIssueHappened.error.required.clientMissedDeadline = The date the health issue first stopped your client getting information to you must include a {0}
+agent.health.whenHealthIssueHappened.error.required.two.clientMissedDeadline = The date the health issue first stopped your client getting information to you must include a {0} and a {1}
+agent.health.whenHealthIssueHappened.error.invalid.clientMissedDeadline = The date the health issue first stopped your client getting information to you must be a real date
+
+agent.health.whenHealthIssueHappened.headingAndTitle.clientIntendedToSubmit = When did the health issue first stop your client submitting the VAT Return?
+agent.health.whenHealthIssueHappened.error.required.all.clientIntendedToSubmit = Tell us the date the health issue first stopped your client submitting the VAT Return
+agent.health.whenHealthIssueHappened.error.notInFuture.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must be today or in the past
+agent.health.whenHealthIssueHappened.error.required.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must include a {0}
+agent.health.whenHealthIssueHappened.error.required.two.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must include a {0} and a {1}
+agent.health.whenHealthIssueHappened.error.invalid.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must be a real date
+
+health.whenHealthIssueHappened.headingAndTitle.lpp = When did the health issue first stop you paying the VAT bill?
+health.whenHealthIssueHappened.error.required.all.lpp = Tell us when the health issue first stopped you paying the VAT bill
+health.whenHealthIssueHappened.error.notInFuture.lpp = The date the health issue first stopped you paying the VAT bill must be today or in the past
+health.whenHealthIssueHappened.error.required.lpp = The date the health issue first stopped you paying the VAT bill must include a {0}
+health.whenHealthIssueHappened.error.required.two.lpp = The date the health issue first stopped you paying the VAT bill must include a {0} and a {1}
+health.whenHealthIssueHappened.error.invalid.lpp = The date the health issue first stopped you paying the VAT bill must be a real date
+
+agent.health.whenHealthIssueHappened.headingAndTitle.lpp = When did the health issue first stop your client paying the VAT bill?
+agent.health.whenHealthIssueHappened.error.required.all.lpp = Tell us the date the health issue first stopped your client paying the VAT bill
+agent.health.whenHealthIssueHappened.error.notInFuture.lpp = The date the health issue first stopped your client paying the VAT bill must be today or in the past
+agent.health.whenHealthIssueHappened.error.required.lpp = The date the health issue first stopped your client paying the VAT bill must include a {0}
+agent.health.whenHealthIssueHappened.error.required.two.lpp = The date the health issue first stopped your client paying the VAT bill must include a {0} and a {1}
+agent.health.whenHealthIssueHappened.error.invalid.lpp = The date the health issue first stopped your client paying the VAT bill must be a real date
 
 # When did the hospital stay begin page
 # ----------------------------------------------------------

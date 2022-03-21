@@ -15,7 +15,7 @@
  *@
 
 @import config.AppConfig
-@import utils.SessionKeys
+@import helpers.WhenDidYouBecomeUnableHelper.getMessageKeyForPage
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
@@ -24,14 +24,8 @@
 
 @(form: Form[_], postAction: Call, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
-@appealType = @{userRequest.session.get(SessionKeys.appealType)}
-@lppOrLspDynamicText = @{
-    if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
-        "healthReason.whenHealthIssueHappened.lpp.hintText"
-    } else "healthReason.whenHealthIssueHappened.hintText"
-}
 
-@layout(pageTitle = getMessage("healthReason.whenHealthIssueHappened.headingAndTitle"),
+@layout(pageTitle = messages(getMessageKeyForPage("health.whenHealthIssueHappened.headingAndTitle")),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
@@ -40,9 +34,9 @@
 
         @dateInput(
             form = form,
-            legendContent = getMessage("healthReason.whenHealthIssueHappened.headingAndTitle"),
+            legendContent = getMessageKeyForPage("health.whenHealthIssueHappened.headingAndTitle"),
             legendClasses = Some("govuk-fieldset__legend govuk-fieldset__legend--l"),
-            hintText = Some(getMessage(lppOrLspDynamicText) + messages("whenDidEventHappen.hint")),
+            hintText = Some(messages("whenDidEventHappen.hint")),
             legendAsPageHeading = true
         )
 
