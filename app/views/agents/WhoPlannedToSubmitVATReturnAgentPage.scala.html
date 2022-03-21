@@ -19,12 +19,13 @@
         govukButton: GovukButton,
         radios: components.radios)
 
-@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("agents.whoPlannedToSubmitVATReturn.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors){
+    formErrors = form.errors,
+    optPageMode = Some(pageMode)){
     @formHelper(action = postAction) {
         @radios(
             form = form,

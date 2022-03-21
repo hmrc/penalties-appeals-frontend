@@ -39,13 +39,17 @@
     backLinkEnabled: Boolean = true,
     customJavaScript: Option[String] = None,
     showSignOut: Boolean = true,
+    optPageMode: Option[PageMode] = None,
     formErrors: Seq[FormError] = Seq.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
     @phaseBanner("beta")
     @if(appConfig.welshLanguageSupportEnabled) {@languageSelect()}
 
-    @if(backLinkEnabled) {@govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))}
+    @if(backLinkEnabled) {
+        @govukBackLink(BackLink(href = controllers.routes.PreviousPageController.previousPage(optPageMode.get.page.toString, optPageMode.get.mode).url,
+            content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
+    }
 }
 
 @headBlock = {

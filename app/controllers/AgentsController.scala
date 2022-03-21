@@ -18,10 +18,10 @@ package controllers
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.{WhoPlannedToSubmitVATReturnAgentForm, WhatCausedYouToMissTheDeadlineForm}
+import forms.{WhatCausedYouToMissTheDeadlineForm, WhoPlannedToSubmitVATReturnAgentForm}
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.{ReasonableExcuseSelectionPage, WhoPlannedToSubmitVATReturnAgentPage}
+import models.pages.{Page, PageMode, WhatCausedYouToMissTheDeadlinePage, WhoPlannedToSubmitVATReturnAgentPage}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -30,26 +30,30 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.agents.{WhoPlannedToSubmitVATReturnAgentPage, WhatCausedYouToMissTheDeadlinePage}
+import views.html.agents.{WhatCausedYouToMissTheDeadlinePage, WhoPlannedToSubmitVATReturnAgentPage}
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
 
 class AgentsController @Inject()(navigation: Navigation,
-                                          whatCausedYouToMissTheDeadlinePage: WhatCausedYouToMissTheDeadlinePage,
-                                          whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnAgentPage,
-                                          errorHandler: ErrorHandler)
-                                         (implicit mcc: MessagesControllerComponents,
-                                          appConfig: AppConfig,
-                                          authorise: AuthPredicate,
-                                          dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
-def onPageLoadForWhatCausedYouToMissTheDeadline(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+                                 whatCausedYouToMissTheDeadlinePage: WhatCausedYouToMissTheDeadlinePage,
+                                 whoPlannedToSubmitVATReturnPage: WhoPlannedToSubmitVATReturnAgentPage,
+                                 errorHandler: ErrorHandler)
+                                (implicit mcc: MessagesControllerComponents,
+                                 appConfig: AppConfig,
+                                 authorise: AuthPredicate,
+                                 dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+
+  val pageMode: (Page, Mode) => PageMode = (page: Page, mode: Mode) => PageMode(page, mode)
+
+  def onPageLoadForWhatCausedYouToMissTheDeadline(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit userRequest => {
       logger.debug("[AgentsController][onPageLoadForWhatCausedYouToMissTheDeadline] - Loaded 'what caused you to miss the deadline' page as user is agent")
       val postAction = controllers.routes.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(mode)
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm,
         SessionKeys.whatCausedYouToMissTheDeadline)
-      Ok(whatCausedYouToMissTheDeadlinePage(formProvider, RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(formProvider), postAction))
+      Ok(whatCausedYouToMissTheDeadlinePage(formProvider,
+        RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(formProvider), postAction, pageMode(WhatCausedYouToMissTheDeadlinePage, mode)))
     }
   }
 
@@ -58,10 +62,10 @@ def onPageLoadForWhatCausedYouToMissTheDeadline(mode: Mode): Action[AnyContent] 
       val postAction = controllers.routes.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(mode)
       WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm.bindFromRequest().fold(
         formWithErrors => {
-          BadRequest(whatCausedYouToMissTheDeadlinePage(formWithErrors, RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(formWithErrors), postAction))
+          BadRequest(whatCausedYouToMissTheDeadlinePage(formWithErrors, RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(formWithErrors), postAction, pageMode(WhatCausedYouToMissTheDeadlinePage, mode)))
         },
         causeOfLateSubmission => {
-          Redirect(navigation.nextPage(ReasonableExcuseSelectionPage,mode))
+          Redirect(navigation.nextPage(WhatCausedYouToMissTheDeadlinePage, mode))
             .addingToSession(SessionKeys.whatCausedYouToMissTheDeadline -> causeOfLateSubmission)
         }
       )
@@ -77,7 +81,7 @@ def onPageLoadForWhatCausedYouToMissTheDeadline(mode: Mode): Action[AnyContent] 
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider)
       val postAction = controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
-      Ok(whoPlannedToSubmitVATReturnPage(formProvider, radioOptionsToRender, postAction))
+      Ok(whoPlannedToSubmitVATReturnPage(formProvider, radioOptionsToRender, postAction, pageMode(WhoPlannedToSubmitVATReturnAgentPage, mode)))
     }
   }
 
@@ -87,16 +91,16 @@ def onPageLoadForWhatCausedYouToMissTheDeadline(mode: Mode): Action[AnyContent] 
         formWithErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formWithErrors)
           val postAction = controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode)
-          BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction))
+          BadRequest(whoPlannedToSubmitVATReturnPage(formWithErrors, radioOptionsToRender, postAction, pageMode(WhoPlannedToSubmitVATReturnAgentPage, mode)))
         },
-        vatReturnSubmittedBy => {
-          vatReturnSubmittedBy.toLowerCase match {
+        whoPlannedToSubmitReturn => {
+          whoPlannedToSubmitReturn.toLowerCase match {
             case "agent" =>
-              Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(vatReturnSubmittedBy)))
-                .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+              Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(whoPlannedToSubmitReturn)))
+                .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, whoPlannedToSubmitReturn))
             case "client" =>
-              Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(vatReturnSubmittedBy)))
-                .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, vatReturnSubmittedBy))
+              Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(whoPlannedToSubmitReturn)))
+                .addingToSession((SessionKeys.whoPlannedToSubmitVATReturn, whoPlannedToSubmitReturn))
             case _ =>
               logger.debug("[AgentsController][onSubmitForWhoPlannedToSubmitVATReturn]- Something went wrong with 'vatReturnSubmittedBy'")
               errorHandler.showInternalServerError

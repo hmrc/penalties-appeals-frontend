@@ -18,7 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.AppealStartMessages._
-import models.PenaltyTypeEnum
+import models.{NormalMode, PenaltyTypeEnum}
+import models.pages.{AppealStartPage, PageMode}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import utils.SessionKeys
@@ -31,7 +32,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
 
     s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -56,7 +57,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     s"it has been more than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -82,7 +83,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal is for a LPP" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false)(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
@@ -108,7 +109,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)
     }
     "the appeal is against an obligation" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true, pageMode = PageMode(AppealStartPage, NormalMode))
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -131,7 +132,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal is triggered by an agent and is not a LPP - redirect to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
           SessionKeys.agentSessionVrn -> "VRN1234"), implicitly, implicitly)
 
@@ -141,7 +142,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal is an obligation appeal - redirect to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true, pageMode = PageMode(AppealStartPage, NormalMode))
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -149,7 +150,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal does not match the special cases - redirect to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false)(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString), implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
@@ -158,7 +159,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "have a link to GOV.UK for GOV.UK logo" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))
 
       implicit val doc: Document = asDocument(applyView())
       doc.select(".govuk-header__logo > a").attr("href") shouldBe "https://www.gov.uk/"

@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHospitalStayBeginForm
 import messages.WhenDidHospitalStayBeginMessages._
 import models.NormalMode
+import models.pages.{PageMode, WhenDidHospitalStayBeginPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -33,7 +34,7 @@ class WhenDidHospitalStayBeginPageSpec extends SpecBase with ViewBehaviours{
 
   object Selectors extends BaseSelectors
   def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidHospitalStayBeginPage.apply(form,
-    controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(NormalMode))
+    controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(NormalMode), pageMode = PageMode(WhenDidHospitalStayBeginPage, NormalMode))
 
   val formProvider: Form[LocalDate] = WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm()
 

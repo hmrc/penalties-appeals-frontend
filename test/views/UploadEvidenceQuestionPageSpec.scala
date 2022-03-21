@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadEvidenceQuestionForm
 import messages.UploadEvidenceQuestionMessages._
 import models.NormalMode
+import models.pages.{PageMode, UploadEvidenceQuestionPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -34,7 +35,8 @@ class UploadEvidenceQuestionPageSpec extends SpecBase with ViewBehaviours {
     val formProvider = UploadEvidenceQuestionForm.uploadEvidenceQuestionForm
     val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
     def applyView(form: Form[_]): HtmlFormat.Appendable = uploadEvidenceQuestionPage.apply(
-      form, radioOptions, controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(NormalMode))
+      form, radioOptions, controllers.routes.OtherReasonController.onSubmitForUploadEvidenceQuestion(NormalMode),
+      pageMode = PageMode(UploadEvidenceQuestionPage, NormalMode))
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

@@ -20,7 +20,8 @@ lazy val microservice = Project(appName, file("."))
       "models.Mode",
       "views.html.layouts.Layout",
       "controllers.routes._",
-      "utils.MessageRenderer._"
+      "utils.MessageRenderer._",
+      "models.pages._"
     ),
     RoutesKeys.routesImport ++= Seq("models._", "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl"),
     // ***************

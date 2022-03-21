@@ -20,7 +20,8 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.ReasonableExcuseForm
 import helpers.FormProviderHelper
-import models.ReasonableExcuse
+import models.pages.{PageMode, ReasonableExcuseSelectionPage}
+import models.{Mode, NormalMode, ReasonableExcuse}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -44,6 +45,8 @@ class ReasonableExcuseController @Inject()(
                                            authorise: AuthPredicate,
                                            dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(ReasonableExcuseSelectionPage, mode)
+
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       attemptToRetrieveReasonableExcuseList().map(_.fold(
@@ -54,7 +57,7 @@ class ReasonableExcuseController @Inject()(
             SessionKeys.reasonableExcuse
           )
           Ok(reasonableExcuseSelectionPage(formProvider,
-            ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses)))
+            ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses), pageMode(NormalMode)))
         }
       ))
     }
@@ -70,7 +73,7 @@ class ReasonableExcuseController @Inject()(
             formWithErrors => {
               logger.debug(s"[ReasonableExcuseController][onSubmit] form errors ${formWithErrors.errors.head.message}")
               BadRequest(reasonableExcuseSelectionPage(formWithErrors,
-                ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses)))
+                ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses), pageMode(NormalMode)))
             },
             selection => {
               logger.debug(s"[ReasonableExcuseController][onSubmit] User selected $selection option - adding '$selection' to session.")

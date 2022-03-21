@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.WhatCausedYouToMissTheDeadlineForm
 import messages.WhatCausedYouToMissTheDeadlineMessages._
 import models.NormalMode
+import models.pages.{PageMode, WhatCausedYouToMissTheDeadlinePage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -37,7 +38,7 @@ class WhatCausedYouToMissTheDeadlinePageSpec extends SpecBase with ViewBehaviour
     def applyView(form: Form[_]): HtmlFormat.Appendable = {
       whatCausedYouToMissTheDeadlinePage.apply(form,
         RadioOptionHelper.radioOptionsForWhatCausedAgentToMissDeadline(formProvider),
-          controllers.routes.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)
+          controllers.routes.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode), pageMode = PageMode(WhatCausedYouToMissTheDeadlinePage, NormalMode)
       )
     }
 

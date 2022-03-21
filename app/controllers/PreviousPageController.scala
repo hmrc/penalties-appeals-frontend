@@ -16,22 +16,24 @@
 
 package controllers
 
-import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import models.NormalMode
-import models.pages.{PageMode, YouCannotAppealPage}
+import models.Mode
+import models.pages.Page
+import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.YouCannotAppealPage
 
 import javax.inject.Inject
 
-class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage)(implicit mcc: MessagesControllerComponents,
-                                                                                    appConfig: AppConfig,
-                                                                                    authorise: AuthPredicate,
-                                                                                    dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
-    implicit request => Ok(youCannotAppealPage(PageMode(YouCannotAppealPage, NormalMode)))
+class PreviousPageController @Inject()(navigation: Navigation)
+                                      (implicit mcc: MessagesControllerComponents,
+                                       authorise: AuthPredicate,
+                                       dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+  def previousPage(pageName: String, mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit request => {
+      val page = Page.find(pageName)
+      Redirect(navigation.previousPage(page, mode))
+    }
   }
 }

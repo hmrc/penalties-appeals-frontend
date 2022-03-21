@@ -44,6 +44,8 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
                                       appConfig: AppConfig,
                                       mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: (Page, Mode) => PageMode = (page: Page, mode: Mode) => PageMode(page, mode)
+
   def onPageLoadForWhenCrimeHappened(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val formProvider: Form[LocalDate] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
@@ -51,7 +53,7 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
         SessionKeys.dateOfCrime
       )
       val postAction = controllers.routes.CrimeReasonController.onSubmitForWhenCrimeHappened(mode)
-      Ok(whenDidCrimeHappenPage(formProvider, postAction))
+      Ok(whenDidCrimeHappenPage(formProvider, postAction, pageMode(WhenDidCrimeHappenPage, mode)))
     }
   }
 
@@ -60,7 +62,7 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
       val postAction = controllers.routes.CrimeReasonController.onSubmitForWhenCrimeHappened(mode)
       WhenDidCrimeHappenForm.whenCrimeHappenedForm.bindFromRequest().fold(
         formWithErrors => {
-          BadRequest(whenDidCrimeHappenPage(formWithErrors, postAction))
+          BadRequest(whenDidCrimeHappenPage(formWithErrors, postAction, pageMode(WhenDidCrimeHappenPage, mode)))
         },
         dateOfCrime => {
           logger.debug(s"[CrimeReasonController][onSubmitForWhenCrimeHappened] - Adding '$dateOfCrime' to session under key: ${SessionKeys.dateOfCrime}")
@@ -79,7 +81,7 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
       )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(formProvider)
       val postAction = controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(mode)
-      Ok(hasCrimeBeenReportedPage(formProvider, radioOptionsToRender, postAction))
+      Ok(hasCrimeBeenReportedPage(formProvider, radioOptionsToRender, postAction, pageMode(HasCrimeBeenReportedPage, mode)))
     }
   }
 
@@ -89,7 +91,7 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
         formHasErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(formHasErrors)
           val postAction = controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(mode)
-          BadRequest(hasCrimeBeenReportedPage(formHasErrors, radioOptionsToRender, postAction))
+          BadRequest(hasCrimeBeenReportedPage(formHasErrors, radioOptionsToRender, postAction, pageMode(HasCrimeBeenReportedPage, mode)))
         },
         reportedAnswer => {
           logger.debug(

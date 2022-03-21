@@ -27,7 +27,8 @@
 @(postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle"),
-    isPageFullWidth = false) {
+    isPageFullWidth = false,
+    backLinkEnabled = false) {
     <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle")</h1>
 
     @formHelper(action = postAction) {

@@ -19,7 +19,8 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.ReasonableExcuseForm
 import messages.ReasonableExcuseSelectionMessages._
-import models.{PenaltyTypeEnum, ReasonableExcuse, UserRequest}
+import models.pages.{PageMode, ReasonableExcuseSelectionPage}
+import models.{NormalMode, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -34,7 +35,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
 
     def applyView(form: Form[_], seqOfRadioOptions: Seq[RadioItem], request: UserRequest[_]): HtmlFormat.Appendable =
-      reasonableExcuseSelectionPage.apply(form, seqOfRadioOptions)(request, implicitly, implicitly)
+      reasonableExcuseSelectionPage.apply(form, seqOfRadioOptions, pageMode = PageMode(ReasonableExcuseSelectionPage, NormalMode))(request, implicitly, implicitly)
 
     val seqOfReasonableExcuses: Seq[ReasonableExcuse] = Seq(
       ReasonableExcuse(

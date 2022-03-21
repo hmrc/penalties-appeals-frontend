@@ -22,14 +22,15 @@
         govukButton: GovukButton,
         formHelper: FormWithCSRF)
 
-@(form: Form[_], reasonableExcuse: String, reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
+@(form: Form[_], reasonableExcuse: String, reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @appealType = @{userRequest.session.get(SessionKeys.appealType)}
 
 @layout(pageTitle = messages("honestyDeclaration.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors) {
+    formErrors = form.errors,
+    optPageMode = Some(pageMode)) {
 
     <h1 class="govuk-heading-l">@messages("honestyDeclaration.headingAndTitle")</h1>
     <p class="govuk-body">@messages("honestyDeclaration.p1")</p>

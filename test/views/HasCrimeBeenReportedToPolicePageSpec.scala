@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.HasCrimeBeenReportedForm
 import messages.HasCrimeBeenReportedToPoliceMessages._
 import models.NormalMode
+import models.pages.{HasCrimeBeenReportedPage, PageMode}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -34,7 +35,8 @@ class HasCrimeBeenReportedToPolicePageSpec extends SpecBase with ViewBehaviours 
     val formProvider = HasCrimeBeenReportedForm.hasCrimeBeenReportedForm
     val radioOptions = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(formProvider)
     def applyView(form: Form[_]): HtmlFormat.Appendable = hasCrimeBeenReportedPage.apply(
-      form, radioOptions, controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(NormalMode))
+      form, radioOptions, controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(NormalMode),
+      pageMode = PageMode(HasCrimeBeenReportedPage, NormalMode))
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

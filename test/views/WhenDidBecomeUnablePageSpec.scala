@@ -19,6 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidBecomeUnableForm
 import messages.WhenDidBecomeUnableMessages._
+import models.pages.{PageMode, WhenDidBecomeUnablePage}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -32,13 +33,13 @@ class WhenDidBecomeUnablePageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
 
     def applyVATTraderView(form: Form[_], userRequest: UserRequest[_] = vatTraderLSPUserRequest): HtmlFormat.Appendable = whenDidBecomeUnablePage.apply(form,
-      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode))(implicitly, implicitly, userRequest)
+      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode), pageMode = PageMode(WhenDidBecomeUnablePage, NormalMode))(implicitly, implicitly, userRequest)
 
     val vatTraderFormProvider = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, vatTraderLSPUserRequest)
 
 
     def applyAgentView(form: Form[_], userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = whenDidBecomeUnablePage.apply(form,
-      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode))(messages, appConfig, userRequest)
+      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode), pageMode = PageMode(WhenDidBecomeUnablePage, NormalMode))(messages, appConfig, userRequest)
 
     val agentFormProvider = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, agentUserAgentSubmitButClientWasLateSessionKeys)
 

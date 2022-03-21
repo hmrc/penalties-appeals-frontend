@@ -21,6 +21,7 @@ import forms.HasHospitalStayEndedForm
 import messages.HasTheHospitalStayEndedMessages._
 import models.NormalMode
 import models.appeals.HospitalStayEndInput
+import models.pages.{DidHospitalStayEndPage, PageMode}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -48,7 +49,8 @@ class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
     val formProvider: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
     val radioOptions = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded")
     def applyView(form: Form[_]): HtmlFormat.Appendable = {
-      hasTheHospitalStayEndedPage.apply(form, radioOptions, controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(NormalMode))
+      hasTheHospitalStayEndedPage.apply(form, radioOptions, controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(NormalMode),
+        pageMode = PageMode(DidHospitalStayEndPage, NormalMode))
     }
 
     implicit val doc: Document = asDocument(applyView(formProvider))

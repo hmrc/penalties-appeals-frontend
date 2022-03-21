@@ -21,7 +21,7 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.OtherRelevantInformationForm
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.OtherRelevantInformationPage
+import models.pages.{OtherRelevantInformationPage, PageMode}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -38,6 +38,9 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
                                                   dataRequired: DataRequiredAction,
                                                   appConfig: AppConfig,
                                                   mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
+
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(OtherRelevantInformationPage, mode)
+
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
@@ -45,7 +48,7 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
         SessionKeys.otherRelevantInformation
       )
       val postAction = controllers.routes.AppealAgainstObligationController.onSubmit(mode)
-      Ok(otherRelevantInformationPage(formProvider, postAction))
+      Ok(otherRelevantInformationPage(formProvider, postAction, pageMode(mode)))
     }
   }
 
@@ -54,7 +57,7 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
       OtherRelevantInformationForm.otherRelevantInformationForm.bindFromRequest.fold(
         formWithErrors => {
           val postAction = controllers.routes.AppealAgainstObligationController.onSubmit(mode)
-          BadRequest(otherRelevantInformationPage(formWithErrors, postAction))
+          BadRequest(otherRelevantInformationPage(formWithErrors, postAction, pageMode(mode)))
         },
         otherInformationForAppealAgainstObligation => {
           Redirect(navigation.nextPage(OtherRelevantInformationPage, mode))

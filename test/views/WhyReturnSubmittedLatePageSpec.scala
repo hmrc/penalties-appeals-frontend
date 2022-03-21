@@ -19,6 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhyReturnSubmittedLateForm
 import messages.WhyReturnSubmittedLateMessages._
+import models.pages.{PageMode, YouCanAppealThisPenaltyPage}
 import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -34,7 +35,8 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
 
     def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whyReturnSubmittedLate.apply(form,
-      controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(NormalMode))(request, implicitly, implicitly)
+      controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(NormalMode),
+      pageMode = PageMode(YouCanAppealThisPenaltyPage, NormalMode))(request, implicitly, implicitly)
 
     val formProvider = WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm()(appConfig, userRequestWithCorrectKeys)
 

@@ -49,6 +49,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
                                        appConfig: AppConfig,
                                        mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: (Page, Mode) => PageMode = (page: Page, mode: Mode) => PageMode(page, mode)
 
   def onPageLoadForWasHospitalStayRequired(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
@@ -57,7 +58,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
     )
     val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
     val postAction = controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(mode)
-    Ok(wasHospitalStayRequiredPage(formProvider, radioOptionsToRender, postAction))
+    Ok(wasHospitalStayRequiredPage(formProvider, radioOptionsToRender, postAction, pageMode(WasHospitalStayRequiredPage, mode)))
   }
 
   def onSubmitForWasHospitalStayRequired(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
@@ -65,7 +66,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
       formWithErrors => {
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
         val postAction = controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(mode)
-        BadRequest(wasHospitalStayRequiredPage(formWithErrors, radioOptionsToRender, postAction))
+        BadRequest(wasHospitalStayRequiredPage(formWithErrors, radioOptionsToRender, postAction, pageMode(WasHospitalStayRequiredPage, mode)))
       },
       wasStayRequiredAnswer => {
         Redirect(navigation.nextPage(WasHospitalStayRequiredPage, mode, Some(wasStayRequiredAnswer)))
@@ -80,14 +81,14 @@ class HealthReasonController @Inject()(navigation: Navigation,
       SessionKeys.whenHealthIssueHappened
     )
     val postAction = controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode)
-    Ok(whenDidHealthReasonHappenPage(formProvider, postAction))
+    Ok(whenDidHealthReasonHappenPage(formProvider, postAction, pageMode(WhenDidHealthIssueHappenPage, mode)))
   }
 
   def onSubmitForWhenHealthReasonHappened(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm.bindFromRequest().fold(
       formWithErrors => {
         val postAction = controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode)
-        BadRequest(whenDidHealthReasonHappenPage(formWithErrors, postAction))
+        BadRequest(whenDidHealthReasonHappenPage(formWithErrors, postAction, pageMode(WhenDidHealthIssueHappenPage, mode)))
       },
       whenHealthIssueHappened => {
         Redirect(navigation.nextPage(WhenDidHealthIssueHappenPage, mode))
@@ -103,7 +104,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
       SessionKeys.whenHealthIssueStarted
     )
     val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode)
-    Ok(whenDidHospitalStayBeginPage(formProvider, postAction))
+    Ok(whenDidHospitalStayBeginPage(formProvider, postAction, pageMode(WhenDidHospitalStayBeginPage, mode)))
   }
 
   def onSubmitForWhenDidHospitalStayBegin(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
@@ -111,7 +112,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
       WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm.bindFromRequest().fold(
         formWithErrors => {
           val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode)
-          BadRequest(whenDidHospitalStayBeginPage(formWithErrors, postAction))
+          BadRequest(whenDidHospitalStayBeginPage(formWithErrors, postAction, pageMode(WhenDidHospitalStayBeginPage, mode)))
         },
         whenHospitalStayBegin => {
           Redirect(navigation.nextPage(WhenDidHospitalStayBeginPage, mode))
@@ -133,7 +134,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
         )
         val radioOptionsToRender = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded")
         val postAction = controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(mode)
-        Ok(hasTheHospitalStayEnded(formProvider, radioOptionsToRender, postAction))
+        Ok(hasTheHospitalStayEnded(formProvider, radioOptionsToRender, postAction, pageMode(DidHospitalStayEndPage, mode)))
       }
     )
   }
@@ -148,7 +149,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
           formWithErrors => {
             val radioOptionsToRender = conditionalRadioHelper.conditionalYesNoOptions(formWithErrors, "healthReason.hasTheHospitalStayEnded")
             val postAction = controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(mode)
-            BadRequest(hasTheHospitalStayEnded(formWithErrors, radioOptionsToRender, postAction))
+            BadRequest(hasTheHospitalStayEnded(formWithErrors, radioOptionsToRender, postAction, pageMode(DidHospitalStayEndPage, mode)))
           },
           formAnswers => {
             (formAnswers.hasStayEnded, formAnswers.stayEndDate) match {

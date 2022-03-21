@@ -24,14 +24,16 @@
         radios: components.radios,
         govukSummaryList : GovukSummaryList)
 
-@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, uploadRows: Seq[Html], optInsetText: Option[Html])(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, uploadRows: Seq[Html], optInsetText: Option[Html],
+        pageMode: PageMode)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @pageHeadingAndTitle = @{getPluralOrSingular(uploadRows.length)("otherReason.uploadList.youHaveUploadedFile.headingAndTitle", "otherReason.uploadList.youHaveUploadedFiles.headingAndTitle").toString()}
 
 @layout(pageTitle = messages(pageHeadingAndTitle),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors) {
+    formErrors = form.errors,
+    optPageMode = Some(pageMode)) {
         <h1 class="govuk-heading-l">@messages(pageHeadingAndTitle)</h1>
 
         @if(optInsetText.isDefined){

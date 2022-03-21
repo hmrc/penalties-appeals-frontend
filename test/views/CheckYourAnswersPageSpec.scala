@@ -18,6 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.CheckYourAnswersMessages._
+import models.NormalMode
+import models.pages.{CheckYourAnswersPage, PageMode}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
@@ -46,7 +48,8 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
         ("Key", "Value", "href#"),
         ("Key 2", "Value 2", "href2#"),
         ("Key 3", "Value 3", "href2#")
-      )
+      ),
+      pageMode = PageMode(CheckYourAnswersPage, NormalMode)
     )
 
     implicit val doc: Document = asDocument(applyView())

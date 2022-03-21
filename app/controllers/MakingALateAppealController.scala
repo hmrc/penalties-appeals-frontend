@@ -20,6 +20,8 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.MakingALateAppealForm
 import helpers.FormProviderHelper
+import models.{Mode, NormalMode}
+import models.pages.{MakingALateAppealPage, PageMode}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -34,18 +36,20 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
                                             authorise: AuthPredicate,
                                             dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(MakingALateAppealPage, mode)
+
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         MakingALateAppealForm.makingALateAppealForm(), SessionKeys.lateAppealReason)
-      Ok(makingALateAppealPage(formProvider))
+      Ok(makingALateAppealPage(formProvider, pageMode(NormalMode)))
     }
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       MakingALateAppealForm.makingALateAppealForm().bindFromRequest().fold(
-        formWithErrors => BadRequest(makingALateAppealPage(formWithErrors)),
+        formWithErrors => BadRequest(makingALateAppealPage(formWithErrors, pageMode(NormalMode))),
         lateAppealReason => {
           Redirect(routes.CheckYourAnswersController.onPageLoad())
             .addingToSession(SessionKeys.lateAppealReason -> lateAppealReason)

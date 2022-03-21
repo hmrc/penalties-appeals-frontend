@@ -25,14 +25,15 @@
         link: components.link
 )
 
-@(form: Form[_], radioOptions: Seq[RadioItem])(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem], pageMode: PageMode)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = if(request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)){
         messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")
     },
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors) {
+    formErrors = form.errors,
+    optPageMode = Some(pageMode)) {
     @formHelper(action = controllers.routes.ReasonableExcuseController.onSubmit()) {
 
         @radios(

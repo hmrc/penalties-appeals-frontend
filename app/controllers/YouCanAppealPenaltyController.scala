@@ -20,8 +20,8 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.YouCanAppealPenaltyForm.youCanAppealPenaltyForm
 import helpers.FormProviderHelper
-import models.NormalMode
-import models.pages.YouCanAppealThisPenaltyPage
+import models.{Mode, NormalMode}
+import models.pages.{PageMode, YouCanAppealThisPenaltyPage}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -42,6 +42,8 @@ class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
                                                authorise: AuthPredicate,
                                                dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(YouCanAppealThisPenaltyPage, mode)
+
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         youCanAppealPenaltyForm,
@@ -49,7 +51,7 @@ class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
     )
     val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
     val postAction = controllers.routes.YouCanAppealPenaltyController.onSubmit()
-    Ok(page(formProvider, radioOptionsToRender, postAction))
+    Ok(page(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
@@ -58,7 +60,7 @@ class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
         logger.debug(s"[YouCanAppealPenaltyController][onSubmit] - Form errors: ${formWithErrors.errors}")
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
         val postAction = controllers.routes.YouCanAppealPenaltyController.onSubmit()
-        BadRequest(page(formWithErrors, radioOptionsToRender, postAction))
+        BadRequest(page(formWithErrors, radioOptionsToRender, postAction, pageMode(NormalMode)))
       },
       answer => {
         Redirect(navigation.nextPage(YouCanAppealThisPenaltyPage, NormalMode, Some(answer))).addingToSession(SessionKeys.youCanAppealThisPenalty -> answer)

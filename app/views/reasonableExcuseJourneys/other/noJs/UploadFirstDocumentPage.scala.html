@@ -32,7 +32,8 @@
 @(
     upscanResponse: UpscanInitiateResponseModel,
     form: Form[_],
-    nextPageIfNoUpload: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+    nextPageIfNoUpload: String,
+    pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.session.get(SessionKeys.appealType)}
 @detailsContent = {
@@ -62,7 +63,8 @@
 @layout(pageTitle = messages("otherReason.uploadEvidence.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors) {
+    formErrors = form.errors,
+    optPageMode = Some(pageMode)) {
     <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.headingAndTitle")</h1>
     <p class="govuk-body">@messages("otherReason.uploadEvidence.noJs.p1")</p>
     <p class="govuk-body">@messages(lppOrLspOrObligationDynamicText)</p>

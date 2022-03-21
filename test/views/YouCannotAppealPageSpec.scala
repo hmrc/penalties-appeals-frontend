@@ -18,7 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.YouCannotAppealMessages._
-import models.UserRequest
+import models.{NormalMode, UserRequest}
+import models.pages.{PageMode, YouCannotAppealPage}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
@@ -37,7 +38,7 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
     }
 
     def applyView(userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = {
-      youCannotAppealPage.apply()(userRequest, messages, appConfig)
+      youCannotAppealPage.apply(PageMode(YouCannotAppealPage, NormalMode))(userRequest, messages, appConfig)
     }
 
     "when agent is on the page with LPP Appeal" must {

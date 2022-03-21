@@ -18,7 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.UploadEvidenceMessages._
-import models.PenaltyTypeEnum
+import models.pages.{EvidencePage, PageMode}
+import models.{NormalMode, PenaltyTypeEnum}
 import models.upload.UploadJourney
 import org.jsoup.nodes.Document
 import play.api.libs.json.Json
@@ -80,7 +81,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         controllers.routes.UpscanController.removeFile("1234", _),
         previousUploadsToString(previousUploads),
         controllers.routes.UpscanController.getDuplicateFiles("1234"),
-        controllers.routes.ProblemWithServiceController.onPageLoad())(request, implicitly, implicitly)
+        controllers.routes.ProblemWithServiceController.onPageLoad(),
+        pageMode = PageMode(EvidencePage, NormalMode))(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView())

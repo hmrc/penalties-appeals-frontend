@@ -18,6 +18,8 @@ package controllers
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import models.NormalMode
+import models.pages.{AppealStartPage, PageMode}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -45,7 +47,8 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
       val isObligationAppeal = request.session.get(SessionKeys.isObligationAppeal).isDefined
       Future.successful(Ok(appealStartPage(
         dateCommunicationSentParsed.isBefore(LocalDateTime.now().minusDays(appConfig.daysRequiredForLateAppeal)),
-        isObligationAppeal
+        isObligationAppeal,
+        PageMode(AppealStartPage, NormalMode)
       )))
     }
   }

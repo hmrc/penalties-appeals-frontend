@@ -21,7 +21,7 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidPersonLeaveTheBusinessForm
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.WhenDidPersonLeaveTheBusinessPage
+import models.pages.{PageMode, WhenDidPersonLeaveTheBusinessPage}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,6 +38,8 @@ class LossOfStaffReasonController @Inject()(whenDidThePersonLeaveBusinessPage: W
                                             appConfig: AppConfig,
                                             mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(WhenDidPersonLeaveTheBusinessPage, mode)
+
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit userRequest => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
@@ -45,7 +47,7 @@ class LossOfStaffReasonController @Inject()(whenDidThePersonLeaveBusinessPage: W
         SessionKeys.whenPersonLeftTheBusiness
       )
       val postAction = controllers.routes.LossOfStaffReasonController.onSubmit(mode)
-      Ok(whenDidThePersonLeaveBusinessPage(formProvider, postAction))
+      Ok(whenDidThePersonLeaveBusinessPage(formProvider, postAction, pageMode(mode)))
     }
   }
 
@@ -53,7 +55,7 @@ class LossOfStaffReasonController @Inject()(whenDidThePersonLeaveBusinessPage: W
     implicit userRequest => {
       val postAction = controllers.routes.LossOfStaffReasonController.onSubmit(mode)
       WhenDidPersonLeaveTheBusinessForm.whenDidPersonLeaveTheBusinessForm().bindFromRequest().fold(
-        formWithErrors => BadRequest(whenDidThePersonLeaveBusinessPage(formWithErrors, postAction)),
+        formWithErrors => BadRequest(whenDidThePersonLeaveBusinessPage(formWithErrors, postAction, pageMode(mode))),
         whenPersonLeft => {
           Redirect(navigation.nextPage(WhenDidPersonLeaveTheBusinessPage, mode, None))
             .addingToSession(SessionKeys.whenPersonLeftTheBusiness -> whenPersonLeft.toString)
