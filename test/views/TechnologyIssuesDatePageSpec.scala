@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.{WhenDidTechnologyIssuesBeginForm, WhenDidTechnologyIssuesEndForm}
 import messages.{WhenDidTechnologyIssuesBeginMessages, WhenDidTechnologyIssuesEndMessages}
 import models.NormalMode
+import models.pages.{PageMode, WhenDidTechnologyIssuesBeginPage, WhenDidTechnologyIssuesEndPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -35,7 +36,7 @@ class TechnologyIssuesDatePageSpec extends SpecBase with ViewBehaviours {
       object Selectors extends BaseSelectors
 
       def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidTechnologyIssuesBeginPage.apply(form,
-        controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(NormalMode), "technicalIssues.begin")
+        controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(NormalMode), "technicalIssues.begin", pageMode = PageMode(WhenDidTechnologyIssuesBeginPage, NormalMode))
 
       val formProvider = WhenDidTechnologyIssuesBeginForm.whenDidTechnologyIssuesBeginForm()
 
@@ -60,7 +61,7 @@ class TechnologyIssuesDatePageSpec extends SpecBase with ViewBehaviours {
       val sampleStartDateForFormValidation: LocalDate = LocalDate.of(2021, 12, 31)
 
       def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidTechnologyIssuesBeginPage.apply(form,
-        controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(NormalMode), "technicalIssues.end")
+        controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(NormalMode), "technicalIssues.end", pageMode = PageMode(WhenDidTechnologyIssuesEndPage, NormalMode))
 
       val formProvider = WhenDidTechnologyIssuesEndForm.whenDidTechnologyIssuesEndForm(sampleStartDateForFormValidation)
 

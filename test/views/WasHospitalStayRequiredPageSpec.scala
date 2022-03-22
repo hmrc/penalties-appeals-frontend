@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.WasHospitalStayRequiredForm
 import messages.WasHospitalStayRequiredMessages._
 import models.NormalMode
+import models.pages.{PageMode, WasHospitalStayRequiredPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -37,7 +38,7 @@ class WasHospitalStayRequiredPageSpec extends SpecBase with ViewBehaviours {
   val formProvider: Form[String] = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(vatTraderLSPUserRequest)
   val radioOptions: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
   def applyView(form: Form[_]): HtmlFormat.Appendable = wasHospitalStayRequiredPage.apply(
-    form, radioOptions, controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(NormalMode))
+    form, radioOptions, controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(NormalMode), pageMode = PageMode(WasHospitalStayRequiredPage, NormalMode))
 
   implicit val doc: Document = asDocument(applyView(formProvider))
 

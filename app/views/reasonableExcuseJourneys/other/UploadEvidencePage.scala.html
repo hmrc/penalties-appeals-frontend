@@ -34,7 +34,8 @@
         removeFileUrl: String => Call,
         previousUploads: String,
         getDuplicatesUrl: Call,
-        getErrorServiceUrl: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+        getErrorServiceUrl: Call,
+        pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.session.get(SessionKeys.appealType)}
 @detailsContent = {
@@ -63,7 +64,8 @@
 
 @layout(pageTitle = messages("otherReason.uploadEvidence.headingAndTitle"),
     isPageFullWidth = false,
-    customJavaScript = Some("multiFileUpload.min.js")) {
+    customJavaScript = Some("multiFileUpload.min.js"),
+    optPageMode = Some(pageMode)) {
     <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.headingAndTitle")</h1>
 
     @formHelper(action = postAction,

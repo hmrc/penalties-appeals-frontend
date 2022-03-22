@@ -175,3 +175,7 @@ GET        /duplicate-appeal                                   controllers.Dupli
 
 # Timeout pages
 GET        /timeout                                            controllers.TimeoutController.onPageLoad()
+
+# Back link
+GET        /previous-page                                      controllers.PreviousPageController.previousPage(pageName: String, mode: Mode = NormalMode)
+GET        /previous-page/change                               controllers.PreviousPageController.previousPage(pageName: String, mode: Mode = CheckMode)

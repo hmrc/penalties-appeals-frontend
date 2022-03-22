@@ -19,7 +19,8 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.HonestyDeclarationForm.honestyDeclarationForm
 import messages.HonestyDeclarationMessages._
-import models.{PenaltyTypeEnum, UserRequest}
+import models.pages.{HonestyDeclarationPage, PageMode}
+import models.{NormalMode, PenaltyTypeEnum, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.mvc.AnyContent
@@ -39,7 +40,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                            reasonText: String,
                            dueDate: String, startDate: String, endDate: String,
                            extraBullets: Seq[String] = Seq.empty, userRequest: UserRequest[_] = vatTraderLSPUserRequest, isObligation: Boolean = false): HtmlFormat.Appendable = {
-      honestyDeclarationPage.apply(form, reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(implicitly, implicitly, userRequest)
+      honestyDeclarationPage.apply(form, reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation,
+        pageMode = PageMode(HonestyDeclarationPage, NormalMode))(implicitly, implicitly, userRequest)
     }
 
     implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "technicalIssues", "of reason",
@@ -47,7 +49,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
     def applyAgentView(form: Form[_], reasonableExcuse: String, reasonText: String, dueDate: String, startDate: String, endDate: String, extraBullets: Seq[String] = Seq.empty,
                        userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys, isObligation: Boolean = false): HtmlFormat.Appendable = {
-      honestyDeclarationPage.apply(form, reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation)(implicitly, implicitly, userRequest)
+      honestyDeclarationPage.apply(form, reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation, pageMode = PageMode(HonestyDeclarationPage, NormalMode))(implicitly, implicitly, userRequest)
     }
 
     implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "technicalIssues", "of agent context reason",

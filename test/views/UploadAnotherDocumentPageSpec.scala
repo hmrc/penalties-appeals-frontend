@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadDocumentForm
 import messages.UploadAnotherDocmuentMessages._
 import models.NormalMode
+import models.pages.{PageMode, UploadAnotherDocumentPage}
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -60,7 +61,7 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
   )
   val fileListPage: Call = controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)
   def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
-    uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form, fileListPage.url)(request, implicitly, implicitly)
+    uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form, fileListPage.url, pageMode = PageMode(UploadAnotherDocumentPage, NormalMode))(request, implicitly, implicitly)
   }
 
   implicit val doc: Document = asDocument(applyView(fakeRequest))

@@ -17,13 +17,14 @@
 package controllers
 
 import java.time.LocalDateTime
-
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.SessionAnswersHelper
+
 import javax.inject.Inject
-import models.PenaltyTypeEnum
+import models.{Mode, NormalMode, PenaltyTypeEnum}
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
+import models.pages.{CheckYourAnswersPage, PageMode}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
@@ -48,6 +49,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
                                            authorise: AuthPredicate,
                                            dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter {
 
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(CheckYourAnswersPage, mode)
+
   def onPageLoad: Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
@@ -57,7 +60,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(request)
           } yield {
             val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
-            Ok(checkYourAnswersPage(answersFromSession)).removingFromSession(SessionKeys.originatingChangePage)
+            Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
           }
         } else {
           logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
@@ -70,7 +73,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             for {
               content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)
             } yield {
-                Ok(checkYourAnswersPage(content)).removingFromSession(SessionKeys.originatingChangePage)
+                Ok(checkYourAnswersPage(content, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
             }
           } else {
             logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")

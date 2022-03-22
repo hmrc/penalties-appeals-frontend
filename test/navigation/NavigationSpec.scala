@@ -101,7 +101,7 @@ class NavigationSpec extends SpecBase {
 
       s"the user is on the $AppealStartPage" must {
         "route the user back to the 'You can appeal this penalty' page when appealing against obligation" in {
-          val result: Call = mainNavigator.previousPage(AppealStartPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "obligation")))
+          val result: Call = mainNavigator.previousPage(AppealStartPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.isObligationAppeal -> "true")))
           result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
         }
 
@@ -113,7 +113,7 @@ class NavigationSpec extends SpecBase {
 
       s"the user is on the $HonestyDeclarationPage" must {
         "route the user back to the 'Appeal a VAT penalty' page when appealing against obligation" in {
-          val result: Call = mainNavigator.previousPage(HonestyDeclarationPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "obligation")))
+          val result: Call = mainNavigator.previousPage(HonestyDeclarationPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.isObligationAppeal -> "true")))
           result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
         }
 
@@ -125,7 +125,7 @@ class NavigationSpec extends SpecBase {
 
       s"the user is on the $UploadEvidenceQuestionPage" must {
         "route the user back to the 'Other relevant information' page when appealing against obligation" in {
-          val result: Call = mainNavigator.previousPage(UploadEvidenceQuestionPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "obligation")))
+          val result: Call = mainNavigator.previousPage(UploadEvidenceQuestionPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(SessionKeys.isObligationAppeal -> "true")))
           result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
         }
 
@@ -182,7 +182,7 @@ class NavigationSpec extends SpecBase {
 
         makingALateAppealReverseNormalRouteTest("obligation",
           controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url,
-          fakeRequestConverter(fakeRequest.withSession(SessionKeys.reasonableExcuse -> "obligation")))
+          fakeRequestConverter(fakeRequest.withSession(SessionKeys.isObligationAppeal -> "true")))
 
       }
 

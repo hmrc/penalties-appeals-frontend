@@ -21,7 +21,7 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.HonestyDeclarationForm._
 import helpers.HonestyDeclarationHelper
 import models.NormalMode
-import models.pages.HonestyDeclarationPage
+import models.pages.{HonestyDeclarationPage, PageMode}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -53,7 +53,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
             val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
             val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
             Ok(honestDeclarationPage(honestyDeclarationForm, reasonableExcuse, reasonText,
-              friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation))
+              friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation, PageMode(HonestyDeclarationPage, NormalMode)))
           }
         }
       )
@@ -73,7 +73,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
               val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
               val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
               BadRequest(honestDeclarationPage(formWithErrors, reasonableExcuse, reasonText,
-                friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation))
+                friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation, PageMode(HonestyDeclarationPage, NormalMode)))
             },
             _ => {
               logger.debug(s"[HonestyDeclarationController][onSubmit] - Adding 'true' to session for key: ${SessionKeys.hasConfirmedDeclaration}")

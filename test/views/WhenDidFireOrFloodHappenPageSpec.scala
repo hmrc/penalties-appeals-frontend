@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.WhenDidFireOrFloodHappenForm
 import messages.WhenDidFireOrFloodHappenMessages._
 import models.NormalMode
+import models.pages.{PageMode, WhenDidFireOrFloodHappenPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -35,7 +36,7 @@ class WhenDidFireOrFloodHappenPageSpec extends SpecBase with ViewBehaviours{
   object Selectors extends BaseSelectors
 
   def applyView(form: Form[_]): HtmlFormat.Appendable = fireOrFloodPage.apply(form,
-  controllers.routes.FireOrFloodReasonController.onSubmit(NormalMode))
+  controllers.routes.FireOrFloodReasonController.onSubmit(NormalMode), pageMode = PageMode(WhenDidFireOrFloodHappenPage, NormalMode))
 
   val formProvider: Form[LocalDate] = WhenDidFireOrFloodHappenForm.whenFireOrFloodHappenedForm()
 

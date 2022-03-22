@@ -22,7 +22,7 @@
         bullets: components.bullets,
         link: components.link)
 
-@(isLate: Boolean, isObligationAppeal: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(isLate: Boolean, isObligationAppeal: Boolean, pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.session.get(SessionKeys.appealType)}
 @nextPageUrl = @{
@@ -43,7 +43,9 @@
 }
 
 @layout(pageTitle = messages("service.name"),
-        isPageFullWidth = false) {
+        isPageFullWidth = false,
+        optPageMode = Some(pageMode)
+) {
     <h1 class="govuk-heading-l">@messages("service.name")</h1>
     <p class="govuk-body">@messages("appealStart.p1")</p>
     @bullets(

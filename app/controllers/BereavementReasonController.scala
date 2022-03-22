@@ -21,7 +21,7 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidThePersonDieForm
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.WhenDidThePersonDiePage
+import models.pages.{PageMode, WhenDidThePersonDiePage}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -39,6 +39,8 @@ class BereavementReasonController @Inject()(whenDidThePersonDiePage: WhenDidTheP
                                             appConfig: AppConfig,
                                             mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(WhenDidThePersonDiePage, mode)
+
   def onPageLoadForWhenThePersonDied(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit userRequest => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
@@ -46,7 +48,7 @@ class BereavementReasonController @Inject()(whenDidThePersonDiePage: WhenDidTheP
         SessionKeys.whenDidThePersonDie
       )
       val postAction = controllers.routes.BereavementReasonController.onSubmitForWhenThePersonDied(mode)
-      Ok(whenDidThePersonDiePage(formProvider, postAction))
+      Ok(whenDidThePersonDiePage(formProvider, postAction, pageMode(mode)))
     }
   }
 
@@ -54,8 +56,9 @@ class BereavementReasonController @Inject()(whenDidThePersonDiePage: WhenDidTheP
     implicit userRequest => {
       val postAction = controllers.routes.BereavementReasonController.onSubmitForWhenThePersonDied(mode)
       WhenDidThePersonDieForm.whenDidThePersonDieForm().bindFromRequest().fold(
-        formWithErrors => BadRequest(whenDidThePersonDiePage(formWithErrors, postAction)),
-        whenPersonDied => {logger.debug(s"[BereavementReasonController]" +
+        formWithErrors => BadRequest(whenDidThePersonDiePage(formWithErrors, postAction, pageMode(mode))),
+        whenPersonDied => {
+          logger.debug(s"[BereavementReasonController]" +
           s"[onSubmitForWhenThePersonDied] - Adding '$whenPersonDied' to session under key: ${SessionKeys.whenDidThePersonDie}")
           Redirect(navigation.nextPage(WhenDidThePersonDiePage, mode))
             .addingToSession(SessionKeys.whenDidThePersonDie -> whenPersonDied.toString)

@@ -22,12 +22,13 @@
         govukButton: GovukButton,
         dateInput: components.inputDate)
 
-@(form: Form[_], postAction: Call)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
+@(form: Form[_], postAction: Call, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @layout(pageTitle = messages(getMessageKeyForPage("whenDidBecomeUnable.headingAndTitle")),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors) {
+    formErrors = form.errors,
+    optPageMode = Some(pageMode)) {
     @formHelper(action = postAction) {
 
         @dateInput(

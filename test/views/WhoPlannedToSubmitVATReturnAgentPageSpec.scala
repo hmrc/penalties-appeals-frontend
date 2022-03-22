@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.WhoPlannedToSubmitVATReturnAgentForm
 import messages.WhoPlannedToSubmitVATReturnAgentMessages._
 import models.NormalMode
+import models.pages.{PageMode, WhoPlannedToSubmitVATReturnAgentPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -33,7 +34,7 @@ class WhoPlannedToSubmitVATReturnAgentPageSpec extends SpecBase with ViewBehavio
   val formProvider: Form[String] = WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm
   def applyView(form: Form[_]): HtmlFormat.Appendable = whoPlannedToSubmitVATReturnPage.apply(form,
     RadioOptionHelper.radioOptionsForSubmitVATReturnPage(formProvider),
-    controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode))
+    controllers.routes.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode), pageMode = PageMode(WhoPlannedToSubmitVATReturnAgentPage, NormalMode))
 
   "WhoPlannedToSubmitVATReturnPage" should {
 

@@ -19,6 +19,8 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.YouCanAppealPenaltyForm
 import messages.YouCanAppealThisPenaltyMessages._
+import models.NormalMode
+import models.pages.{PageMode, WhyWasReturnSubmittedLatePage, YouCanAppealThisPenaltyPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -42,7 +44,8 @@ class YouCanAppealPenaltyPageSpec extends SpecBase with ViewBehaviours {
     val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = youCanAppealPenaltyPage
-      .apply(form, radioOptions, controllers.routes.YouCanAppealPenaltyController.onSubmit())
+      .apply(form, radioOptions, controllers.routes.YouCanAppealPenaltyController.onSubmit(),
+        pageMode = PageMode(YouCanAppealThisPenaltyPage, NormalMode))
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

@@ -19,6 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHealthIssueHappenForm
 import messages.WhenDidHealthReasonHappenMessages._
+import models.pages.{PageMode, WhenDidHealthIssueHappenPage}
 import models.{NormalMode, PenaltyTypeEnum, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -36,12 +37,12 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
   object Selectors extends BaseSelectors
 
   def applyVATTraderView(form: Form[_], userRequest: UserRequest[_] = vatTraderLSPUserRequest): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
-    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(implicitly, implicitly, userRequest)
+    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode), pageMode = PageMode(WhenDidHealthIssueHappenPage, NormalMode))(implicitly, implicitly, userRequest)
 
   val vatTraderFormProvider: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderLSPUserRequest)
 
   def applyAgentView(form: Form[_], userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
-    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode))(implicitly, implicitly, userRequest)
+    controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode), pageMode = PageMode(WhenDidHealthIssueHappenPage, NormalMode))(implicitly, implicitly, userRequest)
 
   val agentFormProvider: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserAgentSubmitButClientWasLateSessionKeys)
 

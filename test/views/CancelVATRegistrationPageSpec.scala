@@ -19,6 +19,8 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.CancelVATRegistrationForm
 import messages.CancelVATRegistrationMessages._
+import models.NormalMode
+import models.pages.{CancelVATRegistrationPage, PageMode}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -33,7 +35,7 @@ class CancelVATRegistrationPageSpec extends SpecBase with ViewBehaviours {
     val formProvider = CancelVATRegistrationForm.cancelVATRegistrationForm
     val radioOptions = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(formProvider)
     def applyView(form: Form[_]): HtmlFormat.Appendable = cancelVATRegistrationPage
-      .apply(form, radioOptions, controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration())
+      .apply(form, radioOptions, controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration(), pageMode = PageMode(CancelVATRegistrationPage, NormalMode))
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

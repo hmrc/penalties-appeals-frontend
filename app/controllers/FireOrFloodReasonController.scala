@@ -20,9 +20,10 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.WhenDidFireOrFloodHappenForm
 import helpers.FormProviderHelper
+
 import javax.inject.Inject
 import models.Mode
-import models.pages.WhenDidFireOrFloodHappenPage
+import models.pages.{Page, PageMode, WhenDidFireOrFloodHappenPage}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,20 +39,22 @@ class FireOrFloodReasonController @Inject()(fireOrFloodPage: WhenDidFireOrFloodH
                                       appConfig: AppConfig,
                                       mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: (Page, Mode) => PageMode = (page: Page, mode: Mode) => PageMode(page, mode)
+
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
       WhenDidFireOrFloodHappenForm.whenFireOrFloodHappenedForm(),
       SessionKeys.dateOfFireOrFlood
     )
     val postAction = controllers.routes.FireOrFloodReasonController.onSubmit(mode)
-    Ok(fireOrFloodPage(formProvider, postAction))
+    Ok(fireOrFloodPage(formProvider, postAction, pageMode(WhenDidFireOrFloodHappenPage, mode)))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
     val postAction = controllers.routes.FireOrFloodReasonController.onSubmit(mode)
     WhenDidFireOrFloodHappenForm.whenFireOrFloodHappenedForm().bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(fireOrFloodPage(formWithErrors, postAction))
+        BadRequest(fireOrFloodPage(formWithErrors, postAction, pageMode(WhenDidFireOrFloodHappenPage, mode)))
       },
       dateOfFireOrFlood => {
         logger.debug(s"[FireOrFloodController][onSubmit] - Adding '$dateOfFireOrFlood' to session under key: ${SessionKeys.dateOfFireOrFlood}")

@@ -19,6 +19,8 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.MakingALateAppealForm
 import messages.MakingALateAppealMessages._
+import models.NormalMode
+import models.pages.{MakingALateAppealPage, PageMode}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -29,7 +31,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
   "MakingALateAppealPage" should {
     val makingALateAppealPage: MakingALateAppealPage = injector.instanceOf[MakingALateAppealPage]
     object Selectors extends BaseSelectors
-    def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form)
+    def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form, pageMode = PageMode(MakingALateAppealPage, NormalMode))
 
     val formProvider = MakingALateAppealForm.makingALateAppealForm()
     implicit val doc: Document = asDocument(applyView(formProvider))

@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.WhenDidPersonLeaveTheBusinessForm
 import messages.WhenDidThePersonLeaveBusinessMessages._
 import models.NormalMode
+import models.pages.{PageMode, WhenDidPersonLeaveTheBusinessPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.mvc.Call
@@ -36,7 +37,7 @@ class WhenDidThePersonLeaveBusinessPageSpec extends SpecBase with ViewBehaviours
     val postAction: Call = controllers.routes.LossOfStaffReasonController.onPageLoad(NormalMode)
     object Selectors extends BaseSelectors
 
-    def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidThePersonLeaveBusinessPage.apply(form, postAction)
+    def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidThePersonLeaveBusinessPage.apply(form, postAction, pageMode = PageMode(WhenDidPersonLeaveTheBusinessPage, NormalMode))
 
     implicit val doc: Document = asDocument(applyView(whenDidThePersonLeaveBusinessForm))
 

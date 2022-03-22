@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.WhenDidThePersonDieForm
 import messages.WhenDidThePersonDiePageMessages._
 import models.NormalMode
+import models.pages.{PageMode, WhenDidThePersonDiePage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -33,7 +34,7 @@ class WhenDidThePersonDiePageSpec extends SpecBase with ViewBehaviours{
 
   object Selectors extends BaseSelectors
   def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidThePersonDiePage.apply(form,
-    controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(NormalMode))
+    controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(NormalMode), pageMode = PageMode(WhenDidThePersonDiePage, NormalMode))
 
   val formProvider: Form[LocalDate] = WhenDidThePersonDieForm.whenDidThePersonDieForm()
 

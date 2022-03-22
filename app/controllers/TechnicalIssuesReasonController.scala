@@ -21,7 +21,7 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.{WhenDidTechnologyIssuesBeginForm, WhenDidTechnologyIssuesEndForm}
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.{WhenDidTechnologyIssuesBeginPage, WhenDidTechnologyIssuesEndPage}
+import models.pages.{Page, PageMode, WhenDidTechnologyIssuesBeginPage, WhenDidTechnologyIssuesEndPage}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -40,6 +40,8 @@ class TechnicalIssuesReasonController @Inject()(technicalIssuesDatePage: Technol
                                                 appConfig: AppConfig,
                                                 mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
+  val pageMode: (Page, Mode) => PageMode = (page: Page, mode: Mode) => PageMode(page, mode)
+
   def onPageLoadForWhenTechnologyIssuesBegan(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit userRequest => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
@@ -47,7 +49,7 @@ class TechnicalIssuesReasonController @Inject()(technicalIssuesDatePage: Technol
         SessionKeys.whenDidTechnologyIssuesBegin
       )
       val postAction = controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(mode)
-      Ok(technicalIssuesDatePage(formProvider, postAction, "technicalIssues.begin"))
+      Ok(technicalIssuesDatePage(formProvider, postAction, "technicalIssues.begin", pageMode(WhenDidTechnologyIssuesBeginPage, mode)))
     }
   }
 
@@ -55,7 +57,7 @@ class TechnicalIssuesReasonController @Inject()(technicalIssuesDatePage: Technol
     implicit userRequest => {
       val postAction = controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(mode)
       WhenDidTechnologyIssuesBeginForm.whenDidTechnologyIssuesBeginForm().bindFromRequest().fold(
-        formWithErrors => BadRequest(technicalIssuesDatePage(formWithErrors, postAction, "technicalIssues.begin")),
+        formWithErrors => BadRequest(technicalIssuesDatePage(formWithErrors, postAction, "technicalIssues.begin", pageMode(WhenDidTechnologyIssuesBeginPage, mode))),
         dateTechnicalIssuesBegan => {
           Redirect(navigation.nextPage(WhenDidTechnologyIssuesBeginPage, mode))
             .addingToSession(SessionKeys.whenDidTechnologyIssuesBegin -> dateTechnicalIssuesBegan.toString)
@@ -74,7 +76,7 @@ class TechnicalIssuesReasonController @Inject()(technicalIssuesDatePage: Technol
             SessionKeys.whenDidTechnologyIssuesEnd
           )
           val postAction = controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesEnded(mode)
-          Ok(technicalIssuesDatePage(formProvider, postAction, "technicalIssues.end"))
+          Ok(technicalIssuesDatePage(formProvider, postAction, "technicalIssues.end", pageMode(WhenDidTechnologyIssuesEndPage, mode)))
         }
       )
     }
@@ -87,7 +89,7 @@ class TechnicalIssuesReasonController @Inject()(technicalIssuesDatePage: Technol
           val parsedStartDate: LocalDate = LocalDate.parse(startDate)
           val postAction = controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesEnded(mode)
           WhenDidTechnologyIssuesEndForm.whenDidTechnologyIssuesEndForm(parsedStartDate).bindFromRequest().fold(
-            formWithErrors => BadRequest(technicalIssuesDatePage(formWithErrors, postAction, "technicalIssues.end")),
+            formWithErrors => BadRequest(technicalIssuesDatePage(formWithErrors, postAction, "technicalIssues.end", pageMode(WhenDidTechnologyIssuesEndPage, mode))),
             dateTechnicalIssuesBegan => {
               Redirect(navigation.nextPage(WhenDidTechnologyIssuesEndPage, mode))
                 .addingToSession(SessionKeys.whenDidTechnologyIssuesEnd -> dateTechnicalIssuesBegan.toString)
