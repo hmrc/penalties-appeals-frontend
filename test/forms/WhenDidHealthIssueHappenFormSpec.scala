@@ -22,15 +22,23 @@ import play.api.data.{Form, FormError}
 import java.time.LocalDate
 
 class WhenDidHealthIssueHappenFormSpec extends SpecBase {
-  val formVATTrader: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderLSPUserRequest)
+  
+  val formVATTraderLSP: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderLSPUserRequest)
 
-  val formAgent: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserAgentSubmitButClientWasLateSessionKeys)
+  val formVATTraderLPP: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderLPPUserRequest)
+
+  val formAgentSubmitClientLate: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserAgentSubmitButClientWasLateSessionKeys)
+
+  val formAgentAgentSubmitLate: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserAgentMissedSessionKeys)
+
+  val formAgentClientSubmit: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserAgentClientPlannedToSubmitSessionKeys)
+
+  val formAgentLPP: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserLPP)
 
   "WhenDidHealthIssueHappenForm" should {
-
-    "when a VAT trader" must {
+    "when a VAT trader appealing against an LSP" must {
       "bind when the date is valid" in {
-        val result = formVATTrader.bind(
+        val result = formVATTraderLSP.bind(
           Map(
             "date.day" -> "1",
             "date.month" -> "2",
@@ -42,7 +50,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
 
       "not bind" when {
         "the date is in the future" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "2",
@@ -50,11 +58,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenHealthIssueHappened.error.notInFuture", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.notInFuture.lsp", Seq("day", "month", "year"))
         }
 
         "the date is not valid" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "31",
               "date.month" -> "2",
@@ -62,11 +70,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenHealthIssueHappened.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lsp", Seq())
         }
 
         "the date contains strings instead of numbers" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "thirtyFirst",
               "date.month" -> "ofTheSecond",
@@ -74,11 +82,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenHealthIssueHappened.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lsp", Seq("day", "month", "year"))
         }
 
         "the date contains negative numbers" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "-1",
               "date.month" -> "-2",
@@ -86,11 +94,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenHealthIssueHappened.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lsp", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "2",
@@ -98,11 +106,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenHealthIssueHappened.error.required", Seq("day"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.lsp", Seq("day"))
         }
 
         "the date has no month" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "",
@@ -110,11 +118,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "whenHealthIssueHappened.error.required", Seq("month"))
+          result.errors.head shouldBe FormError("date.month", "health.whenHealthIssueHappened.error.required.lsp", Seq("month"))
         }
 
         "the date has no year" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "2",
@@ -122,11 +130,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.year", "whenHealthIssueHappened.error.required", Seq("year"))
+          result.errors.head shouldBe FormError("date.year", "health.whenHealthIssueHappened.error.required.lsp", Seq("year"))
         }
 
         "the date has a day but no month and year" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "2",
               "date.month" -> "",
@@ -134,11 +142,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "whenHealthIssueHappened.error.required.two", Seq("month", "year"))
+          result.errors.head shouldBe FormError("date.month", "health.whenHealthIssueHappened.error.required.two.lsp", Seq("month", "year"))
         }
 
         "the date has a month but no day and year" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "2",
@@ -146,11 +154,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenHealthIssueHappened.error.required.two", Seq("day", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.two.lsp", Seq("day", "year"))
         }
 
         "the date has a year but no day and month" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "",
@@ -158,11 +166,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenHealthIssueHappened.error.required.two", Seq("day", "month"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.two.lsp", Seq("day", "month"))
         }
 
         "the date has no values" in {
-          val result = formVATTrader.bind(
+          val result = formVATTraderLSP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "",
@@ -170,14 +178,14 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "whenHealthIssueHappened.error.required.all", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.all.lsp", Seq("day", "month", "year"))
         }
       }
     }
 
-    "when an agent user" must {
+    "when a VAT trader appealing against an LPP" must {
       "bind when the date is valid" in {
-        val result = formAgent.bind(
+        val result = formVATTraderLPP.bind(
           Map(
             "date.day" -> "1",
             "date.month" -> "2",
@@ -189,7 +197,7 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
 
       "not bind" when {
         "the date is in the future" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "2",
@@ -197,11 +205,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenHealthIssueHappened.error.notInFuture", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.notInFuture.lpp", Seq("day", "month", "year"))
         }
 
         "the date is not valid" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "31",
               "date.month" -> "2",
@@ -209,11 +217,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenHealthIssueHappened.error.invalid", Seq())
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lpp", Seq())
         }
 
         "the date contains strings instead of numbers" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "thirtyFirst",
               "date.month" -> "ofTheSecond",
@@ -221,11 +229,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenHealthIssueHappened.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lpp", Seq("day", "month", "year"))
         }
 
         "the date contains negative numbers" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "-1",
               "date.month" -> "-2",
@@ -233,11 +241,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenHealthIssueHappened.error.invalid", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lpp", Seq("day", "month", "year"))
         }
 
         "the date has no day" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "2",
@@ -245,11 +253,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenHealthIssueHappened.error.required", Seq("day"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.lpp", Seq("day"))
         }
 
         "the date has no month" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "",
@@ -257,11 +265,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "agent.whenHealthIssueHappened.error.required", Seq("month"))
+          result.errors.head shouldBe FormError("date.month", "health.whenHealthIssueHappened.error.required.lpp", Seq("month"))
         }
 
         "the date has no year" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "1",
               "date.month" -> "2",
@@ -269,11 +277,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.year", "agent.whenHealthIssueHappened.error.required", Seq("year"))
+          result.errors.head shouldBe FormError("date.year", "health.whenHealthIssueHappened.error.required.lpp", Seq("year"))
         }
 
         "the date has a day but no month and year" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "2",
               "date.month" -> "",
@@ -281,11 +289,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.month", "agent.whenHealthIssueHappened.error.required.two", Seq("month", "year"))
+          result.errors.head shouldBe FormError("date.month", "health.whenHealthIssueHappened.error.required.two.lpp", Seq("month", "year"))
         }
 
         "the date has a month but no day and year" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "2",
@@ -293,11 +301,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenHealthIssueHappened.error.required.two", Seq("day", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.two.lpp", Seq("day", "year"))
         }
 
         "the date has a year but no day and month" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "",
@@ -305,11 +313,11 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenHealthIssueHappened.error.required.two", Seq("day", "month"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.two.lpp", Seq("day", "month"))
         }
 
         "the date has no values" in {
-          val result = formAgent.bind(
+          val result = formVATTraderLPP.bind(
             Map(
               "date.day" -> "",
               "date.month" -> "",
@@ -317,7 +325,595 @@ class WhenDidHealthIssueHappenFormSpec extends SpecBase {
             )
           )
           result.errors.size shouldBe 1
-          result.errors.head shouldBe FormError("date.day", "agent.whenHealthIssueHappened.error.required.all", Seq("day", "month", "year"))
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.all.lpp", Seq("day", "month", "year"))
+        }
+      }
+    }
+
+    "when an agent user is appealing a LSP where the agent planned to submit but the client missed the deadline" must {
+      "bind when the date is valid" in {
+        val result = formAgentSubmitClientLate.bind(
+          Map(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )
+        )
+        result.errors shouldBe List.empty
+      }
+
+      "not bind" when {
+        "the date is in the future" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2050"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.notInFuture.clientMissedDeadline", Seq("day", "month", "year"))
+        }
+
+        "the date is not valid" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.clientMissedDeadline", Seq())
+        }
+
+        "the date contains strings instead of numbers" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "thirtyFirst",
+              "date.month" -> "ofTheSecond",
+              "date.year" -> "twentyTwentyOne"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.clientMissedDeadline", Seq("day", "month", "year"))
+        }
+
+        "the date contains negative numbers" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "-1",
+              "date.month" -> "-2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.clientMissedDeadline", Seq("day", "month", "year"))
+        }
+
+        "the date has no day" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.clientMissedDeadline", Seq("day"))
+        }
+
+        "the date has no month" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.health.whenHealthIssueHappened.error.required.clientMissedDeadline", Seq("month"))
+        }
+
+        "the date has no year" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.year", "agent.health.whenHealthIssueHappened.error.required.clientMissedDeadline", Seq("year"))
+        }
+
+        "the date has a day but no month and year" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "2",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.health.whenHealthIssueHappened.error.required.two.clientMissedDeadline", Seq("month", "year"))
+        }
+
+        "the date has a month but no day and year" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.two.clientMissedDeadline", Seq("day", "year"))
+        }
+
+        "the date has a year but no day and month" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.two.clientMissedDeadline", Seq("day", "month"))
+        }
+
+        "the date has no values" in {
+          val result = formAgentSubmitClientLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.all.clientMissedDeadline", Seq("day", "month", "year"))
+        }
+      }
+    }
+
+    "when an agent user is appealing a LSP where the agent planned to submit but missed the deadline" must {
+      "bind when the date is valid" in {
+        val result = formAgentAgentSubmitLate.bind(
+          Map(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )
+        )
+        result.errors shouldBe List.empty
+      }
+
+      "not bind" when {
+        "the date is in the future" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2050"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.notInFuture.lsp", Seq("day", "month", "year"))
+        }
+
+        "the date is not valid" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lsp", Seq())
+        }
+
+        "the date contains strings instead of numbers" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "thirtyFirst",
+              "date.month" -> "ofTheSecond",
+              "date.year" -> "twentyTwentyOne"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lsp", Seq("day", "month", "year"))
+        }
+
+        "the date contains negative numbers" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "-1",
+              "date.month" -> "-2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.invalid.lsp", Seq("day", "month", "year"))
+        }
+
+        "the date has no day" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.lsp", Seq("day"))
+        }
+
+        "the date has no month" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "health.whenHealthIssueHappened.error.required.lsp", Seq("month"))
+        }
+
+        "the date has no year" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.year", "health.whenHealthIssueHappened.error.required.lsp", Seq("year"))
+        }
+
+        "the date has a day but no month and year" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "2",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "health.whenHealthIssueHappened.error.required.two.lsp", Seq("month", "year"))
+        }
+
+        "the date has a month but no day and year" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.two.lsp", Seq("day", "year"))
+        }
+
+        "the date has a year but no day and month" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.two.lsp", Seq("day", "month"))
+        }
+
+        "the date has no values" in {
+          val result = formAgentAgentSubmitLate.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "health.whenHealthIssueHappened.error.required.all.lsp", Seq("day", "month", "year"))
+        }
+      }
+    }
+
+    "when an agent user is appealing a LSP where the client planned to submit and missed the deadline" must {
+      "bind when the date is valid" in {
+        val result = formAgentClientSubmit.bind(
+          Map(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )
+        )
+        result.errors shouldBe List.empty
+      }
+
+      "not bind" when {
+        "the date is in the future" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2050"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.notInFuture.clientIntendedToSubmit", Seq("day", "month", "year"))
+        }
+
+        "the date is not valid" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.clientIntendedToSubmit", Seq())
+        }
+
+        "the date contains strings instead of numbers" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "thirtyFirst",
+              "date.month" -> "ofTheSecond",
+              "date.year" -> "twentyTwentyOne"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.clientIntendedToSubmit", Seq("day", "month", "year"))
+        }
+
+        "the date contains negative numbers" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "-1",
+              "date.month" -> "-2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.clientIntendedToSubmit", Seq("day", "month", "year"))
+        }
+
+        "the date has no day" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.clientIntendedToSubmit", Seq("day"))
+        }
+
+        "the date has no month" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.health.whenHealthIssueHappened.error.required.clientIntendedToSubmit", Seq("month"))
+        }
+
+        "the date has no year" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.year", "agent.health.whenHealthIssueHappened.error.required.clientIntendedToSubmit", Seq("year"))
+        }
+
+        "the date has a day but no month and year" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "2",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.health.whenHealthIssueHappened.error.required.two.clientIntendedToSubmit", Seq("month", "year"))
+        }
+
+        "the date has a month but no day and year" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.two.clientIntendedToSubmit", Seq("day", "year"))
+        }
+
+        "the date has a year but no day and month" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.two.clientIntendedToSubmit", Seq("day", "month"))
+        }
+
+        "the date has no values" in {
+          val result = formAgentClientSubmit.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.all.clientIntendedToSubmit", Seq("day", "month", "year"))
+        }
+      }
+    }
+
+    "when an agent user is appealing a LPP" must {
+      "bind when the date is valid" in {
+        val result = formAgentLPP.bind(
+          Map(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )
+        )
+        result.errors shouldBe List.empty
+      }
+
+      "not bind" when {
+        "the date is in the future" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2050"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.notInFuture.lpp", Seq("day", "month", "year"))
+        }
+
+        "the date is not valid" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.lpp", Seq())
+        }
+
+        "the date contains strings instead of numbers" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "thirtyFirst",
+              "date.month" -> "ofTheSecond",
+              "date.year" -> "twentyTwentyOne"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.lpp", Seq("day", "month", "year"))
+        }
+
+        "the date contains negative numbers" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "-1",
+              "date.month" -> "-2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.invalid.lpp", Seq("day", "month", "year"))
+        }
+
+        "the date has no day" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.lpp", Seq("day"))
+        }
+
+        "the date has no month" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.health.whenHealthIssueHappened.error.required.lpp", Seq("month"))
+        }
+
+        "the date has no year" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.year", "agent.health.whenHealthIssueHappened.error.required.lpp", Seq("year"))
+        }
+
+        "the date has a day but no month and year" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "2",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.month", "agent.health.whenHealthIssueHappened.error.required.two.lpp", Seq("month", "year"))
+        }
+
+        "the date has a month but no day and year" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "2",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.two.lpp", Seq("day", "year"))
+        }
+
+        "the date has a year but no day and month" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> "2021"
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.two.lpp", Seq("day", "month"))
+        }
+
+        "the date has no values" in {
+          val result = formAgentLPP.bind(
+            Map(
+              "date.day" -> "",
+              "date.month" -> "",
+              "date.year" -> ""
+            )
+          )
+          result.errors.size shouldBe 1
+          result.errors.head shouldBe FormError("date.day", "agent.health.whenHealthIssueHappened.error.required.all.lpp", Seq("day", "month", "year"))
         }
       }
     }

@@ -23,9 +23,6 @@ object WhenDidBecomeUnableMessages {
   val headingAgentSubmitClientLate = "When did the issue first stop your client getting information to you?"
   val titleAgentSubmitClientLate = s"$headingAgentSubmitClientLate - Appeal a VAT penalty - GOV.UK"
 
-  val headingAgentSubmitLate = "When did the issue first stop your client submitting the VAT Return?"
-  val titleAgentSubmitLate = s"$headingAgentSubmitLate - Appeal a VAT penalty - GOV.UK"
-
   val headingAgentClientSubmit = "When did the issue first stop your client submitting the VAT Return?"
   val titleAgentClientSubmit = s"$headingAgentClientSubmit - Appeal a VAT penalty - GOV.UK"
 

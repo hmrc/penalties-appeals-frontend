@@ -18,17 +18,34 @@ package messages
 
 object WhenDidHealthReasonHappenMessages {
 
-  val title = "When did you become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
-  val titleAgentText = "When did your client become unable to manage the VAT account? - Appeal a VAT penalty - GOV.UK"
-  val heading = "When did you become unable to manage the VAT account?"
-  val headingAgentText = "When did your client become unable to manage the VAT account?"
-  val hintText = "Tell us the date when the health issue started to affect your ability to complete this submission. For example, 12 3 2018"
-  val hintTextAgentText = "Tell us the date when the health issue started to affect your client’s ability to complete this submission. For example, 12 3 2018"
-  val hintTextLpp = "Tell us the date when the health issue started to affect your ability to make this payment. For example, 12 3 2018"
-  val hintTextAgentLpp = "Tell us the date when the health issue started to affect your client’s ability to make this payment. For example, 12 3 2018"
+  val headingLSP = "When did the health issue first stop you submitting the VAT Return?"
+
+  val titleLSP = s"$headingLSP - Appeal a VAT penalty - GOV.UK"
+
+  val headingAgentSubmitClientLate = "When did the health issue first stop your client getting information to you?"
+
+  val titleAgentSubmitClientLate = s"$headingAgentSubmitClientLate - Appeal a VAT penalty - GOV.UK"
+
+  val headingAgentClientSubmit = "When did the health issue first stop your client submitting the VAT Return?"
+
+  val titleAgentClientSubmit = s"$headingAgentClientSubmit - Appeal a VAT penalty - GOV.UK"
+
+  val headingLPP = "When did the health issue first stop you paying the VAT bill?"
+
+  val titleLPP = s"$headingLPP - Appeal a VAT penalty - GOV.UK"
+
+  val headingAgentLPP = "When did the health issue first stop your client paying the VAT bill?"
+
+  val titleAgentLPP = s"$headingAgentLPP - Appeal a VAT penalty - GOV.UK"
+
+  val hintText = "For example, 12 3 2018"
+
   val dayEntry = "Day"
+
   val monthEntry = "Month"
+
   val yearEntry = "Year"
+
   val continueButton = "Continue"
 
 }

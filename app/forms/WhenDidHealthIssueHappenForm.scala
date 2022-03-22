@@ -17,8 +17,8 @@
 package forms
 
 import java.time.LocalDate
-
 import forms.mappings.Mappings
+import helpers.WhenDidYouBecomeUnableHelper.getMessageKeyForPage
 import models.UserRequest
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -29,11 +29,11 @@ object WhenDidHealthIssueHappenForm extends Mappings {
   def whenHealthIssueHappenedForm()(implicit messages: Messages, user: UserRequest[_]): Form[LocalDate] = {
     Form(
       "date" -> localDate(
-        invalidKey = getMessageKey("whenHealthIssueHappened.error.invalid"),
-        allRequiredKey = getMessageKey("whenHealthIssueHappened.error.required.all"),
-        twoRequiredKey = getMessageKey("whenHealthIssueHappened.error.required.two"),
-        requiredKey = getMessageKey("whenHealthIssueHappened.error.required"),
-        futureKey = Some(getMessageKey("whenHealthIssueHappened.error.notInFuture"))
+        invalidKey = getMessageKeyForPage("health.whenHealthIssueHappened.error.invalid"),
+        allRequiredKey = getMessageKeyForPage("health.whenHealthIssueHappened.error.required.all"),
+        twoRequiredKey = getMessageKeyForPage("health.whenHealthIssueHappened.error.required.two"),
+        requiredKey = getMessageKeyForPage("health.whenHealthIssueHappened.error.required"),
+        futureKey = Some(getMessageKeyForPage("health.whenHealthIssueHappened.error.notInFuture"))
       )
     )
   }
