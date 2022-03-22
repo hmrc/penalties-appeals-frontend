@@ -338,7 +338,7 @@ otherReason.uploadList.duplicateInsetText = File {0} has the same contents as Fi
 otherReason.uploadList.duplicateInsetText.2 = File {0} has the same contents as Files {1} and {2}. You can remove duplicate files using the ’Remove’ link.
 otherReason.uploadList.duplicateInsetText.3 = File {0} has the same contents as Files {1}, {2} and {3}. You can remove duplicate files using the ’Remove’ link.
 otherReason.uploadList.duplicateInsetText.4 = File {0} has the same contents as Files {1}, {2}, {3} and {4}. You can remove duplicate files using the ’Remove’ link.
-otherReason.uploadList.multipleDuplicateInsetText = {0} of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link.
+otherReason.uploadList.multipleDuplicateInsetText = Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------

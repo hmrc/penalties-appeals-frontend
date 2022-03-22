@@ -133,7 +133,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
         .thenReturn(Future.successful(Some(Seq(firstUpload, secondUpload, fourthUpload, fourthUpload))))
       val result = await(helper.getInsetTextForUploadsInRepository("123456"))
       result.isDefined shouldBe true
-      result.get shouldBe "4 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link."
+      result.get shouldBe "Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link."
     }
 
     "return the 1 set of duplicates variation text" when {
@@ -198,7 +198,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
         val result = helper.getInsetTextForUploads(Seq((firstUpload, 0), (fourthUpload, 1), (fourthUpload, 2), (firstUpload, 3)))
         result.isDefined shouldBe true
         val parsedResult = Jsoup.parse(result.get.toString())
-        parsedResult.select(".govuk-inset-text").text() shouldBe "4 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link."
+        parsedResult.select(".govuk-inset-text").text() shouldBe "Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link."
       }
 
       "1 set of duplicates exists - showing 1 set of duplicates variation text" when {
@@ -242,7 +242,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
         "there is multiple sets of duplicates" in new Setup {
           val result = helper.getInsetTextMessage(Seq((firstUpload, 0), (firstUpload, 1), (fourthUpload, 2), (fourthUpload, 3)))
           result.isDefined shouldBe true
-          result.get shouldBe "4 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link."
+          result.get shouldBe "Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link."
         }
 
         "there is one set of duplicates" when {

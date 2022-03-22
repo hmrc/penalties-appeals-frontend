@@ -61,8 +61,7 @@ class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
     if (multipleDuplicates.isEmpty) {
       None
     } else if (multipleDuplicates.size > 1) {
-      val noOfDuplicateDocs = multipleDuplicates.map(_._2.size).sum
-      Some(messages("otherReason.uploadList.multipleDuplicateInsetText", noOfDuplicateDocs))
+      Some(messages("otherReason.uploadList.multipleDuplicateInsetText"))
     } else {
       val duplicates: Seq[(UploadJourney, Int)] = mappedDuplicates.filter(duplicate => duplicate._2.size > 1).head._2
       val firstFile: Int = duplicates.head._2 + 1

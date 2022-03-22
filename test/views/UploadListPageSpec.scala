@@ -42,8 +42,8 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
 
   val uploadMultipleRows: Seq[Html] = Seq(uploadListRow(1, "file1.txt", "ref1"), uploadListRow(2, "file2.txt", "ref2"))
 
-  val optInsetTextForMultipleDuplicates: String => Option[Html] = item1 => Some(
-    insetText(s"$item1 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link.")
+  val optInsetTextForMultipleDuplicates: Option[Html] = Some(
+    insetText("Some of the files have the same contents. Check your uploaded files and remove duplicates using the ‘Remove’ link.")
   )
 
   val optInsetText: (String, String) => Option[Html] = (item1, item2) => Some(
@@ -150,14 +150,14 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
 
     "show the multiple duplicate insetText when a user uploads multiple sets of duplicate documents" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow, optInsetTextForMultipleDuplicates("4"), pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
+        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow, optInsetTextForMultipleDuplicates, pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
 
       implicit val doc: Document = asDocument(applyView(formProvider))
 
       val expectedContent = Seq(
         Selectors.title -> titleMaxFiles,
         Selectors.h1 -> h1MaxFiles,
-        Selectors.insetText -> multipleDuplicatesInsetTextMsg("4"),
+        Selectors.insetText -> multipleDuplicatesInsetTextMsg,
         Selectors.button -> continueButton
       )
 
