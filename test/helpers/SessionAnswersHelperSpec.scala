@@ -1489,7 +1489,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
           WasHospitalStayRequiredPage.toString
         ).url
-        result(2)._1 shouldBe "When did the health issue first stop you submitting the VAT Return?"
+        result(2)._1 shouldBe "When did the hospital stay begin?"
         result(2)._2 shouldBe "1 January 2022"
         result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
@@ -1533,7 +1533,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
           WasHospitalStayRequiredPage.toString
         ).url
-        result(2)._1 shouldBe "When did the health issue first stop you submitting the VAT Return?"
+        result(2)._1 shouldBe "When did the hospital stay begin?"
         result(2)._2 shouldBe "1 January 2022"
         result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
