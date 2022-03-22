@@ -264,7 +264,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
               WasHospitalStayRequiredPage
             )
           ),
-          (getMessage("checkYourAnswers.unableToManageAccount"),
+          (messages(WhenDidYouBecomeUnableHelper.getMessageKeyForPage("health.whenHealthIssueHappened.headingAndTitle")),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueHappened).get)),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
@@ -289,7 +289,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
               WasHospitalStayRequiredPage
             )
           ),
-          (messages("checkYourAnswers.health.whenDidHospitalStayBegin"),
+          (messages(WhenDidYouBecomeUnableHelper.getMessageKeyForPage("health.whenHealthIssueHappened.headingAndTitle")),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueStarted).get)),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
@@ -327,7 +327,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
               controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
               WasHospitalStayRequiredPage
             )),
-          (messages("checkYourAnswers.health.whenDidHospitalStayBegin"),
+          (messages(WhenDidYouBecomeUnableHelper.getMessageKeyForPage("health.whenHealthIssueHappened.headingAndTitle")),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueStarted).get)),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
