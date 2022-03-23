@@ -56,7 +56,5 @@ object UploadFirstDocumentMessages {
 
   val chooseYourFirstFile = "Choose your first file"
 
-  val continueButton = "Continue without evidence"
-
   val uploadButton = "Upload selected file"
 }

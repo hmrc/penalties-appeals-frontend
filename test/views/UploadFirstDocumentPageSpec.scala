@@ -58,9 +58,8 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         fields = Map.empty
       )
     )
-    val noUploadAction = controllers.routes.MakingALateAppealController.onPageLoad().url
     def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
-      uploadFirstDocumentPage.apply(mockUpscanInitiateResponseModel, form, noUploadAction,
+      uploadFirstDocumentPage.apply(mockUpscanInitiateResponseModel, form,
         pageMode = PageMode(UploadFirstDocumentPage, NormalMode))(request, implicitly, implicitly)
     }
 
@@ -83,7 +82,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentP2 -> detailsP2,
       Selectors.detailsContentP3 -> detailsP3,
       Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-      Selectors.continueButton -> continueButton,
       Selectors.uploadButton -> uploadButton
     )
 
@@ -110,7 +108,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentP2 -> detailsP2,
         Selectors.detailsContentP3 -> detailsP3,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.continueButton -> continueButton,
         Selectors.uploadButton -> uploadButton
       )
 
@@ -139,7 +136,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentP2 -> detailsP2,
         Selectors.detailsContentP3 -> detailsP3,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.continueButton -> continueButton,
         Selectors.uploadButton -> uploadButton
       )
 
@@ -167,7 +163,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentP2 -> detailsP2,
         Selectors.detailsContentP3 -> detailsP3,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.continueButton -> continueButton,
         Selectors.uploadButton -> uploadButton
       )
 
@@ -196,7 +191,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentP2 -> detailsP2,
         Selectors.detailsContentP3 -> detailsP3,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.continueButton -> continueButton,
         Selectors.uploadButton -> uploadButton
       )
 
