@@ -88,7 +88,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
           val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
           status(result) shouldBe OK
-          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "4 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link.")
+          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.")
         }
 
         "there is one set of duplicates" when {
@@ -507,7 +507,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
           val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
           status(result) shouldBe OK
-          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "4 of the files you have uploaded have the same contents. You can remove duplicate files using the ’Remove’ link.")
+          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.")
         }
 
         "there is one set of duplicates" when {
