@@ -264,7 +264,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
               WasHospitalStayRequiredPage
             )
           ),
-          (getMessage("checkYourAnswers.unableToManageAccount"),
+          (messages(WhenDidYouBecomeUnableHelper.getMessageKeyForPage("health.whenHealthIssueHappened.headingAndTitle")),
             dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueHappened).get)),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
