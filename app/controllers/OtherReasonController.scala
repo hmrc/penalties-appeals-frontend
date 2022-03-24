@@ -160,7 +160,6 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       if (request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
-        val nextPageIfNoUpload = navigation.nextPage(EvidencePage, mode)
         val formProvider = UploadDocumentForm.form
         upscanService.initiateSynchronousCallToUpscan(request.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = false, mode).map(
           _.fold(
@@ -173,15 +172,15 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
               val optFailureFromUpscan: Option[String] = request.session.get(SessionKeys.failureMessageFromUpscan)
               val isJsEnabled = request.cookies.get("jsenabled").isDefined
               if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
-                Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, nextPageIfNoUpload.url, pageMode(UploadFirstDocumentPage, mode)))
+                Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, pageMode(UploadFirstDocumentPage, mode)))
               } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
                 val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get, isJsEnabled)
                 val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
-                BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, nextPageIfNoUpload.url, pageMode(UploadFirstDocumentPage, mode)))
+                BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, pageMode(UploadFirstDocumentPage, mode)))
                   .removingFromSession(SessionKeys.errorCodeFromUpscan)
               } else {
                 val formWithErrors = UploadDocumentForm.form.withError(FormError("file", optFailureFromUpscan.get))
-                BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, nextPageIfNoUpload.url, pageMode(UploadFirstDocumentPage, mode)))
+                BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, pageMode(UploadFirstDocumentPage, mode)))
                   .removingFromSession(SessionKeys.failureMessageFromUpscan)
               }
             }

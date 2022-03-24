@@ -324,7 +324,6 @@ otherReason.uploadEvidence.question.hintText = Uploading evidence is optional. W
 otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first file. You can upload additional files afterwards. We will use any evidence to help us review the penalty.
 otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
 otherReason.uploadEvidence.noJs.uploadAnotherLabel = Choose your next file
-otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence = Continue without evidence
 otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
 
 # Upload List (No JS) page
