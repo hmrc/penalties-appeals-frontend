@@ -1458,6 +1458,38 @@ class SessionAnswersHelperSpec extends SpecBase {
             WhenDidHealthIssueHappenPage.toString
           ).url
         }
+
+        "when the agent intended to submit but missed the deadline" in {
+          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.wasHospitalStayRequired -> "no",
+            SessionKeys.whenHealthIssueHappened -> "2022-01-01",
+            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+            SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
+          ))
+
+          val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
+          result.head._1 shouldBe "Reason for missing the VAT deadline"
+          result.head._2 shouldBe "Health"
+          result.head._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
+          result(1)._1 shouldBe "Did this health issue include a hospital stay?"
+          result(1)._2 shouldBe "No"
+          result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+            WasHospitalStayRequiredPage.toString
+          ).url
+          result(2)._1 shouldBe "When did the health issue first stop you submitting the VAT Return?"
+          result(2)._2 shouldBe "1 January 2022"
+          result(2)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+            WhenDidHealthIssueHappenPage.toString
+          ).url
+        }
       }
 
       "when it is an LPP show the correct message" in {
