@@ -17,12 +17,12 @@
 package forms
 
 import java.time.LocalDate
+
 import forms.mappings.Mappings
 import helpers.WhenDidYouBecomeUnableHelper.getMessageKeyForPage
 import models.UserRequest
 import play.api.data.Form
 import play.api.i18n.Messages
-import utils.MessageRenderer.getMessageKey
 
 object WhenDidHealthIssueHappenForm extends Mappings {
 
