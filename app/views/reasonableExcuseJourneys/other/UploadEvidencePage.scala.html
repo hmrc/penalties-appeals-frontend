@@ -40,8 +40,7 @@
         pageMode: PageMode,
         jsEnabled: Boolean = true,
         upscanResponse: Option[UpscanInitiateResponseModel] = None,
-        form: Option[Form[_]] = None,
-        nextPageIfNoUpload: Option[String] = None)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+        form: Option[Form[_]] = None)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.session.get(SessionKeys.appealType)}
 @detailsContent = {
@@ -144,7 +143,6 @@
         </div>
         <p>
             @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))
-            <a href="@nextPageIfNoUpload" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.noJs.button.uploadWithoutEvidence")</a>
         </p>
     </form>
     }

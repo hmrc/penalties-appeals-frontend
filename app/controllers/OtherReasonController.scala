@@ -174,17 +174,17 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
               val isJsEnabled = request.cookies.get("jsenabled").isDefined
               if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
                 Ok(uploadEvidencePage(upscanResponse = Some(upscanResponseModel),
-                  form = Some(formProvider), nextPageIfNoUpload = Some(nextPageIfNoUpload.url), pageMode = pageMode(UploadFirstDocumentPage, mode), jsEnabled = false))
+                  form = Some(formProvider), pageMode = pageMode(UploadFirstDocumentPage, mode), jsEnabled = false))
               } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
                 val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get, isJsEnabled)
                 val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
                 BadRequest(uploadEvidencePage(upscanResponse = Some(upscanResponseModel), form = Some(formWithErrors),
-                  nextPageIfNoUpload = Some(nextPageIfNoUpload.url), pageMode = pageMode(UploadFirstDocumentPage, mode), jsEnabled = false))
+                  pageMode = pageMode(UploadFirstDocumentPage, mode), jsEnabled = false))
                   .removingFromSession(SessionKeys.errorCodeFromUpscan)
               } else {
                 val formWithErrors = UploadDocumentForm.form.withError(FormError("file", optFailureFromUpscan.get))
                 BadRequest(uploadEvidencePage(upscanResponse = Some(upscanResponseModel), form = Some(formWithErrors),
-                  nextPageIfNoUpload = Some(nextPageIfNoUpload.url), pageMode = pageMode(UploadFirstDocumentPage, mode), jsEnabled = false))
+                  pageMode = pageMode(UploadFirstDocumentPage, mode), jsEnabled = false))
                   .removingFromSession(SessionKeys.failureMessageFromUpscan)
               }
             }

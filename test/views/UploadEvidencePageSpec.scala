@@ -279,12 +279,10 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         )
       )
 
-      val noUploadAction = controllers.routes.MakingALateAppealController.onPageLoad().url
-      def applyView(request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
+      def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
         uploadEvidencePage.apply(
           upscanResponse = Some(mockUpscanInitiateResponseModel),
-          form = Some(form),
-          nextPageIfNoUpload = Some(noUploadAction), pageMode = PageMode(UploadFirstDocumentPage, NormalMode), jsEnabled = false)(request, implicitly, implicitly)
+          form = Some(form), pageMode = PageMode(UploadFirstDocumentPage, NormalMode), jsEnabled = false)(request, implicitly, implicitly)
       }
 
       implicit val doc: Document = asDocument(applyView())
@@ -306,7 +304,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentP2 -> noJsDetailsP2,
         Selectors.detailsContentP3 -> noJsDetailsP3,
         Selectors.chooseYourFirstFile -> noJsChooseYourFirstFile,
-        Selectors.continueButton -> noJsContinueButton,
         Selectors.uploadButton -> noJsUploadButton
       )
 
@@ -333,7 +330,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
           Selectors.detailsContentP2 -> noJsDetailsP2,
           Selectors.detailsContentP3 -> noJsDetailsP3,
           Selectors.chooseYourFirstFile -> noJsChooseYourFirstFile,
-          Selectors.continueButton -> noJsContinueButton,
           Selectors.uploadButton -> noJsUploadButton
         )
 
@@ -362,7 +358,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
           Selectors.detailsContentP2 -> noJsDetailsP2,
           Selectors.detailsContentP3 -> noJsDetailsP3,
           Selectors.chooseYourFirstFile -> noJsChooseYourFirstFile,
-          Selectors.continueButton -> noJsContinueButton,
           Selectors.uploadButton -> noJsUploadButton
         )
 
@@ -390,7 +385,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
           Selectors.detailsContentP2 -> noJsDetailsP2,
           Selectors.detailsContentP3 -> noJsDetailsP3,
           Selectors.chooseYourFirstFile -> noJsChooseYourFirstFile,
-          Selectors.continueButton -> noJsContinueButton,
           Selectors.uploadButton -> noJsUploadButton
         )
 
@@ -419,7 +413,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
           Selectors.detailsContentP2 -> noJsDetailsP2,
           Selectors.detailsContentP3 -> noJsDetailsP3,
           Selectors.chooseYourFirstFile -> noJsChooseYourFirstFile,
-          Selectors.continueButton -> noJsContinueButton,
           Selectors.uploadButton -> noJsUploadButton
         )
 
