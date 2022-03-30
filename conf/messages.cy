@@ -414,45 +414,15 @@ checkYourAnswers.reasonableExcuse = Reason for missing the VAT deadline
 checkYourAnswers.change.text = Change
 checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
 checkYourAnswers.whyYouDidNotAppealSooner = Reason for appealing after 30 days
-checkYourAnswers.fireOrFlood.whenDidTheFireOrFloodHappen = When did the fire or flood happen?
-checkYourAnswers.fireOrFlood.reasonableExcuse = Fire or flood
-checkYourAnswers.lossOfStaff.reasonableExcuse = Loss of staff essential to the VAT process
 checkYourAnswers.lossOfStaff.whenPersonBecameUnavailable = When did the person become unavailable?
-checkYourAnswers.crime.whenDidTheCrimeHappen = When did the crime happen?
-checkYourAnswers.crime.reasonableExcuse = Crime
-checkYourAnswers.crime.hasCrimeBeenReported = Has this crime been reported to the police?
-checkYourAnswers.crime.yes = Yes
-checkYourAnswers.crime.no = No
-checkYourAnswers.crime.unknown = I do not know
-checkYourAnswers.technicalIssues.whenDidTechIssuesBegin = When did the technology issues begin?
-checkYourAnswers.technicalIssues.whenDidTechIssuesEnd = When did the technology issues end?
-checkYourAnswers.technicalIssues.reasonableExcuse = Technology issues
-checkYourAnswers.health.reasonableExcuse = Health
-checkYourAnswers.health.hospitalStay = Did this health issue include a hospital stay?
-checkYourAnswers.health.yes = Yes
-checkYourAnswers.health.no = No
-checkYourAnswers.health.whenDidHospitalStayBegin = When did the hospital stay begin?
-checkYourAnswers.health.hasTheHospitalStayEnded = Has the hospital stay ended?
-checkYourAnswers.health.whenDidHospitalStayEnd = When did it end?
-checkYourAnswers.bereavement.whenDidThePersonDie = When did the person die?
-checkYourAnswers.bereavement.reasonableExcuse = Bereavement (someone died)
 
-checkYourAnswers.other.reasonableExcuse = The reason does not fit into any of the other categories
-checkYourAnswers.other.statementOfLateness = Why was the return submitted late?
-checkYourAnswers.other.lpp.statementOfLateness = Why was the VAT bill paid late?
 checkYourAnswers.other.fileEvidence = Evidence to support this appeal
-checkYourAnswers.other.uploadEvidenceQuestion = Do you want to upload evidence to support your appeal?
 checkYourAnswers.other.noFileUpload = Not provided
 
-checkYourAnswers.agents.whoPlannedToSubmitVATReturn = Before the deadline, who planned to submit the return?
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.client = My client did
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = I did
-checkYourAnswers.agents.whatCausedYouToMissTheDeadline = What caused you to miss the deadline?
 checkYourAnswers.agents.whatCausedYouToMissTheDeadline.client = My client did not get information to me on time
 checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Something else happened to delay me
-
-checkYourAnswers.obligation.whyYouWantToAppealPenalty = Tell us why you want to appeal the penalty
-checkYourAnswers.obligation.fileEvidence = Evidence to support this appeal
 
 checkYourAnswers.unableToManageAccount = When did you become unable to manage the VAT account?
 agent.checkYourAnswers.unableToManageAccount = When did your client become unable to manage the VAT account?
