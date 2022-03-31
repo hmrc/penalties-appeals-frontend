@@ -9,6 +9,7 @@ common.acceptAndContinue = Accept and continue
 common.acceptAndSend = Accept and send
 common.radioOption.yes = Yes
 common.radioOption.no = No
+common.radioOption.unknown = I do not know
 
 app.common.back = Back
 
@@ -414,7 +415,6 @@ checkYourAnswers.reasonableExcuse = Reason for missing the VAT deadline
 checkYourAnswers.change.text = Change
 checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
 checkYourAnswers.whyYouDidNotAppealSooner = Reason for appealing after 30 days
-checkYourAnswers.lossOfStaff.whenPersonBecameUnavailable = When did the person become unavailable?
 
 checkYourAnswers.other.fileEvidence = Evidence to support this appeal
 checkYourAnswers.other.noFileUpload = Not provided

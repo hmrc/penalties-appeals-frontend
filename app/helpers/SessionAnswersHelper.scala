@@ -143,7 +143,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
             ReasonableExcuseSelectionPage
           )
         ),
-        (messages("checkYourAnswers.lossOfStaff.whenPersonBecameUnavailable"),
+        (messages("lossOfStaffReason.headingAndTitle"),
           dateToString(LocalDate.parse(request.session.get(SessionKeys.whenPersonLeftTheBusiness).get)),
           changeAnswerUrl(
             controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url,

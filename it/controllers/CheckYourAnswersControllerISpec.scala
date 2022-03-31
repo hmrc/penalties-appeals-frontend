@@ -83,7 +83,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "When did the person become unavailable?"
+      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "When did the person leave the business?"
       parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "1 January 2022"
     }
 
