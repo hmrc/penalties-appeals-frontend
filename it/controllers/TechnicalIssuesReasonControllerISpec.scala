@@ -24,8 +24,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
 import java.time.{LocalDate, LocalDateTime}
+
+import uk.gov.hmrc.http.SessionKeys.authToken
 
 class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: TechnicalIssuesReasonController = injector.instanceOf[TechnicalIssuesReasonController]
@@ -33,6 +34,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /when-did-the-technology-issues-begin" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-begin").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -46,13 +48,16 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-begin")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-begin").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-begin").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -71,6 +76,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /when-did-the-technology-issues-end" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -86,6 +92,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 400 (BAD REQUEST) when the user enters a date that is earlier than the start date" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -100,13 +107,16 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -125,6 +135,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /when-did-the-technology-issues-begin" should {
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - when in check mode" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -152,6 +163,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the date submitted is in the future" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -175,6 +187,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -189,6 +202,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "the date submitted is missing a field" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -240,13 +254,16 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -266,6 +283,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /when-did-the-technology-issues-end" should {
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - to CYA when in CheckMode" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -292,6 +310,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - to late appeal when in NormalMode" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -319,6 +338,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the date submitted is earlier than the start date" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -343,6 +363,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "the date submitted is in the future" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -367,6 +388,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -382,6 +404,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "the date submitted is missing a field" in {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -434,13 +457,16 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),

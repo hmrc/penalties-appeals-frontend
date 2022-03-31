@@ -32,15 +32,15 @@ lazy val microservice = Project(appName, file("."))
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
       "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
     ),
-    WebpackKeys.outputFileName in WebpackKeys.webpack := "javascripts/multiFileUpload.min.js",
-    WebpackKeys.entries in WebpackKeys.webpack := Seq(
+    WebpackKeys.webpack / WebpackKeys.outputFileName := "javascripts/multiFileUpload.min.js",
+    WebpackKeys.webpack / WebpackKeys.entries := Seq(
       "assets:javascripts/upload/multiFileUpload.js"
     ),
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;.*(BuildInfo|Routes).*",
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;" +
       ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;" +
       ".*ControllerConfiguration;.*LanguageSwitchController;.*testonly.*;.*layouts.*;",
-    ScoverageKeys.coverageMinimum := 90,
+    ScoverageKeys.coverageMinimumStmtTotal := 90,
     ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := true,
     PlayKeys.playDefaultPort := 9181

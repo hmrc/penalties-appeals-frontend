@@ -16,17 +16,17 @@
 
 package helpers
 
+import java.time.LocalDate
+
+import javax.inject.Inject
 import models.pages._
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import repositories.UploadJourneyRepository
-import utils.MessageRenderer.getMessage
 import utils.SessionKeys
 import viewtils.ImplicitDateFormatter
 
-import java.time.LocalDate
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository)(implicit ec: ExecutionContext) extends ImplicitDateFormatter {

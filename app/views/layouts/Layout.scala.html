@@ -58,7 +58,7 @@
             Some(hmrcTimeoutDialog(TimeoutDialog(
                 timeout = Some(appConfig.timeoutPeriod),
                 countdown = Some(appConfig.timeoutCountdown),
-                signOutUrl = Some(routes.SignOutController.signOut().url),
+                signOutUrl = Some(routes.SignOutController.signOut.url),
                 timeoutUrl = Some(routes.TimeoutController.onPageLoad().url),
                 keepAliveUrl = Some("#"),
                 signOutButtonText = Some(messages("base.signOut"))

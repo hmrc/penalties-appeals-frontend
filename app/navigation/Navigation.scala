@@ -169,7 +169,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     if (answer.get.toLowerCase == "yes") {
       routes.YouCanAppealPenaltyController.onPageLoad()
     } else {
-      routes.YouCannotAppealController.onPageLoad()
+      routes.YouCannotAppealController.onPageLoad
     }
   }
 
