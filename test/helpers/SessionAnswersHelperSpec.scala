@@ -402,7 +402,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           controllers.routes.ReasonableExcuseController.onPageLoad().url,
           ReasonableExcuseSelectionPage.toString
         ).url
-        result(1)._1 shouldBe "When did the person become unavailable?"
+        result(1)._1 shouldBe "When did the person leave the business?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url,
@@ -426,7 +426,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           controllers.routes.ReasonableExcuseController.onPageLoad().url,
           ReasonableExcuseSelectionPage.toString
         ).url
-        result(1)._1 shouldBe "When did the person become unavailable?"
+        result(1)._1 shouldBe "When did the person leave the business?"
         result(1)._2 shouldBe "1 January 2022"
         result(1)._3 shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url,
