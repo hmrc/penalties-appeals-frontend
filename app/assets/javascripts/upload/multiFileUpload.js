@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
 const status = {
-    Default: "Default",
-    Waiting: "Waiting",
-    Uploading: "Uploading",
-    Verifying: "Verifying",
-    Uploaded: "Uploaded",
-    Removing: "Removing"
-}
+    Default: 'Default',
+    Waiting: 'Waiting',
+    Uploading: 'Uploading',
+    Verifying: 'Verifying',
+    Uploaded: 'Uploaded',
+    Removing: 'Removing'
+};
 
 export class MultiFileUpload {
     /**  F1 */
@@ -15,14 +15,14 @@ export class MultiFileUpload {
         this.uploadData = {};
         this.container = form;
         this.lastFileIndex = 0;
-        this.errorMessageTpl = "";
-        this.errorSummaryList = "";
-        this.errorSummaryTpl = "";
-        this.errorSummaryItemTpl = "";
-        this.errorSummary = "";
+        this.errorMessageTpl = '';
+        this.errorSummaryList = '';
+        this.errorSummaryTpl = '';
+        this.errorSummaryItemTpl = '';
+        this.errorSummary = '';
         this.hasDisplayedErrorPrefix = false;
         this.errors = {};
-        this.csrfToken = form.querySelector("input[name=csrfToken]").value;
+        this.csrfToken = form.querySelector('input[name=csrfToken]').value;
         this.config = {
             startRows: parseInt(form.dataset.multiFileUploadStartRows) || 1,
             minFiles: parseInt(form.dataset.multiFileUploadMinFiles) || 1,
@@ -35,7 +35,7 @@ export class MultiFileUpload {
             removeUrlTpl: decodeURIComponent(form.dataset.multiFileUploadRemoveUrlTpl),
             getDuplicateUrlTpl: decodeURIComponent(form.dataset.multiFileUploadDuplicateUrlTpl),
             getErrorServiceUrlTpl: decodeURIComponent(form.dataset.multiFileUploadErrorUrlTpl)
-        }
+        };
 
         this.classes = {
             itemList: 'multi-file-upload__item-list',
@@ -60,7 +60,7 @@ export class MultiFileUpload {
             errorSummary: 'govuk-error-summary',
             formStatus: 'multi-file-upload__form-status',
             inset: 'govuk-inset-text'
-        }
+        };
 
         this.messages = {
             genericError: form.dataset.multiFileUploadErrorGeneric,
@@ -69,7 +69,7 @@ export class MultiFileUpload {
             fileUploading: form.dataset.multiFileUploadFileUploading,
             fileRemoved: form.dataset.multiFileUploadFileRemoved,
             errorPrefix: form.dataset.multiFileUploadErrorPrefix
-        }
+        };
 
         this.cacheTemplates();
         this.cacheElements();
@@ -224,7 +224,7 @@ export class MultiFileUpload {
             const item = file.closest(`.${this.classes.item}`);
             if(this.getFileName(file)) {
                 this.addNotification(this.parseTemplate(this.messages.fileRemoved, {
-                    fileNumber: item.querySelector(".govuk-label").textContent,
+                    fileNumber: item.querySelector('.govuk-label').textContent,
                     fileName: this.getFileName(file)
                 }));
             }
@@ -355,7 +355,7 @@ export class MultiFileUpload {
     /** F77 */
     setUploadingMessage(item, file) {
         item.querySelector(`.${this.classes.progressBar}`).textContent = this.parseTemplate(this.messages.fileUploading, {
-            fileNumber: item.querySelector(".govuk-label").textContent.toLowerCase(),
+            fileNumber: item.querySelector('.govuk-label').textContent.toLowerCase(),
             fileName: this.getFileName(file)
         });
     }
@@ -390,7 +390,7 @@ export class MultiFileUpload {
 
     /** F27 */
     getFileByReference(fileRef) {
-        return this.itemList.querySelector(`[data-multi-file-upload-file-ref="${fileRef}"]`);
+        return this.itemList.querySelector(`[data-multi-file-upload-file-ref='${fileRef}']`);
     }
 
     /** F28 */
@@ -406,7 +406,7 @@ export class MultiFileUpload {
     handleUploadFileError(fileRef) {
         const file = this.getFileByReference(fileRef);
         const item = this.getItemFromFile(file);
-        item.querySelector(`.${this.classes.fileName}`).style.display = "none";
+        item.querySelector(`.${this.classes.fileName}`).style.display = 'none';
         this.updateFormStatusVisibility();
         this.addError(file, this.messages.genericError);
     }
@@ -414,7 +414,7 @@ export class MultiFileUpload {
     /** F30 */
     handleFileStatusFailed(file, errorMessage) {
         const item = this.getItemFromFile(file);
-        item.querySelector(`.${this.classes.fileName}`).style.display = "none";
+        item.querySelector(`.${this.classes.fileName}`).style.display = 'none';
         this.setItemState(item, status.Default);
         this.addError(file.id, errorMessage);
         this.updateFormStatusVisibility();
@@ -464,7 +464,7 @@ export class MultiFileUpload {
                 this.hasDisplayedErrorPrefix = true;
             }
         } else {
-            document.title = document.title.split(": ")[1];
+            document.title = document.title.split(': ')[1];
             this.hasDisplayedErrorPrefix = false;
             this.errorSummary.remove();
         }
@@ -583,7 +583,7 @@ export class MultiFileUpload {
     handleFileStatusSuccessful(file) {
         const item = this.getItemFromFile(file);
         this.addNotification(this.parseTemplate(this.messages.fileUploaded, {
-            fileNumber: item.querySelector(".govuk-label").textContent,
+            fileNumber: item.querySelector('.govuk-label').textContent,
             fileName: this.getFileName(file)
         }));
         this.setItemState(item, status.Uploaded);
@@ -845,7 +845,7 @@ export class MultiFileUpload {
             method: 'GET'
         })
             .then(response => response.json())
-            .then(this.showInsetText.bind(this))
+            .then(this.showInsetText.bind(this));
     }
 
     /** F74 */
@@ -857,12 +857,12 @@ export class MultiFileUpload {
     showInsetText(response) {
         const message = response['message'];
         if (message === undefined) {
-            this.container.querySelector(".govuk-inset-text").classList.add("hidden");
-            this.container.querySelector(".govuk-inset-text").ariaHidden = "true";
+            this.container.querySelector('.govuk-inset-text').classList.add('hidden');
+            this.container.querySelector('.govuk-inset-text').ariaHidden = 'true';
         } else {
-            this.container.querySelector(".govuk-inset-text").classList.remove("hidden");
-            this.container.querySelector(".govuk-inset-text").innerHTML = message;
-            this.container.querySelector(".govuk-inset-text").ariaHidden = "false";
+            this.container.querySelector('.govuk-inset-text').classList.remove('hidden');
+            this.container.querySelector('.govuk-inset-text').innerHTML = message;
+            this.container.querySelector('.govuk-inset-text').ariaHidden = 'false';
         }
     }
 
@@ -882,7 +882,7 @@ export class MultiFileUpload {
  * Initialises the base state of the MultiFileUpload object.
  */
 document.addEventListener('DOMContentLoaded', function () {
-    const element = document.getElementById("multi-upload-form");
+    const element = document.getElementById('multi-upload-form');
     if(element) {
         const uploadObj = new MultiFileUpload(element);
         uploadObj.init();

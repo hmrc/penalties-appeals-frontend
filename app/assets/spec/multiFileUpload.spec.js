@@ -36,7 +36,7 @@ function getFailedResponse() {
     return {
         status: 'REJECTED',
         errorMessage: 'The selected file must be smaller than 6MB. Remove the file and try again.'
-    }
+    };
 }
 
 describe('Multi File Upload component', () => {
@@ -252,11 +252,11 @@ describe('Multi File Upload component', () => {
                 it('Then item should be in "uploading" state', (done) => {
                     expect(item.classList.contains('multi-file-upload__item--uploading')).toEqual(true);
                     done();
-                })
+                });
 
                 it('Then the progress bar should have the text "Uploading file [file number] [filename]"', (done) => {
                     expect(instance.setUploadingMessage).toHaveBeenCalled();
-                    expect(item.querySelector(".multi-file-upload__progress-bar").textContent).toEqual('Uploading file 1 test.txt');
+                    expect(item.querySelector('.multi-file-upload__progress-bar').textContent).toEqual('Uploading file 1 test.txt');
                     done();
                 });
 
@@ -405,7 +405,7 @@ describe('Multi File Upload component', () => {
 
                 it('Then "file uploaded" message is placed in aria live region', (done) => {
                     const notifications = container.querySelector('.multi-file-upload__notifications');
-                    expect(notifications.textContent.trim()).toEqual("File 1 test.txt has been uploaded");
+                    expect(notifications.textContent.trim()).toEqual('File 1 test.txt has been uploaded');
                     done();
                 });
             });
@@ -506,7 +506,7 @@ describe('Multi File Upload component', () => {
 
                     it('Then "file removed" message is placed in aria live region', (done) => {
                         const notifications = container.querySelector('.multi-file-upload__notifications');
-                        expect(notifications.textContent.trim()).toEqual("File 1 test.txt has been removed");
+                        expect(notifications.textContent.trim()).toEqual('File 1 test.txt has been removed');
                         done();
                     });
 
