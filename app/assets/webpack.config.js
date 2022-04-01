@@ -42,5 +42,5 @@ module.exports = function (env) {
             ]
         },
         output: env.output
-    }
+    };
 };

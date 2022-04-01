@@ -2,6 +2,7 @@
 
 !.gitignore
 !.scalafmt.conf
+!.eslintrc.*
 .cache
 /.classpath
 db
