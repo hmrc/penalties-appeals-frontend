@@ -5,13 +5,13 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "penalties-appeals-frontend"
 
-val silencerVersion = "1.7.1"
+val silencerVersion = "1.7.8"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtWeb)
   .settings(
     majorVersion                     := 0,
-    scalaVersion                     := "2.12.11",
+    scalaVersion                     := "2.12.15",
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
     TwirlKeys.templateImports ++= Seq(
       "play.twirl.api.HtmlFormat",
