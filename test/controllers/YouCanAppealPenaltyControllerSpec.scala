@@ -28,7 +28,7 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
-import views.html.YouCanAppealPenaltyPage
+import views.html.obligation.YouCanAppealPenaltyPage
 
 import scala.concurrent.{ExecutionContext, Future}
 

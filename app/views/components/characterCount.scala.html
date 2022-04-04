@@ -18,6 +18,8 @@
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.charactercount.CharacterCount
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcCharacterCount
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
+@import viewtils.PenaltyTypeHelper
+
 @this(hmrcCharacterCount: HmrcCharacterCount)
 
 @(
@@ -29,7 +31,8 @@
         classes: String = ""
 )(implicit messages: Messages)
 @hmrcCharacterCount(CharacterCount(
-    label = Label(classes = "govuk-label--l",
+    label = Label(
+        classes = "govuk-label--xl",
         isPageHeading = true,
         content = Text(label)),
     hint =  hint.map(h => Hint(content = h)),

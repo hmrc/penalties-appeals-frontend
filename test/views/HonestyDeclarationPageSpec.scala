@@ -508,8 +508,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "the appeal is LPP" must {
-        implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
-        val userRequest = UserRequest("123456789")(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
+        val userRequest = UserRequest("123456789")(vatTraderLPPUserRequest)
 
         implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "crime", messages("honestyDeclaration.crime"),
           "1 January 2022", "1 January 2021", "31 January 2021",
@@ -529,7 +528,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "it is an appeal against an obligation" must {
-        implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
+        implicit val userRequest: UserRequest[AnyContent] = UserRequest("123456789")(vatTraderLSPUserRequest)
         implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "other", "",
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq(), isObligation = true))
@@ -548,9 +547,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "it is a LPP appeal and the reason is technicalIssues" must {
-        implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
-        val userRequest = UserRequest("123456789")(fakeRequest.withSession(
-          SessionKeys.reasonableExcuse -> "technicalIssues", SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
+        implicit val userRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequestLPPWithCorrectKeys.withSession(SessionKeys.reasonableExcuse -> "technicalIssues"))
         implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "technicalIssues", messages("honestyDeclaration.technicalIssues"),
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq(), userRequest))

@@ -23,7 +23,7 @@ import models.pages.{PageMode, YouCannotAppealPage}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.YouCannotAppealPage
+import views.html.obligation.YouCannotAppealPage
 
 class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
   "YouCannotAppealPage" should {

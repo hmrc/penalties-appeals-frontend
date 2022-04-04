@@ -38,9 +38,8 @@
 
         @radios(
             form = form,
-            legend = if(request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)){messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")},
-            items = radioOptions,
-            legendAsHeading = true
+            legendContent = if(request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)){messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")},
+            items = radioOptions
         )
 
         @govukButton(Button(content = Text(messages("common.continue"))))

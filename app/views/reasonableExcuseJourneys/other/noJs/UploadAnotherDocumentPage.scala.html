@@ -23,6 +23,7 @@
         p: components.p,
         details: components.details,
         bullets: components.bullets,
+        pageHeader: components.pageHeader,
         fileUploadDialog: components.upload.fileUploadDialog)
 
 @(upscanResponse: UpscanInitiateResponseModel,
@@ -50,21 +51,21 @@
         formHasErrors = form.errors.nonEmpty,
         formErrors = form.errors,
         optPageMode = Some(pageMode)) {
-        <h1 class="govuk-heading-l">@messages("otherReason.uploadAnotherDocument.noJs.headingAndTitle")</h1>
-        <p class="govuk-body">@messages("otherReason.uploadEvidence.p4")</p>
-        <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
-        @details("otherReason.uploadEvidence.details.heading", detailsContent)
+    @pageHeader(messages("otherReason.uploadAnotherDocument.noJs.headingAndTitle"))
+    <p class="govuk-body">@messages("otherReason.uploadEvidence.p4")</p>
+    <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
+    @details("otherReason.uploadEvidence.details.heading", detailsContent)
 
-        <form method="POST" action="@upscanResponse.uploadRequest.href" id="file-upload-form" enctype="multipart/form-data">
-                @for(field <- upscanResponse.uploadRequest.fields) {
-                        <input type="hidden" name="@field._1" value="@field._2"/>
-                }
-                <div id="file-upload-form-group" class="govuk-form-group">
-                        @fileUploadDialog(form, isAddingAnotherDocument = true)
-                </div>
-                <span>
-                        @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))
-                        <a href="@fileListPage" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadAnotherDocument.noJs.button.cancel")</a>
-                </span>
-        </form>
+    <form method="POST" action="@upscanResponse.uploadRequest.href" id="file-upload-form" enctype="multipart/form-data">
+            @for(field <- upscanResponse.uploadRequest.fields) {
+                    <input type="hidden" name="@field._1" value="@field._2"/>
+            }
+            <div id="file-upload-form-group" class="govuk-form-group">
+                    @fileUploadDialog(form, isAddingAnotherDocument = true)
+            </div>
+            <span>
+                    @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))
+                    <a href="@fileListPage" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadAnotherDocument.noJs.button.cancel")</a>
+            </span>
+    </form>
 }

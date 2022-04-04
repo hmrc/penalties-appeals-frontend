@@ -30,7 +30,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.YouCanAppealPenaltyPage
+import views.html.obligation.YouCanAppealPenaltyPage
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject

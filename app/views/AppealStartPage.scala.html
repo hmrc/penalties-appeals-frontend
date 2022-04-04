@@ -20,7 +20,8 @@
 
 @this(layout: Layout,
         bullets: components.bullets,
-        link: components.link)
+        link: components.link,
+        pageHeader: components.pageHeader)
 
 @(isLate: Boolean, isObligationAppeal: Boolean, pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
@@ -46,7 +47,7 @@
         isPageFullWidth = false,
         optPageMode = Some(pageMode)
 ) {
-    <h1 class="govuk-heading-l">@messages("service.name")</h1>
+    @pageHeader(messages("service.name"))
     <p class="govuk-body">@messages("appealStart.p1")</p>
     @bullets(
         Seq(
