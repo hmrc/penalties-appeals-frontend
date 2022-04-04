@@ -31,9 +31,8 @@
     @formHelper(action = postAction) {
         @radios(
             form = form,
-            legend = messages("healthReason.hasTheHospitalStayEnded.headingAndTitle"),
+            legendContent = messages("healthReason.hasTheHospitalStayEnded.headingAndTitle"),
             items = radioOptions,
-            legendAsHeading = true,
             formFieldId = "hasStayEnded"
         )
 

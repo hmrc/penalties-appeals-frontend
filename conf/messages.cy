@@ -10,6 +10,7 @@ common.acceptAndSend = Accept and send
 common.radioOption.yes = Yes
 common.radioOption.no = No
 common.radioOption.unknown = I do not know
+common.penaltyYouAreAppealing = The penalty you are appealing is
 
 app.common.back = Back
 

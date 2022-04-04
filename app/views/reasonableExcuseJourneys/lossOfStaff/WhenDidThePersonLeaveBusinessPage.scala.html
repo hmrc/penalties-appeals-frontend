@@ -30,10 +30,11 @@
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
     @formHelper(action = postAction) {
+
         @dateInput(
             form = form,
             legendContent = messages("lossOfStaffReason.headingAndTitle"),
-            legendClasses = Some("govuk-fieldset__legend govuk-fieldset__legend--l"),
+            legendClasses = Some("govuk-fieldset__legend--xl"),
             hintText = Some(messages("lossOfStaffReason.hintText") + messages("whenDidEventHappen.hint")),
             legendAsPageHeading = true
         )

@@ -25,7 +25,8 @@
         govukButton: GovukButton,
         details: components.details,
         p: components.p,
-        bullets: components.bullets)
+        bullets: components.bullets,
+        pageHeader: components.pageHeader)
 
 @(
         postAction: Call,
@@ -66,7 +67,7 @@
     isPageFullWidth = false,
     customJavaScript = Some("multiFileUpload.min.js"),
     optPageMode = Some(pageMode)) {
-    <h1 class="govuk-heading-l">@messages("otherReason.uploadEvidence.headingAndTitle")</h1>
+    @pageHeader(messages("otherReason.uploadEvidence.headingAndTitle"))
 
     @formHelper(action = postAction,
         args =

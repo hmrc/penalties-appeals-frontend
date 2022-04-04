@@ -32,9 +32,8 @@
     @formHelper(action = postAction) {
         @radios(
             form = form,
-            legend = messages("crimeReason.hasBeenReported.headingAndTitle"),
-            items = radioOptions,
-            legendAsHeading = true
+            legendContent = messages("crimeReason.hasBeenReported.headingAndTitle"),
+            items = radioOptions
         )
 
         @govukButton(Button(content = Text(messages("common.continue"))))

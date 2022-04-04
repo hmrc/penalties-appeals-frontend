@@ -30,10 +30,9 @@ radios: components.radios)
     @formHelper(action = postAction) {
         @radios(
             form = form,
-            legend = messages("cancelVATRegistration.headingAndTitle"),
+            legendContent = messages("cancelVATRegistration.headingAndTitle"),
             hint = Some(Html(messages("cancelVATRegistration.hintText"))),
-            items = radioOptions,
-            legendAsHeading = true
+            items = radioOptions
         )
     @govukButton(Button(content = Text(messages("common.continue"))))
     }
