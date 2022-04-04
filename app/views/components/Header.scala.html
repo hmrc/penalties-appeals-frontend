@@ -27,5 +27,5 @@
     serviceName = Some(messages("service.name")),
     containerClasses = "govuk-width-container",
     navigation = None,
-    signOutHref = if(showSignOut) Some(controllers.routes.SignOutController.signOut().url) else None
+    signOutHref = if(showSignOut) Some(controllers.routes.SignOutController.signOut.url) else None
 ))

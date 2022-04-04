@@ -30,8 +30,10 @@ import repositories.UploadJourneyRepository
 import stubs.AuthStub
 import stubs.UpscanStub.successfulInitiateCall
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
 import java.time.{LocalDate, LocalDateTime}
+
+import uk.gov.hmrc.http.SessionKeys.authToken
+
 import scala.concurrent.Future
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
@@ -46,6 +48,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /when-inability-to-manage-account-happened" should {
     "return 200 (OK) when the user is authorised" in new Setup {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -59,13 +62,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onPageLoadForWhenDidBecomeUnable(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -84,6 +90,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /when-inability-to-manage-account-happened" should {
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new Setup {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -110,6 +117,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the date submitted is in the future" in new Setup {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -133,6 +141,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in new Setup {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -147,6 +156,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "the date submitted is missing a field" in new Setup {
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -197,13 +207,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -223,6 +236,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /upload-evidence-for-the-appeal" should {
     "return 200 (OK) when the user is authorised" in new Setup {
       val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -238,6 +252,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 303 (SEE_OTHER) when the user does not have JavaScript enabled" in new Setup {
       featureSwitching.disableFeatureSwitch(NonJSRouting)
       val fakeRequestWithCorrectKeys = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -254,6 +269,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 303 (SEE_OTHER) when the user does not have JavaScript enabled but the feature switch is enabled" in new Setup {
       featureSwitching.enableFeatureSwitch(NonJSRouting)
       val fakeRequestWithCorrectKeys = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -270,6 +286,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 200 (OK) when the user does have JavaScript enabled and the feature switch is disabled" in new Setup {
       featureSwitching.disableFeatureSwitch(NonJSRouting)
       val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -284,13 +301,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -310,6 +330,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /why-was-the-vat-late" should {
     "return 200 (OK) when the user is authorised" in new Setup {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-was-the-vat-late").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -323,13 +344,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-was-the-vat-late")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-was-the-vat-late").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-was-the-vat-late").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -348,6 +372,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /why-was-the-vat-late" should {
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new Setup {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-vat-late").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -371,6 +396,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "no body is submitted" in new Setup {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-vat-late").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -385,13 +411,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-vat-late")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-vat-late").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-vat-late").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -421,6 +450,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           |}
           |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -446,6 +476,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           |}
           |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -472,6 +503,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           |}
           |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -497,6 +529,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           |}
           |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -521,6 +554,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           |}
           |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -529,12 +563,14 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
       )
-      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile")))
+      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withSession(
+        SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile")))
       request.header.status shouldBe BAD_REQUEST
     }
 
     "return 500 (ISE) when the call to upscan fails for initiate call" in new Setup {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -548,13 +584,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -586,6 +625,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       await(repository.updateStateOfFileUpload("1234", callBackModel, isInitiateCall = true))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -617,6 +657,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         fileStatus = UploadStatusEnum.DUPLICATE),
         isInitiateCall = true))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -657,6 +698,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
         ))
       )
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -683,6 +725,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER) when the user has no uploads" in new Setup {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -699,6 +742,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 303 (SEE_OTHER) when the user has no successful uploads" in new Setup {
       await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/uploaded-documents").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -733,6 +777,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           |}
           |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-another-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -757,6 +802,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           |}
           |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-another-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -781,6 +827,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
           |}
           |""".stripMargin)
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-another-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -795,6 +842,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 500 (ISE) when the call to upscan fails for initiate call" in new Setup {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-another-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -808,13 +856,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-another-document")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-another-document").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-another-document").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -833,6 +884,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /remove-file-upload" should {
     "return an ISE when the form fails to bind" in new Setup {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file-upload").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -851,6 +903,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to the first document upload page when there is no uploads left" in new Setup {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file-upload").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -871,6 +924,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "reload the upload list when there is more uploads" in new Setup {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file-upload").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -894,6 +948,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
   "POST /upload-taking-longer-than-expected" should {
     val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-taking-longer-than-expected").withSession(
+      authToken -> "1234",
       (SessionKeys.penaltyNumber, "1234"),
       (SessionKeys.appealType, "Late_Submission"),
       (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -945,8 +1000,10 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /uploaded-documents" should {
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to another file upload page when user specifies 'yes'" in new Setup {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to another file" +
+      " upload page when user specifies 'yes'" in new Setup {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/uploaded-documents").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -966,8 +1023,10 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
     }
 
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to another file upload page when user specifies 'no'" in new Setup {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - going to another file upload" +
+      " page when user specifies 'no'" in new Setup {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/uploaded-documents").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -990,6 +1049,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "no body is submitted" in new Setup {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/uploaded-documents").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -1004,13 +1064,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/uploaded-documents")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/uploaded-documents").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/uploaded-documents").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -1030,6 +1093,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   "GET /upload-evidence-question" should {
     "return 200 (OK) when the user is authorised" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -1042,13 +1106,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.OK
     }
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
@@ -1067,6 +1134,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
   "POST /upload-evidence-question" should{
     "return 303 (SEE_OTHER), navigate to check your answer page when the user answers no" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -1090,6 +1158,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
     "return 303 (SEE_OTHER), navigate to upload evidence question and add the session key to the session - when the user answers yes" in {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -1114,6 +1183,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     "return 400 (BAD_REQUEST)" when {
       "the value is invalid" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -1135,6 +1205,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
 
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+          authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
           (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
@@ -1149,13 +1220,16 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question")
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
+        authToken -> "1234"
+      )
       val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question").withSession(
+        authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),

@@ -40,11 +40,11 @@ object SbtNpm extends AutoPlugin {
   override def projectSettings: Seq[Setting[_]] =
     inConfig(Assets)(
       Seq(
-        packageJsonDirectory := (sourceDirectory in WebKeys.assets).value,
+        packageJsonDirectory := (WebKeys.assets / sourceDirectory).value,
         // this enables 'sbt "npm <args>"' commands
         commands ++= packageJsonDirectory(base => Seq(npmCommand(base))).value,
         npmInstall := {
-          val logger: ManagedLogger = (streams in Assets).value.log
+          val logger: ManagedLogger = (Assets / streams).value.log
           val projectRoot: File = baseDirectory.value
           val nodeModulesDir = packageJsonDirectory.value / "node_modules"
           if (nodeModulesDir.exists() && nodeModulesDir.isDirectory()) {
@@ -63,7 +63,7 @@ object SbtNpm extends AutoPlugin {
           npmProcess("npm test failed")(packageJsonDirectory.value, "test")
         },
         npmTest := (npmTest dependsOn npmInstall).value,
-        (test in Test) := (test in Test).dependsOn(npmTest).value,
+        (Test / test) := (Test / test).dependsOn(npmTest).value,
         packager.Keys.dist := (packager.Keys.dist dependsOn npmInstall).value
       )
     )
