@@ -23,7 +23,7 @@
 @this(layout: Layout,
         formHelper: FormWithCSRF,
         govukFileUpload: GovukFileUpload,
-        govukButton: GovukButton,
+        button: components.button,
         details: components.details,
         p: components.p,
         bullets: components.bullets,
@@ -79,6 +79,6 @@
         <div id="file-upload-form-group" class="govuk-form-group">
             @fileUploadDialog(form)
         </div>
-        @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))
+        @button("otherReason.uploadEvidence.noJs.button.uploadFile")
     </form>
 }

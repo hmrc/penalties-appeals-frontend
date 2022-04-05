@@ -110,7 +110,7 @@
             <script type="text/x-template" id="error-manager-message-tpl">@errorManager.message(messages)</script>
 
             <p>
-                @govukButton(Button(content = Text(messages("common.continue"))))
+                @govukButton(Button(content = Text(messages("common.continue")),preventDoubleClick = true))
             </p>
         }
 }
