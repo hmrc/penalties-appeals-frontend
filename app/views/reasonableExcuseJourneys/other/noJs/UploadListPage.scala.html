@@ -19,7 +19,7 @@
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
-        button: components.button,
+        govukButton: GovukButton,
         p: components.p,
         radios: components.radios,
         govukSummaryList : GovukSummaryList)
@@ -55,6 +55,6 @@
                 legendClasses = "govuk-fieldset__legend--m"
             )
         }
-        @button("common.continue")
+        @govukButton(Button(content = Text(messages("common.continue"))))
     }
 }
