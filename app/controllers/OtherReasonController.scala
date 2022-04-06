@@ -139,8 +139,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           }
         } else {
           val previousUploads = previousUploadsState.fold("[]")(previousUploads => {
-            val previousUploadsWithoutDownloadURL = previousUploads.map(_.copy(downloadUrl = None))
-            Json.stringify(Json.toJson(previousUploadsWithoutDownloadURL))
+            val previousUploadsWithoutDownloadURLAndUploadFields = previousUploads.map(_.copy(downloadUrl = None, uploadFields = None))
+            Json.stringify(Json.toJson(previousUploadsWithoutDownloadURLAndUploadFields))
           })
           val initiateNextUploadUrl = controllers.routes.UpscanController.initiateCallToUpscan(request.session.get(SessionKeys.journeyId).get)
           val getStatusUrl = controllers.routes.UpscanController.getStatusOfFileUpload(request.session.get(SessionKeys.journeyId).get, _)
