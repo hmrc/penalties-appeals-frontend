@@ -19,7 +19,7 @@
 @this(layout: Layout,
         formHelper: FormWithCSRF,
         govukFileUpload: GovukFileUpload,
-        govukButton: GovukButton,
+        button: components.button,
         p: components.p,
         details: components.details,
         bullets: components.bullets,
@@ -63,7 +63,7 @@
                         @fileUploadDialog(form, isAddingAnotherDocument = true)
                 </div>
                 <span>
-                        @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.noJs.button.uploadFile"))))
+                        @button("otherReason.uploadEvidence.noJs.button.uploadFile")
                         <a href="@fileListPage" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadAnotherDocument.noJs.button.cancel")</a>
                 </span>
         </form>

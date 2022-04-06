@@ -19,7 +19,7 @@
 
 @this(layout: Layout,
         link: components.link,
-        govukButton: GovukButton,
+        button: components.button,
         formHelper: FormWithCSRF)
 
 @(form: Form[_], reasonableExcuse: String, reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
@@ -105,6 +105,6 @@
 
         <input type="hidden" id="declaration" name="value" value="true">
 
-        @govukButton(Button(content = Text(messages("common.acceptAndContinue"))))
+        @button("common.acceptAndContinue")
     }
 }

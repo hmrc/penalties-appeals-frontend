@@ -19,7 +19,7 @@
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
-        govukButton: GovukButton,
+        button: components.button,
         dateInput: components.inputDate)
 
 @(form: Form[_], postAction: Call, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
@@ -39,6 +39,6 @@
             legendAsPageHeading = true
         )
 
-        @govukButton(Button(content = Text(messages("common.continue"))))
+        @button("common.continue")
     }
 }

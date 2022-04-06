@@ -19,7 +19,7 @@
 @this(layout: Layout,
         bullets: components.bullets,
         link: components.link,
-        govukButton: GovukButton,
+        button: components.button,
         formHelper: FormWithCSRF)
 
 @(contentToDisplayInSummaryList: Seq[(String, String, String)], pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
@@ -54,6 +54,6 @@
     </p>
 
     @formHelper(action = controllers.routes.CheckYourAnswersController.onSubmit()) {
-        @govukButton(Button(content = Text(messages("common.acceptAndSend"))))
+        @button("common.acceptAndSend")
     }
 }
