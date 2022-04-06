@@ -29,13 +29,13 @@ The service when started listens on port 9181
 
 ### Testing
 
-The service can be tested in the SBT
+The service can be tested in SBT
 
   `sbt test it:test` 
 
 ### Testing with coverage
 
-To run testing with coverage and scalastyle in the SBT
+To run testing with coverage and scalastyle in SBT
 
     sbt clean scalastyle coverage test it:test coverageReport
 
