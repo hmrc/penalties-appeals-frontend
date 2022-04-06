@@ -2,14 +2,13 @@
 
 # penalties-appeals-frontend
 
-The penalties and appeals service is a frontend microservice only applicable for PAYE tax payers.
+The penalties and appeals service is a frontend microservice only applicable for MTD VAT users.
 
-The agents/traders can view their VAT information, check and register appeals. 
-It has ability for agents to see VAT penalty points, penalties, interest and make/view appeals for their clients
+Users can appeal their late submission penalties and late payment penalties using this service,
 
 Features:
-- Supports both java script and non-java script browsers
-- Interacts with UpScan services to upload supporting documents
+- Supports both JavaScript and non-JavaScript journeys
+- Interacts with file upload services to upload supporting documents
 
 ### Running the service locally
 
