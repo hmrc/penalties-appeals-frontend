@@ -67,7 +67,7 @@
     } else "otherReason.uploadEvidence.p2"
 }
 
-@if(jsEnabled) {
+<div id="hasJavaScript" style="display: none">
     @layout(pageTitle = messages("otherReason.uploadEvidence.headingAndTitle"),
         isPageFullWidth = false,
         customJavaScript = Some("multiFileUpload.min.js"),
@@ -120,7 +120,8 @@
                 </p>
             }
     }
-} else {
+</div>
+<div id="noscript">
     @layout(pageTitle = messages("otherReason.uploadEvidence.headingAndTitle"),
     isPageFullWidth = false,
     formHasErrors = form.get.errors.nonEmpty,
@@ -146,4 +147,8 @@
         </p>
     </form>
     }
-}
+</div>
+<script type="text/javascript">
+    document.getElementById('hasJavaScript').style.display = 'block';
+    document.getElementById('noscript').style.display = 'none';
+</script>

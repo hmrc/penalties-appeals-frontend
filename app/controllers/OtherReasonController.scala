@@ -60,7 +60,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       featureSwitching: FeatureSwitching,
                                       evidenceFileUploadsHelper: EvidenceFileUploadsHelper,
                                       uploadJourneyRepository: UploadJourneyRepository,
-                                      serviceUnavailablePage: ServiceUnavailablePage)
+                                      serviceUnavailablePage: ServiceUnavailablePage,
+                                      testPage: TestPage)
                                      (implicit authorise: AuthPredicate,
                                       dataRequired: DataRequiredAction,
                                       appConfig: AppConfig,
