@@ -21,7 +21,7 @@
 @this(layout: Layout,
         bullets: components.bullets,
         formHelper: FormWithCSRF,
-        button: components.button,
+        govukButton: GovukButton,
         characterCount: components.characterCount)
 
 @(form: Form[_], postAction: Call, pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
@@ -41,6 +41,6 @@
             maxLength = Some(5000)
         )
 
-        @button("common.continue")
+        @govukButton(Button(content = Text(messages("common.continue"))))
     }
 }
