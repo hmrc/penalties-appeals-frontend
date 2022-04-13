@@ -189,34 +189,34 @@ lossOfStaffReason.hintText = This means someone essential to the tax process lea
 lossOfStaffReason.error.required.all = Tell us the last date the person carried out work for the business
 lossOfStaffReason.error.required.two = The date the person left must include a {0} and a {1}
 lossOfStaffReason.error.required = The date the person left must include a {0}
-lossOfStaffReason.error.invalid = The date the person left must be a real date
-lossOfStaffReason.error.notInFuture = The date the person left must be today or in the past
+lossOfStaffReason.error.invalid = Mae’n rhaid i’r dyddiad y gwnaeth y person adael fod yn ddyddiad go iawn
+lossOfStaffReason.error.notInFuture = Mae’n rhaid i’r dyddiad y gwnaeth y person adael fod heddiw neu yn y gorffennol
 
 # When did the technology issues begin page
 # ----------------------------------------------------------
-technicalIssues.begin.headingAndTitle = When did the technology issues begin?
+technicalIssues.begin.headingAndTitle = Pryd dechreuodd y trafferthion technoleg?
 # Need to confirm that these errors are correct
-technicalIssues.begin.error.required.all = Tell us when the technology issues began
-technicalIssues.begin.error.required.two = The date the technology issues began must include a {0} and a {1}
-technicalIssues.begin.error.required = The date the technology issues began must include a {0}
-technicalIssues.begin.error.invalid = The date the technology issues began must be a real date
-technicalIssues.begin.error.notInFuture = The date the technology issues began must be today or in the past
+technicalIssues.begin.error.required.all = Rhowch wybod i ni pryd dechreuodd y trafferthion technoleg
+technicalIssues.begin.error.required.two = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg gynnwys {0} a {1}
+technicalIssues.begin.error.required = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg gynnwys {0}
+technicalIssues.begin.error.invalid = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg fod yn ddyddiad go iawn
+technicalIssues.begin.error.notInFuture = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg fod heddiw neu yn y gorffennol
 
 # When did the technology issues end page
 # ----------------------------------------------------------
-technicalIssues.end.headingAndTitle = When did the technology issues end?
-technicalIssues.end.error.required.all = Tell us when the technology issues ended
-technicalIssues.end.error.required.two = The date the technology issues ended must include a {0} and a {1}
-technicalIssues.end.error.required = The date the technology issues ended must include a {0}
-technicalIssues.end.error.invalid = The date the technology issues ended must be a real date
-technicalIssues.end.error.notInFuture = The date the technology issues ended must be today or in the past
-technicalIssues.end.error.endDateLessThanStartDate = The date the technology issues ended must be the same or after they began
+technicalIssues.end.headingAndTitle = Pryd daeth y trafferthion technoleg i ben?
+technicalIssues.end.error.required.all = Rhowch wybod i ni pryd ddaeth y trafferthion technoleg i ben
+technicalIssues.end.error.required.two = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben gynnwys {0} a {1}
+technicalIssues.end.error.required = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben gynnwys {0}
+technicalIssues.end.error.invalid = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod yn ddyddiad go iawn
+technicalIssues.end.error.notInFuture = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod heddiw neu yn y gorffennol
+technicalIssues.end.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod naill ai ar yr un dyddiad y gwnaethant ddechrau neu wedi’r dyddiad hwnnw
 
 # Was hospital stay required page
 # ----------------------------------------------------------
-healthReason.wasHospitalStayRequired.headingAndTitle = Did this health issue include a hospital stay?
-healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital
-agent.healthReason.wasHospitalStayRequired.error.required = Tell us if your client or someone else was admitted to hospital
+healthReason.wasHospitalStayRequired.headingAndTitle = A oedd y broblem iechyd wedi arwain at arhosiad yn yr ysbyty?
+healthReason.wasHospitalStayRequired.error.required = Rhowch wybod i ni a oeddech chi neu rywun arall wedi mynd i’r ysbyty
+agent.healthReason.wasHospitalStayRequired.error.required = Rhowch wybod i ni a oedd eich cleient neu rywun arall wedi mynd i’r ysbyty
 
 # When did health event happen page
 # ----------------------------------------------------------
@@ -257,20 +257,20 @@ agent.health.whenHealthIssueHappened.error.invalid.lpp = The date the health iss
 
 # When did the hospital stay begin page
 # ----------------------------------------------------------
-healthReason.whenDidHospitalStayBegin.headingAndTitle = When did the hospital stay begin?
-healthReason.whenDidHospitalStayBegin.error.required.all = Enter the start date of the hospital stay
-healthReason.whenDidHospitalStayBegin.error.required.two = The date the hospital stay started must include a {0} and a {1}
-healthReason.whenDidHospitalStayBegin.error.required = The date the hospital stay started must include a {0}
-healthReason.whenDidHospitalStayBegin.error.invalid = The date the hospital stay started must be a real date
-healthReason.whenDidHospitalStayBegin.error.notInFuture = The date the hospital stay started must be today or in the past
+healthReason.whenDidHospitalStayBegin.headingAndTitle = Pryd y dechreuodd yr arhosiad yn yr ysbyty?
+healthReason.whenDidHospitalStayBegin.error.required.all = Nodwch y dyddiad y dechreuodd yr arhosiad yn yr ysbyty
+healthReason.whenDidHospitalStayBegin.error.required.two = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty gynnwys {0} a {1}
+healthReason.whenDidHospitalStayBegin.error.required = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty gynnwys {0}
+healthReason.whenDidHospitalStayBegin.error.invalid = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty fod yn ddyddiad go iawn
+healthReason.whenDidHospitalStayBegin.error.notInFuture = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty fod heddiw neu yn y gorffennol
 
 
 # Why was the return submitted late page
 # ----------------------------------------------------------
-otherReason.whyReturnSubmittedLate.headingAndTitle = Why was the return submitted late?
-otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Why was the VAT bill paid late?
-otherReason.whyReturnSubmittedLate.lpp.error.required = Explain why the VAT bill was paid late
-otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
+otherReason.whyReturnSubmittedLate.headingAndTitle = Pam y cyflwynwyd y Ffurflen TAW yn hwyr?
+otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Pam y talwyd y bil TAW yn hwyr?
+otherReason.whyReturnSubmittedLate.lpp.error.required = Eglurwch pam y talwyd y bil TAW yn hwyr
+otherReason.whyReturnSubmittedLate.error.required = Eglurwch pam y cyflwynwyd y Ffurflen TAW yn hwyr
 
 # When did you become unable page
 # ----------------------------------------------------------
@@ -281,94 +281,94 @@ agent.otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this 
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
-agents.whoPlannedToSubmitVATReturn.headingAndTitle = Before the deadline, who planned to submit the return?
-agents.whoPlannedToSubmitVATReturn.agent = I did
-agents.whoPlannedToSubmitVATReturn.client = My client did
-agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submit the VAT return
+agents.whoPlannedToSubmitVATReturn.headingAndTitle = Cyn y dyddiad cau, pwy oedd yn bwriadu cyflwyno’r Ffurflen TAW?
+agents.whoPlannedToSubmitVATReturn.agent = Fi
+agents.whoPlannedToSubmitVATReturn.client = Fy nghleient
+agents.whoPlannedToSubmitVATReturn.error.required = Rhowch wybod i ni pwy oedd yn bwriadu cyflwyno’r Ffurflen TAW
 
 
 # Upload Evidence
 # ----------------------------------------------------------
-otherReason.uploadEvidence.headingAndTitle = Evidence to support this appeal (optional)
-otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the penalty.
-otherReason.uploadEvidence.p2 = Evidence might include documents or letters that show why the return was submitted late.
-otherReason.uploadEvidence.lpp.p2 = Evidence might include documents or letters that show why the VAT bill was paid late.
-otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include documents or letters that show why the business did not need to submit a return.
-otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT.
-otherReason.uploadEvidence.p4 = You can upload up to 5 files.
-otherReason.uploadEvidence.p5 = Each file must be smaller than 6MB.
-otherReason.uploadEvidence.details.heading = Types of file you can upload
-otherReason.uploadEvidence.details.p1 = These file types are allowed:
-otherReason.uploadEvidence.details.li.1 = image (.jpg, .jpeg, .png or .tiff)
+otherReason.uploadEvidence.headingAndTitle = Tystiolaeth i gefnogi’r apêl hon (dewisol)
+otherReason.uploadEvidence.p1 = Defnyddiwch y dudalen hon i uwchlwytho unrhyw dystiolaeth i’n helpu i adolygu’r gosb.
+otherReason.uploadEvidence.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam y cyflwynwyd y Ffurflen TAW yn hwyr.
+otherReason.uploadEvidence.lpp.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam y talwyd y bil TAW yn hwyr.
+otherReason.uploadEvidence.appealAgainstObligation.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam nad oedd angen i’r busnes gyflwyno Ffurflen TAW.
+otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam nad oedd angen i’r busnes gyflwyno Ffurflen TAW a thalu TAW.
+otherReason.uploadEvidence.p4 = Gallwch uwchlwytho hyd at 5 ffeil.
+otherReason.uploadEvidence.p5 = Mae’n rhaid i bob ffeil fod yn llai na 6MB.
+otherReason.uploadEvidence.details.heading = Mathau o ffeiliau y gallwch eu huwchlwytho
+otherReason.uploadEvidence.details.p1 = Caniateir y mathau hyn o ffeiliau:
+otherReason.uploadEvidence.details.li.1 = delwedd (.jpg, .jpeg, .png neu .tiff)
 otherReason.uploadEvidence.details.li.2 = PDF (.pdf)
 otherReason.uploadEvidence.details.li.3 = email (.txt or .msg)
-otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel or PowerPoint)
+otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel neu PowerPoint)
 otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
 otherReason.uploadEvidence.details.p2 = You cannot upload zip files or documents that are protected by a password.
 otherReason.uploadEvidence.details.p3 = We’ll scan all files and reject any we think are suspicious.
-otherReason.uploadEvidence.file = File
-otherReason.uploadEvidence.addAnother = Add another file
-otherReason.uploadEvidence.status.uploaded = Ready to Submit
-otherReason.uploadEvidence.status.pending = Pending
-otherReason.uploadEvidence.button.remove = Remove
-otherReason.uploadEvidence.button.removing = Removing
-otherReason.uploadEvidence.stillTransferring = Files are still being transferred
+otherReason.uploadEvidence.file = Ffeil
+otherReason.uploadEvidence.addAnother = Ychwanegu ffeil arall
+otherReason.uploadEvidence.status.uploaded = BAROD I GYFLWYNO
+otherReason.uploadEvidence.status.pending = Ar y gweill
+otherReason.uploadEvidence.button.remove = Tynnu
+otherReason.uploadEvidence.button.removing = Yn tynnu
+otherReason.uploadEvidence.stillTransferring = Mae ffeiliau’n dal i gael eu trosglwyddo
 
 # Upload Evidence Question
 # ----------------------------------------------------------
-otherReason.uploadEvidence.question.headingAndTitle = Do you want to upload evidence to support your appeal?
-otherReason.uploadEvidence.question.required = Select yes if you want to upload evidence
-otherReason.uploadEvidence.question.hintText = Uploading evidence is optional. We will still review your appeal if you do not upload evidence.
+otherReason.uploadEvidence.question.headingAndTitle = A ydych am uwchlwytho tystiolaeth i gefnogi’ch apêl?
+otherReason.uploadEvidence.question.required = Dewiswch ‘Iawn’ os ydych eisiau uwchlwytho tystiolaeth
+otherReason.uploadEvidence.question.hintText = Mae uwchlwytho tystiolaeth yn ddewisol. Byddwn yn dal i adolygu’ch apêl os nad ydych yn uwchlwytho tystiolaeth.
 
 # Upload Evidence (No JS)
 # ----------------------------------------------------------
-otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first file. You can upload additional files afterwards. We will use any evidence to help us review the penalty.
-otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
-otherReason.uploadEvidence.noJs.uploadAnotherLabel = Choose your next file
-otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
+otherReason.uploadEvidence.noJs.p1 = Defnyddiwch y dudalen hon i uwchlwytho eich ffeil gyntaf. Gallwch uwchlwytho ffeiliau ychwanegol maes o law. Byddwn yn defnyddio unrhyw dystiolaeth i’n helpu i adolygu’r gosb.
+otherReason.uploadEvidence.noJs.uploadLabel = Dewiswch eich ffeil gyntaf
+otherReason.uploadEvidence.noJs.uploadAnotherLabel = Dewiswch eich ffeil nesaf
+otherReason.uploadEvidence.noJs.button.uploadFile = Uwchlwythwch y ffeil a ddewisir
 
 # Upload List (No JS) page
 # ----------------------------------------------------------
-otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = You have uploaded {0} files
-otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {0} file
-otherReason.uploadList.uploadAnotherFile = Do you want to upload another file?
-otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another file
-otherReason.uploadList.rowTitle = File {0}
-otherReason.uploadList.duplicateInsetText = File {0} has the same contents as File {1}. You can remove duplicate files using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.2 = File {0} has the same contents as Files {1} and {2}. You can remove duplicate files using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.3 = File {0} has the same contents as Files {1}, {2} and {3}. You can remove duplicate files using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.4 = File {0} has the same contents as Files {1}, {2}, {3} and {4}. You can remove duplicate files using the ’Remove’ link.
+otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = Rydych wedi uwchlwytho {0} o ffeiliau
+otherReason.uploadList.youHaveUploadedFile.headingAndTitle = Rydych wedi uwchlwytho {0} ffeil
+otherReason.uploadList.uploadAnotherFile = A ydych eisiau uwchlwytho ffeil arall?
+otherReason.uploadList.uploadAnotherFile.required = Rhowch wybod i ni a ydych eisiau uwchlwytho ffeil arall
+otherReason.uploadList.rowTitle = Ffeil {0}
+otherReason.uploadList.duplicateInsetText = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeil {1}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
+otherReason.uploadList.duplicateInsetText.2 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1} a {2}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
+otherReason.uploadList.duplicateInsetText.3 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2} a {3}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
+otherReason.uploadList.duplicateInsetText.4 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2}, {3} a {4}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
 otherReason.uploadList.multipleDuplicateInsetText = Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
-otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle = It’s taking longer than expected to upload this file
-otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Reload this page
+otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle = Mae’n cymryd hirach na’r disgwyl i uwchlwytho’r ffeil hwn
+otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Ail-lwytho’r dudalen hon
 
 # Upload Another Document (No JS)
 # ----------------------------------------------------------
-otherReason.uploadAnotherDocument.noJs.headingAndTitle = Add another file (optional)
-otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
+otherReason.uploadAnotherDocument.noJs.headingAndTitle = Ychwanegu ffeil arall (dewisol)
+otherReason.uploadAnotherDocument.noJs.button.cancel = Canslo
 
 # Upscan failure messages
 # ----------------------------------------------------------
-upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)
-upscan.fileTooLarge = The selected file must be smaller than 6MB. Remove the file and try again.
-upscan.fileEmpty = The selected file is empty. Remove the file and try again.
-upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
-upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
-upscan.fileUploaded = {0} {1} has been uploaded
-upscan.fileUploading = Uploading {0} {1}
-upscan.fileRemoved = {0} {1} has been removed
-upscan.fileNotSpecified = Select a file.
+upscan.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileEmpty = Mae’r ffeil dan sylw yn wag. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileHasVirus = Mae feirws yn y ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileUploaded = Uwchlwythwyd {0} {1}
+upscan.fileUploading = Yn uwchlwytho {0} {1}
+upscan.fileRemoved = Mae {0} {1} wedi ei ddileu
+upscan.fileNotSpecified = Dewiswch ffeil.
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------
-upscan.noJs.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF). Choose another file.
-upscan.noJs.fileTooLarge = The selected file must be smaller than 6MB. Choose another file.
-upscan.noJs.fileEmpty = The selected file is empty. Choose another file.
-upscan.noJs.fileHasVirus = The selected file contains a virus. Choose another file.
-upscan.noJs.unableToUpload = The selected file could not be uploaded. Choose another file.
+upscan.noJs.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.noJs.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Dewiswch ffeil arall.
+upscan.noJs.fileEmpty = Mae’r ffeil dan sylw yn wag. Dewiswch ffeil arall.
+upscan.noJs.fileHasVirus = Mae feirws yn y ffeil dan sylw. Dewiswch ffeil arall.
+upscan.noJs.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Dewiswch ffeil arall.
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------
@@ -384,40 +384,40 @@ healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = Mae�
 
 # When did the person die page
 # ----------------------------------------------------------
-bereavementReason.headingAndTitle = When did the person die?
-bereavementReason.error.required.all = Enter the date when the person died
-bereavementReason.error.required.two = The date must include a {0} and {1}
-bereavementReason.error.required = The date must include a {0}
-bereavementReason.error.invalid = The date must be a real date
-bereavementReason.error.notInFuture = The date must be today or in the past
+bereavementReason.headingAndTitle = Pryd y bu farw’r person?
+bereavementReason.error.required.all = Nodwch bryd y bu farw’r person
+bereavementReason.error.required.two = Mae’n rhaid i’r dyddiad gynnwys {0} a {1}
+bereavementReason.error.required = Mae’n rhaid i’r dyddiad gynnwys {0}
+bereavementReason.error.invalid = Mae’n rhaid i’r dyddiad fod yn ddyddiad go iawn
+bereavementReason.error.notInFuture = Mae’n rhaid i’r dyddiad fod heddiw neu yn y gorffennol
 
 # Cancel VAT Registration Page
 # -----------------------------------------------------------
-cancelVATRegistration.headingAndTitle = Has HMRC been asked to cancel the VAT registration for this business?
-cancelVATRegistration.hintText = A business must cancel its VAT registration if it stops trading, deregisters for VAT or if the business ownership is transferred.
-cancelVATRegistration.error.required = Tell us if HMRC has been asked to cancel the VAT registration
+cancelVATRegistration.headingAndTitle = A ofynnwyd i CThEM ganslo cofrestriad TAW ar gyfer y busnes hwn?
+cancelVATRegistration.hintText = Mae’n rhaid i fusnes ganslo’i gofrestriad TAW os yw’n rhoi’r gorau i fasnachu, yn datgofrestru ar gyfer TAW neu os yw perchnogaeth y busnes yn cael ei drosglwyddo.
+cancelVATRegistration.error.required = Rhowch wybod i ni a ofynnwyd i CThEM ganslo’r cofrestriad TAW
 
 # Date input fields
 # ----------------------------------------------------------
-date.day = Day
-date.month = Month
-date.year = Year
+date.day = Diwrnod
+date.month = Mis
+date.year = Blwyddyn
 
 # Check your answers page
 # ----------------------------------------------------------
 
-checkYourAnswers.headingAndTitle = Check your answers
-checkYourAnswers.appealDetails.h2 = Appeal details
-checkYourAnswers.declaration.h2 = Declaration
-checkYourAnswers.declaration.p1 = By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge.
-checkYourAnswers.declaration.p2 = A false declaration can result in prosecution.
-checkYourAnswers.reasonableExcuse = Reason for missing the VAT deadline
-checkYourAnswers.change.text = Change
-checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
-checkYourAnswers.whyYouDidNotAppealSooner = Reason for appealing after 30 days
+checkYourAnswers.headingAndTitle = Gwirio’ch atebion
+checkYourAnswers.appealDetails.h2 = Manylion yr apêl
+checkYourAnswers.declaration.h2 = Datganiad
+checkYourAnswers.declaration.p1 = Wrth gyflwyno’r apêl hon, rydych yn gwneud datganiad cyfreithlon bod yr wybodaeth yn gywir a’n gyflawn hyd eithaf eich gwybodaeth a’ch cred.
+checkYourAnswers.declaration.p2 = Gall datganiad ffug arwain at erlyniad.
+checkYourAnswers.reasonableExcuse = Rheswm dros fethu’r dyddiad cau ar gyfer TAW
+checkYourAnswers.change.text = Newid
+checkYourAnswers.change.ariaLabel = Newid ateb ‘{0}’
+checkYourAnswers.whyYouDidNotAppealSooner = Rheswm dros apelio ar ôl 30 diwrnod
 
-checkYourAnswers.other.fileEvidence = Evidence to support this appeal
-checkYourAnswers.other.noFileUpload = Not provided
+checkYourAnswers.other.fileEvidence = Tystiolaeth i gefnogi’r apêl hon
+checkYourAnswers.other.noFileUpload = Heb ddarparu
 
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.client = My client did
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = I did
@@ -430,57 +430,57 @@ agent.checkYourAnswers.unableToManageAccount = When did your client become unabl
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
-appealConfirmation.headingAndTitle = You have asked us to review a penalty
-appealConfirmation.typeAndPeriod = {0}: {1} to {2}
-appealConfirmation.whatHappensNext = What happens next
-appealConfirmation.p1 = We’ll make a decision about your appeal based on what you have told us.
-appealConfirmation.obligation.p = Our decision will take into account all late submission or late payment penalties in the same VAT period. You do not need to appeal separately for these penalties.
-appealConfirmation.p2 = We aim to make all appeal decisions within 45 days.
-appealConfirmation.p3 = You’ll receive a letter telling you the outcome of this appeal and the reasons for our decision.
-appealConfirmation.p4 = If you have a confirmed email address on your VAT account, we’ll also send you a secure message.
+appealConfirmation.headingAndTitle = Rydych wedi gofyn i ni adolygu cosb
+appealConfirmation.typeAndPeriod = {0}: {1} i {2}
+appealConfirmation.whatHappensNext = Yr hyn sy’n digwydd nesaf
+appealConfirmation.p1 = Byddwn yn gwneud penderfyniad am eich apêl yn seiliedig ar yr hyn rydych wedi’i rhoi gwybod i ni amdano.
+appealConfirmation.obligation.p = Bydd ein penderfyniad yn ystyried pob cosb am gyflwyno neu dalu’n hwyr yn yr un cyfnod TAW. Nid oes angen i chi apelio yn erbyn y cosbau hyn ar wahân.
+appealConfirmation.p2 = Anelwn at wneud penderfyniad ar gyfer pob apêl cyn pen 45 diwrnod.
+appealConfirmation.p3 = Byddwch yn cael llythyr yn rhoi gwybod i chi am ganlyniad yr apêl hon a’r rhesymau dros ein penderfyniad.
+appealConfirmation.p4 = Rydych wedi cadarnhau cyfeiriad e-bost ar eich cyfrif TAW, byddwn hefyd yn anfon neges ddiogelwch atoch.
 
-appealConfirmation.returnToPenalties = Return to your VAT penalties
-agent.appealConfirmation.returnToPenalties = Return to your client’s VAT penalties
-appealConfirmation.returnToVatVc = View your VAT account
-agent.appealConfirmation.returnToVatVc = View your client’s VAT account
-appealConfirmation.feedbackLink.1 = What did you think of this service?
-appealConfirmation.feedbackLink.2 = (takes 30 seconds)
+appealConfirmation.returnToPenalties = Yn ôl i’ch cosbau TAW
+agent.appealConfirmation.returnToPenalties = Yn ôl i gosbau TAW eich cleient
+appealConfirmation.returnToVatVc = Bwrw golwg dros eich cyfrif TAW
+agent.appealConfirmation.returnToVatVc = Bwrw golwg ar gyfrif TAW eich cleient
+appealConfirmation.feedbackLink.1 = Beth oedd eich barn am y gwasanaeth hwn?
+appealConfirmation.feedbackLink.2 = (mae’n cymryd 30 eiliad)
 
 # Making a late appeal page
 # ----------------------------------------------------------
-makingALateAppeal.headingAndTitle = This penalty was issued more than 30 days ago
-makingALateAppeal.p1 = You usually need to appeal within 30 days of the date on the penalty notice. Tell us here why you could not appeal within 30 days.
-makingALateAppeal.error.required = You must provide some information about why you did not appeal sooner
+makingALateAppeal.headingAndTitle = Codwyd y gosb fwy na 30 diwrnod yn ôl
+makingALateAppeal.p1 = Fel arfer mae angen i chi apelio cyn pen 30 diwrnod o ddyddiad yr hysbysiad o gosb. Rhowch wybod i ni pam nad oeddech wedi gallu apelio cyn pen 30 diwrnod.
+makingALateAppeal.error.required = Mae’n rhaid i chi roi ychydig o wybodaeth i ni ynglŷn â pham nad oeddech wedi apelio’n gynt
 
 # Agents 'What caused you to miss the deadline?'
 # ----------------------------------------------------------
-agents.whatCausedYouToMissTheDeadline.headingAndTitle = What caused you to miss the deadline?
-agents.whatCausedYouToMissTheDeadline.option.client = My client did not get information to me on time
-agents.whatCausedYouToMissTheDeadline.option.agent = Something else happened to delay me
-agents.whatCausedYouToMissTheDeadline.error.invalid = Tell us what caused you to miss the deadline
+agents.whatCausedYouToMissTheDeadline.headingAndTitle = Beth oedd wedi’ch achosi i fethu’r dyddiad cau?
+agents.whatCausedYouToMissTheDeadline.option.client = Nid oedd fy nghleient wedi rhoi’r wybodaeth i mi mewn pryd
+agents.whatCausedYouToMissTheDeadline.option.agent = Roedd rhywbeth arall wedi digwydd a oedd wedi achosi oedi
+agents.whatCausedYouToMissTheDeadline.error.invalid = Rhowch wybod i ni beth oedd wedi’ch achosi i fethu’r dyddiad cau
 
 # You Cannot Appeal page
 # -----------------------
 youCannotAppeal.headingAndTitle = You cannot appeal yet
 agent.youCannotAppeal.lsp.p1 = You need to submit your client’s VAT Return before we can review this penalty.
-agent.youCannotAppeal.lsp.p2 = If you have already submitted the VAT Return, it can take up to 24 hours before it shows on your client’s VAT account.
-agent.youCannotAppeal.lpp.p1 = Your client needs to pay their VAT bill before we can review this penalty.
-agent.youCannotAppeal.lpp.p2 = If they have already paid their VAT, it can take up to 5 days to clear to HMRC’s bank account and show on their payment history.
-agent.youCannotAppeal.returnToVATDetails = Return to your client’s VAT details
-youCannotAppeal.returnToVATAccount = Return to your VAT account
-youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
-youCannotAppeal.lsp.p1 = You need to submit your VAT Return before we can review this penalty.
+agent.youCannotAppeal.lsp.p2 = Os ydych eisoes wedi cyflwyno’r Ffurflen TAW, gall gymryd hyd at 24 awr cyn i’r cofnod ymddangos ar gyfrif TAW eich cleient.
+agent.youCannotAppeal.lpp.p1 = Mae angen i’ch cleient dalu’i fil TAW cyn i ni allu adolygu’r gosb hon.
+agent.youCannotAppeal.lpp.p2 = Os ydynt eisoes wedi talu’u TAW, gall gymryd hyd at 5 diwrnod i glirio i gyfrif banc CThEM ac ymddangos ar eu hanes talu.
+agent.youCannotAppeal.returnToVATDetails = Yn ôl i fanylion TAW eich cleient
+youCannotAppeal.returnToVATAccount = Yn ôl i’ch cyfrif TAW
+youCannotAppeal.checkWhatYouOwe = Gwirio a thalu’r hyn sydd arnoch
+youCannotAppeal.lsp.p1 = Mae angen i chi gyflwyno’ch Ffurflen TAW cyn i ni allu adolygu’r gosb hon.
 youCannotAppeal.lsp.p2 = If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account.
-youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your VAT account.
-agent.youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your client’s VAT details.
-youCannotAppeal.lpp.p1 = You need to pay your VAT before we can review this penalty.
+youCannotAppeal.p3 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy’ch cyfrif TAW.
+agent.youCannotAppeal.p3 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy gyfrif TAW eich cleient.
+youCannotAppeal.lpp.p1 = Mae angen i chi dalu’ch TAW cyn i ni allu adolygu’r gosb hon.
 youCannotAppeal.lpp.p2 = If you paid your VAT very recently, it can take up to 5 days to clear to HMRC’s bank account and show on your payment history.
 
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
-otherRelevantInformation.headingAndTitle = Tell us why you want to appeal the penalty
-otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
-otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
+otherRelevantInformation.headingAndTitle = Rhowch wybod i ni pam yr ydych am apelio yn erbyn y gosb
+otherRelevantInformation.hintText = Dylech gynnwys manylion am unrhyw ohebiaeth â CThEM am ganslo’r cofrestriad TAW.
+otherRelevantInformation.error.required = Nodwch y rhesymau pam eich bod am apelio yn erbyn y gosb
 
 # You can appeal this penalty
 # ----------------------------------------------------------
@@ -493,38 +493,38 @@ youCanAppealThisPenalty.error.required = Select yes if you want to appeal this p
 
 # Error message for characters more than 5000 in text area
 # ----------------------------------------------------------
-explainReason.charsInTextArea.error = Explain the reason in 5,000 characters or fewer
+explainReason.charsInTextArea.error = Esboniwch y rheswm gan ddefnyddio 5,000 o gymeriadau neu lai
 
 # Service Unavailable Page
 # ----------------------------------------------------------
-serviceUnavailable.headingAndTitle = Sorry, the service is unavailable
-serviceUnavailable.p1 = We have not saved your answers.
-serviceUnavailable.p2 = You will be able to use the service later.
-serviceUnavailable.p3 = If you prefer, you can appeal by letter. Write to:
-serviceUnavailable.p4 = Solicitor‘s Office and Legal Services
+serviceUnavailable.headingAndTitle = Mae’n ddrwg gennym, nid yw’r gwasanaeth ar gael
+serviceUnavailable.p1 = Nid ydym wedi cadw’ch atebion.
+serviceUnavailable.p2 = Byddwch yn gallu defnyddio’r gwasanaeth yn nes ymlaen.
+serviceUnavailable.p3 = Os oes well gennych, gallwch ysgrifennu llythyr i apelio. Ysgrifennwch at:
+serviceUnavailable.p4 = Swyddfa’r Cyfreithiwr a Gwasanaethau Cyfreithiol / Solicitor’s Office and Legal Services
 serviceUnavailable.p5 = HMRC
 serviceUnavailable.p6 = BX9 1ZT
 
 # Problem with service page
 # ----------------------------------------------------------
-problemWithService.headingAndTitle = Sorry, there is a problem with the service
+problemWithService.headingAndTitle = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
 
 # Duplicate Appeal Page
 # ----------------------------------------------------------
-duplicateAppeal.headingAndTitle = We have already been asked to review this penalty
-duplicateAppeal.p1 = You cannot submit a duplicate request for the same penalty.
-duplicateAppeal.link = View your penalties and appeals
-agent.duplicateAppeal.link = View your client’s penalties and appeals
+duplicateAppeal.headingAndTitle = Rydym eisoes wedi cael cais i adolygu’r gosb hon
+duplicateAppeal.p1 = Ni allwch gyflwyno mwy nag un cais ar gyfer yr un gosb.
+duplicateAppeal.link = Gweld eich cosbau ac apeliadau
+agent.duplicateAppeal.link = Gweld cosbau ac apeliadau eich cleient
 
 # Error scenarios
 # -----------------------------------------------------------
 error.prefix = Error:
-error.summary.headingAndTitle = There is a problem
+error.summary.headingAndTitle = Mae problem wedi codi
 # Not sure if this is as per design
 error.clickAcceptAndContinue = Please click ’Accept and continue’
 
 # Timeout page
 # -----------------------------------------------------------
-timeout.headingAndTitle = For your security, we signed you out
+timeout.headingAndTitle = Er eich diogelwch, gwnaethom eich allgofnodi
 timeout.p1 = We did not save your answers.
-timeout.signIn = Sign in
+timeout.signIn = Mewngofnodi
