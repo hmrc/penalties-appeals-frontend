@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En}
 
 @this(hmrcHeader: HmrcHeader)
 
@@ -27,5 +28,6 @@
     serviceName = Some(messages("service.name")),
     containerClasses = "govuk-width-container",
     navigation = None,
-    signOutHref = if(showSignOut) Some(controllers.routes.SignOutController.signOut.url) else None
+    signOutHref = if(showSignOut) Some(controllers.routes.SignOutController.signOut.url) else None,
+    language = if(messages.lang.code.equalsIgnoreCase("en")) En else Cy
 ))

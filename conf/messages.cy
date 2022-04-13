@@ -372,52 +372,52 @@ upscan.noJs.unableToUpload = The selected file could not be uploaded. Choose ano
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------
-healthReason.hasTheHospitalStayEnded.headingAndTitle = Has the hospital stay ended?
-healthReason.hasTheHospitalStayEnded.yes.heading = When did it end?
-healthReason.hasTheHospitalStayEnded.error.required = Tell us if the hospital stay has now ended
-healthReason.hasTheHospitalStayEnded.date.error.required.all = Tell us when the hospital stay ended
-healthReason.hasTheHospitalStayEnded.date.error.required.two = The date the hospital stay ended must include a {0} and a {1}
-healthReason.hasTheHospitalStayEnded.date.error.required = The date the hospital stay ended must include a {0}
-healthReason.hasTheHospitalStayEnded.date.error.invalid = The date the hospital stay ended must be a real date
-healthReason.hasTheHospitalStayEnded.date.error.notInFuture = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod heddiw neu yn y gorffennol
-healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yr un dyddiad y dechreuodd neu ar ôl y dyddiad hwnnw
+healthReason.hasTheHospitalStayEnded.headingAndTitle = A yw’r arhosiad yn yr ysbyty wedi dod i ben?
+healthReason.hasTheHospitalStayEnded.yes.heading = Pryd ddaeth i ben?
+healthReason.hasTheHospitalStayEnded.error.required = Rhowch wybod i ni a yw’r arhosiad yn yr ysbyty bellach wedi dod i ben
+healthReason.hasTheHospitalStayEnded.date.error.required.all = Rhowch wybod i ni pryd ddaeth yr arhosiad yn yr ysbyty i ben
+healthReason.hasTheHospitalStayEnded.date.error.required.two = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0} a {1}
+healthReason.hasTheHospitalStayEnded.date.error.required = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0}
+healthReason.hasTheHospitalStayEnded.date.error.invalid = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yn ddyddiad go iawn
+healthReason.hasTheHospitalStayEnded.date.error.notInFuture = The date the hospital stay ended must be today or in the past
+healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The date the hospital stay ended must be the same or after it began
 
 # When did the person die page
 # ----------------------------------------------------------
-bereavementReason.headingAndTitle = Pryd y bu farw’r person?
-bereavementReason.error.required.all = Nodwch bryd y bu farw’r person
-bereavementReason.error.required.two = Mae’n rhaid i’r dyddiad gynnwys {0} a {1}
-bereavementReason.error.required = Mae’n rhaid i’r dyddiad gynnwys {0}
-bereavementReason.error.invalid = Mae’n rhaid i’r dyddiad fod yn ddyddiad go iawn
-bereavementReason.error.notInFuture = Mae’n rhaid i’r dyddiad fod heddiw neu yn y gorffennol
+bereavementReason.headingAndTitle = When did the person die?
+bereavementReason.error.required.all = Enter the date when the person died
+bereavementReason.error.required.two = The date must include a {0} and {1}
+bereavementReason.error.required = The date must include a {0}
+bereavementReason.error.invalid = The date must be a real date
+bereavementReason.error.notInFuture = The date must be today or in the past
 
 # Cancel VAT Registration Page
 # -----------------------------------------------------------
-cancelVATRegistration.headingAndTitle = A ofynnwyd i CThEM ganslo cofrestriad TAW ar gyfer y busnes hwn?
-cancelVATRegistration.hintText = Mae’n rhaid i fusnes ganslo’i gofrestriad TAW os yw’n rhoi’r gorau i fasnachu, yn datgofrestru ar gyfer TAW neu os yw perchnogaeth y busnes yn cael ei drosglwyddo.
-cancelVATRegistration.error.required = Rhowch wybod i ni a ofynnwyd i CThEM ganslo’r cofrestriad TAW
+cancelVATRegistration.headingAndTitle = Has HMRC been asked to cancel the VAT registration for this business?
+cancelVATRegistration.hintText = A business must cancel its VAT registration if it stops trading, deregisters for VAT or if the business ownership is transferred.
+cancelVATRegistration.error.required = Tell us if HMRC has been asked to cancel the VAT registration
 
 # Date input fields
 # ----------------------------------------------------------
-date.day = Diwrnod
-date.month = Mis
-date.year = Blwyddyn
+date.day = Day
+date.month = Month
+date.year = Year
 
 # Check your answers page
 # ----------------------------------------------------------
 
-checkYourAnswers.headingAndTitle = Gwirio’ch atebion
-checkYourAnswers.appealDetails.h2 = Manylion yr apêl
-checkYourAnswers.declaration.h2 = Datganiad
-checkYourAnswers.declaration.p1 = Wrth gyflwyno’r apêl hon, rydych yn gwneud datganiad cyfreithlon bod yr wybodaeth yn gywir a’n gyflawn hyd eithaf eich gwybodaeth a’ch cred.
-checkYourAnswers.declaration.p2 = Gall datganiad ffug arwain at erlyniad.
-checkYourAnswers.reasonableExcuse = Rheswm dros fethu’r dyddiad cau ar gyfer TAW
-checkYourAnswers.change.text = Newid
-checkYourAnswers.change.ariaLabel = Newid ateb ‘{0}’
-checkYourAnswers.whyYouDidNotAppealSooner = Rheswm dros apelio ar ôl 30 diwrnod
+checkYourAnswers.headingAndTitle = Check your answers
+checkYourAnswers.appealDetails.h2 = Appeal details
+checkYourAnswers.declaration.h2 = Declaration
+checkYourAnswers.declaration.p1 = By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge.
+checkYourAnswers.declaration.p2 = A false declaration can result in prosecution.
+checkYourAnswers.reasonableExcuse = Reason for missing the VAT deadline
+checkYourAnswers.change.text = Change
+checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
+checkYourAnswers.whyYouDidNotAppealSooner = Reason for appealing after 30 days
 
-checkYourAnswers.other.fileEvidence = Tystiolaeth i gefnogi’r apêl hon
-checkYourAnswers.other.noFileUpload = Heb ddarparu
+checkYourAnswers.other.fileEvidence = Evidence to support this appeal
+checkYourAnswers.other.noFileUpload = Not provided
 
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.client = My client did
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = I did
@@ -430,57 +430,57 @@ agent.checkYourAnswers.unableToManageAccount = When did your client become unabl
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
-appealConfirmation.headingAndTitle = Rydych wedi gofyn i ni adolygu cosb
-appealConfirmation.typeAndPeriod = {0}: {1} i {2}
-appealConfirmation.whatHappensNext = Yr hyn sy’n digwydd nesaf
-appealConfirmation.p1 = Byddwn yn gwneud penderfyniad am eich apêl yn seiliedig ar yr hyn rydych wedi’i rhoi gwybod i ni amdano.
-appealConfirmation.obligation.p = Bydd ein penderfyniad yn ystyried pob cosb am gyflwyno neu dalu’n hwyr yn yr un cyfnod TAW. Nid oes angen i chi apelio yn erbyn y cosbau hyn ar wahân.
-appealConfirmation.p2 = Anelwn at wneud penderfyniad ar gyfer pob apêl cyn pen 45 diwrnod.
-appealConfirmation.p3 = Byddwch yn cael llythyr yn rhoi gwybod i chi am ganlyniad yr apêl hon a’r rhesymau dros ein penderfyniad.
-appealConfirmation.p4 = Rydych wedi cadarnhau cyfeiriad e-bost ar eich cyfrif TAW, byddwn hefyd yn anfon neges ddiogelwch atoch.
+appealConfirmation.headingAndTitle = You have asked us to review a penalty
+appealConfirmation.typeAndPeriod = {0}: {1} to {2}
+appealConfirmation.whatHappensNext = What happens next
+appealConfirmation.p1 = We’ll make a decision about your appeal based on what you have told us.
+appealConfirmation.obligation.p = Our decision will take into account all late submission or late payment penalties in the same VAT period. You do not need to appeal separately for these penalties.
+appealConfirmation.p2 = We aim to make all appeal decisions within 45 days.
+appealConfirmation.p3 = You’ll receive a letter telling you the outcome of this appeal and the reasons for our decision.
+appealConfirmation.p4 = If you have a confirmed email address on your VAT account, we’ll also send you a secure message.
 
-appealConfirmation.returnToPenalties = Yn ôl i’ch cosbau TAW
-agent.appealConfirmation.returnToPenalties = Yn ôl i gosbau TAW eich cleient
-appealConfirmation.returnToVatVc = Bwrw golwg dros eich cyfrif TAW
-agent.appealConfirmation.returnToVatVc = Bwrw golwg ar gyfrif TAW eich cleient
-appealConfirmation.feedbackLink.1 = Beth oedd eich barn am y gwasanaeth hwn?
-appealConfirmation.feedbackLink.2 = (mae’n cymryd 30 eiliad)
+appealConfirmation.returnToPenalties = Return to your VAT penalties
+agent.appealConfirmation.returnToPenalties = Return to your client’s VAT penalties
+appealConfirmation.returnToVatVc = View your VAT account
+agent.appealConfirmation.returnToVatVc = View your client’s VAT account
+appealConfirmation.feedbackLink.1 = What did you think of this service?
+appealConfirmation.feedbackLink.2 = (takes 30 seconds)
 
 # Making a late appeal page
 # ----------------------------------------------------------
-makingALateAppeal.headingAndTitle = Codwyd y gosb fwy na 30 diwrnod yn ôl
-makingALateAppeal.p1 = Fel arfer mae angen i chi apelio cyn pen 30 diwrnod o ddyddiad yr hysbysiad o gosb. Rhowch wybod i ni pam nad oeddech wedi gallu apelio cyn pen 30 diwrnod.
-makingALateAppeal.error.required = Mae’n rhaid i chi roi ychydig o wybodaeth i ni ynglŷn â pham nad oeddech wedi apelio’n gynt
+makingALateAppeal.headingAndTitle = This penalty was issued more than 30 days ago
+makingALateAppeal.p1 = You usually need to appeal within 30 days of the date on the penalty notice. Tell us here why you could not appeal within 30 days.
+makingALateAppeal.error.required = You must provide some information about why you did not appeal sooner
 
 # Agents 'What caused you to miss the deadline?'
 # ----------------------------------------------------------
-agents.whatCausedYouToMissTheDeadline.headingAndTitle = Beth oedd wedi’ch achosi i fethu’r dyddiad cau?
-agents.whatCausedYouToMissTheDeadline.option.client = Nid oedd fy nghleient wedi rhoi’r wybodaeth i mi mewn pryd
-agents.whatCausedYouToMissTheDeadline.option.agent = Roedd rhywbeth arall wedi digwydd a oedd wedi achosi oedi
-agents.whatCausedYouToMissTheDeadline.error.invalid = Rhowch wybod i ni beth oedd wedi’ch achosi i fethu’r dyddiad cau
+agents.whatCausedYouToMissTheDeadline.headingAndTitle = What caused you to miss the deadline?
+agents.whatCausedYouToMissTheDeadline.option.client = My client did not get information to me on time
+agents.whatCausedYouToMissTheDeadline.option.agent = Something else happened to delay me
+agents.whatCausedYouToMissTheDeadline.error.invalid = Tell us what caused you to miss the deadline
 
 # You Cannot Appeal page
 # -----------------------
 youCannotAppeal.headingAndTitle = You cannot appeal yet
 agent.youCannotAppeal.lsp.p1 = You need to submit your client’s VAT Return before we can review this penalty.
-agent.youCannotAppeal.lsp.p2 = Os ydych eisoes wedi cyflwyno’r Ffurflen TAW, gall gymryd hyd at 24 awr cyn i’r cofnod ymddangos ar gyfrif TAW eich cleient.
-agent.youCannotAppeal.lpp.p1 = Mae angen i’ch cleient dalu’i fil TAW cyn i ni allu adolygu’r gosb hon.
-agent.youCannotAppeal.lpp.p2 = Os ydynt eisoes wedi talu’u TAW, gall gymryd hyd at 5 diwrnod i glirio i gyfrif banc CThEM ac ymddangos ar eu hanes talu.
-agent.youCannotAppeal.returnToVATDetails = Yn ôl i fanylion TAW eich cleient
-youCannotAppeal.returnToVATAccount = Yn ôl i’ch cyfrif TAW
-youCannotAppeal.checkWhatYouOwe = Gwirio a thalu’r hyn sydd arnoch
-youCannotAppeal.lsp.p1 = Mae angen i chi gyflwyno’ch Ffurflen TAW cyn i ni allu adolygu’r gosb hon.
+agent.youCannotAppeal.lsp.p2 = If you have already submitted the VAT Return, it can take up to 24 hours before it shows on your client’s VAT account.
+agent.youCannotAppeal.lpp.p1 = Your client needs to pay their VAT bill before we can review this penalty.
+agent.youCannotAppeal.lpp.p2 = If they have already paid their VAT, it can take up to 5 days to clear to HMRC’s bank account and show on their payment history.
+agent.youCannotAppeal.returnToVATDetails = Return to your client’s VAT details
+youCannotAppeal.returnToVATAccount = Return to your VAT account
+youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
+youCannotAppeal.lsp.p1 = You need to submit your VAT Return before we can review this penalty.
 youCannotAppeal.lsp.p2 = If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account.
-youCannotAppeal.p3 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy’ch cyfrif TAW.
-agent.youCannotAppeal.p3 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy gyfrif TAW eich cleient.
-youCannotAppeal.lpp.p1 = Mae angen i chi dalu’ch TAW cyn i ni allu adolygu’r gosb hon.
+youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your VAT account.
+agent.youCannotAppeal.p3 = If you need to cancel the VAT registration, you can do it through your client’s VAT details.
+youCannotAppeal.lpp.p1 = You need to pay your VAT before we can review this penalty.
 youCannotAppeal.lpp.p2 = If you paid your VAT very recently, it can take up to 5 days to clear to HMRC’s bank account and show on your payment history.
 
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
-otherRelevantInformation.headingAndTitle = Rhowch wybod i ni pam yr ydych am apelio yn erbyn y gosb
-otherRelevantInformation.hintText = Dylech gynnwys manylion am unrhyw ohebiaeth â CThEM am ganslo’r cofrestriad TAW.
-otherRelevantInformation.error.required = Nodwch y rhesymau pam eich bod am apelio yn erbyn y gosb
+otherRelevantInformation.headingAndTitle = Tell us why you want to appeal the penalty
+otherRelevantInformation.hintText = Include details of any communication with HMRC about cancelling the VAT registration.
+otherRelevantInformation.error.required = Enter the reasons why you want to appeal the penalty
 
 # You can appeal this penalty
 # ----------------------------------------------------------
@@ -493,38 +493,38 @@ youCanAppealThisPenalty.error.required = Select yes if you want to appeal this p
 
 # Error message for characters more than 5000 in text area
 # ----------------------------------------------------------
-explainReason.charsInTextArea.error = Esboniwch y rheswm gan ddefnyddio 5,000 o gymeriadau neu lai
+explainReason.charsInTextArea.error = Explain the reason in 5,000 characters or fewer
 
 # Service Unavailable Page
 # ----------------------------------------------------------
-serviceUnavailable.headingAndTitle = Mae’n ddrwg gennym, nid yw’r gwasanaeth ar gael
-serviceUnavailable.p1 = Nid ydym wedi cadw’ch atebion.
-serviceUnavailable.p2 = Byddwch yn gallu defnyddio’r gwasanaeth yn nes ymlaen.
-serviceUnavailable.p3 = Os oes well gennych, gallwch ysgrifennu llythyr i apelio. Ysgrifennwch at:
-serviceUnavailable.p4 = Swyddfa’r Cyfreithiwr a Gwasanaethau Cyfreithiol / Solicitor’s Office and Legal Services
+serviceUnavailable.headingAndTitle = Sorry, the service is unavailable
+serviceUnavailable.p1 = We have not saved your answers.
+serviceUnavailable.p2 = You will be able to use the service later.
+serviceUnavailable.p3 = If you prefer, you can appeal by letter. Write to:
+serviceUnavailable.p4 = Solicitor‘s Office and Legal Services
 serviceUnavailable.p5 = HMRC
 serviceUnavailable.p6 = BX9 1ZT
 
 # Problem with service page
 # ----------------------------------------------------------
-problemWithService.headingAndTitle = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
+problemWithService.headingAndTitle = Sorry, there is a problem with the service
 
 # Duplicate Appeal Page
 # ----------------------------------------------------------
-duplicateAppeal.headingAndTitle = Rydym eisoes wedi cael cais i adolygu’r gosb hon
-duplicateAppeal.p1 = Ni allwch gyflwyno mwy nag un cais ar gyfer yr un gosb.
-duplicateAppeal.link = Gweld eich cosbau ac apeliadau
-agent.duplicateAppeal.link = Gweld cosbau ac apeliadau eich cleient
+duplicateAppeal.headingAndTitle = We have already been asked to review this penalty
+duplicateAppeal.p1 = You cannot submit a duplicate request for the same penalty.
+duplicateAppeal.link = View your penalties and appeals
+agent.duplicateAppeal.link = View your client’s penalties and appeals
 
 # Error scenarios
 # -----------------------------------------------------------
 error.prefix = Error:
-error.summary.headingAndTitle = Mae problem wedi codi
+error.summary.headingAndTitle = There is a problem
 # Not sure if this is as per design
 error.clickAcceptAndContinue = Please click ’Accept and continue’
 
 # Timeout page
 # -----------------------------------------------------------
-timeout.headingAndTitle = Er eich diogelwch, gwnaethom eich allgofnodi
+timeout.headingAndTitle = For your security, we signed you out
 timeout.p1 = We did not save your answers.
-timeout.signIn = Mewngofnodi
+timeout.signIn = Sign in
