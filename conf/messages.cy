@@ -379,8 +379,8 @@ healthReason.hasTheHospitalStayEnded.date.error.required.all = Rhowch wybod i ni
 healthReason.hasTheHospitalStayEnded.date.error.required.two = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0} a {1}
 healthReason.hasTheHospitalStayEnded.date.error.required = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0}
 healthReason.hasTheHospitalStayEnded.date.error.invalid = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yn ddyddiad go iawn
-healthReason.hasTheHospitalStayEnded.date.error.notInFuture = The date the hospital stay ended must be today or in the past
-healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The date the hospital stay ended must be the same or after it began
+healthReason.hasTheHospitalStayEnded.date.error.notInFuture = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod heddiw neu yn y gorffennol
+healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yr un dyddiad y dechreuodd neu ar ôl y dyddiad hwnnw
 
 # When did the person die page
 # ----------------------------------------------------------
