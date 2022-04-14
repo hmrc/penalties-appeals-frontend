@@ -189,34 +189,34 @@ lossOfStaffReason.hintText = This means someone essential to the tax process lea
 lossOfStaffReason.error.required.all = Tell us the last date the person carried out work for the business
 lossOfStaffReason.error.required.two = The date the person left must include a {0} and a {1}
 lossOfStaffReason.error.required = The date the person left must include a {0}
-lossOfStaffReason.error.invalid = The date the person left must be a real date
-lossOfStaffReason.error.notInFuture = The date the person left must be today or in the past
+lossOfStaffReason.error.invalid = Mae’n rhaid i’r dyddiad y gwnaeth y person adael fod yn ddyddiad go iawn
+lossOfStaffReason.error.notInFuture = Mae’n rhaid i’r dyddiad y gwnaeth y person adael fod heddiw neu yn y gorffennol
 
 # When did the technology issues begin page
 # ----------------------------------------------------------
-technicalIssues.begin.headingAndTitle = When did the technology issues begin?
+technicalIssues.begin.headingAndTitle = Pryd dechreuodd y trafferthion technoleg?
 # Need to confirm that these errors are correct
-technicalIssues.begin.error.required.all = Tell us when the technology issues began
-technicalIssues.begin.error.required.two = The date the technology issues began must include a {0} and a {1}
-technicalIssues.begin.error.required = The date the technology issues began must include a {0}
-technicalIssues.begin.error.invalid = The date the technology issues began must be a real date
-technicalIssues.begin.error.notInFuture = The date the technology issues began must be today or in the past
+technicalIssues.begin.error.required.all = Rhowch wybod i ni pryd dechreuodd y trafferthion technoleg
+technicalIssues.begin.error.required.two = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg gynnwys {0} a {1}
+technicalIssues.begin.error.required = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg gynnwys {0}
+technicalIssues.begin.error.invalid = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg fod yn ddyddiad go iawn
+technicalIssues.begin.error.notInFuture = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg fod heddiw neu yn y gorffennol
 
 # When did the technology issues end page
 # ----------------------------------------------------------
-technicalIssues.end.headingAndTitle = When did the technology issues end?
-technicalIssues.end.error.required.all = Tell us when the technology issues ended
-technicalIssues.end.error.required.two = The date the technology issues ended must include a {0} and a {1}
-technicalIssues.end.error.required = The date the technology issues ended must include a {0}
-technicalIssues.end.error.invalid = The date the technology issues ended must be a real date
-technicalIssues.end.error.notInFuture = The date the technology issues ended must be today or in the past
-technicalIssues.end.error.endDateLessThanStartDate = The date the technology issues ended must be the same or after they began
+technicalIssues.end.headingAndTitle = Pryd daeth y trafferthion technoleg i ben?
+technicalIssues.end.error.required.all = Rhowch wybod i ni pryd ddaeth y trafferthion technoleg i ben
+technicalIssues.end.error.required.two = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben gynnwys {0} a {1}
+technicalIssues.end.error.required = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben gynnwys {0}
+technicalIssues.end.error.invalid = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod yn ddyddiad go iawn
+technicalIssues.end.error.notInFuture = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod heddiw neu yn y gorffennol
+technicalIssues.end.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod naill ai ar yr un dyddiad y gwnaethant ddechrau neu wedi’r dyddiad hwnnw
 
 # Was hospital stay required page
 # ----------------------------------------------------------
-healthReason.wasHospitalStayRequired.headingAndTitle = Did this health issue include a hospital stay?
-healthReason.wasHospitalStayRequired.error.required = Tell us if you or someone else was admitted to hospital
-agent.healthReason.wasHospitalStayRequired.error.required = Tell us if your client or someone else was admitted to hospital
+healthReason.wasHospitalStayRequired.headingAndTitle = A oedd y broblem iechyd wedi arwain at arhosiad yn yr ysbyty?
+healthReason.wasHospitalStayRequired.error.required = Rhowch wybod i ni a oeddech chi neu rywun arall wedi mynd i’r ysbyty
+agent.healthReason.wasHospitalStayRequired.error.required = Rhowch wybod i ni a oedd eich cleient neu rywun arall wedi mynd i’r ysbyty
 
 # When did health event happen page
 # ----------------------------------------------------------
@@ -257,20 +257,20 @@ agent.health.whenHealthIssueHappened.error.invalid.lpp = The date the health iss
 
 # When did the hospital stay begin page
 # ----------------------------------------------------------
-healthReason.whenDidHospitalStayBegin.headingAndTitle = When did the hospital stay begin?
-healthReason.whenDidHospitalStayBegin.error.required.all = Enter the start date of the hospital stay
-healthReason.whenDidHospitalStayBegin.error.required.two = The date the hospital stay started must include a {0} and a {1}
-healthReason.whenDidHospitalStayBegin.error.required = The date the hospital stay started must include a {0}
-healthReason.whenDidHospitalStayBegin.error.invalid = The date the hospital stay started must be a real date
-healthReason.whenDidHospitalStayBegin.error.notInFuture = The date the hospital stay started must be today or in the past
+healthReason.whenDidHospitalStayBegin.headingAndTitle = Pryd y dechreuodd yr arhosiad yn yr ysbyty?
+healthReason.whenDidHospitalStayBegin.error.required.all = Nodwch y dyddiad y dechreuodd yr arhosiad yn yr ysbyty
+healthReason.whenDidHospitalStayBegin.error.required.two = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty gynnwys {0} a {1}
+healthReason.whenDidHospitalStayBegin.error.required = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty gynnwys {0}
+healthReason.whenDidHospitalStayBegin.error.invalid = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty fod yn ddyddiad go iawn
+healthReason.whenDidHospitalStayBegin.error.notInFuture = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty fod heddiw neu yn y gorffennol
 
 
 # Why was the return submitted late page
 # ----------------------------------------------------------
-otherReason.whyReturnSubmittedLate.headingAndTitle = Why was the return submitted late?
-otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Why was the VAT bill paid late?
-otherReason.whyReturnSubmittedLate.lpp.error.required = Explain why the VAT bill was paid late
-otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
+otherReason.whyReturnSubmittedLate.headingAndTitle = Pam y cyflwynwyd y Ffurflen TAW yn hwyr?
+otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Pam y talwyd y bil TAW yn hwyr?
+otherReason.whyReturnSubmittedLate.lpp.error.required = Eglurwch pam y talwyd y bil TAW yn hwyr
+otherReason.whyReturnSubmittedLate.error.required = Eglurwch pam y cyflwynwyd y Ffurflen TAW yn hwyr
 
 # When did you become unable page
 # ----------------------------------------------------------
@@ -281,104 +281,104 @@ agent.otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this 
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
-agents.whoPlannedToSubmitVATReturn.headingAndTitle = Before the deadline, who planned to submit the return?
-agents.whoPlannedToSubmitVATReturn.agent = I did
-agents.whoPlannedToSubmitVATReturn.client = My client did
-agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submit the VAT return
+agents.whoPlannedToSubmitVATReturn.headingAndTitle = Cyn y dyddiad cau, pwy oedd yn bwriadu cyflwyno’r Ffurflen TAW?
+agents.whoPlannedToSubmitVATReturn.agent = Fi
+agents.whoPlannedToSubmitVATReturn.client = Fy nghleient
+agents.whoPlannedToSubmitVATReturn.error.required = Rhowch wybod i ni pwy oedd yn bwriadu cyflwyno’r Ffurflen TAW
 
 
 # Upload Evidence
 # ----------------------------------------------------------
-otherReason.uploadEvidence.headingAndTitle = Evidence to support this appeal (optional)
-otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the penalty.
-otherReason.uploadEvidence.p2 = Evidence might include documents or letters that show why the return was submitted late.
-otherReason.uploadEvidence.lpp.p2 = Evidence might include documents or letters that show why the VAT bill was paid late.
-otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include documents or letters that show why the business did not need to submit a return.
-otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT.
-otherReason.uploadEvidence.p4 = You can upload up to 5 files.
-otherReason.uploadEvidence.p5 = Each file must be smaller than 6MB.
-otherReason.uploadEvidence.details.heading = Types of file you can upload
-otherReason.uploadEvidence.details.p1 = These file types are allowed:
-otherReason.uploadEvidence.details.li.1 = image (.jpg, .jpeg, .png or .tiff)
+otherReason.uploadEvidence.headingAndTitle = Tystiolaeth i gefnogi’r apêl hon (dewisol)
+otherReason.uploadEvidence.p1 = Defnyddiwch y dudalen hon i uwchlwytho unrhyw dystiolaeth i’n helpu i adolygu’r gosb.
+otherReason.uploadEvidence.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam y cyflwynwyd y Ffurflen TAW yn hwyr.
+otherReason.uploadEvidence.lpp.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam y talwyd y bil TAW yn hwyr.
+otherReason.uploadEvidence.appealAgainstObligation.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam nad oedd angen i’r busnes gyflwyno Ffurflen TAW.
+otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam nad oedd angen i’r busnes gyflwyno Ffurflen TAW a thalu TAW.
+otherReason.uploadEvidence.p4 = Gallwch uwchlwytho hyd at 5 ffeil.
+otherReason.uploadEvidence.p5 = Mae’n rhaid i bob ffeil fod yn llai na 6MB.
+otherReason.uploadEvidence.details.heading = Mathau o ffeiliau y gallwch eu huwchlwytho
+otherReason.uploadEvidence.details.p1 = Caniateir y mathau hyn o ffeiliau:
+otherReason.uploadEvidence.details.li.1 = delwedd (.jpg, .jpeg, .png neu .tiff)
 otherReason.uploadEvidence.details.li.2 = PDF (.pdf)
 otherReason.uploadEvidence.details.li.3 = email (.txt or .msg)
-otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel or PowerPoint)
+otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel neu PowerPoint)
 otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
 otherReason.uploadEvidence.details.p2 = You cannot upload zip files or documents that are protected by a password.
 otherReason.uploadEvidence.details.p3 = We’ll scan all files and reject any we think are suspicious.
-otherReason.uploadEvidence.file = File
-otherReason.uploadEvidence.addAnother = Add another file
-otherReason.uploadEvidence.status.uploaded = Ready to Submit
-otherReason.uploadEvidence.status.pending = Pending
-otherReason.uploadEvidence.button.remove = Remove
-otherReason.uploadEvidence.button.removing = Removing
-otherReason.uploadEvidence.stillTransferring = Files are still being transferred
+otherReason.uploadEvidence.file = Ffeil
+otherReason.uploadEvidence.addAnother = Ychwanegu ffeil arall
+otherReason.uploadEvidence.status.uploaded = BAROD I GYFLWYNO
+otherReason.uploadEvidence.status.pending = Ar y gweill
+otherReason.uploadEvidence.button.remove = Tynnu
+otherReason.uploadEvidence.button.removing = Yn tynnu
+otherReason.uploadEvidence.stillTransferring = Mae ffeiliau’n dal i gael eu trosglwyddo
 
 # Upload Evidence Question
 # ----------------------------------------------------------
-otherReason.uploadEvidence.question.headingAndTitle = Do you want to upload evidence to support your appeal?
-otherReason.uploadEvidence.question.required = Select yes if you want to upload evidence
-otherReason.uploadEvidence.question.hintText = Uploading evidence is optional. We will still review your appeal if you do not upload evidence.
+otherReason.uploadEvidence.question.headingAndTitle = A ydych am uwchlwytho tystiolaeth i gefnogi’ch apêl?
+otherReason.uploadEvidence.question.required = Dewiswch ‘Iawn’ os ydych eisiau uwchlwytho tystiolaeth
+otherReason.uploadEvidence.question.hintText = Mae uwchlwytho tystiolaeth yn ddewisol. Byddwn yn dal i adolygu’ch apêl os nad ydych yn uwchlwytho tystiolaeth.
 
 # Upload Evidence (No JS)
 # ----------------------------------------------------------
-otherReason.uploadEvidence.noJs.p1 = Use this page to upload your first file. You can upload additional files afterwards. We will use any evidence to help us review the penalty.
-otherReason.uploadEvidence.noJs.uploadLabel = Choose your first file
-otherReason.uploadEvidence.noJs.uploadAnotherLabel = Choose your next file
-otherReason.uploadEvidence.noJs.button.uploadFile = Upload selected file
+otherReason.uploadEvidence.noJs.p1 = Defnyddiwch y dudalen hon i uwchlwytho eich ffeil gyntaf. Gallwch uwchlwytho ffeiliau ychwanegol maes o law. Byddwn yn defnyddio unrhyw dystiolaeth i’n helpu i adolygu’r gosb.
+otherReason.uploadEvidence.noJs.uploadLabel = Dewiswch eich ffeil gyntaf
+otherReason.uploadEvidence.noJs.uploadAnotherLabel = Dewiswch eich ffeil nesaf
+otherReason.uploadEvidence.noJs.button.uploadFile = Uwchlwythwch y ffeil a ddewisir
 
 # Upload List (No JS) page
 # ----------------------------------------------------------
-otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = You have uploaded {0} files
-otherReason.uploadList.youHaveUploadedFile.headingAndTitle = You have uploaded {0} file
-otherReason.uploadList.uploadAnotherFile = Do you want to upload another file?
-otherReason.uploadList.uploadAnotherFile.required = Tell us if you want to upload another file
-otherReason.uploadList.rowTitle = File {0}
-otherReason.uploadList.duplicateInsetText = File {0} has the same contents as File {1}. You can remove duplicate files using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.2 = File {0} has the same contents as Files {1} and {2}. You can remove duplicate files using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.3 = File {0} has the same contents as Files {1}, {2} and {3}. You can remove duplicate files using the ’Remove’ link.
-otherReason.uploadList.duplicateInsetText.4 = File {0} has the same contents as Files {1}, {2}, {3} and {4}. You can remove duplicate files using the ’Remove’ link.
+otherReason.uploadList.youHaveUploadedFiles.headingAndTitle = Rydych wedi uwchlwytho {0} o ffeiliau
+otherReason.uploadList.youHaveUploadedFile.headingAndTitle = Rydych wedi uwchlwytho {0} ffeil
+otherReason.uploadList.uploadAnotherFile = A ydych eisiau uwchlwytho ffeil arall?
+otherReason.uploadList.uploadAnotherFile.required = Rhowch wybod i ni a ydych eisiau uwchlwytho ffeil arall
+otherReason.uploadList.rowTitle = Ffeil {0}
+otherReason.uploadList.duplicateInsetText = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeil {1}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
+otherReason.uploadList.duplicateInsetText.2 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1} a {2}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
+otherReason.uploadList.duplicateInsetText.3 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2} a {3}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
+otherReason.uploadList.duplicateInsetText.4 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2}, {3} a {4}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
 otherReason.uploadList.multipleDuplicateInsetText = Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
-otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle = It’s taking longer than expected to upload this file
-otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Reload this page
+otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle = Mae’n cymryd hirach na’r disgwyl i uwchlwytho’r ffeil hwn
+otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Ail-lwytho’r dudalen hon
 
 # Upload Another Document (No JS)
 # ----------------------------------------------------------
-otherReason.uploadAnotherDocument.noJs.headingAndTitle = Add another file (optional)
-otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
+otherReason.uploadAnotherDocument.noJs.headingAndTitle = Ychwanegu ffeil arall (dewisol)
+otherReason.uploadAnotherDocument.noJs.button.cancel = Canslo
 
 # Upscan failure messages
 # ----------------------------------------------------------
-upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)
-upscan.fileTooLarge = The selected file must be smaller than 6MB. Remove the file and try again.
-upscan.fileEmpty = The selected file is empty. Remove the file and try again.
-upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
-upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
-upscan.fileUploaded = {0} {1} has been uploaded
-upscan.fileUploading = Uploading {0} {1}
-upscan.fileRemoved = {0} {1} has been removed
-upscan.fileNotSpecified = Select a file.
+upscan.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileEmpty = Mae’r ffeil dan sylw yn wag. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileHasVirus = Mae feirws yn y ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileUploaded = Uwchlwythwyd {0} {1}
+upscan.fileUploading = Yn uwchlwytho {0} {1}
+upscan.fileRemoved = Mae {0} {1} wedi ei ddileu
+upscan.fileNotSpecified = Dewiswch ffeil.
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------
-upscan.noJs.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF). Choose another file.
-upscan.noJs.fileTooLarge = The selected file must be smaller than 6MB. Choose another file.
-upscan.noJs.fileEmpty = The selected file is empty. Choose another file.
-upscan.noJs.fileHasVirus = The selected file contains a virus. Choose another file.
-upscan.noJs.unableToUpload = The selected file could not be uploaded. Choose another file.
+upscan.noJs.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.noJs.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Dewiswch ffeil arall.
+upscan.noJs.fileEmpty = Mae’r ffeil dan sylw yn wag. Dewiswch ffeil arall.
+upscan.noJs.fileHasVirus = Mae feirws yn y ffeil dan sylw. Dewiswch ffeil arall.
+upscan.noJs.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Dewiswch ffeil arall.
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------
-healthReason.hasTheHospitalStayEnded.headingAndTitle = Has the hospital stay ended?
-healthReason.hasTheHospitalStayEnded.yes.heading = When did it end?
-healthReason.hasTheHospitalStayEnded.error.required = Tell us if the hospital stay has now ended
-healthReason.hasTheHospitalStayEnded.date.error.required.all = Tell us when the hospital stay ended
-healthReason.hasTheHospitalStayEnded.date.error.required.two = The date the hospital stay ended must include a {0} and a {1}
-healthReason.hasTheHospitalStayEnded.date.error.required = The date the hospital stay ended must include a {0}
-healthReason.hasTheHospitalStayEnded.date.error.invalid = The date the hospital stay ended must be a real date
+healthReason.hasTheHospitalStayEnded.headingAndTitle = A yw’r arhosiad yn yr ysbyty wedi dod i ben?
+healthReason.hasTheHospitalStayEnded.yes.heading = Pryd ddaeth i ben?
+healthReason.hasTheHospitalStayEnded.error.required = Rhowch wybod i ni a yw’r arhosiad yn yr ysbyty bellach wedi dod i ben
+healthReason.hasTheHospitalStayEnded.date.error.required.all = Rhowch wybod i ni pryd ddaeth yr arhosiad yn yr ysbyty i ben
+healthReason.hasTheHospitalStayEnded.date.error.required.two = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0} a {1}
+healthReason.hasTheHospitalStayEnded.date.error.required = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0}
+healthReason.hasTheHospitalStayEnded.date.error.invalid = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yn ddyddiad go iawn
 healthReason.hasTheHospitalStayEnded.date.error.notInFuture = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod heddiw neu yn y gorffennol
 healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yr un dyddiad y dechreuodd neu ar ôl y dyddiad hwnnw
 
