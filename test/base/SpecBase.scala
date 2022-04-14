@@ -61,6 +61,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   implicit val messages: Messages = messagesApi.preferred(fakeRequest)
 
+  val cyMessages: Messages = messagesApi.preferred(fakeRequest.withTransientLang("cy"))
+
   val mcc: MessagesControllerComponents = injector.instanceOf[MessagesControllerComponents]
 
   lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]

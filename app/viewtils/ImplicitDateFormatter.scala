@@ -16,19 +16,16 @@
 
 package viewtils
 
-import java.time.format.DateTimeFormatter
+import play.api.i18n.Messages
 import java.time.{LocalDate, LocalDateTime}
 
 trait ImplicitDateFormatter {
 
-  private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-  private val monthYearDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMMM yyyy")
+  implicit def dateToString(date: LocalDate)(implicit messages: Messages): String =
+    s"${date.getDayOfMonth} ${messages(s"month.${date.getMonthValue}")} ${date.getYear}"
 
-  implicit def dateToString(date: LocalDate): String = dateFormatter.format(date)
-
-  implicit def dateTimeToString(dateTime: LocalDateTime): String = dateFormatter.format(dateTime)
-
-  implicit def dateTimeToMonthYearString(dateTime: LocalDateTime): String = monthYearDateFormatter.format(dateTime)
+  implicit def dateTimeToString(date: LocalDateTime)(implicit messages: Messages): String =
+    s"${date.getDayOfMonth} ${messages(s"month.${date.getMonthValue}")} ${date.getYear}"
 
 }
 
