@@ -1,117 +1,117 @@
-service.name = Appeal a VAT penalty
+service.name = Apelio yn erbyn cosb TAW
 service.homePageUrl = /penalties-appeals
 
 # Common
 # ----------------------------------------------------------
 common.pageTitle = {0} - {1} - GOV.UK
-common.continue = Continue
-common.acceptAndContinue = Accept and continue
-common.acceptAndSend = Accept and send
-common.radioOption.yes = Yes
-common.radioOption.no = No
-common.radioOption.unknown = I do not know
+common.continue = Yn eich blaen
+common.acceptAndContinue = Derbyn ac yn eich blaen
+common.acceptAndSend = Derbyn ac anfon
+common.radioOption.yes = Iawn
+common.radioOption.no = Na
+common.radioOption.unknown = Nid wyf yn gwybod
 
-app.common.back = Back
+app.common.back = Yn ôl
 
 # BETA Banner
 # ----------------------------------------------------------
-feedback.before = This is a new service - your
-feedback.link = feedback
-feedback.after = will help us to improve it.
+feedback.before = Gwasanaeth newydd yw hwn – bydd eich
+feedback.link = adborth
+feedback.after = yn ein helpu i’w wella.
 
 # Unauthorised
 # ----------------------------------------------------------
-unauthorised.headingAndTitle = You are not authorised to use this service
-unauthorised.signUp = You need to sign up to appeal your VAT penalties.
-unauthorised.alreadySignedUp = If you have already signed up, you need to sign in with the correct Government Gateway details.
+unauthorised.headingAndTitle = Nid ydych wedi’ch awdurdodi i ddefnyddio’r gwasanaeth hwn
+unauthorised.signUp = Mae angen i chi fewngofnodi i apelio yn erbyn eich cosbau TAW.
+unauthorised.alreadySignedUp = Os ydych eisoes wedi cofrestru, bydd angen i chi fewngofnodi gan ddefnyddio’r manylion cywir ar gyfer Porth y Llywodraeth.
 
-base.signOut = Sign out
+base.signOut = Allgofnodi
 
 # Appeal Start Page
 # ----------------------------------------------------------
-appealStart.p1 = To appeal a penalty about an ’indirect tax’ (for example, VAT) you can either:
-appealStart.li.1.1 = ask HMRC to review the penalty
-appealStart.li.1.2 = appeal straight to the tax tribunal
-appealStart.p2 = Use this service to ask HMRC to review a penalty.
-appealStart.p3 = You can still appeal to the tax tribunal if you are not satisfied with the outcome of HMRC’s review.
-appealStart.h2 = Before you start
-appealStart.p4 = You need:
-appealStart.li.2.1 = a reason why the VAT Return was late (HMRC calls this a ’reasonable excuse’)
-appealStart.lpp.li.2.1 = a reason why the VAT payment was late (HMRC calls this a ’reasonable excuse’)
-appealStart.obligation.li.2.1 = details of any communication with HMRC about cancelling the VAT registration
-appealStart.li.2.2 = the dates the reason related to
+appealStart.p1 = Er mwyn apelio yn erbyn cosb am ‘dreth anuniongyrchol’ (er enghraifft, TAW), gallwch naill ai:
+appealStart.li.1.1 = gofyn i CThEM adolygu’r gosb
+appealStart.li.1.2 = apelio’n syth i’r tribiwnlys treth
+appealStart.p2 = Defnyddiwch y gwasanaeth hwn i ofyn i CThEM adolygu cosb.
+appealStart.p3 = Byddwch yn dal i allu apelio i’r tribiwnlys treth os nad ydych yn fodlon ar ganlyniad adolygiad CThEM.
+appealStart.h2 = Cyn i chi ddechrau
+appealStart.p4 = Bydd angen y canlynol arnoch:
+appealStart.li.2.1 = rheswm dros gyflwyno’r Ffurflen TAW yn hwyr (mae CThEM yn galw hyn yn ‘esgus rhesymol’)
+appealStart.lpp.li.2.1 = rheswm dros dalu’r TAW yn hwyr (mae CThEM yn galw hyn yn ‘esgus rhesymol’)
+appealStart.obligation.li.2.1 = manylion am unrhyw ohebiaeth â CThEM am ganslo’r cofrestriad TAW
+appealStart.li.2.2 = y dyddiadau y mae eich rheswm yn ymwneud â hwy
 appealStart.obligation.li.2.2 = any additional information to support your appeal (optional)
-appealStart.li.2.3 = details of why you did not appeal sooner
+appealStart.li.2.3 = manylion am y rheswm nad oeddech wedi apelio’n gynt
 appealStart.p5 = In some cases, we might also ask you to upload evidence to support the appeal.
-appealStart.p6 = We only need the information we ask for. You do not need to provide additional details unless we ask you for them.
+appealStart.p6 = Dim ond yr wybodaeth yr ydym wedi gofyn amdani sydd angen arnom. Nid oes angen i chi roi manylion ychwanegol oni bai ein bod yn gofyn amdano.
 
 
 
 # Penalty Information
 # ----------------------------------------------------------
-penaltyInformation.headerText = {0}: {1} to {2}
+penaltyInformation.headerText = {0}: {1} i {2}
 
 # Penalty Type
 # ----------------------------------------------------------
-penaltyType.lateSubmission = Late submission penalty
-penaltyType.latePayment = Late payment penalty
-penaltyType.additional = Additional penalty
+penaltyType.lateSubmission = Cosb am gyflwyno’n hwyr
+penaltyType.latePayment = Cosb am dalu’n hwyr
+penaltyType.additional = Cosb ychwanegol
 
 # Reasonable excuse
 # ----------------------------------------------------------
-reasonableExcuses.headingAndTitle = What was the reason for missing the VAT deadline?
-agent.reasonableExcuses.headingAndTitle = What was the reason for the delay?
-reasonableExcuses.bereavementReason = Bereavement (someone died)
-reasonableExcuses.crimeReason = Crime
-reasonableExcuses.fireOrFloodReason = Fire or flood
-reasonableExcuses.healthReason = Health
-reasonableExcuses.lossOfStaffReason = Loss of staff essential to the VAT process
-reasonableExcuses.technicalIssuesReason = Technology issues
-reasonableExcuses.otherReason = The reason does not fit into any of the other categories
-reasonableExcuses.breakerText = or
-reasonableExcuses.externalGuidanceLinkText = Read more about reasonable excuses
-reasonableExcuses.error.required = Select the reason for missing the VAT deadline
+reasonableExcuses.headingAndTitle = Beth oedd y rheswm dros fethu’r dyddiad cau ar gyfer TAW?
+agent.reasonableExcuses.headingAndTitle = Beth oedd y rheswm dros yr oedi?
+reasonableExcuses.bereavementReason = Profedigaeth (roedd rhywun wedi marw)
+reasonableExcuses.crimeReason = Trosedd
+reasonableExcuses.fireOrFloodReason = Tân neu lifogydd
+reasonableExcuses.healthReason = Iechyd
+reasonableExcuses.lossOfStaffReason = Colli staff hanfodol i’r broses TAW
+reasonableExcuses.technicalIssuesReason = Trafferthion technoleg
+reasonableExcuses.otherReason = Nid yw’r rheswm yn berthnasol i unrhyw un o’r categorïau eraill
+reasonableExcuses.breakerText = neu
+reasonableExcuses.externalGuidanceLinkText = Darllen mwy ynglŷn ag ‘esgus rhesymol’
+reasonableExcuses.error.required = Dewiswch reswm dros fethu’r dyddiad cau ar gyfer TAW
 
 # Honesty declaration
 # ----------------------------------------------------------
-honestyDeclaration.headingAndTitle = Honesty declaration
-honestyDeclaration.p1 = I confirm that:
+honestyDeclaration.headingAndTitle = Datganiad gonestrwydd
+honestyDeclaration.p1 = Rwy’n cadarnhau’r canlynol:
 honestyDeclaration.li.1.1 = because {0},
-honestyDeclaration.obligation.li.1 = HMRC has been asked to cancel the VAT registration
-honestyDeclaration.li.1.2 = I was unable to submit the VAT Return due on {0}
-agent.honestyDeclaration.li.1.2 = they were unable to submit the VAT Return due on {0}
-agent.honestyDeclaration.li.1.2.myClient = my client was unable to submit the VAT Return due on {0}
-honestyDeclaration.lpp.li.1.2 = I was unable to pay the VAT bill due on {0}
-agent.honestyDeclaration.lpp.li.1.2 = they were unable to pay the VAT bill due on {0}
-agent.honestyDeclaration.lpp.li.1.2.myClient = my client was unable to pay the VAT bill due on {0}
-honestyDeclaration.li.2 = no one else was available to make the submission for me
-agent.honestyDeclaration.li.2 = no one else was available to make the submission for them
+honestyDeclaration.obligation.li.1 = Gofynnwyd i CThEM ganslo’r cofrestriad TAW
+honestyDeclaration.li.1.2 = nid oeddwn yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
+agent.honestyDeclaration.li.1.2 = nid oedd yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
+agent.honestyDeclaration.li.1.2.myClient = nid oedd fy nghleient yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
+honestyDeclaration.lpp.li.1.2 = nid oeddwn yn gallu talu’r bil TAW a oedd yn ddyledus ar {0}
+agent.honestyDeclaration.lpp.li.1.2 = nid oedd yn gallu talu’r bil TAW a oedd yn ddyledus ar {0}
+agent.honestyDeclaration.lpp.li.1.2.myClient = nid oedd fy nghleient yn gallu talu’r bil TAW a oedd yn ddyledus ar {0}
+honestyDeclaration.li.2 = nid oedd neb arall ar gael i gyflwyno ar fy rhan
+agent.honestyDeclaration.li.2 = nid oedd neb arall ar gael i gyflwyno ar ei ran
 agent.honestyDeclaration.li.2.extra = no one else was available to get the information to me
-honestyDeclaration.lpp.li.2 = no one else was available to make the payment for me
-agent.honestyDeclaration.lpp.li.2 = no one else was available to make the payment for them
-honestyDeclaration.obligation.li.2 = I believe there was no VAT Return due for the period {0} to {1}
-honestyDeclaration.obligation.lpp.li.2 = there was no VAT due for the period {0} to {1}
-honestyDeclaration.li.3 = I will provide honest and accurate information in this appeal
-honestyDeclaration.li.extra.lossOfStaff = the staff member did not return or get replaced before the due date
-honestyDeclaration.li.extra.health = the timing of the health issue was unexpected
-honestyDeclaration.li.extra.technicalIssues = the technical failure was not due to lack of funds
-honestyDeclaration.crime = I was affected by a crime
-agent.honestyDeclaration.crime = my client was affected by a crime
-honestyDeclaration.bereavement = I was affected by someone’s death
-agent.honestyDeclaration.bereavement = my client was affected by someone’s death
-honestyDeclaration.fireOrFlood = of a fire or flood
-agent.honestyDeclaration.fireOrFlood = my client was affected by a fire or flood
-honestyDeclaration.health = of a health issue
-agent.honestyDeclaration.health = my client was affected by a health issue
-honestyDeclaration.technicalIssues = of technology issues
-agent.honestyDeclaration.technicalIssues = my client was affected by technology issues
-honestyDeclaration.lossOfStaff = of loss of staff essential to the VAT process
-agent.honestyDeclaration.lossOfStaff = my client was affected by loss of staff essential to the VAT process
+honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar fy rhan
+agent.honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar ei ran
+honestyDeclaration.obligation.li.2 = Rwyf o’r farn nad oedd Ffurflen TAW yn ddyledus ar gyfer y cyfnod o {0} o {1}
+honestyDeclaration.obligation.lpp.li.2 = nid oedd TAW yn ddyledus ar gyfer y cyfnod o {0} i {1}
+honestyDeclaration.li.3 = Byddaf yn rhoi gwybodaeth onest a chywir yn yr apêl hon
+honestyDeclaration.li.extra.lossOfStaff = nid oedd yr aelod o staff wedi dychwelyd i’r gwaith ac nid oedd neb wedi dod i gymryd ei le erbyn y dyddiad dyledus
+honestyDeclaration.li.extra.health = roedd amseriad y broblem iechyd yn annisgwyl
+honestyDeclaration.li.extra.technicalIssues = nid diffyg arian oedd y rheswm dros y methiant technegol
+honestyDeclaration.crime = effeithiwyd arnaf gan drosedd
+agent.honestyDeclaration.crime = effeithiwyd ar fy nghleient gan drosedd
+honestyDeclaration.bereavement = effeithiwyd arnaf gan farwolaeth rhywun
+agent.honestyDeclaration.bereavement = effeithiwyd ar fy nghleient gan farwolaeth rhywun
+honestyDeclaration.fireOrFlood = o dân neu lifogydd
+agent.honestyDeclaration.fireOrFlood = effeithiwyd ar fy nghleient gan dân neu lifogydd
+honestyDeclaration.health = o broblem iechyd
+agent.honestyDeclaration.health = effeithiwyd ar fy nghleient gan broblem iechyd
+honestyDeclaration.technicalIssues = o broblemau technegol
+agent.honestyDeclaration.technicalIssues = effeithiwyd ar fy nghleient gan broblemau technegol
+honestyDeclaration.lossOfStaff = o golli staff sy’n hanfodol i’r broses TAW
+agent.honestyDeclaration.lossOfStaff = effeithiwyd ar fy nghleient gan golli staff hanfodol i’r broses TAW
 honestyDeclaration.other =
 agent.honestyDeclaration.other = of an issue affecting my client
 
 
-site.opensInNewTab = (opens in a new tab)
+site.opensInNewTab = (yn agor tab newydd)
 
 # When did event happen pages
 # ----------------------------------------------------------
@@ -150,7 +150,7 @@ agent.whenDidBecomeUnable.error.required.lpp = The date when the issue first sto
 agent.whenDidBecomeUnable.error.required.two.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0} and a {1}
 agent.whenDidBecomeUnable.error.invalid.lpp = The date when the issue first stopped your client paying the VAT bill must be a real date
 
-whenDidEventHappen.hint = For example, 12 3 2018
+whenDidEventHappen.hint = Er enghraifft, 12 3 2018
 
 whenDidBecomeUnable.other.lpp = When did the issue first stop you paying the VAT bill?
 agent.whenDidBecomeUnable.other.lpp = When did the issue first stop your client paying the VAT bill?
@@ -160,35 +160,35 @@ whenDidBecomeUnable.other.lsp = When did the issue first stop you submitting the
 
 # When did the crime happen page
 # ----------------------------------------------------------
-crimeReason.headingAndTitle = When did the crime happen?
-crimeReason.error.required.all = Enter the date of the crime
-crimeReason.error.required.two = The date of the crime must include a {0} and a {1}
-crimeReason.error.required = The date of the crime must include a {0}
-crimeReason.error.invalid = The date of the crime must be a real date
-crimeReason.error.notInFuture = The date of the crime must be today or in the past
+crimeReason.headingAndTitle = Pryd ddigwyddodd y drosedd?
+crimeReason.error.required.all = Nodwch ddyddiad y drosedd
+crimeReason.error.required.two = Mae’n rhaid i ddyddiad y drosedd gynnwys {0} a {1}
+crimeReason.error.required = Mae’n rhaid i ddyddiad y drosedd gynnwys {0}
+crimeReason.error.invalid = Mae’n rhaid i ddyddiad y drosedd fod yn ddyddiad go iawn
+crimeReason.error.notInFuture = Mae’n rhaid i ddyddiad y drosedd fod heddiw neu yn y gorffennol
 
 # Has the crime been reported page
 # ----------------------------------------------------------
-crimeReason.hasBeenReported.headingAndTitle = Has this crime been reported to the police?
-crimeReason.hasBeenReported.unknown = I do not know
-crimeReason.hasBeenReported.required = Tell us if the police have been told about the crime
+crimeReason.hasBeenReported.headingAndTitle = A roddwyd gwybod i’r heddlu am y drosedd hon?
+crimeReason.hasBeenReported.unknown = Nid wyf yn gwybod
+crimeReason.hasBeenReported.required = Rhowch wybod i ni os yw'r heddlu wedi eu hysbysu am y drosedd
 
 # When did the fire or flood happen page
 # ----------------------------------------------------------
-fireOrFloodReason.headingAndTitle = When did the fire or flood happen?
-fireOrFloodReason.error.required.all = Enter the date of the fire or flood
-fireOrFloodReason.error.required.two = The date of the fire or flood must include a {0} and a {1}
-fireOrFloodReason.error.required = The date of the fire or flood must include a {0}
-fireOrFloodReason.error.invalid = The date of the fire or flood must be a real date
-fireOrFloodReason.error.notInFuture = The date of the fire or flood must be today or in the past
+fireOrFloodReason.headingAndTitle = Pryd ddigwyddodd y tân neu lifogydd?
+fireOrFloodReason.error.required.all = Nodwch ddyddiad y tân neu lifogydd
+fireOrFloodReason.error.required.two = Mae’n rhaid i ddyddiad y tân neu lifogydd gynnwys {0} a {1}
+fireOrFloodReason.error.required = Mae’n rhaid i ddyddiad y tân neu lifogydd gynnwys {0}
+fireOrFloodReason.error.invalid = Mae’n rhaid i ddyddiad y tân neu lifogydd fod yn ddyddiad go iawn
+fireOrFloodReason.error.notInFuture = Mae’n rhaid i ddyddiad y tân neu lifogydd fod heddiw neu yn y gorffennol
 
 # When did the person leave the business page
 # ----------------------------------------------------------
-lossOfStaffReason.headingAndTitle = When did the person leave the business?
-lossOfStaffReason.hintText = This means someone essential to the tax process leaving at short notice, whether they planned to return or not.<br><br>
-lossOfStaffReason.error.required.all = Tell us the last date the person carried out work for the business
-lossOfStaffReason.error.required.two = The date the person left must include a {0} and a {1}
-lossOfStaffReason.error.required = The date the person left must include a {0}
+lossOfStaffReason.headingAndTitle = Pryd gadawodd y person y busnes?
+lossOfStaffReason.hintText = Mae hyn yn golygu bod rhywun sy’n hanfodol i’r broses dreth wedi gadael ar fyr rybudd, p'un a oedd wedi bwriadu dychwelyd ai peidio.<br><br>
+lossOfStaffReason.error.required.all = Rhowch wybod i ni beth oedd y dyddiad diwethaf yr oedd y person wedi gweithio i’r busnes
+lossOfStaffReason.error.required.two = Mae’n rhaid i’r dyddiad y gwnaeth y person adael gynnwys {0} a {1}
+lossOfStaffReason.error.required = Mae’n rhaid i ddyddiad y gwnaeth y person adael gynnwys {0}
 lossOfStaffReason.error.invalid = Mae’n rhaid i’r dyddiad y gwnaeth y person adael fod yn ddyddiad go iawn
 lossOfStaffReason.error.notInFuture = Mae’n rhaid i’r dyddiad y gwnaeth y person adael fod heddiw neu yn y gorffennol
 
