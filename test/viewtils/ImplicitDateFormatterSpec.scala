@@ -16,26 +16,30 @@
 
 package viewtils
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-
+import base.SpecBase
 import java.time.{LocalDate, LocalDateTime}
 
-class ImplicitDateFormatterSpec extends AnyWordSpec with Matchers {
-  "dateToString" should {
-    "convert a LocalDate to a string - with the correct format" in {
-      val sampleLocalDate: LocalDate = LocalDate.of(2020, 1, 1)
-      ImplicitDateFormatter.dateToString(sampleLocalDate) shouldBe "1 January 2020"
+class ImplicitDateFormatterSpec extends SpecBase with ImplicitDateFormatter {
+
+  "ImplicitDateFormatter" must {
+    "return a formatted LocalDate" when {
+      "dateToString is called" in {
+        dateToString(LocalDate.of(2021, 1, 1)) shouldBe "1 January 2021"
+      }
+
+      "dateTimeToString is called" in {
+        dateTimeToString(LocalDateTime.of(2021, 1, 1, 1, 1, 1)) shouldBe "1 January 2021"
+      }
     }
 
-    "convert a LocalDateTime to a string - with the correct format" in {
-      val sampleLocalDateTime: LocalDateTime = LocalDateTime.of(2020, 1, 1, 12, 0, 0)
-      ImplicitDateFormatter.dateTimeToString(sampleLocalDateTime) shouldBe "1 January 2020"
-    }
+    "return the formatted Welsh LocalDate" when {
+      "dateToString is called" in {
+        dateToString(LocalDate.of(2021, 1, 1))(cyMessages) shouldBe "1 Ionawr 2021"
+      }
 
-    "convert a LocalDateTime to a string - (month year)" in {
-      val sampleLocalDateTime: LocalDateTime = LocalDateTime.of(2020, 1, 1, 12, 0, 0)
-      ImplicitDateFormatter.dateTimeToMonthYearString(sampleLocalDateTime) shouldBe "January 2020"
+      "dateTimeToString is called" in {
+        dateTimeToString(LocalDateTime.of(2021, 1, 1, 1, 1, 1))(cyMessages) shouldBe "1 Ionawr 2021"
+      }
     }
   }
 }
