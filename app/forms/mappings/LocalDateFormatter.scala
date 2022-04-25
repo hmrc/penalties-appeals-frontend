@@ -102,18 +102,18 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
       .withFilter(_._2.isEmpty)
       .map(_._1)
       .toList
-
+    val localisedFieldMessages = missingFields.map(field => messages(s"date.$field").toLowerCase)
     fields.count(_._2.isDefined) match {
       case 3 =>
         formatDate(key, data).left.map {
           _.map(err => err.copy(args = err.args ++ args))
         }
       case 2 =>
-        Left(List(FormError(s"$key.${missingFields.head}", requiredKey, missingFields ++ args)))
+        Left(List(FormError(s"$key.${missingFields.head}", requiredKey, localisedFieldMessages ++ args)))
       case 1 =>
-        Left(List(FormError(s"$key.${missingFields.head}", twoRequiredKey, missingFields ++ args)))
+        Left(List(FormError(s"$key.${missingFields.head}", twoRequiredKey, localisedFieldMessages ++ args)))
       case _ =>
-        Left(List(FormError(s"$key.${missingFields.head}", allRequiredKey, missingFields ++ args)))
+        Left(List(FormError(s"$key.${missingFields.head}", allRequiredKey, localisedFieldMessages ++ args)))
     }
   }
 

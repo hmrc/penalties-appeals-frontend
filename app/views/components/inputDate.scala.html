@@ -24,13 +24,6 @@
         hintText: Option[String] = None,
         legendAsPageHeading: Boolean = false)(implicit messages: Messages)
 
-@idOfError = @{
-    form.errors.headOption.fold(
-        id
-    )(
-        _.key
-    )
-}
 @govukDateInput(DateInput(
     fieldset = Some(Fieldset(
         legend = Some(
