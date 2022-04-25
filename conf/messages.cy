@@ -518,7 +518,7 @@ agent.duplicateAppeal.link = Gweld cosbau ac apeliadau eich cleient
 
 # Error scenarios
 # -----------------------------------------------------------
-error.prefix = Error:
+error.prefix = Gwall:
 error.summary.headingAndTitle = Mae problem wedi codi
 # Not sure if this is as per design
 error.clickAcceptAndContinue = Please click ’Accept and continue’
