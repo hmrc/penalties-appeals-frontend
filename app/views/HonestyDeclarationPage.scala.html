@@ -20,7 +20,8 @@
 @this(layout: Layout,
         link: components.link,
         govukButton: GovukButton,
-        formHelper: FormWithCSRF)
+        formHelper: FormWithCSRF,
+        pageHeader: components.pageHeader)
 
 @(form: Form[_], reasonableExcuse: String, reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
@@ -32,7 +33,7 @@
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
 
-    <h1 class="govuk-heading-l">@messages("honestyDeclaration.headingAndTitle")</h1>
+    @pageHeader(messages("honestyDeclaration.headingAndTitle"))
     <p class="govuk-body">@messages("honestyDeclaration.p1")</p>
     <ul class="govuk-list govuk-list--bullet">
         <li>

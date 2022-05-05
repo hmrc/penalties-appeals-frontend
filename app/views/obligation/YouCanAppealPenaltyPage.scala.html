@@ -18,7 +18,8 @@
         bullets: components.bullets,
         formHelper: FormWithCSRF,
         govukButton: GovukButton,
-        radios: components.radios)
+        radios: components.radios,
+        pageHeader: components.pageHeader)
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
@@ -27,7 +28,8 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
-    <h1 class="govuk-heading-l">@messages("youCanAppealThisPenalty.headingAndTitle")</h1>
+
+    @pageHeader(messages("youCanAppealThisPenalty.headingAndTitle"))
     <p class="govuk-body">@messages("youCanAppealThisPenalty.p1")</p>
     @bullets(
         Seq(
@@ -38,11 +40,11 @@
     @formHelper(action = postAction) {
         @radios(
             form = form,
-            legend = messages("youCanAppealThisPenalty.p2"),
+            legendContent = messages("youCanAppealThisPenalty.p2"),
             hint = None,
             legendClasses = "govuk-fieldset__legend",
             items = radioOptions,
-            legendAsHeading = false
+            showPenaltyInformation = false
         )
         @govukButton(Button(content = Text(messages("common.continue"))))
     }

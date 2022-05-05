@@ -10,6 +10,7 @@ common.acceptAndSend = Derbyn ac anfon
 common.radioOption.yes = Iawn
 common.radioOption.no = Na
 common.radioOption.unknown = Nid wyf yn gwybod
+common.penaltyYouAreAppealing = The penalty you are appealing is
 
 app.common.back = Yn ôl
 

@@ -22,7 +22,8 @@
         govukButton: GovukButton,
         p: components.p,
         radios: components.radios,
-        govukSummaryList : GovukSummaryList)
+        govukSummaryList : GovukSummaryList,
+        pageHeader: components.pageHeader)
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, uploadRows: Seq[Html], optInsetText: Option[Html],
         pageMode: PageMode)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -34,7 +35,7 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
-        <h1 class="govuk-heading-l">@messages(pageHeadingAndTitle)</h1>
+        @pageHeader(messages(pageHeadingAndTitle))
 
         @if(optInsetText.isDefined){
             @optInsetText.get
@@ -47,12 +48,13 @@
         </div>
     @formHelper(action = postAction) {
         @if(uploadRows.length < 5) {
-            @radios(form = form,
-                legend = messages("otherReason.uploadList.uploadAnotherFile"),
+            @radios(
+                form = form,
+                legendContent = messages("otherReason.uploadList.uploadAnotherFile"),
                 items = radioOptions ,
                 hint = None,
-                legendAsHeading = false,
-                legendClasses = "govuk-fieldset__legend--m"
+                legendClasses = "govuk-fieldset__legend--m",
+                showPenaltyInformation = false
             )
         }
         @govukButton(Button(content = Text(messages("common.continue"))))

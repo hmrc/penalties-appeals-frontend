@@ -25,7 +25,7 @@ import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.YouCanAppealPenaltyPage
+import views.html.obligation.YouCanAppealPenaltyPage
 import viewtils.RadioOptionHelper
 
 class YouCanAppealPenaltyPageSpec extends SpecBase with ViewBehaviours {

@@ -20,11 +20,10 @@
 
 @layout(
     pageTitle = messages("problemWithService.headingAndTitle"),
-    showPenaltyInformation = false,
     isPageFullWidth = false,
     backLinkEnabled = false
 ) {
-    <h1 class="govuk-heading-l">@messages("problemWithService.headingAndTitle")</h1>
+    <h1 class="govuk-heading-xl" id="page-heading">@messages("problemWithService.headingAndTitle")</h1>
     <p class="govuk-body">@messages("serviceUnavailable.p1")</p>
     <p class="govuk-body">@messages("serviceUnavailable.p2")</p>
     <p class="govuk-body">@messages("serviceUnavailable.p3")</p>

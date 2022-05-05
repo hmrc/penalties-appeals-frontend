@@ -34,7 +34,6 @@
     pageTitle: String,
     scriptsBlock: Option[Html] = None,
     isPageFullWidth: Boolean = true,
-    showPenaltyInformation: Boolean = true,
     formHasErrors: Boolean = false,
     backLinkEnabled: Boolean = true,
     customJavaScript: Option[String] = None,
@@ -89,7 +88,6 @@
     beforeContentBlock = Some(beforeContentBlock),
     footerBlock = Some(hmrcStandardFooter()),
     isFullWidth = isPageFullWidth,
-    showPenaltyInformation = showPenaltyInformation,
     formHasErrors = formHasErrors,
     errors = formErrors
 )(contentBlock)

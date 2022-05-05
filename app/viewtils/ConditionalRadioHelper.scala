@@ -18,6 +18,7 @@ package viewtils
 
 import play.api.data.Form
 import play.api.i18n.Messages
+import play.api.mvc.Request
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.ViewUtils
@@ -26,7 +27,7 @@ import javax.inject.Inject
 
 class ConditionalRadioHelper @Inject()(dateInput: views.html.components.inputDate) extends ViewUtils {
 
-  def conditionalYesNoOptions(form: Form[_], messagePrefix: String)(implicit messages: Messages): Seq[RadioItem] = {
+  def conditionalYesNoOptions(form: Form[_], messagePrefix: String)(implicit messages: Messages, request: Request[_]): Seq[RadioItem] = {
     Seq(
       RadioItem(
         value = Some("yes"),
@@ -37,7 +38,8 @@ class ConditionalRadioHelper @Inject()(dateInput: views.html.components.inputDat
           legendContent = messages(s"$messagePrefix.yes.heading"),
           legendClasses = Some("govuk-fieldset__legend govuk-label"),
           id = "stayEndDate",
-          hintText = Some(messages("whenDidEventHappen.hint"))
+          hintText = Some(messages("whenDidEventHappen.hint")),
+          showPenaltyInformation = false
         )))
       ),
       RadioItem(

@@ -15,6 +15,7 @@
  *@
 
 @import config.AppConfig
+@import viewtils.PenaltyTypeHelper
 
 @this(layout: Layout,
         link: components.link,
@@ -31,7 +32,6 @@
     optPageMode = Some(pageMode)) {
 
     @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
-
         @characterCount(
             form("late-appeal-text"),
             label = messages("makingALateAppeal.headingAndTitle"),

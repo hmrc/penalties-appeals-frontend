@@ -74,12 +74,12 @@ class PenaltyTypeHelperSpec extends SpecBase {
     }
 
     s"return $None when some of the keys do not exist in the session" in {
-      val fakeRequestWitSomeKeysNotExisting: FakeRequest[AnyContent] = fakeRequest.withSession(
+      val fakeRequestWithSomeKeysNotExisting: FakeRequest[AnyContent] = FakeRequest().withSession(
         (SessionKeys.appealType, "Late_Submission"),
         (SessionKeys.penaltyNumber, "123"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500")
       )
-      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWitSomeKeysNotExisting, implicitly)
+      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithSomeKeysNotExisting, implicitly)
       result.isDefined shouldBe false
     }
 

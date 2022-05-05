@@ -29,7 +29,7 @@ import views.html.reasonableExcuseJourneys.bereavement.WhenDidThePersonDiePage
 
 import java.time.LocalDate
 
-class WhenDidThePersonDiePageSpec extends SpecBase with ViewBehaviours{
+class WhenDidThePersonDiePageSpec extends SpecBase with ViewBehaviours {
   val whenDidThePersonDiePage: WhenDidThePersonDiePage = injector.instanceOf[WhenDidThePersonDiePage]
 
   object Selectors extends BaseSelectors

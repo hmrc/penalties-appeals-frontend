@@ -458,7 +458,7 @@ export class MultiFileUpload {
     /** F33 */
     updateErrorSummaryVisibility() {
         if (this.hasErrors()) {
-            document.querySelector('#penalty-information').before(this.errorSummary);
+            document.querySelector('#hmrc-page-header').before(this.errorSummary);
             if(!this.hasDisplayedErrorPrefix) {
                 document.title = this.messages.errorPrefix + ' ' + document.title;
                 this.hasDisplayedErrorPrefix = true;

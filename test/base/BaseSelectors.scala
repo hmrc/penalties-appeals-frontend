@@ -19,7 +19,7 @@ package base
 class BaseSelectors {
   val title = "title"
 
-  val h1 = "#main-content h1"
+  val h1 = "#page-heading"
   val h2 = "#main-content h2"
 
   val pElementIndex: Int => String = (index: Int) => s"#main-content p.govuk-body:nth-child($index)"

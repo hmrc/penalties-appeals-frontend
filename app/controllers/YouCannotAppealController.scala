@@ -23,7 +23,7 @@ import models.pages.{PageMode, YouCannotAppealPage}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.YouCannotAppealPage
+import views.html.obligation.YouCannotAppealPage
 
 import javax.inject.Inject
 
