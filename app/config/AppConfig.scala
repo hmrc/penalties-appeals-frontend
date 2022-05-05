@@ -39,11 +39,11 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val penaltiesServiceBaseUrl: String = servicesConfig.baseUrl("penalties")
 
   def appealLSPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&useNewApiModel=$useNewAPIModel"
   }
 
   def appealLPPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String, isAdditional: Boolean): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional"
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional&useNewApiModel=$useNewAPIModel"
   }
 
   def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String): String =
@@ -107,5 +107,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val acceptedFileTypes: String = config.get[String]("upscan.acceptedFileTypes")
 
   lazy val maxFileUploadSize: Int = config.get[Int]("upscan.maxFileSize")
+
+  lazy val useNewAPIModel: Boolean = config.get[Boolean]("feature.switch.useNewAPIModel")
 
 }
