@@ -43,7 +43,8 @@ object PenaltiesStub {
                                        penaltyId: String,
                                        enrolmentKey: String,
                                        isLPP: Boolean = false,
-                                       isAdditional: Boolean = false
+                                       isAdditional: Boolean = false,
+                                       useNewApiModel: Boolean = false
                                      ): StubMapping = {
     val typeOfPenalty =
       if (isAdditional) PenaltyTypeEnum.Additional
@@ -54,7 +55,7 @@ object PenaltiesStub {
     stubFor(
       get(
         urlEqualTo(
-          s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey$extraAdditionalParam"
+          s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey$extraAdditionalParam&useNewApiModel=$useNewApiModel"
         )
       ).willReturn(
         aResponse()
