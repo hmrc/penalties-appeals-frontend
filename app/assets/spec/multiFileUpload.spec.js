@@ -49,7 +49,10 @@ describe('Multi File Upload component', () => {
     describe('Given multi-file-upload component and its templates are present in DOM', () => {
         beforeEach(() => {
             document.body.insertAdjacentHTML('afterbegin', `
-            <span class="govuk-caption-l" id="penalty-information"></span>
+            <h1 id="hmrc-page-header">
+                <span class="govuk-caption-l" id="penalty-information"></span>
+            </h1>
+            
         <form class="multi-file-upload"
           data-multi-file-upload-file-uploading="Uploading {fileNumber} {fileName}"
           data-multi-file-upload-file-uploaded="{fileNumber} {fileName} has been uploaded"

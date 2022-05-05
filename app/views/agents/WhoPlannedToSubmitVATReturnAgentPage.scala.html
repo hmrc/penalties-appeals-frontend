@@ -29,9 +29,8 @@
     @formHelper(action = postAction) {
         @radios(
             form = form,
-            legend = messages("agents.whoPlannedToSubmitVATReturn.headingAndTitle"),
-            items = radioOptions,
-            legendAsHeading = true
+            legendContent = messages("agents.whoPlannedToSubmitVATReturn.headingAndTitle"),
+            items = radioOptions
         )
 
         @govukButton(Button(content = Text(messages("common.continue"))))

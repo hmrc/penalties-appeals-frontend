@@ -21,9 +21,8 @@
 @layout(pageTitle = messages("timeout.headingAndTitle"),
     isPageFullWidth = false,
     showSignOut = false,
-    showPenaltyInformation = false,
     backLinkEnabled = false) {
-    <h1 class="govuk-heading-xl">@messages("timeout.headingAndTitle")</h1>
+    <h1 class="govuk-heading-xl" id="page-heading">@messages("timeout.headingAndTitle")</h1>
     <p class="govuk-body">@messages("timeout.p1")</p>
     <a class="govuk-link govuk-button" href="@controllers.routes.AppealStartController.onPageLoad().url">@messages("timeout.signIn")</a>
 }

@@ -31,9 +31,8 @@
     @formHelper(action = postAction) {
         @radios(
             form = form,
-            legend = messages("agents.whatCausedYouToMissTheDeadline.headingAndTitle"),
-            items = radioOptions,
-            legendAsHeading = true
+            legendContent = messages("agents.whatCausedYouToMissTheDeadline.headingAndTitle"),
+            items = radioOptions
         )
 
         @govukButton(Button(content = Text(messages("common.continue"))))

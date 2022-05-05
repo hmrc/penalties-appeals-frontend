@@ -29,11 +29,13 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
+
     @formHelper(action = postAction) {
+
         @dateInput(
             form = form,
             legendContent = messages(s"$messagePrefix.headingAndTitle"),
-            legendClasses = Some("govuk-fieldset__legend govuk-fieldset__legend--l"),
+            legendClasses = Some("govuk-fieldset__legend--xl"),
             hintText = Some(messages("whenDidEventHappen.hint")),
             legendAsPageHeading = true
         )

@@ -57,7 +57,11 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
+  implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/").withSession(
+    (SessionKeys.appealType, "Late_Submission"),
+    (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
+    (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")
+  )
 
   implicit val messages: Messages = messagesApi.preferred(fakeRequest)
 
@@ -92,22 +96,37 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   }
 
   val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Late_Submission"),
-      (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
-      (SessionKeys.journeyId, "1234"))
+    .withSession(
+      SessionKeys.penaltyNumber -> "123",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
+      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.journeyId -> "1234"
+    )
 
   val fakeRequestLPPWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Late_Payment"),
-      (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
-      (SessionKeys.journeyId, "1234"))
+    .withSession(
+      SessionKeys.penaltyNumber -> "123",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
+      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.journeyId -> "1234"
+    )
 
   val fakeRequestAdditionalWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Additional"),
-      (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"),
-      (SessionKeys.journeyId, "1234"))
+    .withSession(
+      SessionKeys.penaltyNumber -> "123",
+      SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString,
+      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
+      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.journeyId -> "1234"
+    )
 
   val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = fakeRequestWithCorrectKeys.withCookies(Cookie("jsenabled", "true"))
 
@@ -120,15 +139,28 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   val userRequestWithCorrectKeysAndJS: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestWithCorrectKeysAndJS)
 
   val fakeRequestWithCorrectKeysAndReasonableExcuseSet: String => UserRequest[AnyContent] = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
-    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
-      (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00.500"),
-      (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"), (SessionKeys.reasonableExcuse, reasonableExcuse), (SessionKeys.journeyId, "1234")))
+    .withSession(
+      SessionKeys.penaltyNumber -> "123",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
+      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.reasonableExcuse -> reasonableExcuse,
+      SessionKeys.journeyId -> "1234")
+  )
 
   val fakeRequestWithCorrectKeysAndHonestyDeclarationSet: FakeRequest[AnyContent] = fakeRequest
-    .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "Late_Submission"), (SessionKeys.startDateOfPeriod,
-      "2020-01-01T12:00:00.500"), (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500"), (SessionKeys.dueDateOfPeriod,
-      "2020-02-07T12:00:00.500"), (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00.500"), (SessionKeys.journeyId, "1234"),
-      (SessionKeys.hasConfirmedDeclaration, "true"))
+    .withSession(
+      SessionKeys.penaltyNumber -> "123",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
+      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.journeyId -> "1234",
+      SessionKeys.hasConfirmedDeclaration -> "true"
+    )
 
   lazy val authPredicate: AuthPredicate = new AuthPredicate(
     messagesApi,
@@ -142,8 +174,16 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val agentRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
 
-  val vatTraderLSPUserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest)
-  val vatTraderLPPUserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
+  val vatTraderLSPUserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+    SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
+    SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500"
+  ))
+
+  val vatTraderLPPUserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+    SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
+    SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500"))
 
   val agentUserAgentSubmitButClientWasLateSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
     SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
@@ -185,24 +225,24 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   def uploadListRow(fileNumber: Int, fileName: String, fileReference: String): Html = {
     Html(
       s"""
-        | <div class="govuk-summary-list__row" id="document-row-${fileNumber + 1}">
-        |   <dt class="govuk-summary-list__key">
-        |    File ${fileNumber + 1}
-        |   </dt>
-        |   <dd class="govuk-summary-list__value">
-        |    $fileName
-        |   </dd>
-        |   <dd class="govuk-summary-list__actions">
-        |   <form method="POST" novalidate action="/penalties-appeals/remove-file-upload">
-        |     <input type="hidden" name="fileReference" value="$fileReference">
-        |     <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-${fileNumber + 1}">
-        |       Remove
-        |       <span class="govuk-visually-hidden">File ${fileNumber + 1}</span>
-        |     </button>
-        |   </form>
-        |</dd>
-        |</div>
-        |""".stripMargin
+         | <div class="govuk-summary-list__row" id="document-row-${fileNumber + 1}">
+         |   <dt class="govuk-summary-list__key">
+         |    File ${fileNumber + 1}
+         |   </dt>
+         |   <dd class="govuk-summary-list__value">
+         |    $fileName
+         |   </dd>
+         |   <dd class="govuk-summary-list__actions">
+         |   <form method="POST" novalidate action="/penalties-appeals/remove-file-upload">
+         |     <input type="hidden" name="fileReference" value="$fileReference">
+         |     <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-${fileNumber + 1}">
+         |       Remove
+         |       <span class="govuk-visually-hidden">File ${fileNumber + 1}</span>
+         |     </button>
+         |   </form>
+         |</dd>
+         |</div>
+         |""".stripMargin
     )
   }
 

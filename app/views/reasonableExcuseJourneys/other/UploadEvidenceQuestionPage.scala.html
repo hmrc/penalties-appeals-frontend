@@ -29,13 +29,13 @@
         formHasErrors = form.errors.nonEmpty,
         formErrors = form.errors,
         optPageMode = Some(pageMode)) {
+
         @formHelper(action = postAction) {
               @radios(
               form = form,
-              legend = messages("otherReason.uploadEvidence.question.headingAndTitle"),
+                  legendContent = messages("otherReason.uploadEvidence.question.headingAndTitle"),
               items = radioOptions,
-              hint = Some(Html(messages("otherReason.uploadEvidence.question.hintText"))),
-              legendAsHeading = true
+              hint = Some(Html(messages("otherReason.uploadEvidence.question.hintText")))
               )
 
               @govukButton(Button(content = Text(messages("common.continue"))))
