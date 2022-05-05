@@ -18,6 +18,7 @@ package controllers
 
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
+import models.v2.AppealInformation
 import models.{AppealData, UserRequest}
 import utils.Logger.logger
 import play.api.i18n.I18nSupport
@@ -65,7 +66,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
   private def removeExistingKeysFromSessionAndRedirect[A](urlToRedirectTo: Call,
                                                           penaltyNumber: String,
-                                                          appealModel: AppealData,
+                                                          appealModel: AppealInformation[_],
                                                           isAppealAgainstObligation: Boolean)(implicit user: UserRequest[A]): Result = {
     logger.debug(s"[InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Resetting appeals session: removing keys from session" +
       s" and replacing with new keys")

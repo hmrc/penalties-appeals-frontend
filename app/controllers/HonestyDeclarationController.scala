@@ -31,7 +31,7 @@ import utils.SessionKeys
 import views.html.HonestyDeclarationPage
 import viewtils.ImplicitDateFormatter
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import javax.inject.Inject
 
 class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDeclarationPage,
@@ -47,9 +47,15 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
       tryToGetExcuseDatesAndObligationFromSession(
         {
           (reasonableExcuse, dueDate, startDate, endDate, isObligation) => {
-            val friendlyDueDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(dueDate))
-            val friendlyStartDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(startDate))
-            val friendlyEndDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(endDate))
+            val (friendlyDueDate, friendlyStartDate, friendlyEndDate) = if(appConfig.useNewAPIModel) {
+              (ImplicitDateFormatter.dateToString(LocalDate.parse(dueDate)),
+              ImplicitDateFormatter.dateToString(LocalDate.parse(startDate)),
+              ImplicitDateFormatter.dateToString(LocalDate.parse(endDate)))
+            } else {
+              (ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(dueDate)),
+              ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(startDate)),
+              ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(endDate)))
+            }
             val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
             val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
             Ok(honestDeclarationPage(honestyDeclarationForm, reasonableExcuse, reasonText,

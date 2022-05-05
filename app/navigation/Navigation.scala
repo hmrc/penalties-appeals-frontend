@@ -16,7 +16,7 @@
 
 package navigation
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import config.AppConfig
 import controllers.routes
 import helpers.DateTimeHelper
@@ -200,19 +200,26 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_], mode: Mode): Call = {
-    val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-    val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
-    val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
-    if (dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
+    if (isAppealLate()(userRequest)
       && (userRequest.session.get(SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)
       && userRequest.session.get(SessionKeys.isObligationAppeal).isEmpty) {
-      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
-        s"Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
+      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - redirect to 'Making a Late Appeal' page")
       controllers.routes.MakingALateAppealController.onPageLoad()
     } else {
-      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - Date now: $dateTimeNow" +
-        s" :: Date communication sent: $dateSentParsed - redirect to CYA page")
+      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - redirect to CYA page")
       controllers.routes.CheckYourAnswersController.onPageLoad()
+    }
+  }
+
+  private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
+    if(appConfig.useNewAPIModel) {
+      val dateTimeNow: LocalDate = dateTimeHelper.dateNow
+      val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
+    } else {
+      val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
+      val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
     }
   }
 

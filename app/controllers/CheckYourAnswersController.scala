@@ -16,7 +16,7 @@
 
 package controllers
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.SessionAnswersHelper
@@ -140,8 +140,13 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         case Late_Payment => "penaltyType.latePayment"
         case Additional => "penaltyType.additional"
       }
-      val readablePeriodStart: String = dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.startDateOfPeriod).get))
-      val readablePeriodEnd: String = dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.endDateOfPeriod).get))
+      val (readablePeriodStart, readablePeriodEnd) = if(appConfig.useNewAPIModel) {
+        (dateToString(LocalDate.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
+          dateToString(LocalDate.parse(request.session.get(SessionKeys.endDateOfPeriod).get)))
+      } else {
+        (dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
+          dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.endDateOfPeriod).get)))
+      }
       val isObligationAppeal: Boolean = request.session.get(SessionKeys.isObligationAppeal).contains("true")
       Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal))
         .removingFromSession(SessionKeys.allKeys: _*)

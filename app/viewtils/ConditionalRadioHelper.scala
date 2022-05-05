@@ -16,6 +16,7 @@
 
 package viewtils
 
+import config.AppConfig
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -27,7 +28,7 @@ import javax.inject.Inject
 
 class ConditionalRadioHelper @Inject()(dateInput: views.html.components.inputDate) extends ViewUtils {
 
-  def conditionalYesNoOptions(form: Form[_], messagePrefix: String)(implicit messages: Messages, request: Request[_]): Seq[RadioItem] = {
+  def conditionalYesNoOptions(form: Form[_], messagePrefix: String)(implicit messages: Messages, request: Request[_], appConfig: AppConfig): Seq[RadioItem] = {
     Seq(
       RadioItem(
         value = Some("yes"),

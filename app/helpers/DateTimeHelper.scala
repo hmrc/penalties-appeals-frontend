@@ -16,8 +16,9 @@
 
 package helpers
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 class DateTimeHelper {
   def dateTimeNow: LocalDateTime = LocalDateTime.now
+  def dateNow: LocalDate = LocalDate.now
 }

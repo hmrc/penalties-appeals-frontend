@@ -20,6 +20,7 @@ import base.SpecBase
 import config.AppConfig
 import connectors.PenaltiesConnector
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.v2.AppealInformation
 import models.{AppealData, ReasonableExcuse, UserRequest}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
@@ -115,7 +116,7 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+      val result: Future[Option[AppealInformation[_]]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
           new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
@@ -125,7 +126,7 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+      val result: Future[Option[AppealInformation[_]]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
           new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
@@ -135,7 +136,7 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJson)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+      val result: Future[Option[AppealInformation[_]]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
         new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
@@ -145,7 +146,7 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPP)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = false)(
+      val result: Future[Option[AppealInformation[_]]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = false)(
         new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
@@ -154,7 +155,7 @@ class AppealServiceSpec extends SpecBase {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPPAdditional)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true)(
+      val result: Future[Option[AppealInformation[_]]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true)(
         new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }

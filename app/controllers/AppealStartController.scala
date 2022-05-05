@@ -21,13 +21,13 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import models.NormalMode
 import models.pages.{AppealStartPage, PageMode}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.AppealStartPage
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import javax.inject.Inject
 import scala.concurrent.Future
 
@@ -43,13 +43,22 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
         s"End date of period = ${request.session.get(SessionKeys.endDateOfPeriod)}, \n" +
         s"Due date of period = ${request.session.get(SessionKeys.dueDateOfPeriod)}, \n" +
         s"Date communication sent of period = ${request.session.get(SessionKeys.dateCommunicationSent)}, \n")
-      val dateCommunicationSentParsed = LocalDateTime.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
       val isObligationAppeal = request.session.get(SessionKeys.isObligationAppeal).isDefined
       Future.successful(Ok(appealStartPage(
-        dateCommunicationSentParsed.isBefore(LocalDateTime.now().minusDays(appConfig.daysRequiredForLateAppeal)),
+        isAppealLate,
         isObligationAppeal,
         PageMode(AppealStartPage, NormalMode)
       )))
+    }
+  }
+
+  private def isAppealLate()(implicit request: Request[_]): Boolean = {
+    if(appConfig.useNewAPIModel) {
+      val dateCommunicationSentParsedAsLocalDate = LocalDate.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
+      dateCommunicationSentParsedAsLocalDate.isBefore(LocalDate.now().minusDays(appConfig.daysRequiredForLateAppeal))
+    } else {
+      val dateCommunicationSentParsed = LocalDateTime.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
+      dateCommunicationSentParsed.isBefore(LocalDateTime.now().minusDays(appConfig.daysRequiredForLateAppeal))
     }
   }
 }
