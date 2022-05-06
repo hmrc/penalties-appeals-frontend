@@ -16,12 +16,13 @@
 
 package viewtils
 
+import config.AppConfig
 import models.PenaltyTypeEnum
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import utils.SessionKeys
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import scala.util.Try
 
 object PenaltyTypeHelper {
@@ -35,13 +36,21 @@ object PenaltyTypeHelper {
     }
   }
 
-  def getKeysFromSession()(implicit request: Request[_], messages: Messages): Option[Seq[String]] = {
+  def getKeysFromSession()(implicit request: Request[_], messages: Messages, appConfig: AppConfig): Option[Seq[String]] = {
     Try {
-      Seq(
-        PenaltyTypeHelper.convertPenaltyTypeToContentString(request.session.get(SessionKeys.appealType).get).get,
-        ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
-        ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.endDateOfPeriod).get))
-      )
+      if(appConfig.useNewAPIModel) {
+        Seq(
+          PenaltyTypeHelper.convertPenaltyTypeToContentString(request.session.get(SessionKeys.appealType).get).get,
+          ImplicitDateFormatter.dateToString(LocalDate.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
+          ImplicitDateFormatter.dateToString(LocalDate.parse(request.session.get(SessionKeys.endDateOfPeriod).get))
+        )
+      } else {
+        Seq(
+          PenaltyTypeHelper.convertPenaltyTypeToContentString(request.session.get(SessionKeys.appealType).get).get,
+          ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
+          ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.endDateOfPeriod).get))
+        )
+      }
     }.map {
       Some(_)
     }.getOrElse(None)

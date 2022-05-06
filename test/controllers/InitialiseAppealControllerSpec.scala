@@ -56,7 +56,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to start appeal" in new Setup(AuthTestModels.successfulAuthResult) {
-      val appealDataToReturn: AppealData = AppealData(
+      val appealDataToReturn: AppealData[LocalDateTime] = AppealData(
         `type` = PenaltyTypeEnum.Late_Submission,
         startDate = LocalDateTime.of(
           2020, 1, 1, 1, 1, 0),
@@ -83,7 +83,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to start appeal for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
-      val appealDataToReturn: AppealData = AppealData(
+      val appealDataToReturn: AppealData[LocalDateTime] = AppealData(
         `type` = PenaltyTypeEnum.Late_Payment,
         startDate = LocalDateTime.of(
           2020, 1, 1, 1, 1, 0),
@@ -111,7 +111,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to start appeal for Additional Penalty (LPP)" in new Setup(AuthTestModels.successfulAuthResult) {
-      val appealDataToReturn: AppealData = AppealData(
+      val appealDataToReturn: AppealData[LocalDateTime] = AppealData(
         `type` = PenaltyTypeEnum.Additional,
         startDate = LocalDateTime.of(
           2020, 1, 1, 1, 1, 0),
@@ -147,7 +147,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to Cancel VAT Registration page" in new Setup(AuthTestModels.successfulAuthResult) {
-      val appealDataToReturn: AppealData = AppealData(
+      val appealDataToReturn: AppealData[LocalDateTime] = AppealData(
         `type` = PenaltyTypeEnum.Late_Submission,
         startDate = LocalDateTime.of(
           2020, 1, 1, 1, 1, 0),
@@ -174,7 +174,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to Cancel VAT Registration page for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
-      val appealDataToReturn: AppealData = AppealData(
+      val appealDataToReturn: AppealData[LocalDateTime] = AppealData(
         `type` = PenaltyTypeEnum.Late_Payment,
         startDate = LocalDateTime.of(
           2020, 1, 1, 1, 1, 0),
@@ -200,7 +200,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     }
     "call the penalties backend and handle a success response and add the keys to the session " +
           "- redirect to Cancel VAT Registration page for LPP additional" in new Setup(AuthTestModels.successfulAuthResult) {
-          val appealDataToReturn: AppealData = AppealData(
+          val appealDataToReturn: AppealData[LocalDateTime] = AppealData(
             `type` = PenaltyTypeEnum.Additional,
             startDate = LocalDateTime.of(
               2020, 1, 1, 1, 1, 0),

@@ -23,6 +23,7 @@ import models.appeals.AppealSubmission
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
 import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
+import models.v2.{AppealInformation, AppealData => AppealDataV2}
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, JsValue, Json}
 import repositories.UploadJourneyRepository
@@ -32,7 +33,7 @@ import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
 import utils.{SessionKeys, UUIDGenerator}
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,13 +45,13 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               uploadJourneyRepository: UploadJourneyRepository) {
 
   def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
-                                         (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+                                         (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealInformation[_]]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
-      _.fold[Option[AppealData]](
+      _.fold[Option[AppealInformation[_]]](
         None
       )(
         jsValue => {
-          val parsedAppealDataModel = Json.fromJson(jsValue)(AppealData.format)
+          val parsedAppealDataModel = Json.fromJson(jsValue)(if(appConfig.useNewAPIModel) AppealDataV2.format else AppealData.format)
           parsedAppealDataModel.fold(
             failure => {
               logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Failed to parse to model with error(s): $failure")
@@ -83,10 +84,6 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
-    val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-    val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
-    val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
-    val isLateAppeal = dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
     val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
     val appealType = userRequest.session.get(SessionKeys.appealType)
     val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)
@@ -99,7 +96,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
       uploads = if(userHasUploadedFiles) readyOrDuplicateFileUploads else None
       modelFromRequest: AppealSubmission = AppealSubmission
-        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isLateAppeal, agentReferenceNo, uploads)
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId)
     } yield {
       response.status match {
@@ -128,6 +125,18 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     case e =>
       logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
       Left(INTERNAL_SERVER_ERROR)
+  }
+
+  private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
+    if(appConfig.useNewAPIModel) {
+      val dateTimeNow: LocalDate = dateTimeHelper.dateNow
+      val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
+    } else {
+      val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
+      val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
+    }
   }
 
   def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])

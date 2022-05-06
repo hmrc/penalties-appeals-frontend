@@ -55,7 +55,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
 
   "getKeysFromSession" should {
     s"return $Some $Seq String when all the keys exist in the session and the enum can be parsed" in {
-      val result = PenaltyTypeHelper.getKeysFromSession()(userRequestWithCorrectKeys, implicitly)
+      val result = PenaltyTypeHelper.getKeysFromSession()(userRequestWithCorrectKeys, implicitly, implicitly)
       result.isDefined shouldBe true
       result.get.head shouldBe messages("penaltyType.lateSubmission")
       result.get(1) shouldBe ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse("2020-01-01T12:00:00.500"))
@@ -69,7 +69,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")
       )
-      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithWrongAppealType, implicitly)
+      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithWrongAppealType, implicitly, implicitly)
       result.isDefined shouldBe false
     }
 
@@ -79,7 +79,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
         (SessionKeys.penaltyNumber, "123"),
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500")
       )
-      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithSomeKeysNotExisting, implicitly)
+      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithSomeKeysNotExisting, implicitly, implicitly)
       result.isDefined shouldBe false
     }
 
@@ -90,7 +90,7 @@ class PenaltyTypeHelperSpec extends SpecBase {
         (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00over5thousand"),
         (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")
       )
-      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithInvalidDates, implicitly)
+      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithInvalidDates, implicitly, implicitly)
       result.isDefined shouldBe false
     }
   }

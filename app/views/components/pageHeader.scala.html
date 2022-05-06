@@ -18,7 +18,7 @@
 
 @this()
 
-@(pageHeader: String)(implicit messages: Messages, request: Request[_])
+@(pageHeader: String)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
 
 <header class="hmrc-page-heading govuk-!-margin-top-0 govuk-!-margin-bottom-4" id="hmrc-page-header">
   <h1 class="govuk-heading-xl govuk-!-margin-bottom-0" id="page-heading">
