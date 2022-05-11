@@ -463,7 +463,7 @@ class AppealSubmissionSpec extends SpecBase {
       val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false,
         agentReferenceNo = Some("1234567890"), None)(fakeAgentRequestForCrimeJourney)
       result.appealSubmittedBy shouldBe "agent"
-      result.agentReferenceNo shouldBe Some("1234567890")
+      result.agentDetails shouldBe Some(AgentDetails("1234567890", false))
       result.appealInformation shouldBe CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
         startDateOfEvent = "2022-01-01", reportedIssueToPolice = true, statement = None, lateAppeal = false,
         lateAppealReason = None, isClientResponsibleForSubmission = Some(false), isClientResponsibleForLateSubmission = Some(true)
@@ -623,7 +623,7 @@ class AppealSubmissionSpec extends SpecBase {
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff", isLateAppeal = false,
           Some("1234567890"), None)(fakeRequestForLossOfStaffJourney)
         result.appealSubmittedBy shouldBe "agent"
-        result.agentReferenceNo shouldBe Some("1234567890")
+        result.agentDetails shouldBe Some(AgentDetails("1234567890", false))
         result.appealInformation shouldBe LossOfStaffAppealInformation(
           reasonableExcuse = "lossOfStaff",
           honestyDeclaration = true,
@@ -674,7 +674,7 @@ class AppealSubmissionSpec extends SpecBase {
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues",
           isLateAppeal = false, agentReferenceNo = Some("1234567890"), None)(fakeRequestForTechnicalIssuesJourney)
         result.appealSubmittedBy shouldBe "agent"
-        result.agentReferenceNo shouldBe Some("1234567890")
+        result.agentDetails shouldBe Some(AgentDetails("1234567890", false))
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
           reasonableExcuse = "technicalIssues",
           honestyDeclaration = true,
@@ -703,7 +703,7 @@ class AppealSubmissionSpec extends SpecBase {
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false,
           agentReferenceNo = Some("1234567890"), None)(fakeRequestForHealthJourney)
         result.appealSubmittedBy shouldBe "agent"
-        result.agentReferenceNo shouldBe Some("1234567890")
+        result.agentDetails shouldBe Some(AgentDetails("1234567890", false))
         result.appealInformation shouldBe HealthAppealInformation(
           reasonableExcuse = "health",
           honestyDeclaration = true,
@@ -910,7 +910,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = false,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = BereavementAppealInformation(
             reasonableExcuse = "bereavement",
             honestyDeclaration = true,
@@ -951,7 +951,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = CrimeAppealInformation(
             reasonableExcuse = "crime",
             honestyDeclaration = true,
@@ -996,7 +996,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = FireOrFloodAppealInformation(
             reasonableExcuse = "fireOrFlood",
             honestyDeclaration = true,
@@ -1040,7 +1040,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = LossOfStaffAppealInformation(
             reasonableExcuse = "lossOfStaff",
             honestyDeclaration = true,
@@ -1083,7 +1083,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = TechnicalIssuesAppealInformation(
             reasonableExcuse = "technicalIssues",
             honestyDeclaration = true,
@@ -1130,7 +1130,7 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
             isLPP = true,
             appealSubmittedBy = "client",
-            agentReferenceNo = None,
+            agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
               honestyDeclaration = true,
@@ -1177,7 +1177,7 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
             isLPP = true,
             appealSubmittedBy = "client",
-            agentReferenceNo = None,
+            agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
               honestyDeclaration = true,
@@ -1224,7 +1224,7 @@ class AppealSubmissionSpec extends SpecBase {
             dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
             isLPP = true,
             appealSubmittedBy = "client",
-            agentReferenceNo = None,
+            agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
               honestyDeclaration = true,
@@ -1273,7 +1273,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
             honestyDeclaration = true,
@@ -1351,7 +1351,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
             honestyDeclaration = true,
@@ -1396,7 +1396,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
             honestyDeclaration = true,
@@ -1477,7 +1477,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = ObligationAppealInformation(
             reasonableExcuse = "obligation",
             honestyDeclaration = true,
@@ -1546,7 +1546,7 @@ class AppealSubmissionSpec extends SpecBase {
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
           appealSubmittedBy = "client",
-          agentReferenceNo = None,
+          agentDetails = None,
           appealInformation = ObligationAppealInformation(
             reasonableExcuse = "obligation",
             honestyDeclaration = true,

@@ -22,8 +22,8 @@ import helpers.DateTimeHelper
 import models.appeals.AppealSubmission
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
-import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import models.v2.{AppealInformation, AppealData => AppealDataV2}
+import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, JsValue, Json}
 import repositories.UploadJourneyRepository

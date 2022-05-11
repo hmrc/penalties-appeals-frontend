@@ -19,7 +19,7 @@ package connectors
 import config.AppConfig
 import models.appeals.AppealSubmission
 import play.api.http.Status._
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}
 import utils.EnrolmentKeys
@@ -83,7 +83,7 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
 
   def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String)
                   (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
-
+    logger.debug(s"[PenaltiesConnector][submitAppeal] - Submitting appeal model send to backend: ${Json.toJson(appealSubmission)}")
     httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyNumber, correlationId), appealSubmission)
   }
 }
