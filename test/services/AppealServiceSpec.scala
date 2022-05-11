@@ -21,10 +21,10 @@ import config.AppConfig
 import connectors.PenaltiesConnector
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.v2.AppealInformation
-import models.{AppealData, ReasonableExcuse, UserRequest}
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import models.{ReasonableExcuse, UserRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers._

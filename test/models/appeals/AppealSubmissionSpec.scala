@@ -793,7 +793,7 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("This is a reason."),
           lateAppeal = false,
           lateAppealReason = None,
-          supportingEvidence = Some(Evidence(2)),
+          supportingEvidence = Some(Evidence(noOfUploadedFiles = 2)),
           isClientResponsibleForSubmission = None,
           isClientResponsibleForLateSubmission = None,
           uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
@@ -846,7 +846,7 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("This is a reason."),
           lateAppeal = true,
           lateAppealReason = Some("This is a reason for appealing late."),
-          supportingEvidence = Some(Evidence(2)),
+          supportingEvidence = Some(Evidence(noOfUploadedFiles = 2)),
           isClientResponsibleForSubmission = None,
           isClientResponsibleForLateSubmission = None,
           uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
@@ -871,7 +871,7 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
           statement = Some("This is a reason."),
-          supportingEvidence = Some(Evidence(2)),
+          supportingEvidence = Some(Evidence(noOfUploadedFiles = 2)),
           uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
       }
@@ -1815,7 +1815,7 @@ class AppealSubmissionSpec extends SpecBase {
           honestyDeclaration = true,
           startDateOfEvent = "2022-01-01T13:00:00.000Z",
           statement = Some("I was late. Sorry."),
-          supportingEvidence = Some(Evidence(1)),
+          supportingEvidence = Some(Evidence(noOfUploadedFiles = 1)),
           lateAppeal = false,
           lateAppealReason = None,
           isClientResponsibleForSubmission = Some(false),
@@ -1875,7 +1875,7 @@ class AppealSubmissionSpec extends SpecBase {
           honestyDeclaration = true,
           startDateOfEvent = "2022-01-01T13:00:00.000Z",
           statement = Some("I was late. Sorry."),
-          supportingEvidence = Some(Evidence(1)),
+          supportingEvidence = Some(Evidence(noOfUploadedFiles = 1)),
           lateAppeal = true,
           lateAppealReason = Some("This is a reason"),
           isClientResponsibleForSubmission = Some(false),

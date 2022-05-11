@@ -19,8 +19,7 @@ package models.appeals
 import play.api.libs.json.{Json, OFormat}
 
 case class Evidence(
-                     noOfUploadedFiles: Long,
-                     referenceId: Option[String] = None
+                     noOfUploadedFiles: Long
                    )
 
 object Evidence {
