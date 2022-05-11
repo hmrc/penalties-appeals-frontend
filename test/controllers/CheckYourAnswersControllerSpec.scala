@@ -320,6 +320,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
+
+        "the downstream service returns UNPROCESSABLE_ENTITY" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
+            .thenReturn(Future.successful(Left(UNPROCESSABLE_ENTITY)))
+          val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
+        }
       }
 
       "redirect the user to the duplicate appeal page" when {
