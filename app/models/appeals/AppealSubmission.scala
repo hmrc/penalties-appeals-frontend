@@ -466,7 +466,8 @@ object AppealSubmission {
     if (userRequest.isAgent) Some(
       AgentDetails(
         agentReferenceNo = agentReferenceNo.get,
-        isExcuseRelatedToAgent = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") && userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("agent"),
+        isExcuseRelatedToAgent = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") &&
+          userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("agent")
       )) else None
   }
 
