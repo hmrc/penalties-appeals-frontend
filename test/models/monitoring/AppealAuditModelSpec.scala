@@ -54,7 +54,7 @@ class AppealAuditModelSpec extends SpecBase {
       dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
       isLPP = true,
       appealSubmittedBy = "client",
-      agentReferenceNo = None,
+      agentDetails = None,
       appealInformation
     )
 
