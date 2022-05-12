@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 class EvidenceSpec extends SpecBase {
   "Evidence" should {
     "be writable to JSON" in {
-      val model = Evidence(1)
+      val model = Evidence(noOfUploadedFiles = 1)
       val expectedResult = Json.parse(
         """
           |{
