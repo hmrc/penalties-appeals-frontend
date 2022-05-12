@@ -22,7 +22,7 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.SessionAnswersHelper
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, PenaltyTypeEnum}
+import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import models.pages.{CheckYourAnswersPage, PageMode}
 import play.api.i18n.I18nSupport
@@ -90,19 +90,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     implicit request => {
       request.session.get(SessionKeys.reasonableExcuse).fold({
         if(request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
-          appealService.submitAppeal("obligation").flatMap(_.fold(
-            {
-              case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))
-              case INTERNAL_SERVER_ERROR | BAD_REQUEST => Future(Redirect(controllers.routes.ProblemWithServiceController.onPageLoad()))
-              case CONFLICT => Future(Redirect(controllers.routes.DuplicateAppealController.onPageLoad()))
-              case _ => Future(errorHandler.showInternalServerError)
-            },
-            _ => {
-              uploadJourneyRepository.removeUploadsForJourney(request.session.get(SessionKeys.journeyId).get).map {
-                _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
-              }
-            }
-          ))
+          handleAppealSubmission("obligation")
         } else {
           logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
           Future(errorHandler.showInternalServerError)
@@ -111,19 +99,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         reasonableExcuse => {
           if (sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
             logger.debug(s"[CheckYourAnswersController][onPageLoad] All keys are present for reasonable excuse: $reasonableExcuse")
-            appealService.submitAppeal(reasonableExcuse).flatMap(_.fold(
-              {
-                case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))
-                case INTERNAL_SERVER_ERROR | BAD_REQUEST => Future(Redirect(controllers.routes.ProblemWithServiceController.onPageLoad()))
-                case CONFLICT => Future(Redirect(controllers.routes.DuplicateAppealController.onPageLoad()))
-                case _ => Future(errorHandler.showInternalServerError)
-              },
-              _ => {
-                uploadJourneyRepository.removeUploadsForJourney(request.session.get(SessionKeys.journeyId).get).map {
-                  _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
-                }
-              }
-            ))
+            handleAppealSubmission(reasonableExcuse)
           } else {
             logger.error(s"[CheckYourAnswersController][onSubmit] User did not have all answers for reasonable excuse: $reasonableExcuse")
             Future(errorHandler.showInternalServerError)
@@ -131,6 +107,22 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         }
       )
     }
+  }
+
+  private def handleAppealSubmission(reasonableExcuse: String)(implicit userRequest: UserRequest[_]) = {
+    appealService.submitAppeal(reasonableExcuse).flatMap(_.fold(
+      {
+        case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))
+        case INTERNAL_SERVER_ERROR | BAD_REQUEST | UNPROCESSABLE_ENTITY => Future(Redirect(controllers.routes.ProblemWithServiceController.onPageLoad()))
+        case CONFLICT => Future(Redirect(controllers.routes.DuplicateAppealController.onPageLoad()))
+        case _ => Future(errorHandler.showInternalServerError)
+      },
+      _ => {
+        uploadJourneyRepository.removeUploadsForJourney(userRequest.session.get(SessionKeys.journeyId).get).map {
+          _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
+        }
+      }
+    ))
   }
 
   def onPageLoadForConfirmation(): Action[AnyContent] = (authorise andThen dataRequired) {

@@ -1094,6 +1094,27 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       redirectLocation(request).get shouldBe controllers.routes.DuplicateAppealController.onPageLoad().url
     }
 
+    "redirect to the ProblemWithService page when downstream returns UNPROCESSABLE_ENTITY" in {
+      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(UNPROCESSABLE_ENTITY))
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
+        authToken -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> "Late_Submission",
+        SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00",
+        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.dateOfCrime -> "2022-01-01",
+        SessionKeys.journeyId -> "1234"
+      )
+      val request = controller.onSubmit()(fakeRequestWithCorrectKeys)
+      status(request) shouldBe SEE_OTHER
+      redirectLocation(request).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
+    }
+
     "redirect to the ProblemWithService page when the appeal fails from a payload issue" in {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(BAD_REQUEST))
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
