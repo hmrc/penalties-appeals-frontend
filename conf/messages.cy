@@ -531,7 +531,7 @@ timeout.p1 = We did not save your answers.
 timeout.signIn = Mewngofnodi
 
 # Months
-# --------------------------
+# -----------------------------------------------------------
 month.1 = Ionawr
 month.2 = Chwefror
 month.3 = Mawrth
@@ -544,3 +544,8 @@ month.9 = Medi
 month.10 = Hydref
 month.11 = Tachwedd
 month.12 = Rhagfyr
+
+# Remove file page
+# -----------------------------------------------------------
+otherReason.uploadEvidence.removeFile.headingAndTitle = Are you sure you want to remove file {0}?
+otherReason.uploadEvidence.removeFile.error.required = Select yes if you want to remove this file

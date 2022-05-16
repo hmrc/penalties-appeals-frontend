@@ -244,4 +244,18 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       result.isEmpty shouldBe true
     }
   }
+
+  "getFileForJourney" should {
+    "return a upload journey model when the file reference exists" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", callbackModel, isInitiateCall = true))
+      val result = await(repository.getFileForJourney("J1234", "ref1"))
+      result.isDefined shouldBe true
+      result.get shouldBe callbackModel
+    }
+
+    "return nothing when the file reference does not exist" in new Setup {
+      val result = await(repository.getFileForJourney("J1234", "F1234"))
+      result.isEmpty shouldBe true
+    }
+  }
 }

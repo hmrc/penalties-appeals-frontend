@@ -77,10 +77,10 @@ POST       /has-the-hospital-stay-ended                    controllers.HealthRea
 POST       /has-the-hospital-stay-ended/change             controllers.HealthReasonController.onSubmitForHasHospitalStayEnded(mode:Mode = CheckMode)
 
 # Other Reasonable Excuse Journey
-GET        /why-was-the-vat-late                   controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = NormalMode)
-GET        /why-was-the-vat-late/change            controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = CheckMode)
-POST       /why-was-the-vat-late                   controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = NormalMode)
-POST       /why-was-the-vat-late/change            controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = CheckMode)
+GET        /why-was-the-vat-late                                   controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = NormalMode)
+GET        /why-was-the-vat-late/change                            controllers.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode: Mode = CheckMode)
+POST       /why-was-the-vat-late                                   controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = NormalMode)
+POST       /why-was-the-vat-late/change                            controllers.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode: Mode = CheckMode)
 GET        /when-inability-to-manage-account-happened              controllers.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode: Mode = NormalMode)
 GET        /when-inability-to-manage-account-happened/change       controllers.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode: Mode = CheckMode)
 POST       /when-inability-to-manage-account-happened              controllers.OtherReasonController.onSubmitForWhenDidBecomeUnable(mode: Mode = NormalMode)
@@ -101,10 +101,14 @@ GET        /uploaded-documents                                     controllers.O
 GET        /uploaded-documents/change                              controllers.OtherReasonController.onPageLoadForUploadComplete(mode: Mode = CheckMode)
 POST       /uploaded-documents                                     controllers.OtherReasonController.onSubmitForUploadComplete(mode: Mode = NormalMode)
 POST       /uploaded-documents/change                              controllers.OtherReasonController.onSubmitForUploadComplete(mode: Mode = CheckMode)
-GET        /upload-evidence-question                                controllers.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode: Mode = NormalMode)
-GET        /upload-evidence-question/change                         controllers.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode: Mode = CheckMode)
+GET        /upload-evidence-question                               controllers.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode: Mode = NormalMode)
+GET        /upload-evidence-question/change                        controllers.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode: Mode = CheckMode)
 POST       /upload-evidence-question                               controllers.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode: Mode = NormalMode)
 POST       /upload-evidence-question/change                        controllers.OtherReasonController.onSubmitForUploadEvidenceQuestion(mode: Mode = CheckMode)
+GET        /remove-file/:fileReference                               controllers.RemoveFileController.onPageLoad(fileReference: String, isJsEnabled: Boolean, mode: Mode = NormalMode)
+GET        /remove-file/:fileReference/change                        controllers.RemoveFileController.onPageLoad(fileReference: String, isJsEnabled: Boolean, mode: Mode = CheckMode)
+POST       /remove-file/:fileReference                               controllers.RemoveFileController.onSubmit(fileReference: String, isJsEnabled: Boolean, mode: Mode = NormalMode)
+POST       /remove-file/:fileReference/change                        controllers.RemoveFileController.onSubmit(fileReference: String, isJsEnabled: Boolean, mode: Mode = CheckMode)
 
 # Who Planned to Submit VAT Return
 GET        /who-planned-to-submit-vat-return                  controllers.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode: Mode = NormalMode)

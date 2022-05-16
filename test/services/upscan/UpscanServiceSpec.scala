@@ -29,10 +29,10 @@ import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
-
 import connectors.httpParsers.UpscanInitiateHttpParser
 import play.api.mvc.Result
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -136,6 +136,39 @@ class UpscanServiceSpec extends SpecBase {
         ))))
       val result: Future[Int] = service.getAmountOfFilesUploadedForJourney("J1234")
       await(result) shouldBe 3
+    }
+  }
+
+  "getFileNameForJourney" should {
+    "retrieve the upload details and return the file name" in new Setup {
+      when(repository.getFileForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(
+          Some(
+            UploadJourney("file1",
+              UploadStatusEnum.READY,
+              uploadDetails = Some(
+                UploadDetails(fileName = "file123.txt", fileMimeType = "mime/type", uploadTimestamp = LocalDateTime.now(), checksum = "check123", size = 1)
+              )
+            )
+          )
+        ))
+      val result: Future[Option[String]] = service.getFileNameForJourney("journey1", "file1")
+      await(result).isDefined shouldBe true
+      await(result).get shouldBe "file123.txt"
+    }
+
+    "return None when the repository finds nothing" in new Setup {
+      when(repository.getFileForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
+      val result: Option[String] = await(service.getFileNameForJourney("journey1", "file1"))
+      result.isEmpty shouldBe true
+    }
+
+    "propagate the any error back to the caller" in new Setup {
+      when(repository.getFileForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.failed(new Exception("i broke :(")))
+      val result: Exception = intercept[Exception](await(service.getFileNameForJourney("journey1", "file1")))
+      result.getMessage shouldBe "i broke :("
     }
   }
 }

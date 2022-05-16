@@ -112,6 +112,11 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
     uploadJourneyRepository.removeFileForJourney(journeyId, fileReference)
   }
 
+  def getFileNameForJourney(journeyId: String, fileReference: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
+    uploadJourneyRepository.getFileForJourney(journeyId, fileReference)
+      .map(_.flatMap(_.uploadDetails.map(_.fileName)))
+  }
+
   def getAmountOfFilesUploadedForJourney(journeyId: String)(implicit ec: ExecutionContext): Future[Int] = {
     uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).map(
       _.fold(0)(_.count(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
