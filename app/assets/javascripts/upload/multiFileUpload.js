@@ -245,8 +245,6 @@ export class MultiFileUpload {
             this.addItem(true, true);
         }
 
-        delete this.uploadData[file.id];
-
         this.uploadNext();
     }
 
@@ -582,6 +580,9 @@ export class MultiFileUpload {
     /** F42 */
     handleFileStatusSuccessful(file) {
         const item = this.getItemFromFile(file);
+        item.querySelector('a').href = item.querySelector('a').href, {
+            fileRef: file.dataset.multiFileUploadFileRef
+        };
         this.addNotification(this.parseTemplate(this.messages.fileUploaded, {
             fileNumber: item.querySelector('.govuk-label').textContent,
             fileName: this.getFileName(file)
@@ -589,6 +590,10 @@ export class MultiFileUpload {
         this.setItemState(item, status.Uploaded);
         this.updateButtonVisibility();
         this.updateFormStatusVisibility();
+
+        item.querySelector('a').href = this.parseTemplate(decodeURIComponent(item.querySelector('a').href), {
+                                    fileRef: file.dataset.multiFileUploadFileRef
+        });
     }
 
     /** F43 */
@@ -702,6 +707,10 @@ export class MultiFileUpload {
         this.getFileNameElement(item).textContent = fileName;
         this.toggleRemoveButtons(true);
         file.dataset.multiFileUploadFileRef = fileData['reference'];
+
+        item.querySelector('a').href = this.parseTemplate(decodeURIComponent(item.querySelector('a').href), {
+                            fileRef: file.dataset.multiFileUploadFileRef
+        });
 
         return item;
     }

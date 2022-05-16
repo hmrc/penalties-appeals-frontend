@@ -18,6 +18,8 @@ package controllers
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import forms.upscan.RemoveFileFormV2
+import models.pages.{Page, PageMode, RemoveFilePage}
 import forms.upscan.RemoveFileQuestionForm
 import models.{Mode, UserRequest}
 import play.api.data.Form

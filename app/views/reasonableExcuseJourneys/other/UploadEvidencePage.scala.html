@@ -105,7 +105,7 @@
 
             <div class="multi-file-upload__notifications govuk-visually-hidden" aria-live="assertive" role="status"></div>
 
-            <script type="text/x-template" id="multi-file-upload-item-tpl">@uploadItem(appConfig.acceptedFileTypes)</script>
+            <script type="text/x-template" id="multi-file-upload-item-tpl">@uploadItem(appConfig.acceptedFileTypes, removeFileUrl)</script>
             <script type="text/x-template" id="error-manager-summary-tpl">@errorManager.summary(messages)</script>
             <script type="text/x-template" id="error-manager-summary-item-tpl">@errorManager.summaryItem(messages)</script>
             <script type="text/x-template" id="error-manager-message-tpl">@errorManager.message(messages)</script>
