@@ -83,15 +83,14 @@ class AppealSubmissionSpec extends SpecBase {
   val healthAppealInformationHospitalStayNotOngoingJson: JsValue = Json.parse(
     """
       |{
+      |   "lateAppeal": false,
       |   "reasonableExcuse": "health",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
-      |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
-      |   "eventOngoing": false,
-      |   "hospitalStayInvolved": true,
-      |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
-      |   "isClientResponsibleForLateSubmission": true
+      |   "isClientResponsibleForLateSubmission": true,
+      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "eventOngoing": false,
+      |   "endDateOfEvent": "2021-04-24T18:25:43.511Z"
       |}
       |""".stripMargin
   )
@@ -99,14 +98,13 @@ class AppealSubmissionSpec extends SpecBase {
   val healthAppealInformationHospitalStayOngoingJson: JsValue = Json.parse(
     """
       |{
+      |   "lateAppeal": false,
       |   "reasonableExcuse": "health",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
-      |   "eventOngoing": true,
-      |   "hospitalStayInvolved": true,
-      |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
-      |   "isClientResponsibleForLateSubmission": true
+      |   "isClientResponsibleForLateSubmission": true,
+      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "eventOngoing": true
       |}
       |""".stripMargin
   )
@@ -114,14 +112,12 @@ class AppealSubmissionSpec extends SpecBase {
   val healthAppealInformationNoHospitalStayJson: JsValue = Json.parse(
     """
       |{
+      |   "lateAppeal": false,
       |   "reasonableExcuse": "health",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
-      |   "hospitalStayInvolved": false,
-      |   "eventOngoing": false,
-      |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
-      |   "isClientResponsibleForLateSubmission": true
+      |   "isClientResponsibleForLateSubmission": true,
+      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z"
       |}
       |""".stripMargin
   )
@@ -1153,16 +1149,15 @@ class AppealSubmissionSpec extends SpecBase {
             "isLPP" -> true,
             "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
+              "lateAppeal" -> true,
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
-              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-              "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
-              "eventOngoing" -> false,
-              "hospitalStayInvolved" -> true,
-              "lateAppeal" -> true,
               "lateAppealReason" -> "Reason",
               "isClientResponsibleForSubmission" -> true,
-              "isClientResponsibleForLateSubmission" -> true
+              "isClientResponsibleForLateSubmission" -> true,
+              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+              "eventOngoing" -> false,
+              "endDateOfEvent" -> "2021-04-24T18:25:43.511Z"
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -1200,15 +1195,14 @@ class AppealSubmissionSpec extends SpecBase {
             "isLPP" -> true,
             "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
+              "lateAppeal" -> true,
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
-              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-              "eventOngoing" -> true,
-              "hospitalStayInvolved" -> true,
-              "lateAppeal" -> true,
               "lateAppealReason" -> "Reason",
               "isClientResponsibleForSubmission" -> true,
-              "isClientResponsibleForLateSubmission" -> true
+              "isClientResponsibleForLateSubmission" -> true,
+              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+              "eventOngoing" -> true
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -1247,15 +1241,13 @@ class AppealSubmissionSpec extends SpecBase {
             "isLPP" -> true,
             "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
+              "lateAppeal" -> true,
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
-              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-              "eventOngoing" -> false,
-              "hospitalStayInvolved" -> false,
-              "lateAppeal" -> true,
               "lateAppealReason" -> "Reason",
               "isClientResponsibleForSubmission" -> true,
-              "isClientResponsibleForLateSubmission" -> true
+              "isClientResponsibleForLateSubmission" -> true,
+              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z"
             )
           )
           val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
@@ -1734,16 +1726,15 @@ class AppealSubmissionSpec extends SpecBase {
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
+            "lateAppeal" -> true,
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
-            "eventOngoing" -> false,
-            "hospitalStayInvolved" -> true,
-            "lateAppeal" -> true,
             "lateAppealReason" -> "Reason",
             "isClientResponsibleForSubmission" -> false,
-            "isClientResponsibleForLateSubmission" -> true
+            "isClientResponsibleForLateSubmission" -> true,
+            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "eventOngoing" -> false,
+            "endDateOfEvent" -> "2021-04-24T18:25:43.511Z"
           )
         }
 
@@ -1763,15 +1754,14 @@ class AppealSubmissionSpec extends SpecBase {
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
+            "lateAppeal" -> true,
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "eventOngoing" -> true,
-            "hospitalStayInvolved" -> true,
-            "lateAppeal" -> true,
             "lateAppealReason" -> "Reason",
             "isClientResponsibleForSubmission" -> false,
-            "isClientResponsibleForLateSubmission" -> true
+            "isClientResponsibleForLateSubmission" -> true,
+            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "eventOngoing" -> true
           )
         }
 
@@ -1792,15 +1782,13 @@ class AppealSubmissionSpec extends SpecBase {
           )
           val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
           result shouldBe Json.obj(
+            "lateAppeal" -> true,
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
-            "eventOngoing" -> false,
-            "hospitalStayInvolved" -> false,
-            "lateAppeal" -> true,
             "lateAppealReason" -> "Reason",
             "isClientResponsibleForSubmission" -> false,
-            "isClientResponsibleForLateSubmission" -> true
+            "isClientResponsibleForLateSubmission" -> true,
+            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z"
           )
         }
       }

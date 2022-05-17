@@ -293,12 +293,10 @@ object HealthAppealInformation {
   implicit val healthAppealInformationFormatter: OFormat[HealthAppealInformation] = Json.format[HealthAppealInformation]
 
   val healthAppealWrites: Writes[HealthAppealInformation] = (healthAppealInformation: HealthAppealInformation) => {
-    Json.obj(
+    val baseHealthInfoJson = Json.obj(
+      "lateAppeal" -> healthAppealInformation.lateAppeal,
       "reasonableExcuse" -> healthAppealInformation.reasonableExcuse,
-      "honestyDeclaration" -> healthAppealInformation.honestyDeclaration,
-      "hospitalStayInvolved" -> healthAppealInformation.hospitalStayInvolved,
-      "eventOngoing" -> healthAppealInformation.eventOngoing,
-      "lateAppeal" -> healthAppealInformation.lateAppeal
+      "honestyDeclaration" -> healthAppealInformation.honestyDeclaration
     ).deepMerge(
       healthAppealInformation.statement.fold(
         Json.obj()
@@ -312,18 +310,6 @@ object HealthAppealInformation {
         lateAppealReason => Json.obj("lateAppealReason" -> lateAppealReason)
       )
     ).deepMerge(
-      (healthAppealInformation.hospitalStayInvolved, healthAppealInformation.eventOngoing) match {
-        case (true, false) =>
-          Json.obj(
-            "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get,
-            "endDateOfEvent" -> healthAppealInformation.endDateOfEvent.get
-          )
-        case _ =>
-          Json.obj(
-            "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get
-          )
-      }
-    ).deepMerge(
       healthAppealInformation.isClientResponsibleForSubmission.fold(
         Json.obj()
       )(
@@ -336,6 +322,26 @@ object HealthAppealInformation {
         isClientResponsibleForLateSubmission => Json.obj("isClientResponsibleForLateSubmission" -> isClientResponsibleForLateSubmission)
       )
     )
+
+    val additionalHealthInfo = (healthAppealInformation.hospitalStayInvolved, healthAppealInformation.eventOngoing) match {
+      case (true, true) =>
+        Json.obj(
+          "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get,
+          "eventOngoing" -> healthAppealInformation.eventOngoing
+        )
+      case (true, false) =>
+        Json.obj(
+          "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get,
+          "eventOngoing" -> healthAppealInformation.eventOngoing,
+          "endDateOfEvent" -> healthAppealInformation.endDateOfEvent.get
+        )
+      case _ =>
+        Json.obj(
+          "startDateOfEvent" -> healthAppealInformation.startDateOfEvent.get
+        )
+    }
+
+    baseHealthInfoJson deepMerge additionalHealthInfo
   }
 }
 
