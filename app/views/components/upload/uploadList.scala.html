@@ -14,25 +14,26 @@
  * limitations under the License.
  *@
 
+@import views.html.components.link
+
 @this(
-    formHelper: FormWithCSRF
+        formHelper: FormWithCSRF,
+        link: link
 )
 
 @(fileReference: String, fileName: String, fileNumber: Int, mode: Mode)(implicit messages: Messages, request: UserRequest[_])
 <div class="govuk-summary-list__row" id="document-row-@fileNumber">
-    <dt class="govuk-summary-list__key">
-        @messages("otherReason.uploadList.rowTitle", fileNumber)
-    </dt>
-    <dd class="govuk-summary-list__value">
-        @fileName
-    </dd>
-    <dd class="govuk-summary-list__actions">
-        @formHelper(action = controllers.routes.OtherReasonController.removeFileUpload(mode)) {
-            <input type="hidden" name="fileReference" value="@fileReference">
-            <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-@fileNumber">
-                @messages("otherReason.uploadEvidence.button.remove")
-                <span class="govuk-visually-hidden">@messages("otherReason.uploadEvidence.file") @fileNumber</span>
-            </button>
-        }
-    </dd>
+  <dt class="govuk-summary-list__key">
+    @messages("otherReason.uploadList.rowTitle", fileNumber)
+  </dt>
+  <dd class="govuk-summary-list__value">
+    @fileName
+  </dd>
+  <dd class="govuk-summary-list__actions">
+    @link(
+      link = controllers.routes.RemoveFileController.onPageLoad(fileReference, isJsEnabled = false, mode).url,
+      messageKey = "otherReason.uploadEvidence.button.remove",
+      id = Some(s"document-row-$fileNumber")
+    )
+  </dd>
 </div>

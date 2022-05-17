@@ -225,7 +225,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   def uploadListRow(fileNumber: Int, fileName: String, fileReference: String): Html = {
     Html(
       s"""
-         | <div class="govuk-summary-list__row" id="document-row-${fileNumber + 1}">
+         |<div class="govuk-summary-list__row" id="document-row-${fileNumber + 1}">
          |   <dt class="govuk-summary-list__key">
          |    File ${fileNumber + 1}
          |   </dt>
@@ -233,14 +233,9 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
          |    $fileName
          |   </dd>
          |   <dd class="govuk-summary-list__actions">
-         |   <form method="POST" novalidate action="/penalties-appeals/remove-file-upload">
-         |     <input type="hidden" name="fileReference" value="$fileReference">
-         |     <button type="submit" class="govuk-link remove-link govuk-body" id="remove-button-${fileNumber + 1}">
-         |       Remove
-         |       <span class="govuk-visually-hidden">File ${fileNumber + 1}</span>
-         |     </button>
-         |   </form>
-         |</dd>
+         |     <a href="/penalties-appeals/remove-file/$fileReference?isJsEnabled=false" class="govuk-link" id="document-row-${fileNumber + 1}">
+         |    Remove</a>
+         |   </dd>
          |</div>
          |""".stripMargin
     )
