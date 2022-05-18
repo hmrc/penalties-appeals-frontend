@@ -36,6 +36,7 @@
     isPageFullWidth: Boolean = true,
     formHasErrors: Boolean = false,
     backLinkEnabled: Boolean = true,
+    customBackLink: Option[String] = None,
     customJavaScript: Option[String] = None,
     showSignOut: Boolean = true,
     optPageMode: Option[PageMode] = None,
@@ -46,7 +47,7 @@
     @if(appConfig.welshLanguageSupportEnabled) {@languageSelect()}
 
     @if(backLinkEnabled) {
-        @govukBackLink(BackLink(href = controllers.routes.PreviousPageController.previousPage(optPageMode.get.page.toString, optPageMode.get.mode).url,
+        @govukBackLink(BackLink(href = customBackLink.fold(controllers.routes.PreviousPageController.previousPage(optPageMode.get.page.toString, optPageMode.get.mode).url)(identity),
             content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
     }
 }

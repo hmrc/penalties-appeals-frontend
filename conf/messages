@@ -531,7 +531,7 @@ timeout.p1 = We did not save your answers.
 timeout.signIn = Sign in
 
 # Months
-# --------------------------
+# -----------------------------------------------------------
 month.1 = January
 month.2 = February
 month.3 = March
@@ -544,3 +544,8 @@ month.9 = September
 month.10 = October
 month.11 = November
 month.12 = December
+
+# Remove file page
+# -----------------------------------------------------------
+otherReason.uploadEvidence.removeFile.headingAndTitle = Are you sure you want to remove file {0}?
+otherReason.uploadEvidence.removeFile.error.required = Select yes if you want to remove this file

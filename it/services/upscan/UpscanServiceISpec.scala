@@ -20,7 +20,7 @@ import akka.actor.ActorSystem
 import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import models.NormalMode
-import models.upload.{FailureDetails, UploadJourney, UploadStatusEnum}
+import models.upload.{FailureDetails, UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.Document
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
@@ -134,6 +134,37 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
     "return 0 when there is no uploads for the journey" in new Setup  {
       val result = service.getAmountOfFilesUploadedForJourney("J1234")
       await(result) shouldBe 0
+    }
+  }
+
+  "getFileNameForJourney" should {
+    val fileUploadModel: UploadJourney = UploadJourney(
+      reference = "ref1",
+      fileStatus = UploadStatusEnum.READY,
+      downloadUrl = Some("download.file/url"),
+      uploadDetails = Some(UploadDetails(
+        fileName = "file1.txt",
+        fileMimeType = "text/plain",
+        uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+        checksum = "check1234",
+        size = 2
+      )),
+      uploadFields = Some(Map(
+        "key" -> "abcxyz",
+        "algo" -> "md5"
+      ))
+    )
+
+    "return the file name if the file reference exists" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", fileUploadModel, isInitiateCall = true))
+      val result = service.getFileNameForJourney(journeyId = "J1234", fileReference = "ref1")
+      await(result).isDefined shouldBe true
+      await(result).get shouldBe "file1.txt"
+    }
+
+    "return nothing if the file reference does not exist" in new Setup {
+      val result = service.getFileNameForJourney(journeyId = "J1234", fileReference = "ref1")
+      await(result).isEmpty shouldBe true
     }
   }
 }

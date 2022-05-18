@@ -56,10 +56,10 @@ class UploadJourneyRepository @Inject()(
     )
   }
 
-  def getFieldsForFileReference(journeyId: String, fileReference: String): Future[Option[Map[String,String]]] = {
+  def getFieldsForFileReference(journeyId: String, fileReference: String): Future[Option[Map[String, String]]] = {
     get[UploadJourney](journeyId)(DataKey(fileReference)).map(
       upload => {
-        if(upload.exists(_.uploadFields.isDefined)) {
+        if (upload.exists(_.uploadFields.isDefined)) {
           upload.flatMap(_.uploadFields.map(
             fields => {
               logger.debug(s"[UploadJourneyRepository][getFieldsForFileReference] -" +
@@ -67,7 +67,7 @@ class UploadJourneyRepository @Inject()(
               fields
             }
           ))
-        }else{
+        } else {
           None
         }
       }
@@ -104,6 +104,18 @@ class UploadJourneyRepository @Inject()(
           }
       case _ => Future.successful(None)
     }
+  }
+
+  def getFileForJourney(journeyId: String, fileReference: String): Future[Option[UploadJourney]] = {
+    findById(journeyId).map(_.fold[Option[UploadJourney]](None)(
+      {
+        item => {
+          val list = item.data.values
+          list.map(a => a.as[UploadJourney]).toSeq
+            .find(_.reference.equals(fileReference))
+        }
+      }
+    ))
   }
 
   def getNumberOfDocumentsForJourneyId(journeyId: String): Future[Int] = {

@@ -18,13 +18,13 @@ package controllers
 
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
+import models.UserRequest
 import models.v2.AppealInformation
-import models.{AppealData, UserRequest}
-import utils.Logger.logger
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
+import play.api.mvc._
 import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 import utils.SessionKeys
 
 import java.util.UUID
