@@ -220,9 +220,9 @@ export class MultiFileUpload {
 
     /** F14 */
     requestRemoveFileCompleted(file, isInit) {
-        if(!isInit) {
+        if (!isInit) {
             const item = file.closest(`.${this.classes.item}`);
-            if(this.getFileName(file)) {
+            if (this.getFileName(file)) {
                 this.addNotification(this.parseTemplate(this.messages.fileRemoved, {
                     fileNumber: item.querySelector('.govuk-label').textContent,
                     fileName: this.getFileName(file)
@@ -359,6 +359,7 @@ export class MultiFileUpload {
             fileName: this.getFileName(file)
         });
     }
+
     /** F24 */
     uploadFile(file) {
         const xhr = new XMLHttpRequest();
@@ -416,6 +417,7 @@ export class MultiFileUpload {
         const item = this.getItemFromFile(file);
         item.querySelector(`.${this.classes.fileName}`).style.display = 'none';
         this.setItemState(item, status.Default);
+        this.toggleRemoveButton(item, false);
         this.addError(file.id, errorMessage);
         this.updateFormStatusVisibility();
     }
@@ -459,7 +461,7 @@ export class MultiFileUpload {
     updateErrorSummaryVisibility() {
         if (this.hasErrors()) {
             document.querySelector('#hmrc-page-header').before(this.errorSummary);
-            if(!this.hasDisplayedErrorPrefix) {
+            if (!this.hasDisplayedErrorPrefix) {
                 document.title = this.messages.errorPrefix + ' ' + document.title;
                 this.hasDisplayedErrorPrefix = true;
             }
@@ -620,12 +622,12 @@ export class MultiFileUpload {
             body: formData
         })
             .then(response => {
-                              if (response.status == 500) {
-                              this.redirectToErrorServicePage();
-                              } else {
-                                return response.json();
-                              }
-                            })
+                if (response.status == 500) {
+                    this.redirectToErrorServicePage();
+                } else {
+                    return response.json();
+                }
+            })
             .then(this.handleProvisionUploadCompleted.bind(this, file))
             .catch(this.delayedProvisionUpload.bind(this, file));
     }
@@ -700,7 +702,7 @@ export class MultiFileUpload {
 
         this.setItemState(item, status.Uploaded);
         this.getFileNameElement(item).textContent = fileName;
-        this.toggleRemoveButtons(true);
+        this.toggleRemoveButton(item, true);
         file.dataset.multiFileUploadFileRef = fileData['reference'];
 
         return item;
@@ -776,8 +778,16 @@ export class MultiFileUpload {
 
     /** F62 */
     updateButtonVisibility() {
-        const itemCount = this.getItems().length;
-        this.toggleRemoveButtons(itemCount > this.config.minFiles);
+        const items = this.getItems();
+        const itemCount = items.length;
+        items.forEach(item => {
+            if (this.isUploaded(item)) {
+                this.toggleRemoveButton(item, true);
+            } else {
+                this.toggleRemoveButton(item, false);
+            }
+        });
+
         this.toggleAddButton(itemCount < this.config.maxFiles);
     }
 
@@ -787,16 +797,9 @@ export class MultiFileUpload {
     }
 
     /** F64 */
-    toggleRemoveButtons(state) {
-        this.getItems().forEach(item => {
-            const button = this.getRemoveButtonFromItem(item);
-
-            if (this.isWaiting(item) || this.isUploading(item) || this.isVerifying(item) || this.isUploaded(item) || this.hasErrors()) {
-                state = true;
-            }
-
-            this.toggleElement(button, state);
-        });
+    toggleRemoveButton(item, state) {
+        const button = this.getRemoveButtonFromItem(item);
+        this.toggleElement(button, state);
     }
 
     /** F65 */
@@ -867,14 +870,14 @@ export class MultiFileUpload {
     }
 
     /** F76 */
-        getErrorServiceUrl() {
-            return this.config.getErrorServiceUrlTpl;
-        }
+    getErrorServiceUrl() {
+        return this.config.getErrorServiceUrlTpl;
+    }
 
     /** F77 */
-        redirectToErrorServicePage() {
-             window.location.href = this.getErrorServiceUrl();
-         }
+    redirectToErrorServicePage() {
+        window.location.href = this.getErrorServiceUrl();
+    }
 }
 
 /**
@@ -883,7 +886,7 @@ export class MultiFileUpload {
  */
 document.addEventListener('DOMContentLoaded', function () {
     const element = document.getElementById('multi-upload-form');
-    if(element) {
+    if (element) {
         const uploadObj = new MultiFileUpload(element);
         uploadObj.init();
     }

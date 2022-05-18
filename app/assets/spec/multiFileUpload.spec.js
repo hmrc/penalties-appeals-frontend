@@ -45,6 +45,7 @@ describe('Multi File Upload component', () => {
     let item;
     let item2;
     let input;
+    let removeBtn;
 
     describe('Given multi-file-upload component and its templates are present in DOM', () => {
         beforeEach(() => {
@@ -161,6 +162,13 @@ describe('Multi File Upload component', () => {
                    expect(input.dataset.multiFileUploadFileRef).toEqual('123');
                    done();
                });
+
+               it('Then the remove button should not be visible', (done) => {
+                   input = container.querySelector('.multi-file-upload__file');
+                   removeBtn = container.querySelector('.multi-file-upload__remove-item');
+                   expect(removeBtn.classList).toContain('hidden');
+                   done();
+               });
             });
 
             describe('And data-multi-file-upload-max-files is set to 5', () => {
@@ -273,6 +281,13 @@ describe('Multi File Upload component', () => {
                     expect(fileName.textContent).toEqual('test.txt');
                     done();
                 });
+
+                it('Then the remove button should not be visible', (done) => {
+                    input = container.querySelector('.multi-file-upload__file');
+                    removeBtn = container.querySelector('.multi-file-upload__remove-item');
+                    expect(removeBtn.classList).toContain('hidden');
+                    done();
+                });
             });
         });
 
@@ -323,6 +338,13 @@ describe('Multi File Upload component', () => {
 
                 it('Then the document title should be prefixed with "Error:"', (done) => {
                     expect(document.title).toContain('Error:');
+                    done();
+                });
+
+                it('Then the remove button should not be visible', (done) => {
+                    input = container.querySelector('.multi-file-upload__file');
+                    removeBtn = container.querySelector('.multi-file-upload__remove-item');
+                    expect(removeBtn.classList).toContain('hidden');
                     done();
                 });
             });
@@ -411,6 +433,13 @@ describe('Multi File Upload component', () => {
                     expect(notifications.textContent.trim()).toEqual('File 1 test.txt has been uploaded');
                     done();
                 });
+
+                it('Then the remove button should be visible', (done) => {
+                    input = container.querySelector('.multi-file-upload__file');
+                    removeBtn = container.querySelector('.multi-file-upload__remove-item');
+                    expect(removeBtn.classList.contains('hidden')).toBeFalse();
+                    done();
+                });
             });
         });
 
@@ -449,6 +478,13 @@ describe('Multi File Upload component', () => {
                 it('Then fileName should contain "test.txt"', () => {
                     const fileName = container.querySelector('.multi-file-upload__file-name');
                     expect(fileName.textContent).toEqual('test.txt');
+                });
+
+                it('Then the remove button should be visible', (done) => {
+                    input = container.querySelector('.multi-file-upload__file');
+                    removeBtn = container.querySelector('.multi-file-upload__remove-item');
+                    expect(removeBtn.classList.contains('hidden')).toBeFalse();
+                    done();
                 });
             });
 
@@ -515,6 +551,13 @@ describe('Multi File Upload component', () => {
 
                     it('Then new item should be added', () => {
                         expect(container.querySelectorAll('.multi-file-upload__item').length).toEqual(1);
+                    });
+
+                    it('Then the remove button should not be visible', (done) => {
+                        input = container.querySelector('.multi-file-upload__file');
+                        removeBtn = container.querySelector('.multi-file-upload__remove-item');
+                        expect(removeBtn.classList).toContain('hidden');
+                        done();
                     });
                 });
             });
