@@ -38,10 +38,10 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
                               upscanConnector: UpscanConnector,
                               scheduler: ActorSystem)(implicit appConfig: AppConfig, errorHandler: ErrorHandler) {
 
-  def upscanInitiateModelForSynchronousUpload(journeyId: String, isAddingAnotherDocument: Boolean, mode: Mode, isJsEnabled: Boolean = false): UpscanInitiateRequest = {
+  def upscanInitiateModelForSynchronousUpload(journeyId: String, isAddingAnotherDocument: Boolean, mode: Mode): UpscanInitiateRequest = {
     UpscanInitiateRequest(
-      callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId, isJsEnabled).url,
-      successRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.fileVerification(isAddingAnotherDocument, mode, isJsEnabled).url),
+      callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
+      successRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.fileVerification(isAddingAnotherDocument, mode).url),
       errorRedirect = Some(appConfig.upscanBaseUrl + controllers.routes.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument, mode).url),
       minimumFileSize = Some(1),
       maximumFileSize = Some(appConfig.maxFileUploadSize)

@@ -60,7 +60,7 @@ object UploadEvidenceMessages {
 
   val continueButton = "Continue"
 
-  val fileUploadTryAgain = "The selected file could not be uploaded. Remove the file and try again."
+  val fileUploadTryAgain = "The selected file could not be uploaded. Choose another file."
 
   val uploadEvidenceStillTransferring = "Files are still being transferred"
 

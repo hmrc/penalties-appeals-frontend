@@ -23,23 +23,20 @@ import play.twirl.api.Html
 
 object UpscanMessageHelper extends FeatureSwitching {
 
-  val jsPrefix = "upscan"
-  val noJsPrefix = "upscan.noJs"
-
-  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean): String = {
+  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value): String = {
     failureReason match {
-      case FailureReasonEnum.QUARANTINE => getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled)
-      case FailureReasonEnum.REJECTED => getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled)
-      case FailureReasonEnum.UNKNOWN => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
+      case FailureReasonEnum.QUARANTINE => "upscan.fileHasVirus"
+      case FailureReasonEnum.REJECTED => "upscan.invalidMimeType"
+      case FailureReasonEnum.UNKNOWN => "upscan.unableToUpload"
     }
   }
 
-  def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean): String = {
+  def getUploadFailureMessage(errorCode: String): String = {
     errorCode match {
-      case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
-      case "EntityTooLarge" => getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
-      case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
-      case _ => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
+      case "EntityTooSmall" => "upscan.fileEmpty"
+      case "EntityTooLarge" => "upscan.fileTooLarge"
+      case "400" | "InvalidArgument" => "upscan.fileEmpty"
+      case _ => "upscan.unableToUpload"
     }
   }
 
@@ -53,9 +50,5 @@ object UpscanMessageHelper extends FeatureSwitching {
     } else {
       Html(messages.apply(msgForPlural, total))
     }
-  }
-
-  def getJsOrNonJsFailureMessage(errorSuffix: String, isJsEnabled: Boolean ): String = {
-    if (isJsEnabled) s"$jsPrefix.$errorSuffix" else s"$noJsPrefix.$errorSuffix"
   }
 }

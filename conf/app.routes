@@ -159,12 +159,12 @@ OPTIONS       /upscan/file-posted/:journeyId                    controllers.Upsc
 
 GET           /upscan/file-verification/failed                   controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = false, mode: Mode = NormalMode)
 GET           /upscan/file-verification/change/failed                   controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = false, mode: Mode = CheckMode)
-GET           /upscan/file-verification/success                  controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = false, mode: Mode = NormalMode, isJsEnabled: Boolean)
-GET           /upscan/file-verification/change/success                  controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = false, mode: Mode = CheckMode, isJsEnabled: Boolean)
+GET           /upscan/file-verification/success                  controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = false, mode: Mode = NormalMode)
+GET           /upscan/file-verification/change/success                  controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = false, mode: Mode = CheckMode)
 GET           /upscan/file-verification/additional/failed        controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = true, mode: Mode = NormalMode)
 GET           /upscan/file-verification/additional/change/failed        controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode)
-GET           /upscan/file-verification/additional/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = NormalMode, isJsEnabled: Boolean)
-GET           /upscan/file-verification/additional/change/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode, isJsEnabled: Boolean)
+GET           /upscan/file-verification/additional/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = NormalMode)
+GET           /upscan/file-verification/additional/change/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode)
 
 GET           /upscan/duplicate-files/:journeyId                        controllers.UpscanController.getDuplicateFiles(journeyId: String)
 

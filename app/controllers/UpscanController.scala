@@ -79,7 +79,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
     implicit request => {
       logger.debug(s"[UpscanController][initiateCallToUpscan] - Initiating Call to Upscan for journey: $journeyId")
       val initiateRequestForMultiFileUpload = UpscanInitiateRequest(
-        callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId, true).url,
+        callbackUrl = appConfig.upscanCallbackBaseUrl + controllers.internal.routes.UpscanCallbackController.callbackFromUpscan(journeyId).url,
         successRedirect = Some(appConfig.upscanSuccessUrl + journeyId),
         errorRedirect = Some(appConfig.upscanFailureUrl + journeyId),
         minimumFileSize = Some(1),
@@ -128,7 +128,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           Future(BadRequest(""))
         },
         s3UploadError => {
-          val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode, isJsEnabled = true)
+          val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode)
           val fileReference = s3UploadError.key
           logger.debug(s"[UpscanController][uploadFailure] - Setting $messageKeyToSet as the message key for file: $fileReference")
           val callbackModel: UploadJourney = UploadJourney(
@@ -193,7 +193,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
     }
   }
 
-  def fileVerification(isAddingAnotherDocument: Boolean, mode: Mode, isJsEnabled: Boolean): Action[AnyContent] = Action.async {
+  def fileVerification(isAddingAnotherDocument: Boolean, mode: Mode): Action[AnyContent] = Action.async {
     implicit request => {
       S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
         errors => {
@@ -205,7 +205,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, mode, isAddingAnotherDocument,{
             (optFailureDetails, errorMessage) => {
               if(errorMessage.isDefined) {
-                val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled)
+                val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason)
                 if(isAddingAnotherDocument) {
                   Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))

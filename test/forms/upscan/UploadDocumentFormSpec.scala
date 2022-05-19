@@ -23,6 +23,6 @@ class UploadDocumentFormSpec extends FormBehaviours {
   val form = UploadDocumentForm.form
   "UploadDocumentForm" should {
     behave like mandatoryField(form, "file",
-      FormError("file", "upscan.fileNotSpecified"))
+      FormError("file", "upscan.fileEmpty"))
   }
 }

@@ -360,7 +360,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
         status(result) shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
-        failureDetailsInRepo.message shouldBe "upscan.fileNotSpecified"
+        failureDetailsInRepo.message shouldBe "upscan.fileEmpty"
       }
 
       "the failure is because there is some unknown client error" in new Setup {
@@ -446,21 +446,21 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
   "GET /upscan/file-verification/success" should {
     "show an ISE" when {
       "the repository doesn't have a status for this file under this journey" in new Setup {
-        val result: Future[Result] = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+        val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
     "redirect back to the 'upload taking longer than expected' page when the recursive call times out" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
-      val result: Future[Result] = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadTakingLongerThanExpected(NormalMode).url
     }
 
     "redirect to the non-JS file upload page when there is an error from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType"))), isInitiateCall = true))
-      val result: Future[Result] = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
@@ -468,7 +468,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to the non-JS file upload page when there is an error from Upscan - check mode" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType"))), isInitiateCall = true))
-      val result: Future[Result] = controller.fileVerification(false, CheckMode, false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      val result: Future[Result] = controller.fileVerification(false, CheckMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
@@ -476,14 +476,14 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to the successful upload page when there is no error from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
-      val result: Future[Result] = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      val result: Future[Result] = controller.fileVerification(false, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
     }
 
     "redirect to the additional file upload page when there is an error from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType"))), isInitiateCall = true))
-      val result: Future[Result] = controller.fileVerification(true, NormalMode, false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+      val result: Future[Result] = controller.fileVerification(true, NormalMode)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url

@@ -353,23 +353,14 @@ otherReason.uploadAnotherDocument.noJs.button.cancel = Canslo
 
 # Upscan failure messages
 # ----------------------------------------------------------
-upscan.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
-upscan.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.fileEmpty = Mae’r ffeil dan sylw yn wag. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.fileHasVirus = Mae feirws yn y ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan..invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Dewiswch ffeil arall.
+upscan.fileEmpty = Mae’r ffeil dan sylw yn wag. Dewiswch ffeil arall.
+upscan.fileHasVirus = Mae feirws yn y ffeil dan sylw. Dewiswch ffeil arall.
+upscan.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Dewiswch ffeil arall.
 upscan.fileUploaded = Uwchlwythwyd {0} {1}
 upscan.fileUploading = Yn uwchlwytho {0} {1}
 upscan.fileRemoved = Mae {0} {1} wedi ei ddileu
-upscan.fileNotSpecified = Dewiswch ffeil.
-
-# Upscan failure messages (NO JS)
-# ----------------------------------------------------------
-upscan.noJs.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
-upscan.noJs.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Dewiswch ffeil arall.
-upscan.noJs.fileEmpty = Mae’r ffeil dan sylw yn wag. Dewiswch ffeil arall.
-upscan.noJs.fileHasVirus = Mae feirws yn y ffeil dan sylw. Dewiswch ffeil arall.
-upscan.noJs.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Dewiswch ffeil arall.
 
 # Has the hospital stay ended page
 # ----------------------------------------------------------
