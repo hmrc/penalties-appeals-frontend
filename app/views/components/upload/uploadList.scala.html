@@ -33,7 +33,8 @@
     @link(
       link = controllers.routes.RemoveFileController.onPageLoad(fileReference, isJsEnabled = false, mode).url,
       messageKey = "otherReason.uploadEvidence.button.remove",
-      id = Some(s"document-row-$fileNumber")
+      id = Some(s"remove-document-$fileNumber"),
+      hiddenContent = Some(messages("otherReason.uploadEvidence.button.remove.hiddenText", fileNumber))
     )
   </dd>
 </div>

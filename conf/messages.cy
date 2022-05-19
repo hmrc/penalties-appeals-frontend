@@ -312,6 +312,7 @@ otherReason.uploadEvidence.addAnother = Ychwanegu ffeil arall
 otherReason.uploadEvidence.status.uploaded = BAROD I GYFLWYNO
 otherReason.uploadEvidence.status.pending = Ar y gweill
 otherReason.uploadEvidence.button.remove = Tynnu
+otherReason.uploadEvidence.button.remove.hiddenText = ffeil {0}
 otherReason.uploadEvidence.button.removing = Yn tynnu
 otherReason.uploadEvidence.stillTransferring = Mae ffeiliau’n dal i gael eu trosglwyddo
 

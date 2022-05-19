@@ -312,6 +312,7 @@ otherReason.uploadEvidence.addAnother = Add another file
 otherReason.uploadEvidence.status.uploaded = Ready to Submit
 otherReason.uploadEvidence.status.pending = Pending
 otherReason.uploadEvidence.button.remove = Remove
+otherReason.uploadEvidence.button.remove.hiddenText = file {0}
 otherReason.uploadEvidence.button.removing = Removing
 otherReason.uploadEvidence.stillTransferring = Files are still being transferred
 

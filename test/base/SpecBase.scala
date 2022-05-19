@@ -233,8 +233,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
          |    $fileName
          |   </dd>
          |   <dd class="govuk-summary-list__actions">
-         |     <a href="/penalties-appeals/remove-file/$fileReference?isJsEnabled=false" class="govuk-link" id="document-row-${fileNumber + 1}">
-         |    Remove</a>
+         |     <a href="/penalties-appeals/remove-file/$fileReference?isJsEnabled=false" class="govuk-link" id="remove-document-${fileNumber + 1}">
+         |    Remove <span class="govuk-visually-hidden"> file ${fileNumber + 1}</span></a>
          |   </dd>
          |</div>
          |""".stripMargin
