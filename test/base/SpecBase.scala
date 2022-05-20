@@ -29,6 +29,7 @@ import org.mockito.Mockito.mock
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.Injector
 import play.api.mvc.{AnyContent, Cookie, MessagesControllerComponents}
@@ -47,11 +48,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
+  implicit val config: Configuration = appConfig.config
+
   lazy val injector: Injector = app.injector
 
   val mockDateTimeHelper: DateTimeHelper = mock(classOf[DateTimeHelper])
-
-  val mockFeatureSwitching = mock(classOf[FeatureSwitching])
 
   val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)
 

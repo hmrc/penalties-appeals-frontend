@@ -17,6 +17,7 @@
 package services
 
 import config.AppConfig
+import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
 import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
 import models.appeals.AppealSubmission
@@ -24,6 +25,7 @@ import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFiles
 import models.upload.{UploadJourney, UploadStatusEnum}
 import models.v2.{AppealInformation, AppealData => AppealDataV2}
 import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
+import play.api.Configuration
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, JsValue, Json}
 import repositories.UploadJourneyRepository
@@ -42,7 +44,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               dateTimeHelper: DateTimeHelper,
                               auditService: AuditService,
                               idGenerator: UUIDGenerator,
-                              uploadJourneyRepository: UploadJourneyRepository) {
+                              uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
   def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
                                          (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealInformation[_]]] = {
@@ -51,7 +53,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         None
       )(
         jsValue => {
-          val parsedAppealDataModel = Json.fromJson(jsValue)(if(appConfig.useNewAPIModel) AppealDataV2.format else AppealData.format)
+          val parsedAppealDataModel = Json.fromJson(jsValue)(if(isEnabled(UseNewAPIModel)) AppealDataV2.format else AppealData.format)
           parsedAppealDataModel.fold(
             failure => {
               logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Failed to parse to model with error(s): $failure")
@@ -128,7 +130,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
-    if(appConfig.useNewAPIModel) {
+    if(isEnabled(UseNewAPIModel)) {
       val dateTimeNow: LocalDate = dateTimeHelper.dateNow
       val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
       dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))

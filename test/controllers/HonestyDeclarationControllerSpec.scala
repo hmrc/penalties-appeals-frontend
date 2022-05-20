@@ -46,7 +46,7 @@ class HonestyDeclarationControllerSpec extends SpecBase {
       honestyDeclarationPage,
       errorHandler,
       mainNavigator
-    )(mcc, appConfig, authPredicate, dataRequiredAction)
+    )(mcc, appConfig, config, authPredicate, dataRequiredAction)
   }
 
   "onPageLoad" should {

@@ -27,7 +27,7 @@ import java.time.LocalDateTime
 
 class NavigationSpec extends SpecBase {
   class Setup {
-    reset(mockDateTimeHelper, mockFeatureSwitching)
+    reset(mockDateTimeHelper)
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
       2020, 2, 1, 0, 0, 0))
 

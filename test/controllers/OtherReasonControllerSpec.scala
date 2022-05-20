@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Cookie, Result}
@@ -54,6 +55,7 @@ class OtherReasonControllerSpec extends SpecBase {
   val uploadListPage: UploadListPage = injector.instanceOf[UploadListPage]
   val evidenceFileUploadsHelper: EvidenceFileUploadsHelper = injector.instanceOf[EvidenceFileUploadsHelper]
   val serviceUnavailablePage: ServiceUnavailablePage = injector.instanceOf[ServiceUnavailablePage]
+  val mockConfig: Configuration = mock(classOf[Configuration])
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
@@ -78,11 +80,10 @@ class OtherReasonControllerSpec extends SpecBase {
       uploadEvidenceQuestionPage,
       mainNavigator,
       mockUpscanService,
-      mockFeatureSwitching,
       evidenceFileUploadsHelper,
       mockUploadJourneyRepository,
       serviceUnavailablePage
-    )(authPredicate, dataRequiredAction, appConfig, errorHandler, mcc, ec)
+    )(authPredicate, dataRequiredAction, appConfig, mockConfig, errorHandler, mcc, ec)
 
     when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
       2020, 2, 1, 0, 0, 0))
@@ -220,7 +221,7 @@ class OtherReasonControllerSpec extends SpecBase {
     "onPageLoadForUploadEvidence" when {
 
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any())).thenReturn(false)
+        when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
         val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
         status(result) shouldBe OK
       }
@@ -228,22 +229,20 @@ class OtherReasonControllerSpec extends SpecBase {
       "return OK and correct view (pre-populated date when present in session)" in new Setup(
         AuthTestModels.successfulAuthResult, Some(UploadData.oneWaitingUploads)
       ) {
-        when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any())).thenReturn(false)
+        when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
         val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndJS))
         status(result) shouldBe OK
       }
 
       "the user does not have JavaScript enabled" when {
         "return OK when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-            .thenReturn(false)
+          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
           status(result) shouldBe OK
         }
 
         "redirect to page /uploaded-documents when there are previous uploads in NormalMode" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-            .thenReturn(true)
+          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
           status(result) shouldBe SEE_OTHER
@@ -251,8 +250,7 @@ class OtherReasonControllerSpec extends SpecBase {
         }
 
         "redirect to page /upload-first-document when there are no previous upload NormalMode" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-            .thenReturn(true)
+          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
           status(result) shouldBe SEE_OTHER
@@ -260,8 +258,7 @@ class OtherReasonControllerSpec extends SpecBase {
         }
 
         "redirect to page /uploaded-documents when there are previous uploads in CheckMode" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-            .thenReturn(true)
+          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode)(userRequestWithCorrectKeysAndJS)
           status(result) shouldBe SEE_OTHER
@@ -269,8 +266,7 @@ class OtherReasonControllerSpec extends SpecBase {
         }
 
         "redirect to page /upload-first-document when there are no previous upload CheckMode" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-            .thenReturn(true)
+          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode)(userRequestWithCorrectKeysAndJS)
           status(result) shouldBe SEE_OTHER
@@ -278,8 +274,7 @@ class OtherReasonControllerSpec extends SpecBase {
         }
 
         "return 303 (SEE_OTHER) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-            .thenReturn(true)
+          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
         }
@@ -366,8 +361,7 @@ class OtherReasonControllerSpec extends SpecBase {
       "the user does not have JavaScript enabled" when {
 
         "return OK when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-            .thenReturn(true)
+          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
           val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
@@ -375,8 +369,7 @@ class OtherReasonControllerSpec extends SpecBase {
         }
 
         "return 303 (SEE_OTHER) when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-            .thenReturn(false)
+          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
           val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeysAndJS)
           status(result) shouldBe SEE_OTHER
         }
@@ -518,10 +511,21 @@ class OtherReasonControllerSpec extends SpecBase {
 
       "removeFileUpload" should {
         "the user is authorised" must {
-          "redirect to multi-file upload page when the JS enabled cookie is present and the routing feature switch is off" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockFeatureSwitching.isEnabled(ArgumentMatchers.any()))
-              .thenReturn(false)
+          "redirect to multi-file upload page when the JS enabled cookie is present and the routing feature switch is off" in
+            new Setup(AuthTestModels.successfulAuthResult) {
+            when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
+            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
+              Json.parse(
+                """
+                  |{
+                  | "fileReference": "file1"
+                  |}
+                  |""".stripMargin)
+            ).withCookies(Cookie("jsenabled", "true")))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
           }
+
           "redirect to multi-file upload page when the JS enabled cookie is present" in new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
               Json.parse(

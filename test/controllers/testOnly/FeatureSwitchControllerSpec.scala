@@ -21,9 +21,8 @@ import config.featureSwitches.{FeatureSwitching, NonJSRouting}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
-class FeatureSwitchControllerSpec extends SpecBase {
+class FeatureSwitchControllerSpec extends SpecBase with FeatureSwitching {
   val controller: FeatureSwitchController = injector.instanceOf[FeatureSwitchController]
-  val featureSwitching: FeatureSwitching = injector.instanceOf[FeatureSwitching]
 
   "FeatureSwitchController" should {
     "return NOT FOUND when the feature switch is not defined" in {
@@ -34,13 +33,13 @@ class FeatureSwitchControllerSpec extends SpecBase {
     "return OK and enable the feature switch when specified" in {
       val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", true)(FakeRequest())
       status(result) shouldBe OK
-      featureSwitching.isEnabled(NonJSRouting) shouldBe true
+      isEnabled(NonJSRouting) shouldBe true
     }
 
     "return OK and disable the feature switch when specified" in {
       val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", false)(FakeRequest())
       status(result) shouldBe OK
-      featureSwitching.isEnabled(NonJSRouting) shouldBe false
+      isEnabled(NonJSRouting) shouldBe false
     }
   }
 }

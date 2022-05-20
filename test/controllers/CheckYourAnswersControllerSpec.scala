@@ -154,7 +154,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     errorHandler,
     uploadJourneyRepository,
     sessionAnswersHelper
-  )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction)
+  )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRequiredAction)
 
   "onPageLoad" should {
     "the user is authorised" must {

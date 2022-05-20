@@ -18,18 +18,20 @@ package navigation
 
 import java.time.{LocalDate, LocalDateTime}
 import config.AppConfig
+import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
 import controllers.routes
 import helpers.DateTimeHelper
 
 import javax.inject.Inject
 import models.pages._
 import models.{CheckMode, Mode, NormalMode, PenaltyTypeEnum, UserRequest}
+import play.api.Configuration
 import play.api.mvc.Call
 import utils.Logger.logger
 import utils.{ReasonableExcuses, SessionKeys}
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
-                           appConfig: AppConfig) {
+                           appConfig: AppConfig)(implicit val config: Configuration) extends FeatureSwitching {
 
   lazy val reverseNormalRoutes: Map[Page, UserRequest[_] => Call] = Map(
     CancelVATRegistrationPage -> (_ => Call("GET", appConfig.penaltiesFrontendUrl)),
@@ -212,7 +214,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
-    if(appConfig.useNewAPIModel) {
+    if(isEnabled(UseNewAPIModel)) {
       val dateTimeNow: LocalDate = dateTimeHelper.dateNow
       val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
       dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))

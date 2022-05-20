@@ -21,6 +21,7 @@ import models.NormalMode
 import models.upload._
 import org.jsoup.Jsoup
 import org.mongodb.scala.Document
+import play.api.Configuration
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Cookie, Result}
@@ -30,15 +31,15 @@ import repositories.UploadJourneyRepository
 import stubs.AuthStub
 import stubs.UpscanStub.successfulInitiateCall
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.{LocalDate, LocalDateTime}
 
+import java.time.{LocalDate, LocalDateTime}
 import uk.gov.hmrc.http.SessionKeys.authToken
 
 import scala.concurrent.Future
 
-class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
+class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+  implicit val config: Configuration = injector.instanceOf[Configuration]
   val controller: OtherReasonController = injector.instanceOf[OtherReasonController]
-  val featureSwitching: FeatureSwitching = injector.instanceOf[FeatureSwitching]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
   class Setup {
@@ -250,7 +251,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 303 (SEE_OTHER) when the user does not have JavaScript enabled" in new Setup {
-      featureSwitching.disableFeatureSwitch(NonJSRouting)
+      disableFeatureSwitch(NonJSRouting)
       val fakeRequestWithCorrectKeys = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
@@ -263,11 +264,11 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe SEE_OTHER
-      featureSwitching.enableFeatureSwitch(NonJSRouting)
+      enableFeatureSwitch(NonJSRouting)
     }
 
     "return 303 (SEE_OTHER) when the user does not have JavaScript enabled but the feature switch is enabled" in new Setup {
-      featureSwitching.enableFeatureSwitch(NonJSRouting)
+      enableFeatureSwitch(NonJSRouting)
       val fakeRequestWithCorrectKeys = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
@@ -280,11 +281,11 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       )
       val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe SEE_OTHER
-      featureSwitching.disableFeatureSwitch(NonJSRouting)
+      disableFeatureSwitch(NonJSRouting)
     }
 
     "return 200 (OK) when the user does have JavaScript enabled and the feature switch is disabled" in new Setup {
-      featureSwitching.disableFeatureSwitch(NonJSRouting)
+      disableFeatureSwitch(NonJSRouting)
       val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
@@ -297,7 +298,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       ).withCookies(Cookie("jsenabled", "true"))
       val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndJS))
       request.header.status shouldBe OK
-      featureSwitching.enableFeatureSwitch(NonJSRouting)
+      enableFeatureSwitch(NonJSRouting)
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
@@ -464,7 +465,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 303 (SEE_OTHER) when the users has JS active but the feature switch is disabled" in new Setup {
-      featureSwitching.disableFeatureSwitch(NonJSRouting)
+      disableFeatureSwitch(NonJSRouting)
       successfulInitiateCall(
         """
           |{
@@ -487,11 +488,11 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       ).withCookies(Cookie("jsenabled", "true"))
       val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe SEE_OTHER
-      featureSwitching.enableFeatureSwitch(NonJSRouting)
+      enableFeatureSwitch(NonJSRouting)
     }
 
     "return 200 (OK) when the users has JS active and the feature switch is enabled" in new Setup {
-      featureSwitching.enableFeatureSwitch(NonJSRouting)
+      enableFeatureSwitch(NonJSRouting)
       successfulInitiateCall(
         """
           |{
@@ -514,7 +515,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase {
       ).withCookies(Cookie("jsenabled", "true"))
       val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
       request.header.status shouldBe OK
-      featureSwitching.disableFeatureSwitch(NonJSRouting)
+      disableFeatureSwitch(NonJSRouting)
     }
 
     "return 400 (BAD_REQUEST) when the users upload has failed (preflight check)" in new Setup {

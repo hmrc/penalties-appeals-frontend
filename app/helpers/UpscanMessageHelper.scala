@@ -16,12 +16,11 @@
 
 package helpers
 
-import config.featureSwitches.FeatureSwitching
 import models.upload.FailureReasonEnum
 import play.api.i18n.Messages
 import play.twirl.api.Html
 
-object UpscanMessageHelper extends FeatureSwitching {
+object UpscanMessageHelper {
 
   val jsPrefix = "upscan"
   val noJsPrefix = "upscan.noJs"

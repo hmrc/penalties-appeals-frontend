@@ -16,14 +16,15 @@
 
 package config.featureSwitches
 
-import javax.inject.Inject
+import play.api.Configuration
 
-class FeatureSwitching @Inject()() {
+trait FeatureSwitching {
+  implicit val config: Configuration
   val FEATURE_SWITCH_ON = "true"
   val FEATURE_SWITCH_OFF = "false"
 
   def isEnabled(featureSwitch: FeatureSwitch): Boolean =
-    sys.props get featureSwitch.name contains FEATURE_SWITCH_ON
+    sys.props.get(featureSwitch.name).map(_.toBoolean).getOrElse(config.get[Boolean](featureSwitch.name))
 
   def enableFeatureSwitch(featureSwitch: FeatureSwitch): Unit =
     sys.props += featureSwitch.name -> FEATURE_SWITCH_ON
