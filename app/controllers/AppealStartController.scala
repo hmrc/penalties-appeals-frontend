@@ -17,9 +17,11 @@
 package controllers
 
 import config.AppConfig
+import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import models.NormalMode
 import models.pages.{AppealStartPage, PageMode}
+import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -33,8 +35,9 @@ import scala.concurrent.Future
 
 class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit mcc: MessagesControllerComponents,
                                                                         appConfig: AppConfig,
+                                                                        val config: Configuration,
                                                                         authorise: AuthPredicate,
-                                                                        dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+                                                                        dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired).async { implicit request => {
       logger.debug(s"[AppealStartController][onPageLoad] - Session keys received: \n" +
         s"Appeal Type = ${request.session.get(SessionKeys.appealType)}, \n" +
@@ -53,7 +56,7 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
   }
 
   private def isAppealLate()(implicit request: Request[_]): Boolean = {
-    if(appConfig.useNewAPIModel) {
+    if(isEnabled(UseNewAPIModel)) {
       val dateCommunicationSentParsedAsLocalDate = LocalDate.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
       dateCommunicationSentParsedAsLocalDate.isBefore(LocalDate.now().minusDays(appConfig.daysRequiredForLateAppeal))
     } else {

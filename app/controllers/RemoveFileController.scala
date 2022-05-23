@@ -103,7 +103,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
     }
   }
 
-  private def routeToUploadPage(isJsEnabled: Boolean, mode: Mode)(implicit userRequest: UserRequest[_]): Result = {
+  private def routeToUploadPage(isJsEnabled: Boolean, mode: Mode): Result = {
     if(isJsEnabled) {
       Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode))
     } else {

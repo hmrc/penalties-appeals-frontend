@@ -44,7 +44,7 @@ class AppealStartControllerSpec extends SpecBase {
 
   object Controller extends AppealStartController(
     page
-  )(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction)
+  )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction)
 
   "IndexController" should {
 

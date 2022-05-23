@@ -16,16 +16,17 @@
 
 package config
 
-import javax.inject.{Inject, Singleton}
+import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
 import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import play.api.i18n.Lang
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.Duration
 
 @Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig){
+class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesConfig) extends FeatureSwitching {
   val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
   val en: String            = "en"
@@ -39,11 +40,11 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val penaltiesServiceBaseUrl: String = servicesConfig.baseUrl("penalties")
 
   def appealLSPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&useNewApiModel=$useNewAPIModel"
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&useNewApiModel=${isEnabled(UseNewAPIModel)}"
   }
 
   def appealLPPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String, isAdditional: Boolean): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional&useNewApiModel=$useNewAPIModel"
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional&useNewApiModel=${isEnabled(UseNewAPIModel)}"
   }
 
   def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String): String =
@@ -107,7 +108,5 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val acceptedFileTypes: String = config.get[String]("upscan.acceptedFileTypes")
 
   lazy val maxFileUploadSize: Int = config.get[Int]("upscan.maxFileSize")
-
-  lazy val useNewAPIModel: Boolean = config.get[Boolean]("feature.switch.useNewAPIModel")
 
 }

@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.HonestyDeclarationForm._
@@ -23,6 +24,7 @@ import helpers.HonestyDeclarationHelper
 import models.NormalMode
 import models.pages.{HonestyDeclarationPage, PageMode}
 import navigation.Navigation
+import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,15 +41,16 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
                                              navigation: Navigation)
                                             (implicit mcc: MessagesControllerComponents,
                                              appConfig: AppConfig,
+                                             val config: Configuration,
                                              authorise: AuthPredicate,
-                                             dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+                                             dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       tryToGetExcuseDatesAndObligationFromSession(
         {
           (reasonableExcuse, dueDate, startDate, endDate, isObligation) => {
-            val (friendlyDueDate, friendlyStartDate, friendlyEndDate) = if(appConfig.useNewAPIModel) {
+            val (friendlyDueDate, friendlyStartDate, friendlyEndDate) = if(isEnabled(UseNewAPIModel)) {
               (ImplicitDateFormatter.dateToString(LocalDate.parse(dueDate)),
               ImplicitDateFormatter.dateToString(LocalDate.parse(startDate)),
               ImplicitDateFormatter.dateToString(LocalDate.parse(endDate)))

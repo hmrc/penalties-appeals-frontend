@@ -23,11 +23,12 @@ import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadEvidenceQuestionForm, UploadListForm}
 import helpers.{FormProviderHelper, UpscanMessageHelper}
-import models.{CheckMode, Mode}
 import models.pages.{UploadEvidenceQuestionPage, _}
 import models.upload.UploadStatusEnum.READY
 import models.upload.{UploadJourney, UploadStatusEnum}
+import models.{CheckMode, Mode}
 import navigation.Navigation
+import play.api.Configuration
 import play.api.data.{Form, FormError}
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
@@ -58,16 +59,16 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                       uploadEvidenceQuestionPage: UploadEvidenceQuestionPage,
                                       navigation: Navigation,
                                       upscanService: UpscanService,
-                                      featureSwitching: FeatureSwitching,
                                       evidenceFileUploadsHelper: EvidenceFileUploadsHelper,
                                       uploadJourneyRepository: UploadJourneyRepository,
                                       serviceUnavailablePage: ServiceUnavailablePage)
                                      (implicit authorise: AuthPredicate,
                                       dataRequired: DataRequiredAction,
                                       appConfig: AppConfig,
+                                      val config: Configuration,
                                       errorHandler: ErrorHandler,
                                       mcc: MessagesControllerComponents,
-                                      ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                      ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   val pageMode: (Page, Mode) => PageMode = (page: Page, mode: Mode) => PageMode(page, mode)
 
@@ -128,7 +129,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       for {
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
       } yield {
-        if (request.cookies.get("jsenabled").isEmpty || featureSwitching.isEnabled(NonJSRouting)) {
+        if (request.cookies.get("jsenabled").isEmpty || isEnabled(NonJSRouting)) {
           val hasReadyUploads: Boolean = previousUploadsState.exists(_.count(_.fileStatus == READY) > 0)
           if (hasReadyUploads) {
             val call = controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)
@@ -157,7 +158,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onPageLoadForFirstFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if (request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
+      if (request.cookies.get("jsenabled").isDefined && !isEnabled(NonJSRouting)) {
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val formProvider = UploadDocumentForm.form
@@ -273,8 +274,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
     implicit request => {
-      if (request.cookies.get("jsenabled").isDefined && !featureSwitching.isEnabled(NonJSRouting)) {
-        logger.debug(s"[OtherReasonController][removeFileUpload] - Redirecting to JS version - feature switch on: ${featureSwitching.isEnabled(NonJSRouting)} and cookie defined: ${request.cookies.get("jsenabled").isDefined}")
+      if (request.cookies.get("jsenabled").isDefined && !isEnabled(NonJSRouting)) {
+        logger.debug(s"[OtherReasonController][removeFileUpload] - Redirecting to JS version - feature switch on: ${isEnabled(NonJSRouting)} and cookie defined: ${request.cookies.get("jsenabled").isDefined}")
         Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)))
       } else {
         val journeyId = request.session.get(SessionKeys.journeyId).get

@@ -17,20 +17,22 @@
 package controllers.testOnly
 
 import config.featureSwitches.{FeatureSwitch, FeatureSwitching}
+import play.api.Configuration
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.Inject
 
-class FeatureSwitchController @Inject()(featureSwitching: FeatureSwitching)(implicit mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+class FeatureSwitchController @Inject()(implicit mcc: MessagesControllerComponents,
+                                        val config: Configuration) extends FrontendController(mcc) with FeatureSwitching {
   def enableOrDisableFeature(name: String, enable: Boolean): Action[AnyContent] = Action {
     val matchedFeatureSwitch: Option[FeatureSwitch] = FeatureSwitch.listOfAllFeatureSwitches.find(_.name == name)
     matchedFeatureSwitch.fold[Result](NotFound)(
       featureSwitch => {
         if (enable) {
-          featureSwitching.enableFeatureSwitch(featureSwitch)
+          enableFeatureSwitch(featureSwitch)
         } else {
-          featureSwitching.disableFeatureSwitch(featureSwitch)
+          disableFeatureSwitch(featureSwitch)
         }
         Ok(s"$featureSwitch set to $enable")
       })

@@ -16,6 +16,8 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
+
 import java.time.{LocalDate, LocalDateTime}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
@@ -25,6 +27,7 @@ import javax.inject.Inject
 import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import models.pages.{CheckYourAnswersPage, PageMode}
+import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
@@ -45,9 +48,10 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
                                            sessionAnswersHelper: SessionAnswersHelper)
                                           (implicit mcc: MessagesControllerComponents,
                                            ec: ExecutionContext,
+                                           val config: Configuration,
                                            appConfig: AppConfig,
                                            authorise: AuthPredicate,
-                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter {
+                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter with FeatureSwitching {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(CheckYourAnswersPage, mode)
 
@@ -132,7 +136,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         case Late_Payment => "penaltyType.latePayment"
         case Additional => "penaltyType.additional"
       }
-      val (readablePeriodStart, readablePeriodEnd) = if(appConfig.useNewAPIModel) {
+      val (readablePeriodStart, readablePeriodEnd) = if(isEnabled(UseNewAPIModel)) {
         (dateToString(LocalDate.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
           dateToString(LocalDate.parse(request.session.get(SessionKeys.endDateOfPeriod).get)))
       } else {

@@ -17,16 +17,24 @@
 package config.featureSwitches
 
 import base.SpecBase
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{mock, reset, when}
+import play.api.Configuration
 
 class FeatureSwitchingSpec extends SpecBase {
+  val mockConfig: Configuration = mock(classOf[Configuration])
+
   class Setup {
-    val featureSwitching: FeatureSwitching = new FeatureSwitching {}
+    reset(mockConfig)
+    val featureSwitching: FeatureSwitching = new FeatureSwitching {
+      override implicit val config: Configuration = mockConfig
+    }
     sys.props -= NonJSRouting.name
   }
 
   "listOfAllFeatureSwitches" should {
     "be all the featureswitches in the app" in {
-      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting)
+      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, UseNewAPIModel)
     }
   }
 
@@ -42,12 +50,16 @@ class FeatureSwitchingSpec extends SpecBase {
       featureSwitching.enableFeatureSwitch(NonJSRouting)
       featureSwitching.isEnabled(NonJSRouting) shouldBe true
     }
+
     s"return false if feature switch is disabled" in new Setup {
       featureSwitching.disableFeatureSwitch(NonJSRouting)
       featureSwitching.isEnabled(NonJSRouting) shouldBe false
     }
-    "return false if feature switch does not exist" in new Setup {
-      featureSwitching.isEnabled(NonJSRouting) shouldBe false
+
+    "return true if system props is empty but config has value" in new Setup {
+      when(mockConfig.get[Boolean](any())(any()))
+        .thenReturn(true)
+      featureSwitching.isEnabled(NonJSRouting) shouldBe true
     }
   }
 
@@ -56,12 +68,22 @@ class FeatureSwitchingSpec extends SpecBase {
       featureSwitching.enableFeatureSwitch(NonJSRouting)
       (sys.props get NonJSRouting.name get) shouldBe "true"
     }
+
+    s"set ${UseNewAPIModel.name} property to true" in new Setup {
+      featureSwitching.enableFeatureSwitch(UseNewAPIModel)
+      (sys.props get UseNewAPIModel.name get) shouldBe "true"
+    }
   }
 
   "disableFeatureSwitch" should {
     s"set ${NonJSRouting.name} property to false" in new Setup {
       featureSwitching.disableFeatureSwitch(NonJSRouting)
       (sys.props get NonJSRouting.name get) shouldBe "false"
+    }
+
+    s"set ${UseNewAPIModel.name} property to false" in new Setup {
+      featureSwitching.disableFeatureSwitch(UseNewAPIModel)
+      (sys.props get UseNewAPIModel.name get) shouldBe "false"
     }
   }
 }
