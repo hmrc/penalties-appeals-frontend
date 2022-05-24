@@ -37,13 +37,7 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
 
       val detailsContentP1 = ".govuk-details__text > p:nth-child(1)"
 
-      val detailsContentP2 = ".govuk-details__text > p:nth-child(3)"
-
-      val detailsContentP3 = ".govuk-details__text > p:nth-child(4)"
-
       val detailsContentLi: Int => String = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
-
-      val continueButton = "#file-upload-form .govuk-button--secondary"
 
       val uploadButton = "#file-upload-form .govuk-button"
 
@@ -79,8 +73,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentLi(3) -> detailsLi3,
       Selectors.detailsContentLi(4) -> detailsLi4,
       Selectors.detailsContentLi(5) -> detailsLi5,
-      Selectors.detailsContentP2 -> detailsP2,
-      Selectors.detailsContentP3 -> detailsP3,
       Selectors.chooseYourFirstFile -> chooseYourFirstFile,
       Selectors.uploadButton -> uploadButton
     )
@@ -105,8 +97,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(3) -> detailsLi3,
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.detailsContentP2 -> detailsP2,
-        Selectors.detailsContentP3 -> detailsP3,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
         Selectors.uploadButton -> uploadButton
       )
@@ -133,8 +123,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(3) -> detailsLi3,
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.detailsContentP2 -> detailsP2,
-        Selectors.detailsContentP3 -> detailsP3,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
         Selectors.uploadButton -> uploadButton
       )
@@ -160,8 +148,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(3) -> detailsLi3,
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.detailsContentP2 -> detailsP2,
-        Selectors.detailsContentP3 -> detailsP3,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
         Selectors.uploadButton -> uploadButton
       )
@@ -188,8 +174,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(3) -> detailsLi3,
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.detailsContentP2 -> detailsP2,
-        Selectors.detailsContentP3 -> detailsP3,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
         Selectors.uploadButton -> uploadButton
       )

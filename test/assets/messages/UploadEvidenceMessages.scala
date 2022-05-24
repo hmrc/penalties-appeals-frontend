@@ -50,10 +50,6 @@ object UploadEvidenceMessages {
 
   val detailsLi5 = "Open Document Format (ODF)"
 
-  val detailsP2 = "You cannot upload zip files or documents that are protected by a password."
-
-  val detailsP3 = "We’ll scan all files and reject any we think are suspicious."
-
   val document1 = "File 1"
 
   val addAnotherButton = "Add another file"
