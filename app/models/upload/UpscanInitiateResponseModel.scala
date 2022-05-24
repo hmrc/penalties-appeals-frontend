@@ -33,17 +33,4 @@ object UploadFormTemplateRequest {
 object UpscanInitiateResponseModel {
   implicit val formats: Format[UpscanInitiateResponseModel] =
     Json.format[UpscanInitiateResponseModel]
-
-  implicit val jsonReadsForModel: Reads[UpscanInitiateResponseModel] =
-    (json: JsValue) => {
-      for {
-        reference <- (json \ "reference").validate[String]
-        fieldsAndHref <-
-          (json \ "uploadRequest").validate[UploadFormTemplateRequest](
-            UploadFormTemplateRequest.formats
-          )
-      } yield {
-        UpscanInitiateResponseModel(reference, fieldsAndHref)
-      }
-    }
 }
