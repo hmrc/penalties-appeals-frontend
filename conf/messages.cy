@@ -172,7 +172,7 @@ crimeReason.error.notInFuture = Mae’n rhaid i ddyddiad y drosedd fod heddiw ne
 # ----------------------------------------------------------
 crimeReason.hasBeenReported.headingAndTitle = A roddwyd gwybod i’r heddlu am y drosedd hon?
 crimeReason.hasBeenReported.unknown = Nid wyf yn gwybod
-crimeReason.hasBeenReported.required = Rhowch wybod i ni os yw'r heddlu wedi eu hysbysu am y drosedd
+crimeReason.hasBeenReported.required = Rhowch wybod i ni os yw’r heddlu wedi eu hysbysu am y drosedd
 
 # When did the fire or flood happen page
 # ----------------------------------------------------------
@@ -186,7 +186,7 @@ fireOrFloodReason.error.notInFuture = Mae’n rhaid i ddyddiad y tân neu lifogy
 # When did the person leave the business page
 # ----------------------------------------------------------
 lossOfStaffReason.headingAndTitle = Pryd gadawodd y person y busnes?
-lossOfStaffReason.hintText = Mae hyn yn golygu bod rhywun sy’n hanfodol i’r broses dreth wedi gadael ar fyr rybudd, p'un a oedd wedi bwriadu dychwelyd ai peidio.<br><br>
+lossOfStaffReason.hintText = Mae hyn yn golygu bod rhywun sy’n hanfodol i’r broses dreth wedi gadael ar fyr rybudd, p’un a oedd wedi bwriadu dychwelyd ai peidio.<br><br>
 lossOfStaffReason.error.required.all = Rhowch wybod i ni beth oedd y dyddiad diwethaf yr oedd y person wedi gweithio i’r busnes
 lossOfStaffReason.error.required.two = Mae’n rhaid i’r dyddiad y gwnaeth y person adael gynnwys {0} a {1}
 lossOfStaffReason.error.required = Mae’n rhaid i ddyddiad y gwnaeth y person adael gynnwys {0}
@@ -424,9 +424,6 @@ checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = I did
 checkYourAnswers.agents.whatCausedYouToMissTheDeadline.client = My client did not get information to me on time
 checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Something else happened to delay me
 
-checkYourAnswers.unableToManageAccount = When did you become unable to manage the VAT account?
-agent.checkYourAnswers.unableToManageAccount = When did your client become unable to manage the VAT account?
-
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
@@ -522,8 +519,6 @@ agent.duplicateAppeal.link = Gweld cosbau ac apeliadau eich cleient
 # -----------------------------------------------------------
 error.prefix = Gwall:
 error.summary.headingAndTitle = Mae problem wedi codi
-# Not sure if this is as per design
-error.clickAcceptAndContinue = Please click ’Accept and continue’
 
 # Timeout page
 # -----------------------------------------------------------

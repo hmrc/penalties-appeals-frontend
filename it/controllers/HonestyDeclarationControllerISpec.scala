@@ -208,28 +208,6 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       request.session(fakeRequestWithCorrectKeys).get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
     }
 
-    "return 400 (BAD REQUEST) when the user POSTs invalid data" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
-        (SessionKeys.journeyId, "1234"),
-        (SessionKeys.reasonableExcuse, "crime")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "value": "this_is_fake"
-          |}
-          |""".stripMargin))
-
-      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
-      request.header.status shouldBe Status.BAD_REQUEST
-    }
-
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
         authToken -> "1234"

@@ -424,9 +424,6 @@ checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = I did
 checkYourAnswers.agents.whatCausedYouToMissTheDeadline.client = My client did not get information to me on time
 checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Something else happened to delay me
 
-checkYourAnswers.unableToManageAccount = When did you become unable to manage the VAT account?
-agent.checkYourAnswers.unableToManageAccount = When did your client become unable to manage the VAT account?
-
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
@@ -522,8 +519,6 @@ agent.duplicateAppeal.link = View your client’s penalties and appeals
 # -----------------------------------------------------------
 error.prefix = Error:
 error.summary.headingAndTitle = There is a problem
-# Not sure if this is as per design
-error.clickAcceptAndContinue = Please click ’Accept and continue’
 
 # Timeout page
 # -----------------------------------------------------------
