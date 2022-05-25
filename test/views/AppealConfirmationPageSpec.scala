@@ -27,8 +27,6 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
   "AppealConfirmationPage" should {
     val appealConfirmationPage: AppealConfirmationPage = injector.instanceOf[AppealConfirmationPage]
     object Selectors extends BaseSelectors {
-      val whatHappensNextPTag: Int => String = (index: Int) => s"#main-content > div > div > p:nth-child($index)"
-
       val penaltyType = ".govuk-panel__body"
 
       val penaltiesLink = "#penalties-link"
@@ -37,7 +35,9 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
 
       val feedbackLink = "#feedback-link"
 
-      val obligationExtraParagraph = "#main-content p:nth-child(4)"
+      val paragraph: Int => String = (index: Int) => s"#main-content > div > div > p:nth-child($index)"
+
+      val obligationExtraParagraph = "#main-content p:nth-child(6)"
     }
 
     def applyVATTraderView(penaltyTypeMsgKey: String,
@@ -62,9 +62,11 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
         Selectors.h1 -> headingPanelH1,
         Selectors.h2 -> h2WhatHappensNext,
         Selectors.penaltyType -> headingPanelBodyLSP,
-        Selectors.whatHappensNextPTag(3) -> p1,
-        Selectors.whatHappensNextPTag(4) -> p2,
-        Selectors.whatHappensNextPTag(5) -> p3,
+        Selectors.paragraph(2) -> p1,
+        Selectors.paragraph(3) -> p2,
+        Selectors.paragraph(5) -> whatHappensNextP1,
+        Selectors.paragraph(6) -> whatHappensNextP2,
+        Selectors.paragraph(7) -> whatHappensNextP3,
         Selectors.penaltiesLink -> returnToPenaltiesAgentText,
         Selectors.vatAccountLink -> goToVatVCAgentText,
         Selectors.feedbackLink -> goToFeedback
@@ -73,7 +75,7 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
 
       "not show the secure/email message" in {
-        agentDoc.select(Selectors.whatHappensNextPTag(6)).text.isEmpty shouldBe true
+        agentDoc.select(Selectors.paragraph(8)).text.isEmpty shouldBe true
       }
     }
 
@@ -84,10 +86,12 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
         Selectors.h1 -> headingPanelH1,
         Selectors.h2 -> h2WhatHappensNext,
         Selectors.penaltyType -> headingPanelBodyLSP,
-        Selectors.whatHappensNextPTag(3) -> p1,
-        Selectors.whatHappensNextPTag(4) -> p2,
-        Selectors.whatHappensNextPTag(5) -> p3,
-        Selectors.whatHappensNextPTag(6) -> p4,
+        Selectors.paragraph(2) -> p1,
+        Selectors.paragraph(3) -> p2,
+        Selectors.paragraph(5) -> whatHappensNextP1,
+        Selectors.paragraph(6) -> whatHappensNextP2,
+        Selectors.paragraph(7) -> whatHappensNextP3,
+        Selectors.paragraph(8) -> whatHappensNextP4,
         Selectors.penaltiesLink -> returnToPenalties,
         Selectors.vatAccountLink -> goToVatVC,
         Selectors.feedbackLink -> goToFeedback

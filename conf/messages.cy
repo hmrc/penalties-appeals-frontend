@@ -432,12 +432,14 @@ agent.checkYourAnswers.unableToManageAccount = When did your client become unabl
 
 appealConfirmation.headingAndTitle = Rydych wedi gofyn i ni adolygu cosb
 appealConfirmation.typeAndPeriod = {0}: {1} i {2}
+appealConfirmation.p1 = You do not need a reference number.
+appealConfirmation.p2 = We have logged this appeal under the VAT registration number (VRN) for the business. Quote the VRN if you need to call HMRC about this appeal.
 appealConfirmation.whatHappensNext = Yr hyn sy’n digwydd nesaf
-appealConfirmation.p1 = Byddwn yn gwneud penderfyniad am eich apêl yn seiliedig ar yr hyn rydych wedi’i rhoi gwybod i ni amdano.
-appealConfirmation.obligation.p = Bydd ein penderfyniad yn ystyried pob cosb am gyflwyno neu dalu’n hwyr yn yr un cyfnod TAW. Nid oes angen i chi apelio yn erbyn y cosbau hyn ar wahân.
-appealConfirmation.p2 = Anelwn at wneud penderfyniad ar gyfer pob apêl cyn pen 45 diwrnod.
-appealConfirmation.p3 = Byddwch yn cael llythyr yn rhoi gwybod i chi am ganlyniad yr apêl hon a’r rhesymau dros ein penderfyniad.
-appealConfirmation.p4 = Rydych wedi cadarnhau cyfeiriad e-bost ar eich cyfrif TAW, byddwn hefyd yn anfon neges ddiogelwch atoch.
+appealConfirmation.whatHappensNext.p1 = Byddwn yn gwneud penderfyniad am eich apêl yn seiliedig ar yr hyn rydych wedi’i rhoi gwybod i ni amdano.
+appealConfirmation.whatHappensNext.obligation.p = Bydd ein penderfyniad yn ystyried pob cosb am gyflwyno neu dalu’n hwyr yn yr un cyfnod TAW. Nid oes angen i chi apelio yn erbyn y cosbau hyn ar wahân.
+appealConfirmation.whatHappensNext.p2 = Anelwn at wneud penderfyniad ar gyfer pob apêl cyn pen 45 diwrnod.
+appealConfirmation.whatHappensNext.p3 = Byddwch yn cael llythyr yn rhoi gwybod i chi am ganlyniad yr apêl hon a’r rhesymau dros ein penderfyniad.
+appealConfirmation.whatHappensNext.p4 = Rydych wedi cadarnhau cyfeiriad e-bost ar eich cyfrif TAW, byddwn hefyd yn anfon neges ddiogelwch atoch.
 
 appealConfirmation.returnToPenalties = Yn ôl i’ch cosbau TAW
 agent.appealConfirmation.returnToPenalties = Yn ôl i gosbau TAW eich cleient

@@ -25,15 +25,19 @@ object AppealConfirmationMessages {
 
   val headingPanelBodyLPP = "Late payment penalty: 1 July 2023 to 31 July 2023"
 
+  val p1 = "You do not need a reference number."
+
+  val p2 = "We have logged this appeal under the VAT registration number (VRN) for the business. Quote the VRN if you need to call HMRC about this appeal."
+
   val h2WhatHappensNext = "What happens next"
 
-  val p1 = "We’ll make a decision about your appeal based on what you have told us."
+  val whatHappensNextP1 = "We’ll make a decision about your appeal based on what you have told us."
 
-  val p2 = "We aim to make all appeal decisions within 45 days."
+  val whatHappensNextP2 = "We aim to make all appeal decisions within 45 days."
 
-  val p3 = "You’ll receive a letter telling you the outcome of this appeal and the reasons for our decision."
+  val whatHappensNextP3 = "You’ll receive a letter telling you the outcome of this appeal and the reasons for our decision."
 
-  val p4 = "If you have a confirmed email address on your VAT account, we’ll also send you a secure message."
+  val whatHappensNextP4 = "If you have a confirmed email address on your VAT account, we’ll also send you a secure message."
 
   val obligationParagraph: String = "Our decision will take into account all late submission or late payment penalties in the same VAT period." +
     " You do not need to appeal separately for these penalties."
