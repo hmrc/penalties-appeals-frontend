@@ -432,12 +432,14 @@ agent.checkYourAnswers.unableToManageAccount = When did your client become unabl
 
 appealConfirmation.headingAndTitle = You have asked us to review a penalty
 appealConfirmation.typeAndPeriod = {0}: {1} to {2}
+appealConfirmation.p1 = You do not need a reference number.
+appealConfirmation.p2 = We have logged this appeal under the VAT registration number (VRN) for the business. Quote the VRN if you need to call HMRC about this appeal.
 appealConfirmation.whatHappensNext = What happens next
-appealConfirmation.p1 = We’ll make a decision about your appeal based on what you have told us.
-appealConfirmation.obligation.p = Our decision will take into account all late submission or late payment penalties in the same VAT period. You do not need to appeal separately for these penalties.
-appealConfirmation.p2 = We aim to make all appeal decisions within 45 days.
-appealConfirmation.p3 = You’ll receive a letter telling you the outcome of this appeal and the reasons for our decision.
-appealConfirmation.p4 = If you have a confirmed email address on your VAT account, we’ll also send you a secure message.
+appealConfirmation.whatHappensNext.p1 = We’ll make a decision about your appeal based on what you have told us.
+appealConfirmation.whatHappensNext.obligation.p = Our decision will take into account all late submission or late payment penalties in the same VAT period. You do not need to appeal separately for these penalties.
+appealConfirmation.whatHappensNext.p2 = We aim to make all appeal decisions within 45 days.
+appealConfirmation.whatHappensNext.p3 = You’ll receive a letter telling you the outcome of this appeal and the reasons for our decision.
+appealConfirmation.whatHappensNext.p4 = If you have a confirmed email address on your VAT account, we’ll also send you a secure message.
 
 appealConfirmation.returnToPenalties = Return to your VAT penalties
 agent.appealConfirmation.returnToPenalties = Return to your client’s VAT penalties

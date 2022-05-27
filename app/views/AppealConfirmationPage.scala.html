@@ -37,22 +37,23 @@
         </div>
     </div>
 
-    <div class="govuk-!-padding-top-4">
-        <h2 class="govuk-heading-m">@messages("appealConfirmation.whatHappensNext")</h2>
-    </div>
-
-    <p class="govuk-body">@messages("appealConfirmation.p1")</p>
-
-    @if(isObligationAppeal) {
-        <p class="govuk-body">@messages("appealConfirmation.obligation.p")</p>
-    }
-
+    <p class="govuk-body govuk-!-padding-top-4">@messages("appealConfirmation.p1")</p>
     <p class="govuk-body">@messages("appealConfirmation.p2")</p>
 
-    <p class="govuk-body">@messages("appealConfirmation.p3")</p>
+    <h2 class="govuk-heading-m">@messages("appealConfirmation.whatHappensNext")</h2>
+
+    <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.p1")</p>
+
+    @if(isObligationAppeal) {
+        <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.obligation.p")</p>
+    }
+
+    <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.p2")</p>
+
+    <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.p3")</p>
 
     @if(!user.isAgent){
-        <p class="govuk-body">@messages("appealConfirmation.p4")</p>
+        <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.p4")</p>
     }
 
     <ul class="govuk-list">
@@ -76,11 +77,8 @@
         </li>
     </ul>
 
-    <p class="govuk-!-padding-top-4 govuk-body" id="feedback-link">
-        <a href="@{appConfig.feedbackUrl}" class="govuk-link">
-            @messages("appealConfirmation.feedbackLink.1")
-        </a>
-         &nbsp;@messages("appealConfirmation.feedbackLink.2")
+    <p class="govuk-!-padding-top-4 govuk-body-s" id="feedback-link">
+        <a href="@{appConfig.feedbackUrl}" class="govuk-link">@messages("appealConfirmation.feedbackLink.1").trim</a> @messages("appealConfirmation.feedbackLink.2")
     </p>
 
 
