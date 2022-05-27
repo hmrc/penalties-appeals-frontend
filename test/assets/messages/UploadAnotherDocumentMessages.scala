@@ -16,7 +16,7 @@
 
 package messages
 
-object UploadAnotherDocmuentMessages {
+object UploadAnotherDocumentMessages {
 
   val title = "Add another file (optional) - Appeal a VAT penalty - GOV.UK"
 
@@ -39,10 +39,6 @@ object UploadAnotherDocmuentMessages {
   val detailsLi4 = "Microsoft (Word, Excel or PowerPoint)"
 
   val detailsLi5 = "Open Document Format (ODF)"
-
-  val detailsP2 = "You cannot upload zip files or documents that are protected by a password."
-
-  val detailsP3 = "We’ll scan all files and reject any we think are suspicious."
 
   val chooseYourFirstFile = "Choose your first file"
 

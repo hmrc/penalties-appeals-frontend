@@ -16,7 +16,6 @@
 
 package base
 
-import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
 import helpers.DateTimeHelper

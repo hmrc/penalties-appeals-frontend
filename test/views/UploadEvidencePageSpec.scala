@@ -39,10 +39,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       val detailsContentP1 = ".govuk-details__text > p:nth-child(1)"
 
-      val detailsContentP2 = ".govuk-details__text > p:nth-child(3)"
-
-      val detailsContentP3 = ".govuk-details__text > p:nth-child(4)"
-
       val detailsContentLi: Int => String = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
 
       val addAnotherButton = ".multi-file-upload__add-another"
@@ -101,8 +97,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentLi(3) -> detailsLi3,
       Selectors.detailsContentLi(4) -> detailsLi4,
       Selectors.detailsContentLi(5) -> detailsLi5,
-      Selectors.detailsContentP2 -> detailsP2,
-      Selectors.detailsContentP3 -> detailsP3,
       Selectors.addAnotherButton -> addAnotherButton,
       Selectors.continueButton -> continueButton
     )
@@ -127,8 +121,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(3) -> detailsLi3,
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.detailsContentP2 -> detailsP2,
-        Selectors.detailsContentP3 -> detailsP3,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )
@@ -155,8 +147,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(3) -> detailsLi3,
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.detailsContentP2 -> detailsP2,
-        Selectors.detailsContentP3 -> detailsP3,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )
@@ -182,8 +172,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(3) -> detailsLi3,
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.detailsContentP2 -> detailsP2,
-        Selectors.detailsContentP3 -> detailsP3,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )
@@ -210,8 +198,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(3) -> detailsLi3,
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.detailsContentP2 -> detailsP2,
-        Selectors.detailsContentP3 -> detailsP3,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )

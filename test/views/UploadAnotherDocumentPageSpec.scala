@@ -18,7 +18,7 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadDocumentForm
-import messages.UploadAnotherDocmuentMessages._
+import messages.UploadAnotherDocumentMessages._
 import models.NormalMode
 import models.pages.{PageMode, UploadAnotherDocumentPage}
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
@@ -80,8 +80,6 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
       Selectors.detailsContentLi(3) -> detailsLi3,
       Selectors.detailsContentLi(4) -> detailsLi4,
       Selectors.detailsContentLi(5) -> detailsLi5,
-      Selectors.detailsContentP2 -> detailsP2,
-      Selectors.detailsContentP3 -> detailsP3,
       Selectors.chooseYourNextFile -> chooseYourNextFile,
       Selectors.uploadButton -> uploadButton,
       Selectors.cancelButton -> cancelButton
