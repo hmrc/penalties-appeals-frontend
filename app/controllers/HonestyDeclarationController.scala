@@ -19,7 +19,6 @@ package controllers
 import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import forms.HonestyDeclarationForm._
 import helpers.HonestyDeclarationHelper
 import models.NormalMode
 import models.pages.{HonestyDeclarationPage, PageMode}
@@ -50,18 +49,18 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
       tryToGetExcuseDatesAndObligationFromSession(
         {
           (reasonableExcuse, dueDate, startDate, endDate, isObligation) => {
-            val (friendlyDueDate, friendlyStartDate, friendlyEndDate) = if(isEnabled(UseNewAPIModel)) {
+            val (friendlyDueDate, friendlyStartDate, friendlyEndDate) = if (isEnabled(UseNewAPIModel)) {
               (ImplicitDateFormatter.dateToString(LocalDate.parse(dueDate)),
-              ImplicitDateFormatter.dateToString(LocalDate.parse(startDate)),
-              ImplicitDateFormatter.dateToString(LocalDate.parse(endDate)))
+                ImplicitDateFormatter.dateToString(LocalDate.parse(startDate)),
+                ImplicitDateFormatter.dateToString(LocalDate.parse(endDate)))
             } else {
               (ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(dueDate)),
-              ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(startDate)),
-              ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(endDate)))
+                ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(startDate)),
+                ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(endDate)))
             }
             val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
             val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
-            Ok(honestDeclarationPage(honestyDeclarationForm, reasonableExcuse, reasonText,
+            Ok(honestDeclarationPage(reasonableExcuse, reasonText,
               friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation, PageMode(HonestyDeclarationPage, NormalMode)))
           }
         }
@@ -72,29 +71,15 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       tryToGetExcuseDatesAndObligationFromSession({
-        (reasonableExcuse, dueDate, startDate, endDate, isObligation) => {
-          honestyDeclarationForm.bindFromRequest.fold(
-            formWithErrors => {
-              logger.debug(s"[HonestyDeclarationController][onSubmit] - Form had errors: ${formWithErrors.errors}")
-              val friendlyDueDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(dueDate))
-              val friendlyStartDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(startDate))
-              val friendlyEndDate: String = ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(endDate))
-              val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
-              val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
-              BadRequest(honestDeclarationPage(formWithErrors, reasonableExcuse, reasonText,
-                friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation, PageMode(HonestyDeclarationPage, NormalMode)))
-            },
-            _ => {
-              logger.debug(s"[HonestyDeclarationController][onSubmit] - Adding 'true' to session for key: ${SessionKeys.hasConfirmedDeclaration}")
-              if(isObligation) {
-                Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, None))
-                  .addingToSession((SessionKeys.hasConfirmedDeclaration, "true"))
-              } else {
-                Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, Some(reasonableExcuse)))
-                  .addingToSession((SessionKeys.hasConfirmedDeclaration, "true"))
-              }
-            }
-          )
+        (reasonableExcuse, _, _, _, isObligation) => {
+          logger.debug(s"[HonestyDeclarationController][onSubmit] - Adding 'true' to session for key: ${SessionKeys.hasConfirmedDeclaration}")
+          if (isObligation) {
+            Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, None))
+              .addingToSession((SessionKeys.hasConfirmedDeclaration, "true"))
+          } else {
+            Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, Some(reasonableExcuse)))
+              .addingToSession((SessionKeys.hasConfirmedDeclaration, "true"))
+          }
         }
       })
     }

@@ -17,14 +17,11 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.HonestyDeclarationForm.honestyDeclarationForm
 import messages.HonestyDeclarationMessages._
 import models.pages.{HonestyDeclarationPage, PageMode}
-import models.{NormalMode, PenaltyTypeEnum, UserRequest}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
-import play.api.data.Form
 import play.api.mvc.AnyContent
-import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import utils.SessionKeys
 import views.behaviours.ViewBehaviours
@@ -35,24 +32,23 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
     val honestyDeclarationPage: HonestyDeclarationPage = injector.instanceOf[HonestyDeclarationPage]
     object Selectors extends BaseSelectors
 
-    def applyVATTraderView(form: Form[_],
-                           reasonableExcuse: String,
+    def applyVATTraderView(reasonableExcuse: String,
                            reasonText: String,
                            dueDate: String, startDate: String, endDate: String,
                            extraBullets: Seq[String] = Seq.empty, userRequest: UserRequest[_] = vatTraderLSPUserRequest, isObligation: Boolean = false): HtmlFormat.Appendable = {
-      honestyDeclarationPage.apply(form, reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation,
+      honestyDeclarationPage.apply(reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation,
         pageMode = PageMode(HonestyDeclarationPage, NormalMode))(implicitly, implicitly, userRequest)
     }
 
-    implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "technicalIssues", "of reason",
+    implicit val doc: Document = asDocument(applyVATTraderView( "technicalIssues", "of reason",
       "1 January 2022", "1 January 2021", "31 January 2021"))
 
-    def applyAgentView(form: Form[_], reasonableExcuse: String, reasonText: String, dueDate: String, startDate: String, endDate: String, extraBullets: Seq[String] = Seq.empty,
+    def applyAgentView(reasonableExcuse: String, reasonText: String, dueDate: String, startDate: String, endDate: String, extraBullets: Seq[String] = Seq.empty,
                        userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys, isObligation: Boolean = false): HtmlFormat.Appendable = {
-      honestyDeclarationPage.apply(form, reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation, pageMode = PageMode(HonestyDeclarationPage, NormalMode))(implicitly, implicitly, userRequest)
+      honestyDeclarationPage.apply(reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation, pageMode = PageMode(HonestyDeclarationPage, NormalMode))(implicitly, implicitly, userRequest)
     }
 
-    implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "technicalIssues", "of agent context reason",
+    implicit val agentDoc: Document = asDocument(applyAgentView( "technicalIssues", "of agent context reason",
       "1 January 2022", "1 January 2021", "31 January 2021"))
 
     "when an agent is on the page" must {
@@ -70,7 +66,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
 
       "it is an appeal against an obligation and agent missed the deadline" must {
-        implicit val doc: Document = asDocument(applyAgentView(honestyDeclarationForm, "obligation","",
+        implicit val doc: Document = asDocument(applyAgentView("obligation","",
           "1 January 2022", "1 January 2021", "31 January 2021", isObligation = true))
 
         val expectedContent = Seq(
@@ -92,7 +88,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
           "the agent missed the deadline" must {
             "the option selected is 'crime'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "crime", messages("honestyDeclaration.crime"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("crime", messages("honestyDeclaration.crime"),
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
@@ -104,7 +100,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'bereavement'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "bereavement", messages("honestyDeclaration.bereavement"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("bereavement", messages("honestyDeclaration.bereavement"),
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
@@ -116,7 +112,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'fire or flood'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "fireOrFlood", messages("honestyDeclaration.fireOrFlood"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("fireOrFlood", messages("honestyDeclaration.fireOrFlood"),
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
@@ -128,7 +124,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'health'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "health", messages("honestyDeclaration.health"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("health", messages("honestyDeclaration.health"),
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
@@ -140,7 +136,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'technical issues'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "technicalIssues", messages("honestyDeclaration.technicalIssues"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("technicalIssues", messages("honestyDeclaration.technicalIssues"),
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
@@ -152,7 +148,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'loss of staff'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "lossOfStaff", messages("honestyDeclaration.lossOfStaff"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("lossOfStaff", messages("honestyDeclaration.lossOfStaff"),
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
@@ -165,7 +161,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
 
             "the option selected is 'other'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "other", messages("honestyDeclaration.other"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("other", messages("honestyDeclaration.other"),
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
@@ -179,7 +175,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
           "the client missed the deadline" must {
             "the option selected is 'crime'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "crime",
+              implicit val agentDoc: Document = asDocument(applyAgentView("crime",
                 messages("agent.honestyDeclaration.crime"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
@@ -191,7 +187,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'bereavement'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "bereavement",
+              implicit val agentDoc: Document = asDocument(applyAgentView("bereavement",
                 messages("agent.honestyDeclaration.bereavement"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
@@ -203,7 +199,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'fire or flood'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "fireOrFlood",
+              implicit val agentDoc: Document = asDocument(applyAgentView("fireOrFlood",
                 messages("agent.honestyDeclaration.fireOrFlood"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
@@ -215,7 +211,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'health'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "health", messages("agent.honestyDeclaration.health"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("health", messages("agent.honestyDeclaration.health"),
                 "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
@@ -227,7 +223,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'technical issues'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "technicalIssues",
+              implicit val agentDoc: Document = asDocument(applyAgentView("technicalIssues",
                 messages("agent.honestyDeclaration.technicalIssues"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
@@ -239,7 +235,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             }
 
             "the option selected is 'loss of staff'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "lossOfStaff",
+              implicit val agentDoc: Document = asDocument(applyAgentView("lossOfStaff",
                 messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
@@ -252,7 +248,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
 
             "the option selected is 'other'" must {
-              implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "other", messages("agent.honestyDeclaration.other"),
+              implicit val agentDoc: Document = asDocument(applyAgentView("other", messages("agent.honestyDeclaration.other"),
                 "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
@@ -270,7 +266,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             SessionKeys.whoPlannedToSubmitVATReturn -> "client")
           )
           "the option selected is 'crime'" must {
-            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "crime", messages("agent.honestyDeclaration.crime"),
+            implicit val agentDoc: Document = asDocument(applyAgentView("crime", messages("agent.honestyDeclaration.crime"),
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
@@ -282,7 +278,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           }
 
           "the option selected is 'bereavement'" must {
-            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "bereavement", messages("agent.honestyDeclaration.bereavement"),
+            implicit val agentDoc: Document = asDocument(applyAgentView("bereavement", messages("agent.honestyDeclaration.bereavement"),
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
@@ -294,7 +290,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           }
 
           "the option selected is 'fire or flood'" must {
-            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "fireOrFlood", messages("honestyDeclaration.fireOrFlood"),
+            implicit val agentDoc: Document = asDocument(applyAgentView("fireOrFlood", messages("honestyDeclaration.fireOrFlood"),
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
@@ -306,7 +302,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           }
 
           "the option selected is 'health'" must {
-            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "health", messages("agent.honestyDeclaration.health"),
+            implicit val agentDoc: Document = asDocument(applyAgentView("health", messages("agent.honestyDeclaration.health"),
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
@@ -318,7 +314,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           }
 
           "the option selected is 'technical issues'" must {
-            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "technicalIssues", messages("agent.honestyDeclaration.technicalIssues"),
+            implicit val agentDoc: Document = asDocument(applyAgentView("technicalIssues", messages("agent.honestyDeclaration.technicalIssues"),
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
@@ -330,7 +326,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           }
 
           "the option selected is 'loss of staff'" must {
-            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "lossOfStaff", messages("agent.honestyDeclaration.lossOfStaff"),
+            implicit val agentDoc: Document = asDocument(applyAgentView("lossOfStaff", messages("agent.honestyDeclaration.lossOfStaff"),
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
@@ -343,7 +339,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
 
           "the option selected is 'other'" must {
-            implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "other", messages("honestyDeclaration.other"),
+            implicit val agentDoc: Document = asDocument(applyAgentView("other", messages("honestyDeclaration.other"),
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
@@ -358,7 +354,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       "display the correct LPP variation" when {
         "the option selected is 'crime'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "crime", messages("agent.honestyDeclaration.crime"),
+          implicit val agentDoc: Document = asDocument(applyAgentView("crime", messages("agent.honestyDeclaration.crime"),
             "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
@@ -370,7 +366,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'bereavement'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "bereavement", messages("agent.honestyDeclaration.bereavement"),
+          implicit val agentDoc: Document = asDocument(applyAgentView("bereavement", messages("agent.honestyDeclaration.bereavement"),
             "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
@@ -382,7 +378,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'health' and others related" must {
-          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "health", messages("agent.honestyDeclaration.health"),
+          implicit val agentDoc: Document = asDocument(applyAgentView("health", messages("agent.honestyDeclaration.health"),
             "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
@@ -394,7 +390,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'other'" must {
-          implicit val agentDoc: Document = asDocument(applyAgentView(honestyDeclarationForm, "other", "",
+          implicit val agentDoc: Document = asDocument(applyAgentView("other", "",
             "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
@@ -422,7 +418,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       "display the correct variation" when {
         "the option selected is 'crime'" must {
-          implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "crime", messages("honestyDeclaration.crime"),
+          implicit val doc: Document = asDocument(applyVATTraderView("crime", messages("honestyDeclaration.crime"),
           "1 January 2022", "1 January 2021", "31 January 2021"))
 
           val expectedContent = Seq(
@@ -433,7 +429,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'loss of staff'" must {
-          implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "lossOfStaff", messages("honestyDeclaration.lossOfStaff"),
+          implicit val doc: Document = asDocument(applyVATTraderView("lossOfStaff", messages("honestyDeclaration.lossOfStaff"),
             "1 January 2022", "1 January 2021", "31 January 2021",
             Seq("honestyDeclaration.li.extra.lossOfStaff")))
 
@@ -446,7 +442,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'fire or flood'" must {
-          implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "fireOrFlood", messages("honestyDeclaration.fireOrFlood"),
+          implicit val doc: Document = asDocument(applyVATTraderView("fireOrFlood", messages("honestyDeclaration.fireOrFlood"),
             "1 January 2022", "1 January 2021", "31 January 2021",
             Seq()))
 
@@ -458,7 +454,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the option selected is 'technical issues'" must {
-          implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "technicalIssues", messages("honestyDeclaration.technicalIssues"),
+          implicit val doc: Document = asDocument(applyVATTraderView("technicalIssues", messages("honestyDeclaration.technicalIssues"),
             "1 January 2022", "1 January 2021", "31 January 2021",
             Seq()))
 
@@ -471,7 +467,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "the option selected is 'bereavement'" must {
-        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "bereavement", messages("honestyDeclaration.bereavement"),
+        implicit val doc: Document = asDocument(applyVATTraderView("bereavement", messages("honestyDeclaration.bereavement"),
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq()))
 
@@ -483,7 +479,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "the option selected is 'health'" must {
-        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "health", messages("honestyDeclaration.health"),
+        implicit val doc: Document = asDocument(applyVATTraderView("health", messages("honestyDeclaration.health"),
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq("honestyDeclaration.li.extra.health")))
 
@@ -496,7 +492,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "the option selected is 'other'" must {
-        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "other", messages("honestyDeclaration.other"),
+        implicit val doc: Document = asDocument(applyVATTraderView("other", messages("honestyDeclaration.other"),
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq()))
 
@@ -510,7 +506,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       "the appeal is LPP" must {
         val userRequest = UserRequest("123456789")(vatTraderLPPUserRequest)
 
-        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "crime", messages("honestyDeclaration.crime"),
+        implicit val doc: Document = asDocument(applyVATTraderView("crime", messages("honestyDeclaration.crime"),
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq(), userRequest))
 
@@ -529,7 +525,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       "it is an appeal against an obligation" must {
         implicit val userRequest: UserRequest[AnyContent] = UserRequest("123456789")(vatTraderLSPUserRequest)
-        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "other", "",
+        implicit val doc: Document = asDocument(applyVATTraderView("other", "",
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq(), isObligation = true))
 
@@ -548,7 +544,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
       "it is a LPP appeal and the reason is technicalIssues" must {
         implicit val userRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequestLPPWithCorrectKeys.withSession(SessionKeys.reasonableExcuse -> "technicalIssues"))
-        implicit val doc: Document = asDocument(applyVATTraderView(honestyDeclarationForm, "technicalIssues", messages("honestyDeclaration.technicalIssues"),
+        implicit val doc: Document = asDocument(applyVATTraderView("technicalIssues", messages("honestyDeclaration.technicalIssues"),
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq(), userRequest))
 
