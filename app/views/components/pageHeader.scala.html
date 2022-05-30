@@ -21,10 +21,7 @@
 @(pageHeader: String)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
 
 <header class="hmrc-page-heading govuk-!-margin-top-0 govuk-!-margin-bottom-4" id="hmrc-page-header">
-  <h1 class="govuk-heading-xl govuk-!-margin-bottom-0" id="page-heading">
-    @pageHeader
-  </h1>
-  <p class="govuk-caption-xl hmrc-caption-xl govuk-!-font-size-24 penalty-information-caption">
+  <p class="govuk-caption-l hmrc-caption-l govuk-!-font-size-24 penalty-information-caption">
     <span class="govuk-visually-hidden">@messages("common.penaltyYouAreAppealing")</span>
     @{
       messages("penaltyInformation.headerText",
@@ -34,4 +31,7 @@
       )
     }
   </p>
+  <h1 class="govuk-heading-l govuk-!-margin-bottom-0" id="page-heading">
+    @pageHeader
+  </h1>
 </header>
