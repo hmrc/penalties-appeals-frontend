@@ -16,10 +16,9 @@
 
 package controllers
 
-import models.{CheckMode, NormalMode}
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.{CheckMode, NormalMode}
 import org.mongodb.scala.Document
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -38,7 +37,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
     await(repository.collection.deleteMany(Document()).toFuture())
   }
 
-  val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/remove-file/ref1").withSession(
+  val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file/ref1").withSession(
     authToken -> "1234",
     (SessionKeys.penaltyNumber, "1234"),
     (SessionKeys.appealType, "Late_Submission"),
@@ -110,7 +109,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel.copy(reference = "ref2"), isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 2
       val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = false, mode = CheckMode)(fakeRequestWithCorrectKeys
-        .withJsonBody(Json.obj("value" -> "yes"))))
+        .withFormUrlEncodedBody("value" -> "yes")))
       await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
@@ -120,7 +119,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
       val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = CheckMode)(fakeRequestWithCorrectKeys
-        .withJsonBody(Json.obj("value" -> "yes"))))
+        .withFormUrlEncodedBody("value" -> "yes")))
       await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 0
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
@@ -130,7 +129,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
       val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = false, mode = CheckMode)(fakeRequestWithCorrectKeys
-        .withJsonBody(Json.obj("value" -> "no"))))
+        .withFormUrlEncodedBody("value" -> "no")))
       await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
@@ -140,7 +139,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
       val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = CheckMode)(fakeRequestWithCorrectKeys
-        .withJsonBody(Json.obj("value" -> "no"))))
+        .withFormUrlEncodedBody("value" -> "no")))
       await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url

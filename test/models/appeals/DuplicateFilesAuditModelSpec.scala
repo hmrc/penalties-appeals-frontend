@@ -16,11 +16,11 @@
 
 package models.appeals
 
-import java.time.LocalDateTime
-
 import base.SpecBase
 import models.monitoring.DuplicateFilesAuditModel
 import play.api.libs.json.{JsValue, Json}
+
+import java.time.LocalDateTime
 
 class DuplicateFilesAuditModelSpec  extends SpecBase {
   val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)

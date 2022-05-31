@@ -17,7 +17,6 @@
 package controllers
 
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -42,6 +41,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.OK
     }
+
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/cancel-vat-registration").withSession(
         authToken -> "1234"
@@ -49,6 +49,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
+
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/cancel-vat-registration").withSession(
         authToken -> "1234",
@@ -59,6 +60,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
+
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
       val request = await(buildClientForRequestToApp(uri = "/cancel-vat-registration").get())
@@ -76,14 +78,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.journeyId -> "1234"
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "yes"
-            |}
-            |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.YouCanAppealPenaltyController.onPageLoad().url
@@ -105,6 +100,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
         val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndNoBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
+
       "the value is invalid" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
           authToken -> "1234",
@@ -115,18 +111,12 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
           SessionKeys.journeyId -> "1234"
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "value": "fake_value"
-              |}
-              |""".stripMargin)
-        )
+        ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
+
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
         authToken -> "1234"
@@ -134,6 +124,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
+
     "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
       val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
         authToken -> "1234",
@@ -145,6 +136,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
+
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
       val request = await(buildClientForRequestToApp(uri = "/cancel-vat-registration").post(""))

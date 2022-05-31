@@ -18,8 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.YouCannotAppealMessages._
-import models.{NormalMode, UserRequest}
 import models.pages.{PageMode, YouCannotAppealPage}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours

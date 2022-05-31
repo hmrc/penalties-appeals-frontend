@@ -27,11 +27,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.{AuthStub, PenaltiesStub}
-import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.LocalDateTime
-
 import uk.gov.hmrc.http.SessionKeys.authToken
+import utils.{IntegrationSpecCommonBase, SessionKeys}
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

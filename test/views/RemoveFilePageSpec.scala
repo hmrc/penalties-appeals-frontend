@@ -17,16 +17,13 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.HasCrimeBeenReportedForm
 import forms.upscan.RemoveFileQuestionForm
 import messages.RemoveFileMessages._
 import models.NormalMode
-import models.pages.{HasCrimeBeenReportedPage, PageMode}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.reasonableExcuseJourneys.crime.HasCrimeBeenReportedToPolicePage
 import views.html.reasonableExcuseJourneys.other.RemoveFilePage
 import viewtils.RadioOptionHelper
 

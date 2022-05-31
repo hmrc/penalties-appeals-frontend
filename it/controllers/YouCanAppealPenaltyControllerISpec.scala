@@ -17,7 +17,6 @@
 package controllers
 
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -78,14 +77,7 @@ class YouCanAppealPenaltyControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
         SessionKeys.journeyId -> "1234"
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "yes"
-            |}
-            |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.AppealStartController.onPageLoad().url
@@ -117,14 +109,7 @@ class YouCanAppealPenaltyControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
           SessionKeys.journeyId -> "1234"
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "value": "fake_value"
-              |}
-              |""".stripMargin)
-        )
+        ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }

@@ -17,6 +17,7 @@
 package viewtils
 
 import base.SpecBase
+
 import java.time.{LocalDate, LocalDateTime}
 
 class ImplicitDateFormatterSpec extends SpecBase with ImplicitDateFormatter {

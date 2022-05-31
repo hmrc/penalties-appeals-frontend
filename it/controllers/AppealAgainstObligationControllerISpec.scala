@@ -18,7 +18,6 @@ package controllers
 
 import models.NormalMode
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -82,13 +81,7 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "other-relevant-information-text": "Other Reason"
-          |}
-          |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("other-relevant-information-text" -> "Other Reason")
       val request = await(controller.onSubmit(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url

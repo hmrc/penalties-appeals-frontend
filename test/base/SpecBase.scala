@@ -57,7 +57,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/").withSession(
+  implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(
     (SessionKeys.appealType, "Late_Submission"),
     (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
     (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")

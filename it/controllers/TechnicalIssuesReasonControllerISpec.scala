@@ -18,15 +18,14 @@ package controllers
 
 import models.{CheckMode, NormalMode}
 import play.api.http.Status
-import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
-import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.{LocalDate, LocalDateTime}
-
 import uk.gov.hmrc.http.SessionKeys.authToken
+import utils.{IntegrationSpecCommonBase, SessionKeys}
+
+import java.time.{LocalDate, LocalDateTime}
 
 class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: TechnicalIssuesReasonController = injector.instanceOf[TechnicalIssuesReasonController]
@@ -143,15 +142,10 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
       )
       val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(CheckMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -171,15 +165,10 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "date.day": "08",
-              | "date.month": "02",
-              | "date.year": "2025"
-              |}
-              |""".stripMargin)
+        ).withFormUrlEncodedBody(
+          "date.day" -> "08",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -212,42 +201,33 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.journeyId, "1234")
         )
 
-        val noDayJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "",
-            | "date.month": "02",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noDayJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
 
-        val noMonthJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noMonthJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "",
+          "date.year" -> "2025"
         )
 
-        val noYearJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "02",
-            | "date.year": ""
-            |}
-            |""".stripMargin
+        val noYearJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "02",
+          "date.year" -> ""
         )
-        val requestNoDay = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+        val requestNoDay = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody(noDayJsonBody: _*)))
         requestNoDay.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoMonth = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+        val requestNoMonth = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody(noMonthJsonBody: _*)))
         requestNoMonth.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoYear = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+        val requestNoYear = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody(noYearJsonBody: _*)))
         requestNoYear.header.status shouldBe Status.BAD_REQUEST
       }
 
@@ -292,15 +272,10 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
       )
       val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(CheckMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -319,15 +294,10 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(31).toString),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
       )
       val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -347,15 +317,10 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "date.day": "08",
-              | "date.month": "01",
-              | "date.year": "2021"
-              |}
-              |""".stripMargin)
+        ).withFormUrlEncodedBody(
+          "date.day" -> "08",
+          "date.month" -> "01",
+          "date.year" -> "2021"
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -372,15 +337,10 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "date.day": "08",
-              | "date.month": "02",
-              | "date.year": "2025"
-              |}
-              |""".stripMargin)
+        ).withFormUrlEncodedBody(
+          "date.day" -> "08",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -415,42 +375,33 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
         )
 
-        val noDayJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "",
-            | "date.month": "02",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noDayJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
 
-        val noMonthJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noMonthJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "",
+          "date.year" -> "2025"
         )
 
-        val noYearJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "02",
-            | "date.year": ""
-            |}
-            |""".stripMargin
+        val noYearJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "02",
+          "date.year" -> ""
         )
-        val requestNoDay = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+        val requestNoDay = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody(noDayJsonBody: _*)))
         requestNoDay.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoMonth = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+        val requestNoMonth = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody(noMonthJsonBody: _*)))
         requestNoMonth.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoYear = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+        val requestNoYear = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody(noYearJsonBody: _*)))
         requestNoYear.header.status shouldBe Status.BAD_REQUEST
       }
 

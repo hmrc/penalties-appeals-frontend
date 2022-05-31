@@ -20,7 +20,7 @@ import models.upload._
 import models.{CheckMode, NormalMode}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -309,16 +309,13 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       "the failure is because the file is too small" in new Setup {
         await(repository.collection.countDocuments().toFuture()) shouldBe 0
         await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
-        val jsonBody: JsValue = Json.parse(
-          """
-            |{
-            |   "key": "file1",
-            |   "errorCode": "EntityTooSmall",
-            |   "errorMessage": "Some arbitrary message",
-            |   "errorRequestId": "request1"
-            |}
-            |""".stripMargin)
-        val result: Result = await(controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody)))
+        val body: Seq[(String, String)] = Seq(
+          "key" -> "file1",
+          "errorCode" -> "EntityTooSmall",
+          "errorMessage" -> "Some arbitrary message",
+          "errorRequestId" -> "request1"
+        )
+        val result: Result = await(controller.uploadFailure("1234")(FakeRequest("POST", "/upscan/upload-failed/1234").withFormUrlEncodedBody(body: _*)))
         result.header.status shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
@@ -328,16 +325,13 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       "the failure is because the file is too large" in new Setup {
         await(repository.collection.countDocuments().toFuture()) shouldBe 0
         await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
-        val jsonBody: JsValue = Json.parse(
-          """
-            |{
-            |   "key": "file1",
-            |   "errorCode": "EntityTooLarge",
-            |   "errorMessage": "Some arbitrary message",
-            |   "errorRequestId": "request1"
-            |}
-            |""".stripMargin)
-        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
+        val body: Seq[(String, String)] = Seq(
+          "key" -> "file1",
+          "errorCode" -> "EntityTooLarge",
+          "errorMessage" -> "Some arbitrary message",
+          "errorRequestId" -> "request1"
+        )
+        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest("POST", "/upscan/upload-failed/1234").withFormUrlEncodedBody(body: _*))
         status(result) shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
@@ -347,16 +341,13 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       "the failure is because the file is not specified" in new Setup {
         await(repository.collection.countDocuments().toFuture()) shouldBe 0
         await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
-        val jsonBody: JsValue = Json.parse(
-          """
-            |{
-            |   "key": "file1",
-            |   "errorCode": "InvalidArgument",
-            |   "errorMessage": "Some arbitrary message",
-            |   "errorRequestId": "request1"
-            |}
-            |""".stripMargin)
-        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
+        val body: Seq[(String, String)] = Seq(
+          "key" -> "file1",
+          "errorCode" -> "InvalidArgument",
+          "errorMessage" -> "Some arbitrary message",
+          "errorRequestId" -> "request1"
+        )
+        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest("POST", "/upscan/upload-failed/1234").withFormUrlEncodedBody(body: _*))
         status(result) shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
@@ -366,16 +357,13 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       "the failure is because there is some unknown client error" in new Setup {
         await(repository.collection.countDocuments().toFuture()) shouldBe 0
         await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.WAITING), isInitiateCall = true))
-        val jsonBody: JsValue = Json.parse(
-          """
-            |{
-            |   "key": "file1",
-            |   "errorCode": "InternalError",
-            |   "errorMessage": "Some arbitrary message",
-            |   "errorRequestId": "request1"
-            |}
-            |""".stripMargin)
-        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest().withJsonBody(jsonBody))
+        val body: Seq[(String, String)] = Seq(
+          "key" -> "file1",
+          "errorCode" -> "InternalError",
+          "errorMessage" -> "Some arbitrary message",
+          "errorRequestId" -> "request1"
+        )
+        val result: Future[Result] = controller.uploadFailure("1234")(FakeRequest("POST", "/upscan/upload-failed/1234").withFormUrlEncodedBody(body: _*))
         status(result) shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED

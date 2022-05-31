@@ -19,7 +19,6 @@ package controllers
 import models.{NormalMode, UserRequest}
 import org.jsoup.Jsoup
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -195,12 +194,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.reasonableExcuse, "crime")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "value": "true"
-          |}
-          |""".stripMargin))
+      ).withFormUrlEncodedBody("value" -> "true")
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER

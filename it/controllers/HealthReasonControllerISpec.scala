@@ -18,15 +18,14 @@ package controllers
 
 import models.NormalMode
 import play.api.http.Status
-import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
-import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.{LocalDate, LocalDateTime}
-
 import uk.gov.hmrc.http.SessionKeys.authToken
+import utils.{IntegrationSpecCommonBase, SessionKeys}
+
+import java.time.{LocalDate, LocalDateTime}
 
 class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: HealthReasonController = injector.instanceOf[HealthReasonController]
@@ -83,14 +82,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "no"
-            |}
-            |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "no")
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
@@ -107,14 +99,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "yes"
-            |}
-            |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(NormalMode).url
@@ -132,14 +117,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "value": "fake_value"
-              |}
-              |""".stripMargin)
-        )
+        ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
@@ -241,15 +219,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
       )
       val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -267,15 +240,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(31).toString),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
       )
       val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -294,15 +262,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "date.day": "08",
-              | "date.month": "02",
-              | "date.year": "2025"
-              |}
-              |""".stripMargin)
+        ).withFormUrlEncodedBody(
+          "date.day" -> "08",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
         val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -336,43 +299,31 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.journeyId, "1234")
         )
 
-        val noDayJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "",
-            | "date.month": "02",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noDayJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
 
-        val noMonthJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noMonthJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "",
+          "date.year" -> "2025"
         )
 
-        val noYearJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "02",
-            | "date.year": ""
-            |}
-            |""".stripMargin
+        val noYearJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "02",
+          "date.year" -> ""
         )
 
-        val requestNoDay = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+        val requestNoDay = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noDayJsonBody: _*)))
         requestNoDay.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoMonth = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+        val requestNoMonth = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noMonthJsonBody: _*)))
         requestNoMonth.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoYear = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+        val requestNoYear = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noYearJsonBody: _*)))
         requestNoYear.header.status shouldBe Status.BAD_REQUEST
 
       }
@@ -469,16 +420,11 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenHealthIssueStarted, "2020-01-01")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "hasStayEnded": "yes",
-            | "stayEndDate.day": "08",
-            | "stayEndDate.month": "02",
-            | "stayEndDate.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "hasStayEnded" -> "yes",
+        "stayEndDate.day" -> "08",
+        "stayEndDate.month" -> "02",
+        "stayEndDate.year" -> "2021"
       )
       val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -498,13 +444,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(31).toString),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenHealthIssueStarted, "2020-01-01")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "hasStayEnded": "no"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "hasStayEnded" -> "no"
       )
       val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -524,15 +465,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenHealthIssueStarted, "2020-01-01")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "stayEndDate.day": "08",
-              | "stayEndDate.month": "02",
-              | "stayEndDate.year": "2025"
-              |}
-              |""".stripMargin)
+        ).withFormUrlEncodedBody(
+          "stayEndDate.day" -> "08",
+          "stayEndDate.month" -> "02",
+          "stayEndDate.year" -> "2025"
         )
         val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -549,15 +485,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenHealthIssueStarted, "2021-01-02")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "stayEndDate.day": "01",
-              | "stayEndDate.month": "01",
-              | "stayEndDate.year": "2021"
-              |}
-              |""".stripMargin)
+        ).withFormUrlEncodedBody(
+          "stayEndDate.day" -> "01",
+          "stayEndDate.month" -> "01",
+          "stayEndDate.year" -> "2021"
         )
         val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -593,43 +524,30 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.whenHealthIssueStarted, "2020-01-01")
         )
 
-        val noDayJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "stayEndDate.day": "",
-            | "stayEndDate.month": "02",
-            | "stayEndDate.year": "2025"
-            |}
-            |""".stripMargin
+        val noDayJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
 
-        val noMonthJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "stayEndDate.day": "02",
-            | "stayEndDate.month": "",
-            | "stayEndDate.year": "2025"
-            |}
-            |""".stripMargin
+        val noMonthJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "",
+          "date.year" -> "2025"
         )
 
-        val noYearJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "stayEndDate.day": "02",
-            | "stayEndDate.month": "02",
-            | "stayEndDate.year": ""
-            |}
-            |""".stripMargin
+        val noYearJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "02",
+          "date.year" -> ""
         )
-
-        val requestNoDay = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+        val requestNoDay = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noDayJsonBody: _*)))
         requestNoDay.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoMonth = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+        val requestNoMonth = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noMonthJsonBody: _*)))
         requestNoMonth.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoYear = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+        val requestNoYear = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noYearJsonBody: _*)))
         requestNoYear.header.status shouldBe Status.BAD_REQUEST
 
       }

@@ -20,7 +20,6 @@ import base.SpecBase
 import models.NormalMode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.upscan.UpscanService
@@ -87,7 +86,7 @@ class RemoveFileControllerSpec extends SpecBase {
       "redirect back to the JS enabled page when the isJsEnabled parameter is true" when {
         "the user clicks no" in new Setup(AuthTestModels.successfulAuthResult) {
           val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-            fakeRequestWithCorrectKeys.withJsonBody(Json.obj("value" -> "no")))
+            fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "no"))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
         }
@@ -95,7 +94,7 @@ class RemoveFileControllerSpec extends SpecBase {
         "the user clicks yes - removing the file" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockUpscanService.removeFileFromJourney(any(), any())).thenReturn(Future.successful((): Unit))
           val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-            fakeRequestWithCorrectKeys.withJsonBody(Json.obj("value" -> "yes")))
+            fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "yes"))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
         }
@@ -105,7 +104,7 @@ class RemoveFileControllerSpec extends SpecBase {
         "the user clicks no" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockUpscanService.getAmountOfFilesUploadedForJourney(any())(any())).thenReturn(Future.successful(1))
           val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = false, mode = NormalMode)(
-            fakeRequestWithCorrectKeys.withJsonBody(Json.obj("value" -> "no")))
+            fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "no"))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
         }
@@ -114,7 +113,7 @@ class RemoveFileControllerSpec extends SpecBase {
           when(mockUpscanService.removeFileFromJourney(any(), any())).thenReturn(Future.successful((): Unit))
           when(mockUpscanService.getAmountOfFilesUploadedForJourney(any())(any())).thenReturn(Future.successful(1))
           val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = false, mode = NormalMode)(
-            fakeRequestWithCorrectKeys.withJsonBody(Json.obj("value" -> "yes")))
+            fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "yes"))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
         }
@@ -123,7 +122,7 @@ class RemoveFileControllerSpec extends SpecBase {
       "show an error when the user does not select an option" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.successful(Some("file123.txt")))
         val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-          fakeRequestWithCorrectKeys.withJsonBody(Json.obj("value" -> "")))
+          fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> ""))
         status(result) shouldBe BAD_REQUEST
       }
 
@@ -131,14 +130,14 @@ class RemoveFileControllerSpec extends SpecBase {
         "the file could not be removed" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockUpscanService.removeFileFromJourney(any(), any())).thenReturn(Future.failed(new Exception("broken :(")))
           val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-            fakeRequestWithCorrectKeys.withJsonBody(Json.obj("value" -> "yes")))
+            fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "yes"))
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "the file name can not be retrieved - on form error" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.failed(new Exception("this is an exception :)")))
           val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-            fakeRequestWithCorrectKeys.withJsonBody(Json.obj("value" -> "what")))
+            fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "what"))
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
