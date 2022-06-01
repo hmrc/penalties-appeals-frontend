@@ -359,9 +359,9 @@ upscan.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Ew
 upscan.fileEmpty = Mae’r ffeil dan sylw yn wag. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
 upscan.fileHasVirus = Mae feirws yn y ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
 upscan.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.fileUploaded = Uwchlwythwyd {0} {1}
-upscan.fileUploading = Yn uwchlwytho {0} {1}
-upscan.fileRemoved = Mae {0} {1} wedi ei ddileu
+upscan.fileUploaded = {0} {1} has been uploaded
+upscan.fileUploading = Uploading {0}
+upscan.fileRemoved = Remove {0} {1}
 upscan.fileNotSpecified = Dewiswch ffeil.
 
 # Upscan failure messages (NO JS)
