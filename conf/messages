@@ -358,8 +358,8 @@ upscan.fileEmpty = The selected file is empty. Remove the file and try again.
 upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
 upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
 upscan.fileUploaded = {0} {1} has been uploaded
-upscan.fileUploading = Uploading {0} {1}
-upscan.fileRemoved = {0} {1} has been removed
+upscan.fileUploading = Uploading {0}
+upscan.fileRemoved = Remove {0} {1}
 upscan.fileNotSpecified = Select a file.
 
 # Upscan failure messages (NO JS)
