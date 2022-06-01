@@ -151,7 +151,7 @@ class UpscanControllerSpec extends SpecBase {
       }
     }
 
-    "removeFile" must  {
+    "removeFile" must {
       "return NO CONTENT" when {
         "the journey and file exists or doesn't exist in the database" in {
           when(repository.removeFileForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -173,9 +173,7 @@ class UpscanControllerSpec extends SpecBase {
 
     "uploadFailure" should {
       "return a BAD_REQUEST when the S3 service doesn't match the expected response model" in {
-        val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
-          Json.parse("{}")
-        ))
+        val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody())
         status(result) shouldBe BAD_REQUEST
       }
 
@@ -183,12 +181,10 @@ class UpscanControllerSpec extends SpecBase {
         "the failure is because the file is too small" in {
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("file1")))
-          val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
-            Json.obj(
-              "key" -> "file1",
-              "errorCode" -> "EntityTooSmall",
-              "errorMessage" -> "Some message about file"
-            )
+          val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
+            "key" -> "file1",
+            "errorCode" -> "EntityTooSmall",
+            "errorMessage" -> "Some message about file"
           ))
           status(result) shouldBe NO_CONTENT
         }
@@ -196,12 +192,10 @@ class UpscanControllerSpec extends SpecBase {
         "the failure is because the file is too large" in {
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("file1")))
-          val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
-            Json.obj(
-              "key" -> "file1",
-              "errorCode" -> "EntityTooLarge",
-              "errorMessage" -> "Some message about file"
-            )
+          val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
+            "key" -> "file1",
+            "errorCode" -> "EntityTooLarge",
+            "errorMessage" -> "Some message about file"
           ))
           status(result) shouldBe NO_CONTENT
         }
@@ -209,12 +203,10 @@ class UpscanControllerSpec extends SpecBase {
         "the failure is because the file is not specified" in {
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("file1")))
-          val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
-            Json.obj(
-              "key" -> "file1",
-              "errorCode" -> "InvalidArgument",
-              "errorMessage" -> "Some message about file"
-            )
+          val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
+            "key" -> "file1",
+            "errorCode" -> "InvalidArgument",
+            "errorMessage" -> "Some message about file"
           ))
           status(result) shouldBe NO_CONTENT
         }
@@ -222,12 +214,10 @@ class UpscanControllerSpec extends SpecBase {
         "the failure is because there is some unknown client error" in {
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("file1")))
-          val result = controller.uploadFailure("J1234")(fakeRequest.withJsonBody(
-            Json.obj(
-              "key" -> "file1",
-              "errorCode" -> "ExpiredToken",
-              "errorMessage" -> "Some message about file"
-            )
+          val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
+            "key" -> "file1",
+            "errorCode" -> "ExpiredToken",
+            "errorMessage" -> "Some message about file"
           ))
           status(result) shouldBe NO_CONTENT
         }

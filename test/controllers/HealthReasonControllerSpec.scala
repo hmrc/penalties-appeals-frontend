@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -110,15 +109,9 @@ class HealthReasonControllerSpec extends SpecBase {
         "the validation is performed against possible values " +
           "- redirects to when health issue happened page and set the session key value" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] =
-            controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": "no"
-                |}
-                |""".stripMargin
-            )
-          )))
+            controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+              "value" -> "no"
+            )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
           await(result).session.get(SessionKeys.wasHospitalStayRequired).get shouldBe "no"
@@ -127,14 +120,8 @@ class HealthReasonControllerSpec extends SpecBase {
         "the validation is performed against possible values " +
           "- redirects to when hospital stay begin page and set the session key value" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate
-            .withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "yes"
-                  |}
-                  |""".stripMargin
-              )
+            .withFormUrlEncodedBody(
+              "value" -> "yes"
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
@@ -143,15 +130,9 @@ class HealthReasonControllerSpec extends SpecBase {
 
         "the validation is performed against possible values - value does not appear in options list" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] =
-            controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": "this_is_fake"
-                |}
-                |""".stripMargin
-            )
-          )))
+            controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+              "value" -> "this_is_fake"
+            )))
           status(result) shouldBe BAD_REQUEST
           contentAsString(result) should include("There is a problem")
           contentAsString(result) should include("Tell us if you or someone else was admitted to hospital")
@@ -159,15 +140,9 @@ class HealthReasonControllerSpec extends SpecBase {
 
         "the validation is performed against an empty value - value is an empty string" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] =
-            controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": ""
-                |}
-                |""".stripMargin
-            )
-          )))
+            controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+              "value" -> ""
+            )))
           status(result) shouldBe BAD_REQUEST
           contentAsString(result) should include("There is a problem")
           contentAsString(result) should include("Tell us if you or someone else was admitted to hospital")
@@ -175,14 +150,8 @@ class HealthReasonControllerSpec extends SpecBase {
       }
 
       "return 500 when the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequest.withJsonBody(
-          Json.parse(
-            """
-              |{
-              |   "value": "no"
-              |}
-              |""".stripMargin
-          )
+        val result: Future[Result] = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequest.withFormUrlEncodedBody(
+          "value" -> "no"
         ))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -246,15 +215,11 @@ class HealthReasonControllerSpec extends SpecBase {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- redirects to CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onSubmitForWhenHealthReasonHappened(NormalMode)(
-            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "date.day": 1,
-                | "date.month": 2,
-                | "date.year": 2021
-                |}
-                |""".stripMargin))))
+            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
           await(result).session.get(SessionKeys.whenHealthIssueHappened).get shouldBe LocalDate.of(2021, 2, 1).toString
@@ -265,17 +230,11 @@ class HealthReasonControllerSpec extends SpecBase {
           when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
             2020, 4, 1, 0, 0, 0))
           val result: Future[Result] = controller.onSubmitForWhenHealthReasonHappened(NormalMode)(
-            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "date.day": 1,
-                | "date.month": 2,
-                | "date.year": 2021
-                |}
-                |""".stripMargin
-            )
-          )))
+            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
           await(result).session.get(SessionKeys.whenHealthIssueHappened).get shouldBe LocalDate.of(
@@ -342,15 +301,11 @@ class HealthReasonControllerSpec extends SpecBase {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to has when hospital stay ended page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(
-            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "date.day": 1,
-                | "date.month": 2,
-                | "date.year": 2021
-                |}
-                |""".stripMargin))))
+            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode).url
           await(result).session.get(SessionKeys.whenHealthIssueStarted).get shouldBe LocalDate.of(
@@ -361,43 +316,31 @@ class HealthReasonControllerSpec extends SpecBase {
 
           "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(
-              fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": "what",
-                  | "date.month": "is",
-                  | "date.year": "this"
-                  |}
-                  |""".stripMargin))))
+              fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+                "date.day" -> "what",
+                "date.month" -> "is",
+                "date.year" -> "this"
+              )))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(
-              fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": 31,
-                  | "date.month": 2,
-                  | "date.year": 2021
-                  |}
-                  |""".stripMargin))))
+              fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+                "date.day" -> "31",
+                "date.month" -> "2",
+                "date.year" -> "2021"
+              )))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(
-              fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": 124356,
-                  | "date.month": 432567,
-                  | "date.year": 3124567
-                  |}
-                  |""".stripMargin))))
+              fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+                "date.day" -> "124356",
+                "date.month" -> "432567",
+                "date.year" -> "3124567"
+              )))
             status(result) shouldBe BAD_REQUEST
           }
         }
@@ -405,15 +348,7 @@ class HealthReasonControllerSpec extends SpecBase {
 
       "return 500" when {
         "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequest.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": "no"
-                |}
-                |""".stripMargin
-            )
-          ))
+          val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> "no"))
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
@@ -483,16 +418,12 @@ class HealthReasonControllerSpec extends SpecBase {
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- redirects to CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-          fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "hasStayEnded": "yes",
-              | "stayEndDate.day": 1,
-              | "stayEndDate.month": 2,
-              | "stayEndDate.year": 2021
-              |}
-              |""".stripMargin))))
+          fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+          "hasStayEnded" -> "yes",
+            "stayEndDate.day" -> "1",
+            "stayEndDate.month" -> "2",
+            "stayEndDate.year" -> "2021"
+          )))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         await(result).session.get(SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.of(
@@ -505,15 +436,9 @@ class HealthReasonControllerSpec extends SpecBase {
         when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
           2020, 4, 1, 0, 0, 0))
         val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-          fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "hasStayEnded": "no"
-              |}
-              |""".stripMargin
-          )
-        )))
+          fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+            "hasStayEnded" -> "no",
+          )))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         await(result).session.get(SessionKeys.whenHealthIssueEnded).isEmpty shouldBe true
@@ -525,18 +450,13 @@ class HealthReasonControllerSpec extends SpecBase {
           when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
             2020, 4, 1, 0, 0, 0))
           val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "hasStayEnded": "yes",
-                | "stayEndDate.day": "",
-                | "stayEndDate.month": "",
-                | "stayEndDate.year": ""
-                |}
-                |""".stripMargin
+            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+              "hasStayEnded" -> "yes",
+              "stayEndDate.day" -> "",
+              "stayEndDate.month" -> "",
+              "stayEndDate.year" -> ""
             )
-          )))
+          ))
           status(result) shouldBe BAD_REQUEST
         }
 
@@ -544,15 +464,9 @@ class HealthReasonControllerSpec extends SpecBase {
           when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
             2020, 4, 1, 0, 0, 0))
           val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "hasStayEnded": ""
-                |}
-                |""".stripMargin
-            )
-          )))
+            fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
+              "hasStayEnded" -> ""
+            )))
           status(result) shouldBe BAD_REQUEST
         }
       }
@@ -560,17 +474,12 @@ class HealthReasonControllerSpec extends SpecBase {
       "return 500 (ISE)" when {
         "the user does not have a start date in the session" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-            fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "hasStayEnded": "yes",
-                | "stayEndDate.day": 1,
-                | "stayEndDate.month": 2,
-                | "stayEndDate.year": 2021
-                |}
-                |""".stripMargin))))
-
+            fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "hasStayEnded" -> "yes",
+              "stayEndDate.day" -> "1",
+              "stayEndDate.month" -> "2",
+              "stayEndDate.year" -> "2021"
+            )))
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }

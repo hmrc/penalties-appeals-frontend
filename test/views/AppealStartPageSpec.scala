@@ -18,8 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.AppealStartMessages._
-import models.{NormalMode, PenaltyTypeEnum}
 import models.pages.{AppealStartPage, PageMode}
+import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import utils.SessionKeys

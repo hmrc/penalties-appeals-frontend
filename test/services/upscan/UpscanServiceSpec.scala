@@ -19,18 +19,18 @@ package services.upscan
 import akka.actor.ActorSystem
 import base.SpecBase
 import connectors.UpscanConnector
+import connectors.httpParsers.UpscanInitiateHttpParser
 import connectors.httpParsers.UpscanInitiateHttpParser.UnexpectedFailure
 import models.NormalMode
 import models.upload._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.http.Status
+import play.api.mvc.Result
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
-import connectors.httpParsers.UpscanInitiateHttpParser
-import play.api.mvc.Result
 
 import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global

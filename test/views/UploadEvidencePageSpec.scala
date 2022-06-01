@@ -19,8 +19,8 @@ package views
 import base.{BaseSelectors, SpecBase}
 import messages.UploadEvidenceMessages._
 import models.pages.{EvidencePage, PageMode}
-import models.{NormalMode, PenaltyTypeEnum}
 import models.upload.UploadJourney
+import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.api.libs.json.Json
 import play.api.test.FakeRequest

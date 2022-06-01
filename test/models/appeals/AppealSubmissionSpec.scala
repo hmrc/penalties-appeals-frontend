@@ -16,13 +16,13 @@
 
 package models.appeals
 
-import java.time.LocalDateTime
-
 import base.SpecBase
 import models.UserRequest
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import play.api.libs.json.{JsValue, Json}
 import utils.SessionKeys
+
+import java.time.LocalDateTime
 
 class AppealSubmissionSpec extends SpecBase {
 

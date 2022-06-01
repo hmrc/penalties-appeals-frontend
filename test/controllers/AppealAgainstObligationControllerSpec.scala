@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -93,13 +92,8 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
     "the user is authorised" must {
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- routing to file upload when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "other-relevant-information-text": "This is some information"
-              |}
-              |""".stripMargin))))
+        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+          "other-relevant-information-text" -> "This is some information")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
         await(result).session.get(SessionKeys.otherRelevantInformation).get shouldBe "This is some information"
@@ -107,26 +101,16 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "other-relevant-information-text": "This is some information"
-              |}
-              |""".stripMargin))))
+        val result: Future[Result] = controller.onSubmit(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+          "other-relevant-information-text" -> "This is some information")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe routes.CheckYourAnswersController.onPageLoad().url
         await(result).session.get(SessionKeys.otherRelevantInformation).get shouldBe "This is some information"
       }
 
       "return 400 (BAD_REQUEST) when the user does not enter a reason" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "other-relevant-information-text": ""
-              |}
-              |""".stripMargin))))
+        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+          "other-relevant-information-text" -> "")))
         status(result) shouldBe BAD_REQUEST
       }
     }

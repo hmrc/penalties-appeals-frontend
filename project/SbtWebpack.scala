@@ -89,19 +89,19 @@ object SbtWebpack extends AutoPlugin {
   lazy val task = Def.task {
 
     val skip = (WebpackKeys.webpack / sbt.Keys.skip).value
-    val logger: ManagedLogger = (streams in Assets).value.log
-    val baseDir: File = (sourceDirectory in Assets).value
-    val targetDir: File = (resourceManaged in WebpackKeys.webpack in Assets).value
+    val logger: ManagedLogger = (Assets / streams).value.log
+    val baseDir: File = (Assets / sourceDirectory).value
+    val targetDir: File = (Assets / WebpackKeys.webpack / resourceManaged).value
 
-    val nodeModulesLocation: File = (WebpackKeys.nodeModulesPath in WebpackKeys.webpack).value
-    val webpackSourceDirs: Seq[File] = (WebpackKeys.sourceDirs in WebpackKeys.webpack).value
-    val webpackReporter: Reporter = (reporter in Assets).value
-    val webpackBinaryLocation: File = (WebpackKeys.binary in WebpackKeys.webpack).value
-    val webpackConfigFileLocation: File = (WebpackKeys.configFile in WebpackKeys.webpack).value
-    val webpackEntries: Seq[String] = (WebpackKeys.entries in WebpackKeys.webpack).value
-    val webpackOutputFileName: String = (WebpackKeys.outputFileName in WebpackKeys.webpack).value
-    val webpackTargetDir: File = (resourceManaged in WebpackKeys.webpack).value
-    val assetsWebJarsLocation: File = (webJarsDirectory in Assets).value
+    val nodeModulesLocation: File = (WebpackKeys.webpack / WebpackKeys.nodeModulesPath).value
+    val webpackSourceDirs: Seq[File] = (WebpackKeys.webpack / WebpackKeys.sourceDirs).value
+    val webpackReporter: Reporter = (Assets / reporter).value
+    val webpackBinaryLocation: File = (WebpackKeys.webpack / WebpackKeys.binary).value
+    val webpackConfigFileLocation: File = (WebpackKeys.webpack / WebpackKeys.configFile).value
+    val webpackEntries: Seq[String] = (WebpackKeys.webpack / WebpackKeys.entries).value
+    val webpackOutputFileName: String = (WebpackKeys.webpack / WebpackKeys.outputFileName).value
+    val webpackTargetDir: File = (WebpackKeys.webpack / resourceManaged).value
+    val assetsWebJarsLocation: File = (Assets / webJarsDirectory).value
     val projectRoot: File = baseDirectory.value
 
     val webpackEntryFiles: Set[File] =
@@ -115,7 +115,7 @@ object SbtWebpack extends AutoPlugin {
 
     val sources: Seq[File] = (webpackSourceDirs
       .flatMap { sourceDir =>
-        (sourceDir ** ((includeFilter in WebpackKeys.webpack).value -- (excludeFilter in WebpackKeys.webpack).value)).get
+        (sourceDir ** ((WebpackKeys.webpack / includeFilter).value -- (WebpackKeys.webpack / excludeFilter).value)).get
       }
       .filter(_.isFile) ++ webpackEntryFiles ++ Seq(webpackConfigFileLocation)).distinct
 
@@ -140,7 +140,7 @@ object SbtWebpack extends AutoPlugin {
       )
     }
 
-    val results = incremental.syncIncremental((streams in Assets).value.cacheDirectory / "run", sources) {
+    val results = incremental.syncIncremental((Assets / streams).value.cacheDirectory / "run", sources) {
       modifiedSources =>
         val startInstant = System.currentTimeMillis
 

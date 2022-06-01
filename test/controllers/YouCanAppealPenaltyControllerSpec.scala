@@ -21,7 +21,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers.{status, _}
 import testUtils.AuthTestModels
@@ -88,26 +87,14 @@ class YouCanAppealPenaltyControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing when a valid option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": "yes"
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER
           await(result).session.get(SessionKeys.youCanAppealThisPenalty).get shouldBe "yes"
         }
       }
       "the user is unauthorised" when {
         "return 400 (BAD_REQUEST) when a no option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": ""
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "")))
           status(result) shouldBe BAD_REQUEST
         }
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {

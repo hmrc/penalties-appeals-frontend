@@ -17,7 +17,6 @@
 package controllers
 
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -84,12 +83,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.reasonableExcuse, "crime")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "late-appeal-text": "This is a great reason."
-          |}
-          |""".stripMargin))
+      ).withFormUrlEncodedBody("late-appeal-text" -> "This is a great reason.")
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
@@ -108,12 +102,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.reasonableExcuse, "crime")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "late-appeal-text": ""
-          |}
-          |""".stripMargin))
+      ).withFormUrlEncodedBody("late-appeal-text" -> "")
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.BAD_REQUEST

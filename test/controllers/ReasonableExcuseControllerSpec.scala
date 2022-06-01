@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.AppealService
@@ -158,15 +157,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-          Json.parse(
-            """
-              |{
-              |   "value": "bereavement"
-              |}
-              |""".stripMargin
-          )
-        )))
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody("value" -> "bereavement")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.HonestyDeclarationController.onPageLoad().url
         await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "bereavement"
@@ -179,15 +171,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-          Json.parse(
-            """
-              |{
-              |   "value": "this_is_fake"
-              |}
-              |""".stripMargin
-          )
-        )))
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody("value" -> "this_is_fake")))
         status(result) shouldBe BAD_REQUEST
       }
 
@@ -198,15 +183,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             Some(seqOfReasonableExcuses)
           ))
 
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-          Json.parse(
-            """
-              |{
-              |   "value": ""
-              |}
-              |""".stripMargin
-          )
-        )))
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withFormUrlEncodedBody("value" -> "")))
         status(result) shouldBe BAD_REQUEST
         contentAsString(result) should include("There is a problem")
         contentAsString(result) should include("Select the reason for missing the VAT deadline")
@@ -215,15 +193,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
 
     "return 500" when {
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit()(fakeRequest.withJsonBody(
-          Json.parse(
-            """
-              |{
-              |   "value": "bereavement"
-              |}
-              |""".stripMargin
-          )
-        ))
+        val result: Future[Result] = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody("value" -> "bereavement"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
@@ -232,16 +202,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
           .thenReturn(Future.successful(
             None
           ))
-
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-          Json.parse(
-            """
-              |{
-              |   "value": "bereavement"
-              |}
-              |""".stripMargin
-          )
-        )))
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "bereavement")))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }

@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -101,15 +100,10 @@ class CrimeReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to has crime been reported page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "date.day": 1,
-                | "date.month": 2,
-                | "date.year": 2021
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021")))
           status(result) shouldBe SEE_OTHER
           await(result).session.get(SessionKeys.dateOfCrime).get shouldBe LocalDate.of(
             2021, 2, 1).toString
@@ -117,15 +111,10 @@ class CrimeReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "date.day": 1,
-                | "date.month": 2,
-                | "date.year": 2021
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
           await(result).session.get(SessionKeys.dateOfCrime).get shouldBe LocalDate.of(2021, 2, 1).toString
@@ -134,41 +123,26 @@ class CrimeReasonControllerSpec extends SpecBase {
         "return 400 (BAD_REQUEST)" when {
 
           "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": "what",
-                  | "date.month": "is",
-                  | "date.year": "this"
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "what",
+              "date.month" -> "is",
+              "date.year" -> "this")))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": 31,
-                  | "date.month": 2,
-                  | "date.year": 2021
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021")))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": 124356,
-                  | "date.month": 432567,
-                  | "date.year": 3124567
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "124356",
+              "date.month" -> "432567",
+              "date.year" -> "3124567")))
             status(result) shouldBe BAD_REQUEST
           }
         }
@@ -230,15 +204,8 @@ class CrimeReasonControllerSpec extends SpecBase {
       "user submits the form" when {
         "the validation is performed against possible values - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "yes"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "yes")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
             await(result).session.get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
@@ -250,15 +217,7 @@ class CrimeReasonControllerSpec extends SpecBase {
             when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
               2020, 4, 1, 0, 0, 0))
             val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
-              .withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "yes"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+              .withFormUrlEncodedBody("value" -> "yes")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
             await(result).session.get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
@@ -266,15 +225,8 @@ class CrimeReasonControllerSpec extends SpecBase {
 
         "the validation is performed against possible values - value does not appear in options list" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "this_is_fake"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "this_is_fake")))
             status(result) shouldBe BAD_REQUEST
             contentAsString(result) should include("There is a problem")
             contentAsString(result) should include("Tell us if the police have been told about the crime")
@@ -282,15 +234,8 @@ class CrimeReasonControllerSpec extends SpecBase {
 
         "the validation is performed against an empty value - value is an empty string" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": ""
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "")))
             status(result) shouldBe BAD_REQUEST
             contentAsString(result) should include("There is a problem")
             contentAsString(result) should include("Tell us if the police have been told about the crime")
@@ -299,14 +244,8 @@ class CrimeReasonControllerSpec extends SpecBase {
 
       "return 500" when {
         "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequest.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": "no"
-                |}
-                |""".stripMargin
-            )
+          val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequest.withFormUrlEncodedBody(
+            "value" -> "no"
           ))
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }

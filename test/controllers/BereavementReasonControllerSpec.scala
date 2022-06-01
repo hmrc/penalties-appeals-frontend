@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -95,15 +94,11 @@ class BereavementReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "date.day": 1,
-                | "date.month": 2,
-                | "date.year": 2021
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
           await(result).session.get(SessionKeys.whenDidThePersonDie).get shouldBe LocalDate.of(
@@ -113,41 +108,29 @@ class BereavementReasonControllerSpec extends SpecBase {
         "return 400 (BAD_REQUEST)" when {
 
           "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": "what",
-                  | "date.month": "is",
-                  | "date.year": "this"
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "what",
+              "date.month" -> "is",
+              "date.year" -> "this"
+            )))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": 31,
-                  | "date.month": 2,
-                  | "date.year": 2021
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": 124356,
-                  | "date.month": 432567,
-                  | "date.year": 3124567
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "124356",
+              "date.month" -> "432567",
+              "date.year" -> "3124567"
+            )))
             status(result) shouldBe BAD_REQUEST
           }
         }

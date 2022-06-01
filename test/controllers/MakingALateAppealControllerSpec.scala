@@ -21,7 +21,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -88,30 +87,16 @@ class MakingALateAppealControllerSpec extends SpecBase {
         "- adding the key to the session with a non-empty value" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = controller.onSubmit()(fakeRequestWithCorrectKeys
           .withSession((SessionKeys.reasonableExcuse, "crime"))
-          .withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "late-appeal-text": "Royale with cheese"
-                |}
-                |""".stripMargin)
-          ))
+          .withFormUrlEncodedBody("late-appeal-text" -> "Royale with cheese"))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         await(result).session.get(SessionKeys.lateAppealReason).get shouldBe "Royale with cheese"
       }
 
-      "return a 400 (BAD REQUEST) and show page with error when an appeal reason has NOT been entered " in new Setup(AuthTestModels.successfulAuthResult) {
+      "return a 400 (BAD REQUEST) and show page with error when an appeal reason has NOT been entered" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = controller.onSubmit()(fakeRequestWithCorrectKeys
           .withSession((SessionKeys.reasonableExcuse, "crime"))
-          .withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "late-appeal-text": ""
-                |}
-                |""".stripMargin)
-          ))
+          .withFormUrlEncodedBody("late-appeal-text" -> ""))
         status(result) shouldBe BAD_REQUEST
         contentAsString(result) should include("There is a problem")
         contentAsString(result) should include("You must provide some information about why you did not appeal sooner")      }

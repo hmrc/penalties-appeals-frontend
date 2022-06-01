@@ -23,18 +23,16 @@ import org.jsoup.Jsoup
 import org.mongodb.scala.Document
 import play.api.Configuration
 import play.api.http.Status
-import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Cookie, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.AuthStub
 import stubs.UpscanStub.successfulInitiateCall
+import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.{LocalDate, LocalDateTime}
-import uk.gov.hmrc.http.SessionKeys.authToken
-
 import scala.concurrent.Future
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
@@ -99,15 +97,10 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
       )
       val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe SEE_OTHER
@@ -126,15 +119,10 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "date.day": "08",
-              | "date.month": "02",
-              | "date.year": "2025"
-              |}
-              |""".stripMargin)
+        ).withFormUrlEncodedBody(
+          "date.day" -> "08",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
         val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe BAD_REQUEST
@@ -167,42 +155,30 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
           (SessionKeys.journeyId, "1234")
         )
 
-        val noDayJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "",
-            | "date.month": "02",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noDayJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
 
-        val noMonthJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noMonthJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "",
+          "date.year" -> "2025"
         )
 
-        val noYearJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "02",
-            | "date.year": ""
-            |}
-            |""".stripMargin
+        val noYearJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "02",
+          "date.year" -> ""
         )
-        val requestNoDay = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+        val requestNoDay = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noDayJsonBody: _*)))
         requestNoDay.header.status shouldBe BAD_REQUEST
 
-        val requestNoMonth = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+        val requestNoMonth = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noMonthJsonBody: _*)))
         requestNoMonth.header.status shouldBe BAD_REQUEST
 
-        val requestNoYear = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+        val requestNoYear = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noYearJsonBody: _*)))
         requestNoYear.header.status shouldBe BAD_REQUEST
       }
     }
@@ -381,13 +357,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "why-return-submitted-late-text": "Other Reason"
-          |}
-          |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("why-return-submitted-late-text" -> "Other Reason")
       val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
@@ -893,12 +863,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234"))
-      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
-        """
-          |{
-          | "file": "file1"
-          |}
-          |""".stripMargin)))
+      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody
+        .withFormUrlEncodedBody("file" -> "file1"))
       status(request) shouldBe INTERNAL_SERVER_ERROR
     }
 
@@ -913,12 +879,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234"))
       await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
-      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
-        """
-          |{
-          | "fileReference": "file1"
-          |}
-          |""".stripMargin)))
+      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withFormUrlEncodedBody("fileReference" -> "file1"))
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
     }
@@ -935,12 +896,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.journeyId, "1234"))
       await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       await(repository.updateStateOfFileUpload("1234", UploadJourney("file2", UploadStatusEnum.READY), isInitiateCall = true))
-      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withJsonBody(Json.parse(
-        """
-          |{
-          | "fileReference": "file1"
-          |}
-          |""".stripMargin)))
+      val request = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody.withFormUrlEncodedBody("fileReference" -> "file1"))
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
     }
@@ -1012,13 +968,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "value": "yes"
-          |}
-          |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "yes")
       val result = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
@@ -1035,13 +985,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "value": "no"
-          |}
-          |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "no")
       val result = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
@@ -1143,14 +1087,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "no"
-            |}
-            |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "no")
       val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
@@ -1167,14 +1104,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "yes"
-            |}
-            |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
@@ -1192,14 +1122,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "value": "fake_value"
-              |}
-              |""".stripMargin)
-        )
+        ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }

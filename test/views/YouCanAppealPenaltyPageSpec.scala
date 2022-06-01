@@ -20,7 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import forms.YouCanAppealPenaltyForm
 import messages.YouCanAppealThisPenaltyMessages._
 import models.NormalMode
-import models.pages.{PageMode, WhyWasReturnSubmittedLatePage, YouCanAppealThisPenaltyPage}
+import models.pages.{PageMode, YouCanAppealThisPenaltyPage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat

@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -94,15 +93,8 @@ class AgentsControllerSpec extends SpecBase {
       "user submits the form" when {
         "the validation is performed against possible values - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "agent"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "agent")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
             await(result).session.get(SessionKeys.whatCausedYouToMissTheDeadline).get shouldBe "agent"
@@ -110,15 +102,8 @@ class AgentsControllerSpec extends SpecBase {
 
         "the validation is performed against possible values - value does not appear in options list" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "this_is_fake"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "this_is_fake")))
             status(result) shouldBe BAD_REQUEST
             contentAsString(result) should include("There is a problem")
             contentAsString(result) should include("Tell us what caused you to miss the deadline")
@@ -126,15 +111,8 @@ class AgentsControllerSpec extends SpecBase {
 
         "the validation is performed against an empty value - value is an empty string" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": ""
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "")))
             status(result) shouldBe BAD_REQUEST
             contentAsString(result) should include("There is a problem")
             contentAsString(result) should include("Tell us what caused you to miss the deadline")
@@ -143,15 +121,7 @@ class AgentsControllerSpec extends SpecBase {
 
       "return 500" when {
         "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequest.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": "no"
-                |}
-                |""".stripMargin
-            )
-          ))
+          val result: Future[Result] = controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> "no"))
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
@@ -213,15 +183,7 @@ class AgentsControllerSpec extends SpecBase {
         "the validation is performed against possible values (agent) - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(
-              fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "agent"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+              fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "agent")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode).url
             await(result).session.get(SessionKeys.whoPlannedToSubmitVATReturn).get shouldBe "agent"
@@ -230,15 +192,7 @@ class AgentsControllerSpec extends SpecBase {
           "the validation is performed against possible values - value does not appear in options list" in
           new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(
-              fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "this_is_fake"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+              fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "this_is_fake")))
             status(result) shouldBe BAD_REQUEST
             contentAsString(result) should include("There is a problem")
             contentAsString(result) should include("Tell us who planned to submit the VAT return")
@@ -247,15 +201,7 @@ class AgentsControllerSpec extends SpecBase {
         "the validation is performed against an empty value - value is an empty string" in
           new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(
-              fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": ""
-                  |}
-                  |""".stripMargin
-              )
-            )))
+              fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "")))
             status(result) shouldBe BAD_REQUEST
             contentAsString(result) should include("There is a problem")
             contentAsString(result) should include("Tell us who planned to submit the VAT return")
@@ -264,15 +210,8 @@ class AgentsControllerSpec extends SpecBase {
 
       "return 500" when {
         "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": "no"
-                |}
-                |""".stripMargin
-            )
-          ))
+          val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest
+            .withFormUrlEncodedBody("value" -> "no"))
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
@@ -294,15 +233,7 @@ class AgentsControllerSpec extends SpecBase {
         "the validation is performed against possible values (client) - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
             val result: Future[Result] = controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(
-              fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "client"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+              fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "client")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
             await(result).session.get(SessionKeys.whoPlannedToSubmitVATReturn).get shouldBe "client"

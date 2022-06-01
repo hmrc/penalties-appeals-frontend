@@ -17,7 +17,6 @@
 package controllers
 
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -94,12 +93,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "value": "type1"
-          |}
-          |""".stripMargin))
+      ).withFormUrlEncodedBody("value" -> "type1")
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.SEE_OTHER
@@ -118,12 +112,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(Json.parse(
-        """
-          |{
-          | "value": "this_is_fake"
-          |}
-          |""".stripMargin))
+      ).withFormUrlEncodedBody("value" -> "this_is_fake")
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
       request.header.status shouldBe Status.BAD_REQUEST

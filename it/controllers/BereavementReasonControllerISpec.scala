@@ -18,15 +18,14 @@ package controllers
 
 import models.NormalMode
 import play.api.http.Status
-import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
-import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.{LocalDate, LocalDateTime}
-
 import uk.gov.hmrc.http.SessionKeys.authToken
+import utils.{IntegrationSpecCommonBase, SessionKeys}
+
+import java.time.{LocalDate, LocalDateTime}
 
 class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
 
@@ -85,15 +84,10 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
       )
       val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -112,15 +106,10 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2021"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
       )
       val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -139,15 +128,10 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "date.day": "08",
-              | "date.month": "02",
-              | "date.year": "2025"
-              |}
-              |""".stripMargin)
+        ).withFormUrlEncodedBody(
+          "date.day" -> "08",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
         val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -180,42 +164,30 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.journeyId, "1234")
         )
 
-        val noDayJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "",
-            | "date.month": "02",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noDayJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "",
+          "date.month" -> "02",
+          "date.year" -> "2025"
         )
 
-        val noMonthJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin
+        val noMonthJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "",
+          "date.year" -> "2025"
         )
 
-        val noYearJsonBody: JsValue = Json.parse(
-          """
-            |{
-            | "date.day": "02",
-            | "date.month": "02",
-            | "date.year": ""
-            |}
-            |""".stripMargin
+        val noYearJsonBody: Seq[(String, String)] = Seq(
+          "date.day" -> "02",
+          "date.month" -> "02",
+          "date.year" -> ""
         )
-        val requestNoDay = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+        val requestNoDay = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noDayJsonBody: _*)))
         requestNoDay.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoMonth = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+        val requestNoMonth = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noMonthJsonBody: _*)))
         requestNoMonth.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoYear = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+        val requestNoYear = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noYearJsonBody: _*)))
         requestNoYear.header.status shouldBe Status.BAD_REQUEST
       }
     }
@@ -258,15 +230,10 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "date.day": "08",
-            | "date.month": "02",
-            | "date.year": "2025"
-            |}
-            |""".stripMargin)
+      ).withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2025"
       )
       val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
       request.header.status shouldBe BAD_REQUEST
@@ -299,42 +266,30 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.journeyId, "1234")
       )
 
-      val noDayJsonBody: JsValue = Json.parse(
-        """
-          |{
-          | "date.day": "",
-          | "date.month": "02",
-          | "date.year": "2025"
-          |}
-          |""".stripMargin
+      val noDayJsonBody: Seq[(String, String)] = Seq(
+        "date.day" -> "",
+        "date.month" -> "02",
+        "date.year" -> "2025"
       )
 
-      val noMonthJsonBody: JsValue = Json.parse(
-        """
-          |{
-          | "date.day": "02",
-          | "date.month": "",
-          | "date.year": "2025"
-          |}
-          |""".stripMargin
+      val noMonthJsonBody: Seq[(String, String)] = Seq(
+        "date.day" -> "02",
+        "date.month" -> "",
+        "date.year" -> "2025"
       )
 
-      val noYearJsonBody: JsValue = Json.parse(
-        """
-          |{
-          | "date.day": "02",
-          | "date.month": "02",
-          | "date.year": ""
-          |}
-          |""".stripMargin
+      val noYearJsonBody: Seq[(String, String)] = Seq(
+        "date.day" -> "02",
+        "date.month" -> "02",
+        "date.year" -> ""
       )
-      val requestNoDay = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noDayJsonBody)))
+      val requestNoDay = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noDayJsonBody: _*)))
       requestNoDay.header.status shouldBe BAD_REQUEST
 
-      val requestNoMonth = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noMonthJsonBody)))
+      val requestNoMonth = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noMonthJsonBody: _*)))
       requestNoMonth.header.status shouldBe BAD_REQUEST
 
-      val requestNoYear = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(noYearJsonBody)))
+      val requestNoYear = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noYearJsonBody: _*)))
       requestNoYear.header.status shouldBe BAD_REQUEST
     }
 
@@ -377,15 +332,10 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
       (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
       (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
       (SessionKeys.journeyId, "1234")
-    ).withJsonBody(
-      Json.parse(
-        """
-          |{
-          | "date.day": "08",
-          | "date.month": "02",
-          | "date.year": "2021"
-          |}
-          |""".stripMargin)
+    ).withFormUrlEncodedBody(
+      "date.day" -> "08",
+      "date.month" -> "02",
+      "date.year" -> "2021"
     )
     val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
     request.header.status shouldBe Status.SEE_OTHER

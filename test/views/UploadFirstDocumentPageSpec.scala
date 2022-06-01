@@ -19,9 +19,9 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadDocumentForm
 import messages.UploadFirstDocumentMessages._
-import models.{NormalMode, PenaltyTypeEnum}
 import models.pages.{PageMode, UploadFirstDocumentPage}
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
+import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.nodes.Document
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat

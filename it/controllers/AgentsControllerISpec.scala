@@ -18,15 +18,14 @@ package controllers
 
 import models.NormalMode
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
-import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.LocalDateTime
-
 import uk.gov.hmrc.http.SessionKeys.authToken
+import utils.{IntegrationSpecCommonBase, SessionKeys}
+
+import java.time.LocalDateTime
 
 class AgentsControllerISpec extends IntegrationSpecCommonBase {
   val controller: AgentsController = injector.instanceOf[AgentsController]
@@ -84,14 +83,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "client"
-            |}
-            |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "client")
       val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -109,14 +101,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "value": "fake_value"
-              |}
-              |""".stripMargin)
-        )
+        ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
@@ -216,14 +201,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
         (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
         (SessionKeys.journeyId, "1234")
-      ).withJsonBody(
-        Json.parse(
-          """
-            |{
-            | "value": "client"
-            |}
-            |""".stripMargin)
-      )
+      ).withFormUrlEncodedBody("value" -> "client")
       val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -241,14 +219,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
           (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
           (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
           (SessionKeys.journeyId, "1234")
-        ).withJsonBody(
-          Json.parse(
-            """
-              |{
-              | "value": "fake_value"
-              |}
-              |""".stripMargin)
-        )
+        ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }

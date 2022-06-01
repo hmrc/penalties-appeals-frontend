@@ -26,7 +26,6 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.Configuration
-import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Cookie, Result}
 import play.api.test.Helpers._
@@ -130,15 +129,11 @@ class OtherReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to reason page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "date.day": 1,
-                | "date.month": 2,
-                | "date.year": 2021
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )))
           status(result) shouldBe SEE_OTHER
           await(result).session.get(SessionKeys.whenDidBecomeUnable).get shouldBe LocalDate.of(
             2021, 2, 1).toString
@@ -146,15 +141,11 @@ class OtherReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "date.day": 1,
-                | "date.month": 2,
-                | "date.year": 2021
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            "date.day" -> "1",
+            "date.month" -> "2",
+            "date.year" -> "2021"
+          )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
           await(result).session.get(SessionKeys.whenDidBecomeUnable).get shouldBe LocalDate.of(
@@ -164,41 +155,29 @@ class OtherReasonControllerSpec extends SpecBase {
         "return 400 (BAD_REQUEST)" when {
 
           "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": "what",
-                  | "date.month": "is",
-                  | "date.year": "this"
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "what",
+              "date.month" -> "is",
+              "date.year" -> "this"
+            )))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": 31,
-                  | "date.month": 2,
-                  | "date.year": 2021
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "31",
+              "date.month" -> "2",
+              "date.year" -> "2021"
+            )))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "date.day": 124356,
-                  | "date.month": 432567,
-                  | "date.year": 3124567
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+              "date.day" -> "123456",
+              "date.month" -> "432567",
+              "date.year" -> "3124567"
+            )))
             status(result) shouldBe BAD_REQUEST
           }
         }
@@ -298,13 +277,8 @@ class OtherReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to file upload when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "why-return-submitted-late-text": "This is a reason"
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            "why-return-submitted-late-text" -> "This is a reason")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
           await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
@@ -312,26 +286,16 @@ class OtherReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "why-return-submitted-late-text": "This is a reason"
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            "why-return-submitted-late-text" -> "This is a reason")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
           await(result).session.get(SessionKeys.whyReturnSubmittedLate).get shouldBe "This is a reason"
         }
 
         "return 400 (BAD_REQUEST) when the user does not enter a reason" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-            Json.parse(
-              """
-                |{
-                | "why-return-submitted-late-text": ""
-                |}
-                |""".stripMargin))))
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            "why-return-submitted-late-text" -> "")))
           status(result) shouldBe BAD_REQUEST
         }
       }
@@ -514,27 +478,17 @@ class OtherReasonControllerSpec extends SpecBase {
           "redirect to multi-file upload page when the JS enabled cookie is present and the routing feature switch is off" in
             new Setup(AuthTestModels.successfulAuthResult) {
             when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "fileReference": "file1"
-                  |}
-                  |""".stripMargin)
-            ).withCookies(Cookie("jsenabled", "true")))
+            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("fileReference" -> "file1")
+              .withCookies(Cookie("jsenabled", "true")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
           }
 
           "redirect to multi-file upload page when the JS enabled cookie is present" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "fileReference": "file1"
-                  |}
-                  |""".stripMargin)
-            ).withCookies(Cookie("jsenabled", "true")))
+            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("fileReference" -> "file1")
+              .withCookies(Cookie("jsenabled", "true")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
           }
@@ -544,14 +498,8 @@ class OtherReasonControllerSpec extends SpecBase {
               .thenReturn(Future.successful((): Unit))
             when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
               .thenReturn(Future.successful(0))
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "fileReference": "file1"
-                  |}
-                  |""".stripMargin)
-            ))
+            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("fileReference" -> "file1"))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
           }
@@ -561,14 +509,8 @@ class OtherReasonControllerSpec extends SpecBase {
               .thenReturn(Future.successful((): Unit))
             when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
               .thenReturn(Future.successful(1))
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "fileReference": "file2"
-                  |}
-                  |""".stripMargin)
-            ))
+            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("fileReference" -> "file2"))
             status(result) shouldBe SEE_OTHER
           }
         }
@@ -637,13 +579,8 @@ class OtherReasonControllerSpec extends SpecBase {
         "the user is authorised" must {
           "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
             "- routing to non-JS evidence upload page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "value": "no"
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "no")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
           }
@@ -651,26 +588,16 @@ class OtherReasonControllerSpec extends SpecBase {
           "return 400 (BAD_REQUEST) when the user does not enter an option" in new Setup(AuthTestModels.successfulAuthResult) {
             when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
               .thenReturn(Future.successful(0))
-            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "value": ""
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "")))
             status(result) shouldBe BAD_REQUEST
           }
 
           "return 303 (SEE_OTHER) when the files uploaded is 5" in new Setup(AuthTestModels.successfulAuthResult) {
             when(mockUploadJourneyRepository.getUploadsForJourney(Some("1234")))
               .thenReturn(Future.successful(Option(Seq(callBackModel, callBackModel, callBackModel, callBackModel, callBackModel))))
-            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  | "value": "yes"
-                  |}
-                  |""".stripMargin))))
+            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "yes")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
 
@@ -729,15 +656,8 @@ class OtherReasonControllerSpec extends SpecBase {
       "user submits the form" when {
         "the validation is performed against possible values - redirect on success and set the session key value" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "yes"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "yes")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
             await(result).session.get(SessionKeys.isUploadEvidence).get shouldBe "yes"
@@ -745,44 +665,23 @@ class OtherReasonControllerSpec extends SpecBase {
 
         "the validation is performed against possible values - value does not appear in options list" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": "this_is_fake"
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "this_is_fake")))
             status(result) shouldBe BAD_REQUEST
           }
 
         "the validation is performed against an empty value - value is an empty string" in
           new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withJsonBody(
-              Json.parse(
-                """
-                  |{
-                  |   "value": ""
-                  |}
-                  |""".stripMargin
-              )
-            )))
+            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
+              .withFormUrlEncodedBody("value" -> "")))
             status(result) shouldBe BAD_REQUEST
           }
       }
 
       "return 500" when {
         "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest.withJsonBody(
-            Json.parse(
-              """
-                |{
-                |   "value": "no"
-                |}
-                |""".stripMargin
-            )
-          ))
+          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest
+            .withFormUrlEncodedBody("value" -> "no"))
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
