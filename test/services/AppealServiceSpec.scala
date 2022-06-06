@@ -32,7 +32,7 @@ import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{SessionKeys, UUIDGenerator}
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealServiceSpec extends SpecBase {
@@ -72,10 +72,10 @@ class AppealServiceSpec extends SpecBase {
     """
       |{
       | "type": "LATE_SUBMISSION",
-      | "startDate": "2020-01-01T12:00:00",
-      | "endDate": "2020-01-01T13:00:00",
-      | "dueDate": "2020-02-07T13:00:00",
-      | "dateCommunicationSent": "2020-02-08T13:00:00"
+      | "startDate": "2020-01-01",
+      | "endDate": "2020-01-01",
+      | "dueDate": "2020-02-07",
+      | "dateCommunicationSent": "2020-02-08"
       |}
       |""".stripMargin)
 
@@ -83,10 +83,10 @@ class AppealServiceSpec extends SpecBase {
     """
       |{
       | "type": "LATE_PAYMENT",
-      | "startDate": "2020-01-01T12:00:00",
-      | "endDate": "2020-01-01T13:00:00",
-      | "dueDate": "2020-02-07T13:00:00",
-      | "dateCommunicationSent": "2020-02-08T13:00:00"
+      | "startDate": "2020-01-01",
+      | "endDate": "2020-01-01",
+      | "dueDate": "2020-02-07",
+      | "dateCommunicationSent": "2020-02-08"
       |}
       |""".stripMargin)
 
@@ -94,10 +94,10 @@ class AppealServiceSpec extends SpecBase {
     """
       |{
       | "type": "ADDITIONAL",
-      | "startDate": "2020-01-01T12:00:00",
-      | "endDate": "2020-01-01T13:00:00",
-      | "dueDate": "2020-02-07T13:00:00",
-      | "dateCommunicationSent": "2020-02-08T13:00:00"
+      | "startDate": "2020-01-01",
+      | "endDate": "2020-01-01",
+      | "dueDate": "2020-02-07",
+      | "dateCommunicationSent": "2020-02-08"
       |}
       |""".stripMargin)
 
@@ -106,8 +106,8 @@ class AppealServiceSpec extends SpecBase {
     val service: AppealService =
       new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, mockUUIDGenerator, mockUploadJourneyRepository)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-      2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+      2020, 2, 1))
   }
 
   "validatePenaltyIdForEnrolmentKey" should {

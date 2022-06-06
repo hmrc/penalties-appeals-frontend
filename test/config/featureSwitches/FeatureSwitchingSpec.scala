@@ -30,6 +30,13 @@ class FeatureSwitchingSpec extends SpecBase {
       override implicit val config: Configuration = mockConfig
     }
     sys.props -= NonJSRouting.name
+    sys.props -= UseNewAPIModel.name
+  }
+
+  override protected def afterAll(): Unit = {
+    super.afterAll()
+    sys.props -= NonJSRouting.name
+    sys.props -= UseNewAPIModel.name
   }
 
   "listOfAllFeatureSwitches" should {

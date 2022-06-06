@@ -40,7 +40,7 @@ class PenaltiesConnectorSpec extends SpecBase {
     """
       |{
       | "type": "LATE_SUBMISSION",
-      | "startDate": "2020-01-01T12:00:00",
+      | "startDate": "2020-01-01",
       | "endDate": "2020-01-01T13:00:00",
       | "lateAppeal": "false"
       |}
@@ -50,7 +50,7 @@ class PenaltiesConnectorSpec extends SpecBase {
     """
       |{
       | "type": "LATE_PAYMENT",
-      | "startDate": "2020-01-01T12:00:00",
+      | "startDate": "2020-01-01",
       | "endDate": "2020-01-01T13:00:00",
       | "lateAppeal": "false"
       |}
@@ -60,7 +60,7 @@ class PenaltiesConnectorSpec extends SpecBase {
     """
       |{
       | "type": "ADDITIONAL",
-      | "startDate": "2020-01-01T12:00:00",
+      | "startDate": "2020-01-01",
       | "endDate": "2020-01-01T13:00:00",
       | "lateAppeal": "false"
       |}

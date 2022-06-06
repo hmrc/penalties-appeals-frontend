@@ -30,7 +30,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.technicalIssues.TechnologyIssuesDatePage
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class TechnicalIssuesReasonControllerSpec extends SpecBase {
@@ -46,8 +46,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
     val controller = new TechnicalIssuesReasonController(whenDidTechnologyIssuesBeginPage, mainNavigator, errorHandler)(
       authPredicate, dataRequiredAction, appConfig, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-      2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+      2020, 2, 1))
 
   }
 

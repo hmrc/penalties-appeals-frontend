@@ -35,10 +35,10 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
@@ -67,8 +67,8 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onPageLoad()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -88,10 +88,10 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody("value" -> "type1")
 
@@ -107,10 +107,10 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody("value" -> "this_is_fake")
 
@@ -140,8 +140,8 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onSubmit()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR

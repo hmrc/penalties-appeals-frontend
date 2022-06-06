@@ -25,6 +25,7 @@ import navigation.Navigation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito.mock
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -44,7 +45,7 @@ import views.html.errors.Unauthorised
 import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
+trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll {
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
   implicit val config: Configuration = appConfig.config
@@ -58,9 +59,9 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(
-    (SessionKeys.appealType, "Late_Submission"),
-    (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
-    (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")
+    (SessionKeys.appealType, PenaltyTypeEnum.Late_Submission.toString),
+    (SessionKeys.startDateOfPeriod, "2020-01-01"),
+    (SessionKeys.endDateOfPeriod, "2020-01-01")
   )
 
   implicit val messages: Messages = messagesApi.preferred(fakeRequest)
@@ -99,10 +100,10 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     .withSession(
       SessionKeys.penaltyNumber -> "123",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
-      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.startDateOfPeriod -> "2020-01-01",
+      SessionKeys.endDateOfPeriod -> "2020-01-01",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07",
+      SessionKeys.dateCommunicationSent -> "2020-02-08",
       SessionKeys.journeyId -> "1234"
     )
 
@@ -110,10 +111,10 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     .withSession(
       SessionKeys.penaltyNumber -> "123",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
-      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.startDateOfPeriod -> "2020-01-01",
+      SessionKeys.endDateOfPeriod -> "2020-01-01",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07",
+      SessionKeys.dateCommunicationSent -> "2020-02-08",
       SessionKeys.journeyId -> "1234"
     )
 
@@ -121,10 +122,10 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     .withSession(
       SessionKeys.penaltyNumber -> "123",
       SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
-      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.startDateOfPeriod -> "2020-01-01",
+      SessionKeys.endDateOfPeriod -> "2020-01-01",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07",
+      SessionKeys.dateCommunicationSent -> "2020-02-08",
       SessionKeys.journeyId -> "1234"
     )
 
@@ -142,10 +143,10 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     .withSession(
       SessionKeys.penaltyNumber -> "123",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
-      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.startDateOfPeriod -> "2020-01-01",
+      SessionKeys.endDateOfPeriod -> "2020-01-01",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07",
+      SessionKeys.dateCommunicationSent -> "2020-02-08",
       SessionKeys.reasonableExcuse -> reasonableExcuse,
       SessionKeys.journeyId -> "1234")
   )
@@ -154,10 +155,10 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
     .withSession(
       SessionKeys.penaltyNumber -> "123",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07T12:00:00.500",
-      SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00.500",
+      SessionKeys.startDateOfPeriod -> "2020-01-01",
+      SessionKeys.endDateOfPeriod -> "2020-01-01",
+      SessionKeys.dueDateOfPeriod -> "2020-02-07",
+      SessionKeys.dateCommunicationSent -> "2020-02-08",
       SessionKeys.journeyId -> "1234",
       SessionKeys.hasConfirmedDeclaration -> "true"
     )
@@ -176,14 +177,14 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val vatTraderLSPUserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-    SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
-    SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500"
+    SessionKeys.startDateOfPeriod -> "2020-01-01",
+    SessionKeys.endDateOfPeriod -> "2020-01-01"
   ))
 
   val vatTraderLPPUserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-    SessionKeys.startDateOfPeriod -> "2020-01-01T12:00:00.500",
-    SessionKeys.endDateOfPeriod -> "2020-01-01T12:00:00.500"))
+    SessionKeys.startDateOfPeriod -> "2020-01-01",
+    SessionKeys.endDateOfPeriod -> "2020-01-01"))
 
   val agentUserAgentSubmitButClientWasLateSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
     SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
