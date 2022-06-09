@@ -25,7 +25,7 @@ import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 class AgentsControllerISpec extends IntegrationSpecCommonBase {
   val controller: AgentsController = injector.instanceOf[AgentsController]
@@ -36,10 +36,10 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeys))
@@ -59,7 +59,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -78,10 +78,10 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(1).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody("value" -> "client")
       val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
@@ -96,10 +96,10 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
@@ -111,10 +111,10 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         )
         val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
@@ -135,8 +135,8 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -154,10 +154,10 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeys))
@@ -177,7 +177,7 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -196,10 +196,10 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(1).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody("value" -> "client")
       val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
@@ -214,10 +214,10 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
@@ -229,10 +229,10 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         )
         val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
@@ -253,8 +253,8 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR

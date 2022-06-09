@@ -25,7 +25,7 @@ import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: FireOrFloodReasonController = injector.instanceOf[FireOrFloodReasonController]
@@ -36,10 +36,10 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoad(NormalMode)(fakeRequestWithCorrectKeys))
@@ -59,7 +59,7 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onPageLoad(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -78,10 +78,10 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now().minusDays(20).toString),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, LocalDate.now().minusDays(20).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody(
         "date.day" -> "08",
@@ -100,10 +100,10 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody(
         "date.day" -> "08",
@@ -122,10 +122,10 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         ).withFormUrlEncodedBody(
           "date.day" -> "08",
@@ -141,10 +141,10 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         )
         val request = await(controller.onSubmit(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
@@ -156,10 +156,10 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         )
 
@@ -205,8 +205,8 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onSubmit(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR

@@ -33,7 +33,7 @@ class WhenDidBecomeUnablePageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
 
     def applyVATTraderView(form: Form[_], userRequest: UserRequest[_] = vatTraderLSPUserRequest): HtmlFormat.Appendable = whenDidBecomeUnablePage.apply(form,
-      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode), pageMode = PageMode(WhenDidBecomeUnablePage, NormalMode))(implicitly, implicitly, userRequest)
+      controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode), pageMode = PageMode(WhenDidBecomeUnablePage, NormalMode))(messages, appConfig, userRequest)
 
     val vatTraderFormProvider = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, vatTraderLSPUserRequest)
 

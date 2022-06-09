@@ -32,10 +32,10 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        SessionKeys.dateCommunicationSent -> "2020-02-08",
         SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequestWithCorrectKeys))
@@ -55,7 +55,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -73,10 +73,10 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        SessionKeys.dateCommunicationSent -> "2020-02-08",
         SessionKeys.journeyId -> "1234"
       ).withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndCorrectBody))
@@ -91,10 +91,10 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          SessionKeys.dateCommunicationSent -> "2020-02-08",
           SessionKeys.journeyId -> "1234"
         )
         val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndNoBody))
@@ -106,10 +106,10 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          SessionKeys.dateCommunicationSent -> "2020-02-08T12:00:00",
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          SessionKeys.dateCommunicationSent -> "2020-02-08",
           SessionKeys.journeyId -> "1234"
         ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndInvalidBody))
@@ -130,8 +130,8 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR

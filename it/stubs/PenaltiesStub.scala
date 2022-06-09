@@ -24,7 +24,7 @@ import models.PenaltyTypeEnum
 import play.api.http.Status
 import play.api.libs.json.Json
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.collection.JavaConverters
 
 object PenaltiesStub {
@@ -44,7 +44,7 @@ object PenaltiesStub {
                                        enrolmentKey: String,
                                        isLPP: Boolean = false,
                                        isAdditional: Boolean = false,
-                                       useNewApiModel: Boolean = false
+                                       useNewApiModel: Boolean = true
                                      ): StubMapping = {
     val typeOfPenalty =
       if (isAdditional) PenaltyTypeEnum.Additional
@@ -61,19 +61,13 @@ object PenaltiesStub {
         aResponse()
           .withStatus(Status.OK)
           .withBody(
-            Json
-              .obj(
+            Json.obj(
                 "type" -> typeOfPenalty,
-                "startDate" -> LocalDateTime
-                  .of(2020, 1, 1, 12, 0, 0)
-                  .toString,
-                "endDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
-                "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString,
-                "dateCommunicationSent" -> LocalDateTime
-                  .of(2020, 2, 8, 12, 0, 0)
-                  .toString
-              )
-              .toString()
+                "startDate" -> LocalDate.of(2020, 1, 1).toString,
+                "endDate" -> LocalDate.of(2020, 1, 1).toString,
+                "dueDate" -> LocalDate.of(2020, 2, 7).toString,
+                "dateCommunicationSent" -> LocalDate.of(2020, 2, 8).toString
+              ).toString()
           )
       )
     )

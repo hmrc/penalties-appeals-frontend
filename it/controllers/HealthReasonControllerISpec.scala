@@ -25,7 +25,7 @@ import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
   val controller: HealthReasonController = injector.instanceOf[HealthReasonController]
@@ -35,10 +35,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeys))
@@ -58,7 +58,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onPageLoadForWasHospitalStayRequired(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -77,10 +77,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody("value" -> "no")
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
@@ -94,10 +94,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
@@ -112,10 +112,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         ).withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
@@ -127,10 +127,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         )
         val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
@@ -151,8 +151,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -171,10 +171,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeys))
@@ -194,7 +194,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onPageLoadForWhenHealthReasonHappened(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -214,10 +214,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(1).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody(
         "date.day" -> "08",
@@ -235,10 +235,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(31).toString),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(31).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody(
         "date.day" -> "08",
@@ -257,10 +257,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         ).withFormUrlEncodedBody(
           "date.day" -> "08",
@@ -276,10 +276,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         )
         val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
@@ -292,10 +292,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         )
 
@@ -342,8 +342,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -362,10 +362,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenHealthIssueStarted, "2020-01-01")
       )
@@ -378,10 +378,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestWithNoStartDateKeys))
@@ -401,7 +401,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
@@ -414,10 +414,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(1).toString),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(1).toString),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenHealthIssueStarted, "2020-01-01")
       ).withFormUrlEncodedBody(
@@ -438,10 +438,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, LocalDateTime.now.minusDays(31).toString),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(31).toString),
         (SessionKeys.journeyId, "1234"),
         (SessionKeys.whenHealthIssueStarted, "2020-01-01")
       ).withFormUrlEncodedBody(
@@ -459,10 +459,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenHealthIssueStarted, "2020-01-01")
         ).withFormUrlEncodedBody(
@@ -479,10 +479,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenHealthIssueStarted, "2021-01-02")
         ).withFormUrlEncodedBody(
@@ -499,10 +499,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenHealthIssueStarted, "2020-01-01")
         )
@@ -516,10 +516,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
           (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234"),
           (SessionKeys.whenHealthIssueStarted, "2020-01-01")
         )
@@ -558,10 +558,10 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07T12:00:00"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08T12:00:00"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithNoStartDateKeys))
@@ -581,8 +581,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
         (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00")
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
       )
       val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithIncompleteKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR

@@ -25,7 +25,7 @@ import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext
 
 class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
@@ -37,13 +37,13 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
   "getAppealUrlBasedOnPenaltyType" should {
     "return the correct url for LPP" in {
       val expectedResult =
-        "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=false&useNewApiModel=false"
+        "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=false&useNewApiModel=true"
       val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = false)
       actualResult shouldBe expectedResult
     }
     "return the correct url for LPP Additional" in {
       val expectedResult =
-        "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=true&useNewApiModel=false"
+        "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=true&useNewApiModel=true"
       val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
       actualResult shouldBe expectedResult
     }
@@ -51,7 +51,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
     "return the correct url for LSP" in {
       val expectedResult =
-        "http://localhost:11111/penalties/appeals-data/late-submissions?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&useNewApiModel=false"
+        "http://localhost:11111/penalties/appeals-data/late-submissions?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&useNewApiModel=true"
       val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = false, isAdditional = false)
       actualResult shouldBe expectedResult
     }
@@ -62,10 +62,10 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       val sampleJsonToPassBack: JsValue = Json.obj(
         "type" -> PenaltyTypeEnum.Late_Submission,
-        "startDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
-        "endDate" -> LocalDateTime.of(2020, 1, 1, 12, 0, 0).toString,
-        "dueDate" -> LocalDateTime.of(2020, 2, 7, 12, 0, 0).toString,
-        "dateCommunicationSent" -> LocalDateTime.of(2020, 2, 8, 12, 0, 0).toString
+        "startDate" -> LocalDate.of(2020, 1, 1).toString,
+        "endDate" -> LocalDate.of(2020, 1, 1).toString,
+        "dueDate" -> LocalDate.of(2020, 2, 7).toString,
+        "dateCommunicationSent" -> LocalDate.of(2020, 2, 8).toString
       )
       val result = await(penaltiesConnector.getAppealsDataForPenalty(
         "1234", "123456789", isLPP = false, isAdditional = false)(HeaderCarrier(), ExecutionContext.Implicits.global))

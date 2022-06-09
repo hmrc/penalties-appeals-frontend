@@ -32,7 +32,7 @@ import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.health.{HasTheHospitalStayEndedPage, WasHospitalStayRequiredPage, WhenDidHealthReasonHappenPage, WhenDidHospitalStayBeginPage}
 import viewtils.ConditionalRadioHelper
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class HealthReasonControllerSpec extends SpecBase {
@@ -62,8 +62,8 @@ class HealthReasonControllerSpec extends SpecBase {
       errorHandler
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-      2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+      2020, 2, 1))
   }
 
   "HealthReasonController" should {
@@ -227,8 +227,8 @@ class HealthReasonControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "redirects to late appeal page when appeal > 30 days late" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-            2020, 4, 1, 0, 0, 0))
+          when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+            2020, 4, 1))
           val result: Future[Result] = controller.onSubmitForWhenHealthReasonHappened(NormalMode)(
             fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
               "date.day" -> "1",
@@ -433,8 +433,8 @@ class HealthReasonControllerSpec extends SpecBase {
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "redirects to late appeal page when appeal > 30 days late" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-          2020, 4, 1, 0, 0, 0))
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+          2020, 4, 1))
         val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
           fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
             "hasStayEnded" -> "no",
@@ -447,8 +447,8 @@ class HealthReasonControllerSpec extends SpecBase {
 
       "return 400 (BAD_REQUEST)" when {
         "the 'yes' option is selected but no date has been entered" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-            2020, 4, 1, 0, 0, 0))
+          when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+            2020, 2, 1))
           val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
             fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
               "hasStayEnded" -> "yes",
@@ -461,8 +461,8 @@ class HealthReasonControllerSpec extends SpecBase {
         }
 
         "no option selected" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-            2020, 4, 1, 0, 0, 0))
+          when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+            2020, 2, 1))
           val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
             fakeRequestConverter(fakeRequestWithCorrectKeysAndStartDate.withFormUrlEncodedBody(
               "hasStayEnded" -> ""

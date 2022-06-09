@@ -39,7 +39,7 @@ import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs._
 import viewtils.EvidenceFileUploadsHelper
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonControllerSpec extends SpecBase {
@@ -84,8 +84,8 @@ class OtherReasonControllerSpec extends SpecBase {
       serviceUnavailablePage
     )(authPredicate, dataRequiredAction, appConfig, mockConfig, errorHandler, mcc, ec)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-      2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+      2020, 2, 1))
   }
 
   "OtherReasonController" should {

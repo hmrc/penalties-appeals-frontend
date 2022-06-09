@@ -30,7 +30,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.bereavement.WhenDidThePersonDiePage
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class BereavementReasonControllerSpec extends SpecBase {
@@ -47,8 +47,8 @@ class BereavementReasonControllerSpec extends SpecBase {
       whenDidThePersonDiePage, mainNavigator
     )(authPredicate, dataRequiredAction, appConfig, mcc)
 
-    when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.of(
-      2020, 2, 1, 0, 0, 0))
+    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
+      2020, 2, 1))
   }
 
   "BereavementReasonController" should {

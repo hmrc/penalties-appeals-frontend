@@ -215,9 +215,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
     if(isEnabled(UseNewAPIModel)) {
-      val dateTimeNow: LocalDate = dateTimeHelper.dateNow
+      val dateNow: LocalDate = dateTimeHelper.dateNow
       val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
+      dateSentParsed.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
     } else {
       val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
       val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
@@ -317,14 +317,14 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRouteForCYAPage(request: UserRequest[_], mode: Mode): Call = {
-    val dateSentParsed: LocalDateTime = LocalDateTime.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
+    val dateSentParsed: LocalDate = LocalDate.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
-    val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
-    if (dateSentParsed.isBefore(dateTimeNow.minusDays(daysResultingInLateAppeal))
+    val dateNow: LocalDate = dateTimeHelper.dateNow
+    if (dateSentParsed.isBefore(dateNow.minusDays(daysResultingInLateAppeal))
       && (request.session.get(SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)
       && request.session.get(SessionKeys.isObligationAppeal).isEmpty) {
       logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
-        s"Date now: $dateTimeNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
+        s"Date now: $dateNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
       controllers.routes.MakingALateAppealController.onPageLoad()
     } else {
       reverseRouteForMakingALateAppealPage(request, mode)
