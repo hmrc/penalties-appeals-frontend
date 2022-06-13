@@ -31,8 +31,7 @@ object PenaltyTypeHelper {
     val penaltyAsEnum = PenaltyTypeEnum.withNameOpt(penaltyType)
     penaltyAsEnum match {
       case Some(PenaltyTypeEnum.Late_Submission) => Some(messages("penaltyType.lateSubmission"))
-      case Some(PenaltyTypeEnum.Late_Payment) => Some(messages("penaltyType.latePayment"))
-      case Some(PenaltyTypeEnum.Additional) => Some(messages("penaltyType.additional"))
+      case Some(PenaltyTypeEnum.Late_Payment | PenaltyTypeEnum.Additional) => Some(messages("penaltyType.latePayment"))
       case _ => None
     }
   }
