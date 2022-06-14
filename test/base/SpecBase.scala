@@ -186,6 +186,11 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
     SessionKeys.startDateOfPeriod -> "2020-01-01",
     SessionKeys.endDateOfPeriod -> "2020-01-01"))
 
+  val vatTraderLPP2UserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(
+    SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString,
+    SessionKeys.startDateOfPeriod -> "2020-01-01",
+    SessionKeys.endDateOfPeriod -> "2020-01-01"))
+
   val agentUserAgentSubmitButClientWasLateSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
     SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
     SessionKeys.whatCausedYouToMissTheDeadline -> "client")

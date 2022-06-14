@@ -48,6 +48,22 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
 
     implicit val vatTraderLateSubmissionPenaltyDoc: Document = asDocument(applyVATTraderView("penaltyType.lateSubmission", "1 July 2023", "31 July 2023"))
 
+    def applyLPP1VATTraderView(penaltyTypeMsgKey: String,
+                           periodStart: String,
+                           periodEnd: String,
+                           isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
+      penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)(fakeRequest, messages, appConfig, vatTraderLPPUserRequest)
+
+    implicit val vatTraderLPP1Doc: Document = asDocument(applyLPP1VATTraderView("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
+
+    def applyLPP2VATTraderView(penaltyTypeMsgKey: String,
+                           periodStart: String,
+                           periodEnd: String,
+                           isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
+      penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)(fakeRequest, messages, appConfig, vatTraderLPP2UserRequest)
+
+    implicit val vatTraderLPP2Doc: Document = asDocument(applyLPP2VATTraderView("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
+
     def applyAgentView(penaltyTypeMsgKey: String,
                        periodStart: String,
                        periodEnd: String): HtmlFormat.Appendable = appealConfirmationPage.apply(
@@ -79,7 +95,7 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
       }
     }
 
-    "when VAT trader is on page" must {
+    "when VAT trader is on page in LSP appeal" must {
 
       val expectedContent = Seq(
         Selectors.title -> title,
@@ -106,10 +122,63 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
       "the penalty information should not be visible" in {
         vatTraderLateSubmissionPenaltyDoc.select("#penalty-information").text().isEmpty shouldBe true
       }
+    }
 
-      "the panel body should contain late payment penalty when there is such" in {
-        implicit val latePaymentPenaltyDoc: Document = asDocument(applyVATTraderView("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
-        latePaymentPenaltyDoc.select(Selectors.penaltyType).text() shouldBe headingPanelBodyLPP
+    "when VAT trader is on page in LPP1 appeal" must {
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> headingPanelH1,
+        Selectors.h2 -> h2WhatHappensNext,
+        Selectors.penaltyType -> headingPanelBodyLPP,
+        Selectors.paragraph(2) -> p1,
+        Selectors.paragraph(3) -> p2,
+        Selectors.paragraph(5) -> whatHappensNextP1,
+        Selectors.paragraph(6) -> whatHappensNextP2,
+        Selectors.paragraph(7) -> whatHappensNextP3,
+        Selectors.paragraph(8) -> whatHappensNextP4,
+        Selectors.penaltiesLink -> returnToPenalties,
+        Selectors.vatAccountLink -> goToVatVC,
+        Selectors.feedbackLink -> goToFeedback
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)(vatTraderLPP1Doc)
+
+      "the back link should not be present" in {
+        vatTraderLPP1Doc.select("#back-link").text().isEmpty shouldBe true
+      }
+
+      "the penalty information should not be visible" in {
+        vatTraderLPP1Doc.select("#penalty-information").text().isEmpty shouldBe true
+      }
+    }
+
+    "when VAT trader is on page in LPP2 appeal" must {
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> headingPanelH1,
+        Selectors.h2 -> h2WhatHappensNext,
+        Selectors.penaltyType -> headingPanelBodyLPP,
+        Selectors.paragraph(2) -> p1,
+        Selectors.paragraph(3) -> p2,
+        Selectors.paragraph(5) -> whatHappensNextP1,
+        Selectors.paragraph(6) -> whatHappensNextP2,
+        Selectors.paragraph(7) -> whatHappensNextP3,
+        Selectors.paragraph(8) -> whatHappensNextP4,
+        Selectors.penaltiesLink -> returnToPenalties,
+        Selectors.vatAccountLink -> goToVatVC,
+        Selectors.feedbackLink -> goToFeedback
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)(vatTraderLPP2Doc)
+
+      "the back link should not be present" in {
+        vatTraderLPP2Doc.select("#back-link").text().isEmpty shouldBe true
+      }
+
+      "the penalty information should not be visible" in {
+        vatTraderLPP2Doc.select("#penalty-information").text().isEmpty shouldBe true
       }
     }
 
