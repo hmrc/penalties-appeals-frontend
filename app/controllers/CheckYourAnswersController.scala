@@ -133,8 +133,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     implicit request => {
       val penaltyType: String = PenaltyTypeEnum.withName(request.session.get(SessionKeys.appealType).get) match {
         case Late_Submission => "penaltyType.lateSubmission"
-        case Late_Payment => "penaltyType.latePayment"
-        case Additional => "penaltyType.additional"
+        case Late_Payment | Additional => "penaltyType.latePayment"
       }
       val (readablePeriodStart, readablePeriodEnd) = if(isEnabled(UseNewAPIModel)) {
         (dateToString(LocalDate.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
