@@ -13,3 +13,4 @@
 ->         /                                                      prod.Routes
 
 GET        /penalties-appeals/test-only/feature-switch            controllers.testOnly.FeatureSwitchController.enableOrDisableFeature(name: String, enable: Boolean)
+GET        /penalties-appeals/test-only/time-machine-now          controllers.testOnly.FeatureSwitchController.setTimeMachineDate(dateToSet: Option[String])
