@@ -36,8 +36,8 @@ trait FeatureSwitching {
   def disableFeatureSwitch(featureSwitch: FeatureSwitch): Unit =
     sys.props += featureSwitch.name -> FEATURE_SWITCH_OFF
 
-  def setDateFeature(dateToSet: Option[LocalDate]): Unit = {
-    logger.debug(s"[FeatureSwitching][setDateFeature] - setting time machine date to: $dateToSet")
+  def setFeatureDate(dateToSet: Option[LocalDate]): Unit = {
+    logger.debug(s"[FeatureSwitching][setFeatureDate] - setting time machine date to: $dateToSet")
     dateToSet.fold(sys.props -= TIME_MACHINE_NOW)(sys.props += TIME_MACHINE_NOW -> _.toString)
   }
 

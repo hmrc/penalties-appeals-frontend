@@ -97,28 +97,28 @@ class FeatureSwitchingSpec extends SpecBase {
     }
   }
 
-  "FeatureSwitching setDateFeature" should {
+  "FeatureSwitching setFeatureDate" should {
     lazy val dateNow: LocalDate = LocalDate.now()
     s"set the date when the parameter is $Some" in new Setup {
       val dateMinus1Day: LocalDate = dateNow.minusDays(1)
       (sys.props get featureSwitching.TIME_MACHINE_NOW) shouldBe None
-      featureSwitching.setDateFeature(Some(dateMinus1Day))
+      featureSwitching.setFeatureDate(Some(dateMinus1Day))
       (sys.props get featureSwitching.TIME_MACHINE_NOW) shouldBe Some(dateMinus1Day.toString)
     }
 
     s"overwrite an existing date when the parameter is $Some" in new Setup {
       val dateMinus1Day: LocalDate = dateNow.minusDays(1)
       val dateMinus2Days: LocalDate = dateNow.minusDays(2)
-      featureSwitching.setDateFeature(Some(dateMinus1Day))
+      featureSwitching.setFeatureDate(Some(dateMinus1Day))
       (sys.props get featureSwitching.TIME_MACHINE_NOW) shouldBe Some(dateMinus1Day.toString)
-      featureSwitching.setDateFeature(Some(dateMinus2Days))
+      featureSwitching.setFeatureDate(Some(dateMinus2Days))
       (sys.props get featureSwitching.TIME_MACHINE_NOW) shouldBe Some(dateMinus2Days.toString)
     }
 
     s"remove an existing date when the parameter is $None" in new Setup {
-      featureSwitching.setDateFeature(Some(dateNow))
+      featureSwitching.setFeatureDate(Some(dateNow))
       (sys.props get featureSwitching.TIME_MACHINE_NOW) shouldBe Some(dateNow.toString)
-      featureSwitching.setDateFeature(None)
+      featureSwitching.setFeatureDate(None)
       (sys.props get featureSwitching.TIME_MACHINE_NOW) shouldBe None
     }
   }
@@ -126,7 +126,7 @@ class FeatureSwitchingSpec extends SpecBase {
   "FeatureSwitching getFeatureDate" should {
     lazy val dateNowMinus1Day: LocalDate = LocalDate.now().minusDays(1)
     s"get the date when it exists in system properties" in new Setup {
-      featureSwitching.setDateFeature(Some(dateNowMinus1Day))
+      featureSwitching.setFeatureDate(Some(dateNowMinus1Day))
       (sys.props get featureSwitching.TIME_MACHINE_NOW) shouldBe Some(dateNowMinus1Day.toString)
       featureSwitching.getFeatureDate shouldBe dateNowMinus1Day
     }
