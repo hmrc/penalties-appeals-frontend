@@ -20,8 +20,11 @@ import config.featureSwitches.{FeatureSwitch, FeatureSwitching}
 import play.api.Configuration
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 
+import java.time.LocalDate
 import javax.inject.Inject
+import scala.util.Try
 
 class FeatureSwitchController @Inject()(implicit mcc: MessagesControllerComponents,
                                         val config: Configuration) extends FrontendController(mcc) with FeatureSwitching {
@@ -36,5 +39,25 @@ class FeatureSwitchController @Inject()(implicit mcc: MessagesControllerComponen
         }
         Ok(s"$featureSwitch set to $enable")
       })
+  }
+
+  def setTimeMachineDate(dateToSet: Option[String]): Action[AnyContent] = Action {
+    dateToSet.fold({
+      setFeatureDate(None)
+      Ok(s"Time machine set to: ${LocalDate.now()}")
+    })(
+      dateAsString => {
+        Try(LocalDate.parse(dateAsString)).fold(
+          err => {
+            logger.debug(s"[FeatureSwitchController][setFeatureDate] - Exception was thrown when setting time machine date: ${err.getMessage}")
+            BadRequest("The date provided is in an invalid format")
+          },
+          date => {
+            setFeatureDate(Some(date))
+            Ok(s"Time machine set to: $date")
+          }
+        )
+      }
+    )
   }
 }

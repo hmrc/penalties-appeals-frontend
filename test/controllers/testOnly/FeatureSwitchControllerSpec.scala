@@ -17,14 +17,27 @@
 package controllers.testOnly
 
 import base.SpecBase
-import config.featureSwitches.{FeatureSwitching, NonJSRouting}
+import config.featureSwitches.{FeatureSwitch, FeatureSwitching, NonJSRouting}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{mock, reset, when}
+import play.api.Configuration
+import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
+import java.time.LocalDate
+
 class FeatureSwitchControllerSpec extends SpecBase with FeatureSwitching {
   val controller: FeatureSwitchController = injector.instanceOf[FeatureSwitchController]
+  val mockConfig: Configuration = mock(classOf[Configuration])
 
-  "FeatureSwitchController" should {
+  class Setup {
+    reset(mockConfig)
+    val controller = new FeatureSwitchController()(mcc, mockConfig)
+    FeatureSwitch.listOfAllFeatureSwitches.foreach(sys.props -= _.name)
+  }
+
+  "enableOrDisableFeature" should {
     "return NOT FOUND when the feature switch is not defined" in {
       val result = controller.enableOrDisableFeature("fake", true)(FakeRequest())
       status(result) shouldBe NOT_FOUND
@@ -40,6 +53,30 @@ class FeatureSwitchControllerSpec extends SpecBase with FeatureSwitching {
       val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", false)(FakeRequest())
       status(result) shouldBe OK
       isEnabled(NonJSRouting) shouldBe false
+    }
+  }
+  "setTimeMachineDate" should {
+
+    s"return NOT_FOUND (${Status.NOT_FOUND}) when the date provided is invalid" in new Setup {
+      val result = controller.setTimeMachineDate(Some("this-is-invalid"))(FakeRequest())
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) shouldBe "The date provided is in an invalid format"
+    }
+
+    s"return OK (${Status.OK}) and reset the date back to today's date if no date provided" in new Setup {
+      when(mockConfig.getOptional[String](any())(any()))
+        .thenReturn(None)
+      val result = controller.setTimeMachineDate(None)(FakeRequest())
+      status(result) shouldBe OK
+      contentAsString(result) shouldBe s"Time machine set to: ${LocalDate.now().toString}"
+      controller.getFeatureDate shouldBe LocalDate.now()
+    }
+
+    s"return OK (${Status.OK}) and set the correct date provided" in new Setup {
+      val result = controller.setTimeMachineDate(Some("2022-01-01"))(FakeRequest())
+      status(result) shouldBe OK
+      contentAsString(result) shouldBe s"Time machine set to: ${LocalDate.of(2022, 1, 1).toString}"
+      (sys.props get "TIME_MACHINE_NOW" get) shouldBe LocalDate.of(2022, 1, 1).toString
     }
   }
 }
