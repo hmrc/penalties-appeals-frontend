@@ -16,6 +16,10 @@
 
 package forms.mappings
 
+import config.AppConfig
+import config.featureSwitches.FeatureSwitching
+import play.api.Configuration
+
 import java.time.LocalDate
 import play.api.data.FormError
 import play.api.data.format.Formatter
@@ -32,7 +36,10 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
                                            futureKey: Option[String] = None,
                                            dateNotEqualOrAfterKeyAndCompareDate: Option[(String, LocalDate)] = None,
                                            args: Seq[String] = Seq.empty)
-                                          (implicit val messages: Messages) extends Formatter[LocalDate] with Formatters with Constraints {
+                                          (implicit val messages: Messages, appConfig: AppConfig) extends Formatter[LocalDate] with Formatters
+                                          with Constraints with FeatureSwitching {
+
+  implicit val config: Configuration = appConfig.config
 
   private val fieldKeys: List[String] = List("day", "month", "year")
 
@@ -80,7 +87,7 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
         if (futureKey.isDefined) {
           if (dateNotEqualOrAfterKeyAndCompareDate.isDefined && dateNotEqualOrAfterKeyAndCompareDate.get._2.isAfter(date)) {
             Left(Seq(FormError(s"$key.day", dateNotEqualOrAfterKeyAndCompareDate.get._1, fieldKeys)))
-          } else if (date.isEqual(LocalDate.now()) || date.isBefore(LocalDate.now())) {
+          } else if (date.isEqual(getFeatureDate) || date.isBefore(getFeatureDate)) {
             Right(date)
           } else {
             Left(Seq(FormError(s"$key.day", futureKey.get, fieldKeys)))

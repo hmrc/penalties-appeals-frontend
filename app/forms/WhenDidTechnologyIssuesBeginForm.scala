@@ -16,6 +16,7 @@
 
 package forms
 
+import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -23,7 +24,7 @@ import play.api.i18n.Messages
 import java.time.LocalDate
 
 object WhenDidTechnologyIssuesBeginForm extends Mappings {
-  def whenDidTechnologyIssuesBeginForm()(implicit messages: Messages): Form[LocalDate] = {
+  def whenDidTechnologyIssuesBeginForm()(implicit messages: Messages, appConfig: AppConfig): Form[LocalDate] = {
     Form(
       "date" -> localDate(
         invalidKey = "technicalIssues.begin.error.invalid",

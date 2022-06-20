@@ -16,6 +16,7 @@
 
 package forms
 
+import config.AppConfig
 import forms.mappings.Mappings
 import models.appeals.HospitalStayEndInput
 import play.api.data._
@@ -28,7 +29,7 @@ import java.time.LocalDate
 object HasHospitalStayEndedForm extends Mappings {
   final val options = Seq("yes", "no")
 
-  def hasHospitalStayEndedForm(healthIssueStartDate: LocalDate)(implicit messages: Messages): Form[HospitalStayEndInput] = {
+  def hasHospitalStayEndedForm(healthIssueStartDate: LocalDate)(implicit messages: Messages, appConfig: AppConfig): Form[HospitalStayEndInput] = {
     Form(mapping(
       "hasStayEnded" -> text("healthReason.hasTheHospitalStayEnded.error.required")
         .verifying("healthReason.hasTheHospitalStayEnded.error.required", value => options.contains(value)),

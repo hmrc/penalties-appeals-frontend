@@ -16,14 +16,15 @@
 
 package forms
 
-import java.time.LocalDate
+import config.AppConfig
 
+import java.time.LocalDate
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.i18n.Messages
 
 object WhenDidFireOrFloodHappenForm extends Mappings {
-  def whenFireOrFloodHappenedForm()(implicit messages: Messages): Form[LocalDate] = {
+  def whenFireOrFloodHappenedForm()(implicit messages: Messages, appConfig: AppConfig): Form[LocalDate] = {
     Form(
       "date" -> localDate(
       invalidKey = "fireOrFloodReason.error.invalid",

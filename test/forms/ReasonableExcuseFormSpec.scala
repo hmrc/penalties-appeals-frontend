@@ -16,9 +16,15 @@
 
 package forms
 
+import base.SpecBase
+import config.AppConfig
+import org.mockito.Mockito.mock
+import play.api.Configuration
 import play.api.data.{Form, FormError}
 
-class ReasonableExcuseFormSpec extends FormBehaviours {
+class ReasonableExcuseFormSpec extends FormBehaviours with SpecBase {
+  implicit val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+  override implicit val config: Configuration = mock(classOf[Configuration])
   val seqOfReasonableExcuses = Seq(
     "reasonableExcuse1",
     "reasonableExcuse2",

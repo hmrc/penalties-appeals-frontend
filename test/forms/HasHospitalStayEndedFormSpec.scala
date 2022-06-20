@@ -17,12 +17,17 @@
 package forms
 
 import base.SpecBase
+import config.AppConfig
 import models.appeals.HospitalStayEndInput
+import org.mockito.Mockito.mock
+import play.api.Configuration
 import play.api.data.{Form, FormError}
 
 import java.time.LocalDate
 
 class HasHospitalStayEndedFormSpec extends FormBehaviours with SpecBase {
+  implicit val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+  override implicit val config: Configuration = mock(classOf[Configuration])
   val sampleStartDate: LocalDate = LocalDate.parse("2020-01-02")
   val form: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
 

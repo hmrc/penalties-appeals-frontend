@@ -16,9 +16,10 @@
 
 package forms.upscan
 
+import base.SpecBase
 import forms.FormBehaviours
 
-class S3UploadErrorFormSpec extends FormBehaviours {
+class S3UploadErrorFormSpec extends FormBehaviours with SpecBase {
   "S3UploadErrorForm" should {
     "bind when all mandatory fields are present" in {
       val formFields = Map(

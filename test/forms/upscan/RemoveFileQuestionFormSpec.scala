@@ -16,10 +16,11 @@
 
 package forms.upscan
 
+import base.SpecBase
 import forms.FormBehaviours
 import play.api.data.{Form, FormError}
 
-class RemoveFileQuestionFormSpec extends FormBehaviours {
+class RemoveFileQuestionFormSpec extends FormBehaviours with SpecBase {
   val form: Form[String] = RemoveFileQuestionForm.form
 
   behave like mandatoryField(form, "value", FormError("value", "otherReason.uploadEvidence.removeFile.error.required"))

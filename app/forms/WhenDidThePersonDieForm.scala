@@ -16,6 +16,7 @@
 
 package forms
 
+import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -24,7 +25,7 @@ import java.time.LocalDate
 
 object WhenDidThePersonDieForm extends Mappings {
 
-  def whenDidThePersonDieForm()(implicit messages: Messages): Form[LocalDate] = {
+  def whenDidThePersonDieForm()(implicit messages: Messages, appConfig: AppConfig): Form[LocalDate] = {
     Form(
       "date" -> localDate(
         invalidKey = "bereavementReason.error.invalid",

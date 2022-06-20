@@ -16,9 +16,10 @@
 
 package forms.upscan
 
+import base.SpecBase
 import forms.FormBehaviours
 
-class RemoveFileFormSpec extends FormBehaviours {
+class RemoveFileFormSpec extends FormBehaviours with SpecBase {
   val form = RemoveFileForm.form
   "RemoveFileForm" should {
     s"not bind when key is not present at all" in {
