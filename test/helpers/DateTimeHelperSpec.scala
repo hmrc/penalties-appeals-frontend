@@ -16,15 +16,18 @@
 
 package helpers
 
-import config.featureSwitches.FeatureSwitching
-import play.api.Configuration
+import base.SpecBase
 import config.AppConfig
+import org.mockito.Mockito.mock
+import config.featureSwitches.FeatureSwitching
 
-import java.time.{LocalDate, LocalDateTime}
-import javax.inject.Inject
+class DateTimeHelperSpec extends SpecBase with FeatureSwitching {
+  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+  val dateTimeHelper: DateTimeHelper = injector.instanceOf[DateTimeHelper]
 
-class DateTimeHelper @Inject()(implicit val appConfig: AppConfig) extends FeatureSwitching {
-  implicit val config: Configuration = appConfig.config
-  def dateTimeNow: LocalDateTime = LocalDateTime.now
-  def dateNow: LocalDate = getFeatureDate
+  "DateTimeHelper" should {
+    "return getFeatureDate" in {
+      dateTimeHelper.dateNow shouldBe getFeatureDate
+    }
+  }
 }
