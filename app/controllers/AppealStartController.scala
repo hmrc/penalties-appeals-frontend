@@ -58,10 +58,10 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
   private def isAppealLate()(implicit request: Request[_]): Boolean = {
     if(isEnabled(UseNewAPIModel)) {
       val dateCommunicationSentParsedAsLocalDate = LocalDate.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
-      dateCommunicationSentParsedAsLocalDate.isBefore(LocalDate.now().minusDays(appConfig.daysRequiredForLateAppeal))
+      dateCommunicationSentParsedAsLocalDate.isBefore(getFeatureDate.minusDays(appConfig.daysRequiredForLateAppeal))
     } else {
       val dateCommunicationSentParsed = LocalDateTime.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
-      dateCommunicationSentParsed.isBefore(LocalDateTime.now().minusDays(appConfig.daysRequiredForLateAppeal))
+      dateCommunicationSentParsed.isBefore(getFeatureDate.atStartOfDay.minusDays(appConfig.daysRequiredForLateAppeal))
     }
   }
 }
