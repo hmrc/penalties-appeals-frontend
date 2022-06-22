@@ -16,6 +16,7 @@
 
 package forms.mappings
 
+import config.AppConfig
 import play.api.data.FieldMapping
 import play.api.data.Forms.of
 import play.api.i18n.Messages
@@ -34,6 +35,6 @@ trait Mappings extends Formatters {
                            requiredKey: String,
                            futureKey: Option[String] = None,
                            dateNotEqualOrAfterKeyAndCompareDate: Option[(String, LocalDate)] = None,
-                           args: Seq[String] = Seq.empty)(implicit messages: Messages): FieldMapping[LocalDate] =
+                           args: Seq[String] = Seq.empty)(implicit messages: Messages, appConfig: AppConfig): FieldMapping[LocalDate] =
     of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey,  requiredKey, futureKey, dateNotEqualOrAfterKeyAndCompareDate, args))
 }

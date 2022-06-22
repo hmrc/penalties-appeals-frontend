@@ -16,6 +16,7 @@
 
 package forms
 
+import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -25,7 +26,7 @@ import java.time.LocalDate
 
 object WhenDidHospitalStayBeginForm extends Mappings {
 
-  def whenHospitalStayBeginForm()(implicit messages: Messages): Form[LocalDate] = {
+  def whenHospitalStayBeginForm()(implicit messages: Messages, appConfig: AppConfig): Form[LocalDate] = {
     Form(
       "date" -> localDate(
         invalidKey = "healthReason.whenDidHospitalStayBegin.error.invalid",

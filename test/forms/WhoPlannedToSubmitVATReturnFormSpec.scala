@@ -19,8 +19,7 @@ package forms
 import base.SpecBase
 import play.api.data.{Form, FormError}
 
-class WhoPlannedToSubmitVATReturnFormSpec extends FormBehaviours with SpecBase{
-
+class WhoPlannedToSubmitVATReturnFormSpec extends FormBehaviours with SpecBase {
   val form: Form[String] = WhoPlannedToSubmitVATReturnAgentForm.whoPlannedToSubmitVATReturnForm
   behave like mandatoryField(form, "value", FormError("value", "agents.whoPlannedToSubmitVATReturn.error.required"))
   "the value entered does not exist in the possible, valid values" in {

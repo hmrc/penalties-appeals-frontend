@@ -21,166 +21,24 @@ import play.api.data.{Form, FormError}
 
 import java.time.LocalDate
 
-class WhenDidTechnologyIssuesEndFormSpec extends SpecBase {
+class WhenDidTechnologyIssuesEndFormSpec extends SpecBase with FormBehaviours {
+
   val form: Form[LocalDate] = WhenDidTechnologyIssuesEndForm.whenDidTechnologyIssuesEndForm(LocalDate.of(
     2021, 1, 1))
 
   "WhenDidTechnologyIssuesEndForm" should {
-    "bind when the date is valid" in {
+    behave like dateForm(form, "date", errorType => s"technicalIssues.end.error.$errorType")
+
+    "not bind when the date entered is earlier than the date provided previously" in {
       val result = form.bind(
         Map(
-          "date.day" -> "1",
-          "date.month" -> "2",
-          "date.year" -> "2021"
+          "date.day" -> "31",
+          "date.month" -> "12",
+          "date.year" -> "2020"
         )
       )
-      result.errors shouldBe List.empty
-    }
-
-    "not bind" when {
-      "the date entered is earlier than the date provided previously" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "31",
-            "date.month" -> "12",
-            "date.year" -> "2020"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.endDateLessThanStartDate", Seq("day", "month", "year"))
-      }
-      
-      "the date is in the future" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "1",
-            "date.month" -> "2",
-            "date.year" -> "2050"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.notInFuture", Seq("day", "month", "year"))
-      }
-
-      "the date is not valid" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "31",
-            "date.month" -> "2",
-            "date.year" -> "2021"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.invalid", Seq())
-      }
-
-      "the date contains strings instead of numbers" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "thirtyFirst",
-            "date.month" -> "ofTheSecond",
-            "date.year" -> "twentyTwentyOne"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.invalid", Seq("day", "month", "year"))
-      }
-
-      "the date contains negative numbers" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "-1",
-            "date.month" -> "-2",
-            "date.year" -> "2021"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.invalid", Seq("day", "month", "year"))
-      }
-
-      "the date has no day" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "",
-            "date.month" -> "2",
-            "date.year" -> "2021"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.required", Seq("day"))
-      }
-
-      "the date has no month" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "1",
-            "date.month" -> "",
-            "date.year" -> "2021"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.month", "technicalIssues.end.error.required", Seq("month"))
-      }
-
-      "the date has no year" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "1",
-            "date.month" -> "2",
-            "date.year" -> ""
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.year", "technicalIssues.end.error.required", Seq("year"))
-      }
-
-      "the date has a day but no month and year" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "2",
-            "date.month" -> "",
-            "date.year" -> ""
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.month", "technicalIssues.end.error.required.two", Seq("month", "year"))
-      }
-
-      "the date has a month but no day and year" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "",
-            "date.month" -> "2",
-            "date.year" -> ""
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.required.two", Seq("day", "year"))
-      }
-
-      "the date has a year but no day and month" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "",
-            "date.month" -> "",
-            "date.year" -> "2021"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.required.two", Seq("day", "month"))
-      }
-
-      "the date has no values" in {
-        val result = form.bind(
-          Map(
-            "date.day" -> "",
-            "date.month" -> "",
-            "date.year" -> ""
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.required.all", Seq("day", "month", "year"))
-      }
+      result.errors.size shouldBe 1
+      result.errors.head shouldBe FormError("date.day", "technicalIssues.end.error.endDateLessThanStartDate", Seq("day", "month", "year"))
     }
   }
 }

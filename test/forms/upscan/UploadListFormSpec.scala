@@ -16,10 +16,11 @@
 
 package forms.upscan
 
+import base.SpecBase
 import forms.FormBehaviours
 import play.api.data.{Form, FormError}
 
-class UploadListFormSpec extends FormBehaviours {
+class UploadListFormSpec extends FormBehaviours with SpecBase {
   val form: Form[String] = UploadListForm.youHaveUploadedForm
 
   behave like mandatoryField(form, "value", FormError("value", "otherReason.uploadList.uploadAnotherFile.required"))

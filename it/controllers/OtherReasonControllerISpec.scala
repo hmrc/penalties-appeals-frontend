@@ -21,7 +21,6 @@ import models.NormalMode
 import models.upload._
 import org.jsoup.Jsoup
 import org.mongodb.scala.Document
-import play.api.Configuration
 import play.api.http.Status
 import play.api.mvc.{AnyContent, Cookie, Result}
 import play.api.test.FakeRequest
@@ -36,7 +35,6 @@ import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
-  implicit val config: Configuration = injector.instanceOf[Configuration]
   val controller: OtherReasonController = injector.instanceOf[OtherReasonController]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
@@ -126,6 +124,27 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         )
         val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe BAD_REQUEST
+      }
+
+      "the date submitted is in the future - relative to the time machine" in {
+        setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+          authToken -> "1234",
+          (SessionKeys.penaltyNumber, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
+          (SessionKeys.journeyId, "1234")
+        ).withFormUrlEncodedBody(
+          "date.day" -> "02",
+          "date.month" -> "01",
+          "date.year" -> "2022"
+        )
+        val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe BAD_REQUEST
+        setFeatureDate(None)
       }
 
       "no body is submitted" in new Setup {

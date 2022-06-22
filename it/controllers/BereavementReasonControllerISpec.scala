@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.FeatureSwitching
 import models.NormalMode
 import play.api.http.Status
 import play.api.mvc.AnyContent
@@ -27,7 +28,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
+class BereavementReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
 
   val controller: BereavementReasonController = injector.instanceOf[BereavementReasonController]
 
@@ -135,6 +136,27 @@ class BereavementReasonControllerISpec extends IntegrationSpecCommonBase {
         )
         val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "the date submitted is in the future - relative to the time machine" in {
+        setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-die").withSession(
+          authToken -> "1234",
+          (SessionKeys.penaltyNumber, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
+          (SessionKeys.journeyId, "1234")
+        ).withFormUrlEncodedBody(
+          "date.day" -> "02",
+          "date.month" -> "01",
+          "date.year" -> "2022"
+        )
+        val request = await(controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+        setFeatureDate(None)
       }
 
       "no body is submitted" in {

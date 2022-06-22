@@ -16,8 +16,9 @@
 
 package forms
 
-import java.time.LocalDate
+import config.AppConfig
 
+import java.time.LocalDate
 import forms.mappings.Mappings
 import helpers.WhenDidYouBecomeUnableHelper.getMessageKeyForPage
 import models.UserRequest
@@ -26,7 +27,7 @@ import play.api.i18n.Messages
 
 object WhenDidHealthIssueHappenForm extends Mappings {
 
-  def whenHealthIssueHappenedForm()(implicit messages: Messages, user: UserRequest[_]): Form[LocalDate] = {
+  def whenHealthIssueHappenedForm()(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_]): Form[LocalDate] = {
     Form(
       "date" -> localDate(
         invalidKey = getMessageKeyForPage("health.whenHealthIssueHappened.error.invalid"),

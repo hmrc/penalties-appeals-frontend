@@ -16,9 +16,15 @@
 
 package forms
 
+import base.SpecBase
+import config.AppConfig
+import org.mockito.Mockito.mock
+import play.api.Configuration
 import play.api.data.FormError
 
-class YouCanAppealPenaltyFormSpec extends FormBehaviours {
+class YouCanAppealPenaltyFormSpec extends FormBehaviours with SpecBase {
+  implicit val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+  override implicit val config: Configuration = mock(classOf[Configuration])
   "when a VAT trader is in session" must {
     val form = YouCanAppealPenaltyForm.youCanAppealPenaltyForm
     behave like mandatoryField(form, "value", FormError("value", "youCanAppealThisPenalty.error.required"))

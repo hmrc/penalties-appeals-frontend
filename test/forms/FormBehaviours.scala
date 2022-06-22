@@ -16,11 +16,16 @@
 
 package forms
 
+import config.AppConfig
+import config.featureSwitches.FeatureSwitching
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.{Form, FormError}
 
-trait FormBehaviours extends AnyWordSpec with Matchers {
+import java.time.LocalDate
+
+trait FormBehaviours extends AnyWordSpec with Matchers with FeatureSwitching {
+  implicit val appConfig: AppConfig
   val emptyForm: Map[String, String] = Map.empty
 
   def mandatoryField(form: Form[_],
@@ -37,6 +42,171 @@ trait FormBehaviours extends AnyWordSpec with Matchers {
 
       val result = form.bind(Map(fieldName -> "")).apply(fieldName)
       result.errors.headOption shouldBe Some(requiredError)
+    }
+  }
+
+  //scalastyle:off
+  def dateForm(form: Form[_],
+               fieldName: String,
+               errorMessage: String => String): Unit = {
+    "bind when the date is valid" in {
+      setFeatureDate(None)
+      val result = form.bind(
+        Map(
+          s"$fieldName.day" -> "1",
+          s"$fieldName.month" -> "2",
+          s"$fieldName.year" -> "2021"
+        )
+      )
+      result.errors shouldBe List.empty
+    }
+
+    "not bind" when {
+      "the date is in the future" in {
+        setFeatureDate(None)
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "1",
+            s"$fieldName.month" -> "2",
+            s"$fieldName.year" -> "2050"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("notInFuture"), Seq("day", "month", "year"))
+      }
+
+      "the date is in the future relative to the time machine" in {
+        setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "2",
+            s"$fieldName.month" -> "2",
+            s"$fieldName.year" -> "2022"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("notInFuture"), Seq("day", "month", "year"))
+      }
+
+      "the date is not valid" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "31",
+            s"$fieldName.month" -> "2",
+            s"$fieldName.year" -> "2021"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("invalid"), Seq())
+      }
+
+      "the date contains strings instead of numbers" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "thirtyFirst",
+            s"$fieldName.month" -> "ofTheSecond",
+            s"$fieldName.year" -> "twentyTwentyOne"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("invalid"), Seq("day", "month", "year"))
+      }
+
+      "the date contains negative numbers" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "-1",
+            s"$fieldName.month" -> "-2",
+            s"$fieldName.year" -> "2021"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("invalid"), Seq("day", "month", "year"))
+      }
+
+      "the date has no day" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "",
+            s"$fieldName.month" -> "2",
+            s"$fieldName.year" -> "2021"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("required"), Seq("day"))
+      }
+
+      "the date has no month" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "1",
+            s"$fieldName.month" -> "",
+            s"$fieldName.year" -> "2021"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.month", errorMessage("required"), Seq("month"))
+      }
+
+      "the date has no year" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "1",
+            s"$fieldName.month" -> "2",
+            s"$fieldName.year" -> ""
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.year", errorMessage("required"), Seq("year"))
+      }
+
+      "the date has a day but no month and year" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "2",
+            s"$fieldName.month" -> "",
+            s"$fieldName.year" -> ""
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.month", errorMessage("required.two"), Seq("month", "year"))
+      }
+
+      "the date has a month but no day and year" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "",
+            s"$fieldName.month" -> "2",
+            s"$fieldName.year" -> ""
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("required.two"), Seq("day", "year"))
+      }
+
+      "the date has a year but no day and month" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "",
+            s"$fieldName.month" -> "",
+            s"$fieldName.year" -> "2021"
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("required.two"), Seq("day", "month"))
+      }
+
+      "the date has no values" in {
+        val result = form.bind(
+          Map(
+            s"$fieldName.day" -> "",
+            s"$fieldName.month" -> "",
+            s"$fieldName.year" -> ""
+          )
+        )
+        result.errors.size shouldBe 1
+        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("required.all"), Seq("day", "month", "year"))
+      }
     }
   }
 }

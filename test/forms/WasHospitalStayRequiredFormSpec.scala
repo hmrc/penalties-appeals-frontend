@@ -16,14 +16,19 @@
 
 package forms
 
+import base.SpecBase
+import config.AppConfig
 import models.UserRequest
+import org.mockito.Mockito.mock
+import play.api.Configuration
 import play.api.data.FormError
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import utils.SessionKeys
 
-class WasHospitalStayRequiredFormSpec extends FormBehaviours {
-
+class WasHospitalStayRequiredFormSpec extends FormBehaviours with SpecBase {
+  implicit val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+  override implicit val config: Configuration = mock(classOf[Configuration])
   "when a VAT trader is in session" must {
     val vatTraderUserRequest = UserRequest("123456789")(FakeRequest("GET", "/"))
     val vatTraderForm = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(vatTraderUserRequest)

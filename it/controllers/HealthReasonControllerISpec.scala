@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.FeatureSwitching
 import models.NormalMode
 import play.api.http.Status
 import play.api.mvc.AnyContent
@@ -27,7 +28,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
+class HealthReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
   val controller: HealthReasonController = injector.instanceOf[HealthReasonController]
   "GET /was-a-hospital-stay-required" should {
     "return 200 (OK) when the user is authorised" in {
@@ -271,6 +272,27 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
+      "the date submitted is in the future - relative to the time machine" in {
+        setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
+          authToken -> "1234",
+          (SessionKeys.penaltyNumber, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
+          (SessionKeys.journeyId, "1234")
+        ).withFormUrlEncodedBody(
+          "date.day" -> "02",
+          "date.month" -> "01",
+          "date.year" -> "2022"
+        )
+        val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+        setFeatureDate(None)
+      }
+
       "no body is submitted" in {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-health-issue-happen").withSession(
           authToken -> "1234",
@@ -472,6 +494,28 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase {
         )
         val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "the date submitted is in the future - relative to the time machine" in {
+        setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-the-hospital-stay-ended").withSession(
+          authToken -> "1234",
+          (SessionKeys.penaltyNumber, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
+          (SessionKeys.journeyId, "1234"),
+          (SessionKeys.whenHealthIssueStarted, "2020-01-01")
+        ).withFormUrlEncodedBody(
+          "stayEndDate.day" -> "02",
+          "stayEndDate.month" -> "01",
+          "stayEndDate.year" -> "2022"
+        )
+        val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+        setFeatureDate(None)
       }
 
       "the date submitted is before the start date" in {

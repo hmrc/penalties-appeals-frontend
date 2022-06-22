@@ -22,7 +22,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.Application
+import play.api.{Application, Configuration}
 import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{WSClient, WSRequest}
@@ -78,5 +78,7 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
   def buildClientForRequestToApp(baseUrl: String = "/penalties-appeals", uri: String): WSRequest = {
     ws.url(s"http://localhost:$port$baseUrl$uri").withFollowRedirects(false)
   }
+
+  implicit val config: Configuration = injector.instanceOf[Configuration]
 
 }

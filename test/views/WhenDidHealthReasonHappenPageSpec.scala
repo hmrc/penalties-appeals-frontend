@@ -39,12 +39,12 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
   def applyVATTraderView(form: Form[_], userRequest: UserRequest[_] = vatTraderLSPUserRequest): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
     controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode), pageMode = PageMode(WhenDidHealthIssueHappenPage, NormalMode))(implicitly, implicitly, userRequest)
 
-  val vatTraderFormProvider: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, vatTraderLSPUserRequest)
+  val vatTraderFormProvider: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, vatTraderLSPUserRequest)
 
   def applyAgentView(form: Form[_], userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = whenHealthReasonHappenedPage.apply(form,
     controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(NormalMode), pageMode = PageMode(WhenDidHealthIssueHappenPage, NormalMode))(implicitly, implicitly, userRequest)
 
-  val agentFormProvider: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, agentUserAgentSubmitButClientWasLateSessionKeys)
+  val agentFormProvider: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, agentUserAgentSubmitButClientWasLateSessionKeys)
 
   "WhenDidHealthReasonHappenPage" should {
 

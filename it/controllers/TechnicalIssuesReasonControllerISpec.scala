@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.FeatureSwitching
 import models.{CheckMode, NormalMode}
 import play.api.http.Status
 import play.api.mvc.AnyContent
@@ -27,7 +28,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
+class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
   val controller: TechnicalIssuesReasonController = injector.instanceOf[TechnicalIssuesReasonController]
 
   "GET /when-did-the-technology-issues-begin" should {
@@ -74,22 +75,6 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
 
   "GET /when-did-the-technology-issues-end" should {
     "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234"),
-        (SessionKeys.whenDidTechnologyIssuesBegin, "2020-01-01")
-      )
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeys))
-      request.header.status shouldBe Status.OK
-    }
-
-    "return 400 (BAD REQUEST) when the user enters a date that is earlier than the start date" in {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end").withSession(
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
@@ -172,6 +157,27 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "the date submitted is in the future - relative to the time machine" in {
+        setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+          authToken -> "1234",
+          (SessionKeys.penaltyNumber, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
+          (SessionKeys.journeyId, "1234")
+        ).withFormUrlEncodedBody(
+          "date.day" -> "02",
+          "date.month" -> "01",
+          "date.year" -> "2022"
+        )
+        val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe BAD_REQUEST
+        setFeatureDate(None)
       }
 
       "no body is submitted" in {
@@ -324,6 +330,28 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase {
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "the date submitted is in the future - relative to the time machine" in {
+        setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
+          authToken -> "1234",
+          (SessionKeys.penaltyNumber, "1234"),
+          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.startDateOfPeriod, "2020-01-01"),
+          (SessionKeys.endDateOfPeriod, "2020-01-01"),
+          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.dateCommunicationSent, "2020-02-08"),
+          (SessionKeys.journeyId, "1234"),
+          (SessionKeys.whenDidTechnologyIssuesBegin, "2021-02-01")
+        ).withFormUrlEncodedBody(
+          "date.day" -> "02",
+          "date.month" -> "01",
+          "date.year" -> "2022"
+        )
+        val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        request.header.status shouldBe BAD_REQUEST
+        setFeatureDate(None)
       }
 
       "the date submitted is in the future" in {
