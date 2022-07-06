@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package models.v2
+package models
 
-import models.PenaltyTypeEnum
+import java.time.LocalDate
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
-import java.time.LocalDate
-
-import models.v3.AppealData
 
 class AppealDataSpec extends AnyWordSpec with Matchers {
   val expectedModelAsJson: JsValue = Json.parse(

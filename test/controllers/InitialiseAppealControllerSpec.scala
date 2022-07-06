@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.PenaltyTypeEnum
+import models.{AppealData, PenaltyTypeEnum}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.Result
@@ -28,8 +28,6 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import java.time.LocalDate
-
-import models.v3.AppealData
 
 import scala.concurrent.Future
 

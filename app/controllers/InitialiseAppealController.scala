@@ -18,7 +18,7 @@ package controllers
 
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
-import models.UserRequest
+import models.{AppealData, UserRequest}
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.AppealService
@@ -28,7 +28,6 @@ import utils.SessionKeys
 import java.util.UUID
 
 import javax.inject.Inject
-import models.v3.AppealData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package models.v3
-
-import models.PenaltyTypeEnum
-import play.api.libs.json.{Format, Json}
+package models
 
 import java.time.LocalDate
+
+import play.api.libs.json.{Format, Json}
 
 case class AppealData[A](
                        `type`: PenaltyTypeEnum.Value,

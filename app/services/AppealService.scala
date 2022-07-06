@@ -26,8 +26,7 @@ import javax.inject.Inject
 import models.appeals.AppealSubmission
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
-import models.v3.AppealData
-import models.{PenaltyTypeEnum, ReasonableExcuse, UserRequest}
+import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.Configuration
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, JsValue, Json}

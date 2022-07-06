@@ -20,7 +20,7 @@ import base.SpecBase
 import config.AppConfig
 import connectors.PenaltiesConnector
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
-import models.{ReasonableExcuse, UserRequest}
+import models.{AppealData, ReasonableExcuse, UserRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
@@ -31,8 +31,6 @@ import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{SessionKeys, UUIDGenerator}
 import java.time.LocalDate
-
-import models.v3.AppealData
 
 import scala.concurrent.{ExecutionContext, Future}
 
