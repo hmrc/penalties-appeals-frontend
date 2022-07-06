@@ -25,7 +25,7 @@ import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import utils.SessionKeys
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 class PenaltyTypeHelperSpec extends SpecBase {
   
@@ -88,8 +88,8 @@ class PenaltyTypeHelperSpec extends SpecBase {
         val result = PenaltyTypeHelper.getKeysFromSession()(userRequestWithCorrectKeys, implicitly, implicitly)
         result.isDefined shouldBe true
         result.get.head shouldBe messages("penaltyType.lateSubmission")
-        result.get(1) shouldBe ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse("2020-01-01T12:00:00.500"))
-        result.get(2) shouldBe ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse("2020-01-01T12:00:00.500"))
+        result.get(1) shouldBe ImplicitDateFormatter.dateToString(LocalDate.parse("2020-01-01"))
+        result.get(2) shouldBe ImplicitDateFormatter.dateToString(LocalDate.parse("2020-01-01"))
       }
     }
 

@@ -32,19 +32,17 @@ class FeatureSwitchingSpec extends SpecBase {
       override implicit val config: Configuration = mockConfig
     }
     sys.props -= NonJSRouting.name
-    sys.props -= UseNewAPIModel.name
     sys.props -= featureSwitching.TIME_MACHINE_NOW
   }
 
   override protected def afterAll(): Unit = {
     super.afterAll()
     sys.props -= NonJSRouting.name
-    sys.props -= UseNewAPIModel.name
   }
 
   "listOfAllFeatureSwitches" should {
     "be all the featureswitches in the app" in {
-      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, UseNewAPIModel)
+      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting)
     }
   }
 
@@ -78,22 +76,12 @@ class FeatureSwitchingSpec extends SpecBase {
       featureSwitching.enableFeatureSwitch(NonJSRouting)
       (sys.props get NonJSRouting.name get) shouldBe "true"
     }
-
-    s"set ${UseNewAPIModel.name} property to true" in new Setup {
-      featureSwitching.enableFeatureSwitch(UseNewAPIModel)
-      (sys.props get UseNewAPIModel.name get) shouldBe "true"
-    }
   }
 
   "disableFeatureSwitch" should {
     s"set ${NonJSRouting.name} property to false" in new Setup {
       featureSwitching.disableFeatureSwitch(NonJSRouting)
       (sys.props get NonJSRouting.name get) shouldBe "false"
-    }
-
-    s"set ${UseNewAPIModel.name} property to false" in new Setup {
-      featureSwitching.disableFeatureSwitch(UseNewAPIModel)
-      (sys.props get UseNewAPIModel.name get) shouldBe "false"
     }
   }
 

@@ -22,7 +22,7 @@ import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import play.api.libs.json.{JsValue, Json}
 import utils.SessionKeys
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 class AppealSubmissionSpec extends SpecBase {
 
@@ -31,7 +31,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "crime",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "reportedIssueToPolice": true,
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
@@ -45,7 +45,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "lossOfStaff",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
       |   "isClientResponsibleForLateSubmission": true
@@ -58,7 +58,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "technicalIssues",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
@@ -72,7 +72,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "fireOrFlood",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
       |   "isClientResponsibleForLateSubmission": true
@@ -85,7 +85,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "health",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "endDateOfEvent": "2021-04-24T18:25:43.511Z",
       |   "eventOngoing": false,
       |   "hospitalStayInvolved": true,
@@ -101,7 +101,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "health",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "eventOngoing": true,
       |   "hospitalStayInvolved": true,
       |   "lateAppeal": false,
@@ -116,7 +116,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "health",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "hospitalStayInvolved": false,
       |   "eventOngoing": false,
       |   "lateAppeal": false,
@@ -131,7 +131,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "other",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "statement": "This is a statement.",
       |   "supportingEvidence": {
       |     "noOfUploadedFiles": 1
@@ -147,11 +147,11 @@ class AppealSubmissionSpec extends SpecBase {
       |       "uploadDetails": {
       |         "fileName":"filename.txt",
       |         "fileMimeType":"txt",
-      |         "uploadTimestamp":"2020-01-01T01:01:00",
+      |         "uploadTimestamp":"2020-01-01",
       |         "checksum":"abcde",
       |         "size":1
       |       },
-      |       "lastUpdated":"2021-02-02T02:02:00"
+      |       "lastUpdated":"2021-02-02"
       |     },
       |     {
       |       "reference":"abc",
@@ -160,11 +160,11 @@ class AppealSubmissionSpec extends SpecBase {
       |       "uploadDetails": {
       |         "fileName":"filename2.pdf",
       |         "fileMimeType":"pdf",
-      |         "uploadTimestamp":"2020-03-03T03:03:00",
+      |         "uploadTimestamp":"2020-03-03",
       |         "checksum":"zyxwv",
       |         "size":1
       |       },
-      |       "lastUpdated":"2021-04-04T04:04:00"
+      |       "lastUpdated":"2021-04-04"
       |     }
       |    ]
       |}
@@ -176,7 +176,7 @@ class AppealSubmissionSpec extends SpecBase {
       |{
       |   "reasonableExcuse": "other",
       |   "honestyDeclaration": true,
-      |   "startDateOfEvent": "2021-04-23T18:25:43.511Z",
+      |   "startDateOfEvent": "2021-04-23",
       |   "statement": "This is a statement.",
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
@@ -202,11 +202,11 @@ class AppealSubmissionSpec extends SpecBase {
       |       "uploadDetails": {
       |         "fileName":"filename.txt",
       |         "fileMimeType":"txt",
-      |         "uploadTimestamp":"2020-01-01T01:01:00",
+      |         "uploadTimestamp":"2020-01-01",
       |         "checksum":"abcde",
       |         "size":1
       |       },
-      |       "lastUpdated":"2021-02-02T02:02:00"
+      |       "lastUpdated":"2021-02-02"
       |     },
       |     {
       |       "reference":"abc",
@@ -215,11 +215,11 @@ class AppealSubmissionSpec extends SpecBase {
       |       "uploadDetails": {
       |         "fileName":"filename2.pdf",
       |         "fileMimeType":"pdf",
-      |         "uploadTimestamp":"2020-03-03T03:03:00",
+      |         "uploadTimestamp":"2020-03-03",
       |         "checksum":"zyxwv",
       |         "size":1
       |       },
-      |       "lastUpdated":"2021-04-04T04:04:00"
+      |       "lastUpdated":"2021-04-04"
       |     }
       |    ]
       |}
@@ -241,18 +241,18 @@ class AppealSubmissionSpec extends SpecBase {
       Some(UploadDetails(
         fileName = "filename.txt",
         fileMimeType = "txt",
-        uploadTimestamp = LocalDateTime.of(2020,1,1,1,1),
+        uploadTimestamp = LocalDate.of(2020,1,1),
         checksum = "abcde", size = 1)),
-    failureDetails = None, lastUpdated = LocalDateTime.of(2021,2,2,2,2))
+    failureDetails = None, lastUpdated = LocalDate.of(2021,2,2))
 
   val uploadJourneyModel2: UploadJourney = UploadJourney(reference = "abc", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("abc.com"),
     uploadDetails =
       Some(UploadDetails(
         fileName = "filename2.pdf",
         fileMimeType = "pdf",
-        uploadTimestamp = LocalDateTime.of(2020,3,3,3,3),
+        uploadTimestamp = LocalDate.of(2020,3,3),
         checksum = "zyxwv", size = 1)),
-    failureDetails = None, lastUpdated = LocalDateTime.of(2021,4,4,4,4))
+    failureDetails = None, lastUpdated = LocalDate.of(2021,4,4))
 
   "parseAppealInformationToJson" should {
     "for crime" must {
@@ -260,7 +260,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           reportedIssueToPolice = true,
           statement = None,
           lateAppeal = false,
@@ -278,7 +278,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = FireOrFloodAppealInformation(
           reasonableExcuse = "fireOrFlood",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -295,7 +295,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = LossOfStaffAppealInformation(
           reasonableExcuse = "lossOfStaff",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -312,7 +312,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = TechnicalIssuesAppealInformation(
           reasonableExcuse = "technicalIssues",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           endDateOfEvent = "2021-04-24T18:25:43.511Z",
           statement = None,
           lateAppeal = false,
@@ -330,7 +330,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = HealthAppealInformation(
           reasonableExcuse = "health",
           honestyDeclaration = true,
-          startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+          startDateOfEvent = Some("2021-04-23"),
           endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
           eventOngoing = false,
           hospitalStayInvolved = true,
@@ -349,7 +349,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = HealthAppealInformation(
           reasonableExcuse = "health",
           honestyDeclaration = true,
-          startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+          startDateOfEvent = Some("2021-04-23"),
           endDateOfEvent = None,
           eventOngoing = true,
           hospitalStayInvolved = true,
@@ -368,7 +368,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = HealthAppealInformation(
           reasonableExcuse = "health",
           honestyDeclaration = true,
-          startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+          startDateOfEvent = Some("2021-04-23"),
           endDateOfEvent = None,
           eventOngoing = false,
           hospitalStayInvolved = false,
@@ -388,7 +388,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = OtherAppealInformation(
           reasonableExcuse = "other",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           statement = Some("This is a statement."),
           supportingEvidence = Some(Evidence(
             noOfUploadedFiles = 1
@@ -407,7 +407,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = OtherAppealInformation(
           reasonableExcuse = "other",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           statement = Some("This is a statement."),
           supportingEvidence = None,
           lateAppeal = false,
@@ -907,14 +907,14 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = false,
           appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = BereavementAppealInformation(
             reasonableExcuse = "bereavement",
             honestyDeclaration = true,
-            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            startDateOfEvent = "2021-04-23",
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
@@ -926,13 +926,13 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> false,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "bereavement",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
             "isClientResponsibleForLateSubmission" -> true
@@ -948,14 +948,14 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = CrimeAppealInformation(
             reasonableExcuse = "crime",
             honestyDeclaration = true,
-            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            startDateOfEvent = "2021-04-23",
             reportedIssueToPolice = true,
             statement = None,
             lateAppeal = false,
@@ -968,13 +968,13 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "crime",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "reportedIssueToPolice" -> true,
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
@@ -993,14 +993,14 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = FireOrFloodAppealInformation(
             reasonableExcuse = "fireOrFlood",
             honestyDeclaration = true,
-            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            startDateOfEvent = "2021-04-23",
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
@@ -1013,13 +1013,13 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "fireOrFlood",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
             "isClientResponsibleForLateSubmission" -> true
@@ -1037,14 +1037,14 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = LossOfStaffAppealInformation(
             reasonableExcuse = "lossOfStaff",
             honestyDeclaration = true,
-            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            startDateOfEvent = "2021-04-23",
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
@@ -1056,13 +1056,13 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "lossOfStaff",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
             "isClientResponsibleForLateSubmission" -> true
@@ -1080,14 +1080,14 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = TechnicalIssuesAppealInformation(
             reasonableExcuse = "technicalIssues",
             honestyDeclaration = true,
-            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            startDateOfEvent = "2021-04-23",
             endDateOfEvent = "2021-04-24T18:25:43.511Z",
             statement = None,
             lateAppeal = false,
@@ -1101,13 +1101,13 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "technicalIssues",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
@@ -1127,14 +1127,14 @@ class AppealSubmissionSpec extends SpecBase {
             sourceSystem = "MDTP",
             taxRegime = "VAT",
             customerReferenceNo = "VRN1234567890",
-            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            dateOfAppeal = LocalDate.of(2020,1,1),
             isLPP = true,
             appealSubmittedBy = "client",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
               honestyDeclaration = true,
-              startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+              startDateOfEvent = Some("2021-04-23"),
               endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
               eventOngoing = false,
               hospitalStayInvolved = true,
@@ -1149,13 +1149,13 @@ class AppealSubmissionSpec extends SpecBase {
             "sourceSystem" -> "MDTP",
             "taxRegime" -> "VAT",
             "customerReferenceNo" -> "VRN1234567890",
-            "dateOfAppeal" -> "2020-01-01T00:00:00",
+            "dateOfAppeal" -> "2020-01-01",
             "isLPP" -> true,
             "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
-              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+              "startDateOfEvent" -> "2021-04-23",
               "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
               "eventOngoing" -> false,
               "hospitalStayInvolved" -> true,
@@ -1174,14 +1174,14 @@ class AppealSubmissionSpec extends SpecBase {
             sourceSystem = "MDTP",
             taxRegime = "VAT",
             customerReferenceNo = "VRN1234567890",
-            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            dateOfAppeal = LocalDate.of(2020,1,1),
             isLPP = true,
             appealSubmittedBy = "client",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
               honestyDeclaration = true,
-              startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+              startDateOfEvent = Some("2021-04-23"),
               endDateOfEvent = None,
               eventOngoing = true,
               hospitalStayInvolved = true,
@@ -1196,13 +1196,13 @@ class AppealSubmissionSpec extends SpecBase {
             "sourceSystem" -> "MDTP",
             "taxRegime" -> "VAT",
             "customerReferenceNo" -> "VRN1234567890",
-            "dateOfAppeal" -> "2020-01-01T00:00:00",
+            "dateOfAppeal" -> "2020-01-01",
             "isLPP" -> true,
             "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
-              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+              "startDateOfEvent" -> "2021-04-23",
               "eventOngoing" -> true,
               "hospitalStayInvolved" -> true,
               "lateAppeal" -> true,
@@ -1221,14 +1221,14 @@ class AppealSubmissionSpec extends SpecBase {
             sourceSystem = "MDTP",
             taxRegime = "VAT",
             customerReferenceNo = "VRN1234567890",
-            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            dateOfAppeal = LocalDate.of(2020,1,1),
             isLPP = true,
             appealSubmittedBy = "client",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
               honestyDeclaration = true,
-              startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+              startDateOfEvent = Some("2021-04-23"),
               endDateOfEvent = None,
               eventOngoing = false,
               hospitalStayInvolved = false,
@@ -1243,13 +1243,13 @@ class AppealSubmissionSpec extends SpecBase {
             "sourceSystem" -> "MDTP",
             "taxRegime" -> "VAT",
             "customerReferenceNo" -> "VRN1234567890",
-            "dateOfAppeal" -> "2020-01-01T00:00:00",
+            "dateOfAppeal" -> "2020-01-01",
             "isLPP" -> true,
             "appealSubmittedBy" -> "client",
             "appealInformation" -> Json.obj(
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
-              "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+              "startDateOfEvent" -> "2021-04-23",
               "eventOngoing" -> false,
               "hospitalStayInvolved" -> false,
               "lateAppeal" -> true,
@@ -1270,14 +1270,14 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
             honestyDeclaration = true,
-            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            startDateOfEvent = "2021-04-23",
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
               noOfUploadedFiles = 1
@@ -1294,13 +1294,13 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "other",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
               "noOfUploadedFiles" -> 1
@@ -1316,11 +1316,11 @@ class AppealSubmissionSpec extends SpecBase {
                 "uploadDetails" -> Json.obj(
                   "fileName" -> "filename.txt",
                   "fileMimeType" ->"txt",
-                  "uploadTimestamp" -> "2020-01-01T01:01:00",
+                  "uploadTimestamp" -> "2020-01-01",
                   "checksum" -> "abcde",
                   "size" -> 1
                 ),
-                "lastUpdated" -> "2021-02-02T02:02:00"
+                "lastUpdated" -> "2021-02-02"
               ),
               Json.obj(
                 "reference" -> "abc",
@@ -1329,11 +1329,11 @@ class AppealSubmissionSpec extends SpecBase {
                 "uploadDetails" -> Json.obj(
                   "fileName" -> "filename2.pdf",
                   "fileMimeType" -> "pdf",
-                  "uploadTimestamp" -> "2020-03-03T03:03:00",
+                  "uploadTimestamp" -> "2020-03-03",
                   "checksum" -> "zyxwv",
                   "size" -> 1
                 ),
-                "lastUpdated" -> "2021-04-04T04:04:00"
+                "lastUpdated" -> "2021-04-04"
               )
             )
           )
@@ -1348,14 +1348,14 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
             honestyDeclaration = true,
-            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            startDateOfEvent = "2021-04-23",
             statement = Some("This was the reason"),
             supportingEvidence = None,
             lateAppeal = false,
@@ -1370,13 +1370,13 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "other",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "statement" -> "This was the reason",
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
@@ -1393,14 +1393,14 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
             honestyDeclaration = true,
-            startDateOfEvent = "2021-04-23T18:25:43.511Z",
+            startDateOfEvent = "2021-04-23",
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
               noOfUploadedFiles = 1
@@ -1417,13 +1417,13 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "other",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
               "noOfUploadedFiles" -> 1
@@ -1440,11 +1440,11 @@ class AppealSubmissionSpec extends SpecBase {
                 "uploadDetails" -> Json.obj(
                   "fileName" -> "filename.txt",
                   "fileMimeType" ->"txt",
-                  "uploadTimestamp" -> "2020-01-01T01:01:00",
+                  "uploadTimestamp" -> "2020-01-01",
                   "checksum" -> "abcde",
                   "size" -> 1
                   ),
-                "lastUpdated" -> "2021-02-02T02:02:00"
+                "lastUpdated" -> "2021-02-02"
               ),
               Json.obj(
                 "reference" -> "abc",
@@ -1453,11 +1453,11 @@ class AppealSubmissionSpec extends SpecBase {
                 "uploadDetails" -> Json.obj(
                   "fileName" -> "filename2.pdf",
                   "fileMimeType" -> "pdf",
-                  "uploadTimestamp" -> "2020-03-03T03:03:00",
+                  "uploadTimestamp" -> "2020-03-03",
                   "checksum" -> "zyxwv",
                   "size" -> 1
                   ),
-                "lastUpdated" -> "2021-04-04T04:04:00"
+                "lastUpdated" -> "2021-04-04"
               )
             )
           )
@@ -1474,7 +1474,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
@@ -1493,7 +1493,7 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
@@ -1511,11 +1511,11 @@ class AppealSubmissionSpec extends SpecBase {
                 "uploadDetails" -> Json.obj(
                   "fileName" -> "filename.txt",
                   "fileMimeType" ->"txt",
-                  "uploadTimestamp" -> "2020-01-01T01:01:00",
+                  "uploadTimestamp" -> "2020-01-01",
                   "checksum" -> "abcde",
                   "size" -> 1
                 ),
-                "lastUpdated" -> "2021-02-02T02:02:00"
+                "lastUpdated" -> "2021-02-02"
               ),
               Json.obj(
                 "reference" -> "abc",
@@ -1524,11 +1524,11 @@ class AppealSubmissionSpec extends SpecBase {
                 "uploadDetails" -> Json.obj(
                   "fileName" -> "filename2.pdf",
                   "fileMimeType" -> "pdf",
-                  "uploadTimestamp" -> "2020-03-03T03:03:00",
+                  "uploadTimestamp" -> "2020-03-03",
                   "checksum" -> "zyxwv",
                   "size" -> 1
                 ),
-                "lastUpdated" -> "2021-04-04T04:04:00"
+                "lastUpdated" -> "2021-04-04"
               )
             )
           )
@@ -1543,7 +1543,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDate.of(2020,1,1),
           isLPP = true,
           appealSubmittedBy = "client",
           agentDetails = None,
@@ -1560,7 +1560,7 @@ class AppealSubmissionSpec extends SpecBase {
           "sourceSystem" -> "MDTP",
           "taxRegime" -> "VAT",
           "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
+          "dateOfAppeal" -> "2020-01-01",
           "isLPP" -> true,
           "appealSubmittedBy" -> "client",
           "appealInformation" -> Json.obj(
@@ -1582,7 +1582,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = BereavementAppealInformation(
           reasonableExcuse = "bereavement",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
@@ -1593,7 +1593,7 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe Json.obj(
           "reasonableExcuse" -> "bereavement",
           "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "startDateOfEvent" -> "2021-04-23",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
           "isClientResponsibleForSubmission" -> false,
@@ -1609,7 +1609,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           reportedIssueToPolice = true,
           statement = None,
           lateAppeal = true,
@@ -1621,7 +1621,7 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe Json.obj(
           "reasonableExcuse" -> "crime",
           "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "startDateOfEvent" -> "2021-04-23",
           "reportedIssueToPolice" -> true,
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
@@ -1638,7 +1638,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = FireOrFloodAppealInformation(
           reasonableExcuse = "fireOrFlood",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
@@ -1649,7 +1649,7 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe Json.obj(
           "reasonableExcuse" -> "fireOrFlood",
           "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "startDateOfEvent" -> "2021-04-23",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
           "isClientResponsibleForSubmission" -> false,
@@ -1665,7 +1665,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = LossOfStaffAppealInformation(
           reasonableExcuse = "lossOfStaff",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
@@ -1676,7 +1676,7 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe Json.obj(
           "reasonableExcuse" -> "lossOfStaff",
           "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "startDateOfEvent" -> "2021-04-23",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
           "isClientResponsibleForSubmission" -> false,
@@ -1692,7 +1692,7 @@ class AppealSubmissionSpec extends SpecBase {
         val model = TechnicalIssuesAppealInformation(
           reasonableExcuse = "technicalIssues",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23T18:25:43.511Z",
+          startDateOfEvent = "2021-04-23",
           endDateOfEvent = "2021-04-24T18:25:43.511Z",
           statement = None,
           lateAppeal = true,
@@ -1704,7 +1704,7 @@ class AppealSubmissionSpec extends SpecBase {
         result shouldBe Json.obj(
           "reasonableExcuse" -> "technicalIssues",
           "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "startDateOfEvent" -> "2021-04-23",
           "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
@@ -1722,7 +1722,7 @@ class AppealSubmissionSpec extends SpecBase {
           val model = HealthAppealInformation(
             reasonableExcuse = "health",
             honestyDeclaration = true,
-            startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+            startDateOfEvent = Some("2021-04-23"),
             endDateOfEvent = Some("2021-04-24T18:25:43.511Z"),
             eventOngoing = false,
             hospitalStayInvolved = true,
@@ -1736,7 +1736,7 @@ class AppealSubmissionSpec extends SpecBase {
           result shouldBe Json.obj(
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "endDateOfEvent" -> "2021-04-24T18:25:43.511Z",
             "eventOngoing" -> false,
             "hospitalStayInvolved" -> true,
@@ -1751,7 +1751,7 @@ class AppealSubmissionSpec extends SpecBase {
           val model = HealthAppealInformation(
             reasonableExcuse = "health",
             honestyDeclaration = true,
-            startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+            startDateOfEvent = Some("2021-04-23"),
             endDateOfEvent = None,
             eventOngoing = true,
             hospitalStayInvolved = true,
@@ -1765,7 +1765,7 @@ class AppealSubmissionSpec extends SpecBase {
           result shouldBe Json.obj(
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "eventOngoing" -> true,
             "hospitalStayInvolved" -> true,
             "lateAppeal" -> true,
@@ -1780,7 +1780,7 @@ class AppealSubmissionSpec extends SpecBase {
           val model = HealthAppealInformation(
             reasonableExcuse = "health",
             honestyDeclaration = true,
-            startDateOfEvent = Some("2021-04-23T18:25:43.511Z"),
+            startDateOfEvent = Some("2021-04-23"),
             endDateOfEvent = None,
             eventOngoing = false,
             hospitalStayInvolved = false,
@@ -1794,7 +1794,7 @@ class AppealSubmissionSpec extends SpecBase {
           result shouldBe Json.obj(
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+            "startDateOfEvent" -> "2021-04-23",
             "eventOngoing" -> false,
             "hospitalStayInvolved" -> false,
             "lateAppeal" -> true,
@@ -1843,11 +1843,11 @@ class AppealSubmissionSpec extends SpecBase {
             |     "uploadDetails": {
             |         "fileName": "filename.txt",
             |         "fileMimeType": "txt",
-            |         "uploadTimestamp": "2020-01-01T01:01:00",
+            |         "uploadTimestamp": "2020-01-01",
             |         "checksum": "abcde",
             |         "size": 1
             |       },
-            |       "lastUpdated": "2021-02-02T02:02:00"
+            |       "lastUpdated": "2021-02-02"
             |     },
             |     {
             |       "reference": "abc",
@@ -1856,11 +1856,11 @@ class AppealSubmissionSpec extends SpecBase {
             |       "uploadDetails": {
             |         "fileName": "filename2.pdf",
             |         "fileMimeType": "pdf",
-            |         "uploadTimestamp": "2020-03-03T03:03:00",
+            |         "uploadTimestamp": "2020-03-03",
             |         "checksum": "zyxwv",
             |         "size": 1
             |       },
-            |       "lastUpdated": "2021-04-04T04:04:00"
+            |       "lastUpdated": "2021-04-04"
             |     }
             |   ]
             |}
@@ -1904,11 +1904,11 @@ class AppealSubmissionSpec extends SpecBase {
             |     "uploadDetails": {
             |         "fileName": "filename.txt",
             |         "fileMimeType": "txt",
-            |         "uploadTimestamp": "2020-01-01T01:01:00",
+            |         "uploadTimestamp": "2020-01-01",
             |         "checksum": "abcde",
             |         "size": 1
             |       },
-            |       "lastUpdated": "2021-02-02T02:02:00"
+            |       "lastUpdated": "2021-02-02"
             |     },
             |     {
             |       "reference": "abc",
@@ -1917,11 +1917,11 @@ class AppealSubmissionSpec extends SpecBase {
             |       "uploadDetails": {
             |         "fileName": "filename2.pdf",
             |         "fileMimeType": "pdf",
-            |         "uploadTimestamp": "2020-03-03T03:03:00",
+            |         "uploadTimestamp": "2020-03-03",
             |         "checksum": "zyxwv",
             |         "size": 1
             |       },
-            |       "lastUpdated": "2021-04-04T04:04:00"
+            |       "lastUpdated": "2021-04-04"
             |     }
             |   ]
             |}
@@ -1992,11 +1992,11 @@ class AppealSubmissionSpec extends SpecBase {
             |     "uploadDetails": {
             |         "fileName": "filename.txt",
             |         "fileMimeType": "txt",
-            |         "uploadTimestamp": "2020-01-01T01:01:00",
+            |         "uploadTimestamp": "2020-01-01",
             |         "checksum": "abcde",
             |         "size": 1
             |       },
-            |       "lastUpdated": "2021-02-02T02:02:00"
+            |       "lastUpdated": "2021-02-02"
             |     },
             |     {
             |       "reference": "abc",
@@ -2005,11 +2005,11 @@ class AppealSubmissionSpec extends SpecBase {
             |       "uploadDetails": {
             |         "fileName": "filename2.pdf",
             |         "fileMimeType": "pdf",
-            |         "uploadTimestamp": "2020-03-03T03:03:00",
+            |         "uploadTimestamp": "2020-03-03",
             |         "checksum": "zyxwv",
             |         "size": 1
             |       },
-            |       "lastUpdated": "2021-04-04T04:04:00"
+            |       "lastUpdated": "2021-04-04"
             |     }
             |   ]
             |}

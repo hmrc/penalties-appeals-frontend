@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-package models.v2
+package models.v3
 
 import models.PenaltyTypeEnum
 import play.api.libs.json.{Format, Json}
 
 import java.time.LocalDate
 
-//TODO: quick workaround for type difference, remove when old API is removed
-trait AppealInformation[A] {
-  val `type`: PenaltyTypeEnum.Value
-  val startDate: A
-  val endDate: A
-  val dueDate: A
-  val dateCommunicationSent: A
-}
 case class AppealData[A](
                        `type`: PenaltyTypeEnum.Value,
                        startDate: A,
                        endDate: A,
                        dueDate: A,
                        dateCommunicationSent: A
-                     ) extends AppealInformation[A]
+                     )
 
 object AppealData {
   implicit val format: Format[AppealData[LocalDate]] = Json.format[AppealData[LocalDate]]

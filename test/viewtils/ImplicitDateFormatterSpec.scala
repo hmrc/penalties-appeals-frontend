@@ -18,7 +18,7 @@ package viewtils
 
 import base.SpecBase
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 class ImplicitDateFormatterSpec extends SpecBase with ImplicitDateFormatter {
 
@@ -27,19 +27,11 @@ class ImplicitDateFormatterSpec extends SpecBase with ImplicitDateFormatter {
       "dateToString is called" in {
         dateToString(LocalDate.of(2021, 1, 1)) shouldBe "1 January 2021"
       }
-
-      "dateTimeToString is called" in {
-        dateTimeToString(LocalDateTime.of(2021, 1, 1, 1, 1, 1)) shouldBe "1 January 2021"
-      }
     }
 
     "return the formatted Welsh LocalDate" when {
       "dateToString is called" in {
         dateToString(LocalDate.of(2021, 1, 1))(cyMessages) shouldBe "1 Ionawr 2021"
-      }
-
-      "dateTimeToString is called" in {
-        dateTimeToString(LocalDateTime.of(2021, 1, 1, 1, 1, 1))(cyMessages) shouldBe "1 Ionawr 2021"
       }
     }
   }

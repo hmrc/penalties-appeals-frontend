@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -2042,7 +2042,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          uploadTimestamp = LocalDate.of(2018, 1, 1),
           checksum = "check1234",
           size = 2
         ))

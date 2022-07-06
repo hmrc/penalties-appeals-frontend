@@ -32,7 +32,7 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -147,7 +147,7 @@ class UpscanServiceSpec extends SpecBase {
             UploadJourney("file1",
               UploadStatusEnum.READY,
               uploadDetails = Some(
-                UploadDetails(fileName = "file123.txt", fileMimeType = "mime/type", uploadTimestamp = LocalDateTime.now(), checksum = "check123", size = 1)
+                UploadDetails(fileName = "file123.txt", fileMimeType = "mime/type", uploadTimestamp = LocalDate.now(), checksum = "check123", size = 1)
               )
             )
           )

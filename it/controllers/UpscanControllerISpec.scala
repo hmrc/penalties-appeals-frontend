@@ -29,7 +29,7 @@ import repositories.UploadJourneyRepository
 import stubs.UpscanStub._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class UpscanControllerISpec extends IntegrationSpecCommonBase {
@@ -53,7 +53,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.now(),
+      uploadTimestamp = LocalDate.now(),
       checksum = "123456",
       size = 200
     )))
@@ -65,7 +65,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.now(),
+      uploadTimestamp = LocalDate.now(),
       checksum = "123457",
       size = 200
     )))
@@ -194,7 +194,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file1.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -207,7 +207,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file2.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -227,7 +227,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file1.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -240,7 +240,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file2.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -259,7 +259,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file1.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -272,7 +272,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file2.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -292,7 +292,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file1.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))

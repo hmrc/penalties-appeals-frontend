@@ -16,7 +16,7 @@
 
 package config
 
-import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
+import config.featureSwitches.FeatureSwitching
 import play.api.Configuration
 import play.api.i18n.Lang
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
@@ -40,11 +40,11 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
   lazy val penaltiesServiceBaseUrl: String = servicesConfig.baseUrl("penalties")
 
   def appealLSPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&useNewApiModel=${isEnabled(UseNewAPIModel)}"
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
   }
 
   def appealLPPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String, isAdditional: Boolean): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional&useNewApiModel=${isEnabled(UseNewAPIModel)}"
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional"
   }
 
   def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String): String =

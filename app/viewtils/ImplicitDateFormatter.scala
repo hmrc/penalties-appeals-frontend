@@ -17,14 +17,11 @@
 package viewtils
 
 import play.api.i18n.Messages
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 trait ImplicitDateFormatter {
 
   implicit def dateToString(date: LocalDate)(implicit messages: Messages): String =
-    s"${date.getDayOfMonth} ${messages(s"month.${date.getMonthValue}")} ${date.getYear}"
-
-  implicit def dateTimeToString(date: LocalDateTime)(implicit messages: Messages): String =
     s"${date.getDayOfMonth} ${messages(s"month.${date.getMonthValue}")} ${date.getYear}"
 
 }

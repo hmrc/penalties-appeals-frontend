@@ -20,10 +20,10 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 class UploadJourneySpec extends AnyWordSpec with Matchers {
-  val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+  val mockDateTime = LocalDate.of(2020, 1, 1)
 
   val uploadJourneyAsJson: JsValue = Json.parse(
     """
@@ -34,11 +34,11 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       | "uploadDetails": {
       |   "fileName": "file1.txt",
       |   "fileMimeType": "text/plain",
-      |   "uploadTimestamp": "2018-04-24T09:30:00",
+      |   "uploadTimestamp": "2018-04-24",
       |   "checksum": "check123456789",
       |   "size": 1
       | },
-      | "lastUpdated": "2020-01-01T00:00:00",
+      | "lastUpdated": "2020-01-01",
       | "uploadFields": {
       |   "key": "abcxyz",
       |   "algo": "md5"
@@ -52,7 +52,7 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       |{
       | "reference": "123456789",
       | "fileStatus": "READY",
-      | "lastUpdated": "2020-01-01T00:00:00",
+      | "lastUpdated": "2020-01-01",
       | "uploadFields": {
       |   "key": "abcxyz",
       |   "algo": "md5"
@@ -65,7 +65,7 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
     """
       |{
       | "reference": "123456789",
-      | "lastUpdated": "2020-01-01T00:00:00",
+      | "lastUpdated": "2020-01-01",
       | "uploadFields": {
       |   "key": "abcxyz",
       |   "algo": "md5"
@@ -83,7 +83,7 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       |   "failureReason": "REJECTED",
       |   "message": "this file was rejected"
       | },
-      | "lastUpdated": "2020-01-01T00:00:00"
+      | "lastUpdated": "2020-01-01"
       |}
       |""".stripMargin
   )
@@ -96,8 +96,8 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
       UploadDetails(
         fileName = "file1.txt",
         fileMimeType = "text/plain",
-        uploadTimestamp = LocalDateTime.of(
-          2018, 4, 24, 9, 30, 0),
+        uploadTimestamp = LocalDate.of(
+          2018, 4, 24),
         checksum = "check123456789",
         size = 1
     )),

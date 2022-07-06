@@ -16,7 +16,7 @@
 
 package models.appeals
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 import models.upload.UploadJourney
 import models.{PenaltyTypeEnum, UserRequest}
@@ -437,7 +437,7 @@ case class AppealSubmission(
                              sourceSystem: String,
                              taxRegime: String,
                              customerReferenceNo: String,
-                             dateOfAppeal: LocalDateTime,
+                             dateOfAppeal: LocalDate,
                              isLPP: Boolean,
                              appealSubmittedBy: String,
                              agentDetails: Option[AgentDetails],
@@ -481,7 +481,7 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDate.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
@@ -504,7 +504,7 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDate.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
@@ -528,7 +528,7 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDate.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
@@ -551,7 +551,7 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDate.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
@@ -574,7 +574,7 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDate.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
@@ -600,7 +600,7 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDate.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
@@ -626,7 +626,7 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDate.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
@@ -650,7 +650,7 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDate.now(),
           isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),

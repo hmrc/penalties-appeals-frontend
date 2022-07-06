@@ -24,7 +24,7 @@ import repositories.UploadJourneyRepository
 import uk.gov.hmrc.mongo.cache.DataKey
 import utils.IntegrationSpecCommonBase
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
 
@@ -39,7 +39,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |    "uploadDetails": {
       |        "fileName": "file1.txt",
       |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+      |        "uploadTimestamp": "2018-04-24Z",
       |        "checksum": "check12345678",
       |        "size": 987
       |    },
@@ -60,7 +60,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |    "uploadDetails": {
       |        "fileName": "file1.txt",
       |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+      |        "uploadTimestamp": "2018-04-24Z",
       |        "checksum": "check12345678",
       |        "size": 987
       |    },
@@ -92,7 +92,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+      uploadTimestamp = LocalDate.of(2018, 4, 24),
       checksum = "check12345678",
       size = 987
     )),
@@ -109,7 +109,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     uploadDetails = Some(UploadDetails(
         fileName = "file1.txt",
         fileMimeType = "text/plain",
-        uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+        uploadTimestamp = LocalDate.of(2018, 4, 24),
         checksum = "check12345678",
         size = 987
       )

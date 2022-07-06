@@ -19,16 +19,17 @@ package controllers
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import models.UserRequest
-import models.v2.AppealInformation
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-
 import java.util.UUID
+
 import javax.inject.Inject
+import models.v3.AppealData
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class InitialiseAppealController @Inject()(appealService: AppealService,
@@ -66,7 +67,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
   private def removeExistingKeysFromSessionAndRedirect[A](urlToRedirectTo: Call,
                                                           penaltyNumber: String,
-                                                          appealModel: AppealInformation[_],
+                                                          appealModel: AppealData[_],
                                                           isAppealAgainstObligation: Boolean)(implicit user: UserRequest[A]): Result = {
     logger.debug(s"[InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Resetting appeals session: removing keys from session" +
       s" and replacing with new keys")

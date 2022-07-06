@@ -31,7 +31,7 @@ import stubs.UpscanStub.successfulInitiateCall
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
@@ -608,7 +608,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          uploadTimestamp = LocalDate.of(2018, 1, 1),
           checksum = "check1234",
           size = 2
         ))
@@ -636,7 +636,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          uploadTimestamp = LocalDate.of(2018, 1, 1),
           checksum = "check1234",
           size = 2
         ))
@@ -670,7 +670,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          uploadTimestamp = LocalDate.of(2018, 1, 1),
           checksum = "check1234",
           size = 2
         ))
@@ -682,7 +682,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         uploadDetails = Some(UploadDetails(
           fileName = "file2.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          uploadTimestamp = LocalDate.of(2018, 1, 1),
           checksum = "check1235",
           size = 3
         ))

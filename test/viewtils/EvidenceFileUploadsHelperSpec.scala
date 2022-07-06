@@ -27,7 +27,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
 import views.html.components.upload.uploadList
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -46,7 +46,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+      uploadTimestamp = LocalDate.of(2018, 1, 1),
       checksum = "check1234",
       size = 2
     ))
@@ -58,7 +58,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file2.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+      uploadTimestamp = LocalDate.of(2018, 1, 1),
       checksum = "check1234",
       size = 2
     ))
@@ -70,7 +70,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file3.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+      uploadTimestamp = LocalDate.of(2018, 1, 1),
       checksum = "check1234",
       size = 2
     ))
@@ -82,7 +82,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file3.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+      uploadTimestamp = LocalDate.of(2018, 1, 1),
       checksum = "check1235",
       size = 2
     ))

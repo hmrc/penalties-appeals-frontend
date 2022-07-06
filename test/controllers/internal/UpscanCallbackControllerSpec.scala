@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.mongo.cache.DataKey
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class UpscanCallbackControllerSpec extends SpecBase {
@@ -61,7 +61,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
       |    "uploadDetails": {
       |        "fileName": "file1.txt",
       |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+      |        "uploadTimestamp": "2018-04-24Z",
       |        "checksum": "check12345678",
       |        "size": 987
       |    },
@@ -82,7 +82,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
       |    "uploadDetails": {
       |        "fileName": "file1.txt",
       |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+      |        "uploadTimestamp": "2018-04-24Z",
       |        "checksum": "check12345678",
       |        "size": 987
       |    },
@@ -114,7 +114,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+      uploadTimestamp = LocalDate.of(2018, 4, 24),
       checksum = "check12345678",
       size = 987
     )),
@@ -131,7 +131,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+      uploadTimestamp = LocalDate.of(2018, 4, 24),
       checksum = "check12345678",
       size = 987
     )),
@@ -163,7 +163,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
     }
 
     "return NO CONTENT" when {
-      lazy val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+      lazy val mockDateTime = LocalDate.of(2020, 1, 1)
       "the body is valid and state has been updated" in new Setup {
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING,
           uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))

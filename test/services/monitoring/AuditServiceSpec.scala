@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -75,7 +75,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
   }
 
   "getAllDuplicateUploadsForAppealSubmission" should {
-    val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+    val sampleDate: LocalDate = LocalDate.of(2020, 1, 1)
     "return all the duplicates in a JSON array" in {
       val uploadAsReady: UploadJourney = UploadJourney(
         reference = "ref1",
@@ -91,7 +91,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
           )
         ),
         failureDetails = None,
-        lastUpdated = LocalDateTime.now()
+        lastUpdated = LocalDate.now()
       )
       val uploadAsDuplicate: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
       val uploadsWithDuplicates = Seq(uploadAsReady, uploadAsDuplicate)

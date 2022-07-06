@@ -30,7 +30,7 @@ import stubs.{AuthStub, PenaltiesStub}
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -271,7 +271,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file1.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -309,7 +309,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file1.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -321,7 +321,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file2.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -394,7 +394,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file1.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -434,7 +434,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
           uploadDetails = Some(UploadDetails(
             fileName = "file1.txt",
             fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+            uploadTimestamp = LocalDate.of(2018, 1, 1),
             checksum = "check1234",
             size = 2
           ))
@@ -534,7 +534,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          uploadTimestamp = LocalDate.of(2018, 1, 1),
           checksum = "check1234",
           size = 2
         ))
@@ -572,7 +572,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          uploadTimestamp = LocalDate.of(2018, 1, 1),
           checksum = "check1234",
           size = 2
         ))
@@ -1009,7 +1009,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val uploadJourneyModel: UploadJourney = UploadJourney(
         reference = "file1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/upload"), uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1024
+          fileName = "file1.txt", fileMimeType = "text/plain", uploadTimestamp = LocalDate.now(), checksum = "check1", size = 1024
         ))
       )
       await(repository.updateStateOfFileUpload("1234", uploadJourneyModel, isInitiateCall = true))

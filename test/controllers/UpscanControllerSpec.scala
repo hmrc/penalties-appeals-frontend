@@ -34,7 +34,7 @@ import uk.gov.hmrc.http.HttpClient
 import utils.SessionKeys
 import viewtils.EvidenceFileUploadsHelper
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -59,7 +59,7 @@ class UpscanControllerSpec extends SpecBase {
       UploadDetails(
         fileName = "file1.txt",
         fileMimeType = "text/plain",
-        uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+        uploadTimestamp = LocalDate.of(2018, 4, 24),
         checksum = "check12345678",
         size = 987
       )
