@@ -41,8 +41,8 @@ import services.monitoring.AuditService
 import uk.gov.hmrc.auth.core.AuthConnector
 import utils.SessionKeys
 import views.html.errors.Unauthorised
+import java.time.{LocalDate, LocalDateTime}
 
-import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll {
@@ -264,7 +264,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDate.of(2018, 1, 1),
+      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
       checksum = "check1234",
       size = 2
     ))

@@ -26,7 +26,7 @@ import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
@@ -157,7 +157,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     }
 
     "return true when the connector call succeeds for other - file upload with duplicates" in {
-      val sampleDate: LocalDate = LocalDate.of(2020, 1, 1)
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       val uploadAsReady: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.READY,
@@ -172,7 +172,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           )
         ),
         failureDetails = None,
-        lastUpdated = LocalDate.now()
+        lastUpdated = LocalDateTime.now()
       )
       val uploadAsDuplicate: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
       val uploadAsWaiting: UploadJourney = uploadAsReady.copy(reference = "ref3", fileStatus = UploadStatusEnum.WAITING, downloadUrl = None, uploadDetails = None)
@@ -203,7 +203,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     }
 
     "return true when the connector call succeeds for other - user selects no to uploading files (some files already uploaded)" in {
-      val sampleDate: LocalDate = LocalDate.of(2020, 1, 1)
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       val uploadAsReady: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.READY,
@@ -218,7 +218,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           )
         ),
         failureDetails = None,
-        lastUpdated = LocalDate.now()
+        lastUpdated = LocalDateTime.now()
       )
       successfulAppealSubmission(isLPP = false, "1234")
       await(repository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))

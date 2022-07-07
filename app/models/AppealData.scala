@@ -20,15 +20,15 @@ import java.time.LocalDate
 
 import play.api.libs.json.{Format, Json}
 
-case class AppealData[A](
+case class AppealData(
                        `type`: PenaltyTypeEnum.Value,
-                       startDate: A,
-                       endDate: A,
-                       dueDate: A,
-                       dateCommunicationSent: A
+                       startDate: LocalDate,
+                       endDate: LocalDate,
+                       dueDate: LocalDate,
+                       dateCommunicationSent: LocalDate
                      )
 
 object AppealData {
-  implicit val format: Format[AppealData[LocalDate]] = Json.format[AppealData[LocalDate]]
+  implicit val format: Format[AppealData] = Json.format[AppealData]
 }
 

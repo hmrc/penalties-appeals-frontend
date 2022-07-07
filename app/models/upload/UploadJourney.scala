@@ -17,8 +17,7 @@
 package models.upload
 
 import play.api.libs.json.{JsValue, Json, OWrites, Reads}
-
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 case class UploadJourney (
                            reference: String,
@@ -26,7 +25,7 @@ case class UploadJourney (
                            downloadUrl: Option[String] = None,
                            uploadDetails: Option[UploadDetails] = None,
                            failureDetails: Option[FailureDetails] = None,
-                           lastUpdated: LocalDate = LocalDate.now(),
+                           lastUpdated: LocalDateTime = LocalDateTime.now(),
                            uploadFields: Option[Map[String, String]] = None
                          )
 
@@ -40,7 +39,7 @@ object UploadJourney {
       downloadUrl <- (json \ "downloadUrl").validateOpt[String]
       uploadDetails <- (json \ "uploadDetails").validateOpt[UploadDetails]
       failureDetails <- (json \ "failureDetails").validateOpt[FailureDetails]
-      lastUpdated <- (json \ "lastUpdated").validateOpt[LocalDate]
+      lastUpdated <- (json \ "lastUpdated").validateOpt[LocalDateTime]
       uploadFields <- (json \ "uploadFields").validateOpt[Map[String, String]]
     } yield {
       UploadJourney(
@@ -49,7 +48,7 @@ object UploadJourney {
         downloadUrl,
         uploadDetails,
         failureDetails,
-        lastUpdated.fold(LocalDate.now)(identity),
+        lastUpdated.fold(LocalDateTime.now)(identity),
         uploadFields
       )
     }

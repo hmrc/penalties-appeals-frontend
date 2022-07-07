@@ -20,7 +20,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class UploadDetailsSpec extends AnyWordSpec with Matchers {
   val uploadDetailsAsJson: JsValue = Json.parse(
@@ -28,7 +28,7 @@ class UploadDetailsSpec extends AnyWordSpec with Matchers {
       |{
       | "fileName": "file1.txt",
       | "fileMimeType": "text/plain",
-      | "uploadTimestamp": "2018-04-24",
+      | "uploadTimestamp": "2018-04-24T09:30:00",
       | "checksum": "check123456789",
       | "size": 1
       |}
@@ -37,7 +37,7 @@ class UploadDetailsSpec extends AnyWordSpec with Matchers {
   val uploadDetailsModel: UploadDetails = UploadDetails(
     fileName = "file1.txt",
     fileMimeType = "text/plain",
-    uploadTimestamp = LocalDate.of(2018, 4, 24),
+    uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30, 0),
     checksum = "check123456789",
     size = 1
   )

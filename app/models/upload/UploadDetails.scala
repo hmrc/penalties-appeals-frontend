@@ -17,13 +17,12 @@
 package models.upload
 
 import play.api.libs.json.{Json, OFormat}
-
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 case class UploadDetails(
                           fileName: String,
                           fileMimeType: String,
-                          uploadTimestamp: LocalDate,
+                          uploadTimestamp: LocalDateTime,
                           checksum: String,
                           size: Int
 )

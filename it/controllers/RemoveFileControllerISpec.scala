@@ -27,7 +27,7 @@ import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
   val controller = injector.instanceOf[RemoveFileController]
@@ -55,7 +55,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDate.of(2018, 1, 1),
+      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
       checksum = "check1234",
       size = 2
     )),

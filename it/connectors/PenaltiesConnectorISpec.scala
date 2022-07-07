@@ -24,8 +24,8 @@ import play.api.test.Helpers._
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
+import java.time.{LocalDate, LocalDateTime}
 
-import java.time.LocalDate
 import scala.concurrent.ExecutionContext
 
 class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
@@ -157,14 +157,14 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         sourceSystem = "MDTP",
         taxRegime = "VAT",
         customerReferenceNo = "VRN123456789",
-        dateOfAppeal = LocalDate.of(2020,1,1),
+        dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
         isLPP = false,
         appealSubmittedBy = "client",
         agentDetails = None,
         appealInformation = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23",
+          startDateOfEvent = "2021-04-23T18:25:43.511Z",
           reportedIssueToPolice = true,
           statement = None,
           lateAppeal = false,
@@ -183,14 +183,14 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         sourceSystem = "MDTP",
         taxRegime = "VAT",
         customerReferenceNo = "VRN123456789",
-        dateOfAppeal = LocalDate.of(2020,1,1),
+        dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
         isLPP = true,
         appealSubmittedBy = "client",
         agentDetails = None,
         appealInformation = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = "2021-04-23",
+          startDateOfEvent = "2021-04-23T18:25:43.511Z",
           reportedIssueToPolice = true,
           statement = None,
           lateAppeal = false,

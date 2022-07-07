@@ -34,7 +34,7 @@ class AppealDataSpec extends AnyWordSpec with Matchers {
       |}
       |""".stripMargin)
 
-  val expectedModel: AppealData[LocalDate] = AppealData(
+  val expectedModel: AppealData = AppealData(
     `type` = PenaltyTypeEnum.Late_Submission,
     startDate = LocalDate.of(2020, 1, 1),
     endDate = LocalDate.of(2020, 1, 1),

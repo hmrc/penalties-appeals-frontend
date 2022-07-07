@@ -30,7 +30,7 @@ import stubs.UpscanStub.{failedInitiateCall, successfulInitiateCall}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -59,7 +59,7 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
     }
 
     "return Right and update Mongo when the upscan initiate call succeeds" in new Setup {
-      val mockDateTime = LocalDate.of(2020, 1, 1)
+      val mockDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       successfulInitiateCall(
         """
           |{
@@ -145,7 +145,7 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
       uploadDetails = Some(UploadDetails(
         fileName = "file1.txt",
         fileMimeType = "text/plain",
-        uploadTimestamp = LocalDate.of(2018, 1, 1),
+        uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
         checksum = "check1234",
         size = 2
       )),

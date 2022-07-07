@@ -24,7 +24,7 @@ import repositories.UploadJourneyRepository
 import uk.gov.hmrc.mongo.cache.DataKey
 import utils.IntegrationSpecCommonBase
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
 
@@ -39,7 +39,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |    "uploadDetails": {
       |        "fileName": "file1.txt",
       |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24Z",
+      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
       |        "checksum": "check12345678",
       |        "size": 987
       |    },
@@ -60,7 +60,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |    "uploadDetails": {
       |        "fileName": "file1.txt",
       |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24Z",
+      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
       |        "checksum": "check12345678",
       |        "size": 987
       |    },
@@ -92,7 +92,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDate.of(2018, 4, 24),
+      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
       checksum = "check12345678",
       size = 987
     )),
@@ -107,12 +107,12 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     fileStatus = UploadStatusEnum.DUPLICATE,
     downloadUrl = Some("download.file"),
     uploadDetails = Some(UploadDetails(
-        fileName = "file1.txt",
-        fileMimeType = "text/plain",
-        uploadTimestamp = LocalDate.of(2018, 4, 24),
-        checksum = "check12345678",
-        size = 987
-      )
+      fileName = "file1.txt",
+      fileMimeType = "text/plain",
+      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+      checksum = "check12345678",
+      size = 987
+    )
     ),
     uploadFields = Some(Map(
       "key" -> "abcxyz",
