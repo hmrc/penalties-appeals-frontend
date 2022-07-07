@@ -34,7 +34,8 @@ export class MultiFileUpload {
             statusUrlTpl: decodeURIComponent(form.dataset.multiFileUploadStatusUrlTpl),
             removeUrlTpl: decodeURIComponent(form.dataset.multiFileUploadRemoveUrlTpl),
             getDuplicateUrlTpl: decodeURIComponent(form.dataset.multiFileUploadDuplicateUrlTpl),
-            getErrorServiceUrlTpl: decodeURIComponent(form.dataset.multiFileUploadErrorUrlTpl)
+            getErrorServiceUrlTpl: decodeURIComponent(form.dataset.multiFileUploadErrorUrlTpl),
+            removePageUrl: decodeURIComponent(form.dataset.multiFileUploadRemovePageUrlTpl)
         };
 
         this.classes = {
@@ -141,8 +142,12 @@ export class MultiFileUpload {
         }
 
         if (ref) {
-            this.setItemState(item, status.Removing);
-            this.requestRemoveFile(file, false);
+            if (this.isUploaded(item)) {
+                this.redirectToFileRemovalPage(ref);
+            } else {
+                this.setItemState(item, status.Removing);
+                this.requestRemoveFile(file, false);
+            }
         } else {
             this.requestRemoveFile(file, false);
             this.removeItem(item);
@@ -220,9 +225,9 @@ export class MultiFileUpload {
 
     /** F14 */
     requestRemoveFileCompleted(file, isInit) {
-        if(!isInit) {
+        if (!isInit) {
             const item = file.closest(`.${this.classes.item}`);
-            if(this.getFileName(file)) {
+            if (this.getFileName(file)) {
                 this.addNotification(this.parseTemplate(this.messages.fileRemoved, {
                     fileNumber: item.querySelector('.govuk-label').textContent,
                     fileName: this.getFileName(file)
@@ -359,6 +364,7 @@ export class MultiFileUpload {
             fileName: this.getFileName(file)
         });
     }
+
     /** F24 */
     uploadFile(file) {
         const xhr = new XMLHttpRequest();
@@ -459,7 +465,7 @@ export class MultiFileUpload {
     updateErrorSummaryVisibility() {
         if (this.hasErrors()) {
             document.querySelector('#hmrc-page-header').before(this.errorSummary);
-            if(!this.hasDisplayedErrorPrefix) {
+            if (!this.hasDisplayedErrorPrefix) {
                 document.title = this.messages.errorPrefix + ' ' + document.title;
                 this.hasDisplayedErrorPrefix = true;
             }
@@ -620,12 +626,12 @@ export class MultiFileUpload {
             body: formData
         })
             .then(response => {
-                              if (response.status == 500) {
-                              this.redirectToErrorServicePage();
-                              } else {
-                                return response.json();
-                              }
-                            })
+                if (response.status == 500) {
+                    this.redirectToErrorServicePage();
+                } else {
+                    return response.json();
+                }
+            })
             .then(this.handleProvisionUploadCompleted.bind(this, file))
             .catch(this.delayedProvisionUpload.bind(this, file));
     }
@@ -867,14 +873,18 @@ export class MultiFileUpload {
     }
 
     /** F76 */
-        getErrorServiceUrl() {
-            return this.config.getErrorServiceUrlTpl;
-        }
+    getErrorServiceUrl() {
+        return this.config.getErrorServiceUrlTpl;
+    }
 
     /** F77 */
-        redirectToErrorServicePage() {
-             window.location.href = this.getErrorServiceUrl();
-         }
+    redirectToErrorServicePage() {
+        window.location.href = this.getErrorServiceUrl();
+    }
+
+    redirectToFileRemovalPage(fileRef) {
+        window.location.href = this.parseTemplate(this.config.removePageUrl, {fileRef: fileRef});
+    }
 }
 
 /**
@@ -883,7 +893,7 @@ export class MultiFileUpload {
  */
 document.addEventListener('DOMContentLoaded', function () {
     const element = document.getElementById('multi-upload-form');
-    if(element) {
+    if (element) {
         const uploadObj = new MultiFileUpload(element);
         uploadObj.init();
     }

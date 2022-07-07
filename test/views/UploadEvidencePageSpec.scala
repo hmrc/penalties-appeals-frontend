@@ -69,12 +69,13 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       }
     }
 
-    def applyView(request: FakeRequest[_] = fakeRequest, previousUploads:Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
+    def applyView(request: FakeRequest[_] = fakeRequest, previousUploads: Option[Seq[UploadJourney]] = None): HtmlFormat.Appendable = {
       uploadEvidencePage.apply(
         controllers.routes.MakingALateAppealController.onPageLoad(),
         controllers.routes.UpscanController.initiateCallToUpscan("1234"),
         controllers.routes.UpscanController.getStatusOfFileUpload("1234", _),
         controllers.routes.UpscanController.removeFile("1234", _),
+        controllers.routes.RemoveFileController.onPageLoad(_, isJsEnabled = true, NormalMode),
         previousUploadsToString(previousUploads),
         controllers.routes.UpscanController.getDuplicateFiles("1234"),
         controllers.routes.ProblemWithServiceController.onPageLoad(),

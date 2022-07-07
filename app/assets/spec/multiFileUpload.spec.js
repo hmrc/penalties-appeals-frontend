@@ -57,6 +57,7 @@ describe('Multi File Upload component', () => {
           data-multi-file-upload-file-uploading="Uploading {fileNumber} {fileName}"
           data-multi-file-upload-file-uploaded="{fileNumber} {fileName} has been uploaded"
           data-multi-file-upload-file-removed="{fileNumber} {fileName} has been removed"
+          data-multi-file-upload-remove-page-url-tpl="/remove-file/{fileRef}"
           data-multi-file-upload-error-prefix="Error:"
           >
           <ul class="multi-file-upload__item-list"></ul>
@@ -458,39 +459,7 @@ describe('Multi File Upload component', () => {
 
                     spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse()));
                     spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
-
-                    spyOn(instance, 'requestRemoveFile');
-
-                    instance.init();
-
-                    item = container.querySelector('.multi-file-upload__item');
-                    input = container.querySelector('.multi-file-upload__file');
-                });
-
-                describe('When "Remove" is clicked', () => {
-                    beforeEach(() => {
-                        item.querySelector('.multi-file-upload__remove-item').click();
-                    });
-
-                    it('Then item should be in "removing" state', () => {
-                        expect(item.classList.contains('multi-file-upload__item--removing')).toEqual(true);
-                    });
-
-                    it('Then requestRemoveFile should have been called', () => {
-                        expect(instance.requestRemoveFile).toHaveBeenCalled();
-                    });
-                });
-            });
-
-            describe('And component is initialised', () => {
-                beforeEach(() => {
-                    instance = new MultiFileUpload(container);
-
-                    spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse()));
-                    spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
-                    spyOn(instance, 'requestRemoveFile').and.callFake((file) => {
-                        instance.requestRemoveFileCompleted(file);
-                    });
+                    spyOn(instance, 'redirectToFileRemovalPage');
 
                     instance.init();
 
@@ -503,18 +472,8 @@ describe('Multi File Upload component', () => {
                         item.querySelector('.multi-file-upload__remove-item').click();
                     });
 
-                    it('Then item should be removed', () => {
-                        expect(item.parentNode).toEqual(null);
-                    });
-
-                    it('Then "file removed" message is placed in aria live region', (done) => {
-                        const notifications = container.querySelector('.multi-file-upload__notifications');
-                        expect(notifications.textContent.trim()).toEqual('File 1 test.txt has been removed');
-                        done();
-                    });
-
-                    it('Then new item should be added', () => {
-                        expect(container.querySelectorAll('.multi-file-upload__item').length).toEqual(1);
+                    it('Then the user should be redirected to the remove file page', () => {
+                        expect(instance.redirectToErrorServicePage.toHaveBeenCalled);
                     });
                 });
             });
