@@ -51,6 +51,7 @@ class YouCannotUseThisServiceHelper @Inject()(appConfig: AppConfig,
       p(content = html(stringAsHtml(messages("youCannotUse.p1")))),
       p(content = html(stringAsHtml(getMessage(s"youCannotUse.p2.lsp")))),
       p(content = html(stringAsHtml(getMessage(s"youCannotUse.p3.lsp")))),
+      p(content = html(stringAsHtml(getMessage(s"youCannotUse.p6")))),
       p(link(link = appConfig.vatOverviewUrl, getMessage(s"youCannotUse.returnToVATAccount")))
     )
   }

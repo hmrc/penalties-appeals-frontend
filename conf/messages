@@ -548,7 +548,7 @@ otherReason.uploadEvidence.removeFile.error.required = Select yes if you want to
 # You Cannot Use This Service page
 # -----------------------------------------------------------
 youCannotUse.headingAndTitle.lpp = You cannot use this service until you pay your VAT
-agent.youCannotUse.headingAndTitle.lpp = You cannot use this service your client pays the VAT
+agent.youCannotUse.headingAndTitle.lpp = You cannot use this service until your client pays the VAT
 youCannotUse.headingAndTitle.lsp = You cannot use this service until you submit your VAT Return
 agent.youCannotUse.headingAndTitle.lsp = You cannot use this service until the VAT Return is submitted
 youCannotUse.p1 = You can still write to HMRC and ask us to review the penalty. Details are on the penalty notice we sent you through the post.
@@ -558,11 +558,11 @@ youCannotUse.p2.lsp = If you want to use this service to appeal, you need to sub
 agent.youCannotUse.p2.lsp = If you want to use this service to appeal, you or your client need to submit the VAT Return first.
 youCannotUse.p3.lpp = It can take up to 5 days for the payment to clear and show on your payment history. If you‘ve already paid, keep checking back to see when the payment clears.
 agent.youCannotUse.p3.lpp = It can take up to 5 days for the payment to clear and show on their payment history. If they‘ve already paid, keep checking back to see when the payment clears.
-youCannotUse.p3.lsp = It can take up to 24 hours before the VAT Return shows on the VAT account. If you‘ve already submitted it, keep checking back to see when it appears in the submission history.
+youCannotUse.p3.lsp = It can take up to 24 hours before the VAT Return shows on the VAT account. If you‘ve already submitted it, keep checking back to see when it appears in your submission history.
 agent.youCannotUse.p3.lsp = It can take up to 24 hours before the VAT Return shows on the VAT account. If it‘s already submitted it, keep checking back to see when it appears in the submission history.
-youCannotUse.p4.lpp = If you want to use this service to appeal, you need to submit your client's VAT Return first.
+youCannotUse.p4.lpp = If you want to use this service to appeal, you need to submit your client‘s VAT Return first.
 youCannotUse.p6 = If you need to cancel the VAT registration, you can do it through your VAT account.
-agent.youCannotUse.p6 = If you need to cancel the VAT registration, you can do it through your client's VAT account.
+agent.youCannotUse.p6 = If you need to cancel the VAT registration, you can do it through your client‘s VAT details.
 youCannotUse.checkWhatYouOwe = Check and pay what you owe
 youCannotUse.returnToVATAccount = Return to your VAT account
 agent.youCannotUse.returnToVATAccount = Return to your client's VAT details

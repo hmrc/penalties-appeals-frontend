@@ -26,8 +26,6 @@ pageHeader: components.pageHeader)
 @layout(pageTitle = messages(headerAndTitle),
     isPageFullWidth = false,
     optPageMode = Some(pageMode)) {
-        <h1 class="govuk-heading-xl">@{
-            messages(headerAndTitle)
-        }</h1>
+        @pageHeader(messages(headerAndTitle))
         @contentToDisplay
 }
