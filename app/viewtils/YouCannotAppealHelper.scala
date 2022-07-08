@@ -20,50 +20,48 @@ import config.AppConfig
 import javax.inject.Inject
 import models.{PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.Html
 import utils.MessageRenderer.getMessage
 import utils.{SessionKeys, ViewUtils}
 
-class YouCannotUseThisServiceHelper @Inject()(appConfig: AppConfig,
-                                              p: views.html.components.p,
-                                              link: views.html.components.link)
+class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
+                                      p: views.html.components.p,
+                                      link: views.html.components.link)
                                               extends ViewUtils {
 
   def getHeaderAndTitle(implicit messages: Messages, user: UserRequest[_]): String = {
-    println(Console.GREEN + "GEtting Header and Title" + Console.RESET)
     val isLPP = user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) ||
       user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)
-    println(Console.GREEN + s"isLPP is $isLPP" + Console.RESET)
     (isLPP, user.isAgent) match {
       case (true, true) =>
-        "agent.youCannotUse.headingAndTitle.lpp"
+        "agent.youCannotAppeal.headingAndTitle.lpp"
       case (true, false) =>
-        "youCannotUse.headingAndTitle.lpp"
+        "youCannotAppeal.headingAndTitle.lpp"
       case (false, true) =>
-        "agent.youCannotUse.headingAndTitle.lsp"
+        "agent.youCannotAppeal.headingAndTitle.lsp"
       case (_, _) =>
-        "youCannotUse.headingAndTitle.lsp"
+        "youCannotAppeal.headingAndTitle.lsp"
     }
   }
 
   private def lspHtml(implicit messages: Messages, user: UserRequest[_]): Html = {
     html(
-      p(content = html(stringAsHtml(messages("youCannotUse.p1")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotUse.p2.lsp")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotUse.p3.lsp")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotUse.p6")))),
-      p(link(link = appConfig.vatOverviewUrl, getMessage(s"youCannotUse.returnToVATAccount")))
+      p(content = html(stringAsHtml(messages("youCannotAppeal.p1")))),
+      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p2.lsp")))),
+      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p3.lsp")))),
+      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p4")))),
+      p(link(link = appConfig.vatOverviewUrl, getMessage(s"youCannotAppeal.returnToVATAccount")))
     )
   }
 
   private def lppHtml(agent: Boolean)(implicit messages: Messages, user: UserRequest[_]): Html = {
     html(
-      p(content = html(stringAsHtml(messages("youCannotUse.p1")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotUse.p2.lpp")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotUse.p3.lpp")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotUse.p6")))),
+      p(content = html(stringAsHtml(messages("youCannotAppeal.p1")))),
+      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p2.lpp")))),
+      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p3.lpp")))),
+      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p4")))),
       p(link(link = if(agent) appConfig.whatYouOweUrl else appConfig.vatOverviewUrl,
-             messages(if(!agent) s"youCannotUse.checkWhatYouOwe" else "agent.youCannotUse.returnToVATAccount"))
+             messages(if(!agent) s"youCannotAppeal.checkWhatYouOwe" else "agent.youCannotAppeal.returnToVATAccount"))
       )
     )
   }

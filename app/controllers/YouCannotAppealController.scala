@@ -25,10 +25,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.obligation.YouCannotAppealPage
 import javax.inject.Inject
-import viewtils.YouCannotUseThisServiceHelper
+import viewtils.YouCannotAppealHelper
 
 class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage,
-                                          pageHelper: YouCannotUseThisServiceHelper)
+                                          pageHelper: YouCannotAppealHelper)
                                          (implicit mcc: MessagesControllerComponents,
                                           appConfig: AppConfig, authorise: AuthPredicate,
                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {

@@ -457,23 +457,6 @@ agents.whatCausedYouToMissTheDeadline.option.client = Nid oedd fy nghleient wedi
 agents.whatCausedYouToMissTheDeadline.option.agent = Roedd rhywbeth arall wedi digwydd a oedd wedi achosi oedi
 agents.whatCausedYouToMissTheDeadline.error.invalid = Rhowch wybod i ni beth oedd wedi’ch achosi i fethu’r dyddiad cau
 
-# You Cannot Appeal page
-# -----------------------
-youCannotAppeal.headingAndTitle = You cannot appeal yet
-agent.youCannotAppeal.lsp.p1 = You need to submit your client’s VAT Return before we can review this penalty.
-agent.youCannotAppeal.lsp.p2 = Os ydych eisoes wedi cyflwyno’r Ffurflen TAW, gall gymryd hyd at 24 awr cyn i’r cofnod ymddangos ar gyfrif TAW eich cleient.
-agent.youCannotAppeal.lpp.p1 = Mae angen i’ch cleient dalu’i fil TAW cyn i ni allu adolygu’r gosb hon.
-agent.youCannotAppeal.lpp.p2 = Os ydynt eisoes wedi talu’u TAW, gall gymryd hyd at 5 diwrnod i glirio i gyfrif banc CThEM ac ymddangos ar eu hanes talu.
-agent.youCannotAppeal.returnToVATDetails = Yn ôl i fanylion TAW eich cleient
-youCannotAppeal.returnToVATAccount = Yn ôl i’ch cyfrif TAW
-youCannotAppeal.checkWhatYouOwe = Gwirio a thalu’r hyn sydd arnoch
-youCannotAppeal.lsp.p1 = Mae angen i chi gyflwyno’ch Ffurflen TAW cyn i ni allu adolygu’r gosb hon.
-youCannotAppeal.lsp.p2 = If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account.
-youCannotAppeal.p3 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy’ch cyfrif TAW.
-agent.youCannotAppeal.p3 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy gyfrif TAW eich cleient.
-youCannotAppeal.lpp.p1 = Mae angen i chi dalu’ch TAW cyn i ni allu adolygu’r gosb hon.
-youCannotAppeal.lpp.p2 = If you paid your VAT very recently, it can take up to 5 days to clear to HMRC’s bank account and show on your payment history.
-
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
 otherRelevantInformation.headingAndTitle = Rhowch wybod i ni pam yr ydych am apelio yn erbyn y gosb
@@ -544,3 +527,24 @@ month.12 = Rhagfyr
 # -----------------------------------------------------------
 otherReason.uploadEvidence.removeFile.headingAndTitle = Are you sure you want to remove file {0}?
 otherReason.uploadEvidence.removeFile.error.required = Select yes if you want to remove this file
+
+# You Cannot Appeal page
+# -----------------------------------------------------------
+youCannotAppeal.headingAndTitle.lpp = You cannot use this service until you pay your VAT
+agent.youCannotAppeal.headingAndTitle.lpp = You cannot use this service until your client pays the VAT
+youCannotAppeal.headingAndTitle.lsp = You cannot use this service until you submit your VAT Return
+agent.youCannotAppeal.headingAndTitle.lsp = You cannot use this service until the VAT Return is submitted
+youCannotAppeal.p1 = You can still write to HMRC and ask us to review the penalty. Details are on the penalty notice we sent you through the post.
+youCannotAppeal.p2.lpp = If you want to use this service to appeal, you need to pay your VAT first.
+agent.youCannotAppeal.p2.lpp = If you want to use this service to appeal, your client needs to pay their VAT first.
+youCannotAppeal.p2.lsp = If you want to use this service to appeal, you need to submit your VAT Return first.
+agent.youCannotAppeal.p2.lsp = If you want to use this service to appeal, you or your client need to submit the VAT Return first.
+youCannotAppeal.p3.lpp = It can take up to 5 days for the payment to clear and show on your payment history. If you‘ve already paid, keep checking back to see when the payment clears.
+agent.youCannotAppeal.p3.lpp = It can take up to 5 days for the payment to clear and show on their payment history. If they‘ve already paid, keep checking back to see when the payment clears.
+youCannotAppeal.p3.lsp = It can take up to 24 hours before the VAT Return shows on the VAT account. If you‘ve already submitted it, keep checking back to see when it appears in your submission history.
+agent.youCannotAppeal.p3.lsp = It can take up to 24 hours before the VAT Return shows on the VAT account. If it‘s already been submitted it, keep checking back to see when it appears in the submission history.
+youCannotAppeal.p4 = If you need to cancel the VAT registration, you can do it through your VAT account.
+agent.youCannotAppeal.p4 = If you need to cancel the VAT registration, you can do it through your client‘s VAT details.
+youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
+youCannotAppeal.returnToVATAccount = Return to your VAT account
+agent.youCannotAppeal.returnToVATAccount = Return to your client‘s VAT details

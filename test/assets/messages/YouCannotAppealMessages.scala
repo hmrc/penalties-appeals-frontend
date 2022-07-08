@@ -17,34 +17,42 @@
 package messages
 
 object YouCannotAppealMessages {
-  val title = "You cannot appeal yet - Appeal a VAT penalty - GOV.UK"
+  val titleHeaderLPP = "You cannot use this service until you pay your VAT"
 
-  val headingPanelH1 = "You cannot appeal yet"
+  val titleHeaderLPPAgent = "You cannot use this service until your client pays the VAT"
 
-  val agentLSPp1 = "You need to submit your client’s VAT Return before we can review this penalty."
+  val titleHeaderLSP = "You cannot use this service until you submit your VAT Return"
 
-  val agentLSPp2 = "If you have already submitted the VAT Return, it can take up to 24 hours before it shows on your client’s VAT account."
+  val titleHeaderLSPAgent = "You cannot use this service until the VAT Return is submitted"
 
-  val agentp3 = "If you need to cancel the VAT registration, you can do it through your client’s VAT details."
+  val titleAppend = " - Appeal a VAT penalty - GOV.UK"
 
-  val agentLPPp1 = "Your client needs to pay their VAT bill before we can review this penalty."
+  val p1 = "You can still write to HMRC and ask us to review the penalty. Details are on the penalty notice we sent you through the post."
 
-  val agentLPPp2 = "If they have already paid their VAT, it can take up to 5 days to clear to HMRC’s bank account and show on their payment history."
+  val agentLSPp2 = "If you want to use this service to appeal, you or your client need to submit the VAT Return first."
 
-  val returnToClientVATDetails = "Return to your client’s VAT details"
+  val traderLSPp2 = "If you want to use this service to appeal, you need to submit your VAT Return first."
+
+  val traderLPPp2 = "If you want to use this service to appeal, you need to pay your VAT first."
+
+  val agentLSPp3 = "It can take up to 24 hours before the VAT Return shows on the VAT account. If it‘s already been submitted it, keep checking back to see when it appears in the submission history."
+
+  val traderLSPp3 = "It can take up to 24 hours before the VAT Return shows on the VAT account. If you‘ve already submitted it, keep checking back to see when it appears in your submission history."
+
+  val agentLPPp3 = "It can take up to 5 days for the payment to clear and show on their payment history. If they‘ve already paid, keep checking back to see when the payment clears."
+
+  val traderLPPp3 = "It can take up to 5 days for the payment to clear and show on your payment history. If you‘ve already paid, keep checking back to see when the payment clears."
+
+  val agentLPPp2 = "If you want to use this service to appeal, your client needs to pay their VAT first."
+
+  val traderP4 = "If you need to cancel the VAT registration, you can do it through your VAT account."
+
+  val agentP4 = "If you need to cancel the VAT registration, you can do it through your client‘s VAT details."
+
+  val returnToClientVATDetails = "Return to your client‘s VAT details"
 
   val returnToVATAccount = "Return to your VAT account"
 
   val checkWhatYouOwe = "Check and pay what you owe"
-
-  val vatTraderLSPp1 = "You need to submit your VAT Return before we can review this penalty."
-
-  val vatTraderLSPp2 = "If you submitted the VAT Return very recently, it can take up to 24 hours before it shows on your VAT account."
-
-  val p3 = "If you need to cancel the VAT registration, you can do it through your VAT account."
-
-  val vatTraderLPPp1 = "You need to pay your VAT before we can review this penalty."
-
-  val vatTraderLPPp2 = "If you paid your VAT very recently, it can take up to 5 days to clear to HMRC’s bank account and show on your payment history."
 
 }
