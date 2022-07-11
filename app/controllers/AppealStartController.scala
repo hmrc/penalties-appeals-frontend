@@ -16,9 +16,12 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
+import config.featureSwitches.FeatureSwitching
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import javax.inject.Inject
 import models.NormalMode
 import models.pages.{AppealStartPage, PageMode}
 import play.api.Configuration
@@ -29,8 +32,6 @@ import utils.Logger.logger
 import utils.SessionKeys
 import views.html.AppealStartPage
 
-import java.time.{LocalDate, LocalDateTime}
-import javax.inject.Inject
 import scala.concurrent.Future
 
 class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit mcc: MessagesControllerComponents,
@@ -56,12 +57,7 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
   }
 
   private def isAppealLate()(implicit request: Request[_]): Boolean = {
-    if(isEnabled(UseNewAPIModel)) {
       val dateCommunicationSentParsedAsLocalDate = LocalDate.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
       dateCommunicationSentParsedAsLocalDate.isBefore(getFeatureDate.minusDays(appConfig.daysRequiredForLateAppeal))
-    } else {
-      val dateCommunicationSentParsed = LocalDateTime.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
-      dateCommunicationSentParsed.isBefore(getFeatureDate.atStartOfDay.minusDays(appConfig.daysRequiredForLateAppeal))
-    }
   }
 }

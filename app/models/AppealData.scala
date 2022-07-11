@@ -16,20 +16,19 @@
 
 package models
 
+import java.time.LocalDate
 
-import models.v2.AppealInformation
 import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDateTime
-
-case class AppealData[A](
+case class AppealData(
                        `type`: PenaltyTypeEnum.Value,
-                        startDate: A,
-                        endDate: A,
-                        dueDate: A,
-                        dateCommunicationSent: A
-                     ) extends AppealInformation[A]
+                       startDate: LocalDate,
+                       endDate: LocalDate,
+                       dueDate: LocalDate,
+                       dateCommunicationSent: LocalDate
+                     )
 
 object AppealData {
-  implicit val format: Format[AppealData[LocalDateTime]] = Json.format[AppealData[LocalDateTime]]
+  implicit val format: Format[AppealData] = Json.format[AppealData]
 }
+

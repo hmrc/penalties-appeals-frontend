@@ -16,6 +16,8 @@
 
 package controllers.internal
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import models.upload._
 import org.mongodb.scala.Document
@@ -25,7 +27,6 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.mongo.cache.DataKey
 
-import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class UpscanCallbackControllerSpec extends SpecBase {

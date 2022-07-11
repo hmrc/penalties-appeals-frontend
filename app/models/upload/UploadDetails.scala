@@ -16,9 +16,9 @@
 
 package models.upload
 
-import play.api.libs.json.{Json, OFormat}
-
 import java.time.LocalDateTime
+
+import play.api.libs.json.{Json, OFormat}
 
 case class UploadDetails(
                           fileName: String,

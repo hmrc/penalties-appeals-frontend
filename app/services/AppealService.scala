@@ -16,14 +16,16 @@
 
 package services
 
+import java.time.LocalDate
+
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
+import config.featureSwitches.FeatureSwitching
 import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
+import javax.inject.Inject
 import models.appeals.AppealSubmission
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
-import models.v2.{AppealInformation, AppealData => AppealDataV2}
 import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.Configuration
 import play.api.http.Status._
@@ -35,8 +37,6 @@ import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
 import utils.{SessionKeys, UUIDGenerator}
 
-import java.time.{LocalDate, LocalDateTime}
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
@@ -47,13 +47,13 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
   def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
-                                         (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealInformation[_]]] = {
+                                         (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
-      _.fold[Option[AppealInformation[_]]](
+      _.fold[Option[AppealData]](
         None
       )(
         jsValue => {
-          val parsedAppealDataModel = Json.fromJson(jsValue)(if(isEnabled(UseNewAPIModel)) AppealDataV2.format else AppealData.format)
+          val parsedAppealDataModel = Json.fromJson(jsValue)(AppealData.format)
           parsedAppealDataModel.fold(
             failure => {
               logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Failed to parse to model with error(s): $failure")
@@ -130,15 +130,9 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
-    if(isEnabled(UseNewAPIModel)) {
       val dateTimeNow: LocalDate = dateTimeHelper.dateNow
       val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
       dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
-    } else {
-      val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
-      val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
-    }
   }
 
   def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])

@@ -16,17 +16,16 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
+import java.time.LocalDate
 
-import java.time.{LocalDate, LocalDateTime}
+import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.SessionAnswersHelper
-
 import javax.inject.Inject
-import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import models.pages.{CheckYourAnswersPage, PageMode}
+import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -135,13 +134,9 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         case Late_Submission => "penaltyType.lateSubmission"
         case Late_Payment | Additional => "penaltyType.latePayment"
       }
-      val (readablePeriodStart, readablePeriodEnd) = if(isEnabled(UseNewAPIModel)) {
+      val (readablePeriodStart, readablePeriodEnd) =
         (dateToString(LocalDate.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
           dateToString(LocalDate.parse(request.session.get(SessionKeys.endDateOfPeriod).get)))
-      } else {
-        (dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
-          dateTimeToString(LocalDateTime.parse(request.session.get(SessionKeys.endDateOfPeriod).get)))
-      }
       val isObligationAppeal: Boolean = request.session.get(SessionKeys.isObligationAppeal).contains("true")
       Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal))
         .removingFromSession(SessionKeys.allKeys: _*)

@@ -20,10 +20,10 @@ import base.SpecBase
 import models.monitoring.DuplicateFilesAuditModel
 import play.api.libs.json.{JsValue, Json}
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 class DuplicateFilesAuditModelSpec  extends SpecBase {
-  val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+  val sampleDate: LocalDate = LocalDate.of(2020, 1, 1)
   val duplicateFilesPayload: JsValue = Json.arr(
     Json.obj(
       "upscanReference" -> "ref1",

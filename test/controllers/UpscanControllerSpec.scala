@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDateTime
+
 import base.SpecBase
 import connectors.UpscanConnector
 import connectors.httpParsers.UpscanInitiateHttpParser.InvalidJson
@@ -34,7 +36,6 @@ import uk.gov.hmrc.http.HttpClient
 import utils.SessionKeys
 import viewtils.EvidenceFileUploadsHelper
 
-import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

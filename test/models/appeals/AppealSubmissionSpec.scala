@@ -1443,7 +1443,7 @@ class AppealSubmissionSpec extends SpecBase {
                   "uploadTimestamp" -> "2020-01-01T01:01:00",
                   "checksum" -> "abcde",
                   "size" -> 1
-                  ),
+                ),
                 "lastUpdated" -> "2021-02-02T02:02:00"
               ),
               Json.obj(
@@ -1456,7 +1456,7 @@ class AppealSubmissionSpec extends SpecBase {
                   "uploadTimestamp" -> "2020-03-03T03:03:00",
                   "checksum" -> "zyxwv",
                   "size" -> 1
-                  ),
+                ),
                 "lastUpdated" -> "2021-04-04T04:04:00"
               )
             )

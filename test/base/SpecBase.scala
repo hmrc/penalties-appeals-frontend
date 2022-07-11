@@ -16,6 +16,8 @@
 
 package base
 
+import java.time.LocalDateTime
+
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
 import helpers.DateTimeHelper
@@ -42,7 +44,6 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import utils.SessionKeys
 import views.html.errors.Unauthorised
 
-import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll {

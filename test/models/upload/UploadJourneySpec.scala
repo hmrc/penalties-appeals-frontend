@@ -100,7 +100,7 @@ class UploadJourneySpec extends AnyWordSpec with Matchers {
           2018, 4, 24, 9, 30, 0),
         checksum = "check123456789",
         size = 1
-    )),
+      )),
     lastUpdated = mockDateTime,
     uploadFields = Some(Map(
       "key" -> "abcxyz",

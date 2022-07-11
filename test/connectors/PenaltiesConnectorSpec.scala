@@ -26,8 +26,8 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
-
 import java.time.LocalDateTime
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltiesConnectorSpec extends SpecBase {

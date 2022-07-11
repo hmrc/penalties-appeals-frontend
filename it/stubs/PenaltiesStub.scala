@@ -55,7 +55,7 @@ object PenaltiesStub {
     stubFor(
       get(
         urlEqualTo(
-          s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey$extraAdditionalParam&useNewApiModel=$useNewApiModel"
+          s"$uri?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey$extraAdditionalParam"
         )
       ).willReturn(
         aResponse()

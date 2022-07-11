@@ -487,56 +487,56 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return Some when there is duplicates in the repository" when {
-        "there is multiple sets of duplicates" in new Setup {
+      "there is multiple sets of duplicates" in new Setup {
+        await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-3"), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-4"), isInitiateCall = true))
+
+        val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
+        status(result) shouldBe OK
+        contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.")
+      }
+
+      "there is one set of duplicates" when {
+        "there is 1 duplicate" in new Setup {
           await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
           await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
-          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-3"), isInitiateCall = true))
-          await(repository.updateStateOfFileUpload("1234", duplicateFile2.copy(reference = "file-4"), isInitiateCall = true))
-
-          val result = controller.getStatusOfFileUpload("1234", "file-4")(FakeRequest())
+          val result = controller.getDuplicateFiles("1234")(FakeRequest())
           status(result) shouldBe OK
-          contentAsJson(result) shouldBe Json.obj("status" -> "DUPLICATE", "errorMessage" -> "Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.")
+          contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2. You can remove duplicate files using the ’Remove’ link.")
         }
 
-        "there is one set of duplicates" when {
-          "there is 1 duplicate" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
-            val result = controller.getDuplicateFiles("1234")(FakeRequest())
-            status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as File 2. You can remove duplicate files using the ’Remove’ link.")
-          }
+        "there is 2 duplicates" in new Setup {
+          await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
+          val result = controller.getDuplicateFiles("1234")(FakeRequest())
+          status(result) shouldBe OK
+          contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as Files 2 and 3. You can remove duplicate files using the ’Remove’ link.")
+        }
 
-          "there is 2 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
-            val result = controller.getDuplicateFiles("1234")(FakeRequest())
-            status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as Files 2 and 3. You can remove duplicate files using the ’Remove’ link.")
-          }
+        "there is 3 duplicates" in new Setup {
+          await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4"), isInitiateCall = true))
+          val result = controller.getDuplicateFiles("1234")(FakeRequest())
+          status(result) shouldBe OK
+          contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as Files 2, 3 and 4. You can remove duplicate files using the ’Remove’ link.")
+        }
 
-          "there is 3 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4"), isInitiateCall = true))
-            val result = controller.getDuplicateFiles("1234")(FakeRequest())
-            status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as Files 2, 3 and 4. You can remove duplicate files using the ’Remove’ link.")
-          }
-
-          "there is 4 duplicates" in new Setup {
-            await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4"), isInitiateCall = true))
-            await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-5"), isInitiateCall = true))
-            val result = controller.getDuplicateFiles("1234")(FakeRequest())
-            status(result) shouldBe OK
-            contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as Files 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link.")
-          }
+        "there is 4 duplicates" in new Setup {
+          await(repository.updateStateOfFileUpload("1234", duplicateFile, isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-2"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-3"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-4"), isInitiateCall = true))
+          await(repository.updateStateOfFileUpload("1234", duplicateFile.copy(reference = "file-5"), isInitiateCall = true))
+          val result = controller.getDuplicateFiles("1234")(FakeRequest())
+          status(result) shouldBe OK
+          contentAsJson(result) shouldBe Json.obj("message" -> "File 1 has the same contents as Files 2, 3, 4 and 5. You can remove duplicate files using the ’Remove’ link.")
         }
       }
+    }
   }
 }

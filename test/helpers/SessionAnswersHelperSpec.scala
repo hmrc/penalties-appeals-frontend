@@ -25,8 +25,8 @@ import play.api.mvc.AnyContent
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
-
 import java.time.LocalDateTime
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

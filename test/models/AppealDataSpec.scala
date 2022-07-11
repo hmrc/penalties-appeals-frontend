@@ -16,34 +16,30 @@
 
 package models
 
+import java.time.LocalDate
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
-
-import java.time.LocalDateTime
 
 class AppealDataSpec extends AnyWordSpec with Matchers {
   val expectedModelAsJson: JsValue = Json.parse(
     """
       |{
       | "type": "LATE_SUBMISSION",
-      | "startDate": "2020-01-01T12:00:00",
-      | "endDate": "2020-01-01T13:00:00",
-      | "dueDate": "2020-02-07T13:00:00",
-      | "dateCommunicationSent": "2020-02-08T13:00:00"
+      | "startDate": "2020-01-01",
+      | "endDate": "2020-01-01",
+      | "dueDate": "2020-02-07",
+      | "dateCommunicationSent": "2020-02-08"
       |}
       |""".stripMargin)
 
-  val expectedModel: AppealData[LocalDateTime] = AppealData(
+  val expectedModel: AppealData = AppealData(
     `type` = PenaltyTypeEnum.Late_Submission,
-    startDate = LocalDateTime.of(
-      2020, 1, 1, 12, 0, 0),
-    endDate = LocalDateTime.of(
-      2020, 1, 1, 13, 0, 0),
-    dueDate = LocalDateTime.of(
-      2020, 2, 7, 13, 0, 0),
-    dateCommunicationSent = LocalDateTime.of(
-      2020, 2, 8, 13, 0, 0)
+    startDate = LocalDate.of(2020, 1, 1),
+    endDate = LocalDate.of(2020, 1, 1),
+    dueDate = LocalDate.of(2020, 2, 7),
+    dateCommunicationSent = LocalDate.of(2020, 2, 8)
   )
 
   "AppealData" should {

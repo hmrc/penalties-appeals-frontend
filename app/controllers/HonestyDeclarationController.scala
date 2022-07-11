@@ -16,10 +16,13 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
+import java.time.LocalDate
+
+import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import helpers.HonestyDeclarationHelper
+import javax.inject.Inject
 import models.NormalMode
 import models.pages.{HonestyDeclarationPage, PageMode}
 import navigation.Navigation
@@ -31,9 +34,6 @@ import utils.Logger.logger
 import utils.SessionKeys
 import views.html.HonestyDeclarationPage
 import viewtils.ImplicitDateFormatter
-
-import java.time.{LocalDate, LocalDateTime}
-import javax.inject.Inject
 
 class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDeclarationPage,
                                              errorHandler: ErrorHandler,
@@ -49,15 +49,10 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
       tryToGetExcuseDatesAndObligationFromSession(
         {
           (reasonableExcuse, dueDate, startDate, endDate, isObligation) => {
-            val (friendlyDueDate, friendlyStartDate, friendlyEndDate) = if (isEnabled(UseNewAPIModel)) {
+            val (friendlyDueDate, friendlyStartDate, friendlyEndDate) =
               (ImplicitDateFormatter.dateToString(LocalDate.parse(dueDate)),
                 ImplicitDateFormatter.dateToString(LocalDate.parse(startDate)),
                 ImplicitDateFormatter.dateToString(LocalDate.parse(endDate)))
-            } else {
-              (ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(dueDate)),
-                ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(startDate)),
-                ImplicitDateFormatter.dateTimeToString(LocalDateTime.parse(endDate)))
-            }
             val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
             val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
             Ok(honestDeclarationPage(reasonableExcuse, reasonText,

@@ -16,15 +16,15 @@
 
 package navigation
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
+
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, UseNewAPIModel}
+import config.featureSwitches.FeatureSwitching
 import controllers.routes
 import helpers.DateTimeHelper
-
 import javax.inject.Inject
 import models.pages._
-import models.{CheckMode, Mode, NormalMode, PenaltyTypeEnum, UserRequest}
+import models._
 import play.api.Configuration
 import play.api.mvc.Call
 import utils.Logger.logger
@@ -214,15 +214,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
-    if(isEnabled(UseNewAPIModel)) {
       val dateNow: LocalDate = dateTimeHelper.dateNow
       val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
       dateSentParsed.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
-    } else {
-      val dateTimeNow: LocalDateTime = dateTimeHelper.dateTimeNow
-      val dateSentParsed: LocalDateTime = LocalDateTime.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
-    }
   }
 
   def routeForUploadList(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
