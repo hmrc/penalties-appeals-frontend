@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDateTime
+
 import models.UserRequest
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.jsoup.{Jsoup, nodes}
@@ -29,7 +31,6 @@ import repositories.UploadJourneyRepository
 import stubs.{AuthStub, PenaltiesStub}
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.{LocalDate, LocalDateTime}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

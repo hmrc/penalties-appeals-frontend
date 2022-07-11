@@ -16,8 +16,9 @@
 
 package models.upload
 
+import java.time.LocalDateTime
+
 import play.api.libs.json.{JsValue, Json, OWrites, Reads}
-import java.time.{LocalDate, LocalDateTime}
 
 case class UploadJourney (
                            reference: String,

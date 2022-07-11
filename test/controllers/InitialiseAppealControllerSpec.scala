@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import base.SpecBase
 import models.{AppealData, PenaltyTypeEnum}
 import org.mockito.ArgumentMatchers.any
@@ -27,7 +29,6 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
-import java.time.{LocalDate, LocalDateTime}
 
 import scala.concurrent.Future
 

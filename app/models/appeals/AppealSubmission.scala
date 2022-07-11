@@ -16,7 +16,7 @@
 
 package models.appeals
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDateTime
 
 import models.upload.UploadJourney
 import models.{PenaltyTypeEnum, UserRequest}
