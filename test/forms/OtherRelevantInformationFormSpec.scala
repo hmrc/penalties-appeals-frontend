@@ -17,9 +17,6 @@
 package forms
 
 import base.SpecBase
-import config.AppConfig
-import org.mockito.Mockito.mock
-import play.api.Configuration
 import play.api.data.{Form, FormError}
 
 class OtherRelevantInformationFormSpec extends SpecBase with FormBehaviours {
