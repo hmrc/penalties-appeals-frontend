@@ -128,22 +128,25 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           Future(BadRequest(""))
         },
         s3UploadError => {
-          val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode, isJsEnabled = true)
           val fileReference = s3UploadError.key
-          logger.debug(s"[UpscanController][uploadFailure] - Setting $messageKeyToSet as the message key for file: $fileReference")
-          val callbackModel: UploadJourney = UploadJourney(
-            reference = fileReference,
-            fileStatus = UploadStatusEnum.FAILED,
-            downloadUrl = None,
-            uploadDetails = None,
-            failureDetails = Some(
-              FailureDetails(
-                failureReason = FailureReasonEnum.REJECTED,
-                message = messageKeyToSet
+          repository.getFileIndexForJourney(journeyId, fileReference).flatMap(
+            fileIndex => {
+              val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode, isJsEnabled = true, Some(fileIndex + 1))
+              val callbackModel: UploadJourney = UploadJourney(
+                reference = fileReference,
+                fileStatus = UploadStatusEnum.FAILED,
+                downloadUrl = None,
+                uploadDetails = None,
+                failureDetails = Some(
+                  FailureDetails(
+                    failureReason = FailureReasonEnum.REJECTED,
+                    message = messageKeyToSet
+                  )
+                )
               )
-            )
+              repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
+            }
           )
-          repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
         }
       )
     }

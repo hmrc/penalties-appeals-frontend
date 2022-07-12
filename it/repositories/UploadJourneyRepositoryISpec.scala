@@ -258,4 +258,17 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       result.isEmpty shouldBe true
     }
   }
+
+  "getFileIndexForJourney" should {
+    "return file index with a journey id and reference" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", callbackModel, isInitiateCall = true))
+      val result = await(repository.getFileIndexForJourney("J1234", "ref1"))
+      result shouldBe 0
+    }
+
+    "return nothing when the file reference does not exist" in new Setup {
+      val result = await(repository.getFileIndexForJourney("J1234", "F1234"))
+      result shouldBe -1
+    }
+  }
 }

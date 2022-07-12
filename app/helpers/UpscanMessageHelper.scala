@@ -33,10 +33,11 @@ object UpscanMessageHelper {
     }
   }
 
-  def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean): String = {
+  def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean, fileIndex: Option[Int] = None)(implicit messages: Messages): String = {
     errorCode match {
       case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
-      case "EntityTooLarge" => getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
+      case "EntityTooLarge" => if (isJsEnabled) messages(getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled), fileIndex.getOrElse(""))
+                                else getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
       case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
       case _ => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
     }

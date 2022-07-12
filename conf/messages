@@ -352,7 +352,7 @@ otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
 # Upscan failure messages
 # ----------------------------------------------------------
 upscan.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)
-upscan.fileTooLarge = The selected file must be smaller than 6MB. Remove the file and try again.
+upscan.fileTooLarge = File {0} must be smaller than 6MB. Remove the file and try again.
 upscan.fileEmpty = The selected file is empty. Remove the file and try again.
 upscan.fileHasVirus = The selected file contains a virus. Remove the file and try again.
 upscan.unableToUpload = The selected file could not be uploaded. Remove the file and try again.
