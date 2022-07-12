@@ -160,11 +160,6 @@ export class MultiFileUpload {
 
         this.updateFormStatusVisibility(this.isBusy());
 
-        if (this.hasErrors()) {
-            document.querySelector(`.${this.classes.errorSummary}`).focus();
-            return;
-        }
-
         if (this.isInProgress()) {
             this.addNotification(this.messages.stillTransferring);
 
@@ -487,6 +482,7 @@ export class MultiFileUpload {
             fileRef: ref,
             errorMessage: message
         });
+        this.updateButtonVisibility();
         inputContainer.classList.add(this.classes.inputContainerError);
         input.setAttribute('aria-describedby', `error-message-${ref}`);
         label.after(errorMessage);
@@ -706,7 +702,7 @@ export class MultiFileUpload {
 
         this.setItemState(item, status.Uploaded);
         this.getFileNameElement(item).textContent = fileName;
-        this.toggleRemoveButtons(true);
+        this.toggleRemoveButtons();
         file.dataset.multiFileUploadFileRef = fileData['reference'];
 
         return item;
@@ -783,7 +779,7 @@ export class MultiFileUpload {
     /** F62 */
     updateButtonVisibility() {
         const itemCount = this.getItems().length;
-        this.toggleRemoveButtons(itemCount > this.config.minFiles);
+        this.toggleRemoveButtons();
         this.toggleAddButton(itemCount < this.config.maxFiles);
     }
 
@@ -793,13 +789,12 @@ export class MultiFileUpload {
     }
 
     /** F64 */
-    toggleRemoveButtons(state) {
+    toggleRemoveButtons() {
+        let state;
         this.getItems().forEach(item => {
             const button = this.getRemoveButtonFromItem(item);
 
-            if (this.isWaiting(item) || this.isUploading(item) || this.isVerifying(item) || this.isUploaded(item) || this.hasErrors()) {
-                state = true;
-            }
+            state = !!(this.isWaiting(item) || this.isUploading(item) || this.isVerifying(item) || this.isUploaded(item));
 
             this.toggleElement(button, state);
         });
