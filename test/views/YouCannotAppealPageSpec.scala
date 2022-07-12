@@ -40,7 +40,7 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
 
     def applyView(implicit userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = {
       youCannotAppealPage.apply(youCannotHelper.getContent, youCannotHelper.getHeaderAndTitle,
-        PageMode(YouCannotAppealPage, NormalMode) )(userRequest, messages, appConfig)
+        PageMode(YouCannotAppealPage, NormalMode))(userRequest, messages, appConfig)
     }
 
     "when agent is on the page with LPP Appeal" must {

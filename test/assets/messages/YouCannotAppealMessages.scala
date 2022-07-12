@@ -35,9 +35,9 @@ object YouCannotAppealMessages {
 
   val traderLPPp2 = "If you want to use this service to appeal, you need to pay your VAT first."
 
-  val agentLSPp3 = "It can take up to 24 hours before the VAT Return shows on the VAT account. If it‘s already been submitted it, keep checking back to see when it appears in the submission history."
+  val agentLSPp3 = "It can take up to 24 hours before the VAT Return shows on the VAT account. If it‘s already been submitted, keep checking back to see when it appears in the submission history."
 
-  val traderLSPp3 = "It can take up to 24 hours before the VAT Return shows on the VAT account. If you‘ve already submitted it, keep checking back to see when it appears in your submission history."
+  val traderLSPp3 = "It can take up to 24 hours before the VAT Return shows on your VAT account. If you‘ve already submitted it, keep checking back to see when it appears in your submission history."
 
   val agentLPPp3 = "It can take up to 5 days for the payment to clear and show on their payment history. If they‘ve already paid, keep checking back to see when the payment clears."
 
@@ -54,5 +54,4 @@ object YouCannotAppealMessages {
   val returnToVATAccount = "Return to your VAT account"
 
   val checkWhatYouOwe = "Check and pay what you owe"
-
 }

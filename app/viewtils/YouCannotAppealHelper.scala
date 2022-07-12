@@ -47,19 +47,19 @@ class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
   private def lspHtml(implicit messages: Messages, user: UserRequest[_]): Html = {
     html(
       p(content = html(stringAsHtml(messages("youCannotAppeal.p1")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p2.lsp")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p3.lsp")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p4")))),
-      p(link(link = appConfig.vatOverviewUrl, getMessage(s"youCannotAppeal.returnToVATAccount")))
+      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p2.lsp")))),
+      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p3.lsp")))),
+      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p4")))),
+      p(link(link = appConfig.vatOverviewUrl, getMessage("youCannotAppeal.returnToVATAccount")))
     )
   }
 
   private def lppHtml(agent: Boolean)(implicit messages: Messages, user: UserRequest[_]): Html = {
     html(
       p(content = html(stringAsHtml(messages("youCannotAppeal.p1")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p2.lpp")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p3.lpp")))),
-      p(content = html(stringAsHtml(getMessage(s"youCannotAppeal.p4")))),
+      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p2.lpp")))),
+      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p3.lpp")))),
+      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p4")))),
       p(link(link = if(agent) appConfig.whatYouOweUrl else appConfig.vatOverviewUrl,
              messages(if(!agent) s"youCannotAppeal.checkWhatYouOwe" else "agent.youCannotAppeal.returnToVATAccount"))
       )
