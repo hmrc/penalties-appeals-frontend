@@ -25,11 +25,13 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import views.html.obligation.YouCannotAppealPage
+import viewtils.YouCannotAppealHelper
 
 import scala.concurrent.Future
 
 class YouCannotAppealControllerSpec extends SpecBase {
-  val youCannotAppealPage:YouCannotAppealPage = injector.instanceOf[YouCannotAppealPage]
+  val youCannotAppealPage: YouCannotAppealPage = injector.instanceOf[YouCannotAppealPage]
+  val youCannotAppealHelper: YouCannotAppealHelper = injector.instanceOf[YouCannotAppealHelper]
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
 
@@ -38,7 +40,7 @@ class YouCannotAppealControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
     val controller: YouCannotAppealController = new YouCannotAppealController(
-      youCannotAppealPage)(mcc, appConfig, authPredicate, dataRequiredAction)
+      youCannotAppealPage, youCannotAppealHelper)(mcc, appConfig, authPredicate, dataRequiredAction)
   }
 
   "YouCannotAppealController" should{

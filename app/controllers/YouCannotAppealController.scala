@@ -18,20 +18,21 @@ package controllers
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import models.NormalMode
+import models.{NormalMode, UserRequest}
 import models.pages.{PageMode, YouCannotAppealPage}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.obligation.YouCannotAppealPage
-
 import javax.inject.Inject
+import viewtils.YouCannotAppealHelper
 
-class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage)(implicit mcc: MessagesControllerComponents,
-                                                                                    appConfig: AppConfig,
-                                                                                    authorise: AuthPredicate,
-                                                                                    dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage,
+                                          pageHelper: YouCannotAppealHelper)
+                                         (implicit mcc: MessagesControllerComponents,
+                                          appConfig: AppConfig, authorise: AuthPredicate,
+                                          dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) {
-    implicit request => Ok(youCannotAppealPage(PageMode(YouCannotAppealPage, NormalMode)))
+    implicit request => Ok(youCannotAppealPage(pageHelper.getContent, pageHelper.getHeaderAndTitle, PageMode(YouCannotAppealPage, NormalMode)))
   }
 }

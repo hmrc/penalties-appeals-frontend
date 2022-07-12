@@ -14,44 +14,18 @@
  * limitations under the License.
  *@
 
-@import utils.SessionKeys
+@this(layout: Layout,
+link: components.link,
+formHelper: FormWithCSRF,
+pageHeader: components.pageHeader)
 
-@this(
-        layout: Layout,
-        link: components.link,
-        formHelper: FormWithCSRF,
-        pageHeader: components.pageHeader
-)
+@(contentToDisplay: Html,
+    headerAndTitle: String,
+    pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
-@(pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
-@appealType = @{userRequest.session.get(SessionKeys.appealType)}
-
-@layout(pageTitle = messages("youCannotAppeal.headingAndTitle"),
+@layout(pageTitle = messages(headerAndTitle),
     isPageFullWidth = false,
     optPageMode = Some(pageMode)) {
-    @pageHeader(messages("youCannotAppeal.headingAndTitle"))
-    @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)
-                || appealType.contains(PenaltyTypeEnum.Additional.toString)){
-        <p class="govuk-body">@getMessage("youCannotAppeal.lpp.p1")</p>
-        <p class="govuk-body">@getMessage("youCannotAppeal.lpp.p2")</p>
-    }  else {
-        <p class="govuk-body">@getMessage("youCannotAppeal.lsp.p1")</p>
-        <p class="govuk-body">@getMessage("youCannotAppeal.lsp.p2")</p>
-    }
-    <p class="govuk-body">@getMessage("youCannotAppeal.p3")</p>
-
-    <ul class="govuk-list">
-        <li>
-            @if(userRequest.isAgent) {
-                <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="vat-client-details-link">@messages("agent.youCannotAppeal.returnToVATDetails")</a>
-            } else {
-                @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString)|| appealType.contains(PenaltyTypeEnum.Additional.toString)) {
-                <a class="govuk-link" href="@{appConfig.whatYouOweUrl}" id="check-what-you-owe-link">@messages("youCannotAppeal.checkWhatYouOwe")</a>
-                } else {
-                <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="vat-details-link">@messages("youCannotAppeal.returnToVATAccount")</a>
-                }
-            }
-        </li>
-    </ul>
+        @pageHeader(messages(headerAndTitle))
+        @contentToDisplay
 }
-

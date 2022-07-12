@@ -24,33 +24,36 @@ import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.obligation.YouCannotAppealPage
+import viewtils.YouCannotAppealHelper
 
 class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
   "YouCannotAppealPage" should {
     val youCannotAppealPage: YouCannotAppealPage = injector.instanceOf[YouCannotAppealPage]
+    val youCannotHelper = injector.instanceOf[YouCannotAppealHelper]
     object Selectors extends BaseSelectors {
       val p1 = "#main-content > div > div > p:nth-child(2)"
       val p2 = "#main-content > div > div > p:nth-child(3)"
       val p3 = "#main-content > div > div > p:nth-child(4)"
-      val vatClientLink = "#vat-client-details-link"
-      val vatLink = "#vat-details-link"
-      val checkWhatYouOweLink = "#check-what-you-owe-link"
+      val p4 = "#main-content > div > div > p:nth-child(5)"
+      val link = "p > .govuk-link"
     }
 
-    def applyView(userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = {
-      youCannotAppealPage.apply(PageMode(YouCannotAppealPage, NormalMode))(userRequest, messages, appConfig)
+    def applyView(implicit userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = {
+      youCannotAppealPage.apply(youCannotHelper.getContent, youCannotHelper.getHeaderAndTitle,
+        PageMode(YouCannotAppealPage, NormalMode))(userRequest, messages, appConfig)
     }
 
     "when agent is on the page with LPP Appeal" must {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLPP))
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
-        Selectors.p1 -> agentLPPp1,
+        Selectors.title -> (titleHeaderLPPAgent + titleAppend),
+        Selectors.h1 -> titleHeaderLPPAgent,
+        Selectors.p1 -> p1,
         Selectors.p2 -> agentLPPp2,
-        Selectors.p3 -> agentp3,
-        Selectors.vatClientLink -> returnToClientVATDetails
+        Selectors.p3 -> agentLPPp3,
+        Selectors.p4 -> agentP4,
+        Selectors.link -> returnToClientVATDetails
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
       }
@@ -58,12 +61,12 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLPPAdditional))
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
-        Selectors.p1 -> agentLPPp1,
+        Selectors.title -> (titleHeaderLPPAgent + titleAppend),
+        Selectors.h1 -> titleHeaderLPPAgent,
+        Selectors.p1 -> p1,
         Selectors.p2 -> agentLPPp2,
-        Selectors.p3 -> agentp3,
-        Selectors.vatClientLink -> returnToClientVATDetails
+        Selectors.p3 -> agentLPPp3,
+        Selectors.link -> returnToClientVATDetails
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
@@ -71,12 +74,13 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLSP))
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
-        Selectors.p1 -> agentLSPp1,
+        Selectors.title -> (titleHeaderLSPAgent + titleAppend),
+        Selectors.h1 -> titleHeaderLSPAgent,
+        Selectors.p1 -> p1,
         Selectors.p2 -> agentLSPp2,
-        Selectors.p3 -> agentp3,
-        Selectors.vatClientLink -> returnToClientVATDetails
+        Selectors.p3 -> agentLSPp3,
+        Selectors.p4 -> agentP4,
+        Selectors.link -> returnToClientVATDetails
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
@@ -84,12 +88,13 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserLSP))
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
-        Selectors.p1 -> vatTraderLSPp1,
-        Selectors.p2 -> vatTraderLSPp2,
-        Selectors.p3 -> p3,
-        Selectors.vatLink -> returnToVATAccount
+        Selectors.title -> (titleHeaderLSP + titleAppend),
+        Selectors.h1 -> titleHeaderLSP,
+        Selectors.p1 -> p1,
+        Selectors.p2 -> traderLSPp2,
+        Selectors.p3 -> traderLSPp3,
+        Selectors.p4 -> traderP4,
+        Selectors.link -> returnToVATAccount
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
@@ -97,12 +102,13 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserLPP))
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
-        Selectors.p1 -> vatTraderLPPp1,
-        Selectors.p2 -> vatTraderLPPp2,
-        Selectors.p3 -> p3,
-        Selectors.checkWhatYouOweLink -> checkWhatYouOwe
+        Selectors.title -> (titleHeaderLPP + titleAppend),
+        Selectors.h1 -> titleHeaderLPP,
+        Selectors.p1 -> p1,
+        Selectors.p2 -> traderLPPp2,
+        Selectors.p3 -> traderLPPp3,
+        Selectors.p4 -> traderP4,
+        Selectors.link -> checkWhatYouOwe
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
@@ -110,12 +116,13 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserAdditional))
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
-        Selectors.p1 -> vatTraderLPPp1,
-        Selectors.p2 -> vatTraderLPPp2,
-        Selectors.p3 -> p3,
-        Selectors.checkWhatYouOweLink -> checkWhatYouOwe
+        Selectors.title -> (titleHeaderLPP + titleAppend),
+        Selectors.h1 -> titleHeaderLPP,
+        Selectors.p1 -> p1,
+        Selectors.p2 -> traderLPPp2,
+        Selectors.p3 -> traderLPPp3,
+        Selectors.p4 -> traderP4,
+        Selectors.link -> checkWhatYouOwe
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
