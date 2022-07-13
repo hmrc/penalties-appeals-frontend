@@ -61,44 +61,44 @@ class UpscanMessageHelperSpec extends SpecBase {
 
     "routing through the js journey " should {
       "return empty file message when errorCode is EntityTooSmall" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", true)
+        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", true, None)
         result shouldBe "upscan.fileEmpty"
       }
 
       "return file too large message when errorCode is EntityTooLarge" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooLarge", true)
-        result shouldBe "upscan.fileTooLarge"
+        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooLarge", true, Some(1))
+        result shouldBe "File 1 must be smaller than 6MB. Remove the file and try again."
       }
 
       "return select a file message when errorCode is InvalidArgument" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", true)
+        val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", true, None)
         result shouldBe "upscan.fileNotSpecified"
       }
 
       "return try again message when errorCode is not matched" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", true)
+        val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", true, None)
         result shouldBe "upscan.unableToUpload"
       }
     }
 
     "routing through the non-js journey" should {
       "return empty file message when errorCode is EntityTooSmall" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", false)
+        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", false, None)
         result shouldBe "upscan.noJs.fileEmpty"
       }
 
       "return file too large message when errorCode is EntityTooLarge" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooLarge", false)
+        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooLarge", false, None)
         result shouldBe "upscan.noJs.fileTooLarge"
       }
 
       "return select a file message when errorCode is InvalidArgument" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", false)
+        val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", false, None)
         result shouldBe "upscan.fileNotSpecified"
       }
 
       "return try again message when errorCode is not matched" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", false)
+        val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", false, None)
         result shouldBe "upscan.noJs.unableToUpload"
       }
     }

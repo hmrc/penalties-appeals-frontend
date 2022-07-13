@@ -182,6 +182,8 @@ class UpscanControllerSpec extends SpecBase {
         "the failure is because the file is too small" in {
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("file1")))
+          when(repository.getFileIndexForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(-1))
           val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
             "key" -> "file1",
             "errorCode" -> "EntityTooSmall",

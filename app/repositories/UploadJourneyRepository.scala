@@ -156,4 +156,15 @@ class UploadJourneyRepository @Inject()(
         ).collect { case Some(x) => x }
       ).getOrElse(Seq.empty))
   }
+
+  def getFileIndexForJourney(journeyId: String, fileReference: String): Future[Int] = {
+    findById(journeyId).map {
+      _.map {
+        item => {
+          val list = item.data.values
+          list.map(a => a.as[UploadJourney]).toSeq.indexWhere(_.reference.equals(fileReference))
+        }
+      }.getOrElse(-1)
+    }
+  }
 }
