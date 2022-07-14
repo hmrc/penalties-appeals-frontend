@@ -34,10 +34,12 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
     implicit request => {
       withJsonBody[UploadJourney] {
         callbackModel => {
+          repository.getFileIndexForJourney(journeyId, callbackModel.reference).flatMap(
+            fileIndex => {
           if (callbackModel.failureDetails.isDefined) {
             logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload failed, marking failure in repository")
             val failureReason = callbackModel.failureDetails.get.failureReason
-            val localisedFailureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason, isJsEnabled)
+            val localisedFailureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason, isJsEnabled, Some(fileIndex + 1))
             val failureDetails = callbackModel.failureDetails.get.copy(message = localisedFailureReason)
             repository.updateStateOfFileUpload(journeyId, callbackModel.copy(failureDetails = Some(failureDetails))).map(_ => NoContent)
           } else {
@@ -60,6 +62,7 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository)
               }
             )
           }
+        })
         }
       }
     }
