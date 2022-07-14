@@ -50,13 +50,11 @@ object UploadEvidenceMessages {
 
   val detailsLi5 = "Open Document Format (ODF)"
 
-  val document1 = "File 1"
-
   val addAnotherButton = "Add another file"
 
   val continueButton = "Continue"
 
-  val fileUploadTryAgain = "The selected file could not be uploaded. Remove the file and try again."
+  val fileUploadTryAgain = "File 1 could not be uploaded. Remove the file and try again."
 
   val uploadEvidenceStillTransferring = "Files are still being transferred"
 
