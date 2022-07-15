@@ -65,7 +65,6 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
             } else {
               val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_))
               val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
-              println("fileStatusWithLocalisedMessage.."+fileStatusWithLocalisedMessage)
               logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
                 s"reference: $fileReference - returning status: $fileStatusWithLocalisedMessage with message: ${fileStatusWithLocalisedMessage.errorMessage}")
               Future(Ok(Json.toJson(fileStatusWithLocalisedMessage)))
@@ -206,28 +205,24 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
         },
         upload => {
           val timeoutForCheckingStatus = System.nanoTime() + (appConfig.upscanStatusCheckTimeout * 1000000000L)
-          service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, mode, isAddingAnotherDocument,{
+          service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, mode, isAddingAnotherDocument, {
             (optFailureDetails, errorMessage) => {
-              repository.getFileIndexForJourney(request.session.get(SessionKeys.journeyId).get, upload.key).flatMap(
-                fileIndex => {
-                  if (errorMessage.isDefined) {
-                    val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled, Some(fileIndex + 1))
-                    if (isAddingAnotherDocument) {
-                      Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
-                        .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
-                    } else {
-                      Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-                        .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
-                    }
-                  } else {
-                    Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)))
-                  }
-                })
+              if (errorMessage.isDefined) {
+                val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled, None)
+                if (isAddingAnotherDocument) {
+                  Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
+                    .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
+                } else {
+                  Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+                    .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
+                }
+              } else {
+                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)))
+              }
             }
           })
         }
       )
-
     }
   }
 
