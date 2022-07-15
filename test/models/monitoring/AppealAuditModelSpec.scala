@@ -337,6 +337,19 @@ class AppealAuditModelSpec extends SpecBase {
           "lateAppeal" -> false
         )
       )
+
+      lppHealthOngoingModel.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN",
+        "penaltyType" -> "LPP",
+        "correlationId" -> "someUUID",
+        "appealInformation" -> Json.obj(
+          "type" -> "unexpectedHospitalStay",
+          "startDateOfEvent" -> "2021-04-23T18:25:43.511Z",
+          "lateAppeal" -> false
+        )
+      )
     }
 
     "output the correct details for a lpp other submission without evidence with correlationID" in {

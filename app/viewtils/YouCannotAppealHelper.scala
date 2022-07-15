@@ -29,7 +29,7 @@ class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
                                       link: views.html.components.link)
                                               extends ViewUtils {
 
-  def getHeaderAndTitle(implicit messages: Messages, user: UserRequest[_]): String = {
+  def getHeaderAndTitle(implicit user: UserRequest[_]): String = {
     val isLPP = user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) ||
       user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)
     (isLPP, user.isAgent) match {

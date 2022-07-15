@@ -18,14 +18,15 @@ package controllers
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import models.{NormalMode, UserRequest}
+import models.NormalMode
 import models.pages.{PageMode, YouCannotAppealPage}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.obligation.YouCannotAppealPage
-import javax.inject.Inject
 import viewtils.YouCannotAppealHelper
+
+import javax.inject.Inject
 
 class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage,
                                           pageHelper: YouCannotAppealHelper)

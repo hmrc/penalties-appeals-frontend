@@ -16,7 +16,6 @@
 
 package viewtils
 
-import config.AppConfig
 import models.PenaltyTypeEnum
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -35,7 +34,7 @@ object PenaltyTypeHelper {
     }
   }
 
-  def getKeysFromSession()(implicit request: Request[_], messages: Messages, appConfig: AppConfig): Option[Seq[String]] = {
+  def getKeysFromSession()(implicit request: Request[_], messages: Messages): Option[Seq[String]] = {
     Try {
         Seq(
           PenaltyTypeHelper.convertPenaltyTypeToContentString(request.session.get(SessionKeys.appealType).get).get,
