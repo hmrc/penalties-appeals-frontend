@@ -35,7 +35,7 @@ function getProvisionResponse() {
 function getFailedResponse() {
     return {
         status: 'REJECTED',
-        errorMessage: 'The selected file must be smaller than 6MB. Remove the file and try again.'
+        errorMessage: 'File 1 must be smaller than 6MB. Remove the file and try again.'
     };
 }
 
@@ -54,6 +54,8 @@ describe('Multi File Upload component', () => {
             </h1>
             
         <form class="multi-file-upload"
+          data-multi-file-upload-max-retries=1
+          data-multi-file-upload-error-generic="File {fileNumber} could not be uploaded. Remove the file and try again."
           data-multi-file-upload-file-uploading="Uploading {fileNumber} {fileName}"
           data-multi-file-upload-file-uploaded="{fileNumber} {fileName} has been uploaded"
           data-multi-file-upload-file-removed="{fileNumber} {fileName} has been removed"
@@ -332,6 +334,11 @@ describe('Multi File Upload component', () => {
                     done();
                 });
 
+                 it('Then the correct error is shown', (done) => {
+                    expect(item.querySelector('.multi-file-upload__error-message').textContent).toEqual('File 1 must be smaller than 6MB. Remove the file and try again.');
+                    done();
+                    });
+
                 it('Then the remove button is not present', (done) => {
                     expect(container.querySelector('.multi-file-upload__remove-item').classList.contains('hidden')).toBeTrue();
                     done();
@@ -372,6 +379,102 @@ describe('Multi File Upload component', () => {
                 });
             });
         });
+
+        describe('And component is initialised', () => {
+                    beforeEach((done) => {
+                        instance = new MultiFileUpload(container);
+                        spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
+                            const response = getProvisionResponse();
+                            const promise = Promise.resolve(response);
+
+                            promise.then(() => {
+                                instance.handleProvisionUploadCompleted(file, response);
+                                done();
+                            });
+
+                            return promise;
+                        });
+                        spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
+                        spyOn(instance, 'uploadFile').and.callFake((file) => {
+                            instance.handleUploadFileCompleted(file.dataset.multiFileUploadFileRef);
+                        });
+                        spyOn(instance, 'requestUploadStatus').and.callFake((fileRef) => {
+                            instance.handleRequestUploadStatusCompleted(fileRef, getStatusResponseWaiting());
+                        });
+                        spyOn(instance, 'delayedRequestUploadStatus').and.callFake((fileRef) => {
+                            instance.requestUploadStatus(fileRef);
+                        });
+
+                        instance.init();
+                        item = container.querySelector('.multi-file-upload__item');
+                        input = container.querySelector('.multi-file-upload__file');
+                        done();
+                    });
+
+                    describe('When there is an error', () => {
+                        beforeEach((done) => {
+
+                            input.files = createFileList([new File([''], '/path/to/test.txt')]);
+                            input.dispatchEvent(new Event('change'));
+                            done();
+                        });
+
+                        it('Then item should have the aria-describedby attribute', (done) => {
+                            expect(input.hasAttribute('aria-describedby')).toEqual(true);
+                            expect(input.getAttribute('aria-describedby')).toEqual('error-message-123');
+                            done();
+                        });
+
+                        it('Then the document title should be prefixed with "Error:"', (done) => {
+                            expect(document.title).toContain('Error:');
+                            done();
+                        });
+
+                         it('Then the file could not be uploaded error is shown', (done) => {
+                              expect(item.querySelector('.multi-file-upload__error-message').textContent).toEqual('File 1 could not be uploaded. Remove the file and try again.');
+                              done();
+                            });
+
+                        it('Then the remove button is not present', (done) => {
+                            expect(container.querySelector('.multi-file-upload__remove-item').classList.contains('hidden')).toBeTrue();
+                            done();
+                        });
+                    });
+
+                    describe('When the user removes the last error', () => {
+                        beforeEach((done) => {
+                            spyOn(instance, 'requestRemoveFile').and.callFake((file) => {
+                                instance.requestRemoveFileCompleted(file);
+                            });
+                            input.files = createFileList([new File([''], '/path/to/test.txt')]);
+                            input.dispatchEvent(new Event('change'));
+                            done();
+                        });
+
+                        it('Then the document title prefix ("Error:") should be removed', (done) => {
+                            item.querySelector('.multi-file-upload__remove-item').click();
+                            expect(document.title).not.toContain('Error:');
+                            done();
+                        });
+                    });
+
+                    describe('When the user changes the file', () => {
+                        beforeEach((done) => {
+                            input.files = createFileList([new File([''], '/path/to/test.txt')]);
+                            input.dispatchEvent(new Event('change'));
+                            done();
+                        });
+
+                        it('Then the input should no longer have the aria-describedby attribute', (done) => {
+                            instance.requestUploadStatus.and.callFake((fileRef) => {
+                                instance.handleRequestUploadStatusCompleted(fileRef, getStatusResponse());
+                            });
+                            input.dispatchEvent(new Event('change'));
+                            expect(input.hasAttribute('aria-describedby')).toEqual(false);
+                            done();
+                        });
+                    });
+                });
 
         describe('And component is initialised', () => {
             beforeEach((done) => {
