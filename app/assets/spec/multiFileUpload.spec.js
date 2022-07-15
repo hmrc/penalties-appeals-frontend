@@ -440,40 +440,6 @@ describe('Multi File Upload component', () => {
                             done();
                         });
                     });
-
-                    describe('When the user removes the last error', () => {
-                        beforeEach((done) => {
-                            spyOn(instance, 'requestRemoveFile').and.callFake((file) => {
-                                instance.requestRemoveFileCompleted(file);
-                            });
-                            input.files = createFileList([new File([''], '/path/to/test.txt')]);
-                            input.dispatchEvent(new Event('change'));
-                            done();
-                        });
-
-                        it('Then the document title prefix ("Error:") should be removed', (done) => {
-                            item.querySelector('.multi-file-upload__remove-item').click();
-                            expect(document.title).not.toContain('Error:');
-                            done();
-                        });
-                    });
-
-                    describe('When the user changes the file', () => {
-                        beforeEach((done) => {
-                            input.files = createFileList([new File([''], '/path/to/test.txt')]);
-                            input.dispatchEvent(new Event('change'));
-                            done();
-                        });
-
-                        it('Then the input should no longer have the aria-describedby attribute', (done) => {
-                            instance.requestUploadStatus.and.callFake((fileRef) => {
-                                instance.handleRequestUploadStatusCompleted(fileRef, getStatusResponse());
-                            });
-                            input.dispatchEvent(new Event('change'));
-                            expect(input.hasAttribute('aria-describedby')).toEqual(false);
-                            done();
-                        });
-                    });
                 });
 
         describe('And component is initialised', () => {

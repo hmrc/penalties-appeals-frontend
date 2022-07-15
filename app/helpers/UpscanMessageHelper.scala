@@ -26,37 +26,19 @@ object UpscanMessageHelper {
   val noJsPrefix = "upscan.noJs"
 
   def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean, fileIndex: Option[Int] = None)(implicit messages: Messages): String = {
-    if (isJsEnabled) {
-      failureReason match {
-        case FailureReasonEnum.QUARANTINE => messages(getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled), fileIndex.getOrElse(""))
-        case FailureReasonEnum.REJECTED => messages(getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled), fileIndex.getOrElse(""))
-        case FailureReasonEnum.UNKNOWN => messages(getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled), fileIndex.getOrElse(""))
-      }
-    }
-    else {
-      failureReason match {
-        case FailureReasonEnum.QUARANTINE => getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled)
-        case FailureReasonEnum.REJECTED => getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled)
-        case FailureReasonEnum.UNKNOWN => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
-      }
+    failureReason match {
+      case FailureReasonEnum.QUARANTINE => messages(getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled), fileIndex.getOrElse(""))
+      case FailureReasonEnum.REJECTED => messages(getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled), fileIndex.getOrElse(""))
+      case FailureReasonEnum.UNKNOWN => messages(getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled), fileIndex.getOrElse(""))
     }
   }
 
   def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean, fileIndex: Option[Int] = None)(implicit messages: Messages): String = {
-    if (isJsEnabled) {
-      errorCode match {
-        case "EntityTooSmall" => messages(getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled), fileIndex.getOrElse(""))
-        case "EntityTooLarge" => messages(getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled), fileIndex.getOrElse(""))
-        case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
-        case _ =>  messages(getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled), fileIndex.getOrElse(""), fileIndex.getOrElse(""))
-      }
-    } else {
-      errorCode match {
-        case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
-        case "EntityTooLarge" => getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
-        case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
-        case _ => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
-      }
+    errorCode match {
+      case "EntityTooSmall" => messages(getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled), fileIndex.getOrElse(""))
+      case "EntityTooLarge" => messages(getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled), fileIndex.getOrElse(""))
+      case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
+      case _ => messages(getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled), fileIndex.getOrElse(""))
     }
   }
 
