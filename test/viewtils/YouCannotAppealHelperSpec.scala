@@ -27,13 +27,13 @@ class YouCannotAppealHelperSpec extends SpecBase {
     "the user is an agent" when {
       "the appeal type is LPP" should {
         "return the correct value" in {
-          val result = youCannotAppealHelper.getHeaderAndTitle(implicitly, agentUserLPP)
+          val result = youCannotAppealHelper.getHeaderAndTitle(agentUserLPP)
           result shouldBe "agent.youCannotAppeal.headingAndTitle.lpp"
         }
       }
       "the appeal type is LSP" should {
         "return the correct value" in {
-          val result = youCannotAppealHelper.getHeaderAndTitle(implicitly, agentUserLSP)
+          val result = youCannotAppealHelper.getHeaderAndTitle(agentUserLSP)
           result shouldBe "agent.youCannotAppeal.headingAndTitle.lsp"
         }
       }
@@ -42,13 +42,13 @@ class YouCannotAppealHelperSpec extends SpecBase {
     "the user is a vat trader" when {
       "the appeal type is LPP" should {
         "return the correct value" in {
-          val result = youCannotAppealHelper.getHeaderAndTitle(implicitly, vatTraderUserLPP)
+          val result = youCannotAppealHelper.getHeaderAndTitle(vatTraderUserLPP)
           result shouldBe "youCannotAppeal.headingAndTitle.lpp"
         }
       }
       "the appeal type is LSP" should {
         "return the correct value" in {
-          val result = youCannotAppealHelper.getHeaderAndTitle(implicitly, vatTraderUserLSP)
+          val result = youCannotAppealHelper.getHeaderAndTitle(vatTraderUserLSP)
           result shouldBe "youCannotAppeal.headingAndTitle.lsp"
         }
       }

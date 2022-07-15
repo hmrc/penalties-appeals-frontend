@@ -28,9 +28,9 @@ import utils.SessionKeys
 import java.time.LocalDate
 
 class PenaltyTypeHelperSpec extends SpecBase {
-  
+
   val mockAppConfig: AppConfig = mock(classOf[AppConfig])
-  
+
   class Setup {
     reset(mockAppConfig)
   }
@@ -63,112 +63,61 @@ class PenaltyTypeHelperSpec extends SpecBase {
   }
 
   "getKeysFromSession" should {
-    s"return $Some $Seq String when all the keys exist in the session and the enum can be parsed" when {
-      "the call API 1812 feature switch is enabled" in new Setup {
-        when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
-          .thenReturn(true)
-        val fakeRequestWithCorrectKeysForNewAPI: FakeRequest[AnyContent] = fakeRequest
-          .withSession(
-            SessionKeys.penaltyNumber -> "123",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-            SessionKeys.startDateOfPeriod -> "2020-01-01",
-            SessionKeys.endDateOfPeriod -> "2020-01-31",
-            SessionKeys.dueDateOfPeriod -> "2020-02-07",
-            SessionKeys.dateCommunicationSent -> "2020-02-08",
-            SessionKeys.journeyId -> "1234"
-          )
-        val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithCorrectKeysForNewAPI, implicitly, mockAppConfig)
-        result.isDefined shouldBe true
-        result.get.head shouldBe messages("penaltyType.lateSubmission")
-        result.get(1) shouldBe ImplicitDateFormatter.dateToString(LocalDate.parse("2020-01-01"))
-        result.get(2) shouldBe ImplicitDateFormatter.dateToString(LocalDate.parse("2020-01-31"))
-      }
-
-      "the call API 1812 feature switch is disabled" in new Setup {
-        val result = PenaltyTypeHelper.getKeysFromSession()(userRequestWithCorrectKeys, implicitly, implicitly)
-        result.isDefined shouldBe true
-        result.get.head shouldBe messages("penaltyType.lateSubmission")
-        result.get(1) shouldBe ImplicitDateFormatter.dateToString(LocalDate.parse("2020-01-01"))
-        result.get(2) shouldBe ImplicitDateFormatter.dateToString(LocalDate.parse("2020-01-01"))
-      }
+    s"return $Some $Seq String when all the keys exist in the session and the enum can be parsed" in {
+      when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
+        .thenReturn(true)
+      val fakeRequestWithCorrectKeysForNewAPI: FakeRequest[AnyContent] = fakeRequest
+        .withSession(
+          SessionKeys.penaltyNumber -> "123",
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          SessionKeys.startDateOfPeriod -> "2020-01-01",
+          SessionKeys.endDateOfPeriod -> "2020-01-31",
+          SessionKeys.dueDateOfPeriod -> "2020-02-07",
+          SessionKeys.dateCommunicationSent -> "2020-02-08",
+          SessionKeys.journeyId -> "1234"
+        )
+      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithCorrectKeysForNewAPI, implicitly)
+      result.isDefined shouldBe true
+      result.get.head shouldBe messages("penaltyType.lateSubmission")
+      result.get(1) shouldBe ImplicitDateFormatter.dateToString(LocalDate.parse("2020-01-01"))
+      result.get(2) shouldBe ImplicitDateFormatter.dateToString(LocalDate.parse("2020-01-31"))
     }
 
-    s"return $None when all the keys exist in the session and the enum can not be parsed" when {
-      "the call API 1812 feature switch is enabled" in new Setup {
-        when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
-          .thenReturn(true)
-        val fakeRequestWithWrongAppealType: FakeRequest[AnyContent] = fakeRequest.withSession(
-          (SessionKeys.appealType, "invalid"),
-          (SessionKeys.penaltyNumber, "123"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01")
-        )
-        val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithWrongAppealType, implicitly, mockAppConfig)
-        result.isDefined shouldBe false
-      }
-
-      "the call API 1812 feature switch is disabled" in new Setup {
-        val fakeRequestWithWrongAppealType: FakeRequest[AnyContent] = fakeRequest.withSession(
-          (SessionKeys.appealType, "invalid"),
-          (SessionKeys.penaltyNumber, "123"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")
-        )
-        val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithWrongAppealType, implicitly, implicitly)
-        result.isDefined shouldBe false
-      }
-
+    s"return $None when all the keys exist in the session and the enum can not be parsed" in {
+      when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
+        .thenReturn(true)
+      val fakeRequestWithWrongAppealType: FakeRequest[AnyContent] = fakeRequest.withSession(
+        (SessionKeys.appealType, "invalid"),
+        (SessionKeys.penaltyNumber, "123"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
+      )
+      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithWrongAppealType, implicitly)
+      result.isDefined shouldBe false
     }
 
-    s"return $None when some of the keys do not exist in the session" when {
-      "the call API 1812 feature switch is enabled" in new Setup {
-        when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
-          .thenReturn(true)
-        val fakeRequestWithSomeKeysNotExisting: FakeRequest[AnyContent] = FakeRequest().withSession(
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.penaltyNumber, "123"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01")
-        )
-        val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithSomeKeysNotExisting, implicitly, mockAppConfig)
-        result.isDefined shouldBe false
-      }
-
-      "the call API 1812 feature switch is disabled" in new Setup {
-        val fakeRequestWithSomeKeysNotExisting: FakeRequest[AnyContent] = FakeRequest().withSession(
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.penaltyNumber, "123"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500")
-        )
-        val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithSomeKeysNotExisting, implicitly, implicitly)
-        result.isDefined shouldBe false
-      }
-
+    s"return $None when some of the keys do not exist in the session" in {
+      val fakeRequestWithSomeKeysNotExisting: FakeRequest[AnyContent] = FakeRequest().withSession(
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.penaltyNumber, "123"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500")
+      )
+      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithSomeKeysNotExisting, implicitly)
+      result.isDefined shouldBe false
     }
 
-    s"return $None when the dates stored in the session can not be parsed" when {
-      "the call API 1812 feature switch is enabled" in new Setup {
-        when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
-          .thenReturn(true)
-        val fakeRequestWithInvalidDates: FakeRequest[AnyContent] = fakeRequest.withSession(
-          (SessionKeys.appealType, "invalid"),
-          (SessionKeys.penaltyNumber, "123"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01over5thousand"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01")
-        )
-        val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithInvalidDates, implicitly, mockAppConfig)
-        result.isDefined shouldBe false
-      }
 
-      "the call API 1812 feature switch is disabled" in new Setup {
-        val fakeRequestWithInvalidDates: FakeRequest[AnyContent] = fakeRequest.withSession(
-          (SessionKeys.appealType, "invalid"),
-          (SessionKeys.penaltyNumber, "123"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00over5thousand"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01T12:00:00.500")
-        )
-        val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithInvalidDates, implicitly, implicitly)
-        result.isDefined shouldBe false
-      }
+    s"return $None when the dates stored in the session can not be parsed" in {
+      when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
+        .thenReturn(true)
+      val fakeRequestWithInvalidDates: FakeRequest[AnyContent] = fakeRequest.withSession(
+        (SessionKeys.appealType, "invalid"),
+        (SessionKeys.penaltyNumber, "123"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01over5thousand"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01")
+      )
+      val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithInvalidDates, implicitly)
+      result.isDefined shouldBe false
     }
   }
 }

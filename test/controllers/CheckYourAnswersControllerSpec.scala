@@ -250,7 +250,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "the user is authorised" must {
       "redirect the user to the confirmation page on success" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right()))
+          .thenReturn(Future.successful(Right((): Unit)))
         when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
           .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
@@ -260,7 +260,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right()))
+          .thenReturn(Future.successful(Right((): Unit)))
         when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
           .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)

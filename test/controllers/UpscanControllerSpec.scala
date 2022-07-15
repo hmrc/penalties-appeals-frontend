@@ -156,7 +156,7 @@ class UpscanControllerSpec extends SpecBase {
       "return NO CONTENT" when {
         "the journey and file exists or doesn't exist in the database" in {
           when(repository.removeFileForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful())
+            .thenReturn(Future.successful((): Unit))
           val result = controller.removeFile("J1234", "F1234")(fakeRequest)
           status(result) shouldBe NO_CONTENT
         }
