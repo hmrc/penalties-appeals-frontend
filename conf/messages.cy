@@ -351,11 +351,11 @@ otherReason.uploadAnotherDocument.noJs.button.cancel = Canslo
 
 # Upscan failure messages
 # ----------------------------------------------------------
-upscan.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.invalidMimeType = File {0} must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
 upscan.fileTooLarge = File {0} must be smaller than 6MB. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.fileEmpty = Mae’r ffeil dan sylw yn wag. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.fileHasVirus = Mae feirws yn y ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.unableToUpload = Nid oedd modd uwchlwytho’r ffeil dan sylw. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileEmpty = File {0} is empty. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileHasVirus = File {0} contains a virus. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.unableToUpload = File {0} could not be uploaded. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
 upscan.fileUploaded = {0} {1} has been uploaded
 upscan.fileUploading = Uploading {0}
 upscan.fileRemoved = Remove {0} {1}

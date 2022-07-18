@@ -417,7 +417,7 @@ export class MultiFileUpload {
         const item = this.getItemFromFile(file);
         item.querySelector(`.${this.classes.fileName}`).style.display = 'none';
         this.setItemState(item, status.Default);
-        this.addError(file.id, errorMessage);
+        this.addError(file.id, this.parseTemplate(errorMessage, {fileNumber: item.querySelector('.govuk-label').textContent.slice(-1)}));
         this.updateFormStatusVisibility();
     }
 

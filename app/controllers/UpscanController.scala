@@ -205,11 +205,11 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
         },
         upload => {
           val timeoutForCheckingStatus = System.nanoTime() + (appConfig.upscanStatusCheckTimeout * 1000000000L)
-          service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, mode, isAddingAnotherDocument,{
+          service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, mode, isAddingAnotherDocument, {
             (optFailureDetails, errorMessage) => {
-              if(errorMessage.isDefined) {
-                val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled)
-                if(isAddingAnotherDocument) {
+              if (errorMessage.isDefined) {
+                val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled, None)
+                if (isAddingAnotherDocument) {
                   Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 } else {
@@ -223,7 +223,6 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           })
         }
       )
-
     }
   }
 

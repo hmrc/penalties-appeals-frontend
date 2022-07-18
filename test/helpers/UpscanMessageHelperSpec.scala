@@ -24,35 +24,35 @@ class UpscanMessageHelperSpec extends SpecBase {
   "getLocalisedFailureMessageForFailure" when {
     "routing through the js journey " should {
       "return virus message when status is QUARANTINE" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, true)
-        result shouldBe "upscan.fileHasVirus"
+        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, true, Some(1))
+        result shouldBe "File 1 contains a virus. Remove the file and try again."
       }
 
       "return MIME type message when status is REJECTED" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, true)
-        result shouldBe "upscan.invalidMimeType"
+        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, true, Some(1))
+        result shouldBe "File 1 must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)"
       }
 
       "return try again message when status is UNKNOWN" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, true)
-        result shouldBe "upscan.unableToUpload"
+        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, true, Some(1))
+        result shouldBe "File 1 could not be uploaded. Remove the file and try again."
       }
     }
 
     "routing through the non-js journey" should {
       "return virus message when status is QUARANTINE" in {
         val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, false)
-        result shouldBe "upscan.noJs.fileHasVirus"
+        result shouldBe "The selected file contains a virus. Choose another file."
       }
 
       "return MIME type message when status is REJECTED" in {
         val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, false)
-        result shouldBe "upscan.noJs.invalidMimeType"
+        result shouldBe "The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF). Choose another file."
       }
 
       "return try again message when status is UNKNOWN" in {
         val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, false)
-        result shouldBe "upscan.noJs.unableToUpload"
+        result shouldBe "The selected file could not be uploaded. Choose another file."
       }
     }
   }
@@ -61,8 +61,8 @@ class UpscanMessageHelperSpec extends SpecBase {
 
     "routing through the js journey " should {
       "return empty file message when errorCode is EntityTooSmall" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", true, None)
-        result shouldBe "upscan.fileEmpty"
+        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", true, Some(1))
+        result shouldBe "File 1 is empty. Remove the file and try again."
       }
 
       "return file too large message when errorCode is EntityTooLarge" in {
@@ -71,25 +71,25 @@ class UpscanMessageHelperSpec extends SpecBase {
       }
 
       "return select a file message when errorCode is InvalidArgument" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", true, None)
+        val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", true, Some(1))
         result shouldBe "upscan.fileNotSpecified"
       }
 
       "return try again message when errorCode is not matched" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", true, None)
-        result shouldBe "upscan.unableToUpload"
+        val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", true, Some(1))
+        result shouldBe "File 1 could not be uploaded. Remove the file and try again."
       }
     }
 
     "routing through the non-js journey" should {
       "return empty file message when errorCode is EntityTooSmall" in {
         val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", false, None)
-        result shouldBe "upscan.noJs.fileEmpty"
+        result shouldBe "The selected file is empty. Choose another file."
       }
 
       "return file too large message when errorCode is EntityTooLarge" in {
         val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooLarge", false, None)
-        result shouldBe "upscan.noJs.fileTooLarge"
+        result shouldBe "The selected file must be smaller than 6MB. Choose another file."
       }
 
       "return select a file message when errorCode is InvalidArgument" in {
@@ -99,7 +99,7 @@ class UpscanMessageHelperSpec extends SpecBase {
 
       "return try again message when errorCode is not matched" in {
         val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", false, None)
-        result shouldBe "upscan.noJs.unableToUpload"
+        result shouldBe "The selected file could not be uploaded. Choose another file."
       }
     }
   }

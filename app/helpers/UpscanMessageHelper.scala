@@ -25,21 +25,20 @@ object UpscanMessageHelper {
   val jsPrefix = "upscan"
   val noJsPrefix = "upscan.noJs"
 
-  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean): String = {
+  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean, fileIndex: Option[Int] = None)(implicit messages: Messages): String = {
     failureReason match {
-      case FailureReasonEnum.QUARANTINE => getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled)
-      case FailureReasonEnum.REJECTED => getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled)
-      case FailureReasonEnum.UNKNOWN => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
+      case FailureReasonEnum.QUARANTINE => messages(getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled), fileIndex.getOrElse(""))
+      case FailureReasonEnum.REJECTED => messages(getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled), fileIndex.getOrElse(""))
+      case FailureReasonEnum.UNKNOWN => messages(getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled), fileIndex.getOrElse(""))
     }
   }
 
   def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean, fileIndex: Option[Int] = None)(implicit messages: Messages): String = {
     errorCode match {
-      case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
-      case "EntityTooLarge" => if (isJsEnabled) messages(getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled), fileIndex.getOrElse(""))
-                                else getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
+      case "EntityTooSmall" => messages(getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled), fileIndex.getOrElse(""))
+      case "EntityTooLarge" => messages(getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled), fileIndex.getOrElse(""))
       case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
-      case _ => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
+      case _ => messages(getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled), fileIndex.getOrElse(""))
     }
   }
 
