@@ -60,7 +60,7 @@ class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
       p(content = html(stringAsHtml(getMessage("youCannotAppeal.p2.lpp")))),
       p(content = html(stringAsHtml(getMessage("youCannotAppeal.p3.lpp")))),
       p(content = html(stringAsHtml(getMessage("youCannotAppeal.p4")))),
-      p(link(link = if(agent) appConfig.whatYouOweUrl else appConfig.vatOverviewUrl,
+      p(link(link = if(!agent) appConfig.whatYouOweUrl else appConfig.vatOverviewUrl,
              messages(if(!agent) s"youCannotAppeal.checkWhatYouOwe" else "agent.youCannotAppeal.returnToVATAccount"))
       )
     )
