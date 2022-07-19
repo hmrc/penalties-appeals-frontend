@@ -66,6 +66,7 @@ class YouCannotAppealHelperSpec extends SpecBase {
           parsedHtmlResult.select("p.govuk-body").get(2).text() shouldBe agentLPPp3
           parsedHtmlResult.select("p.govuk-body").get(3).text() shouldBe agentP4
           parsedHtmlResult.select("p > .govuk-link").text() shouldBe returnToClientVATDetails
+          parsedHtmlResult.select("p > .govuk-link").attr("href") shouldBe "http://localhost:9152/vat-through-software/vat-overview"
         }
       }
       "the appeal type is LSP" when {
@@ -77,6 +78,7 @@ class YouCannotAppealHelperSpec extends SpecBase {
           parsedHtmlResult.select("p.govuk-body").get(2).text() shouldBe agentLSPp3
           parsedHtmlResult.select("p.govuk-body").get(3).text() shouldBe agentP4
           parsedHtmlResult.select("p > .govuk-link").text() shouldBe returnToClientVATDetails
+          parsedHtmlResult.select("p > .govuk-link").attr("href") shouldBe "http://localhost:9152/vat-through-software/vat-overview"
         }
       }
     }
@@ -90,6 +92,7 @@ class YouCannotAppealHelperSpec extends SpecBase {
           parsedHtmlResult.select("p.govuk-body").get(2).text() shouldBe traderLPPp3
           parsedHtmlResult.select("p.govuk-body").get(3).text() shouldBe traderP4
           parsedHtmlResult.select("p > .govuk-link").text() shouldBe checkWhatYouOwe
+          parsedHtmlResult.select("p > .govuk-link").attr("href") shouldBe "http://localhost:9152/vat-through-software/what-you-owe"
         }
       }
       "the appeal type is LSP" when {
@@ -101,6 +104,7 @@ class YouCannotAppealHelperSpec extends SpecBase {
           parsedHtmlResult.select("p.govuk-body").get(2).text() shouldBe traderLSPp3
           parsedHtmlResult.select("p.govuk-body").get(3).text() shouldBe traderP4
           parsedHtmlResult.select("p > .govuk-link").text() shouldBe returnToVATAccount
+          parsedHtmlResult.select("p > .govuk-link").attr("href") shouldBe "http://localhost:9152/vat-through-software/vat-overview"
         }
       }
     }
