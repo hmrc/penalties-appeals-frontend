@@ -17,18 +17,16 @@
 package forms
 
 import forms.mappings.Mappings
-import models.UserRequest
 import play.api.data.Form
 import play.api.data.Forms.single
-import utils.MessageRenderer.getMessageKey
 
-object WasHospitalStayRequiredForm extends Mappings {
+object PenaltySelectionForm extends Mappings {
   final val options = Seq("yes", "no")
 
-  def wasHospitalStayRequiredForm()(implicit user: UserRequest[_]): Form[String] = Form(
+  val doYouWantToAppealBothPenalties: Form[String] = Form(
     single(
-      "value" -> text(getMessageKey("healthReason.wasHospitalStayRequired.error.required"))
-        .verifying(getMessageKey("healthReason.wasHospitalStayRequired.error.required"), value => options.contains(value))
+      "value" -> text("penaltySelection.error.required")
+        .verifying("penaltySelection.error.required", value => options.contains(value))
     )
   )
 }
