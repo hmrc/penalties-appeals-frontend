@@ -565,3 +565,8 @@ appealSinglePenalty.p1 = You have chosen to appeal the {0}.
 appealSinglePenalty.lpp1 = £{0} first late payment penalty
 appealSinglePenalty.lpp2 = £{0} second late payment penalty
 appealSinglePenalty.p2 = You can still appeal other penalties separately.
+
+# Appeal Cover Both Penalties page
+# -----------------------------------------------------------
+appealCoverBothPenalties.headingAndTitle = The appeal will cover both penalties
+appealCoverBothPenalties.p1 = This allows you to enter appeal details once for penalties linked to the same charge. However, we will still review each penalty separately.
