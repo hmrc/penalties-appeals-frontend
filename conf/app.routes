@@ -183,3 +183,10 @@ GET        /timeout                                            controllers.Timeo
 # Back link
 GET        /previous-page                                      controllers.PreviousPageController.previousPage(pageName: String, mode: Mode = NormalMode)
 GET        /previous-page/change                               controllers.PreviousPageController.previousPage(pageName: String, mode: Mode = CheckMode)
+
+# Penalty selection
+GET        /multiple-penalties-for-this-period                 controllers.PenaltySelectionController.onPageLoadForPenaltySelection(mode: Mode = NormalMode)
+GET        /multiple-penalties-for-this-period/change          controllers.PenaltySelectionController.onPageLoadForPenaltySelection(mode: Mode = CheckMode)
+
+POST       /multiple-penalties-for-this-period                 controllers.PenaltySelectionController.onSubmitForPenaltySelection(mode: Mode = NormalMode)
+POST       /multiple-penalties-for-this-period/change          controllers.PenaltySelectionController.onSubmitForPenaltySelection(mode: Mode = CheckMode)

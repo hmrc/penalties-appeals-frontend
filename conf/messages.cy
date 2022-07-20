@@ -548,3 +548,12 @@ agent.youCannotAppeal.p4 = If you need to cancel the VAT registration, you can d
 youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
 youCannotAppeal.returnToVATAccount = Return to your VAT account
 agent.youCannotAppeal.returnToVATAccount = Return to your client‘s VAT details
+
+# Multiple penalties for this period page
+# -----------------------------------------------------------
+penaltySelection.headingAndTitle = There are 2 penalties for this VAT charge
+penaltySelection.p1 = These are:
+agent.penaltySelection.p2 = You can do a combined appeal if the reason your client did not pay VAT on time is the same for both penalties.
+penaltySelection.p2 = You can do a combined appeal if the reason you did not pay VAT on time is the same for both penalties.
+penaltySelection.form.heading = Do you intend to appeal both penalties for the same reason?
+penaltySelection.error.required = Tell us if you intend to appeal both penalties for the same reason

@@ -95,7 +95,8 @@ class NavigationSpec extends SpecBase {
           (WhenDidBecomeUnablePage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
           (WhyWasReturnSubmittedLatePage, controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode).url),
           (WhoPlannedToSubmitVATReturnAgentPage, controllers.routes.AppealStartController.onPageLoad().url),
-          (WhatCausedYouToMissTheDeadlinePage, controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url)
+          (WhatCausedYouToMissTheDeadlinePage, controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url),
+          (PenaltySelectionPage, controllers.routes.AppealStartController.onPageLoad().url)
         )
       )
 

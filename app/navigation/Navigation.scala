@@ -62,7 +62,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhatCausedYouToMissTheDeadlinePage -> (_ => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)),
     ReasonableExcuseSelectionPage -> (request => reverseRouteForReasonableExcuseSelectionPage(request, NormalMode)),
     MakingALateAppealPage -> (request => reverseRouteForMakingALateAppealPage(request, NormalMode)),
-    CheckYourAnswersPage -> (request => reverseRouteForCYAPage(request, NormalMode))
+    CheckYourAnswersPage -> (request => reverseRouteForCYAPage(request, NormalMode)),
+    PenaltySelectionPage -> (_ => routes.AppealStartController.onPageLoad())
   )
 
   def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
