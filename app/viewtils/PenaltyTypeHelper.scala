@@ -19,6 +19,7 @@ package viewtils
 import models.PenaltyTypeEnum
 import play.api.i18n.Messages
 import play.api.mvc.Request
+import play.twirl.api.Html
 import utils.SessionKeys
 
 import java.time.LocalDate
@@ -44,5 +45,13 @@ object PenaltyTypeHelper {
     }.map {
       Some(_)
     }.getOrElse(None)
+  }
+
+  def getPluralOrSingular(appealBothPenalties: Boolean)(msgForSingular: String, msgForPlural: String)(implicit messages: Messages): Html = {
+    if (!appealBothPenalties) {
+      Html(messages.apply(msgForSingular))
+    } else {
+      Html(messages.apply(msgForPlural))
+    }
   }
 }

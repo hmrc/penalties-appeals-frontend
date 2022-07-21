@@ -11,6 +11,7 @@ common.radioOption.yes = Iawn
 common.radioOption.no = Na
 common.radioOption.unknown = Nid wyf yn gwybod
 common.penaltyYouAreAppealing = The penalty you are appealing is
+common.penaltiesYouAreAppealing = The penalties you are appealing are
 
 app.common.back = Yn ôl
 
