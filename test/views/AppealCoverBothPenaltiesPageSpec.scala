@@ -29,14 +29,15 @@ class AppealCoverBothPenaltiesPageSpec extends SpecBase with ViewBehaviours {
     val p = "p.govuk-body"
   }
   def applyView(): HtmlFormat.Appendable = {
-    appealCoverBothPenaltiesPage.apply()(messages, appConfig, userRequest = userRequestWithCorrectKeys)
+    appealCoverBothPenaltiesPage.apply("#")(messages, appConfig, userRequest = userRequestWithCorrectKeys)
   }
   "AppealCoverBothPenaltiesPage" should {
     implicit val doc: Document = asDocument(applyView())
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> h1,
-      Selectors.p -> p
+      Selectors.p -> p,
+      Selectors.button -> button
     )
     behave like pageWithExpectedMessages(expectedContent)
   }

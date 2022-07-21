@@ -23,4 +23,6 @@ object AppealCoverBothPenaltiesMessages {
 
   val p = "This allows you to enter appeal details once for penalties linked to the same charge. " +
             "However, we will still review each penalty separately."
+  val button = "Continue"
 }
+

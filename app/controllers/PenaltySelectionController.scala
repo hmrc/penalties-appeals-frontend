@@ -81,7 +81,7 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
 
   def onPageLoadForAppealCoverBothPenalties(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
-      Ok(appealCoverBothPenaltiesPage())
+      Ok(appealCoverBothPenaltiesPage("#"))
     }
   }
 }
