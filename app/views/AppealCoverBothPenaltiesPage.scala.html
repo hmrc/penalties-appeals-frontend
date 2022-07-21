@@ -21,17 +21,20 @@
       link: components.link
 )
 
-@(nextPage: String)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
+@(pageMode: PageMode, nextPage: String, penaltyInformation: String)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @layout(pageTitle = messages("appealCoverBothPenalties.headingAndTitle"),
-    isPageFullWidth = false,
-    backLinkEnabled = false) {
-        @pageHeader(messages("appealCoverBothPenalties.headingAndTitle"))
-    <p class="govuk-body">@messages("appealCoverBothPenalties.p1")</p>
-    @link(
-    link = nextPage,
-    messageKey = "common.continue",
-    button = true,
-    classes = "govuk-button"
-    )
+  isPageFullWidth = false,
+  optPageMode = Some(pageMode)) {
+
+  @pageHeader(messages("appealCoverBothPenalties.headingAndTitle"))
+
+  <p class="govuk-body">@messages("appealCoverBothPenalties.p1")</p>
+
+  @link(
+  link = nextPage,
+  messageKey = "common.continue",
+  button = true,
+  classes = "govuk-button"
+  )
 }

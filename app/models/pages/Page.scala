@@ -82,6 +82,8 @@ case object PenaltySelectionPage extends Page
 
 case object AppealSinglePenaltyPage extends Page
 
+case object AppealCoverBothPenaltiesPage extends Page
+
 object Page {
   val allPages: Seq[Page] = Seq(
     HonestyDeclarationPage,

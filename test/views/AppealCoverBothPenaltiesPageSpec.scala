@@ -18,6 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.AppealCoverBothPenaltiesMessages._
+import models.NormalMode
+import models.pages.{AppealCoverBothPenaltiesPage, PageMode}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
@@ -29,7 +31,9 @@ class AppealCoverBothPenaltiesPageSpec extends SpecBase with ViewBehaviours {
     val p = "p.govuk-body"
   }
   def applyView(): HtmlFormat.Appendable = {
-    appealCoverBothPenaltiesPage.apply("#")(messages, appConfig, userRequest = userRequestWithCorrectKeys)
+    appealCoverBothPenaltiesPage.apply(PageMode(AppealCoverBothPenaltiesPage, NormalMode),
+      controllers.routes.AppealStartController.onPageLoad().url,
+      "£4.20 second late payment penalty")(messages, appConfig, userRequestWithCorrectKeys)
   }
   "AppealCoverBothPenaltiesPage" should {
     implicit val doc: Document = asDocument(applyView())
