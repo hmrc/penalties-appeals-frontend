@@ -31,18 +31,54 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
   "MakingALateAppealPage" should {
     val makingALateAppealPage: MakingALateAppealPage = injector.instanceOf[MakingALateAppealPage]
     object Selectors extends BaseSelectors
-    def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form, pageMode = PageMode(MakingALateAppealPage, NormalMode))
+    "when a single penalty is appealed" when {
+      def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form, pageMode = PageMode(MakingALateAppealPage, NormalMode))
 
-    val formProvider = MakingALateAppealForm.makingALateAppealForm()
-    implicit val doc: Document = asDocument(applyView(formProvider))
+      val formProvider = MakingALateAppealForm.makingALateAppealForm()
+      implicit val doc: Document = asDocument(applyView(formProvider))
 
-    val expectedContent = Seq(
-      Selectors.title -> title,
-      Selectors.h1 -> heading,
-      Selectors.hintText -> hintText,
-      Selectors.button -> continueBtn
-    )
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> heading,
+        Selectors.hintText -> hintText,
+        Selectors.button -> continueBtn
+      )
 
-    behave like pageWithExpectedMessages(expectedContent)
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "when multiple penalties are being appealed and multiple are late" when {
+      def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form,
+        pageMode = PageMode(MakingALateAppealPage, NormalMode), numberOfLatePenalties = Some(2))
+
+      val formProvider = MakingALateAppealForm.makingALateAppealForm()
+      implicit val doc: Document = asDocument(applyView(formProvider))
+
+      val expectedContent = Seq(
+        Selectors.title -> titleMulti,
+        Selectors.h1 -> headingMulti,
+        Selectors.hintText -> hintText,
+        Selectors.button -> continueBtn
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "when multiple penalties are being appealed and the first is late" when {
+      def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form,
+        pageMode = PageMode(MakingALateAppealPage, NormalMode), numberOfLatePenalties = Some(1))
+
+      val formProvider = MakingALateAppealForm.makingALateAppealForm()
+      implicit val doc: Document = asDocument(applyView(formProvider))
+
+      val expectedContent = Seq(
+        Selectors.title -> titleFirst,
+        Selectors.h1 -> headingFirst,
+        Selectors.hintText -> hintText,
+        Selectors.button -> continueBtn
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
   }
 }

@@ -23,9 +23,15 @@
         characterCount: components.characterCount,
         formHelper: FormWithCSRF)
 
-@(form: Form[_], pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], pageMode: PageMode, numberOfLatePenalties: Option[Int] = None)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("makingALateAppeal.headingAndTitle"),
+@layout(pageTitle = if(!numberOfLatePenalties.isDefined) {
+                            messages("makingALateAppeal.headingAndTitle")
+                        } else if (numberOfLatePenalties.get > 1) {
+                            messages("makingALateAppeal.headingAndTitle.multi")
+                        } else {
+                        messages("makingALateAppeal.headingAndTitle.first")
+                    },
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
@@ -34,7 +40,13 @@
     @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
         @characterCount(
             form("late-appeal-text"),
-            label = messages("makingALateAppeal.headingAndTitle"),
+            label = if(!numberOfLatePenalties.isDefined) {
+                    messages("makingALateAppeal.headingAndTitle")
+                } else if (numberOfLatePenalties.get > 1) {
+                    messages("makingALateAppeal.headingAndTitle.multi")
+                } else {
+                    messages("makingALateAppeal.headingAndTitle.first")
+                },
             hint = Some(HtmlContent(messages("makingALateAppeal.p1"))),
             maxLength = Some(5000)
         )
