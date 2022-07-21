@@ -16,6 +16,7 @@
 
 @import config.AppConfig
 @import viewtils.PenaltyTypeHelper
+@import utils.SessionKeys
 
 @this(layout: Layout,
         link: components.link,
@@ -23,11 +24,11 @@
         characterCount: components.characterCount,
         formHelper: FormWithCSRF)
 
-@(form: Form[_], pageMode: PageMode, numberOfLatePenalties: Option[Int] = None)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = if(!numberOfLatePenalties.isDefined) {
+@layout(pageTitle = if(!request.session.get(SessionKeys.doYouWantToAppealBothPenalties).isDefined) {
                             messages("makingALateAppeal.headingAndTitle")
-                        } else if (numberOfLatePenalties.get > 1) {
+                        } else if (request.session.get(SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
                             messages("makingALateAppeal.headingAndTitle.multi")
                         } else {
                         messages("makingALateAppeal.headingAndTitle.first")
@@ -40,9 +41,9 @@
     @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
         @characterCount(
             form("late-appeal-text"),
-            label = if(!numberOfLatePenalties.isDefined) {
+            label = if(!request.session.get(SessionKeys.doYouWantToAppealBothPenalties).isDefined) {
                     messages("makingALateAppeal.headingAndTitle")
-                } else if (numberOfLatePenalties.get > 1) {
+                } else if (request.session.get(SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
                     messages("makingALateAppeal.headingAndTitle.multi")
                 } else {
                     messages("makingALateAppeal.headingAndTitle.first")

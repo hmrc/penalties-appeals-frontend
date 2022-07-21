@@ -24,6 +24,7 @@ import models.pages.{MakingALateAppealPage, PageMode}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
+import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.MakingALateAppealPage
 
@@ -47,9 +48,9 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)
     }
 
-    "when multiple penalties are being appealed and multiple are late" when {
+    "when multiple penalties are being appealed" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form,
-        pageMode = PageMode(MakingALateAppealPage, NormalMode), numberOfLatePenalties = Some(2))
+        pageMode = PageMode(MakingALateAppealPage, NormalMode))(fakeRequestWithCorrectKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "yes"), messages, appConfig)
 
       val formProvider = MakingALateAppealForm.makingALateAppealForm()
       implicit val doc: Document = asDocument(applyView(formProvider))
@@ -64,9 +65,9 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)
     }
 
-    "when multiple penalties are being appealed and the first is late" when {
+    "when only one penalty of the period is being appealed" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form,
-        pageMode = PageMode(MakingALateAppealPage, NormalMode), numberOfLatePenalties = Some(1))
+        pageMode = PageMode(MakingALateAppealPage, NormalMode))(fakeRequestWithCorrectKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "no"), messages, appConfig)
 
       val formProvider = MakingALateAppealForm.makingALateAppealForm()
       implicit val doc: Document = asDocument(applyView(formProvider))
