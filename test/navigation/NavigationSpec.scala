@@ -61,7 +61,8 @@ class NavigationSpec extends SpecBase {
         (UploadAnotherDocumentPage, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url),
         (EvidencePage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
         (FileListPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
-        (UploadEvidenceQuestionPage, controllers.routes.CheckYourAnswersController.onPageLoad().url)
+        (UploadEvidenceQuestionPage, controllers.routes.CheckYourAnswersController.onPageLoad().url),
+        (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url)
       ))
 
       "the user is on the original page they were routed to - route back to CYA" in {
@@ -96,7 +97,8 @@ class NavigationSpec extends SpecBase {
           (WhyWasReturnSubmittedLatePage, controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode).url),
           (WhoPlannedToSubmitVATReturnAgentPage, controllers.routes.AppealStartController.onPageLoad().url),
           (WhatCausedYouToMissTheDeadlinePage, controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url),
-          (PenaltySelectionPage, controllers.routes.AppealStartController.onPageLoad().url)
+          (PenaltySelectionPage, controllers.routes.AppealStartController.onPageLoad().url),
+          (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url)
         )
       )
 
