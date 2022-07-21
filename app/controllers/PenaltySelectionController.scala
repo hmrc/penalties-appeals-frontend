@@ -21,18 +21,19 @@ import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.PenaltySelectionForm
 import helpers.FormProviderHelper
 import models.Mode
-import models.pages.{Page, PageMode, PenaltySelectionPage}
+import models.pages.{AppealSinglePenaltyPage, Page, PageMode, PenaltySelectionPage}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
-import views.html.PenaltySelectionPage
+import views.html.{AppealSinglePenaltyPage, PenaltySelectionPage}
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
 
 class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectionPage,
+                                           appealSinglePenaltyPage: AppealSinglePenaltyPage,
                                            navigation: Navigation)
                                           (implicit mcc: MessagesControllerComponents,
                                            appConfig: AppConfig,
@@ -65,6 +66,14 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
           Redirect("").addingToSession(SessionKeys.doYouWantToAppealBothPenalties -> answer)
         }
       )
+    }
+  }
+
+  def onPageLoadForSinglePenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+    implicit userRequest => {
+      val nextPageUrl: String = navigation.nextPage(AppealSinglePenaltyPage, mode).url
+      //TODO: penaltyInformation should be populated
+      Ok(appealSinglePenaltyPage(pageMode(AppealSinglePenaltyPage, mode), nextPageUrl, "’penalty information here’"))
     }
   }
 }

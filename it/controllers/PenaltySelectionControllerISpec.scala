@@ -17,7 +17,8 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
-import models.NormalMode
+import models.{CheckMode, NormalMode}
+import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
@@ -154,6 +155,53 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
       val request = await(buildClientForRequestToApp(uri = "/multiple-penalties-for-this-period").post(""))
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
+  "GET /appeal-single-penalty" should {
+    "return 200 (OK) when the user is authorised - showing the correct link" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-single-penalty").withSession(
+        authToken -> "1234",
+        (SessionKeys.penaltyNumber, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
+        (SessionKeys.journeyId, "1234")
+      )
+      val normalModeRequest = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestWithCorrectKeys)
+      await(normalModeRequest).header.status shouldBe Status.OK
+      Jsoup.parse(contentAsString(normalModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+
+      val checkModeRequest = controller.onPageLoadForSinglePenaltySelection(CheckMode)(fakeRequestWithCorrectKeys)
+      await(checkModeRequest).header.status shouldBe Status.OK
+      Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-single-penalty").withSession(
+        authToken -> "1234"
+      )
+      val request = await(controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-single-penalty").withSession(
+        authToken -> "1234",
+        (SessionKeys.penaltyNumber, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
+      )
+      val request = await(controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/appeal-single-penalty").get())
       request.status shouldBe Status.SEE_OTHER
     }
   }

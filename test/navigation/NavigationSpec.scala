@@ -480,6 +480,11 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
       }
+
+      s"called with $AppealSinglePenaltyPage" in new Setup {
+        val result: Call = mainNavigator.nextPage(AppealSinglePenaltyPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
     }
 
     "in NormalMode" when {
@@ -754,6 +759,11 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.nextPage(YouCanAppealThisPenaltyPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("obligation")
         )
         result.url shouldBe "http://localhost:9180/penalties"
+      }
+
+      s"called with $AppealSinglePenaltyPage" in new Setup {
+        val result: Call = mainNavigator.nextPage(AppealSinglePenaltyPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
       }
     }
   }
