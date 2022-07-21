@@ -205,4 +205,22 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       request.status shouldBe Status.SEE_OTHER
     }
   }
+
+  "GET /appeal-cover-for-both-penalties" should {
+    "return 200 (OK) when the user is authorised" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-cover-for-both-penalties").withSession(
+        authToken -> "1234",
+        (SessionKeys.penaltyNumber, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
+        (SessionKeys.journeyId, "1234")
+      )
+
+      val request = await(controller.onPageLoadForAppealCoverBothPenalties()(fakeRequestWithCorrectKeys))
+      request.header.status shouldBe OK
+    }
+  }
 }

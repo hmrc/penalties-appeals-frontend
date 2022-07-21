@@ -31,6 +31,7 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
 import views.html.{AppealSinglePenaltyPage, PenaltySelectionPage}
+import views.html.{AppealCoverBothPenaltiesPage, PenaltySelectionPage}
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
@@ -39,6 +40,8 @@ class PenaltySelectionControllerSpec extends SpecBase {
   val mockNavigator = mock(classOf[Navigation])
   val penaltySelectionPage = injector.instanceOf[PenaltySelectionPage]
   val appealSinglePenaltyPage = injector.instanceOf[AppealSinglePenaltyPage]
+  val page = injector.instanceOf[PenaltySelectionPage]
+  val appealCoverBothPenaltiesPage = injector.instanceOf[AppealCoverBothPenaltiesPage]
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector, mockNavigator)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
@@ -47,6 +50,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
     ).thenReturn(authResult)
   }
   val controller = new PenaltySelectionController(penaltySelectionPage, appealSinglePenaltyPage, mockNavigator)(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction)
+  val controller = new PenaltySelectionController(page, appealCoverBothPenaltiesPage, mockNavigator)(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction)
 
   "onPageLoadForPenaltySelection" should {
     "return 200" when {
@@ -151,6 +155,15 @@ class PenaltySelectionControllerSpec extends SpecBase {
       "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
         val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequest)
         status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
+
+  "onPageLoadForAppealCoverBothPenalties" should {
+    "the user is authorised" must {
+      "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties()(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
       }
     }
   }
