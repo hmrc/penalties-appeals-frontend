@@ -895,7 +895,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
       }
 
-      "for LPP - appeal both penalties available" in {
+      "for LPP - appeal both penalties available - agent selects no" in {
         val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
           .withSession(
             SessionKeys.reasonableExcuse -> "other",
@@ -949,6 +949,29 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(6).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.MakingALateAppealController.onPageLoad().url,
           MakingALateAppealPage.toString
+        ).url
+      }
+
+      "for LPP - appeal both penalties available - agent selects yes" in {
+        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+            SessionKeys.isUploadEvidence -> "yes",
+            SessionKeys.doYouWantToAppealBothPenalties -> "yes"
+          ))
+
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "other", Some("file.docx"))(fakeRequestWithLPPKeysPresent, implicitly)
+        result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
+        result.head.value shouldBe "Yes"
+        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
+          PenaltySelectionPage.toString
         ).url
       }
 
@@ -1100,7 +1123,7 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when a VAT trader is on the page" should {
 
-      "for LPP - appeal both penalties available" in {
+      "for LPP - appeal both penalties available - trader selects yes" in {
         val fakeRequestWithLPPKeysPresent = fakeRequestConverter(fakeRequest
           .withSession(
             SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
@@ -1135,6 +1158,26 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
           WhenDidHealthIssueHappenPage.toString
+        ).url
+      }
+
+      "for LPP - appeal both penalties available - trader selects no" in {
+        val fakeRequestWithLPPKeysPresent = fakeRequestConverter(fakeRequest
+          .withSession(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.wasHospitalStayRequired -> "no",
+            SessionKeys.whenHealthIssueHappened -> "2022-01-01",
+            SessionKeys.doYouWantToAppealBothPenalties -> "no"
+          ))
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "health")(fakeRequestWithLPPKeysPresent, implicitly)
+        result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
+        result.head.value shouldBe "No"
+        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
+          PenaltySelectionPage.toString
         ).url
       }
 
