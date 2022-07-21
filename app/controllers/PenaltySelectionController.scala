@@ -81,7 +81,7 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
   def onPageLoadForAppealCoverBothPenalties(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       val nextPageUrl: String = navigation.nextPage(AppealCoverBothPenaltiesPage, mode).url
-      Ok(appealCoverBothPenaltiesPage(pageMode(AppealCoverBothPenaltiesPage, mode), nextPageUrl, "’penalty information here’"))
+      Ok(appealCoverBothPenaltiesPage(pageMode(AppealCoverBothPenaltiesPage, mode), nextPageUrl))
     }
   }
 }

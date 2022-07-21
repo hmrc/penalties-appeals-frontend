@@ -32,8 +32,7 @@ class AppealCoverBothPenaltiesPageSpec extends SpecBase with ViewBehaviours {
   }
   def applyView(): HtmlFormat.Appendable = {
     appealCoverBothPenaltiesPage.apply(PageMode(AppealCoverBothPenaltiesPage, NormalMode),
-      controllers.routes.AppealStartController.onPageLoad().url,
-      "£4.20 second late payment penalty")(messages, appConfig, userRequestWithCorrectKeys)
+      controllers.routes.AppealStartController.onPageLoad().url)(messages, appConfig, userRequestWithCorrectKeys)
   }
   "AppealCoverBothPenaltiesPage" should {
     implicit val doc: Document = asDocument(applyView())

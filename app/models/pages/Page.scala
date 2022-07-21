@@ -117,7 +117,8 @@ object Page {
     CheckYourAnswersPage,
     RemoveFilePage,
     PenaltySelectionPage,
-    AppealSinglePenaltyPage
+    AppealSinglePenaltyPage,
+    AppealCoverBothPenaltiesPage
   )
 
   def find(pageName: String): Page = allPages.find(_.toString == pageName).get

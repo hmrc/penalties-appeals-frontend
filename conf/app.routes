@@ -192,8 +192,6 @@ GET        /appeal-cover-for-both-penalties/change             controllers.Penal
 
 POST       /multiple-penalties-for-this-period                 controllers.PenaltySelectionController.onSubmitForPenaltySelection(mode: Mode = NormalMode)
 POST       /multiple-penalties-for-this-period/change          controllers.PenaltySelectionController.onSubmitForPenaltySelection(mode: Mode = CheckMode)
-POST       /appeal-cover-for-both-penalties                    controllers.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode: Mode = NormalMode)
-POST       /appeal-cover-for-both-penalties/change             controllers.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode: Mode = CheckMode)
 
 # Appeal single penalty
 GET        /appeal-single-penalty                              controllers.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode: Mode = NormalMode)

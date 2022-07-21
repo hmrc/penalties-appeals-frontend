@@ -21,7 +21,7 @@
       link: components.link
 )
 
-@(pageMode: PageMode, nextPage: String, penaltyInformation: String)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
+@(pageMode: PageMode, nextPage: String)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @layout(pageTitle = messages("appealCoverBothPenalties.headingAndTitle"),
   isPageFullWidth = false,
