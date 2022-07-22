@@ -55,6 +55,16 @@ class PenaltyTypeHelperSpec extends SpecBase {
         result.get shouldBe messages("penaltyType.latePayment")
       }
 
+      s"return $Some with the correct message for appealing multiple penalties" in new Setup {
+        val fakeRequestForAppealingMultiplePenalties: FakeRequest[AnyContent] = fakeRequest.withSession(
+            SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString
+        )
+        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString("Late_Payment")(fakeRequestForAppealingMultiplePenalties, implicitly)
+        result.isDefined shouldBe true
+        result.get shouldBe messages("penaltyType.latePayment.multiple")
+      }
+
       s"the string does not match an enum value - return $None" in new Setup {
         val result = PenaltyTypeHelper.convertPenaltyTypeToContentString("what")
         result.isDefined shouldBe false

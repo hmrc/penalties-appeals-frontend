@@ -19,18 +19,19 @@ package viewtils
 import models.PenaltyTypeEnum
 import play.api.i18n.Messages
 import play.api.mvc.Request
-import play.twirl.api.Html
 import utils.SessionKeys
 
 import java.time.LocalDate
 import scala.util.Try
 
 object PenaltyTypeHelper {
-  def convertPenaltyTypeToContentString(penaltyType: String)(implicit messages: Messages): Option[String] = {
+  def convertPenaltyTypeToContentString(penaltyType: String)(implicit request: Request[_], messages: Messages): Option[String] = {
+    val isAppealingMultiplePenalties: Boolean = request.session.get(SessionKeys.doYouWantToAppealBothPenalties).contains("yes")
     val penaltyAsEnum = PenaltyTypeEnum.withNameOpt(penaltyType)
-    penaltyAsEnum match {
-      case Some(PenaltyTypeEnum.Late_Submission) => Some(messages("penaltyType.lateSubmission"))
-      case Some(PenaltyTypeEnum.Late_Payment | PenaltyTypeEnum.Additional) => Some(messages("penaltyType.latePayment"))
+    (penaltyAsEnum, isAppealingMultiplePenalties) match {
+      case (_, true) => Some(messages("penaltyType.latePayment.multiple"))
+      case (Some(PenaltyTypeEnum.Late_Submission), _) => Some(messages("penaltyType.lateSubmission"))
+      case (Some(PenaltyTypeEnum.Late_Payment | PenaltyTypeEnum.Additional), _) => Some(messages("penaltyType.latePayment"))
       case _ => None
     }
   }
@@ -45,13 +46,5 @@ object PenaltyTypeHelper {
     }.map {
       Some(_)
     }.getOrElse(None)
-  }
-
-  def getPluralOrSingular(appealBothPenalties: Boolean)(msgForSingular: String, msgForPlural: String)(implicit messages: Messages): Html = {
-    if (!appealBothPenalties) {
-      Html(messages.apply(msgForSingular))
-    } else {
-      Html(messages.apply(msgForPlural))
-    }
   }
 }

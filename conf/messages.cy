@@ -57,6 +57,7 @@ penaltyInformation.headerText = {0}: {1} i {2}
 # ----------------------------------------------------------
 penaltyType.lateSubmission = Cosb am gyflwyno’n hwyr
 penaltyType.latePayment = Cosb am dalu’n hwyr
+penaltyType.latePayment.multiple = Late payment penalties
 
 # Reasonable excuse
 # ----------------------------------------------------------

@@ -23,7 +23,7 @@
 
 @appealBothPenalties = @{request.session.get(SessionKeys.doYouWantToAppealBothPenalties)}
 
-@captionPenaltyAppeal = @{PenaltyTypeHelper.getPluralOrSingular(appealBothPenalties)("common.penaltyYouAreAppealing", "common.penaltiesYouAreAppealing").toString()}
+@captionPenaltyAppeal = @{if(appealBothPenalties.contains("yes")) messages("common.penaltiesYouAreAppealing") else messages("common.penaltyYouAreAppealing")}
 
 <header class="hmrc-page-heading govuk-!-margin-top-0 govuk-!-margin-bottom-4" id="hmrc-page-header">
   <p class="govuk-caption-l hmrc-caption-l govuk-!-font-size-24 penalty-information-caption">
