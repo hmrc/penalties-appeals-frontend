@@ -64,6 +64,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     MakingALateAppealPage -> (request => reverseRouteForMakingALateAppealPage(request, NormalMode)),
     CheckYourAnswersPage -> (request => reverseRouteForCYAPage(request, NormalMode)),
     PenaltySelectionPage -> (_ => routes.AppealStartController.onPageLoad()),
+    AppealSinglePenaltyPage -> (_ => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
     AppealCoverBothPenaltiesPage -> (_ => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode))
   )
 
@@ -80,6 +81,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case UploadEvidenceQuestionPage => routes.CheckYourAnswersController.onPageLoad()
       case WhenDidTechnologyIssuesEndPage => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode)
       case WhatCausedYouToMissTheDeadlinePage => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)
+      case AppealSinglePenaltyPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
       case AppealCoverBothPenaltiesPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
     }
   }
