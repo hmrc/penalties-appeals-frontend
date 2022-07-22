@@ -31,6 +31,7 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
 import views.html.{AppealSinglePenaltyPage, PenaltySelectionPage}
+import views.html.{AppealCoverBothPenaltiesPage, PenaltySelectionPage}
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
@@ -39,6 +40,8 @@ class PenaltySelectionControllerSpec extends SpecBase {
   val mockNavigator = mock(classOf[Navigation])
   val penaltySelectionPage = injector.instanceOf[PenaltySelectionPage]
   val appealSinglePenaltyPage = injector.instanceOf[AppealSinglePenaltyPage]
+  val page = injector.instanceOf[PenaltySelectionPage]
+  val appealCoverBothPenaltiesPage = injector.instanceOf[AppealCoverBothPenaltiesPage]
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector, mockNavigator)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
@@ -46,7 +49,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
   }
-  val controller = new PenaltySelectionController(penaltySelectionPage, appealSinglePenaltyPage, mockNavigator)(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction)
+  val controller = new PenaltySelectionController(penaltySelectionPage, appealCoverBothPenaltiesPage, appealSinglePenaltyPage, mockNavigator)(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction)
 
   "onPageLoadForPenaltySelection" should {
     "return 200" when {
@@ -150,6 +153,37 @@ class PenaltySelectionControllerSpec extends SpecBase {
 
       "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
         val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
+
+  "onPageLoadForAppealCoverBothPenalties" should {
+    "return 200" when {
+      "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockNavigator.nextPage(any(), any(), any())(any()))
+          .thenReturn(controllers.routes.AppealStartController.onPageLoad())
+        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequestWithCorrectKeys)
+        status(result) shouldBe OK
+      }
+    }
+
+    "return 500" when {
+      "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "the user is unauthorised" when {
+
+      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest)
+        status(result) shouldBe FORBIDDEN
+      }
+
+      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest)
         status(result) shouldBe SEE_OTHER
       }
     }

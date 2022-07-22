@@ -187,6 +187,8 @@ GET        /previous-page/change                               controllers.Previ
 # Penalty selection
 GET        /multiple-penalties-for-this-period                 controllers.PenaltySelectionController.onPageLoadForPenaltySelection(mode: Mode = NormalMode)
 GET        /multiple-penalties-for-this-period/change          controllers.PenaltySelectionController.onPageLoadForPenaltySelection(mode: Mode = CheckMode)
+GET        /appeal-cover-for-both-penalties                    controllers.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode: Mode = NormalMode)
+GET        /appeal-cover-for-both-penalties/change             controllers.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode: Mode = CheckMode)
 
 POST       /multiple-penalties-for-this-period                 controllers.PenaltySelectionController.onSubmitForPenaltySelection(mode: Mode = NormalMode)
 POST       /multiple-penalties-for-this-period/change          controllers.PenaltySelectionController.onSubmitForPenaltySelection(mode: Mode = CheckMode)

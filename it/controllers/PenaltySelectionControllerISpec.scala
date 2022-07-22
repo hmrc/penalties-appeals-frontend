@@ -205,4 +205,51 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       request.status shouldBe Status.SEE_OTHER
     }
   }
+
+  "GET /appeal-cover-for-both-penalties" should {
+    "return 200 (OK) when the user is authorised" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-cover-for-both-penalties").withSession(
+        authToken -> "1234",
+        (SessionKeys.penaltyNumber, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01"),
+        (SessionKeys.endDateOfPeriod, "2020-01-01"),
+        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.dateCommunicationSent, "2020-02-08"),
+        (SessionKeys.journeyId, "1234")
+      )
+      val normalModeRequest = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequestWithCorrectKeys)
+      await(normalModeRequest).header.status shouldBe Status.OK
+      Jsoup.parse(contentAsString(normalModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+
+      val checkModeRequest = controller.onPageLoadForAppealCoverBothPenalties(CheckMode)(fakeRequestWithCorrectKeys)
+      await(checkModeRequest).header.status shouldBe Status.OK
+      Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-cover-for-both-penalties").withSession(
+        authToken -> "1234"
+      )
+      val request = await(controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
+      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-cover-for-both-penalties").withSession(
+        authToken -> "1234",
+        (SessionKeys.penaltyNumber, "1234"),
+        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.startDateOfPeriod, "2020-01-01")
+      )
+      val request = await(controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequestWithIncompleteKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/appeal-cover-for-both-penalties").get())
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
 }

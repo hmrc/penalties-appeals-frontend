@@ -16,19 +16,19 @@
 
 package navigation
 
-import java.time.LocalDate
-
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import controllers.routes
 import helpers.DateTimeHelper
-import javax.inject.Inject
-import models.pages._
 import models._
+import models.pages._
 import play.api.Configuration
 import play.api.mvc.Call
 import utils.Logger.logger
 import utils.{ReasonableExcuses, SessionKeys}
+
+import java.time.LocalDate
+import javax.inject.Inject
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
                            appConfig: AppConfig)(implicit val config: Configuration) extends FeatureSwitching {
@@ -63,7 +63,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     ReasonableExcuseSelectionPage -> (request => reverseRouteForReasonableExcuseSelectionPage(request, NormalMode)),
     MakingALateAppealPage -> (request => reverseRouteForMakingALateAppealPage(request, NormalMode)),
     CheckYourAnswersPage -> (request => reverseRouteForCYAPage(request, NormalMode)),
-    PenaltySelectionPage -> (_ => routes.AppealStartController.onPageLoad())
+    PenaltySelectionPage -> (_ => routes.AppealStartController.onPageLoad()),
+    AppealCoverBothPenaltiesPage -> (_ => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode))
   )
 
   def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
@@ -79,6 +80,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case UploadEvidenceQuestionPage => routes.CheckYourAnswersController.onPageLoad()
       case WhenDidTechnologyIssuesEndPage => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode)
       case WhatCausedYouToMissTheDeadlinePage => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)
+      case AppealCoverBothPenaltiesPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
     }
   }
 
@@ -105,7 +107,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     UploadAnotherDocumentPage -> ((_, _) => routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode)),
     FileListPage -> ((answer, request) => routeForUploadList(answer, request, CheckMode)),
     UploadEvidenceQuestionPage -> ((answer, request) => routeForUploadEvidenceQuestion(answer, request, CheckMode)),
-    AppealSinglePenaltyPage -> ((_, _) => routes.CheckYourAnswersController.onPageLoad())
+    AppealSinglePenaltyPage -> ((_, _) => routes.CheckYourAnswersController.onPageLoad()),
+    AppealCoverBothPenaltiesPage -> ((_, _) => routes.CheckYourAnswersController.onPageLoad())
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
@@ -135,7 +138,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     FileListPage -> ((answer, request) => routeForUploadList(answer, request, NormalMode)),
     UploadEvidenceQuestionPage -> ((answer, request) => routeForUploadEvidenceQuestion(answer, request, NormalMode)),
     YouCanAppealThisPenaltyPage -> ((answer, _) => routeForYouCanAppealPenalty(answer)),
-    AppealSinglePenaltyPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad())
+    AppealSinglePenaltyPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
+    AppealCoverBothPenaltiesPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad())
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None)

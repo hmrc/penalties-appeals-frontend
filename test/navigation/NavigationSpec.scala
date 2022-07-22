@@ -61,7 +61,8 @@ class NavigationSpec extends SpecBase {
         (UploadAnotherDocumentPage, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url),
         (EvidencePage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
         (FileListPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
-        (UploadEvidenceQuestionPage, controllers.routes.CheckYourAnswersController.onPageLoad().url)
+        (UploadEvidenceQuestionPage, controllers.routes.CheckYourAnswersController.onPageLoad().url),
+        (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url)
       ))
 
       "the user is on the original page they were routed to - route back to CYA" in {
@@ -96,7 +97,8 @@ class NavigationSpec extends SpecBase {
           (WhyWasReturnSubmittedLatePage, controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode).url),
           (WhoPlannedToSubmitVATReturnAgentPage, controllers.routes.AppealStartController.onPageLoad().url),
           (WhatCausedYouToMissTheDeadlinePage, controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url),
-          (PenaltySelectionPage, controllers.routes.AppealStartController.onPageLoad().url)
+          (PenaltySelectionPage, controllers.routes.AppealStartController.onPageLoad().url),
+          (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url)
         )
       )
 
@@ -485,6 +487,11 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.nextPage(AppealSinglePenaltyPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+
+      s"called with $AppealCoverBothPenaltiesPage" in new Setup {
+        val result: Call = mainNavigator.nextPage(AppealCoverBothPenaltiesPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
     }
 
     "in NormalMode" when {
@@ -763,6 +770,10 @@ class NavigationSpec extends SpecBase {
 
       s"called with $AppealSinglePenaltyPage" in new Setup {
         val result: Call = mainNavigator.nextPage(AppealSinglePenaltyPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      }
+      s"called with $AppealCoverBothPenaltiesPage" in new Setup {
+        val result: Call = mainNavigator.nextPage(AppealCoverBothPenaltiesPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
         result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
       }
     }
