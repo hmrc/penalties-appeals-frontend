@@ -610,6 +610,29 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "1 January 2021"
     }
 
+    "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - multiple penalties appeal available" in {
+      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(
+        authToken -> "1234",
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.agentSessionVrn -> "VRN1234",
+        SessionKeys.appealType -> "Late_Payment",
+        SessionKeys.startDateOfPeriod -> "2020-01-01",
+        SessionKeys.endDateOfPeriod -> "2020-01-01",
+        SessionKeys.dueDateOfPeriod -> "2020-02-07",
+        SessionKeys.dateCommunicationSent -> "2020-02-08",
+        SessionKeys.reasonableExcuse -> "bereavement",
+        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.whenDidThePersonDie -> "2021-01-01",
+        SessionKeys.journeyId -> "1234",
+        SessionKeys.doYouWantToAppealBothPenalties -> "yes"
+      )
+      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+      await(request).header.status shouldBe Status.OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select("#main-content dl > div:nth-child(1) > dt").text() shouldBe "Do you intend to appeal both penalties for the same reason?"
+      parsedBody.select("#main-content dl > div:nth-child(1) > dd.govuk-summary-list__value").text() shouldBe "Yes"
+    }
+
 
     "return 500 (ISE) when the user hasn't selected a reasonable excuse option" in {
       val fakeRequestWithMissingReasonableExcuse: FakeRequest[AnyContent] = FakeRequest("GET", "/check-your-answers").withSession(

@@ -536,15 +536,15 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1).key shouldBe "When did the issue first stop you paying the VAT bill?"
         result(1).value shouldBe "1 January 2022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-            WhenDidBecomeUnablePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+          WhenDidBecomeUnablePage.toString
+        ).url
         result(2).key shouldBe "Why was the VAT bill paid late?"
         result(2).value shouldBe "This is why my VAT payment was late."
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-            WhyWasReturnSubmittedLatePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+          WhyWasReturnSubmittedLatePage.toString
+        ).url
         result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
         result(3).value shouldBe "No"
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -578,21 +578,21 @@ class SessionAnswersHelperSpec extends SpecBase {
             result.head.key shouldBe "Reason for missing the VAT deadline"
             result.head.value shouldBe "Health"
             result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+              controllers.routes.ReasonableExcuseController.onPageLoad().url,
+              ReasonableExcuseSelectionPage.toString
+            ).url
             result(1).key shouldBe "Did this health issue include a hospital stay?"
             result(1).value shouldBe "No"
             result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-            WasHospitalStayRequiredPage.toString
-          ).url
+              controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+              WasHospitalStayRequiredPage.toString
+            ).url
             result(2).key shouldBe "When did the health issue first stop your client getting information to you?"
             result(2).value shouldBe "1 January 2022"
             result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
-            WhenDidHealthIssueHappenPage.toString
-          ).url
+              controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+              WhenDidHealthIssueHappenPage.toString
+            ).url
           }
 
           "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -611,21 +611,21 @@ class SessionAnswersHelperSpec extends SpecBase {
             result.head.key shouldBe "Reason for missing the VAT deadline"
             result.head.value shouldBe "Health"
             result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+              controllers.routes.ReasonableExcuseController.onPageLoad().url,
+              ReasonableExcuseSelectionPage.toString
+            ).url
             result(1).key shouldBe "Did this health issue include a hospital stay?"
             result(1).value shouldBe "No"
             result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-            WasHospitalStayRequiredPage.toString
-          ).url
+              controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+              WasHospitalStayRequiredPage.toString
+            ).url
             result(2).key shouldBe "When did the health issue first stop your client getting information to you?"
             result(2).value shouldBe "1 January 2022"
             result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
-            WhenDidHealthIssueHappenPage.toString
-          ).url
+              controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+              WhenDidHealthIssueHappenPage.toString
+            ).url
             result(3).key shouldBe "Reason for appealing after 30 days"
             result(3).value shouldBe "Lorem ipsum"
             result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -725,9 +725,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop your client getting information to you?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -770,9 +770,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop your client getting information to you?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -817,9 +817,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop your client getting information to you?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -895,6 +895,86 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
       }
 
+      "for LPP - appeal both penalties available - agent selects no" in {
+        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+            SessionKeys.isUploadEvidence -> "yes",
+            SessionKeys.doYouWantToAppealBothPenalties -> "no"
+          ))
+
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "other", Some("file.docx"))(fakeRequestWithLPPKeysPresent, implicitly)
+        result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
+        result.head.value shouldBe "No"
+        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
+          PenaltySelectionPage.toString
+        ).url
+        result(1).key shouldBe "Reason for missing the VAT deadline"
+        result(1).value shouldBe "The reason does not fit into any of the other categories"
+        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
+        result(2).key shouldBe "When did the issue first stop your client paying the VAT bill?"
+        result(2).value shouldBe "1 January 2022"
+        result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+          WhenDidBecomeUnablePage.toString
+        ).url
+        result(3).key shouldBe "Why was the VAT bill paid late?"
+        result(3).value shouldBe "This is why my VAT bill was paid late."
+        result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+          WhyWasReturnSubmittedLatePage.toString
+        ).url
+        result(4).key shouldBe "Do you want to upload evidence to support your appeal?"
+        result(4).value shouldBe "Yes"
+        result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
+        result(5).key shouldBe "Evidence to support this appeal"
+        result(5).value shouldBe "file.docx"
+        result(5).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+
+        result(6).key shouldBe "Reason for appealing after 30 days"
+        result(6).value shouldBe "This is the reason why my appeal was late."
+        result(6).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.MakingALateAppealController.onPageLoad().url,
+          MakingALateAppealPage.toString
+        ).url
+      }
+
+      "for LPP - appeal both penalties available - agent selects yes" in {
+        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
+          .withSession(
+            SessionKeys.reasonableExcuse -> "other",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
+            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+            SessionKeys.isUploadEvidence -> "yes",
+            SessionKeys.doYouWantToAppealBothPenalties -> "yes"
+          ))
+
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "other", Some("file.docx"))(fakeRequestWithLPPKeysPresent, implicitly)
+        result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
+        result.head.value shouldBe "Yes"
+        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
+          PenaltySelectionPage.toString
+        ).url
+      }
+
       "for LPP" in {
         val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
           .withSession(
@@ -918,15 +998,15 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1).key shouldBe "When did the issue first stop your client paying the VAT bill?"
         result(1).value shouldBe "1 January 2022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-            WhenDidBecomeUnablePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+          WhenDidBecomeUnablePage.toString
+        ).url
         result(2).key shouldBe "Why was the VAT bill paid late?"
         result(2).value shouldBe "This is why my VAT bill was paid late."
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-            WhyWasReturnSubmittedLatePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+          WhyWasReturnSubmittedLatePage.toString
+        ).url
         result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
         result(3).value shouldBe "Yes"
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -969,15 +1049,15 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1).key shouldBe "When did the issue first stop your client getting information to you?"
         result(1).value shouldBe "1 January 2022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-            WhenDidBecomeUnablePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+          WhenDidBecomeUnablePage.toString
+        ).url
         result(2).key shouldBe "Why was the return submitted late?"
         result(2).value shouldBe "This is why my VAT return was late."
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-            WhyWasReturnSubmittedLatePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+          WhyWasReturnSubmittedLatePage.toString
+        ).url
         result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
         result(3).value shouldBe "No"
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1017,15 +1097,15 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1).key shouldBe "When did the issue first stop your client getting information to you?"
         result(1).value shouldBe "1 January 2022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-            WhenDidBecomeUnablePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+          WhenDidBecomeUnablePage.toString
+        ).url
         result(2).key shouldBe "Why was the return submitted late?"
         result(2).value shouldBe "This is why my VAT return was late."
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-            WhyWasReturnSubmittedLatePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+          WhyWasReturnSubmittedLatePage.toString
+        ).url
         result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
         result(3).value shouldBe "No"
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1042,6 +1122,65 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "when a VAT trader is on the page" should {
+
+      "for LPP - appeal both penalties available - trader selects yes" in {
+        val fakeRequestWithLPPKeysPresent = fakeRequestConverter(fakeRequest
+          .withSession(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.wasHospitalStayRequired -> "no",
+            SessionKeys.whenHealthIssueHappened -> "2022-01-01",
+            SessionKeys.doYouWantToAppealBothPenalties -> "yes"
+          ))
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "health")(fakeRequestWithLPPKeysPresent, implicitly)
+        result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
+        result.head.value shouldBe "Yes"
+        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
+          PenaltySelectionPage.toString
+        ).url
+        result(1).key shouldBe "Reason for missing the VAT deadline"
+        result(1).value shouldBe "Health"
+        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
+        result(2).key shouldBe "Did this health issue include a hospital stay?"
+        result(2).value shouldBe "No"
+        result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+          WasHospitalStayRequiredPage.toString
+        ).url
+        result(3).key shouldBe "When did the health issue first stop you paying the VAT bill?"
+        result(3).value shouldBe "1 January 2022"
+        result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+          WhenDidHealthIssueHappenPage.toString
+        ).url
+      }
+
+      "for LPP - appeal both penalties available - trader selects no" in {
+        val fakeRequestWithLPPKeysPresent = fakeRequestConverter(fakeRequest
+          .withSession(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.wasHospitalStayRequired -> "no",
+            SessionKeys.whenHealthIssueHappened -> "2022-01-01",
+            SessionKeys.doYouWantToAppealBothPenalties -> "no"
+          ))
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "health")(fakeRequestWithLPPKeysPresent, implicitly)
+        result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
+        result.head.value shouldBe "No"
+        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
+          PenaltySelectionPage.toString
+        ).url
+      }
+
       "for health" must {
         "for no hospital stay" should {
           "return all the keys from the session ready to be passed to the view" in {
@@ -1058,21 +1197,21 @@ class SessionAnswersHelperSpec extends SpecBase {
             result.head.key shouldBe "Reason for missing the VAT deadline"
             result.head.value shouldBe "Health"
             result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+              controllers.routes.ReasonableExcuseController.onPageLoad().url,
+              ReasonableExcuseSelectionPage.toString
+            ).url
             result(1).key shouldBe "Did this health issue include a hospital stay?"
             result(1).value shouldBe "No"
             result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-            WasHospitalStayRequiredPage.toString
-          ).url
+              controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+              WasHospitalStayRequiredPage.toString
+            ).url
             result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
             result(2).value shouldBe "1 January 2022"
             result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
-            WhenDidHealthIssueHappenPage.toString
-          ).url
+              controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+              WhenDidHealthIssueHappenPage.toString
+            ).url
           }
 
           "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -1090,21 +1229,21 @@ class SessionAnswersHelperSpec extends SpecBase {
             result.head.key shouldBe "Reason for missing the VAT deadline"
             result.head.value shouldBe "Health"
             result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+              controllers.routes.ReasonableExcuseController.onPageLoad().url,
+              ReasonableExcuseSelectionPage.toString
+            ).url
             result(1).key shouldBe "Did this health issue include a hospital stay?"
             result(1).value shouldBe "No"
             result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-            WasHospitalStayRequiredPage.toString
-          ).url
+              controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
+              WasHospitalStayRequiredPage.toString
+            ).url
             result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
             result(2).value shouldBe "1 January 2022"
             result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
-            WhenDidHealthIssueHappenPage.toString
-          ).url
+              controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+              WhenDidHealthIssueHappenPage.toString
+            ).url
             result(3).key shouldBe "Reason for appealing after 30 days"
             result(3).value shouldBe "Lorem ipsum"
             result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1132,9 +1271,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1175,9 +1314,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1223,9 +1362,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1266,9 +1405,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1315,9 +1454,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1361,9 +1500,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
           result(1).value shouldBe "1 January 2022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1411,9 +1550,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "Health"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "Did this health issue include a hospital stay?"
           result(1).value shouldBe "No"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1430,13 +1569,13 @@ class SessionAnswersHelperSpec extends SpecBase {
 
         "when the client intended to submit the VAT return" in {
           val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.wasHospitalStayRequired -> "no",
-            SessionKeys.whenHealthIssueHappened -> "2022-01-01",
-            SessionKeys.whoPlannedToSubmitVATReturn -> "client"
-          ))
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "no",
+              SessionKeys.whenHealthIssueHappened -> "2022-01-01",
+              SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+            ))
 
           val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
           result.head.key shouldBe "Reason for missing the VAT deadline"
@@ -1461,14 +1600,14 @@ class SessionAnswersHelperSpec extends SpecBase {
 
         "when the agent intended to submit but missed the deadline" in {
           val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.wasHospitalStayRequired -> "no",
-            SessionKeys.whenHealthIssueHappened -> "2022-01-01",
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
-          ))
+            .withSession(
+              SessionKeys.reasonableExcuse -> "health",
+              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.wasHospitalStayRequired -> "no",
+              SessionKeys.whenHealthIssueHappened -> "2022-01-01",
+              SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+              SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
+            ))
 
           val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
           result.head.key shouldBe "Reason for missing the VAT deadline"
@@ -1494,13 +1633,13 @@ class SessionAnswersHelperSpec extends SpecBase {
 
       "when it is an LPP show the correct message" in {
         val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-        .withSession(
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-          SessionKeys.reasonableExcuse -> "health",
-          SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.wasHospitalStayRequired -> "no",
-          SessionKeys.whenHealthIssueHappened -> "2022-01-01"
-        ))
+          .withSession(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.wasHospitalStayRequired -> "no",
+            SessionKeys.whenHealthIssueHappened -> "2022-01-01"
+          ))
 
         val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
         result.head.key shouldBe "Reason for missing the VAT deadline"
@@ -1539,9 +1678,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "Health"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+            controllers.routes.ReasonableExcuseController.onPageLoad().url,
+            ReasonableExcuseSelectionPage.toString
+          ).url
           result(1).key shouldBe "Did this health issue include a hospital stay?"
           result(1).value shouldBe "No"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1701,15 +1840,15 @@ class SessionAnswersHelperSpec extends SpecBase {
       result.head.key shouldBe "Reason for missing the VAT deadline"
       result.head.value shouldBe "Bereavement (someone died)"
       result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+        controllers.routes.ReasonableExcuseController.onPageLoad().url,
+        ReasonableExcuseSelectionPage.toString
+      ).url
       result(1).key shouldBe "When did the person die?"
       result(1).value shouldBe "1 January 2022"
       result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
-          WhenDidThePersonDiePage.toString
-        ).url
+        controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
+        WhenDidThePersonDiePage.toString
+      ).url
     }
 
     "return all keys and the 'Reason for appealing after 30 days' text" in {
@@ -1726,15 +1865,15 @@ class SessionAnswersHelperSpec extends SpecBase {
       result.head.key shouldBe "Reason for missing the VAT deadline"
       result.head.value shouldBe "Bereavement (someone died)"
       result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+        controllers.routes.ReasonableExcuseController.onPageLoad().url,
+        ReasonableExcuseSelectionPage.toString
+      ).url
       result(1).key shouldBe "When did the person die?"
       result(1).value shouldBe "1 January 2022"
       result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
-          WhenDidThePersonDiePage.toString
-        ).url
+        controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
+        WhenDidThePersonDiePage.toString
+      ).url
       result(2).key shouldBe "Reason for appealing after 30 days"
       result(2).value shouldBe "Lorem ipsum"
       result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -2087,15 +2226,15 @@ class SessionAnswersHelperSpec extends SpecBase {
         result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
         result(1).value shouldBe "1 January 2022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-            WhenDidBecomeUnablePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+          WhenDidBecomeUnablePage.toString
+        ).url
         result(2).key shouldBe "Why was the return submitted late?"
         result(2).value shouldBe "This is a reason."
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-            WhyWasReturnSubmittedLatePage.toString
-          ).url
+          controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+          WhyWasReturnSubmittedLatePage.toString
+        ).url
         result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
         result(3).value shouldBe "Yes"
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(

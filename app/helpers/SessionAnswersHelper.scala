@@ -75,8 +75,23 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
   }
 
+  private def getMultiplePenaltiesForThisPeriodRows()(implicit request: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+    val answer = request.session.get(SessionKeys.doYouWantToAppealBothPenalties).map(answer => messages(s"common.radioOption.$answer")).get
+    Seq(
+      CheckYourAnswersRow(
+        messages("penaltySelection.form.heading"),
+        answer,
+        changeAnswerUrl(
+          controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
+          PenaltySelectionPage
+        )
+      )
+    )
+  }
+
   //scalastyle:off
-  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String, fileNames: Option[String] = None)(implicit request: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String, fileNames: Option[String] = None, isLPP: Boolean = false)(implicit request: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+    val multiplePenaltiesContent = if (request.session.get(SessionKeys.doYouWantToAppealBothPenalties).isDefined) getMultiplePenaltiesForThisPeriodRows else Seq.empty
     val reasonableExcuseContent = reasonableExcuse match {
       case "bereavement" => Seq(
         CheckYourAnswersRow(
@@ -231,10 +246,10 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     }
 
     request.session.get(SessionKeys.lateAppealReason).fold(
-      reasonableExcuseContent
+      multiplePenaltiesContent ++ reasonableExcuseContent
     )(
       reason => {
-        reasonableExcuseContent :+ (
+        multiplePenaltiesContent ++ reasonableExcuseContent :+ (
           CheckYourAnswersRow(messages("checkYourAnswers.whyYouDidNotAppealSooner"),
             reason,
             changeAnswerUrl(
@@ -382,8 +397,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     (request.session.get(SessionKeys.isObligationAppeal), reasonableExcuse.isDefined, agentSession) match {
       case (Some(_), _, _) => getContentForObligationAppealCheckYourAnswersPage(uploadFilenames)
       case (_, true, false) if isAllAnswerPresentForReasonableExcuse(reasonableExcuse.get) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
-      case (_, true, true) if appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString) =>
-        getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
+      case (_, true, true) if appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames, isLPP = true)
       case (_, true, true) => getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
       case _ => Seq.empty
     }
