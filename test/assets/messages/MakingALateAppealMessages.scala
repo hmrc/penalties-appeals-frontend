@@ -19,7 +19,15 @@ package messages
 object MakingALateAppealMessages {
   val title = "This penalty was issued more than 30 days ago - Appeal a VAT penalty - GOV.UK"
 
+  val titleMulti = "The penalties were issued more than 30 days ago - Appeal a VAT penalty - GOV.UK"
+
+  val titleFirst = "The first penalty was issued more than 30 days ago - Appeal a VAT penalty - GOV.UK"
+
   val heading = "This penalty was issued more than 30 days ago"
+
+  val headingMulti = "The penalties were issued more than 30 days ago"
+
+  val headingFirst = "The first penalty was issued more than 30 days ago"
 
   val hintText = "You usually need to appeal within 30 days of the date on the penalty notice. Tell us here why you could not appeal within 30 days."
 

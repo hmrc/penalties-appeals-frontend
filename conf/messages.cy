@@ -447,6 +447,8 @@ appealConfirmation.feedbackLink.2 = (mae’n cymryd 30 eiliad)
 # Making a late appeal page
 # ----------------------------------------------------------
 makingALateAppeal.headingAndTitle = Codwyd y gosb fwy na 30 diwrnod yn ôl
+makingALateAppeal.headingAndTitle.multi = The penalties were issued more than 30 days ago
+makingALateAppeal.headingAndTitle.first = The first penalty was issued more than 30 days ago
 makingALateAppeal.p1 = Fel arfer mae angen i chi apelio cyn pen 30 diwrnod o ddyddiad yr hysbysiad o gosb. Rhowch wybod i ni pam nad oeddech wedi gallu apelio cyn pen 30 diwrnod.
 makingALateAppeal.error.required = Mae’n rhaid i chi roi ychydig o wybodaeth i ni ynglŷn â pham nad oeddech wedi apelio’n gynt
 

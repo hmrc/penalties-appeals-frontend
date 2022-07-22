@@ -24,6 +24,7 @@ import models.pages.{MakingALateAppealPage, PageMode}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
+import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.MakingALateAppealPage
 
@@ -31,18 +32,54 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
   "MakingALateAppealPage" should {
     val makingALateAppealPage: MakingALateAppealPage = injector.instanceOf[MakingALateAppealPage]
     object Selectors extends BaseSelectors
-    def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form, pageMode = PageMode(MakingALateAppealPage, NormalMode))
+    "when a single penalty is appealed" when {
+      def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form, pageMode = PageMode(MakingALateAppealPage, NormalMode))
 
-    val formProvider = MakingALateAppealForm.makingALateAppealForm()
-    implicit val doc: Document = asDocument(applyView(formProvider))
+      val formProvider = MakingALateAppealForm.makingALateAppealForm()
+      implicit val doc: Document = asDocument(applyView(formProvider))
 
-    val expectedContent = Seq(
-      Selectors.title -> title,
-      Selectors.h1 -> heading,
-      Selectors.hintText -> hintText,
-      Selectors.button -> continueBtn
-    )
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> heading,
+        Selectors.hintText -> hintText,
+        Selectors.button -> continueBtn
+      )
 
-    behave like pageWithExpectedMessages(expectedContent)
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "when multiple penalties are being appealed" when {
+      def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form,
+        pageMode = PageMode(MakingALateAppealPage, NormalMode))(fakeRequestWithCorrectKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "yes"), messages, appConfig)
+
+      val formProvider = MakingALateAppealForm.makingALateAppealForm()
+      implicit val doc: Document = asDocument(applyView(formProvider))
+
+      val expectedContent = Seq(
+        Selectors.title -> titleMulti,
+        Selectors.h1 -> headingMulti,
+        Selectors.hintText -> hintText,
+        Selectors.button -> continueBtn
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "when only one penalty of the period is being appealed" when {
+      def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form,
+        pageMode = PageMode(MakingALateAppealPage, NormalMode))(fakeRequestWithCorrectKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "no"), messages, appConfig)
+
+      val formProvider = MakingALateAppealForm.makingALateAppealForm()
+      implicit val doc: Document = asDocument(applyView(formProvider))
+
+      val expectedContent = Seq(
+        Selectors.title -> titleFirst,
+        Selectors.h1 -> headingFirst,
+        Selectors.hintText -> hintText,
+        Selectors.button -> continueBtn
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+    }
   }
 }
