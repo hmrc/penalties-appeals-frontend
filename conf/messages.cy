@@ -11,6 +11,7 @@ common.radioOption.yes = Iawn
 common.radioOption.no = Na
 common.radioOption.unknown = Nid wyf yn gwybod
 common.penaltyYouAreAppealing = The penalty you are appealing is
+common.penaltiesYouAreAppealing = The penalties you are appealing are
 
 app.common.back = Yn ôl
 
@@ -56,6 +57,7 @@ penaltyInformation.headerText = {0}: {1} i {2}
 # ----------------------------------------------------------
 penaltyType.lateSubmission = Cosb am gyflwyno’n hwyr
 penaltyType.latePayment = Cosb am dalu’n hwyr
+penaltyType.latePayment.multiple = Late payment penalties
 
 # Reasonable excuse
 # ----------------------------------------------------------

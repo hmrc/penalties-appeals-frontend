@@ -15,14 +15,19 @@
  *@
 
 @import viewtils.PenaltyTypeHelper
+@import utils.SessionKeys
 
 @this()
 
 @(pageHeader: String)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
 
+@appealBothPenalties = @{request.session.get(SessionKeys.doYouWantToAppealBothPenalties)}
+
+@captionPenaltyAppeal = @{if(appealBothPenalties.contains("yes")) messages("common.penaltiesYouAreAppealing") else messages("common.penaltyYouAreAppealing")}
+
 <header class="hmrc-page-heading govuk-!-margin-top-0 govuk-!-margin-bottom-4" id="hmrc-page-header">
   <p class="govuk-caption-l hmrc-caption-l govuk-!-font-size-24 penalty-information-caption">
-    <span class="govuk-visually-hidden">@messages("common.penaltyYouAreAppealing")</span>
+    <span class="govuk-visually-hidden">@messages(captionPenaltyAppeal)</span>
     @{
       messages("penaltyInformation.headerText",
         PenaltyTypeHelper.getKeysFromSession().get.head,

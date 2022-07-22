@@ -11,6 +11,7 @@ common.radioOption.yes = Yes
 common.radioOption.no = No
 common.radioOption.unknown = I do not know
 common.penaltyYouAreAppealing = The penalty you are appealing is
+common.penaltiesYouAreAppealing = The penalties you are appealing are
 
 app.common.back = Back
 
@@ -56,6 +57,7 @@ penaltyInformation.headerText = {0}: {1} to {2}
 # ----------------------------------------------------------
 penaltyType.lateSubmission = Late submission penalty
 penaltyType.latePayment = Late payment penalty
+penaltyType.latePayment.multiple = Late payment penalties
 
 # Reasonable excuse
 # ----------------------------------------------------------
