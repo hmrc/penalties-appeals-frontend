@@ -19,6 +19,7 @@ package services
 import base.SpecBase
 import config.AppConfig
 import connectors.PenaltiesConnector
+import models.appeals.MultiplePenaltiesData
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{AppealData, ReasonableExcuse, UserRequest}
 import org.mockito.ArgumentMatchers.any
@@ -30,8 +31,8 @@ import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{SessionKeys, UUIDGenerator}
-import java.time.{LocalDate, LocalDateTime}
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealServiceSpec extends SpecBase {
@@ -100,6 +101,16 @@ class AppealServiceSpec extends SpecBase {
       |}
       |""".stripMargin)
 
+  val multiplePenaltiesData: JsValue = Json.parse(
+    """
+      |{
+      | "firstPenaltyChargeReference": "123456789",
+      | "firstPenaltyAmount": 101.01,
+      | "secondPenaltyChargeReference": "123456790",
+      | "secondPenaltyAmount": 101.02
+      |}
+      |""".stripMargin)
+
   class Setup {
     reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService, mockUploadJourneyRepository)
     val service: AppealService =
@@ -116,7 +127,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
-          new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -126,7 +137,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
       val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
-          new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -155,6 +166,35 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(appealDataAsJsonLPPAdditional)))
 
       val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true)(
+        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      await(result).isDefined shouldBe true
+    }
+  }
+
+  "validateMultiplePenaltyDataForEnrolmentKey" should {
+    "return None when the connector returns None" in new Setup {
+      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
+        .thenReturn(Future.successful(None))
+
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
+        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      await(result).isDefined shouldBe false
+    }
+
+    "return None when the connector returns returns Json that cannot be parsed to a model" in new Setup {
+      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Some(Json.obj("foo" -> "bar"))))
+
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
+        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+      await(result).isDefined shouldBe false
+    }
+
+    "return Some when the connector returns Json that can be parsed to a model" in new Setup {
+      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Some(multiplePenaltiesData)))
+
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
         new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
@@ -262,7 +302,7 @@ class AppealServiceSpec extends SpecBase {
     }
 
     "parse the session keys into a model and audit the response - for duplicate file upload" in new Setup {
-      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1,1,1)
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 1, 1)
       val uploadAsDuplicate: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.READY,
@@ -293,7 +333,7 @@ class AppealServiceSpec extends SpecBase {
     }
 
     "parse the session keys into a model and audit the response - removing file uploads if the user selected no to uploading files" in new Setup {
-      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1,1,1)
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 1, 1)
       val uploadAsDuplicate: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.READY,
@@ -322,8 +362,8 @@ class AppealServiceSpec extends SpecBase {
     }
 
     "ignore FAILED or WAITING files for audit" in new Setup {
-      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1,1,1)
-      val auditCapture:ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
+      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 1, 1)
+      val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
       val uploadAsDuplicate: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.FAILED,
@@ -391,7 +431,7 @@ class AppealServiceSpec extends SpecBase {
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 4, 24,9,30),
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
           checksum = "check12345678",
           size = 987
         ))
@@ -413,7 +453,7 @@ class AppealServiceSpec extends SpecBase {
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 4, 24,9,30),
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
           checksum = "check12345678",
           size = 987
         ))
@@ -434,7 +474,7 @@ class AppealServiceSpec extends SpecBase {
         uploadDetails = Some(UploadDetails(
           fileName = "file1.txt",
           fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 4, 24,9,30),
+          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
           checksum = "check12345678",
           size = 987
         ))

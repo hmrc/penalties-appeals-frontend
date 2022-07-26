@@ -18,6 +18,7 @@ package controllers
 
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
+import models.appeals.MultiplePenaltiesData
 import models.{AppealData, UserRequest}
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -25,19 +26,18 @@ import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
+
 import java.util.UUID
-
 import javax.inject.Inject
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class InitialiseAppealController @Inject()(appealService: AppealService,
                                            errorHandler: ErrorHandler)(implicit mcc: MessagesControllerComponents, authorise: AuthPredicate)
   extends FrontendController(mcc) with I18nSupport {
 
-   def onPageLoad(penaltyId: String, isLPP: Boolean,isAdditional:Boolean): Action[AnyContent] = authorise.async {
+  def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP,isAdditional).map {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional).map {
         _.fold(
           errorHandler.showInternalServerError
         )(
@@ -49,9 +49,9 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
   }
 
- def onPageLoadForObligation(penaltyId: String, isLPP: Boolean,isAdditional:Boolean): Action[AnyContent] = authorise.async {
+  def onPageLoadForObligation(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP,isAdditional).map {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional).map {
         _.fold(
           errorHandler.showInternalServerError
         )(

@@ -102,6 +102,17 @@ class PenaltiesConnectorSpec extends SpecBase {
       |}
       |""".stripMargin)
 
+  val multiplePenaltiesJson: JsValue = Json.parse(
+    """
+      |{
+      | "firstPenaltyChargeReference": "123456789",
+      | "firstPenaltyAmount": "101.01",
+      | "secondPenaltyChargeReference": "123456790",
+      | "secondPenaltyAmount": "101.02"
+      |}
+      |""".stripMargin
+  )
+
   class Setup {
     reset(mockHttpClient)
     reset(mockAppConfig)
@@ -156,10 +167,10 @@ class PenaltiesConnectorSpec extends SpecBase {
       result.get.toString() shouldBe appealDataAsJson.toString()
     }
 
-s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
+    s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJsonLPP.toString())))
-      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(),any()))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any()))
         .thenReturn("http://url/url")
 
       val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = false))
@@ -167,7 +178,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       result.get.toString() shouldBe appealDataAsJsonLPP.toString()
     }
 
-   s"return $Some $JsValue when the connector call succeeds for LPP - Additional" in new Setup {
+    s"return $Some $JsValue when the connector call succeeds for LPP - Additional" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJsonLPPAdditional.toString())))
       when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any()))
@@ -195,6 +206,49 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         .thenReturn("http://url/url")
 
       val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+      result.isDefined shouldBe false
+    }
+  }
+
+  "getMultiplePenaltiesForPrincipleCharge" should {
+    s"return $Some $JsValue when the connector call succeeds" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(Status.OK, multiplePenaltiesJson.toString())))
+      when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
+        .thenReturn("http://url/url")
+
+      val result: Option[JsValue] = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      result.isDefined shouldBe true
+      result.get shouldBe multiplePenaltiesJson
+    }
+
+    s"return $None when $NO_CONTENT is returned from the call" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(Status.NO_CONTENT, "")))
+      when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
+        .thenReturn("http://url/url")
+
+      val result: Option[JsValue] = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      result.isDefined shouldBe false
+    }
+
+    s"return $None when $NOT_FOUND is returned from the call" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
+      when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
+        .thenReturn("http://url/url")
+
+      val result: Option[JsValue] = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      result.isDefined shouldBe false
+    }
+
+    s"return $None when $INTERNAL_SERVER_ERROR is returned from the call" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
+      when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
+        .thenReturn("http://url/url")
+
+      val result: Option[JsValue] = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
       result.isDefined shouldBe false
     }
   }
@@ -247,8 +301,8 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
-          2020,1,1,0,0,0), isLPP = true, appealSubmittedBy = "client",
-        agentDetails = None,  appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
+          2020, 1, 1, 0, 0, 0), isLPP = true, appealSubmittedBy = "client",
+        agentDetails = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
           startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false,
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
@@ -264,7 +318,7 @@ s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
         .thenReturn("http://url/url")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
-          2020,1,1,0,0,0), isLPP = true, appealSubmittedBy = "client",
+          2020, 1, 1, 0, 0, 0), isLPP = true, appealSubmittedBy = "client",
         agentDetails = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
           startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false,
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None

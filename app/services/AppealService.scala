@@ -17,13 +17,13 @@
 package services
 
 import java.time.LocalDate
-
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
+
 import javax.inject.Inject
-import models.appeals.AppealSubmission
+import models.appeals.{AppealSubmission, MultiplePenaltiesData}
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
 import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
@@ -66,6 +66,25 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
+  def validateMultiplePenaltyDataForEnrolmentKey[A](penaltyId: String)
+                                    (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
+    penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, user.vrn).map(
+      _.fold[Option[MultiplePenaltiesData]](None)(
+        jsValue => {
+          val parsedMultiplePenaltiesDetailsModel = Json.fromJson(jsValue)(MultiplePenaltiesData.format)
+          parsedMultiplePenaltiesDetailsModel.fold(
+            failure => {
+              logger.warn(s"[AppealService][validateMultiplePenaltyDataForEnrolmentKey] - Failed to parse multiple penalties model" +
+                s" with error(s): $failure")
+              None
+            },
+            parsedModel => Some(parsedModel)
+          )
+        }
+      )
+    )
+  }
+
   def getReasonableExcuseListAndParse()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[ReasonableExcuse]]] = {
     penaltiesConnector.getListOfReasonableExcuses().map {
       _.fold[Option[Seq[ReasonableExcuse]]](
@@ -96,7 +115,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
       readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
-      uploads = if(userHasUploadedFiles) readyOrDuplicateFileUploads else None
+      uploads = if (userHasUploadedFiles) readyOrDuplicateFileUploads else None
       modelFromRequest: AppealSubmission = AppealSubmission
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId)
@@ -130,18 +149,18 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
-      val dateTimeNow: LocalDate = dateTimeHelper.dateNow
-      val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
+    val dateTimeNow: LocalDate = dateTimeHelper.dateNow
+    val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+    dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
   }
 
   def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])
                                 (implicit userRequest: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
-    if(optFileUploads.isDefined) {
+    if (optFileUploads.isDefined) {
       val fileUploads = optFileUploads.get.filter(_.uploadDetails.isDefined)
       val checksumMapToUpload = fileUploads.groupBy(_.uploadDetails.get.checksum)
       val onlyDuplicateFileUploads = checksumMapToUpload.filter(_._2.size > 1).values.flatten.toSeq
-      if(onlyDuplicateFileUploads.nonEmpty) {
+      if (onlyDuplicateFileUploads.nonEmpty) {
         logger.debug("[AppealService][sendAuditIfDuplicatesExist] - Found duplicates in repository, sending duplicate appeal event")
         val duplicateUploadsInAuditFormat: JsValue = auditService.getAllDuplicateUploadsForAppealSubmission(onlyDuplicateFileUploads)
         auditService.audit(DuplicateFilesAuditModel(duplicateUploadsInAuditFormat))
