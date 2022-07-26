@@ -107,7 +107,6 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         "secondPenaltyAmount" -> "101.02"
       )
       val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
-      println(Console.CYAN + result + Console.RESET)
       result.isDefined shouldBe true
       result.get shouldBe expectedResponse
     }

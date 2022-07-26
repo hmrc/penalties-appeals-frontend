@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.NormalMode
+import models.{NormalMode, PenaltyTypeEnum}
 import navigation.Navigation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -42,6 +42,10 @@ class PenaltySelectionControllerSpec extends SpecBase {
   val appealSinglePenaltyPage = injector.instanceOf[AppealSinglePenaltyPage]
   val page = injector.instanceOf[PenaltySelectionPage]
   val appealCoverBothPenaltiesPage = injector.instanceOf[AppealCoverBothPenaltiesPage]
+  val fakeRequestWithMultiplePenaltyAppealKeys = fakeRequestWithCorrectKeys.withSession(
+    SessionKeys.firstPenaltyAmount -> "4.20",
+    SessionKeys.secondPenaltyAmount -> "3000"
+  )
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector, mockNavigator)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
@@ -54,13 +58,13 @@ class PenaltySelectionControllerSpec extends SpecBase {
   "onPageLoadForPenaltySelection" should {
     "return 200" when {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequestWithMultiplePenaltyAppealKeys)
         status(result) shouldBe OK
       }
 
       "return OK and correct view (pre-populated radio option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
         val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(
-          fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "yes")))
+          fakeRequestConverter(fakeRequestWithMultiplePenaltyAppealKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "yes")))
         status(result) shouldBe OK
         val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select("#value").hasAttr("checked") shouldBe true
@@ -91,23 +95,26 @@ class PenaltySelectionControllerSpec extends SpecBase {
   "onSubmitForPenaltySelection" should {
     "the user is authorised" when {
       "redirect the user to the single penalty page when no is selected" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithCorrectKeys
+        when(mockNavigator.nextPage(any(), any(), any())(any()))
+          .thenReturn(controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode))
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithMultiplePenaltyAppealKeys
           .withFormUrlEncodedBody("value" -> "no"))
         status(result) shouldBe SEE_OTHER
-        //TODO: check that the redirect is correct
-        redirectLocation(result).get shouldBe ""
+        redirectLocation(result).get shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode).url
       }
 
       "redirect the user to the multiple penalty page when yes is selected" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithCorrectKeys
+        when(mockNavigator.nextPage(any(), any(), any())(any()))
+          .thenReturn(controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode))
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithMultiplePenaltyAppealKeys
           .withFormUrlEncodedBody("value" -> "yes"))
         status(result) shouldBe SEE_OTHER
-        //TODO: check that the redirect is correct
-        redirectLocation(result).get shouldBe ""
+
+        redirectLocation(result).get shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode).url
       }
 
       "return a 400 (BAD REQUEST) and show page with error when no option has been selected" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithCorrectKeys
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithMultiplePenaltyAppealKeys
           .withFormUrlEncodedBody("value" -> ""))
         status(result) shouldBe BAD_REQUEST
       }
@@ -129,10 +136,22 @@ class PenaltySelectionControllerSpec extends SpecBase {
 
   "onPageLoadForSinglePenaltySelection" should {
     "return 200" when {
-      "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+      "the user is authorised and has the correct keys in the session - first LPP" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockNavigator.nextPage(any(), any(), any())(any()))
           .thenReturn(controllers.routes.AppealStartController.onPageLoad())
-        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestLPPWithCorrectKeys.withSession(
+          SessionKeys.firstPenaltyAmount -> "4.20"
+        ))
+        status(result) shouldBe OK
+      }
+
+      "the user is authorised and has the correct keys in the session - second LPP" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockNavigator.nextPage(any(), any(), any())(any()))
+          .thenReturn(controllers.routes.AppealStartController.onPageLoad())
+        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestLPPWithCorrectKeys.withSession(
+          SessionKeys.secondPenaltyAmount -> "4.20",
+          SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString
+        ))
         status(result) shouldBe OK
       }
     }

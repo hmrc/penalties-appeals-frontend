@@ -79,7 +79,11 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
             logger.warn(s"$startOfLogMsg Returned unknown response ${response.status} with body: ${response.body}")
             None
         }
-    )
+    ).recover{
+      case e =>
+        logger.error(s"$startOfLogMsg An exception occurred with error ${e.getMessage}")
+        None
+    }
   }
 
   def getListOfReasonableExcuses()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {

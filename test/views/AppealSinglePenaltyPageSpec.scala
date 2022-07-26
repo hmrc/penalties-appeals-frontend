@@ -28,7 +28,7 @@ class AppealSinglePenaltyPageSpec extends SpecBase with ViewBehaviours {
   val page: AppealSinglePenaltyPage = injector.instanceOf[AppealSinglePenaltyPage]
   object Selectors extends BaseSelectors
 
-  implicit val document = asDocument(page(PageMode(AppealSinglePenaltyPage, NormalMode), controllers.routes.AppealStartController.onPageLoad().url, "£4.20 second late payment penalty")(userRequestWithCorrectKeys, implicitly, implicitly))
+  implicit val document = asDocument(page(PageMode(AppealSinglePenaltyPage, NormalMode), controllers.routes.AppealStartController.onPageLoad().url, "4.20", true)(userRequestWithCorrectKeys, implicitly, implicitly))
 
   val expectedContent = Seq(
     Selectors.title -> title,

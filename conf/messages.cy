@@ -561,13 +561,13 @@ agent.penaltySelection.p2 = You can do a combined appeal if the reason your clie
 penaltySelection.p2 = You can do a combined appeal if the reason you did not pay VAT on time is the same for both penalties.
 penaltySelection.form.heading = Do you intend to appeal both penalties for the same reason?
 penaltySelection.error.required = Tell us if you intend to appeal both penalties for the same reason
+penaltySelection.lpp1 = £{0} first late payment penalty
+penaltySelection.lpp2 = £{0} second late payment penalty
 
 # Appeal single penalty page
 # -----------------------------------------------------------
 appealSinglePenalty.headingAndTitle = The appeal will cover a single penalty
 appealSinglePenalty.p1 = You have chosen to appeal the {0}.
-appealSinglePenalty.lpp1 = £{0} first late payment penalty
-appealSinglePenalty.lpp2 = £{0} second late payment penalty
 appealSinglePenalty.p2 = You can still appeal other penalties separately.
 
 # Appeal Cover Both Penalties page

@@ -17,8 +17,8 @@
 package controllers
 
 import java.time.LocalDate
-
 import base.SpecBase
+import models.appeals.MultiplePenaltiesData
 import models.{AppealData, PenaltyTypeEnum}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -34,18 +34,27 @@ import scala.concurrent.Future
 
 class InitialiseAppealControllerSpec extends SpecBase {
   val mockAppealsService: AppealService = mock(classOf[AppealService])
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], expectedContent: Option[MultiplePenaltiesData] = None) {
     reset(mockAppealsService)
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
+    when(mockAppealsService.validateMultiplePenaltyDataForEnrolmentKey(any())(any(), any(), any()))
+      .thenReturn(Future.successful(expectedContent))
     val controller = new InitialiseAppealController(
       mockAppealsService,
       errorHandler
     )(mcc, authPredicate)
   }
+
+  val sampleExamplePenalties: MultiplePenaltiesData = MultiplePenaltiesData(
+    firstPenaltyChargeReference = "123456789",
+    firstPenaltyAmount = 101.01,
+    secondPenaltyChargeReference = "123456790",
+    secondPenaltyAmount = 101.02
+  )
 
   "onPageLoad" should {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -80,6 +89,10 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
+      await(result).session.get(SessionKeys.firstPenaltyAmount).isDefined shouldBe false
+      await(result).session.get(SessionKeys.secondPenaltyAmount).isDefined shouldBe false
+      await(result).session.get(SessionKeys.firstPenaltyChargeReference).isDefined shouldBe false
+      await(result).session.get(SessionKeys.secondPenaltyChargeReference).isDefined shouldBe false
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
@@ -107,8 +120,11 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
+      await(result).session.get(SessionKeys.firstPenaltyAmount).isDefined shouldBe false
+      await(result).session.get(SessionKeys.secondPenaltyAmount).isDefined shouldBe false
+      await(result).session.get(SessionKeys.firstPenaltyChargeReference).isDefined shouldBe false
+      await(result).session.get(SessionKeys.secondPenaltyChargeReference).isDefined shouldBe false
     }
-   }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to start appeal for Additional Penalty (LPP)" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -135,7 +151,73 @@ class InitialiseAppealControllerSpec extends SpecBase {
       await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
+      await(result).session.get(SessionKeys.firstPenaltyAmount).isDefined shouldBe false
+      await(result).session.get(SessionKeys.secondPenaltyAmount).isDefined shouldBe false
+      await(result).session.get(SessionKeys.firstPenaltyChargeReference).isDefined shouldBe false
+      await(result).session.get(SessionKeys.secondPenaltyChargeReference).isDefined shouldBe false
   }
+
+    "call the penalties backend for multiple penalties and handle a success response and do not call multiple penalty endpoint when appeal is LSP" in new Setup(AuthTestModels.successfulAuthResult) {
+      reset(mockAppealsService)
+      val appealDataToReturn: AppealData = AppealData(
+        `type` = PenaltyTypeEnum.Additional,
+        startDate = LocalDate.of(
+          2020, 1, 1),
+        endDate = LocalDate.of(
+          2020, 1, 2),
+        dueDate = LocalDate.of(
+          2020, 2, 7),
+        dateCommunicationSent = LocalDate.of(2020, 2, 8)
+      )
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(appealDataToReturn)))
+
+      val result: Future[Result] = controller.onPageLoad("12345", isLPP = false, isAdditional = true)(fakeRequest)
+      redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
+      await(result).header.status shouldBe SEE_OTHER
+      await(result).session.get(SessionKeys.firstPenaltyAmount).isDefined shouldBe false
+      await(result).session.get(SessionKeys.secondPenaltyAmount).isDefined shouldBe false
+      await(result).session.get(SessionKeys.firstPenaltyChargeReference).isDefined shouldBe false
+      await(result).session.get(SessionKeys.secondPenaltyChargeReference).isDefined shouldBe false
+    }
+
+    "call the penalties backend for multiple penalties and handle a success response and add multi penalties details keys " +
+      "to session" in new Setup(AuthTestModels.successfulAuthResult, Some(sampleExamplePenalties)) {
+      val appealDataToReturn: AppealData = AppealData(
+        `type` = PenaltyTypeEnum.Additional,
+        startDate = LocalDate.of(
+          2020, 1, 1),
+        endDate = LocalDate.of(
+          2020, 1, 2),
+        dueDate = LocalDate.of(
+          2020, 2, 7),
+        dateCommunicationSent = LocalDate.of(2020, 2, 8)
+      )
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(appealDataToReturn)))
+
+      val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = true)(fakeRequest)
+      redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
+      await(result).header.status shouldBe SEE_OTHER
+      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
+      await(result).session.get(SessionKeys.appealType).get shouldBe PenaltyTypeEnum.Additional.toString
+      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
+      await(result).session.get(SessionKeys.firstPenaltyAmount).isDefined shouldBe true
+      await(result).session.get(SessionKeys.firstPenaltyAmount).get shouldBe "101.01"
+      await(result).session.get(SessionKeys.secondPenaltyAmount).isDefined shouldBe true
+      await(result).session.get(SessionKeys.secondPenaltyAmount).get shouldBe "101.02"
+      await(result).session.get(SessionKeys.firstPenaltyChargeReference).isDefined shouldBe true
+      await(result).session.get(SessionKeys.firstPenaltyChargeReference).get shouldBe "123456789"
+      await(result).session.get(SessionKeys.secondPenaltyChargeReference).isDefined shouldBe true
+      await(result).session.get(SessionKeys.secondPenaltyChargeReference).get shouldBe "123456790"
+    }
+
+   }
 
   "onPageLoadForObligation" should {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {

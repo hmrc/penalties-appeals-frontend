@@ -31,6 +31,8 @@
         routes.HonestyDeclarationController.onPageLoad().url
     } else if(request.session.get(SessionKeys.agentSessionVrn).isDefined && !appealType.contains(PenaltyTypeEnum.Late_Payment.toString) && !appealType.contains(PenaltyTypeEnum.Additional.toString)) {
         routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
+    } else if(request.session.get(SessionKeys.firstPenaltyChargeReference).isDefined) {
+        routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url
     } else {
         routes.ReasonableExcuseController.onPageLoad().url
     }

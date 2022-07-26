@@ -24,9 +24,9 @@ object PenaltySelectionMessages {
 
   val p1 = "These are:"
 
-  val firstPenalty = "penalty 1"
+  val firstPenalty = (penaltyAmount: String) => s"£$penaltyAmount first late payment penalty"
 
-  val secondPenalty = "penalty 2"
+  val secondPenalty = (penaltyAmount: String) => s"£$penaltyAmount second late payment penalty"
 
   val p2 = "You can do a combined appeal if the reason you did not pay VAT on time is the same for both penalties."
 

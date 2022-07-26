@@ -35,7 +35,7 @@ import services.monitoring.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
-import utils.{SessionKeys, UUIDGenerator}
+import utils.{EnrolmentKeys, SessionKeys, UUIDGenerator}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,8 +46,8 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               idGenerator: UUIDGenerator,
                               uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
-  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
-                                         (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+  def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
+                                         (implicit user: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
       _.fold[Option[AppealData]](
         None
@@ -66,9 +66,10 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
-  def validateMultiplePenaltyDataForEnrolmentKey[A](penaltyId: String)
-                                    (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
-    penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, user.vrn).map(
+  def validateMultiplePenaltyDataForEnrolmentKey(penaltyId: String)
+                                    (implicit user: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
+    val enrolmentKey = EnrolmentKeys.constructMTDVATEnrolmentKey(user.vrn)
+    penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, enrolmentKey).map(
       _.fold[Option[MultiplePenaltiesData]](None)(
         jsValue => {
           val parsedMultiplePenaltiesDetailsModel = Json.fromJson(jsValue)(MultiplePenaltiesData.format)
