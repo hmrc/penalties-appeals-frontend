@@ -231,34 +231,35 @@ class PenaltiesConnectorSpec extends SpecBase {
       result shouldBe Right(multiplePenaltiesModel)
     }
 
-    s"return $None when $NO_CONTENT is returned from the call" in new Setup {
+    s"return Left when $NO_CONTENT is returned from the call" in new Setup {
       when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Left(NoContent)))
       when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
         .thenReturn("http://url/url")
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
-      result.isRight shouldBe false
+      result.isLeft shouldBe true
+      result.left.get shouldBe NoContent
     }
 
-    s"return $None when $NOT_FOUND is returned from the call" in new Setup {
+    s"return Left when $NOT_FOUND is returned from the call" in new Setup {
       when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(Status.NOT_FOUND, ""))))
       when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
         .thenReturn("http://url/url")
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
-      result.isRight shouldBe false
+      result.isLeft shouldBe true
     }
 
-    s"return $None when $INTERNAL_SERVER_ERROR is returned from the call" in new Setup {
+    s"return Left when $INTERNAL_SERVER_ERROR is returned from the call" in new Setup {
       when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, ""))))
       when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
         .thenReturn("http://url/url")
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
-      result.isRight shouldBe false
+      result.isLeft shouldBe true
     }
   }
 

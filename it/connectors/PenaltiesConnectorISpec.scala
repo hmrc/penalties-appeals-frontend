@@ -111,23 +111,23 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
       result shouldBe Right(expectedResponse)
     }
 
-    s"return $None" when {
+    "return Left" when {
       s"only a single penalty is found for the principle charge and ${Status.NO_CONTENT} is returned" in {
         failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.NO_CONTENT)
         val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
-        result.isRight shouldBe false
+        result.isLeft shouldBe true
       }
 
       s"${Status.NOT_FOUND} is returned" in {
         failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.NOT_FOUND)
         val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
-        result.isRight shouldBe false
+        result.isLeft shouldBe true
       }
 
       s"${Status.INTERNAL_SERVER_ERROR} is returned" in {
         failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.INTERNAL_SERVER_ERROR)
         val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
-        result.isRight shouldBe false
+        result.isLeft shouldBe true
       }
     }
   }
