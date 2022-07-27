@@ -18,7 +18,8 @@ package connectors
 
 import base.SpecBase
 import config.AppConfig
-import connectors.httpParsers.UpscanInitiateHttpParser.{BadRequest, UpscanInitiateResponse}
+import connectors.httpParsers.BadRequest
+import connectors.httpParsers.UpscanInitiateHttpParser.UpscanInitiateResponse
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateRequest, UpscanInitiateResponseModel}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._

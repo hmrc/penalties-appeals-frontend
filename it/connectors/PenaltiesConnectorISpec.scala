@@ -17,15 +17,15 @@
 package connectors
 
 import models.PenaltyTypeEnum
-import models.appeals.{AppealSubmission, CrimeAppealInformation}
+import models.appeals.{AppealSubmission, CrimeAppealInformation, MultiplePenaltiesData}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
-import java.time.{LocalDate, LocalDateTime}
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext
 
 class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
@@ -98,36 +98,36 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
   }
 
   "getMultiplePenaltiesForPrincipleCharge" should {
-    s"return $Some and the $JsValue returned by the call when successful" in {
+    s"return Right with the parsed model when the call is successful" in {
       successfulGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val expectedResponse: JsValue = Json.obj(
-        "firstPenaltyChargeReference" -> "123456789",
-        "firstPenaltyAmount" -> "101.01",
-        "secondPenaltyChargeReference" -> "123456790",
-        "secondPenaltyAmount" -> "101.02"
+      val expectedResponse: MultiplePenaltiesData = MultiplePenaltiesData(
+        firstPenaltyChargeReference = "123456789",
+        firstPenaltyAmount = 101.01,
+        secondPenaltyChargeReference = "123456790",
+        secondPenaltyAmount = 101.02
       )
       val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
-      result.isDefined shouldBe true
-      result.get shouldBe expectedResponse
+      result.isRight shouldBe true
+      result shouldBe Right(expectedResponse)
     }
 
     s"return $None" when {
       s"only a single penalty is found for the principle charge and ${Status.NO_CONTENT} is returned" in {
         failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.NO_CONTENT)
         val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
-        result.isDefined shouldBe false
+        result.isRight shouldBe false
       }
 
       s"${Status.NOT_FOUND} is returned" in {
         failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.NOT_FOUND)
         val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
-        result.isDefined shouldBe false
+        result.isRight shouldBe false
       }
 
       s"${Status.INTERNAL_SERVER_ERROR} is returned" in {
         failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.INTERNAL_SERVER_ERROR)
         val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
-        result.isDefined shouldBe false
+        result.isRight shouldBe false
       }
     }
   }

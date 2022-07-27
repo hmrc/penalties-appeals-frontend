@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 
 import base.SpecBase
 import connectors.UpscanConnector
-import connectors.httpParsers.UpscanInitiateHttpParser.InvalidJson
+import connectors.httpParsers.InvalidJson
 import models.upload._
 import models.{CheckMode, NormalMode}
 import org.mockito.ArgumentMatchers

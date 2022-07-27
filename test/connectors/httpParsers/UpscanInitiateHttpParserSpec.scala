@@ -17,7 +17,6 @@
 package connectors.httpParsers
 
 import base.SpecBase
-import connectors.httpParsers.UpscanInitiateHttpParser._
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
@@ -64,7 +63,7 @@ class UpscanInitiateHttpParserSpec extends SpecBase {
     }
 
     s"return $UnexpectedFailure if random non Success status code returned" in new Setup(Status.INTERNAL_SERVER_ERROR, optJson = Some(Json.obj())) {
-      readResponse shouldBe Left(UnexpectedFailure(500, "Unexpected response, status 500 returned"))
+      readResponse shouldBe Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, "Unexpected response, status 500 returned"))
     }
   }
 

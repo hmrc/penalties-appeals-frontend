@@ -17,6 +17,7 @@
 package connectors
 
 import config.AppConfig
+import connectors.httpParsers.MultiplePenaltiesHttpParser.{MultiplePenaltiesResponse, MultiplePenaltiesResponseReads}
 import models.appeals.AppealSubmission
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
@@ -63,27 +64,10 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
   }
 
   def getMultiplePenaltiesForPrincipleCharge(penaltyId: String, enrolmentKey: String)
-                                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
+                                                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MultiplePenaltiesResponse] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getMultiplePenaltiesForPrincipleCharge] -"
-    httpClient.GET[HttpResponse](
-     appConfig.multiplePenaltyDataUrl(penaltyId,enrolmentKey)
-    ).map( response =>
-        response.status match {
-          case OK =>
-            logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with ID: $penaltyId and enrolment key $enrolmentKey")
-            Some(response.json)
-          case NO_CONTENT =>
-            logger.info(s"$startOfLogMsg Returned 204 from Penalties backend - with body: ${response.body}")
-            None
-          case _ =>
-            logger.warn(s"$startOfLogMsg Returned unknown response ${response.status} with body: ${response.body}")
-            None
-        }
-    ).recover{
-      case e =>
-        logger.error(s"$startOfLogMsg An exception occurred with error ${e.getMessage}")
-        None
-    }
+    logger.debug(s"$startOfLogMsg Calling penalties backend with $penaltyId and $enrolmentKey")
+    httpClient.GET[MultiplePenaltiesResponse](appConfig.multiplePenaltyDataUrl(penaltyId,enrolmentKey))(MultiplePenaltiesResponseReads, hc, ec)
   }
 
   def getListOfReasonableExcuses()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {

@@ -18,7 +18,9 @@ package connectors
 
 import base.SpecBase
 import config.AppConfig
-import models.appeals.{AppealSubmission, CrimeAppealInformation}
+import connectors.httpParsers.MultiplePenaltiesHttpParser.MultiplePenaltiesResponse
+import connectors.httpParsers.{NoContent, UnexpectedFailure}
+import models.appeals.{AppealSubmission, CrimeAppealInformation, MultiplePenaltiesData}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -26,8 +28,8 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
-import java.time.LocalDateTime
 
+import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltiesConnectorSpec extends SpecBase {
@@ -111,6 +113,13 @@ class PenaltiesConnectorSpec extends SpecBase {
       | "secondPenaltyAmount": "101.02"
       |}
       |""".stripMargin
+  )
+
+  val multiplePenaltiesModel: MultiplePenaltiesData = MultiplePenaltiesData(
+    firstPenaltyChargeReference = "123456789",
+    firstPenaltyAmount = 101.01,
+    secondPenaltyChargeReference = "123456790",
+    secondPenaltyAmount = 101.02
   )
 
   class Setup {
@@ -211,45 +220,45 @@ class PenaltiesConnectorSpec extends SpecBase {
   }
 
   "getMultiplePenaltiesForPrincipleCharge" should {
-    s"return $Some $JsValue when the connector call succeeds" in new Setup {
-      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(Status.OK, multiplePenaltiesJson.toString())))
+    s"return Right with the correct model when the connector call succeeds" in new Setup {
+      when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Right(multiplePenaltiesModel)))
       when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
         .thenReturn("http://url/url")
 
-      val result: Option[JsValue] = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
-      result.isDefined shouldBe true
-      result.get shouldBe multiplePenaltiesJson
+      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      result.isRight shouldBe true
+      result shouldBe Right(multiplePenaltiesModel)
     }
 
     s"return $None when $NO_CONTENT is returned from the call" in new Setup {
-      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(Status.NO_CONTENT, "")))
+      when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Left(NoContent)))
       when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
         .thenReturn("http://url/url")
 
-      val result: Option[JsValue] = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
-      result.isDefined shouldBe false
+      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      result.isRight shouldBe false
     }
 
     s"return $None when $NOT_FOUND is returned from the call" in new Setup {
-      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
+      when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Left(UnexpectedFailure(Status.NOT_FOUND, ""))))
       when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
         .thenReturn("http://url/url")
 
-      val result: Option[JsValue] = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
-      result.isDefined shouldBe false
+      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      result.isRight shouldBe false
     }
 
     s"return $None when $INTERNAL_SERVER_ERROR is returned from the call" in new Setup {
-      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
+      when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, ""))))
       when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
         .thenReturn("http://url/url")
 
-      val result: Option[JsValue] = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
-      result.isDefined shouldBe false
+      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      result.isRight shouldBe false
     }
   }
 

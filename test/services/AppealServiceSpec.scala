@@ -19,6 +19,7 @@ package services
 import base.SpecBase
 import config.AppConfig
 import connectors.PenaltiesConnector
+import connectors.httpParsers.{InvalidJson, UnexpectedFailure}
 import models.appeals.MultiplePenaltiesData
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{AppealData, ReasonableExcuse, UserRequest}
@@ -101,15 +102,12 @@ class AppealServiceSpec extends SpecBase {
       |}
       |""".stripMargin)
 
-  val multiplePenaltiesData: JsValue = Json.parse(
-    """
-      |{
-      | "firstPenaltyChargeReference": "123456789",
-      | "firstPenaltyAmount": 101.01,
-      | "secondPenaltyChargeReference": "123456790",
-      | "secondPenaltyAmount": 101.02
-      |}
-      |""".stripMargin)
+  val multiplePenaltiesModel: MultiplePenaltiesData = MultiplePenaltiesData(
+    firstPenaltyChargeReference = "123456789",
+    firstPenaltyAmount = 101.01,
+    secondPenaltyChargeReference = "123456790",
+    secondPenaltyAmount = 101.02
+  )
 
   class Setup {
     reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService, mockUploadJourneyRepository)
@@ -172,18 +170,18 @@ class AppealServiceSpec extends SpecBase {
   }
 
   "validateMultiplePenaltyDataForEnrolmentKey" should {
-    "return None when the connector returns None" in new Setup {
+    "return None when the connector returns a left with an UnexpectedFailure" in new Setup {
       when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
-        .thenReturn(Future.successful(None))
+        .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned"))))
 
       val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
         new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
-    "return None when the connector returns returns Json that cannot be parsed to a model" in new Setup {
+    "return None when the connector returns returns InvalidJson that cannot be parsed to a model" in new Setup {
       when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Some(Json.obj("foo" -> "bar"))))
+        .thenReturn(Future.successful(Left(InvalidJson)))
 
       val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
         new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
@@ -192,7 +190,7 @@ class AppealServiceSpec extends SpecBase {
 
     "return Some when the connector returns Json that can be parsed to a model" in new Setup {
       when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Some(multiplePenaltiesData)))
+        .thenReturn(Future.successful(Right(multiplePenaltiesModel)))
 
       val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
         new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)

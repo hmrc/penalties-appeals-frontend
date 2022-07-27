@@ -16,13 +16,10 @@
 
 package services
 
-import java.time.LocalDate
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
-
-import javax.inject.Inject
 import models.appeals.{AppealSubmission, MultiplePenaltiesData}
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
@@ -37,6 +34,8 @@ import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
 import utils.{EnrolmentKeys, SessionKeys, UUIDGenerator}
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
@@ -47,7 +46,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
   def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
-                                         (implicit user: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+                                      (implicit user: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
       _.fold[Option[AppealData]](
         None
@@ -67,23 +66,22 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   def validateMultiplePenaltyDataForEnrolmentKey(penaltyId: String)
-                                    (implicit user: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
+                                                (implicit user: UserRequest[_],
+                                                 hc: HeaderCarrier,
+                                                 ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
     val enrolmentKey = EnrolmentKeys.constructMTDVATEnrolmentKey(user.vrn)
-    penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, enrolmentKey).map(
-      _.fold[Option[MultiplePenaltiesData]](None)(
-        jsValue => {
-          val parsedMultiplePenaltiesDetailsModel = Json.fromJson(jsValue)(MultiplePenaltiesData.format)
-          parsedMultiplePenaltiesDetailsModel.fold(
-            failure => {
-              logger.warn(s"[AppealService][validateMultiplePenaltyDataForEnrolmentKey] - Failed to parse multiple penalties model" +
-                s" with error(s): $failure")
-              None
-            },
-            parsedModel => Some(parsedModel)
-          )
-        }
-      )
-    )
+    for {
+      multiplePenaltiesResponse <- penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, enrolmentKey)
+    } yield {
+      multiplePenaltiesResponse match {
+        case Right(model) =>
+          logger.info(s"[AppealService][validateMultiplePenaltyDataForEnrolmentKey] - Received Right with parsed model")
+          Some(model)
+        case Left(e) =>
+          logger.error(s"[AppealService][validateMultiplePenaltyDataForEnrolmentKey] - received Left with error $e")
+          None
+      }
+    }
   }
 
   def getReasonableExcuseListAndParse()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[ReasonableExcuse]]] = {

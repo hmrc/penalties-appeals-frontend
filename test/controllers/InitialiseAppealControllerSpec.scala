@@ -160,7 +160,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend for multiple penalties and handle a success response and do not call multiple penalty endpoint when appeal is LSP" in new Setup(AuthTestModels.successfulAuthResult) {
       reset(mockAppealsService)
       val appealDataToReturn: AppealData = AppealData(
-        `type` = PenaltyTypeEnum.Additional,
+        `type` = PenaltyTypeEnum.Late_Submission,
         startDate = LocalDate.of(
           2020, 1, 1),
         endDate = LocalDate.of(

@@ -16,29 +16,33 @@
 
 package connectors.httpParsers
 
-import models.upload.UpscanInitiateResponseModel
-import play.api.http.Status.{BAD_REQUEST, OK}
+import models.appeals.MultiplePenaltiesData
+import play.api.http.Status.{OK, NO_CONTENT}
 import play.api.libs.json.JsSuccess
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.Logger.logger
 
-object UpscanInitiateHttpParser {
-  type UpscanInitiateResponse = Either[ErrorResponse, UpscanInitiateResponseModel]
 
-  implicit object UpscanInitiateResponseReads extends HttpReads[UpscanInitiateResponse] {
+object MultiplePenaltiesHttpParser {
+  type MultiplePenaltiesResponse = Either[ErrorResponse, MultiplePenaltiesData]
 
-    def read(method: String, url: String, response: HttpResponse): UpscanInitiateResponse = {
+
+  implicit object MultiplePenaltiesResponseReads extends HttpReads[MultiplePenaltiesResponse] {
+    val startOfLogging = "[MultiplePenaltiesHttpParser][MultiplePenaltiesResponseReads] -"
+
+    def read(method: String, url: String, response: HttpResponse): MultiplePenaltiesResponse = {
       response.status match {
         case OK =>
-          response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.formats) match {
+          logger.info(s"$startOfLogging Received $OK Response from penalties backend")
+          response.json.validate[MultiplePenaltiesData](MultiplePenaltiesData.format) match {
             case JsSuccess(model, _) => Right(model)
             case _ => Left(InvalidJson)
           }
-        case BAD_REQUEST =>
-          logger.debug(s"[UpScanInitiateResponseReads][read]: Bad request returned with reason: ${response.body}")
-          Left(BadRequest)
+        case NO_CONTENT =>
+          logger.debug(s"$startOfLogging $NO_CONTENT returned from penalties backend")
+          Left(NoContent)
         case status =>
-          logger.warn(s"[UpScanInitiateResponseReads][read]: Unexpected response, status $status returned")
+          logger.warn(s"$startOfLogging Unexpected response, status $status returned")
           Left(UnexpectedFailure(status, s"Unexpected response, status $status returned"))
       }
     }
