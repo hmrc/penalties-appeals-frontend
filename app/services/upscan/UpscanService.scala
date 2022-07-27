@@ -20,7 +20,7 @@ import akka.actor.ActorSystem
 import akka.pattern.after
 import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
-import connectors.httpParsers.UpscanInitiateHttpParser
+import connectors.httpParsers.ErrorResponse
 import models.Mode
 import models.upload._
 import play.api.mvc.Results.Redirect
@@ -49,7 +49,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
   }
 
   def initiateSynchronousCallToUpscan(journeyId: String, isAddingAnotherDocument: Boolean, mode: Mode)(implicit ec: ExecutionContext,
-                                                         hc: HeaderCarrier): Future[Either[UpscanInitiateHttpParser.ErrorResponse, UpscanInitiateResponseModel]] = {
+                                                         hc: HeaderCarrier): Future[Either[ErrorResponse, UpscanInitiateResponseModel]] = {
     val initiateRequestModel = upscanInitiateModelForSynchronousUpload(journeyId, isAddingAnotherDocument, mode)
     upscanConnector.initiateToUpscan(initiateRequestModel).flatMap {
       _.fold(

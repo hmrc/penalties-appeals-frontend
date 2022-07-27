@@ -30,6 +30,7 @@ import scala.collection.JavaConverters
 object PenaltiesStub {
   private val appealUriForLSP = "/penalties/appeals-data/late-submissions"
   private val appealUriForLPP = "/penalties/appeals-data/late-payments"
+  private val appealUriForMultiplePenaltyData = "/penalties/appeals-data/multiple-penalties"
   private val fetchReasonableExcuseUri = "/penalties/appeals-data/reasonable-excuses"
   private val submitAppealUri = "/penalties/appeals/submit-appeal"
   private val submitAppealQueryParams = (isLPP: Boolean, penaltyNumber: String) => Map[String, StringValuePattern](
@@ -38,13 +39,14 @@ object PenaltiesStub {
   ("penaltyNumber" -> equalTo(penaltyNumber)),
   ("correlationId" -> matching(".*"))
 )
+  private val multiplePenaltiesUri = (penaltyId: String, enrolmentKey: String) =>
+    s"/penalties/appeals-data/multiple-penalties?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
 
   def successfulGetAppealDataResponse(
                                        penaltyId: String,
                                        enrolmentKey: String,
                                        isLPP: Boolean = false,
-                                       isAdditional: Boolean = false,
-                                       useNewApiModel: Boolean = true
+                                       isAdditional: Boolean = false
                                      ): StubMapping = {
     val typeOfPenalty =
       if (isAdditional) PenaltyTypeEnum.Additional
@@ -68,6 +70,30 @@ object PenaltiesStub {
                 "dueDate" -> LocalDate.of(2020, 2, 7).toString,
                 "dateCommunicationSent" -> LocalDate.of(2020, 2, 8).toString
               ).toString()
+          )
+      )
+    )
+  }
+
+  def successfulGetMultiplePenaltyDetailsResponse(
+                                       penaltyId: String,
+                                       enrolmentKey: String
+                                     ): StubMapping = {
+    stubFor(
+      get(
+        urlEqualTo(
+          s"$appealUriForMultiplePenaltyData?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+        )
+      ).willReturn(
+        aResponse()
+          .withStatus(Status.OK)
+          .withBody(
+            Json.obj(
+              "firstPenaltyChargeReference" -> "123456789",
+              "firstPenaltyAmount" -> "100.10",
+              "secondPenaltyChargeReference" -> "123456790",
+              "secondPenaltyAmount" -> "302.10"
+            ).toString()
           )
       )
     )
@@ -110,6 +136,34 @@ object PenaltiesStub {
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
+        )
+    )
+  }
+
+  def successfulGetMultiplePenalties(penaltyId: String, enrolmentKey: String): StubMapping = {
+    stubFor(
+      get(urlEqualTo(multiplePenaltiesUri(penaltyId, enrolmentKey)))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withBody(
+              Json.obj(
+                "firstPenaltyChargeReference" -> "123456789",
+                "firstPenaltyAmount" -> "101.01",
+                "secondPenaltyChargeReference" -> "123456790",
+                "secondPenaltyAmount" -> "101.02"
+              ).toString()
+            )
+        )
+    )
+  }
+
+  def failedGetMultiplePenalties(penaltyId: String, enrolmentKey: String, status: Int = Status.INTERNAL_SERVER_ERROR): StubMapping = {
+    stubFor(
+      get(urlEqualTo(multiplePenaltiesUri(penaltyId, enrolmentKey)))
+        .willReturn(
+          aResponse()
+          .withStatus(status)
         )
     )
   }

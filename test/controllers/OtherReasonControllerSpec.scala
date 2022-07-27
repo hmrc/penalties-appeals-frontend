@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import connectors.httpParsers.UpscanInitiateHttpParser.UnexpectedFailure
+import connectors.httpParsers.UnexpectedFailure
 import models.upload._
 import models.{CheckMode, NormalMode, UserRequest}
 import org.jsoup.Jsoup

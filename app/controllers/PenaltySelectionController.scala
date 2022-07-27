@@ -20,7 +20,7 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.PenaltySelectionForm
 import helpers.FormProviderHelper
-import models.Mode
+import models.{Mode, PenaltyTypeEnum}
 import models.pages._
 import navigation.Navigation
 import play.api.i18n.I18nSupport
@@ -50,8 +50,9 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
         SessionKeys.doYouWantToAppealBothPenalties
       )
       val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
-      //TODO: firstPenaltyText and secondPenaltyText should be populated
-      Ok(penaltySelectionPage(formProvider, radioOptions, "penalty 1", "penalty 2", pageMode(PenaltySelectionPage, mode)))
+      val firstPenalty = userRequest.session.get(SessionKeys.firstPenaltyAmount).get
+      val secondPenalty = userRequest.session.get(SessionKeys.secondPenaltyAmount).get
+      Ok(penaltySelectionPage(formProvider, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode)))
     }
   }
 
@@ -60,11 +61,13 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
       PenaltySelectionForm.doYouWantToAppealBothPenalties.bindFromRequest.fold(
         errors => {
           val radioOptions = RadioOptionHelper.yesNoRadioOptions(errors)
-          //TODO: firstPenaltyText and secondPenaltyText should be populated
-          BadRequest(penaltySelectionPage(errors, radioOptions, "penalty 1", "penalty 2", pageMode(PenaltySelectionPage, mode)))
+          val firstPenalty = userRequest.session.get(SessionKeys.firstPenaltyAmount).get
+          val secondPenalty = userRequest.session.get(SessionKeys.secondPenaltyAmount).get
+          BadRequest(penaltySelectionPage(errors, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode)))
         },
         answer => {
-          Redirect("").addingToSession(SessionKeys.doYouWantToAppealBothPenalties -> answer)
+          Redirect(navigation.nextPage(PenaltySelectionPage, mode, Some(answer)))
+            .addingToSession(SessionKeys.doYouWantToAppealBothPenalties -> answer)
         }
       )
     }
@@ -73,8 +76,15 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
   def onPageLoadForSinglePenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit userRequest => {
       val nextPageUrl: String = navigation.nextPage(AppealSinglePenaltyPage, mode).url
-      //TODO: penaltyInformation should be populated
-      Ok(appealSinglePenaltyPage(pageMode(AppealSinglePenaltyPage, mode), nextPageUrl, "’penalty information here’"))
+      val originalAppealPenalty = userRequest.session.get(SessionKeys.appealType).get
+      val isLPP2 = originalAppealPenalty.equals(PenaltyTypeEnum.Additional.toString)
+      val penaltyAmount = {
+        if (isLPP2)
+          userRequest.session.get(SessionKeys.secondPenaltyAmount).get
+        else
+          userRequest.session.get(SessionKeys.firstPenaltyAmount).get
+      }
+      Ok(appealSinglePenaltyPage(pageMode(AppealSinglePenaltyPage, mode), nextPageUrl, penaltyAmount, isLPP2))
     }
   }
 

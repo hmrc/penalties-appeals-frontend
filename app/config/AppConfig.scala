@@ -50,6 +50,9 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
   def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String): String =
     penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl") + s"?enrolmentKey=$enrolmentKey&isLPP=$isLPP&penaltyNumber=$penaltyNumber&correlationId=$correlationId"
 
+  def multiplePenaltyDataUrl(penaltyId: String, enrolmentKey: String): String =
+    s"$penaltiesServiceBaseUrl/penalties/appeals-data/multiple-penalties?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+
   lazy val reasonableExcuseFetchUrl: String = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.fetchUrl")
 
   lazy val signInContinueBaseUrl: String = config.get[String]("signIn.continueBaseUrl")

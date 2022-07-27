@@ -55,6 +55,11 @@ object SessionKeys {
   val youCanAppealThisPenalty = "youCanAppealThisPenalty"
   val originatingChangePage = "originatingChangePage"
   val doYouWantToAppealBothPenalties = "doYouWantToAppealBothPenalties"
+  val firstPenaltyChargeReference = "firstPenaltyChargeReference"
+  val firstPenaltyAmount = "firstPenaltyAmount"
+  val secondPenaltyChargeReference = "secondPenaltyChargeReference"
+  val secondPenaltyAmount = "secondPenaltyAmount"
+
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -93,6 +98,10 @@ object SessionKeys {
     isUploadEvidence,
     youCanAppealThisPenalty,
     originatingChangePage,
-    doYouWantToAppealBothPenalties
+    doYouWantToAppealBothPenalties,
+    firstPenaltyChargeReference,
+    firstPenaltyAmount,
+    secondPenaltyChargeReference,
+    secondPenaltyAmount
   )
 }

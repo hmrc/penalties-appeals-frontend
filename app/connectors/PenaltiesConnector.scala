@@ -17,6 +17,7 @@
 package connectors
 
 import config.AppConfig
+import connectors.httpParsers.MultiplePenaltiesHttpParser.{MultiplePenaltiesResponse, MultiplePenaltiesResponseReads}
 import models.appeals.AppealSubmission
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
@@ -31,17 +32,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class PenaltiesConnector @Inject()(httpClient: HttpClient,
                                    appConfig: AppConfig) {
 
- def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean,isAdditional:Boolean): String = {
+  def getAppealUrlBasedOnPenaltyType(penaltyId: String, enrolmentKey: String, isLPP: Boolean, isAdditional: Boolean): String = {
     if (isLPP) {
-      appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey),isAdditional)
+      appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey), isAdditional)
     } else appConfig.appealLSPDataForPenaltyAndEnrolmentKey(penaltyId, EnrolmentKeys.constructMTDVATEnrolmentKey(enrolmentKey))
   }
 
-  def getAppealsDataForPenalty(penaltyId: String, enrolmentKey: String, isLPP: Boolean,isAdditional:Boolean)
+  def getAppealsDataForPenalty(penaltyId: String, enrolmentKey: String, isLPP: Boolean, isAdditional: Boolean)
                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getAppealsDataForPenalty] -"
     httpClient.GET[HttpResponse](
-      getAppealUrlBasedOnPenaltyType(penaltyId, enrolmentKey, isLPP,isAdditional)
+      getAppealUrlBasedOnPenaltyType(penaltyId, enrolmentKey, isLPP, isAdditional)
     ).map {
       response =>
         response.status match {
@@ -60,6 +61,13 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
         logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
         None
     }
+  }
+
+  def getMultiplePenaltiesForPrincipleCharge(penaltyId: String, enrolmentKey: String)
+                                                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MultiplePenaltiesResponse] = {
+    val startOfLogMsg: String = "[PenaltiesConnector][getMultiplePenaltiesForPrincipleCharge] -"
+    logger.debug(s"$startOfLogMsg Calling penalties backend with $penaltyId and $enrolmentKey")
+    httpClient.GET[MultiplePenaltiesResponse](appConfig.multiplePenaltyDataUrl(penaltyId,enrolmentKey))(MultiplePenaltiesResponseReads, hc, ec)
   }
 
   def getListOfReasonableExcuses()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {

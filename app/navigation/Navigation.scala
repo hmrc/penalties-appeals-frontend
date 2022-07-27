@@ -110,7 +110,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     FileListPage -> ((answer, request) => routeForUploadList(answer, request, CheckMode)),
     UploadEvidenceQuestionPage -> ((answer, request) => routeForUploadEvidenceQuestion(answer, request, CheckMode)),
     AppealSinglePenaltyPage -> ((_, _) => routes.CheckYourAnswersController.onPageLoad()),
-    AppealCoverBothPenaltiesPage -> ((_, _) => routes.CheckYourAnswersController.onPageLoad())
+    AppealCoverBothPenaltiesPage -> ((_, _) => routes.CheckYourAnswersController.onPageLoad()),
+    PenaltySelectionPage -> ((answer, _) => routingForPenaltySelectionPage(answer, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_]) => Call] = Map(
@@ -141,7 +142,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     UploadEvidenceQuestionPage -> ((answer, request) => routeForUploadEvidenceQuestion(answer, request, NormalMode)),
     YouCanAppealThisPenaltyPage -> ((answer, _) => routeForYouCanAppealPenalty(answer)),
     AppealSinglePenaltyPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
-    AppealCoverBothPenaltiesPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad())
+    AppealCoverBothPenaltiesPage -> ((_, _) => routes.ReasonableExcuseController.onPageLoad()),
+    PenaltySelectionPage -> ((answer, _) => routingForPenaltySelectionPage(answer, NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None)
@@ -181,6 +183,14 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       routes.YouCanAppealPenaltyController.onPageLoad()
     } else {
       routes.YouCannotAppealController.onPageLoad
+    }
+  }
+
+  def routingForPenaltySelectionPage(answer: Option[String], mode: Mode): Call = {
+    if(answer.get.toLowerCase == "yes") {
+      routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode)
+    } else {
+      routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode)
     }
   }
 

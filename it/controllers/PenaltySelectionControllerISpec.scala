@@ -17,7 +17,7 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, NormalMode, PenaltyTypeEnum}
 import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.mvc.AnyContent
@@ -37,11 +37,13 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/multiple-penalties-for-this-period").withSession(
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.appealType, PenaltyTypeEnum.Late_Payment.toString),
         (SessionKeys.startDateOfPeriod, "2020-01-01"),
         (SessionKeys.endDateOfPeriod, "2020-01-01"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07"),
         (SessionKeys.dateCommunicationSent, "2020-02-08"),
+        (SessionKeys.firstPenaltyAmount, "100.01"),
+        (SessionKeys.secondPenaltyAmount, "100.02"),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequestWithCorrectKeys))
@@ -79,10 +81,14 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/multiple-penalties-for-this-period").withSession(
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.appealType, PenaltyTypeEnum.Late_Payment.toString),
         (SessionKeys.startDateOfPeriod, "2020-01-01"),
         (SessionKeys.endDateOfPeriod, "2020-01-01"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.firstPenaltyAmount, "100.01"),
+        (SessionKeys.firstPenaltyChargeReference, "123456789"),
+        (SessionKeys.secondPenaltyAmount, "100.02"),
+        (SessionKeys.secondPenaltyChargeReference, "123456790"),
         (SessionKeys.dateCommunicationSent, LocalDate.now().minusDays(20).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody(
@@ -90,7 +96,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       )
       val request = await(controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe ""
+      request.header.headers("Location") shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.doYouWantToAppealBothPenalties).get shouldBe "no"
     }
 
@@ -98,10 +104,12 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/multiple-penalties-for-this-period").withSession(
         authToken -> "1234",
         (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
+        (SessionKeys.appealType, PenaltyTypeEnum.Late_Payment.toString),
         (SessionKeys.startDateOfPeriod, "2020-01-01"),
         (SessionKeys.endDateOfPeriod, "2020-01-01"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+        (SessionKeys.firstPenaltyAmount, "100.01"),
+        (SessionKeys.secondPenaltyAmount, "100.02"),
         (SessionKeys.dateCommunicationSent, LocalDate.now().minusDays(20).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody(
@@ -109,19 +117,21 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       )
       val request = await(controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe ""
+      request.header.headers("Location") shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode).url
       request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.doYouWantToAppealBothPenalties).get shouldBe "yes"
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the date submitted is in the future" in {
+      "the value is empty" in {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/multiple-penalties-for-this-period").withSession(
           authToken -> "1234",
           (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
+          (SessionKeys.appealType, PenaltyTypeEnum.Late_Payment.toString),
           (SessionKeys.startDateOfPeriod, "2020-01-01"),
           (SessionKeys.endDateOfPeriod, "2020-01-01"),
           (SessionKeys.dueDateOfPeriod, "2020-02-07"),
+          (SessionKeys.firstPenaltyAmount, "100.01"),
+          (SessionKeys.secondPenaltyAmount, "100.02"),
           (SessionKeys.dateCommunicationSent, "2020-02-08"),
           (SessionKeys.journeyId, "1234")
         ).withFormUrlEncodedBody(
@@ -169,6 +179,8 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
         (SessionKeys.endDateOfPeriod, "2020-01-01"),
         (SessionKeys.dueDateOfPeriod, "2020-02-07"),
         (SessionKeys.dateCommunicationSent, "2020-02-08"),
+        (SessionKeys.firstPenaltyAmount, "100.01"),
+        (SessionKeys.secondPenaltyAmount, "100.02"),
         (SessionKeys.journeyId, "1234")
       )
       val normalModeRequest = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestWithCorrectKeys)

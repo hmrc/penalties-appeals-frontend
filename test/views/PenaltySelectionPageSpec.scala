@@ -36,14 +36,14 @@ class PenaltySelectionPageSpec extends SpecBase with ViewBehaviours {
     val legend = ".govuk-fieldset__legend"
   }
 
-  implicit val document = asDocument(page(form, yesNoOptions, "penalty 1", "penalty 2", PageMode(PenaltySelectionPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly))
+  implicit val document = asDocument(page(form, yesNoOptions, "50.12", "526.10", PageMode(PenaltySelectionPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly))
 
   val expectedContent = Seq(
     Selectors.title -> title,
     Selectors.h1 -> heading,
     Selectors.pElementIndex(2) -> p1,
-    Selectors.listIndexWithElementIndex(3, 1) -> firstPenalty,
-    Selectors.listIndexWithElementIndex(3, 2) -> secondPenalty,
+    Selectors.listIndexWithElementIndex(3, 1) -> firstPenalty("50.12"),
+    Selectors.listIndexWithElementIndex(3, 2) -> secondPenalty("526.10"),
     Selectors.pElementIndex(4) -> p2,
     Selectors.legend -> formHeading,
     Selectors.labelForRadioButton(1) -> yesOption,
@@ -54,14 +54,14 @@ class PenaltySelectionPageSpec extends SpecBase with ViewBehaviours {
   behave like pageWithExpectedMessages(expectedContent)
 
   "when agent is on the page" must {
-    implicit val document = asDocument(page(form, yesNoOptions, "penalty 1", "penalty 2", PageMode(PenaltySelectionPage, NormalMode))(agentFakeRequestConverter(), implicitly, implicitly))
+    implicit val document = asDocument(page(form, yesNoOptions, "50.12", "526.10", PageMode(PenaltySelectionPage, NormalMode))(agentFakeRequestConverter(), implicitly, implicitly))
 
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> heading,
       Selectors.pElementIndex(2) -> p1,
-      Selectors.listIndexWithElementIndex(3, 1) -> firstPenalty,
-      Selectors.listIndexWithElementIndex(3, 2) -> secondPenalty,
+      Selectors.listIndexWithElementIndex(3, 1) -> firstPenalty("50.12"),
+      Selectors.listIndexWithElementIndex(3, 2) -> secondPenalty("526.10"),
       Selectors.pElementIndex(4) -> p2Agent,
       Selectors.legend -> formHeading,
       Selectors.labelForRadioButton(1) -> yesOption,

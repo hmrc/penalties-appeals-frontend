@@ -16,14 +16,11 @@
 
 package services
 
-import java.time.LocalDate
-
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
-import javax.inject.Inject
-import models.appeals.AppealSubmission
+import models.appeals.{AppealSubmission, MultiplePenaltiesData}
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
 import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
@@ -35,8 +32,10 @@ import services.monitoring.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
-import utils.{SessionKeys, UUIDGenerator}
+import utils.{EnrolmentKeys, SessionKeys, UUIDGenerator}
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
@@ -46,8 +45,8 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               idGenerator: UUIDGenerator,
                               uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
-  def validatePenaltyIdForEnrolmentKey[A](penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
-                                         (implicit user: UserRequest[A], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+  def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
+                                      (implicit user: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
       _.fold[Option[AppealData]](
         None
@@ -63,6 +62,25 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
           )
         }
       )
+    }
+  }
+
+  def validateMultiplePenaltyDataForEnrolmentKey(penaltyId: String)
+                                                (implicit user: UserRequest[_],
+                                                 hc: HeaderCarrier,
+                                                 ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
+    val enrolmentKey = EnrolmentKeys.constructMTDVATEnrolmentKey(user.vrn)
+    for {
+      multiplePenaltiesResponse <- penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, enrolmentKey)
+    } yield {
+      multiplePenaltiesResponse match {
+        case Right(model) =>
+          logger.info(s"[AppealService][validateMultiplePenaltyDataForEnrolmentKey] - Received Right with parsed model")
+          Some(model)
+        case Left(e) =>
+          logger.error(s"[AppealService][validateMultiplePenaltyDataForEnrolmentKey] - received Left with error $e")
+          None
+      }
     }
   }
 
@@ -96,7 +114,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
       readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
-      uploads = if(userHasUploadedFiles) readyOrDuplicateFileUploads else None
+      uploads = if (userHasUploadedFiles) readyOrDuplicateFileUploads else None
       modelFromRequest: AppealSubmission = AppealSubmission
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
       response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId)
@@ -130,18 +148,18 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
-      val dateTimeNow: LocalDate = dateTimeHelper.dateNow
-      val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-      dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
+    val dateTimeNow: LocalDate = dateTimeHelper.dateNow
+    val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+    dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
   }
 
   def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])
                                 (implicit userRequest: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
-    if(optFileUploads.isDefined) {
+    if (optFileUploads.isDefined) {
       val fileUploads = optFileUploads.get.filter(_.uploadDetails.isDefined)
       val checksumMapToUpload = fileUploads.groupBy(_.uploadDetails.get.checksum)
       val onlyDuplicateFileUploads = checksumMapToUpload.filter(_._2.size > 1).values.flatten.toSeq
-      if(onlyDuplicateFileUploads.nonEmpty) {
+      if (onlyDuplicateFileUploads.nonEmpty) {
         logger.debug("[AppealService][sendAuditIfDuplicatesExist] - Found duplicates in repository, sending duplicate appeal event")
         val duplicateUploadsInAuditFormat: JsValue = auditService.getAllDuplicateUploadsForAppealSubmission(onlyDuplicateFileUploads)
         auditService.audit(DuplicateFilesAuditModel(duplicateUploadsInAuditFormat))

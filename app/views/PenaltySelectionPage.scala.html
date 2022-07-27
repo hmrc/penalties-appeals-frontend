@@ -26,7 +26,7 @@
         pageHeader: components.pageHeader
 )
 
-@(form: Form[_], radioOptions: Seq[RadioItem], firstPenaltyText: String, secondPenaltyText: String, pageMode: PageMode)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem], firstPenaltyAmount: String, secondPenaltyAmount: String, pageMode: PageMode)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
   pageTitle = messages("penaltySelection.headingAndTitle"),
@@ -40,10 +40,11 @@
   <p class="govuk-body">@messages("penaltySelection.p1")</p>
   @bullets(
     Seq(
-      Html(firstPenaltyText),
-      Html(secondPenaltyText)
+      Html(messages("penaltySelection.lpp1", firstPenaltyAmount)),
+      Html(messages("penaltySelection.lpp2", secondPenaltyAmount))
     )
   )
+
   <p class="govuk-body">@getMessage("penaltySelection.p2")</p>
   @formHelper(action = controllers.routes.PenaltySelectionController.onSubmitForPenaltySelection(pageMode.mode)) {
     @radios(

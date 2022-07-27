@@ -293,7 +293,6 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
-
       s"called with $WhenDidHealthIssueHappenPage" in new Setup {
         val result: Call = mainNavigator.nextPage(WhenDidHealthIssueHappenPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
@@ -435,6 +434,7 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
+
       s"called with $ReasonableExcuseSelectionPage when the appeal > 30 days late" in new Setup {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
         val result: Call = mainNavigator.nextPage(ReasonableExcuseSelectionPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
@@ -460,26 +460,31 @@ class NavigationSpec extends SpecBase {
         )
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
       }
+
       s"called with $UploadAnotherDocumentPage redirects to File Upload List Page" in new Setup {
         val result: Call = mainNavigator.nextPage(UploadAnotherDocumentPage, CheckMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
       }
+
       s"called with $FileListPage redirects to $UploadAnotherDocumentPage when the user selects yes" in new Setup {
         val result: Call = mainNavigator.nextPage(FileListPage, CheckMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(CheckMode).url
       }
+
       s"called with $FileListPage redirects to CYA page when the user selects no" in new Setup {
         val result: Call = mainNavigator.nextPage(FileListPage, CheckMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+
       s"called with $FileListPage redirects CYA page - when the user has 5 documents uploaded " in new Setup {
         val result: Call = mainNavigator.nextPage(FileListPage, CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
         ))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+
       s"called with $UploadEvidenceQuestionPage" in new Setup {
         val result: Call = mainNavigator.nextPage(UploadEvidenceQuestionPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other"))
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url
@@ -493,6 +498,16 @@ class NavigationSpec extends SpecBase {
       s"called with $AppealCoverBothPenaltiesPage" in new Setup {
         val result: Call = mainNavigator.nextPage(AppealCoverBothPenaltiesPage, CheckMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $PenaltySelectionPage - redirects to single appeal page when user selects yes" in new Setup {
+        val result: Call = mainNavigator.nextPage(PenaltySelectionPage, CheckMode, Some("yes"))(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        result.url shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(CheckMode).url
+      }
+
+      s"called with $PenaltySelectionPage - redirects to single appeal page when user selects no" in new Setup {
+        val result: Call = mainNavigator.nextPage(PenaltySelectionPage, CheckMode, Some("no"))(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        result.url shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(CheckMode).url
       }
     }
 
@@ -701,38 +716,45 @@ class NavigationSpec extends SpecBase {
           )))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+
       s"called with $UploadFirstDocumentPage redirects to File Upload List Page" in new Setup {
         val result: Call = mainNavigator.nextPage(UploadFirstDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
       }
+
       s"called with $UploadAnotherDocumentPage redirects to File Upload List Page" in new Setup {
         val result: Call = mainNavigator.nextPage(UploadAnotherDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
       }
+
       s"called with $FileListPage redirects to $UploadAnotherDocumentPage when the user selects yes" in new Setup {
         val result: Call = mainNavigator.nextPage(FileListPage, NormalMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
       }
+
       s"called with $FileListPage redirect making a late appeal page - when the user has 5 documents uploaded and appeal > 30 days late and user answers no" in new Setup {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
         val result: Call = mainNavigator.nextPage(FileListPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
+
       s"called with $FileListPage redirects CYA page - when the user has 5 documents uploaded and user answers no" in new Setup {
         val result: Call = mainNavigator.nextPage(FileListPage, NormalMode, Some("no"))(fakeRequestConverter(fakeRequestWithCorrectKeys
         ))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
+
       s"called with $FileListPage redirect making a late appeal page - when the user has 5 documents uploaded and appeal > 30 days late" in new Setup {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
         val result: Call = mainNavigator.nextPage(FileListPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
+
       s"called with $FileListPage redirects CYA page - when the user has 5 documents uploaded " in new Setup {
         val result: Call = mainNavigator.nextPage(FileListPage, NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
         ))
@@ -774,9 +796,20 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.nextPage(AppealSinglePenaltyPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
         result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
       }
+
       s"called with $AppealCoverBothPenaltiesPage" in new Setup {
         val result: Call = mainNavigator.nextPage(AppealCoverBothPenaltiesPage, NormalMode, None)(fakeRequestConverter(fakeRequestWithCorrectKeys))
         result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      }
+
+      s"called with $PenaltySelectionPage - redirects to single appeal page when user selects yes" in new Setup {
+        val result: Call = mainNavigator.nextPage(PenaltySelectionPage, NormalMode, Some("yes"))(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        result.url shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode).url
+      }
+
+      s"called with $PenaltySelectionPage - redirects to single appeal page when user selects no" in new Setup {
+        val result: Call = mainNavigator.nextPage(PenaltySelectionPage, NormalMode, Some("no"))(fakeRequestConverter(fakeRequestWithCorrectKeys))
+        result.url shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode).url
       }
     }
   }
@@ -974,6 +1007,22 @@ class NavigationSpec extends SpecBase {
           )
           result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         }
+      }
+    }
+  }
+
+  "routingForPenaltySelectionPage" should {
+    "redirect to the single appeal page" when {
+      "user selects no" in new Setup{
+        val result: Call = mainNavigator.routingForPenaltySelectionPage(Some("no"), NormalMode)
+        result shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode)
+      }
+    }
+
+    "redirect to the multiple appeal page" when {
+      "the user selects yes" in {
+        val result: Call = mainNavigator.routingForPenaltySelectionPage(Some("yes"), NormalMode)
+        result shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode)
       }
     }
   }
