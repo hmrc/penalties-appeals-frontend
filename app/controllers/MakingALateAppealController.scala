@@ -19,18 +19,20 @@ package controllers
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction}
 import forms.MakingALateAppealForm
-import helpers.FormProviderHelper
-import models.{Mode, NormalMode}
+import helpers.{DateTimeHelper, FormProviderHelper}
+import models.{Mode, NormalMode, UserRequest}
 import models.pages.{MakingALateAppealPage, PageMode}
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
 import views.html.MakingALateAppealPage
 
+import java.time.LocalDate
 import javax.inject.Inject
 
-class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAppealPage)
+class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAppealPage,
+                                            dateTimeHelper: DateTimeHelper)
                                            (implicit mcc: MessagesControllerComponents,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
@@ -42,14 +44,30 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
     implicit request => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         MakingALateAppealForm.makingALateAppealForm(), SessionKeys.lateAppealReason)
-      Ok(makingALateAppealPage(formProvider, pageMode(NormalMode)))
+      Ok(makingALateAppealPage(formProvider, getHeadingAndTitle, pageMode(NormalMode)))
+    }
+  }
+
+  def getHeadingAndTitle()(implicit userRequest: UserRequest[_], messages: Messages): String = {
+    userRequest.session.get(SessionKeys.doYouWantToAppealBothPenalties) match {
+      case Some("yes") => {
+        val dateOfFirstComms = LocalDate.parse(userRequest.session.get(SessionKeys.firstPenaltyCommunicationDate).get)
+        val dateOfSecondComms = LocalDate.parse(userRequest.session.get(SessionKeys.secondPenaltyCommunicationDate).get)
+        if(dateOfFirstComms.isBefore(dateTimeHelper.dateNow.minusDays(appConfig.daysRequiredForLateAppeal)) &&
+        dateOfSecondComms.isBefore(dateTimeHelper.dateNow.minusDays(appConfig.daysRequiredForLateAppeal))) {
+          messages("makingALateAppeal.headingAndTitle.multi")
+        } else {
+          messages("makingALateAppeal.headingAndTitle.first")
+        }
+      }
+      case Some("no") | None => messages("makingALateAppeal.headingAndTitle")
     }
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) {
     implicit request => {
       MakingALateAppealForm.makingALateAppealForm().bindFromRequest().fold(
-        formWithErrors => BadRequest(makingALateAppealPage(formWithErrors, pageMode(NormalMode))),
+        formWithErrors => BadRequest(makingALateAppealPage(formWithErrors, getHeadingAndTitle, pageMode(NormalMode))),
         lateAppealReason => {
           Redirect(routes.CheckYourAnswersController.onPageLoad())
             .addingToSession(SessionKeys.lateAppealReason -> lateAppealReason)

@@ -53,7 +53,9 @@ class InitialiseAppealControllerSpec extends SpecBase {
     firstPenaltyChargeReference = "123456789",
     firstPenaltyAmount = 101.01,
     secondPenaltyChargeReference = "123456790",
-    secondPenaltyAmount = 101.02
+    secondPenaltyAmount = 101.02,
+    firstPenaltyCommunicationDate = LocalDate.of(2022, 1, 1),
+    secondPenaltyCommunicationDate = LocalDate.of(2022, 1, 2)
   )
 
   "onPageLoad" should {

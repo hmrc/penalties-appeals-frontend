@@ -44,6 +44,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
         (SessionKeys.dateCommunicationSent, "2020-02-08"),
         (SessionKeys.firstPenaltyAmount, "100.01"),
         (SessionKeys.secondPenaltyAmount, "100.02"),
+        (SessionKeys.firstPenaltyCommunicationDate, LocalDate.now().minusDays(30).toString),
         (SessionKeys.journeyId, "1234")
       )
       val request = await(controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequestWithCorrectKeys))
@@ -89,6 +90,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
         (SessionKeys.firstPenaltyChargeReference, "123456789"),
         (SessionKeys.secondPenaltyAmount, "100.02"),
         (SessionKeys.secondPenaltyChargeReference, "123456790"),
+        (SessionKeys.firstPenaltyCommunicationDate, LocalDate.now().minusDays(30).toString),
         (SessionKeys.dateCommunicationSent, LocalDate.now().minusDays(20).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody(
@@ -110,6 +112,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
         (SessionKeys.dueDateOfPeriod, "2020-02-07"),
         (SessionKeys.firstPenaltyAmount, "100.01"),
         (SessionKeys.secondPenaltyAmount, "100.02"),
+        (SessionKeys.firstPenaltyCommunicationDate, LocalDate.now().minusDays(30).toString),
         (SessionKeys.dateCommunicationSent, LocalDate.now().minusDays(20).toString),
         (SessionKeys.journeyId, "1234")
       ).withFormUrlEncodedBody(

@@ -24,19 +24,9 @@
         characterCount: components.characterCount,
         formHelper: FormWithCSRF)
 
-@(form: Form[_], pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], headingAndTitle: String, pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@areThereMultiplePenaltiesContent = @{
-    if(!request.session.get(SessionKeys.doYouWantToAppealBothPenalties).isDefined) {
-        messages("makingALateAppeal.headingAndTitle")
-    } else if (request.session.get(SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
-        messages("makingALateAppeal.headingAndTitle.multi")
-    } else {
-        messages("makingALateAppeal.headingAndTitle.first")
-    }
-}
-
-@layout(pageTitle = areThereMultiplePenaltiesContent,
+@layout(pageTitle = headingAndTitle,
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
@@ -45,7 +35,7 @@
     @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
         @characterCount(
             form("late-appeal-text"),
-            label = areThereMultiplePenaltiesContent,
+            label = headingAndTitle,
             hint = Some(HtmlContent(messages("makingALateAppeal.p1"))),
             maxLength = Some(5000)
         )

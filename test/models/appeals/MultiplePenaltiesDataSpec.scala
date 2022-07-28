@@ -19,6 +19,7 @@ package models.appeals
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
+import java.time.LocalDate
 
 class MultiplePenaltiesDataSpec extends AnyWordSpec with Matchers {
 
@@ -30,7 +31,9 @@ class MultiplePenaltiesDataSpec extends AnyWordSpec with Matchers {
           | "firstPenaltyChargeReference": "123456789",
           | "firstPenaltyAmount": 101.01,
           | "secondPenaltyChargeReference": "123456790",
-          | "secondPenaltyAmount": 101.02
+          | "secondPenaltyAmount": 101.02,
+          | "firstPenaltyCommunicationDate" : "2022-01-01",
+          | "secondPenaltyCommunicationDate" : "2022-01-02"
           |}
           |""".stripMargin
       )
@@ -39,7 +42,9 @@ class MultiplePenaltiesDataSpec extends AnyWordSpec with Matchers {
         firstPenaltyChargeReference = "123456789",
         firstPenaltyAmount = 101.01,
         secondPenaltyChargeReference = "123456790",
-        secondPenaltyAmount = 101.02
+        secondPenaltyAmount = 101.02,
+        firstPenaltyCommunicationDate = LocalDate.parse("2022-01-01"),
+        secondPenaltyCommunicationDate = LocalDate.parse("2022-01-02")
       )
       val result = Json.fromJson(multiplePenaltiesJson)(MultiplePenaltiesData.format)
       result.isSuccess shouldBe true

@@ -28,6 +28,7 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import java.time.LocalDate
 
 import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
@@ -110,7 +111,9 @@ class PenaltiesConnectorSpec extends SpecBase {
       | "firstPenaltyChargeReference": "123456789",
       | "firstPenaltyAmount": "101.01",
       | "secondPenaltyChargeReference": "123456790",
-      | "secondPenaltyAmount": "101.02"
+      | "secondPenaltyAmount": "101.02",
+      | "firstPenaltyCommunicationDate" : "2022-01-01",
+      | "firstPenaltyCommunicationDate" : "2022-01-02"
       |}
       |""".stripMargin
   )
@@ -119,7 +122,9 @@ class PenaltiesConnectorSpec extends SpecBase {
     firstPenaltyChargeReference = "123456789",
     firstPenaltyAmount = 101.01,
     secondPenaltyChargeReference = "123456790",
-    secondPenaltyAmount = 101.02
+    secondPenaltyAmount = 101.02,
+    firstPenaltyCommunicationDate = LocalDate.of(2022, 1, 1),
+    secondPenaltyCommunicationDate = LocalDate.of(2022, 1, 2)
   )
 
   class Setup {

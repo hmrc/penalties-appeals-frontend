@@ -59,6 +59,8 @@ object SessionKeys {
   val firstPenaltyAmount = "firstPenaltyAmount"
   val secondPenaltyChargeReference = "secondPenaltyChargeReference"
   val secondPenaltyAmount = "secondPenaltyAmount"
+  val firstPenaltyCommunicationDate = "firstPenaltyCommunicationDate"
+  val secondPenaltyCommunicationDate = "secondPenaltyCommunicationDate"
 
 
   val allKeys: Seq[String] = Seq(
@@ -102,6 +104,8 @@ object SessionKeys {
     firstPenaltyChargeReference,
     firstPenaltyAmount,
     secondPenaltyChargeReference,
-    secondPenaltyAmount
+    secondPenaltyAmount,
+    firstPenaltyCommunicationDate,
+    secondPenaltyCommunicationDate
   )
 }
