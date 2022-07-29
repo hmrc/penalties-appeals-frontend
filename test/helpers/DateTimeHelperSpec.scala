@@ -21,13 +21,22 @@ import config.AppConfig
 import org.mockito.Mockito.mock
 import config.featureSwitches.FeatureSwitching
 
+import java.time.LocalDateTime
+
 class DateTimeHelperSpec extends SpecBase with FeatureSwitching {
   val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val dateTimeHelper: DateTimeHelper = injector.instanceOf[DateTimeHelper]
 
-  "DateTimeHelper" should {
+  "dateNow" should {
     "return getFeatureDate" in {
       dateTimeHelper.dateNow shouldBe getFeatureDate
+    }
+  }
+
+  "dateTimeNow" should {
+    lazy val dateTimeNow: LocalDateTime = LocalDateTime.now()
+    "return the current date time of now" in {
+      dateTimeHelper.dateTimeNow shouldBe dateTimeNow
     }
   }
 }
