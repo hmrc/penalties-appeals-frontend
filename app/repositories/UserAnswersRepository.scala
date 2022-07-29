@@ -16,73 +16,86 @@
 
 package repositories
 
-import config.AppConfig
 import models.session.UserAnswers
-import uk.gov.hmrc.mongo.cache.{CacheIdType, DataKey, MongoCacheRepository}
-import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
+import org.mongodb.scala.model.Filters._
+import org.mongodb.scala.model.Indexes.ascending
+import org.mongodb.scala.model.{IndexModel, IndexOptions, UpdateOptions, Updates}
+import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 import utils.Logger.logger
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class UserAnswersRepository @Inject()(
-                                       mongoComponent: MongoComponent,
-                                       timestampSupport: TimestampSupport,
-                                       appConfig: AppConfig
-                                     )(implicit ec: ExecutionContext)
-  extends MongoCacheRepository[String] (
-    mongoComponent = mongoComponent,
-    collectionName = "user-answers",
-    replaceIndexes = true,
-    ttl = appConfig.mongoTTL,
-    timestampSupport = timestampSupport,
-    cacheIdType = CacheIdType.SimpleCacheId
-  )(ec) {
 
-  def insertData(userAnswers: UserAnswers): Future[Boolean] = {
-    logger.debug(s"[UserAnswersRepository][insertData] - inserting userAnswer ${userAnswers.toString} in repository")
-    put(userAnswers.journeyId)(DataKey(userAnswers.data.toString()), userAnswers)
-      .map(item => item.id).map( _ => true).recover {
-      case e => {
-        logger.error(s"[UserAnswersRepository][insertData] - Failed to insert data with message: ${e.getMessage}")
-        false
-      }
-    }
+@Singleton
+class UserAnswersRepository @Inject()(mongo: MongoComponent)
+                                     (implicit ec: ExecutionContext) extends PlayMongoRepository[UserAnswers](
+  collectionName = "user-answers",
+  mongoComponent = mongo,
+  domainFormat = UserAnswers.format,
+  indexes = Seq(
+    IndexModel(
+      keys = ascending("journeyId"),
+      indexOptions = IndexOptions()
+        .name("journeyId")
+        .unique(true)
+    )
+  )) {
+
+  def findAll(): Future[Seq[UserAnswers]] = {
+    collection.find().toFuture
   }
 
-  def updateUserAnswer(userAnswers: UserAnswers): Future[Option[String]] = {
-    get[UserAnswers](userAnswers.journeyId)(DataKey(userAnswers.data.toString())).flatMap(
-      document => {
-        if (document.isDefined) {
-          put(userAnswers.journeyId)(DataKey(userAnswers.data.toString()), userAnswers).map(item => {
-            logger.debug(s"[UserAnswersRepository][updateUserAnswer] - updating userAnswer for answer: ${userAnswers.toString} in repository: " +
-              s"is document defined: ${document.isDefined}")
-            item.id
-          }).map(Some(_))
-        } else {
-          Future.successful(None)
+  def getUserAnswer(id: String): Future[Option[UserAnswers]] =
+    collection.find(equal("journeyId", id)).headOption()
+
+  def insertUserAnswer(userAnswers: UserAnswers): Future[Boolean] = {
+    collection.insertOne(userAnswers).toFuture().map(_.wasAcknowledged())
+      .recover {
+        case e => {
+          logger.error(s"[UserAnswersRepository][insertUserAnswer] - Failed to insert data with message: ${e.getMessage}")
+          false
         }
       }
-    )
   }
 
-  def getUserAnswers(userAnswers: UserAnswers): Future[Option[Seq[UserAnswers]]] = {
-    Some(userAnswers.journeyId) match {
-      case Some(id) =>
-        findById(id)
-          .map {
-            case Some(cacheItem) if cacheItem.data.fields.nonEmpty =>
-              val list = cacheItem.data.values
-              Some(list.map(a => a.as[UserAnswers]).toSeq)
-            case None => None
-          }
-      case _ => Future.successful(None)
-    }
+  def upsertUserAnswer(userAnswers: UserAnswers): Future[Boolean] = {
+    collection.updateOne(
+      filter = equal("journeyId", userAnswers.journeyId),
+      update = Updates.combine(
+        Updates.set("data", Codecs.toBson(userAnswers.data)),
+        Updates.setOnInsert("journeyId", userAnswers.journeyId)
+      ),
+      options = UpdateOptions().upsert(true)
+    ).toFuture().map(_.wasAcknowledged())
+      .recover {
+        case e => {
+          logger.error(s"[UserAnswersRepository][upsertUserAnswer] - Failed to insert or update data with message: ${e.getMessage}")
+          false
+        }
+      }
   }
 
-  def removeUserAnswer(userAnswers: UserAnswers): Future[Unit] = {
-    logger.info(s"[UserAnswersRepository][removeUserAnswer] - Removing user answers for journey ID: ${userAnswers.journeyId}")
-    deleteEntity(userAnswers.journeyId)
+  def deleteOneUserAnswer(journeyId: String): Future[Int] = {
+    collection.deleteOne(equal("journeyId", journeyId)).toFuture().map(_.getDeletedCount.toInt)
+      .recover {
+        case e => {
+          logger.error(s"[UserAnswersRepository][deleteOneUserAnswer] - Failed to delete data for journeyId: $journeyId with " +
+            s"error message: ${e.getMessage}")
+          0
+        }
+      }
+  }
+
+  def deleteManyUserAnswer(journeyId: List[String]): Future[Int] = {
+    collection.deleteMany(in("journeyId", journeyId: _*)).toFuture().map(_.getDeletedCount.toInt)
+      .recover {
+        case e => {
+          logger.error(s"[UserAnswersRepository][deleteManyUserAnswer] - Failed to delete data for id: $journeyId with " +
+            s"error message: ${e.getMessage}")
+          0
+        }
+      }
   }
 }
