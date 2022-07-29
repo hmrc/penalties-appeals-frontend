@@ -16,6 +16,8 @@
 
 package repositories
 
+import config.AppConfig
+import helpers.DateTimeHelper
 import models.session.UserAnswers
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Indexes.ascending
@@ -24,12 +26,15 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 import utils.Logger.logger
 
+import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class UserAnswersRepository @Inject()(mongo: MongoComponent)
+class UserAnswersRepository @Inject()(mongo: MongoComponent,
+                                      appConfig: AppConfig,
+                                      dateTimeHelper: DateTimeHelper)
                                      (implicit ec: ExecutionContext) extends PlayMongoRepository[UserAnswers](
   collectionName = "user-answers",
   mongoComponent = mongo,
@@ -40,32 +45,25 @@ class UserAnswersRepository @Inject()(mongo: MongoComponent)
       indexOptions = IndexOptions()
         .name("journeyId")
         .unique(true)
+    ),
+    IndexModel(
+      keys = ascending("lastUpdated"),
+      indexOptions = IndexOptions()
+        .name("user-answers-last-updated-index")
+        .expireAfter(appConfig.mongoTTL.toSeconds, TimeUnit.SECONDS)
     )
   )) {
 
-  def findAll(): Future[Seq[UserAnswers]] = {
-    collection.find().toFuture
-  }
-
   def getUserAnswer(id: String): Future[Option[UserAnswers]] =
     collection.find(equal("journeyId", id)).headOption()
-
-  def insertUserAnswer(userAnswers: UserAnswers): Future[Boolean] = {
-    collection.insertOne(userAnswers).toFuture().map(_.wasAcknowledged())
-      .recover {
-        case e => {
-          logger.error(s"[UserAnswersRepository][insertUserAnswer] - Failed to insert data with message: ${e.getMessage}")
-          false
-        }
-      }
-  }
 
   def upsertUserAnswer(userAnswers: UserAnswers): Future[Boolean] = {
     collection.updateOne(
       filter = equal("journeyId", userAnswers.journeyId),
       update = Updates.combine(
         Updates.set("data", Codecs.toBson(userAnswers.data)),
-        Updates.setOnInsert("journeyId", userAnswers.journeyId)
+        Updates.setOnInsert("journeyId", userAnswers.journeyId),
+        Updates.set("lastUpdated", dateTimeHelper.dateTimeNow)
       ),
       options = UpdateOptions().upsert(true)
     ).toFuture().map(_.wasAcknowledged())
@@ -77,22 +75,11 @@ class UserAnswersRepository @Inject()(mongo: MongoComponent)
       }
   }
 
-  def deleteOneUserAnswer(journeyId: String): Future[Int] = {
+  def deleteUserAnswers(journeyId: String): Future[Int] = {
     collection.deleteOne(equal("journeyId", journeyId)).toFuture().map(_.getDeletedCount.toInt)
       .recover {
         case e => {
-          logger.error(s"[UserAnswersRepository][deleteOneUserAnswer] - Failed to delete data for journeyId: $journeyId with " +
-            s"error message: ${e.getMessage}")
-          0
-        }
-      }
-  }
-
-  def deleteManyUserAnswer(journeyId: List[String]): Future[Int] = {
-    collection.deleteMany(in("journeyId", journeyId: _*)).toFuture().map(_.getDeletedCount.toInt)
-      .recover {
-        case e => {
-          logger.error(s"[UserAnswersRepository][deleteManyUserAnswer] - Failed to delete data for id: $journeyId with " +
+          logger.error(s"[UserAnswersRepository][deleteUserAnswers] - Failed to delete data for journeyId: $journeyId with " +
             s"error message: ${e.getMessage}")
           0
         }

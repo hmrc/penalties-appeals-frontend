@@ -16,17 +16,30 @@
 
 package repositories
 
+import config.AppConfig
+import helpers.DateTimeHelper
 import models.session.UserAnswers
+import org.mockito.Mockito.{mock, when}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import utils.IntegrationSpecCommonBase
 
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase with DefaultPlayMongoRepositorySupport[UserAnswers] {
 
-  val repository: UserAnswersRepository = new UserAnswersRepository(mongoComponent)
+  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+
+  val mockDateTimeHelper: DateTimeHelper = mock(classOf[DateTimeHelper])
+
+  when(mockAppConfig.mongoTTL).thenReturn(Duration("1 hour"))
+
+  when(mockDateTimeHelper.dateTimeNow).thenReturn(LocalDateTime.now())
+
+  val repository: UserAnswersRepository = new UserAnswersRepository(mongoComponent, mockAppConfig, mockDateTimeHelper)
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -69,45 +82,12 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase with DefaultP
     "key2" -> "value2"
   ))
 
-  "findAll" should {
-    "return all the documents in the collection when they exist" in new Setup {
-      val documentsToStore: Seq[UserAnswers] = Seq(
-        UserAnswers("journey123", Json.obj(
-          "key1" -> "value1",
-          "key2" -> "value2"
-        )),
-        UserAnswers("journey124", Json.obj(
-          "key1" -> "value1",
-          "key2" -> "value2"
-        )),
-        UserAnswers("journey125", Json.obj(
-          "key1" -> "value1",
-          "key2" -> "value2"
-        ))
-      )
-
-      documentsToStore.map {
-        payload => {
-          await(repository.collection.insertOne(payload).toFuture()).wasAcknowledged() shouldBe true
-        }
-      }
-
-      val result = await(repository.findAll())
-      result shouldBe documentsToStore
-    }
-
-    "return no documents when none exist in the collection" in new Setup {
-      val result = await(repository.findAll())
-      result.isEmpty shouldBe true
-    }
-  }
-
   "upsertUserAnswer" should {
     "insert userAnswer payload when there is no duplicate keys" in new Setup {
       val result = await(repository.upsertUserAnswer(userAnswer))
       result shouldBe true
 
-      val recordsInMongoAfterInsertion = await(repository.findAll())
+      val recordsInMongoAfterInsertion = await(repository.collection.find().toFuture())
       recordsInMongoAfterInsertion.size shouldBe 1
       recordsInMongoAfterInsertion.head shouldBe userAnswer
     }
@@ -123,7 +103,7 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase with DefaultP
       val duplicateResult = await(repository.upsertUserAnswer(duplicateUserAnswer))
       duplicateResult shouldBe true
 
-      val recordsInMongoAfterUpdate = await(repository.findAll())
+      val recordsInMongoAfterUpdate = await(repository.collection.find().toFuture())
       recordsInMongoAfterUpdate.size shouldBe 1
       recordsInMongoAfterUpdate.head shouldBe duplicateUserAnswer
       recordsInMongoAfterUpdate.head.data shouldBe duplicateUserAnswer.data
@@ -135,7 +115,7 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase with DefaultP
       val setUpResult = await(repository.upsertUserAnswer(userAnswer))
       setUpResult shouldBe true
 
-      val recordsInMongoAfterInsertion = await(repository.findAll())
+      val recordsInMongoAfterInsertion = await(repository.collection.find().toFuture())
       recordsInMongoAfterInsertion.size shouldBe 1
       recordsInMongoAfterInsertion.head shouldBe userAnswer
 
@@ -150,62 +130,23 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase with DefaultP
     }
   }
 
-  "deleteOneUserAnswer" should {
+  "deleteUserAnswers" should {
     "return 1 when there is a pre-existing record under the journeyId" in new Setup {
       val setUpResult = await(repository.upsertUserAnswer(userAnswer))
       setUpResult shouldBe true
 
-      val recordsInMongoAfterInsertion = await(repository.findAll())
+      val recordsInMongoAfterInsertion = await(repository.collection.find().toFuture())
       recordsInMongoAfterInsertion.size shouldBe 1
 
-      val deleteResult = await(repository.deleteOneUserAnswer("journey123"))
+      val deleteResult = await(repository.deleteUserAnswers("journey123"))
       deleteResult shouldBe 1
 
-      val recordsInMongoAfterDeletion = await(repository.findAll())
+      val recordsInMongoAfterDeletion = await(repository.collection.find().toFuture())
       recordsInMongoAfterDeletion.size shouldBe 0
     }
 
     "return 0 when there is no pre-existing record under the journeyId" in new Setup {
-      val deleteResult = await(repository.deleteOneUserAnswer("journey123"))
-      deleteResult shouldBe 0
-    }
-  }
-
-  "deleteManyUserAnswer" should {
-    "return 3 when there is the same number of pre-existing records under the journeyIds" in new Setup {
-      val setUpResult = (await(repository.upsertUserAnswer(userAnswer)),
-        await(repository.upsertUserAnswer(userAnswer2)), await(repository.upsertUserAnswer(userAnswer3)))
-
-      setUpResult shouldBe ((true, true, true): (Boolean, Boolean, Boolean))
-
-      val recordsInMongoAfterInsertion = await(repository.findAll())
-      recordsInMongoAfterInsertion.size shouldBe 3
-
-      val deleteResult = await(repository.deleteManyUserAnswer(List("journey123", "journey456", "journey789")))
-      deleteResult shouldBe 3
-
-      val recordsInMongoAfterDeletion = await(repository.findAll())
-      recordsInMongoAfterDeletion.size shouldBe 0
-    }
-
-    "return 2 when there is the same number of pre-existing records, but one of them does not have the correct journeyId" in new Setup {
-      val setUpResult = (await(repository.upsertUserAnswer(userAnswer)),
-        await(repository.upsertUserAnswer(userAnswer2)), await(repository.upsertUserAnswer(userAnswer3)))
-
-      setUpResult shouldBe ((true, true, true): (Boolean, Boolean, Boolean))
-
-      val recordsInMongoAfterInsertion = await(repository.findAll())
-      recordsInMongoAfterInsertion.size shouldBe 3
-
-      val deleteResult = await(repository.deleteManyUserAnswer(List("journey123", "journey000", "journey789")))
-      deleteResult shouldBe 2
-
-      val recordsInMongoAfterDeletion = await(repository.findAll())
-      recordsInMongoAfterDeletion.size shouldBe 1
-    }
-
-    "return 0 when there are no pre-existing record under the journeyIds" in new Setup {
-      val deleteResult = await(repository.deleteManyUserAnswer(List("journey123", "journey456", "journey789")))
+      val deleteResult = await(repository.deleteUserAnswers("journey123"))
       deleteResult shouldBe 0
     }
   }

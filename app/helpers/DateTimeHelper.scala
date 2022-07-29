@@ -16,14 +16,16 @@
 
 package helpers
 
-import java.time.LocalDate
-
+import java.time.{LocalDate, LocalDateTime}
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
+
 import javax.inject.Inject
 import play.api.Configuration
 
 class DateTimeHelper @Inject()(implicit val appConfig: AppConfig) extends FeatureSwitching {
   implicit val config: Configuration = appConfig.config
   def dateNow: LocalDate = getFeatureDate
+
+  def dateTimeNow: LocalDateTime = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MILLIS)
 }
