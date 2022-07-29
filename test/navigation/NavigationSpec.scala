@@ -210,6 +210,28 @@ class NavigationSpec extends SpecBase {
           }
         }
 
+        "the user has the option to appeal both penalties" must {
+          "route back to appeal both penalties page" when {
+            "they have selected to appeal both penalties" in {
+              val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(
+                (SessionKeys.doYouWantToAppealBothPenalties, "yes"),
+                (SessionKeys.appealType, PenaltyTypeEnum.Late_Payment.toString)
+              )))
+              result.url shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode).url
+            }
+          }
+
+          "route back to appeal single penalty page" when {
+            "they have selected NOT to appeal both penalties" in {
+              val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode)(fakeRequestConverter(fakeRequest.withSession(
+                (SessionKeys.doYouWantToAppealBothPenalties, "no"),
+                (SessionKeys.appealType, PenaltyTypeEnum.Late_Payment.toString)
+              )))
+              result.url shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode).url
+            }
+          }
+        }
+
         "the user is not agent or not appealing an LSP as agent" must {
           "route back to the landing page" in {
             val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode)(fakeRequestConverter(fakeRequest))
