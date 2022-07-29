@@ -187,7 +187,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   def routingForPenaltySelectionPage(answer: Option[String], mode: Mode): Call = {
-    if(answer.get.toLowerCase == "yes") {
+    if (answer.get.toLowerCase == "yes") {
       routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode)
     } else {
       routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode)
@@ -233,9 +233,19 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
-      val dateNow: LocalDate = dateTimeHelper.dateNow
-      val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
-      dateSentParsed.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
+    val dateNow: LocalDate = dateTimeHelper.dateNow
+    userRequest.session.get(SessionKeys.doYouWantToAppealBothPenalties) match {
+      case Some("yes") => {
+        val dateOfFirstComms = LocalDate.parse(userRequest.session.get(SessionKeys.firstPenaltyCommunicationDate).get)
+        val dateOfSecondComms = LocalDate.parse(userRequest.session.get(SessionKeys.secondPenaltyCommunicationDate).get)
+        dateOfFirstComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal)) ||
+          dateOfSecondComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
+      }
+      case _ => {
+        val dateOfComms = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+        dateOfComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
+      }
+    }
   }
 
   def routeForUploadList(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
@@ -270,7 +280,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRouteForAppealStartPage(request: UserRequest[_]): Call = {
-    if(request.session.get(SessionKeys.isObligationAppeal).isDefined) {
+    if (request.session.get(SessionKeys.isObligationAppeal).isDefined) {
       routes.YouCanAppealPenaltyController.onPageLoad()
     } else {
       Call("GET", appConfig.penaltiesFrontendUrl)
@@ -278,7 +288,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRouteForHonestyDeclaration(request: UserRequest[_]): Call = {
-    if(request.session.get(SessionKeys.isObligationAppeal).isDefined) {
+    if (request.session.get(SessionKeys.isObligationAppeal).isDefined) {
       routes.AppealStartController.onPageLoad()
     } else {
       routes.ReasonableExcuseController.onPageLoad()
@@ -286,7 +296,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRouteForUploadEvidenceQuestion(request: UserRequest[_], mode: Mode): Call = {
-    if(request.session.get(SessionKeys.isObligationAppeal).isDefined) {
+    if (request.session.get(SessionKeys.isObligationAppeal).isDefined) {
       routes.AppealAgainstObligationController.onPageLoad(mode)
     } else {
       routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode)
@@ -310,7 +320,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRoutingForUpload(request: UserRequest[_], mode: Mode): Call = {
-    if(request.session.get(SessionKeys.isUploadEvidence).contains("yes")) {
+    if (request.session.get(SessionKeys.isUploadEvidence).contains("yes")) {
       routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
     } else {
       routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(mode)
@@ -318,8 +328,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRouteForReasonableExcuseSelectionPage(request: UserRequest[_], mode: Mode): Call = {
-    if(request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)) {
-      if(request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+    if (request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)) {
+      if (request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
         routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(mode)
       } else {
         routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode)

@@ -22,13 +22,17 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpResponse
 
+import java.time.LocalDate
+
 class MultiplePenaltiesHttpParserSpec extends SpecBase {
 
   val multiplePenaltiesModel: MultiplePenaltiesData = MultiplePenaltiesData(
     firstPenaltyChargeReference = "123456789",
     firstPenaltyAmount = 101.01,
     secondPenaltyChargeReference = "123456790",
-    secondPenaltyAmount = 101.02
+    secondPenaltyAmount = 101.02,
+    firstPenaltyCommunicationDate = LocalDate.of(2022, 1, 1),
+    secondPenaltyCommunicationDate = LocalDate.of(2022, 1, 2)
   )
 
   val multiplePenaltiesJson: JsValue = Json.parse(
@@ -37,7 +41,9 @@ class MultiplePenaltiesHttpParserSpec extends SpecBase {
       | "firstPenaltyChargeReference": "123456789",
       | "firstPenaltyAmount": 101.01,
       | "secondPenaltyChargeReference": "123456790",
-      | "secondPenaltyAmount": 101.02
+      | "secondPenaltyAmount": 101.02,
+      | "firstPenaltyCommunicationDate": "2022-01-01",
+      | "secondPenaltyCommunicationDate": "2022-01-02"
       |}
       |""".stripMargin)
 

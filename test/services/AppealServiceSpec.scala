@@ -32,6 +32,7 @@ import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{SessionKeys, UUIDGenerator}
+import java.time.LocalDate
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
@@ -106,7 +107,9 @@ class AppealServiceSpec extends SpecBase {
     firstPenaltyChargeReference = "123456789",
     firstPenaltyAmount = 101.01,
     secondPenaltyChargeReference = "123456790",
-    secondPenaltyAmount = 101.02
+    secondPenaltyAmount = 101.02,
+    firstPenaltyCommunicationDate = LocalDate.parse("2022-01-01"),
+    secondPenaltyCommunicationDate = LocalDate.parse("2022-01-02"),
   )
 
   class Setup {

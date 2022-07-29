@@ -86,7 +86,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234"
       )
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
-      successfulGetMultiplePenaltyDetailsResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      successfulGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789")
       val result = controller.onPageLoad("1234", isLPP = true, isAdditional = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
@@ -99,13 +99,15 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
       await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
       await(result).session.get(SessionKeys.firstPenaltyAmount).isDefined shouldBe true
-      await(result).session.get(SessionKeys.firstPenaltyAmount).get shouldBe "100.10"
+      await(result).session.get(SessionKeys.firstPenaltyAmount).get shouldBe "101.01"
       await(result).session.get(SessionKeys.secondPenaltyAmount).isDefined shouldBe true
-      await(result).session.get(SessionKeys.secondPenaltyAmount).get shouldBe "302.10"
+      await(result).session.get(SessionKeys.secondPenaltyAmount).get shouldBe "101.02"
       await(result).session.get(SessionKeys.firstPenaltyChargeReference).isDefined shouldBe true
       await(result).session.get(SessionKeys.firstPenaltyChargeReference).get shouldBe "123456789"
       await(result).session.get(SessionKeys.secondPenaltyChargeReference).isDefined shouldBe true
       await(result).session.get(SessionKeys.secondPenaltyChargeReference).get shouldBe "123456790"
+      await(result).session.get(SessionKeys.firstPenaltyCommunicationDate).isDefined shouldBe true
+      await(result).session.get(SessionKeys.firstPenaltyCommunicationDate).get shouldBe "2022-01-01"
     }
 
     "render an ISE when the appeal data can not be retrieved" in {

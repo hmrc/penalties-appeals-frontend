@@ -882,6 +882,36 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
 
+      "appealing multiple penalties and the LPP1 communication date is more than 30 days ago" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
+
+        val result: Call = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.appealType -> "crime",
+            SessionKeys.firstPenaltyCommunicationDate -> "2020-02-01",
+            SessionKeys.secondPenaltyCommunicationDate -> "2020-03-31",
+            SessionKeys.dateCommunicationSent -> "",
+            SessionKeys.doYouWantToAppealBothPenalties -> "yes"
+          )), NormalMode)
+
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+
+      "appealing multiple penalties and both the LPP1 / LPP2 communication date are more than 30 days ago" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
+
+        val result: Call = mainNavigator.routeToMakingALateAppealOrCYAPage(fakeRequestConverter(fakeRequestWithCorrectKeys
+          .withSession(
+            SessionKeys.appealType -> "crime",
+            SessionKeys.firstPenaltyCommunicationDate -> "2020-02-01",
+            SessionKeys.secondPenaltyCommunicationDate -> "2020-02-28",
+            SessionKeys.dateCommunicationSent -> "",
+            SessionKeys.doYouWantToAppealBothPenalties -> "yes"
+          )), NormalMode)
+
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+
       "the appeal is late but the reason has already been given and we are in NormalMode" in new Setup {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
 

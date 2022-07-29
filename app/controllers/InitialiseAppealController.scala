@@ -82,12 +82,16 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
         val firstPenaltyChargeReference = data.firstPenaltyChargeReference
         val parsedSecondPenaltyAmount = CurrencyFormatter.parseBigDecimalToFriendlyValue(data.secondPenaltyAmount)
         val secondPenaltyChargeReference = data.secondPenaltyChargeReference
+        val firstPenaltyCommunicationDate = data.firstPenaltyCommunicationDate
+        val secondPenaltyCommunicationDate = data.secondPenaltyCommunicationDate
 
         Seq(
           (SessionKeys.firstPenaltyChargeReference, firstPenaltyChargeReference),
           (SessionKeys.firstPenaltyAmount, parsedFirstPenaltyAmount),
           (SessionKeys.secondPenaltyChargeReference, secondPenaltyChargeReference),
-          (SessionKeys.secondPenaltyAmount, parsedSecondPenaltyAmount)
+          (SessionKeys.secondPenaltyAmount, parsedSecondPenaltyAmount),
+          (SessionKeys.firstPenaltyCommunicationDate, firstPenaltyCommunicationDate.toString),
+          (SessionKeys.secondPenaltyCommunicationDate, secondPenaltyCommunicationDate.toString)
         )
       }
     }.getOrElse(Seq.empty)

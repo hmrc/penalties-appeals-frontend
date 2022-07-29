@@ -29,19 +29,20 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.MakingALateAppealPage
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class MakingALateAppealControllerSpec extends SpecBase {
   val makingALateAppealPage: MakingALateAppealPage = injector.instanceOf[MakingALateAppealPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockDateTimeHelper)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
-    val controller = new MakingALateAppealController(makingALateAppealPage)(mcc, appConfig, authPredicate, dataRequiredAction)
+    val controller = new MakingALateAppealController(makingALateAppealPage, mockDateTimeHelper)(mcc, appConfig, authPredicate, dataRequiredAction)
   }
 
   "onPageLoad" should {
@@ -112,6 +113,46 @@ class MakingALateAppealControllerSpec extends SpecBase {
       "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
         val result: Future[Result] = controller.onSubmit()(fakeRequest)
         status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
+
+  "getHeadingAndTitle" should {
+    "show the single penalty text" when {
+      "the user has selected no to appealing both penalties" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = controller.getHeadingAndTitle()(fakeRequestConverter(fakeRequest.withSession(
+          (SessionKeys.doYouWantToAppealBothPenalties, "no")
+        )), implicitly)
+        result shouldBe "This penalty was issued more than 30 days ago"
+      }
+
+      "the user hasn't been given the option to appeal both penalties" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = controller.getHeadingAndTitle()(fakeRequestConverter(fakeRequest), implicitly)
+        result shouldBe "This penalty was issued more than 30 days ago"
+      }
+    }
+
+    "show the first penalty text" when {
+      "the user is appealing both penalties but the first penalty is late" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 5, 3))
+        val result = controller.getHeadingAndTitle()(fakeRequestConverter(fakeRequest.withSession(
+          (SessionKeys.doYouWantToAppealBothPenalties, "yes"),
+          (SessionKeys.secondPenaltyCommunicationDate, "2022-05-01"),
+          (SessionKeys.firstPenaltyCommunicationDate, "2022-04-01")
+        )), implicitly)
+        result shouldBe "The first penalty was issued more than 30 days ago"
+      }
+    }
+
+    "show the multiple penalties text" when {
+      "the user is appealing both penalties and both are late" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 7, 3))
+        val result = controller.getHeadingAndTitle()(fakeRequestConverter(fakeRequest.withSession(
+          (SessionKeys.doYouWantToAppealBothPenalties, "yes"),
+          (SessionKeys.secondPenaltyCommunicationDate, "2022-05-01"),
+          (SessionKeys.firstPenaltyCommunicationDate, "2022-04-01")
+        )), implicitly)
+        result shouldBe "The penalties were issued more than 30 days ago"
       }
     }
   }
