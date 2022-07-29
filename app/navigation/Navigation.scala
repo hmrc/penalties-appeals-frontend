@@ -328,14 +328,17 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRouteForReasonableExcuseSelectionPage(request: UserRequest[_], mode: Mode): Call = {
-    if (request.isAgent && request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString)) {
-      if (request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+    (request.isAgent, request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+      request.session.get(SessionKeys.doYouWantToAppealBothPenalties).isDefined) match {
+      case (true, true, _) if request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") => {
         routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(mode)
-      } else {
-        routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode)
       }
-    } else {
-      routes.AppealStartController.onPageLoad()
+      case (true, true, _) => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode)
+      case (_, _, true) if request.session.get(SessionKeys.doYouWantToAppealBothPenalties).contains("yes") => {
+        routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode)
+      }
+      case (_, _, true) => routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode)
+      case _ => routes.AppealStartController.onPageLoad()
     }
   }
 
