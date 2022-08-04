@@ -16,11 +16,10 @@
 
 package base
 
-import java.time.LocalDateTime
-
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredActionImpl}
+import controllers.predicates.{AuthPredicate, DataRequiredActionImpl, DataRetrievalActionImpl}
 import helpers.DateTimeHelper
+import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{PenaltyTypeEnum, UserRequest}
 import navigation.Navigation
@@ -34,16 +33,18 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.Injector
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Cookie, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import repositories.UploadJourneyRepository
-import services.AuthService
 import services.monitoring.AuditService
+import services.{AuthService, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import utils.SessionKeys
 import views.html.errors.Unauthorised
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll {
@@ -57,13 +58,11 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)
 
+  val mockSessionService: SessionService = mock(classOf[SessionService])
+
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(
-    (SessionKeys.appealType, PenaltyTypeEnum.Late_Submission.toString),
-    (SessionKeys.startDateOfPeriod, "2020-01-01"),
-    (SessionKeys.endDateOfPeriod, "2020-01-01")
-  )
+  implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(SessionKeys.journeyId -> "1234")
 
   implicit val messages: Messages = messagesApi.preferred(fakeRequest)
 
@@ -72,6 +71,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
   val mcc: MessagesControllerComponents = injector.instanceOf[MessagesControllerComponents]
 
   lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
+
+  val sessionService: SessionService = injector.instanceOf[SessionService]
 
   val unauthorised: Unauthorised = injector.instanceOf[Unauthorised]
 
@@ -83,86 +84,77 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   lazy val dataRequiredAction: DataRequiredActionImpl = injector.instanceOf[DataRequiredActionImpl]
 
+  lazy val dataRetrievalAction: DataRetrievalActionImpl = new DataRetrievalActionImpl(mockSessionService)
+
   val mockAuthService: AuthService = new AuthService(mockAuthConnector)
 
   val vrn: String = "123456789"
 
   val arn: Option[String] = Some("AGENT1")
 
-  def fakeRequestConverter(fakeRequest: FakeRequest[AnyContent] = fakeRequestWithCorrectKeys): UserRequest[AnyContent] = {
-    UserRequest(vrn)(fakeRequest)
+  def fakeRequestConverter(answers: JsObject = correctUserAnswers, fakeRequest: FakeRequest[AnyContent] = fakeRequest): UserRequest[AnyContent] = {
+    UserRequest(vrn, answers = userAnswers(answers))(fakeRequest)
   }
 
-  def agentFakeRequestConverter(fakeRequest: FakeRequest[AnyContent] = fakeRequestWithCorrectKeys): UserRequest[AnyContent] = {
-    UserRequest(vrn = vrn, arn = arn)(fakeRequest)
+  def agentFakeRequestConverter(answers: JsObject = correctUserAnswers): UserRequest[AnyContent] = {
+    UserRequest(vrn = vrn, arn = arn, answers = userAnswers(answers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
   }
 
-  val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession(
-      SessionKeys.penaltyNumber -> "123",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01",
-      SessionKeys.endDateOfPeriod -> "2020-01-01",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07",
-      SessionKeys.dateCommunicationSent -> "2020-02-08",
-      SessionKeys.journeyId -> "1234"
-    )
-
-  val fakeRequestLPPWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession(
-      SessionKeys.penaltyNumber -> "123",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01",
-      SessionKeys.endDateOfPeriod -> "2020-01-01",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07",
-      SessionKeys.dateCommunicationSent -> "2020-02-08",
-      SessionKeys.journeyId -> "1234"
-    )
-
-  val fakeRequestAdditionalWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest
-    .withSession(
-      SessionKeys.penaltyNumber -> "123",
-      SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01",
-      SessionKeys.endDateOfPeriod -> "2020-01-01",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07",
-      SessionKeys.dateCommunicationSent -> "2020-02-08",
-      SessionKeys.journeyId -> "1234"
-    )
-
-  val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = fakeRequestWithCorrectKeys.withCookies(Cookie("jsenabled", "true"))
-
-  val userRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestWithCorrectKeys)
-
-  val userRequestLPPWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestLPPWithCorrectKeys)
-
-  val userRequestAdditionalWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestAdditionalWithCorrectKeys)
-
-  val userRequestWithCorrectKeysAndJS: UserRequest[AnyContent] = UserRequest(vrn)(fakeRequestWithCorrectKeysAndJS)
-
-  val fakeRequestWithCorrectKeysAndReasonableExcuseSet: String => UserRequest[AnyContent] = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
-    .withSession(
-      SessionKeys.penaltyNumber -> "123",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-      SessionKeys.startDateOfPeriod -> "2020-01-01",
-      SessionKeys.endDateOfPeriod -> "2020-01-01",
-      SessionKeys.dueDateOfPeriod -> "2020-02-07",
-      SessionKeys.dateCommunicationSent -> "2020-02-08",
-      SessionKeys.reasonableExcuse -> reasonableExcuse,
-      SessionKeys.journeyId -> "1234")
+  val correctUserAnswers: JsObject = Json.obj(
+    SessionKeys.penaltyNumber -> "123",
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+    SessionKeys.journeyId -> "1234"
   )
 
-  val fakeRequestWithCorrectKeysAndHonestyDeclarationSet: FakeRequest[AnyContent] = fakeRequest
-    .withSession(
+  def userAnswers(answers: JsObject): UserAnswers = UserAnswers("1234", answers)
+
+  val correctLPPUserAnswers: JsObject = Json.obj(
+    SessionKeys.penaltyNumber -> "123",
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+    SessionKeys.journeyId -> "1234"
+  )
+
+  val correctAdditionalLPPUserAnswers: JsObject = Json.obj(
+    SessionKeys.penaltyNumber -> "123",
+    SessionKeys.appealType -> PenaltyTypeEnum.Additional,
+    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+    SessionKeys.journeyId -> "1234"
+  )
+
+  val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.journeyId -> "1234").withCookies(Cookie("jsenabled", "true"))
+
+  val userRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
+
+  val userRequestLPPWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
+
+  val userRequestAdditionalWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctAdditionalLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
+
+  val userRequestWithCorrectKeysAndJS: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequestWithCorrectKeysAndJS)
+
+  val fakeRequestWithCorrectKeysAndReasonableExcuseSet: String => UserRequest[AnyContent] = (reasonableExcuse: String) =>
+    UserRequest(vrn, answers = UserAnswers("1234", correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> reasonableExcuse)))(fakeRequest)
+
+  val fakeRequestWithCorrectKeysAndHonestyDeclarationSet: UserRequest[AnyContent] = fakeRequestConverter(Json.obj(
       SessionKeys.penaltyNumber -> "123",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> "2020-01-01",
       SessionKeys.endDateOfPeriod -> "2020-01-01",
       SessionKeys.dueDateOfPeriod -> "2020-02-07",
       SessionKeys.dateCommunicationSent -> "2020-02-08",
       SessionKeys.journeyId -> "1234",
       SessionKeys.hasConfirmedDeclaration -> "true"
-    )
+    ))
 
   lazy val authPredicate: AuthPredicate = new AuthPredicate(
     messagesApi,
@@ -174,58 +166,72 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   def asDocument(html: Html): Document = Jsoup.parse(html.toString())
 
+  val agentAnswers: JsObject = Json.obj(
+    SessionKeys.agentSessionVrn -> "VRN1234",
+    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+  )
+
   val agentRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
 
-  val vatTraderLSPUserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-    SessionKeys.startDateOfPeriod -> "2020-01-01",
-    SessionKeys.endDateOfPeriod -> "2020-01-01"
-  ))
+  val vatTraderLSPUserRequest: UserRequest[AnyContent] = UserRequest("123456789", answers = UserAnswers("1234",
+    Json.obj(
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    )))(fakeRequest)
 
-  val vatTraderLPPUserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-    SessionKeys.startDateOfPeriod -> "2020-01-01",
-    SessionKeys.endDateOfPeriod -> "2020-01-01"))
+  val vatTraderLPPUserRequest: UserRequest[AnyContent] = UserRequest("123456789", answers = UserAnswers("1234",
+    Json.obj(
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    )))(fakeRequest)
 
-  val vatTraderLPP2UserRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest.withSession(
-    SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString,
-    SessionKeys.startDateOfPeriod -> "2020-01-01",
-    SessionKeys.endDateOfPeriod -> "2020-01-01"))
+  val vatTraderLPP2UserRequest: UserRequest[AnyContent] = UserRequest("123456789", answers = UserAnswers("1234",
+    Json.obj(
+      SessionKeys.appealType -> PenaltyTypeEnum.Additional,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    )))(fakeRequest)
 
-  val agentUserAgentSubmitButClientWasLateSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+  val agentUserAgentSubmitButClientWasLateSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234", Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
     SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-    SessionKeys.whatCausedYouToMissTheDeadline -> "client")
-  )
+    SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+  ) ++ agentAnswers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
-  val agentUserAgentClientPlannedToSubmitSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
-    SessionKeys.whoPlannedToSubmitVATReturn -> "client")
-  )
+  val agentUserAgentClientPlannedToSubmitSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"),
+    answers = UserAnswers("1234", Json.obj(
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+    ) ++ agentAnswers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
-  val agentUserAgentMissedSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+  val agentUserAgentMissedSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234", Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
     SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-    SessionKeys.whatCausedYouToMissTheDeadline -> "agent")
-  )
+    SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
+  ) ++ agentAnswers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
-  val agentUserLPP: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString
-  ))
+  val agentUserLPP: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234", Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment
+  ) ++ agentAnswers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
-  val agentUserLSP: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString
-  ))
+  val agentUserLSP: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234", Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+  ) ++ agentAnswers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
-  val agentUserLPPAdditional: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
-    SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString
-  ))
+  val agentUserLPPAdditional: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234", Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Additional) ++ agentAnswers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
-  val vatTraderUserLSP: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest
-    .withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString))
+  val vatTraderUserLSP: UserRequest[AnyContent] = UserRequest("123456789", answers = UserAnswers("1234", correctUserAnswers ++ Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission)))(fakeRequest)
 
-  val vatTraderUserLPP: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest
-    .withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
+  val vatTraderUserLPP: UserRequest[AnyContent] = UserRequest("123456789", answers = UserAnswers("1234", correctUserAnswers ++ Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment)))(fakeRequest)
 
-  val vatTraderUserAdditional: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequest
-    .withSession(SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString))
+  val vatTraderUserAdditional: UserRequest[AnyContent] = UserRequest("123456789", answers = UserAnswers("1234", correctUserAnswers ++ Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Additional)))(fakeRequest)
 
   val moreThanFiveThousandChars: String = 'a'.toString * 5010
 

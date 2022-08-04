@@ -24,14 +24,9 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class SignOutController @Inject() (val mcc: MessagesControllerComponents)(
-    implicit val ec: ExecutionContext,
-    appConfig: AppConfig
-) extends FrontendController(mcc) {
-
-  def signOut: Action[AnyContent] =
-    Action {
+class SignOutController @Inject() (val mcc: MessagesControllerComponents)
+                                  (implicit val ec: ExecutionContext, appConfig: AppConfig) extends FrontendController(mcc) {
+  def signOut: Action[AnyContent] = Action {
       Redirect(appConfig.signOutUrl)
-    }
-
+  }
 }

@@ -18,10 +18,13 @@ package controllers
 
 import base.SpecBase
 import models.NormalMode
+import models.session.UserAnswers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -31,10 +34,11 @@ import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.bereavement.WhenDidThePersonDiePage
 
 import java.time.LocalDate
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class BereavementReasonControllerSpec extends SpecBase {
   val whenDidThePersonDiePage: WhenDidThePersonDiePage = injector.instanceOf[WhenDidThePersonDiePage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -44,8 +48,10 @@ class BereavementReasonControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
     val controller: BereavementReasonController = new BereavementReasonController(
-      whenDidThePersonDiePage, mainNavigator
-    )(authPredicate, dataRequiredAction, appConfig, mcc)
+      whenDidThePersonDiePage,
+      mainNavigator,
+      mockSessionService
+    )(authPredicate, dataRequiredAction, dataRetrievalAction, ec, appConfig, mcc)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
@@ -56,13 +62,18 @@ class BereavementReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
 
         "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           val result: Future[Result] = controller.onPageLoadForWhenThePersonDied(NormalMode)(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
 
         "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onPageLoadForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys
-            .withSession(SessionKeys.whenDidThePersonDie -> "2021-01-01")))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
+              SessionKeys.whenDidThePersonDie -> LocalDate.parse("2021-01-01")
+            )))))
+          val result: Future[Result] = controller.onPageLoadForWhenThePersonDied(NormalMode)(userRequestWithCorrectKeys)
           status(result) shouldBe OK
           val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
@@ -71,6 +82,8 @@ class BereavementReasonControllerSpec extends SpecBase {
         }
 
         "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoadForWhenThePersonDied(NormalMode)(fakeRequest)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
@@ -94,21 +107,27 @@ class BereavementReasonControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing to CYA when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
+          val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
             "date.day" -> "1",
             "date.month" -> "2",
             "date.year" -> "2021"
           )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          await(result).session.get(SessionKeys.whenDidThePersonDie).get shouldBe LocalDate.of(
-            2021, 2, 1).toString
+          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidThePersonDie -> LocalDate.of(2021, 2, 1))
         }
 
         "return 400 (BAD_REQUEST)" when {
 
           "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            when(mockSessionService.getUserAnswers(any()))
+              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
               "date.day" -> "what",
               "date.month" -> "is",
               "date.year" -> "this"
@@ -117,7 +136,9 @@ class BereavementReasonControllerSpec extends SpecBase {
           }
 
           "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            when(mockSessionService.getUserAnswers(any()))
+              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
               "date.day" -> "31",
               "date.month" -> "2",
               "date.year" -> "2021"
@@ -126,7 +147,9 @@ class BereavementReasonControllerSpec extends SpecBase {
           }
 
           "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+            when(mockSessionService.getUserAnswers(any()))
+              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+            val result: Future[Result] = controller.onSubmitForWhenThePersonDied(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
               "date.day" -> "124356",
               "date.month" -> "432567",
               "date.year" -> "3124567"

@@ -18,9 +18,8 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.UploadTakingLongerThanExpectedMessages._
-import models.NormalMode
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
-import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadTakingLongerThanExpectedPage
@@ -29,11 +28,11 @@ class UploadTakingLongerThanExpectedPageSpec extends SpecBase with ViewBehaviour
   "UploadTakingLongerThanExpectedPage" should {
     val uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage = injector.instanceOf[UploadTakingLongerThanExpectedPage]
     object Selectors extends BaseSelectors
-    def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
+    def applyView(request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = {
       uploadTakingLongerThanExpectedPage.apply(controllers.routes.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(NormalMode))(request, implicitly, implicitly)
     }
 
-    implicit val doc: Document = asDocument(applyView(fakeRequest))
+    implicit val doc: Document = asDocument(applyView(userRequestWithCorrectKeys))
 
     val expectedContent = Seq(
       Selectors.title -> title,

@@ -16,9 +16,11 @@
 
 package controllers
 
+import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, NormalMode, PenaltyTypeEnum}
 import org.mongodb.scala.Document
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -27,26 +29,24 @@ import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
   val controller = injector.instanceOf[RemoveFileController]
   val repository = injector.instanceOf[UploadJourneyRepository]
 
-  class Setup {
+  class Setup(sessionDataToStore: UserAnswers = UserAnswers("1234", Json.obj())) extends UserAnswersSetup(sessionDataToStore) {
     await(repository.collection.deleteMany(Document()).toFuture())
   }
 
-  val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file/ref1").withSession(
-    authToken -> "1234",
-    (SessionKeys.penaltyNumber, "1234"),
-    (SessionKeys.appealType, "Late_Submission"),
-    (SessionKeys.startDateOfPeriod, "2020-01-01"),
-    (SessionKeys.endDateOfPeriod, "2020-01-01"),
-    (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-    (SessionKeys.dateCommunicationSent, "2020-02-08"),
-    (SessionKeys.journeyId, "J1234")
-  )
+  val userAnswers: UserAnswers = userAnswers(Json.obj(
+    SessionKeys.penaltyNumber -> "1234",
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+    SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+  ))
 
   val fileUploadModel: UploadJourney = UploadJourney(
     reference = "ref1",
@@ -66,33 +66,32 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
   )
 
   "GET /remove-file/:fileReference" should {
-    "return 200 (OK) the page if the file reference exists" in new Setup {
-      await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel, isInitiateCall = true))
-      val result = await(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode)(fakeRequestWithCorrectKeys))
+    "return 200 (OK) the page if the file reference exists" in new Setup(userAnswers) {
+      await(repository.updateStateOfFileUpload(journeyId = "1234", callbackModel = fileUploadModel, isInitiateCall = true))
+      val result = await(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode)(fakeRequest))
       result.header.status shouldBe OK
     }
 
-    "render ISE when the file reference does not exist" in new Setup {
-      val result = await(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode)(fakeRequestWithCorrectKeys))
+    "render ISE when the file reference does not exist" in new Setup(userAnswers) {
+      val result = await(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode)(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/remove-file/ref1").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/remove-file/ref1").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequest))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
@@ -104,63 +103,62 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /remove-file/:fileReference" should {
-    "return 303 (SEE_OTHER) redirecting to upload list page when the user answers yes (js disabled)" in new Setup {
-      await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel, isInitiateCall = true))
-      await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel.copy(reference = "ref2"), isInitiateCall = true))
-      await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 2
-      val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = false, mode = CheckMode)(fakeRequestWithCorrectKeys
+    "return 303 (SEE_OTHER) redirecting to upload list page when the user answers yes (js disabled)" in new Setup(userAnswers) {
+      await(repository.updateStateOfFileUpload(journeyId = "1234", callbackModel = fileUploadModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload(journeyId = "1234", callbackModel = fileUploadModel.copy(reference = "ref2"), isInitiateCall = true))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
+      val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = false, mode = CheckMode)(fakeRequest
         .withFormUrlEncodedBody("value" -> "yes")))
-      await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
     }
 
-    "return 303 (SEE_OTHER) redirecting to upload JS page when the user answers yes (js enabled)" in new Setup {
-      await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel, isInitiateCall = true))
-      await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
-      val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = CheckMode)(fakeRequestWithCorrectKeys
+    "return 303 (SEE_OTHER) redirecting to upload JS page when the user answers yes (js enabled)" in new Setup(userAnswers) {
+      await(repository.updateStateOfFileUpload(journeyId = "1234", callbackModel = fileUploadModel, isInitiateCall = true))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = CheckMode)(fakeRequest
         .withFormUrlEncodedBody("value" -> "yes")))
-      await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 0
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 0
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
     }
 
-    "return 303 (SEE_OTHER) redirecting back to upload list page when the user answers no (js disabled)" in new Setup {
-      await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel, isInitiateCall = true))
-      await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
-      val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = false, mode = CheckMode)(fakeRequestWithCorrectKeys
+    "return 303 (SEE_OTHER) redirecting back to upload list page when the user answers no (js disabled)" in new Setup(userAnswers) {
+      await(repository.updateStateOfFileUpload(journeyId = "1234", callbackModel = fileUploadModel, isInitiateCall = true))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = false, mode = CheckMode)(fakeRequest
         .withFormUrlEncodedBody("value" -> "no")))
-      await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
     }
 
-    "return 303 (SEE_OTHER) redirecting back to upload JS page when the user answers no (js enabled)" in new Setup {
-      await(repository.updateStateOfFileUpload(journeyId = "J1234", callbackModel = fileUploadModel, isInitiateCall = true))
-      await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
-      val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = CheckMode)(fakeRequestWithCorrectKeys
+    "return 303 (SEE_OTHER) redirecting back to upload JS page when the user answers no (js enabled)" in new Setup(userAnswers) {
+      await(repository.updateStateOfFileUpload(journeyId = "1234", callbackModel = fileUploadModel, isInitiateCall = true))
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = CheckMode)(fakeRequest
         .withFormUrlEncodedBody("value" -> "no")))
-      await(repository.getNumberOfDocumentsForJourneyId("J1234")) shouldBe 1
+      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file/ref1").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file/ref1").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequest))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 

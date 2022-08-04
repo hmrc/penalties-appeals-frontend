@@ -19,10 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.MakingALateAppealForm
 import messages.MakingALateAppealMessages._
-import models.NormalMode
 import models.pages.{MakingALateAppealPage, PageMode}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.twirl.api.HtmlFormat
 import utils.SessionKeys
 import views.behaviours.ViewBehaviours
@@ -34,7 +35,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
     "when a single penalty is appealed" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form,
-        "This penalty was issued more than 30 days ago", pageMode = PageMode(MakingALateAppealPage, NormalMode))
+        "This penalty was issued more than 30 days ago", pageMode = PageMode(MakingALateAppealPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
 
       val formProvider = MakingALateAppealForm.makingALateAppealForm()
       implicit val doc: Document = asDocument(applyView(formProvider))
@@ -51,7 +52,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
 
     "when multiple penalties are being appealed" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form, "The penalties were issued more than 30 days ago",
-        pageMode = PageMode(MakingALateAppealPage, NormalMode))(fakeRequestWithCorrectKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "yes"), messages, appConfig)
+        pageMode = PageMode(MakingALateAppealPage, NormalMode))(UserRequest("123456789", answers = userAnswers(correctLPPUserAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes"))), messages, appConfig)
 
       val formProvider = MakingALateAppealForm.makingALateAppealForm()
       implicit val doc: Document = asDocument(applyView(formProvider))
@@ -68,7 +69,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
 
     "when multiple penalties are being appealed - and the first penalty is late" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form, "The first penalty was issued more than 30 days ago",
-        pageMode = PageMode(MakingALateAppealPage, NormalMode))(fakeRequestWithCorrectKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "yes"), messages, appConfig)
+        pageMode = PageMode(MakingALateAppealPage, NormalMode))(UserRequest("123456789", answers = userAnswers(correctLPPUserAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes"))), messages, appConfig)
 
       val formProvider = MakingALateAppealForm.makingALateAppealForm()
       implicit val doc: Document = asDocument(applyView(formProvider))
@@ -85,7 +86,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
 
     "when only one penalty of the period is being appealed" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form, "This penalty was issued more than 30 days ago",
-        pageMode = PageMode(MakingALateAppealPage, NormalMode))(fakeRequestWithCorrectKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "no"), messages, appConfig)
+        pageMode = PageMode(MakingALateAppealPage, NormalMode))(UserRequest("123456789", answers = userAnswers(correctLPPUserAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "no"))), messages, appConfig)
 
       val formProvider = MakingALateAppealForm.makingALateAppealForm()
       implicit val doc: Document = asDocument(applyView(formProvider))

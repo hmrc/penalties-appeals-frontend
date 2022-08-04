@@ -20,21 +20,22 @@ import base.{BaseSelectors, SpecBase}
 import forms.WhyReturnSubmittedLateForm
 import messages.WhyReturnSubmittedLateMessages._
 import models.pages.{PageMode, YouCanAppealThisPenaltyPage}
-import models.{NormalMode, PenaltyTypeEnum}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.test.FakeRequest
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
-import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.WhyReturnSubmittedLatePage
 
 class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
   "WhyReturnSubmittedLatePage" should {
     val whyReturnSubmittedLate: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
+    implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
+
     object Selectors extends BaseSelectors
 
-    def applyView(form: Form[_], request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = whyReturnSubmittedLate.apply(form,
+    def applyView(form: Form[_], request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = whyReturnSubmittedLate.apply(form,
       controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(NormalMode),
       pageMode = PageMode(YouCanAppealThisPenaltyPage, NormalMode))(request, implicitly, implicitly)
 
@@ -51,7 +52,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     behave like pageWithExpectedMessages(expectedContent)
 
     "display the LPP variation when the appeal is for a LPP" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+      implicit val doc: Document = asDocument(applyView(formProvider, userRequestLPPWithCorrectKeys))
 
       val expectedContent = Seq(
         Selectors.title -> titleLpp,
@@ -63,7 +64,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     }
 
     "display the LPP variation when the appeal is for a LPP - Additional" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString)))
+      implicit val doc: Document = asDocument(applyView(formProvider, userRequestAdditionalWithCorrectKeys))
 
       val expectedContent = Seq(
         Selectors.title -> titleLpp,

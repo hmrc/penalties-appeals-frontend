@@ -35,7 +35,7 @@ class CancelVATRegistrationPageSpec extends SpecBase with ViewBehaviours {
     val formProvider = CancelVATRegistrationForm.cancelVATRegistrationForm
     val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
     def applyView(form: Form[_]): HtmlFormat.Appendable = cancelVATRegistrationPage
-      .apply(form, radioOptions, controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration(), pageMode = PageMode(CancelVATRegistrationPage, NormalMode))(implicitly, implicitly, appConfig)
+      .apply(form, radioOptions, controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration(), pageMode = PageMode(CancelVATRegistrationPage, NormalMode))(userRequestWithCorrectKeys, implicitly, appConfig)
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

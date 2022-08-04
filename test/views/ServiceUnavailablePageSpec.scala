@@ -18,7 +18,9 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.ServiceUnavailableMessages._
+import models.UserRequest
 import org.jsoup.nodes.Document
+import play.api.mvc.AnyContent
 import views.behaviours.ViewBehaviours
 import views.html.errors.ServiceUnavailablePage
 
@@ -31,6 +33,8 @@ class ServiceUnavailablePageSpec extends SpecBase with ViewBehaviours {
       val p3 = "#main-content > div > div > p:nth-child(4)"
       val p4 = "#main-content > div > div > p:nth-child(5)"
     }
+
+    implicit val userRequest: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
     implicit val doc: Document = asDocument(makingALateAppealPage())
 

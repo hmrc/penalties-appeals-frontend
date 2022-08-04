@@ -17,7 +17,7 @@
 package controllers.predicates
 
 import config.{AppConfig, ErrorHandler}
-import models.UserRequest
+import models.AuthRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import services.AuthService
@@ -42,12 +42,12 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
                              (implicit val appConfig: AppConfig,
                               implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with
   I18nSupport with
-  ActionBuilder[UserRequest, AnyContent] with
-  ActionFunction[Request, UserRequest] {
+  ActionBuilder[AuthRequest, AnyContent] with
+  ActionFunction[Request, AuthRequest] {
 
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
 
-  override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: AuthRequest[A] => Future[Result]): Future[Result] = {
     implicit val req: Request[A] = request
     val logMsgStart: String = "[AuthPredicate][invokeBlock]"
     authService.authorised().retrieve(
@@ -77,11 +77,11 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
     }
   }
 
-  private[predicates] def checkVatEnrolment[A](allEnrolments: Enrolments, block: UserRequest[A] => Future[Result])(implicit request: Request[A]) = {
+  private[predicates] def checkVatEnrolment[A](allEnrolments: Enrolments, block: AuthRequest[A] => Future[Result])(implicit request: Request[A]) = {
     val logMsgStart: String = "[AuthPredicate][checkVatEnrolment]"
-    val extractedMTDVATEnrolment: Option[String] = UserRequest.extractFirstMTDVatEnrolment(allEnrolments)
+    val extractedMTDVATEnrolment: Option[String] = AuthRequest.extractFirstMTDVatEnrolment(allEnrolments)
     if (extractedMTDVATEnrolment.isDefined) {
-      val user: UserRequest[A] = UserRequest(extractedMTDVATEnrolment.get)
+      val user: AuthRequest[A] = AuthRequest(extractedMTDVATEnrolment.get)
       block(user)
     } else {
       logger.debug(s"$logMsgStart - User does not have an activated HMRC-MTD-VAT enrolment. User had these enrolments: ${allEnrolments.enrolments}")
@@ -89,7 +89,7 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
     }
   }
 
-  private[predicates] def authoriseAsAgent[A](block: UserRequest[A] => Future[Result])
+  private[predicates] def authoriseAsAgent[A](block: AuthRequest[A] => Future[Result])
                                              (implicit request: Request[A]): Future[Result] = {
 
     val agentDelegatedAuthorityRule: String => Enrolment = vrn =>
@@ -105,7 +105,7 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
               enrolments.enrolments.collectFirst {
                 case Enrolment(EnrolmentKeys.agentEnrolmentKey, Seq(EnrolmentIdentifier(_, arn)), EnrolmentKeys.activated, _) => arn
               } match {
-                case Some(arn) => block(UserRequest(vrn, arn = Some(arn)))
+                case Some(arn) => block(AuthRequest(vrn, arn = Some(arn)))
                 case None =>
                   logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
                   Future.successful(Forbidden(unauthorisedView()))

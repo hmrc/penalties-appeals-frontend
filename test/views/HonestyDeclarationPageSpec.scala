@@ -21,6 +21,7 @@ import messages.HonestyDeclarationMessages._
 import models.pages.{HonestyDeclarationPage, PageMode}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import utils.SessionKeys
@@ -262,9 +263,9 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         }
 
         "the client planned to submit" must {
-          val agentUserClientPlannedSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "client")
-          )
+          val agentUserClientPlannedSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
+              SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+          )))
           "the option selected is 'crime'" must {
             implicit val agentDoc: Document = asDocument(applyAgentView("crime", messages("agent.honestyDeclaration.crime"),
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
@@ -504,11 +505,9 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "the appeal is LPP" must {
-        val userRequest = UserRequest("123456789")(vatTraderLPPUserRequest)
-
         implicit val doc: Document = asDocument(applyVATTraderView("crime", messages("honestyDeclaration.crime"),
           "1 January 2022", "1 January 2021", "31 January 2021",
-          Seq(), userRequest))
+          Seq(), vatTraderLPPUserRequest))
 
         val expectedContent = Seq(
           Selectors.title -> title,
@@ -524,7 +523,6 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "it is an appeal against an obligation" must {
-        implicit val userRequest: UserRequest[AnyContent] = UserRequest("123456789")(vatTraderLSPUserRequest)
         implicit val doc: Document = asDocument(applyVATTraderView("other", "",
           "1 January 2022", "1 January 2021", "31 January 2021",
           Seq(), isObligation = true))
@@ -543,10 +541,9 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "it is a LPP appeal and the reason is technicalIssues" must {
-        implicit val userRequest: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequestLPPWithCorrectKeys.withSession(SessionKeys.reasonableExcuse -> "technicalIssues"))
         implicit val doc: Document = asDocument(applyVATTraderView("technicalIssues", messages("honestyDeclaration.technicalIssues"),
           "1 January 2022", "1 January 2021", "31 January 2021",
-          Seq(), userRequest))
+          Seq(), UserRequest("123456789", answers = userAnswers(correctLPPUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "technicalIssues")))))
 
         val expectedContent = Seq(
           Selectors.title -> title,

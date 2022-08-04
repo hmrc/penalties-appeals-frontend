@@ -19,10 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WasHospitalStayRequiredForm
 import messages.WasHospitalStayRequiredMessages._
-import models.NormalMode
 import models.pages.{PageMode, WasHospitalStayRequiredPage}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import views.behaviours.ViewBehaviours
@@ -32,6 +33,7 @@ import viewtils.RadioOptionHelper
 class WasHospitalStayRequiredPageSpec extends SpecBase with ViewBehaviours {
 
   val wasHospitalStayRequiredPage: WasHospitalStayRequiredPage = injector.instanceOf[WasHospitalStayRequiredPage]
+  implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
   object Selectors extends BaseSelectors
 

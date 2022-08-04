@@ -26,14 +26,14 @@ class ProblemWithServicePageSpec extends SpecBase with ViewBehaviours {
 
   val page: ProblemWithServicePage = injector.instanceOf[ProblemWithServicePage]
 
-  object Selectors extends BaseSelectors{
+  object Selectors extends BaseSelectors {
     val p1 = "#main-content > div > div > p:nth-child(2)"
     val p2 = "#main-content > div > div > p:nth-child(3)"
     val p3 = "#main-content > div > div > p:nth-child(4)"
     val p4 = "#main-content > div > div > p:nth-child(5)"
   }
 
-  implicit val doc: Document = asDocument(page())
+  implicit val doc: Document = asDocument(page()(implicitly, implicitly, userRequestWithCorrectKeys))
 
   "ProblemWithServicePage" should {
     val expectedContent = Seq(

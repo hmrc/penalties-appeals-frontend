@@ -17,19 +17,21 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.AuthPredicate
-import views.html.errors.ProblemWithServicePage
-import javax.inject.Inject
+import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.errors.ProblemWithServicePage
+
+import javax.inject.Inject
 
 class ProblemWithServiceController @Inject()(problemWithServicePage: ProblemWithServicePage)
                                             (implicit mcc: MessagesControllerComponents,
-                                            appConfig: AppConfig,
-                                            authorise: AuthPredicate) extends FrontendController(mcc) with I18nSupport {
+                                             appConfig: AppConfig,
+                                             authorise: AuthPredicate,
+                                             dataRetrieval: DataRetrievalAction) extends FrontendController(mcc) with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
+  def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval) { implicit request =>
     InternalServerError(problemWithServicePage())
   }
 

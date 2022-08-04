@@ -19,13 +19,12 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.UploadDocumentForm
 import messages.UploadAnotherDocumentMessages._
-import models.NormalMode
 import models.pages.{PageMode, UploadAnotherDocumentPage}
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.mvc.Call
-import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadAnotherDocumentPage
@@ -60,11 +59,11 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
     )
   )
   val fileListPage: Call = controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)
-  def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
+  def applyView(request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = {
     uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form, fileListPage.url, pageMode = PageMode(UploadAnotherDocumentPage, NormalMode))(request, implicitly, implicitly)
   }
 
-  implicit val doc: Document = asDocument(applyView(fakeRequest))
+  implicit val doc: Document = asDocument(applyView(userRequestWithCorrectKeys))
 
   "UploadAnotherDocumentPage" should {
 

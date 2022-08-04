@@ -16,21 +16,19 @@
 
 package models
 
-import models.session.UserAnswers
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core._
 import utils.EnrolmentKeys
 
-case class UserRequest[A](vrn: String,
+case class AuthRequest[A](vrn: String,
                           active: Boolean = true,
-                          arn: Option[String] = None,
-                          answers: UserAnswers
+                          arn: Option[String] = None
                          )(implicit request: Request[A]) extends WrappedRequest[A](request) {
   val isAgent: Boolean = arn.isDefined
   val redirectSuffix: String = if (isAgent) "agent" else "non-agent"
 }
 
-object UserRequest {
+object AuthRequest {
   def extractFirstMTDVatEnrolment(enrolments: Enrolments): Option[String] = {
     enrolments.enrolments.collectFirst {
       case _@Enrolment(EnrolmentKeys.mtdVATEnrolmentKey, Seq(EnrolmentIdentifier(EnrolmentKeys.vrnId, vrn)), EnrolmentKeys.activated, _) => vrn

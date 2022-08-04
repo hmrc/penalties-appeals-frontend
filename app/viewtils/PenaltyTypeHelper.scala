@@ -16,32 +16,29 @@
 
 package viewtils
 
-import models.PenaltyTypeEnum
+import models.{PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
-import play.api.mvc.Request
 import utils.SessionKeys
 
 import java.time.LocalDate
 import scala.util.Try
 
 object PenaltyTypeHelper {
-  def convertPenaltyTypeToContentString(penaltyType: String)(implicit request: Request[_], messages: Messages): Option[String] = {
-    val isAppealingMultiplePenalties: Boolean = request.session.get(SessionKeys.doYouWantToAppealBothPenalties).contains("yes")
-    val penaltyAsEnum = PenaltyTypeEnum.withNameOpt(penaltyType)
-    (penaltyAsEnum, isAppealingMultiplePenalties) match {
-      case (_, true) => Some(messages("penaltyType.latePayment.multiple"))
-      case (Some(PenaltyTypeEnum.Late_Submission), _) => Some(messages("penaltyType.lateSubmission"))
-      case (Some(PenaltyTypeEnum.Late_Payment | PenaltyTypeEnum.Additional), _) => Some(messages("penaltyType.latePayment"))
-      case _ => None
+  def convertPenaltyTypeToContentString(penaltyType: PenaltyTypeEnum.Value)(implicit userRequest: UserRequest[_], messages: Messages): String = {
+    val isAppealingMultiplePenalties: Boolean = userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")
+    (penaltyType, isAppealingMultiplePenalties) match {
+      case (_, true) => messages("penaltyType.latePayment.multiple")
+      case (PenaltyTypeEnum.Late_Submission, _) => messages("penaltyType.lateSubmission")
+      case (PenaltyTypeEnum.Late_Payment | PenaltyTypeEnum.Additional, _) => messages("penaltyType.latePayment")
     }
   }
 
-  def getKeysFromSession()(implicit request: Request[_], messages: Messages): Option[Seq[String]] = {
+  def getKeysFromSession()(implicit userRequest: UserRequest[_], messages: Messages): Option[Seq[String]] = {
     Try {
         Seq(
-          PenaltyTypeHelper.convertPenaltyTypeToContentString(request.session.get(SessionKeys.appealType).get).get,
-          ImplicitDateFormatter.dateToString(LocalDate.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
-          ImplicitDateFormatter.dateToString(LocalDate.parse(request.session.get(SessionKeys.endDateOfPeriod).get))
+          PenaltyTypeHelper.convertPenaltyTypeToContentString(userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get),
+          ImplicitDateFormatter.dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get),
+          ImplicitDateFormatter.dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get)
         )
     }.map {
       Some(_)

@@ -25,7 +25,7 @@
         govukButton: GovukButton,
         pageHeader: components.pageHeader)
 
-@(postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(postAction: Call)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle"),
     isPageFullWidth = false,

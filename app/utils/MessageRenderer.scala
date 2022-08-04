@@ -22,8 +22,8 @@ import play.api.i18n.Messages
 object MessageRenderer {
 
   def getMessageKey(msgKey: String)(implicit user: UserRequest[_]): String = {
-    if (user.isAgent && (didClientCauseLateSubmission || (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).isEmpty
-      && user.session.get(SessionKeys.whatCausedYouToMissTheDeadline).isEmpty))) {
+    if (user.isAgent && (didClientCauseLateSubmission || (user.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).isEmpty
+      && user.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).isEmpty))) {
       s"agent.$msgKey"
     } else {
       msgKey
@@ -32,7 +32,7 @@ object MessageRenderer {
 
   def getMessage(msgKey: String, msgArgs: Any*)(implicit messages: Messages, user: UserRequest[_]): String = {
     if (user.isAgent && (didClientCauseLateSubmission ||
-      (user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).isEmpty && user.session.get(SessionKeys.whatCausedYouToMissTheDeadline).isEmpty))) {
+      (user.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).isEmpty && user.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).isEmpty))) {
       messages.apply(s"agent.$msgKey", msgArgs: _*)
     } else {
       messages.apply(msgKey, msgArgs: _*)
@@ -40,8 +40,8 @@ object MessageRenderer {
   }
 
   def didClientCauseLateSubmission()(implicit user: UserRequest[_]): Boolean = {
-    val clientPlannedToSubmit = user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
-    val clientCausedLateSubmissionReturn = user.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("client")
+    val clientPlannedToSubmit = user.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
+    val clientCausedLateSubmissionReturn = user.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).contains("client")
 
     (clientPlannedToSubmit, clientCausedLateSubmissionReturn) match {
       case (true, _) => true
@@ -50,12 +50,12 @@ object MessageRenderer {
     }
   }
 
-  def didClientPlanToSubmit()(implicit user: UserRequest[_]): Boolean = {
-    user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
+  def didClientPlanToSubmit()(implicit userRequest: UserRequest[_]): Boolean = {
+    userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
   }
 
-  def didAgentPlanToSubmitAndClientMissedDeadline()(implicit user: UserRequest[_]): Boolean = {
-    user.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") &&
-      user.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("client")
+  def didAgentPlanToSubmitAndClientMissedDeadline()(implicit userRequest: UserRequest[_]): Boolean = {
+    userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") &&
+      userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).contains("client")
   }
 }

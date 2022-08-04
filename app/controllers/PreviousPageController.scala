@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import models.Mode
 import models.pages.Page
 import navigation.Navigation
@@ -29,8 +29,9 @@ import javax.inject.Inject
 class PreviousPageController @Inject()(navigation: Navigation)
                                       (implicit mcc: MessagesControllerComponents,
                                        authorise: AuthPredicate,
+                                       dataRetrieval: DataRetrievalAction,
                                        dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
-  def previousPage(pageName: String, mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def previousPage(pageName: String, mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
       val page = Page.find(pageName)
       Redirect(navigation.previousPage(page, mode))

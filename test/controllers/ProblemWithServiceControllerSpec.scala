@@ -34,7 +34,7 @@ class ProblemWithServiceControllerSpec extends SpecBase {
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
@@ -42,11 +42,13 @@ class ProblemWithServiceControllerSpec extends SpecBase {
 
     val controller: ProblemWithServiceController = new ProblemWithServiceController(
       problemWithServicePage
-    )(mcc, appConfig, authPredicate)
+    )(mcc, appConfig, authPredicate, dataRetrievalAction)
   }
 
   "onPageLoad" should {
     "return the 500 status code" in new Setup(AuthTestModels.successfulAuthResult) {
+      when(mockSessionService.getUserAnswers(any()))
+        .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
       val result: Future[Result] = controller.onPageLoad()(fakeRequest)
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }

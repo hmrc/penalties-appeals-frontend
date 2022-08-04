@@ -17,11 +17,14 @@
 package controllers
 
 import base.SpecBase
+import models.session.UserAnswers
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -31,13 +34,15 @@ import utils.SessionKeys
 import views.html.obligation.OtherRelevantInformationPage
 
 import java.time.LocalDate
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AppealAgainstObligationControllerSpec extends SpecBase {
   val otherRelevantInformationPage: OtherRelevantInformationPage = injector.instanceOf[OtherRelevantInformationPage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
@@ -45,71 +50,89 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
 
     val controller: AppealAgainstObligationController = new AppealAgainstObligationController(
       otherRelevantInformationPage,
-      mainNavigator
-    )(authPredicate, dataRequiredAction, appConfig, mcc)
+      mainNavigator,
+      mockSessionService
+    )(authPredicate, dataRequiredAction, appConfig, mcc, dataRetrievalAction, ec)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
   }
 
   "onPageLoad" should {
-      "the user is authorised" must {
+    "the user is authorised" must {
 
-        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onPageLoad(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
-        }
-
-        "return OK and correct view (pre-populated text when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onPageLoad(NormalMode)(
-            fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.otherRelevantInformation -> "this is some relevant information")))
-          status(result) shouldBe OK
-          val documentParsed: Document = Jsoup.parse(contentAsString(result))
-          documentParsed.select("#other-relevant-information-text").text() shouldBe "this is some relevant information"
-        }
-
-        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
-        }
+      "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
       }
 
-      "the user is unauthorised" when {
+      "return OK and correct view (pre-populated text when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "this is some relevant information")))))
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
+        documentParsed.select("#other-relevant-information-text").text() shouldBe "this is some relevant information"
+      }
 
-        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
-          status(result) shouldBe FORBIDDEN
-        }
-
-        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-        }
+      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
+
+    "the user is unauthorised" when {
+
+      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+        status(result) shouldBe FORBIDDEN
+      }
+
+      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
 
   "onSubmit" should {
     "the user is authorised" must {
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- routing to file upload when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionService.updateAnswers(answerCaptor.capture()))
+          .thenReturn(Future.successful(true))
+        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
           "other-relevant-information-text" -> "This is some information")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
-        await(result).session.get(SessionKeys.otherRelevantInformation).get shouldBe "This is some information"
+        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "This is some information")
       }
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionService.updateAnswers(answerCaptor.capture()))
+          .thenReturn(Future.successful(true))
+        val result: Future[Result] = controller.onSubmit(CheckMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
           "other-relevant-information-text" -> "This is some information")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe routes.CheckYourAnswersController.onPageLoad().url
-        await(result).session.get(SessionKeys.otherRelevantInformation).get shouldBe "This is some information"
+        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "This is some information")
       }
 
       "return 400 (BAD_REQUEST) when the user does not enter a reason" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
           "other-relevant-information-text" -> "")))
         status(result) shouldBe BAD_REQUEST
       }

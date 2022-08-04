@@ -19,9 +19,10 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.upscan.RemoveFileQuestionForm
 import messages.RemoveFileMessages._
-import models.NormalMode
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.RemoveFilePage
@@ -33,6 +34,7 @@ class RemoveFilePageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors
     val formProvider = RemoveFileQuestionForm.form
     val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
+    implicit val userRequest: UserRequest[AnyContent] = userRequestWithCorrectKeys
     def applyView(form: Form[_]): HtmlFormat.Appendable = removeFilePage.apply(
       form,
       radioOptions,

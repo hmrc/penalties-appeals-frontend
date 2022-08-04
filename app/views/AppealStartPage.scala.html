@@ -23,15 +23,15 @@
         link: components.link,
         pageHeader: components.pageHeader)
 
-@(isLate: Boolean, isObligationAppeal: Boolean, pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(isLate: Boolean, isObligationAppeal: Boolean, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
-@appealType = @{request.session.get(SessionKeys.appealType)}
+@appealType = @{userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
 @nextPageUrl = @{
     if(isObligationAppeal){
         routes.HonestyDeclarationController.onPageLoad().url
-    } else if(request.session.get(SessionKeys.agentSessionVrn).isDefined && !appealType.contains(PenaltyTypeEnum.Late_Payment.toString) && !appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+    } else if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined && !appealType.contains(PenaltyTypeEnum.Late_Payment) && !appealType.contains(PenaltyTypeEnum.Additional)) {
         routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
-    } else if(request.session.get(SessionKeys.firstPenaltyChargeReference).isDefined) {
+    } else if(userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyChargeReference).isDefined) {
         routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url
     } else {
         routes.ReasonableExcuseController.onPageLoad().url
@@ -40,7 +40,7 @@
 
 @baseBulletPoints = @{
     Seq(
-        if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) Html(messages("appealStart.lpp.li.2.1")) else Html(messages("appealStart.li.2.1")),
+        if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) Html(messages("appealStart.lpp.li.2.1")) else Html(messages("appealStart.li.2.1")),
         Html(messages("appealStart.li.2.2"))
     )
 }

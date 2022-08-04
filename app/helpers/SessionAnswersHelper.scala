@@ -17,17 +17,15 @@
 package helpers
 
 import models.appeals.CheckYourAnswersRow
-
-import java.time.LocalDate
-import javax.inject.Inject
 import models.pages._
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
-import play.api.mvc.Request
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
 import viewtils.ImplicitDateFormatter
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository)(implicit ec: ExecutionContext) extends ImplicitDateFormatter {
@@ -46,11 +44,11 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     "other" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whyReturnSubmittedLate, SessionKeys.whenDidBecomeUnable, SessionKeys.isUploadEvidence)
   )
 
-  def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit request: Request[_]): Boolean = {
-    val keysInSession = request.session.data.keys.toSet
+  def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit userRequest: UserRequest[_]): Boolean = {
+    val keysInSession = userRequest.answers.data.keys.toSet
     reasonableExcuse match {
       case "health" =>
-        (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.hasHealthEventEnded)) match {
+        (userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired), userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded)) match {
           //No hospital stay
           case (Some("no"), _) =>
             val answersRequired = answersRequiredForReasonableExcuseJourney("healthIssueNoHospitalStay").toSet
@@ -75,8 +73,8 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
   }
 
-  private def getMultiplePenaltiesForThisPeriodRows()(implicit request: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
-    val answer = request.session.get(SessionKeys.doYouWantToAppealBothPenalties).map(answer => messages(s"common.radioOption.$answer")).get
+  private def getMultiplePenaltiesForThisPeriodRows()(implicit userRequest: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+    val answer = userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).map(answer => messages(s"common.radioOption.$answer")).get
     Seq(
       CheckYourAnswersRow(
         messages("penaltySelection.form.heading"),
@@ -90,20 +88,20 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
   }
 
   //scalastyle:off
-  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String, fileNames: Option[String] = None, isLPP: Boolean = false)(implicit request: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
-    val multiplePenaltiesContent = if (request.session.get(SessionKeys.doYouWantToAppealBothPenalties).isDefined) getMultiplePenaltiesForThisPeriodRows else Seq.empty
+  def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String, fileNames: Option[String] = None, isLPP: Boolean = false)(implicit userRequest: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+    val multiplePenaltiesContent = if (userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).isDefined) getMultiplePenaltiesForThisPeriodRows else Seq.empty
     val reasonableExcuseContent = reasonableExcuse match {
       case "bereavement" => Seq(
         CheckYourAnswersRow(
           messages("checkYourAnswers.reasonableExcuse"),
-          messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+          messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
           changeAnswerUrl(
             controllers.routes.ReasonableExcuseController.onPageLoad().url,
             ReasonableExcuseSelectionPage
           )
         ),
         CheckYourAnswersRow(messages("bereavementReason.headingAndTitle"),
-          dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidThePersonDie).get)),
+          dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidThePersonDie).get),
           changeAnswerUrl(
             controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
             WhenDidThePersonDiePage
@@ -113,21 +111,21 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
       case "crime" => Seq(
         CheckYourAnswersRow(messages("checkYourAnswers.reasonableExcuse"),
-          messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+          messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
           changeAnswerUrl(
             controllers.routes.ReasonableExcuseController.onPageLoad().url,
             ReasonableExcuseSelectionPage
           )
         ),
         CheckYourAnswersRow(messages("crimeReason.headingAndTitle"),
-          dateToString(LocalDate.parse(request.session.get(SessionKeys.dateOfCrime).get)),
+          dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfCrime).get),
           changeAnswerUrl(
             controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url,
             WhenDidCrimeHappenPage
           )
         ),
         CheckYourAnswersRow(messages("crimeReason.hasBeenReported.headingAndTitle"),
-          messages(s"common.radioOption.${request.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get}"),
+          messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.hasCrimeBeenReportedToPolice).get}"),
           changeAnswerUrl(
             controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(CheckMode).url,
             HasCrimeBeenReportedPage
@@ -137,14 +135,14 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
       case "fireOrFlood" => Seq(
         CheckYourAnswersRow(messages("checkYourAnswers.reasonableExcuse"),
-          messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+          messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
           changeAnswerUrl(
             controllers.routes.ReasonableExcuseController.onPageLoad().url,
             ReasonableExcuseSelectionPage
           )
         ),
         CheckYourAnswersRow(messages("fireOrFloodReason.headingAndTitle"),
-          dateToString(LocalDate.parse(request.session.get(SessionKeys.dateOfFireOrFlood).get)),
+          dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get),
           changeAnswerUrl(
             controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url,
             WhenDidFireOrFloodHappenPage
@@ -154,14 +152,14 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
       case "lossOfStaff" => Seq(
         CheckYourAnswersRow(messages("checkYourAnswers.reasonableExcuse"),
-          messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+          messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
           changeAnswerUrl(
             controllers.routes.ReasonableExcuseController.onPageLoad().url,
             ReasonableExcuseSelectionPage
           )
         ),
         CheckYourAnswersRow(messages("lossOfStaffReason.headingAndTitle"),
-          dateToString(LocalDate.parse(request.session.get(SessionKeys.whenPersonLeftTheBusiness).get)),
+          dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness).get),
           changeAnswerUrl(
             controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url,
             WhenDidPersonLeaveTheBusinessPage
@@ -171,21 +169,21 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
       case "technicalIssues" => Seq(
         CheckYourAnswersRow(messages("checkYourAnswers.reasonableExcuse"),
-          messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+          messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
           changeAnswerUrl(
             controllers.routes.ReasonableExcuseController.onPageLoad().url,
             ReasonableExcuseSelectionPage
           )
         ),
         CheckYourAnswersRow(messages("technicalIssues.begin.headingAndTitle"),
-          dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidTechnologyIssuesBegin).get)),
+          dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).get),
           changeAnswerUrl(
             controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url,
             WhenDidTechnologyIssuesBeginPage
           )
         ),
         CheckYourAnswersRow(messages("technicalIssues.end.headingAndTitle"),
-          dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get)),
+          dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get),
           changeAnswerUrl(
             controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url,
             WhenDidTechnologyIssuesEndPage
@@ -197,7 +195,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
       case "other" =>
         val statementOfLatenessForLPPOrLSP: String = {
-          if (request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) || request.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)) {
+          if (userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment) || userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Additional)) {
             messages("otherReason.whyReturnSubmittedLate.lpp.headingAndTitle")
           } else {
             messages("otherReason.whyReturnSubmittedLate.headingAndTitle")
@@ -205,28 +203,28 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
         }
         val base = Seq(
           CheckYourAnswersRow(messages("checkYourAnswers.reasonableExcuse"),
-            messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+            messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
             changeAnswerUrl(
               controllers.routes.ReasonableExcuseController.onPageLoad().url,
               ReasonableExcuseSelectionPage
             )
           ),
           CheckYourAnswersRow(messages(WhenDidYouBecomeUnableHelper.getMessageKeyForPage("whenDidBecomeUnable.other")),
-            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenDidBecomeUnable).get)),
+            dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidBecomeUnable).get),
             changeAnswerUrl(
               controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
               WhenDidBecomeUnablePage
             )
           ),
           CheckYourAnswersRow(statementOfLatenessForLPPOrLSP,
-            request.session.get(SessionKeys.whyReturnSubmittedLate).get,
+            userRequest.answers.getAnswer[String](SessionKeys.whyReturnSubmittedLate).get,
             changeAnswerUrl(
               controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
               WhyWasReturnSubmittedLatePage
             )
           ),
           CheckYourAnswersRow(messages("otherReason.uploadEvidence.question.headingAndTitle"),
-            messages(s"common.radioOption.${request.session.get(SessionKeys.isUploadEvidence).get}"),
+            messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).get}"),
             changeAnswerUrl(
               controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
               UploadEvidenceQuestionPage
@@ -234,7 +232,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
           )
         )
 
-        if (request.session.get(SessionKeys.isUploadEvidence).get.equalsIgnoreCase("yes")) {
+        if (userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).get.equalsIgnoreCase("yes")) {
           base :+ CheckYourAnswersRow(
             messages("checkYourAnswers.other.fileEvidence"),
             if (fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
@@ -245,7 +243,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
         }
     }
 
-    request.session.get(SessionKeys.lateAppealReason).fold(
+    userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).fold(
       multiplePenaltiesContent ++ reasonableExcuseContent
     )(
       reason => {
@@ -262,27 +260,27 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     )
   }
 
-  def getHealthReasonAnswers()(implicit request: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
-    (request.session.get(SessionKeys.wasHospitalStayRequired), request.session.get(SessionKeys.hasHealthEventEnded)) match {
+  def getHealthReasonAnswers()(implicit userRequest: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+    (userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired), userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded)) match {
       //No hospital stay
       case (Some("no"), _) =>
         Seq(
           CheckYourAnswersRow(messages("checkYourAnswers.reasonableExcuse"),
-            messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+            messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
             changeAnswerUrl(
               controllers.routes.ReasonableExcuseController.onPageLoad().url,
               ReasonableExcuseSelectionPage
             )
           ),
           CheckYourAnswersRow(messages("healthReason.wasHospitalStayRequired.headingAndTitle"),
-            messages(s"common.radioOption.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
+            messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).get}"),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
               WasHospitalStayRequiredPage
             )
           ),
           CheckYourAnswersRow(messages(WhenDidYouBecomeUnableHelper.getMessageKeyForPage("health.whenHealthIssueHappened.headingAndTitle")),
-            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueHappened).get)),
+            dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened).get),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
               WhenDidHealthIssueHappenPage
@@ -293,35 +291,35 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
       case (Some("yes"), Some("yes")) =>
         Seq(
           CheckYourAnswersRow(messages("checkYourAnswers.reasonableExcuse"),
-            messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+            messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
             changeAnswerUrl(
               controllers.routes.ReasonableExcuseController.onPageLoad().url,
               ReasonableExcuseSelectionPage
             )
           ),
           CheckYourAnswersRow(messages("healthReason.wasHospitalStayRequired.headingAndTitle"),
-            messages(s"common.radioOption.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
+            messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).get}"),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
               WasHospitalStayRequiredPage
             )
           ),
           CheckYourAnswersRow(messages("healthReason.whenDidHospitalStayBegin.headingAndTitle"),
-            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueStarted).get)),
+            dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted).get),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
               WhenDidHospitalStayBeginPage
             )
           ),
           CheckYourAnswersRow(messages("healthReason.hasTheHospitalStayEnded.headingAndTitle"),
-            messages(s"common.radioOption.${request.session.get(SessionKeys.hasHealthEventEnded).get}"),
+            messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).get}"),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
               DidHospitalStayEndPage
             )
           ),
           CheckYourAnswersRow(messages("healthReason.hasTheHospitalStayEnded.yes.heading"),
-            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueEnded).get)),
+            dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).get),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
               DidHospitalStayEndPage
@@ -333,25 +331,25 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
       case (Some("yes"), Some("no")) =>
         Seq(
           CheckYourAnswersRow(messages("checkYourAnswers.reasonableExcuse"),
-            messages(s"reasonableExcuses.${request.session.get(SessionKeys.reasonableExcuse).get}Reason"),
+            messages(s"reasonableExcuses.${userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get}Reason"),
             changeAnswerUrl(
               controllers.routes.ReasonableExcuseController.onPageLoad().url,
               ReasonableExcuseSelectionPage
             )),
           CheckYourAnswersRow(messages("healthReason.wasHospitalStayRequired.headingAndTitle"),
-            messages(s"common.radioOption.${request.session.get(SessionKeys.wasHospitalStayRequired).get}"),
+            messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).get}"),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
               WasHospitalStayRequiredPage
             )),
           CheckYourAnswersRow(messages("healthReason.whenDidHospitalStayBegin.headingAndTitle"),
-            dateToString(LocalDate.parse(request.session.get(SessionKeys.whenHealthIssueStarted).get)),
+            dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted).get),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
               WhenDidHospitalStayBeginPage
             )),
           CheckYourAnswersRow(messages("healthReason.hasTheHospitalStayEnded.headingAndTitle"),
-            messages(s"common.radioOption.${request.session.get(SessionKeys.hasHealthEventEnded).get}"),
+            messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).get}"),
             changeAnswerUrl(
               controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
               DidHospitalStayEndPage
@@ -361,11 +359,11 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     }
   }
 
-  def getContentForAgentsCheckYourAnswersPage()(implicit request: Request[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+  def getContentForAgentsCheckYourAnswersPage()(implicit userRequest: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
 
     val seqWhoPlannedToSubmitVATReturn = Seq(
       CheckYourAnswersRow(messages("agents.whoPlannedToSubmitVATReturn.headingAndTitle"),
-        messages(s"checkYourAnswers.agents.whoPlannedToSubmitVATReturn.${request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get}"),
+        messages(s"checkYourAnswers.agents.whoPlannedToSubmitVATReturn.${userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).get}"),
         changeAnswerUrl(
           controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url,
           WhoPlannedToSubmitVATReturnAgentPage
@@ -373,10 +371,10 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
       )
     )
 
-    val seqWhatCausedAgentToMissDeadline = if (request.session.get(SessionKeys.whoPlannedToSubmitVATReturn).get.equals("agent")) {
+    val seqWhatCausedAgentToMissDeadline = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).get.equals("agent")) {
       Seq(
         CheckYourAnswersRow(messages("agents.whatCausedYouToMissTheDeadline.headingAndTitle"),
-          messages(s"checkYourAnswers.agents.whatCausedYouToMissTheDeadline.${request.session.get(SessionKeys.whatCausedYouToMissTheDeadline).get}"),
+          messages(s"checkYourAnswers.agents.whatCausedYouToMissTheDeadline.${userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).get}"),
           changeAnswerUrl(
             controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(CheckMode).url,
             WhatCausedYouToMissTheDeadlinePage
@@ -388,39 +386,39 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     seqWhoPlannedToSubmitVATReturn ++ seqWhatCausedAgentToMissDeadline
   }
 
-  def getAllTheContentForCheckYourAnswersPage(uploadFilenames: Option[String] = None)(implicit request: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+  def getAllTheContentForCheckYourAnswersPage(uploadFilenames: Option[String] = None)(implicit userRequest: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
 
-    val reasonableExcuse = request.session.get(SessionKeys.reasonableExcuse)
-    val agentSession = request.session.get(SessionKeys.agentSessionVrn).isDefined
-    val appealType = request.session.get(SessionKeys.appealType)
+    val reasonableExcuse = userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse)
+    val agentSession = userRequest.session.get(SessionKeys.agentSessionVrn).isDefined
+    val appealType = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
 
-    (request.session.get(SessionKeys.isObligationAppeal), reasonableExcuse.isDefined, agentSession) match {
+    (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal), reasonableExcuse.isDefined, agentSession) match {
       case (Some(_), _, _) => getContentForObligationAppealCheckYourAnswersPage(uploadFilenames)
       case (_, true, false) if isAllAnswerPresentForReasonableExcuse(reasonableExcuse.get) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
-      case (_, true, true) if appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames, isLPP = true)
+      case (_, true, true) if appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames, isLPP = true)
       case (_, true, true) => getContentForAgentsCheckYourAnswersPage() ++ getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
       case _ => Seq.empty
     }
   }
 
-  def getContentForObligationAppealCheckYourAnswersPage(fileNames: Option[String] = None)(implicit request: Request[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+  def getContentForObligationAppealCheckYourAnswersPage(fileNames: Option[String] = None)(implicit userRequest: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
     val base = Seq(
       CheckYourAnswersRow(messages("otherRelevantInformation.headingAndTitle"),
-        request.session.get(SessionKeys.otherRelevantInformation).get,
+        userRequest.answers.getAnswer[String](SessionKeys.otherRelevantInformation).get,
         changeAnswerUrl(
           controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
           OtherRelevantInformationPage
         )
       ),
       CheckYourAnswersRow(messages("otherReason.uploadEvidence.question.headingAndTitle"),
-        messages(s"common.radioOption.${request.session.get(SessionKeys.isUploadEvidence).get}"),
+        messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).get}"),
         changeAnswerUrl(
           controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
           UploadEvidenceQuestionPage
         )
       )
     )
-    if (request.session.get(SessionKeys.isUploadEvidence).get.equalsIgnoreCase("yes")) {
+    if (userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).get.equalsIgnoreCase("yes")) {
       base :+ CheckYourAnswersRow(
         messages("checkYourAnswers.other.fileEvidence"),
         if (fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
@@ -442,15 +440,15 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     }
   }
 
-  def getContentWithExistingUploadFileNames(reasonableExcuse: String)(implicit request: UserRequest[_], messages: Messages): Future[Seq[CheckYourAnswersRow]] = {
-    if (!reasonableExcuse.equals("other") && !request.session.get(SessionKeys.isObligationAppeal).contains("true")) {
-      Future(getAllTheContentForCheckYourAnswersPage()(request, messages))
+  def getContentWithExistingUploadFileNames(reasonableExcuse: String)(implicit userRequest: UserRequest[_], messages: Messages): Future[Seq[CheckYourAnswersRow]] = {
+    if (!reasonableExcuse.equals("other") && !userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {
+      Future(getAllTheContentForCheckYourAnswersPage()(userRequest, messages))
     }
     else {
       for {
-        fileNames <- getPreviousUploadsFileNames()(request)
+        fileNames <- getPreviousUploadsFileNames()(userRequest)
       } yield {
-        getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))(request, messages)
+        getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))(userRequest, messages)
       }
     }
   }

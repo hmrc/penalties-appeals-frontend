@@ -18,8 +18,8 @@ package helpers
 
 import base.SpecBase
 import config.AppConfig
-import org.mockito.Mockito.mock
 import config.featureSwitches.FeatureSwitching
+import org.mockito.Mockito.mock
 
 import java.time.LocalDateTime
 

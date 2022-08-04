@@ -16,12 +16,13 @@
 
 package global
 
-import controllers.predicates.{DataRequiredAction, DataRequiredActionImpl}
+import controllers.predicates._
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
 
 class ServiceBindings extends Module {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
-    bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly()
+    bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly(),
+    bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]).eagerly()
   )
 }

@@ -25,7 +25,7 @@
         id: String = "date",
         hintText: Option[String] = None,
         showPenaltyInformation: Boolean = true,
-        legendAsPageHeading: Boolean = false)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
+        legendAsPageHeading: Boolean = false)(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
 
 @legend = {
   <h1 class="govuk-fieldset__heading">

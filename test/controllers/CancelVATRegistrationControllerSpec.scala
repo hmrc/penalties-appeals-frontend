@@ -17,8 +17,13 @@
 package controllers
 
 import base.SpecBase
+import models.session.UserAnswers
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{status, _}
 import testUtils.AuthTestModels
@@ -28,50 +33,60 @@ import utils.SessionKeys
 import views.html.CancelVATRegistrationPage
 
 import java.time.LocalDate
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CancelVATRegistrationControllerSpec extends SpecBase {
   val cancelVATRegistrationPage: CancelVATRegistrationPage = injector.instanceOf[CancelVATRegistrationPage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-
-    reset(mockAuthConnector)
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
+    val sessionAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
+    reset(mockAuthConnector, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
+    when(mockSessionService.getUserAnswers(any()))
+      .thenReturn(Future.successful(Some(sessionAnswers)))
 
     val controller: CancelVATRegistrationController = new CancelVATRegistrationController(
       cancelVATRegistrationPage,
-      mainNavigator
-    )(authPredicate, dataRequiredAction, appConfig, mcc)
+      mainNavigator,
+      mockSessionService
+    )(authPredicate, dataRequiredAction, dataRetrievalAction, appConfig, mcc, ec)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
   }
 
   "CancelVATRegistrationController" should {
-    "onPageLoadForCancelVATRegistration" should {
+    "onPageLoadForCancelVATRegistration" when {
       "the user is authorised" must {
         "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
           val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
+
+        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
+          val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+
+        "return OK and correct view (pre-populated option when present in session)" in new Setup(AuthTestModels.successfulAuthResult, Json.obj(SessionKeys.cancelVATRegistration -> "yes")) {
+          val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+          val documentParsed: Document = Jsoup.parse(contentAsString(result))
+          documentParsed.select("#value").hasAttr("checked") shouldBe true
+        }
       }
-      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
-      "return OK and correct view (pre-populated option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequestConverter(fakeRequestWithCorrectKeys.
-          withSession(SessionKeys.cancelVATRegistration -> "yes")))
-        status(result) shouldBe OK
-      }
-      "the user is unauthorised" when {
+      "the user is unauthorised" must {
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
           val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequest)
           status(result) shouldBe FORBIDDEN
         }
+
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequest)
           status(result) shouldBe SEE_OTHER
@@ -83,15 +98,18 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing when a valid option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequestConverter(fakeRequestWithCorrectKeys
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
+          val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequestConverter(fakeRequest = fakeRequest
             .withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER
-          await(result).session.get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
+          answerCaptor.getValue shouldBe userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.cancelVATRegistration -> "yes"))
         }
       }
       "the user is unauthorised" when {
         "return 400 (BAD_REQUEST) when a no option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequestConverter(fakeRequestWithCorrectKeys
+          val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequestConverter(fakeRequest = fakeRequest
             .withFormUrlEncodedBody("value" -> "")))
           status(result) shouldBe BAD_REQUEST
         }

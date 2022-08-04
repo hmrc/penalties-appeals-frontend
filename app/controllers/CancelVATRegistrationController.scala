@@ -17,15 +17,16 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.CancelVATRegistrationForm
 import helpers.FormProviderHelper
-import models.{Mode, NormalMode}
 import models.pages.{CancelVATRegistrationPage, PageMode}
+import models.{Mode, NormalMode}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
@@ -33,25 +34,30 @@ import views.html.CancelVATRegistrationPage
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class CancelVATRegistrationController @Inject()(
                                                  cancelVATRegistrationPage: CancelVATRegistrationPage,
-                                                 navigation: Navigation
+                                                 navigation: Navigation,
+                                                 sessionService: SessionService
                                                )(implicit
                                                  authorise: AuthPredicate,
                                                  dataRequired: DataRequiredAction,
+                                                 dataRetrieval: DataRetrievalAction,
                                                  appConfig: AppConfig,
-                                                 mcc: MessagesControllerComponents
+                                                 mcc: MessagesControllerComponents,
+                                                 executionContext: ExecutionContext
                                                ) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(CancelVATRegistrationPage, mode)
 
-  def onPageLoadForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRequired) {
-      implicit userRequest => {
+  def onPageLoadForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+    implicit userRequest => {
       val formProvider: Form[String] =
         FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
           CancelVATRegistrationForm.cancelVATRegistrationForm,
-          SessionKeys.cancelVATRegistration
+          SessionKeys.cancelVATRegistration,
+          userRequest.answers
         )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
       val postAction = controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
@@ -59,21 +65,23 @@ class CancelVATRegistrationController @Inject()(
     }
   }
 
-  def onSubmitForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRequired) { implicit userRequest => {
-      CancelVATRegistrationForm.cancelVATRegistrationForm
-        .bindFromRequest()
-        .fold(
-          form => {
-            val postAction =
-              controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
-            val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
-            BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction, pageMode(NormalMode)))
-          },
-          cancelVATRegistration => {
-            Redirect(navigation.nextPage(CancelVATRegistrationPage, NormalMode, Some(cancelVATRegistration))
-            ).addingToSession(SessionKeys.cancelVATRegistration -> cancelVATRegistration)
+  def onSubmitForCancelVATRegistration(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit userRequest => {
+    CancelVATRegistrationForm.cancelVATRegistrationForm
+      .bindFromRequest()
+      .fold(
+        form => {
+          val postAction =
+            controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
+          val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
+          Future(BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction, pageMode(NormalMode))))
+        },
+        cancelVATRegistration => {
+          val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.cancelVATRegistration, cancelVATRegistration)
+          sessionService.updateAnswers(updatedAnswers).map {
+            _ => Redirect(navigation.nextPage(CancelVATRegistrationPage, NormalMode, Some(cancelVATRegistration)))
           }
+        }
       )
-    }
+  }
   }
 }

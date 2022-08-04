@@ -21,6 +21,7 @@ import helpers.SessionAnswersHelper
 import models.{PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
@@ -42,105 +43,120 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
   val uploadJourneyRepository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
-  val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val crimeAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "crime",
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-    SessionKeys.hasConfirmedDeclaration -> "true",
-    SessionKeys.dateOfCrime -> "2022-01-01")
-  )
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.dateOfCrime -> "2022-01-01"
+  ) ++ correctUserAnswers
 
-  val fakeRequestForLossOfStaffJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(crimeAnswers, fakeRequest)
+
+  val lossOfStaffAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "lossOfStaff",
-    SessionKeys.hasConfirmedDeclaration -> "true",
-    SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01")
-  )
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
+  ) ++ correctUserAnswers
 
-  val fakeRequestForTechnicalIssuesJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+
+  val fakeRequestForLossOfStaffJourney: UserRequest[AnyContent] = fakeRequestConverter(lossOfStaffAnswers, fakeRequest)
+
+  val techIssuesAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "technicalIssues",
-    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-    SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02")
-  )
+    SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+  ) ++ correctUserAnswers
 
-  val fakeRequestForHealthNoHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForTechnicalIssuesJourney: UserRequest[AnyContent] = fakeRequestConverter(techIssuesAnswers, fakeRequest)
+
+  val noHospitalStayAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "health",
-    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.wasHospitalStayRequired -> "no",
-    SessionKeys.whenHealthIssueHappened -> "2022-01-02")
-  )
+    SessionKeys.whenHealthIssueHappened -> "2022-01-02"
+  ) ++ correctUserAnswers
 
-  val fakeRequestForHealthOngoingHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForHealthNoHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(noHospitalStayAnswers, fakeRequest)
+
+  val hospitalOngoingAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "health",
-    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.wasHospitalStayRequired -> "yes",
     SessionKeys.hasHealthEventEnded -> "no",
-    SessionKeys.whenHealthIssueStarted -> "2022-01-02")
-  )
+    SessionKeys.whenHealthIssueStarted -> "2022-01-02"
+  ) ++ correctUserAnswers
 
-  val fakeRequestForHealthEndedHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForHealthOngoingHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(hospitalOngoingAnswers, fakeRequest)
+
+  val hospitalEndedAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "health",
-    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.wasHospitalStayRequired -> "yes",
     SessionKeys.hasHealthEventEnded -> "yes",
     SessionKeys.whenHealthIssueStarted -> "2022-01-02",
-    SessionKeys.whenHealthIssueEnded -> "2022-01-03")
-  )
+    SessionKeys.whenHealthIssueEnded -> "2022-01-03"
+  ) ++ correctUserAnswers
 
-  val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForHealthEndedHospitalStayJourney: UserRequest[AnyContent] = fakeRequestConverter(hospitalEndedAnswers, fakeRequest)
+
+  val otherAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "other",
-    SessionKeys.hasConfirmedDeclaration -> "true",
+    SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
     SessionKeys.whenDidBecomeUnable -> "2022-01-02",
     SessionKeys.journeyId -> "4321",
     SessionKeys.isUploadEvidence -> "yes"
-  ))
+  ) ++ correctUserAnswers
 
-  val fakeRequestForCrimeJourneyNoReasonableExcuse: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
-    .withSession(
-      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-      SessionKeys.hasConfirmedDeclaration -> "true",
-      SessionKeys.dateOfCrime -> "2022-01-01"
-    )
-  )
+  val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(otherAnswers, fakeRequest)
 
-  val fakeRequestForCrimeJourneyWithoutSomeAnswers: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
-    .withSession(
+  val crimeNoReasonAnswers: JsObject = Json.obj(
+    SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.dateOfCrime -> "2022-01-01"
+  ) ++ correctUserAnswers
+
+  val fakeRequestForCrimeJourneyNoReasonableExcuse: UserRequest[AnyContent] = fakeRequestConverter(crimeNoReasonAnswers, fakeRequest)
+
+  val crimeMissingAnswers: JsObject = Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
-      SessionKeys.hasConfirmedDeclaration -> "true",
+      SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfCrime -> "2022-01-01"
-    )
-  )
+  ) ++ correctUserAnswers
 
-  val fakeRequestForBereavementJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
-    .withSession(
-      SessionKeys.reasonableExcuse -> "bereavement",
-      SessionKeys.hasConfirmedDeclaration -> "true",
-      SessionKeys.whenDidThePersonDie -> "2021-01-01"
-    )
-  )
+  val fakeRequestForCrimeJourneyWithoutSomeAnswers: UserRequest[AnyContent] = fakeRequestConverter(crimeMissingAnswers, fakeRequest)
 
-  val fakeRequestForObligationAppealJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
-    .withSession(
-      SessionKeys.isObligationAppeal -> "true",
-      SessionKeys.otherRelevantInformation -> "This is some relevant information",
-      SessionKeys.journeyId -> "4321",
-      SessionKeys.isUploadEvidence -> "yes"
-    )
-  )
+  val bereavementAnswers: JsObject = Json.obj(
+    SessionKeys.reasonableExcuse -> "bereavement",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.whenDidThePersonDie -> "2021-01-01"
+  ) ++ correctUserAnswers
 
-  val fakeRequestForLPPAgentAppeal: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys
-    .withSession(
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-      SessionKeys.agentSessionVrn -> "VRN1234",
-      SessionKeys.reasonableExcuse -> "bereavement",
-      SessionKeys.hasConfirmedDeclaration -> "true",
-      SessionKeys.whenDidThePersonDie -> "2021-01-01"
-    )
-  )
+  val fakeRequestForBereavementJourney: UserRequest[AnyContent] = fakeRequestConverter(bereavementAnswers, fakeRequest)
+
+  val obligationAnswers: JsObject = Json.obj(
+    SessionKeys.isObligationAppeal -> true,
+    SessionKeys.otherRelevantInformation -> "This is some relevant information",
+    SessionKeys.journeyId -> "4321",
+    SessionKeys.isUploadEvidence -> "yes"
+  ) ++ correctUserAnswers
+
+  val fakeRequestForObligationAppealJourney: UserRequest[AnyContent] = fakeRequestConverter(obligationAnswers, fakeRequest)
+
+  val agentLPPAnswers: JsObject = Json.obj(
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+    SessionKeys.agentSessionVrn -> "VRN1234",
+    SessionKeys.reasonableExcuse -> "bereavement",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.whenDidThePersonDie -> "2021-01-01"
+  ) ++ correctUserAnswers
+
+  val fakeRequestForLPPAgentAppeal: UserRequest[AnyContent] = fakeRequestConverter(agentLPPAnswers, fakeRequest)
+
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector)
-    reset(mockAppealService)
+    reset(mockAuthConnector, mockAppealService, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
@@ -154,78 +170,106 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     errorHandler,
     uploadJourneyRepository,
     sessionAnswersHelper
-  )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRequiredAction)
+  )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction)
 
   "onPageLoad" should {
     "the user is authorised" must {
 
       "return OK and correct view - when all answers exist for crime" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when all answers exist for loss of staff" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(lossOfStaffAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForLossOfStaffJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when all answers exist for technical issues" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(techIssuesAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForTechnicalIssuesJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when all answers exist for health - no hospital stay" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(noHospitalStayAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForHealthNoHospitalStayJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when all answers exist for health - ongoing hospital stay" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(hospitalOngoingAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForHealthOngoingHospitalStayJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when all answers exist for health - ended hospital stay" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(hospitalEndedAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForHealthEndedHospitalStayJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when all answers exist for other" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(otherAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForOtherJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when all answers exist for bereavement" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(bereavementAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForBereavementJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when it is an appeal against the obligation" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForObligationAppealJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when file is uploaded" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForObligationAppealJourney)
         status(result) shouldBe OK
       }
 
       "return OK and correct view - when user is agent submitting an LPP appeal" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(agentLPPAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForLPPAgentAppeal)
         status(result) shouldBe OK
       }
 
       "return ISE" when {
         "the user has not selected a reasonable excuse" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourneyNoReasonableExcuse)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "the user has not completed all required answers" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(crimeMissingAnswers))))
           val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourneyWithoutSomeAnswers)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "the user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
@@ -251,6 +295,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       "redirect the user to the confirmation page on success" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right((): Unit)))
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
         when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
           .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
@@ -261,6 +307,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right((): Unit)))
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
         when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
           .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
@@ -271,6 +319,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       "redirect the user to an ISE" when {
 
         "the appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourney)
@@ -280,17 +330,23 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the obligation appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
 
         "there is no reasonable excuse selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(crimeNoReasonAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourneyNoReasonableExcuse)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "not all session keys are present" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(crimeMissingAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourneyWithoutSomeAnswers)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
@@ -300,6 +356,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the downstream service returns SERVICE_UNAVAILABLE" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(SERVICE_UNAVAILABLE)))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ServiceUnavailableController.onPageLoad().url
@@ -308,6 +366,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the downstream service returns INTERNAL_SERVER_ERROR" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -316,6 +376,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the downstream service returns BAD_REQUEST" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(BAD_REQUEST)))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -324,6 +386,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the downstream service returns UNPROCESSABLE_ENTITY" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(UNPROCESSABLE_ENTITY)))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -334,6 +398,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the downstream service returns CONFLICT" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockAppealService.submitAppeal(any())(any(), any(), any()))
             .thenReturn(Future.successful(Left(CONFLICT)))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForObligationAppealJourney)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.DuplicateAppealController.onPageLoad().url
@@ -358,6 +424,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   "onPageLoadForConfirmation" should {
     "the user is authorised" when {
       "show the confirmation page and remove all custom session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
         val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequestForCrimeJourney)
         await(result).header.status shouldBe OK
         SessionKeys.allKeys.toSet.subsetOf(await(result).session.data.values.toSet) shouldBe false

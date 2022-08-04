@@ -17,7 +17,7 @@
 package controllers
 
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.upscan.RemoveFileQuestionForm
 import models.{Mode, UserRequest}
 import play.api.data.Form
@@ -26,7 +26,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
-import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.other.RemoveFilePage
 import viewtils.RadioOptionHelper
 
@@ -39,23 +38,22 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
                                                                      appConfig: AppConfig,
                                                                      authorise: AuthPredicate,
                                                                      dataRequired: DataRequiredAction,
+                                                                     dataRetrieval: DataRetrievalAction,
                                                                      ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
-  def onPageLoad(fileReference: String, isJsEnabled: Boolean, mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
+  def onPageLoad(fileReference: String, isJsEnabled: Boolean, mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
-      val journeyId: String = request.session.get(SessionKeys.journeyId).get
-      showPage(journeyId, fileReference, RemoveFileQuestionForm.form, Ok, mode, isJsEnabled)
+      showPage(request.answers.journeyId, fileReference, RemoveFileQuestionForm.form, Ok, mode, isJsEnabled)
     }
   }
 
-  def onSubmit(fileReference: String, isJsEnabled: Boolean, mode: Mode): Action[AnyContent] = (authorise andThen dataRequired).async {
+  def onSubmit(fileReference: String, isJsEnabled: Boolean, mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
-      val journeyId: String = request.session.get(SessionKeys.journeyId).get
       RemoveFileQuestionForm.form.bindFromRequest.fold(
-        formWithErrors => showPage(journeyId, fileReference, formWithErrors, BadRequest, mode, isJsEnabled),
+        formWithErrors => showPage(request.answers.journeyId, fileReference, formWithErrors, BadRequest, mode, isJsEnabled),
         answer => {
-          if(answer == "yes") {
-            upscanService.removeFileFromJourney(journeyId, fileReference).map {
+          if (answer == "yes") {
+            upscanService.removeFileFromJourney(request.answers.journeyId, fileReference).map {
               _ => {
                 routeToUploadPage(isJsEnabled, mode)
               }
@@ -73,6 +71,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
     }
   }
 
+
   private def showPage(journeyId: String,
                        fileReference: String,
                        form: Form[_],
@@ -80,7 +79,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
                        mode: Mode,
                        isJsEnabled: Boolean)(implicit userRequest: UserRequest[_]): Future[Result] = {
     val backUrl = {
-      if(isJsEnabled) controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
+      if (isJsEnabled) controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
       else controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)
     }
     upscanService.getFileNameForJourney(journeyId, fileReference).map {
@@ -104,7 +103,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
   }
 
   private def routeToUploadPage(isJsEnabled: Boolean, mode: Mode): Result = {
-    if(isJsEnabled) {
+    if (isJsEnabled) {
       Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode))
     } else {
       //Relying on upload list to handle further routing if no files are left

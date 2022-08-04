@@ -24,14 +24,14 @@
         characterCount: components.characterCount,
         formHelper: FormWithCSRF)
 
-@(form: Form[_], postAction: Call, pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{
-  request.session.get(SessionKeys.appealType)
+    userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
 }
 
 @pageTitleAndHeading = @{
-  if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+  if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
     "otherReason.whyReturnSubmittedLate.lpp.headingAndTitle"
   } else "otherReason.whyReturnSubmittedLate.headingAndTitle"
 }

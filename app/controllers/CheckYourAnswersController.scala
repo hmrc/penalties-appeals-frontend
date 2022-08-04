@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import helpers.SessionAnswersHelper
 import javax.inject.Inject
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
@@ -50,17 +50,18 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
                                            val config: Configuration,
                                            appConfig: AppConfig,
                                            authorise: AuthPredicate,
+                                           dataRetrieval: DataRetrievalAction,
                                            dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter with FeatureSwitching {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(CheckYourAnswersPage, mode)
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen dataRequired).async {
-    implicit request => {
-      request.session.get(SessionKeys.reasonableExcuse).fold({
-        if(request.session.get(SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+  def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+    implicit userRequest => {
+      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
+        if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
           logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
           for {
-            fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(request)
+            fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(userRequest)
           } yield {
             val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
             Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
@@ -80,7 +81,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             }
           } else {
             logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${request.session.data} " +
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${userRequest.session.data} " +
               s"and tried to load page with reasonable excuse: $reasonableExcuse")
             Future(errorHandler.showInternalServerError)
           }
@@ -89,10 +90,10 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired).async {
-    implicit request => {
-      request.session.get(SessionKeys.reasonableExcuse).fold({
-        if(request.session.get(SessionKeys.isObligationAppeal).getOrElse("") == "true") {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+    implicit userRequest => {
+      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
+        if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {
           handleAppealSubmission("obligation")
         } else {
           logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
@@ -128,22 +129,22 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     ))
   }
 
-  def onPageLoadForConfirmation(): Action[AnyContent] = (authorise andThen dataRequired) {
-    implicit request => {
-      val penaltyType: String = PenaltyTypeEnum.withName(request.session.get(SessionKeys.appealType).get) match {
+  def onPageLoadForConfirmation(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+    implicit userRequest => {
+      val penaltyType: String = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get match {
         case Late_Submission => "penaltyType.lateSubmission"
         case Late_Payment | Additional => "penaltyType.latePayment"
       }
       val (readablePeriodStart, readablePeriodEnd) =
-        (dateToString(LocalDate.parse(request.session.get(SessionKeys.startDateOfPeriod).get)),
-          dateToString(LocalDate.parse(request.session.get(SessionKeys.endDateOfPeriod).get)))
-      val isObligationAppeal: Boolean = request.session.get(SessionKeys.isObligationAppeal).contains("true")
+        (dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get),
+          dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get))
+      val isObligationAppeal: Boolean = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)
       Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal))
         .removingFromSession(SessionKeys.allKeys: _*)
     }
   }
 
-  def changeAnswer(continueUrl: String, pageName: String): Action[AnyContent] = (authorise andThen dataRequired) {
+  def changeAnswer(continueUrl: String, pageName: String): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
       Redirect(continueUrl).addingToSession(SessionKeys.originatingChangePage -> pageName)
     }

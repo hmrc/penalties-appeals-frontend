@@ -21,9 +21,9 @@ import forms.upscan.UploadDocumentForm
 import messages.UploadFirstDocumentMessages._
 import models.pages.{PageMode, UploadFirstDocumentPage}
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
-import models.{NormalMode, PenaltyTypeEnum}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
-import play.api.test.FakeRequest
+import play.api.libs.json.Json
 import play.twirl.api.HtmlFormat
 import utils.SessionKeys
 import views.behaviours.ViewBehaviours
@@ -52,12 +52,12 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         fields = Map.empty
       )
     )
-    def applyView(request: FakeRequest[_] = fakeRequest): HtmlFormat.Appendable = {
+    def applyView(request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = {
       uploadFirstDocumentPage.apply(mockUpscanInitiateResponseModel, form,
         pageMode = PageMode(UploadFirstDocumentPage, NormalMode))(request, implicitly, implicitly)
     }
 
-    implicit val doc: Document = asDocument(applyView(fakeRequest))
+    implicit val doc: Document = asDocument(applyView(userRequestWithCorrectKeys))
 
     val expectedContent = Seq(
       Selectors.title -> title,
@@ -80,8 +80,7 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
     behave like pageWithExpectedMessages(expectedContent)
 
     "display the LPP variation when the appeal is for a LPP" must {
-      implicit val lppDoc: Document = asDocument(applyView(fakeRequest.withSession(
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString)))
+      implicit val lppDoc: Document = asDocument(applyView(userRequestLPPWithCorrectKeys))
 
       val expectedContent = Seq(
         Selectors.title -> title,
@@ -105,9 +104,8 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "display appeal against the obligation page when the appeal is for LSP" must {
-      implicit val doc: Document = asDocument(applyView(fakeRequest.withSession(
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-        SessionKeys.isObligationAppeal -> "true")))
+      implicit val doc: Document = asDocument(applyView(fakeRequestConverter(correctUserAnswers ++ Json.obj(
+        SessionKeys.isObligationAppeal -> true))))
 
       val expectedContent = Seq(
         Selectors.title -> title,
@@ -131,8 +129,7 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "display the LPP variation when the appeal is for a LPP - Additional" must {
-      implicit val lppAdditionalDoc: Document = asDocument(applyView(fakeRequest.withSession(
-        SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString)))
+      implicit val lppAdditionalDoc: Document = asDocument(applyView(userRequestAdditionalWithCorrectKeys))
 
       val expectedContent = Seq(
         Selectors.title -> title,
@@ -156,9 +153,9 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "display appeal against the obligation page when the appeal is for LPP" must {
-      implicit val doc: Document = asDocument(applyView(fakeRequest.withSession(
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-        SessionKeys.isObligationAppeal -> "true")))
+      implicit val doc: Document = asDocument(applyView(fakeRequestConverter(correctLPPUserAnswers ++ Json.obj(
+        SessionKeys.isObligationAppeal -> true
+      ))))
 
       val expectedContent = Seq(
         Selectors.title -> title,

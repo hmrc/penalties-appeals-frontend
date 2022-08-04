@@ -19,10 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.{WhenDidTechnologyIssuesBeginForm, WhenDidTechnologyIssuesEndForm}
 import messages.{WhenDidTechnologyIssuesBeginMessages, WhenDidTechnologyIssuesEndMessages}
-import models.NormalMode
 import models.pages.{PageMode, WhenDidTechnologyIssuesBeginPage, WhenDidTechnologyIssuesEndPage}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.technicalIssues.TechnologyIssuesDatePage
@@ -33,10 +34,14 @@ class TechnologyIssuesDatePageSpec extends SpecBase with ViewBehaviours {
   "TechnologyIssuesDatePage" should {
     "have a begin variation" when {
       val whenDidTechnologyIssuesBeginPage: TechnologyIssuesDatePage = injector.instanceOf[TechnologyIssuesDatePage]
+      implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
+
       object Selectors extends BaseSelectors
 
       def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidTechnologyIssuesBeginPage.apply(form,
-        controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(NormalMode), "technicalIssues.begin", pageMode = PageMode(WhenDidTechnologyIssuesBeginPage, NormalMode))
+        controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(NormalMode),
+        "technicalIssues.begin",
+        pageMode = PageMode(WhenDidTechnologyIssuesBeginPage, NormalMode))
 
       val formProvider = WhenDidTechnologyIssuesBeginForm.whenDidTechnologyIssuesBeginForm()
 
@@ -56,12 +61,16 @@ class TechnologyIssuesDatePageSpec extends SpecBase with ViewBehaviours {
     }
 
     "have an end variation" when {
+      implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
+
       val whenDidTechnologyIssuesBeginPage: TechnologyIssuesDatePage = injector.instanceOf[TechnologyIssuesDatePage]
       object Selectors extends BaseSelectors
       val sampleStartDateForFormValidation: LocalDate = LocalDate.of(2021, 12, 31)
 
       def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidTechnologyIssuesBeginPage.apply(form,
-        controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(NormalMode), "technicalIssues.end", pageMode = PageMode(WhenDidTechnologyIssuesEndPage, NormalMode))
+        controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesBegan(NormalMode),
+        "technicalIssues.end",
+        pageMode = PageMode(WhenDidTechnologyIssuesEndPage, NormalMode))
 
       val formProvider = WhenDidTechnologyIssuesEndForm.whenDidTechnologyIssuesEndForm(sampleStartDateForFormValidation)
 

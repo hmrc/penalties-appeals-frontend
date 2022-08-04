@@ -28,7 +28,7 @@
         inline: Boolean = false,
         formFieldId: String = "value",
         showPenaltyInformation: Boolean = true
-)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
+)(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
 
 @legend = {
   <h1 class="govuk-fieldset__heading">

@@ -19,10 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHospitalStayBeginForm
 import messages.WhenDidHospitalStayBeginMessages._
-import models.NormalMode
 import models.pages.{PageMode, WhenDidHospitalStayBeginPage}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.WhenDidHospitalStayBeginPage
@@ -31,6 +32,7 @@ import java.time.LocalDate
 
 class WhenDidHospitalStayBeginPageSpec extends SpecBase with ViewBehaviours{
   val whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginPage = injector.instanceOf[WhenDidHospitalStayBeginPage]
+  implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
   object Selectors extends BaseSelectors
   def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidHospitalStayBeginPage.apply(form,

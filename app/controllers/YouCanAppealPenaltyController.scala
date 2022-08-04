@@ -17,15 +17,16 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.YouCanAppealPenaltyForm.youCanAppealPenaltyForm
 import helpers.FormProviderHelper
-import models.{Mode, NormalMode}
 import models.pages.{PageMode, YouCanAppealThisPenaltyPage}
+import models.{Mode, NormalMode}
 import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
@@ -34,36 +35,46 @@ import views.html.obligation.YouCanAppealPenaltyPage
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
-                                              navigation: Navigation)(
+                                              navigation: Navigation,
+                                              sessionService: SessionService)(
                                                implicit mcc: MessagesControllerComponents,
                                                appConfig: AppConfig,
                                                authorise: AuthPredicate,
-                                               dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+                                               dataRequired: DataRequiredAction,
+                                               dataRetrieval: DataRetrievalAction,
+                                               executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(YouCanAppealThisPenaltyPage, mode)
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
-    val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+    implicit request =>
+
+      val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         youCanAppealPenaltyForm,
-        SessionKeys.youCanAppealThisPenalty
-    )
-    val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
-    val postAction = controllers.routes.YouCanAppealPenaltyController.onSubmit()
-    Ok(page(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
+        SessionKeys.youCanAppealThisPenalty,
+        request.answers
+      )
+      val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
+      val postAction = controllers.routes.YouCanAppealPenaltyController.onSubmit()
+      Ok(page(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRequired) { implicit request =>
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit request =>
     youCanAppealPenaltyForm.bindFromRequest.fold(
       formWithErrors => {
         logger.debug(s"[YouCanAppealPenaltyController][onSubmit] - Form errors: ${formWithErrors.errors}")
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
         val postAction = controllers.routes.YouCanAppealPenaltyController.onSubmit()
-        BadRequest(page(formWithErrors, radioOptionsToRender, postAction, pageMode(NormalMode)))
+        Future(BadRequest(page(formWithErrors, radioOptionsToRender, postAction, pageMode(NormalMode))))
       },
       answer => {
-        Redirect(navigation.nextPage(YouCanAppealThisPenaltyPage, NormalMode, Some(answer))).addingToSession(SessionKeys.youCanAppealThisPenalty -> answer)
+        val updatedAnswers = request.answers.setAnswer[String](SessionKeys.youCanAppealThisPenalty, answer)
+        sessionService.updateAnswers(updatedAnswers).map {
+          _ => Redirect(navigation.nextPage(YouCanAppealThisPenaltyPage, NormalMode, Some(answer)))
+        }
       }
     )
   }

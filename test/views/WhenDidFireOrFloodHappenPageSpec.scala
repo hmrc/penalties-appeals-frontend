@@ -19,10 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidFireOrFloodHappenForm
 import messages.WhenDidFireOrFloodHappenMessages._
-import models.NormalMode
 import models.pages.{PageMode, WhenDidFireOrFloodHappenPage}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.fireOrFlood.WhenDidFireOrFloodHappenPage
@@ -32,6 +33,7 @@ import java.time.LocalDate
 class WhenDidFireOrFloodHappenPageSpec extends SpecBase with ViewBehaviours{
 
   val fireOrFloodPage: WhenDidFireOrFloodHappenPage = injector.instanceOf[WhenDidFireOrFloodHappenPage]
+  implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
   object Selectors extends BaseSelectors
 

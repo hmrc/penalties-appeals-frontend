@@ -35,18 +35,21 @@ class PreviousPageControllerSpec extends SpecBase {
   val mockNavigator = mock(classOf[Navigation])
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
+
+    val controller = new PreviousPageController(mockNavigator)(mcc, authPredicate, dataRetrievalAction, dataRequiredAction)
   }
 
-  val controller = new PreviousPageController(mockNavigator)(mcc, authPredicate, dataRequiredAction)
   "previousPage" should {
     "redirect to the previous page relative to the given page" in new Setup(AuthTestModels.successfulAuthResult) {
       when(mockNavigator.previousPage(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Call("", "/url"))
+      when(mockSessionService.getUserAnswers(any()))
+        .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
       val result = controller.previousPage(ReasonableExcuseSelectionPage.toString, NormalMode)(userRequestWithCorrectKeys)
       status(result) shouldBe SEE_OTHER
     }

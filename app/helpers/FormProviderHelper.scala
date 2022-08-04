@@ -17,49 +17,38 @@
 package helpers
 
 import models.appeals.HospitalStayEndInput
+import models.session.UserAnswers
 import play.api.data.Form
-import play.api.mvc.Request
 
 import java.time.LocalDate
 
 object FormProviderHelper {
-  def getSessionKeyAndAttemptToFillAnswerAsString(formProvider: Form[String], sessionKeyToQuery: String)(implicit request: Request[_]): Form[String] = {
-    if (request.session.get(sessionKeyToQuery).isDefined) {
-      formProvider.fill(request.session.get(sessionKeyToQuery).get)
-    } else {
-      formProvider
+  def getSessionKeyAndAttemptToFillAnswerAsString(formProvider: Form[String], sessionKeyToQuery: String, userAnswers: UserAnswers): Form[String] = {
+    userAnswers.getAnswer[String](sessionKeyToQuery) match {
+      case Some(answer) => formProvider.fill(answer)
+      case None => formProvider
     }
   }
 
-  def getSessionKeyAndAttemptToFillAnswerAsOptionString(formProvider: Form[Option[String]], sessionKeyToQuery: String)
-                                                       (implicit request: Request[_]): Form[Option[String]] = {
-    if (request.session.get(sessionKeyToQuery).isDefined) {
-      formProvider.fill(Some(request.session.get(sessionKeyToQuery).get))
-    } else {
-      formProvider
+  def getSessionKeyAndAttemptToFillAnswerAsDate(formProvider: Form[LocalDate], sessionKeyToQuery: String, userAnswers: UserAnswers): Form[LocalDate] = {
+    userAnswers.getAnswer[LocalDate](sessionKeyToQuery) match {
+      case Some(answer) => formProvider.fill(answer)
+      case None => formProvider
     }
   }
 
-  def getSessionKeyAndAttemptToFillAnswerAsDate(formProvider: Form[LocalDate], sessionKeyToQuery: String)(implicit request: Request[_]): Form[LocalDate] = {
-    if (request.session.get(sessionKeyToQuery).isDefined) {
-      val parsedDate: LocalDate = LocalDate.parse(request.session.get(sessionKeyToQuery).get)
-      formProvider.fill(parsedDate)
-    } else {
-      formProvider
-    }
-  }
-
-  def getSessionKeysAndAttemptToFillConditionalForm(formProvider: Form[HospitalStayEndInput], sessionKvs: (String, String)
-                                                   )(implicit request: Request[_]): Form[HospitalStayEndInput] = {
-    (request.session.get(sessionKvs._1), request.session.get(sessionKvs._2)) match {
-      case (Some(key1), Some(key2)) =>
-        val parsedDate: LocalDate = LocalDate.parse(key2)
-        val formInput = HospitalStayEndInput(key1, Some(parsedDate))
-        formProvider.fill(formInput)
-      case (Some(key1), None) =>
-        val formInput = HospitalStayEndInput(key1, None)
-        formProvider.fill(formInput)
-      case (_, _) => formProvider
+  def getSessionKeysAndAttemptToFillConditionalForm(formProvider: Form[HospitalStayEndInput], sessionKvs: (String, String), userAnswers: UserAnswers): Form[HospitalStayEndInput] = {
+    userAnswers.getAnswer[String](sessionKvs._1) match {
+      case Some(key1) =>
+        userAnswers.getAnswer[LocalDate](sessionKvs._2) match {
+          case Some(answer) =>
+            val formInput = HospitalStayEndInput(key1, Some(answer))
+            formProvider.fill(formInput)
+          case None =>
+            val formInput = HospitalStayEndInput(key1, None)
+            formProvider.fill(formInput)
+        }
+      case None => formProvider
     }
   }
 }

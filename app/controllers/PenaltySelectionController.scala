@@ -17,79 +17,87 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.PenaltySelectionForm
 import helpers.FormProviderHelper
-import models.{Mode, PenaltyTypeEnum}
 import models.pages._
+import models.{Mode, PenaltyTypeEnum}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
 import views.html.{AppealCoverBothPenaltiesPage, AppealSinglePenaltyPage, PenaltySelectionPage}
 import viewtils.RadioOptionHelper
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectionPage,
                                            appealCoverBothPenaltiesPage: AppealCoverBothPenaltiesPage,
                                            appealSinglePenaltyPage: AppealSinglePenaltyPage,
-                                           navigation: Navigation)
+                                           navigation: Navigation,
+                                           sessionService: SessionService)
                                           (implicit mcc: MessagesControllerComponents,
                                            appConfig: AppConfig,
                                            authorise: AuthPredicate,
-                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+                                           dataRequired: DataRequiredAction,
+                                           dataRetrieval: DataRetrievalAction,
+                                           executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: (Page, Mode) => PageMode = (page: Page, mode: Mode) => PageMode(page, mode)
 
-  def onPageLoadForPenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoadForPenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         PenaltySelectionForm.doYouWantToAppealBothPenalties,
-        SessionKeys.doYouWantToAppealBothPenalties
+        SessionKeys.doYouWantToAppealBothPenalties,
+        userRequest.answers
       )
       val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
-      val firstPenalty = userRequest.session.get(SessionKeys.firstPenaltyAmount).get
-      val secondPenalty = userRequest.session.get(SessionKeys.secondPenaltyAmount).get
+      val firstPenalty = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get
+      val secondPenalty = userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).get
       Ok(penaltySelectionPage(formProvider, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode)))
     }
   }
 
-  def onSubmitForPenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onSubmitForPenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       PenaltySelectionForm.doYouWantToAppealBothPenalties.bindFromRequest.fold(
         errors => {
           val radioOptions = RadioOptionHelper.yesNoRadioOptions(errors)
-          val firstPenalty = userRequest.session.get(SessionKeys.firstPenaltyAmount).get
-          val secondPenalty = userRequest.session.get(SessionKeys.secondPenaltyAmount).get
-          BadRequest(penaltySelectionPage(errors, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode)))
+          val firstPenalty = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get
+          val secondPenalty = userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).get
+          Future(BadRequest(penaltySelectionPage(errors, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode))))
         },
         answer => {
-          Redirect(navigation.nextPage(PenaltySelectionPage, mode, Some(answer)))
-            .addingToSession(SessionKeys.doYouWantToAppealBothPenalties -> answer)
+          val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.doYouWantToAppealBothPenalties, answer)
+          sessionService.updateAnswers(updatedAnswers).map {
+            _ => Redirect(navigation.nextPage(PenaltySelectionPage, mode, Some(answer)))
+          }
         }
       )
     }
   }
 
-  def onPageLoadForSinglePenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoadForSinglePenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
       val nextPageUrl: String = navigation.nextPage(AppealSinglePenaltyPage, mode).url
-      val originalAppealPenalty = userRequest.session.get(SessionKeys.appealType).get
-      val isLPP2 = originalAppealPenalty.equals(PenaltyTypeEnum.Additional.toString)
+      val originalAppealPenalty = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get
+      val isLPP2 = originalAppealPenalty.equals(PenaltyTypeEnum.Additional)
       val penaltyAmount = {
         if (isLPP2)
-          userRequest.session.get(SessionKeys.secondPenaltyAmount).get
+          userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).get
         else
-          userRequest.session.get(SessionKeys.firstPenaltyAmount).get
+          userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get
       }
       Ok(appealSinglePenaltyPage(pageMode(AppealSinglePenaltyPage, mode), nextPageUrl, penaltyAmount, isLPP2))
     }
   }
 
-  def onPageLoadForAppealCoverBothPenalties(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
-    implicit request => {
+  def onPageLoadForAppealCoverBothPenalties(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+    implicit userRequest => {
       val nextPageUrl: String = navigation.nextPage(AppealCoverBothPenaltiesPage, mode).url
       Ok(appealCoverBothPenaltiesPage(pageMode(AppealCoverBothPenaltiesPage, mode), nextPageUrl))
     }
