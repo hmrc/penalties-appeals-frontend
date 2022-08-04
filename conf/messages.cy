@@ -42,7 +42,7 @@ appealStart.li.2.1 = rheswm dros gyflwyno’r Ffurflen TAW yn hwyr (mae CThEM yn
 appealStart.lpp.li.2.1 = rheswm dros dalu’r TAW yn hwyr (mae CThEM yn galw hyn yn ‘esgus rhesymol’)
 appealStart.obligation.li.2.1 = manylion am unrhyw ohebiaeth â CThEM am ganslo’r cofrestriad TAW
 appealStart.li.2.2 = y dyddiadau y mae eich rheswm yn ymwneud â hwy
-appealStart.obligation.li.2.2 = any additional information to support your appeal (optional)
+appealStart.obligation.li.2.2 = unrhyw wybodaeth ychwanegol i gefnogi’ch apêl (dewisol)
 appealStart.li.2.3 = manylion am y rheswm nad oeddech wedi apelio’n gynt
 appealStart.p5 = In some cases, we might also ask you to upload evidence to support the appeal.
 appealStart.p6 = Dim ond yr wybodaeth yr ydym wedi gofyn amdani sydd angen arnom. Nid oes angen i chi roi manylion ychwanegol oni bai ein bod yn gofyn amdano.
@@ -78,7 +78,7 @@ reasonableExcuses.error.required = Dewiswch reswm dros fethu’r dyddiad cau ar 
 # ----------------------------------------------------------
 honestyDeclaration.headingAndTitle = Datganiad gonestrwydd
 honestyDeclaration.p1 = Rwy’n cadarnhau’r canlynol:
-honestyDeclaration.li.1.1 = because {0},
+honestyDeclaration.li.1.1 = oherwydd {0},
 honestyDeclaration.obligation.li.1 = Gofynnwyd i CThEM ganslo’r cofrestriad TAW
 honestyDeclaration.li.1.2 = nid oeddwn yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
 agent.honestyDeclaration.li.1.2 = nid oedd yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
@@ -88,12 +88,12 @@ agent.honestyDeclaration.lpp.li.1.2 = nid oedd yn gallu talu’r bil TAW a oedd 
 agent.honestyDeclaration.lpp.li.1.2.myClient = nid oedd fy nghleient yn gallu talu’r bil TAW a oedd yn ddyledus ar {0}
 honestyDeclaration.li.2 = nid oedd neb arall ar gael i gyflwyno ar fy rhan
 agent.honestyDeclaration.li.2 = nid oedd neb arall ar gael i gyflwyno ar ei ran
-agent.honestyDeclaration.li.2.extra = no one else was available to get the information to me
+agent.honestyDeclaration.li.2.extra = nid oedd neb arall ar gael i roi’r wybodaeth i mi
 honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar fy rhan
 agent.honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar ei ran
 honestyDeclaration.obligation.li.2 = Rwyf o’r farn nad oedd Ffurflen TAW yn ddyledus ar gyfer y cyfnod o {0} o {1}
 honestyDeclaration.obligation.lpp.li.2 = nid oedd TAW yn ddyledus ar gyfer y cyfnod o {0} i {1}
-honestyDeclaration.li.3 = Byddaf yn rhoi gwybodaeth onest a chywir yn yr apêl hon
+honestyDeclaration.li.3 = byddaf yn rhoi gwybodaeth onest a chywir yn yr apêl hon
 honestyDeclaration.li.extra.lossOfStaff = nid oedd yr aelod o staff wedi dychwelyd i’r gwaith ac nid oedd neb wedi dod i gymryd ei le erbyn y dyddiad dyledus
 honestyDeclaration.li.extra.health = roedd amseriad y broblem iechyd yn annisgwyl
 honestyDeclaration.li.extra.technicalIssues = nid diffyg arian oedd y rheswm dros y methiant technegol
@@ -101,13 +101,13 @@ honestyDeclaration.crime = effeithiwyd arnaf gan drosedd
 agent.honestyDeclaration.crime = effeithiwyd ar fy nghleient gan drosedd
 honestyDeclaration.bereavement = effeithiwyd arnaf gan farwolaeth rhywun
 agent.honestyDeclaration.bereavement = effeithiwyd ar fy nghleient gan farwolaeth rhywun
-honestyDeclaration.fireOrFlood = o dân neu lifogydd
+honestyDeclaration.fireOrFlood = tân neu lifogydd
 agent.honestyDeclaration.fireOrFlood = effeithiwyd ar fy nghleient gan dân neu lifogydd
-honestyDeclaration.health = o broblem iechyd
+honestyDeclaration.health = oherwydd problem iechyd
 agent.honestyDeclaration.health = effeithiwyd ar fy nghleient gan broblem iechyd
-honestyDeclaration.technicalIssues = o broblemau technegol
+honestyDeclaration.technicalIssues = problemau technegol
 agent.honestyDeclaration.technicalIssues = effeithiwyd ar fy nghleient gan broblemau technegol
-honestyDeclaration.lossOfStaff = o golli staff sy’n hanfodol i’r broses TAW
+honestyDeclaration.lossOfStaff = colli staff sy’n hanfodol i’r broses TAW
 agent.honestyDeclaration.lossOfStaff = effeithiwyd ar fy nghleient gan golli staff hanfodol i’r broses TAW
 honestyDeclaration.other =
 agent.honestyDeclaration.other = of an issue affecting my client
@@ -117,22 +117,22 @@ site.opensInNewTab = (yn agor tab newydd)
 
 # When did event happen pages
 # ----------------------------------------------------------
-whenDidBecomeUnable.headingAndTitle.lsp = When did the issue first stop you submitting the VAT Return?
-whenDidBecomeUnable.error.required.all.lsp = Tell us when the issue first stopped you submitting the VAT Return
+whenDidBecomeUnable.headingAndTitle.lsp = Pryd wnaeth y mater eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
+whenDidBecomeUnable.error.required.all.lsp = Rhowch wybod i ni pryd y gwnaeth y mater eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf
 whenDidBecomeUnable.error.notInFuture.lsp = The date the issue first stopped you submitting the VAT Return must be today or in the past
 whenDidBecomeUnable.error.required.lsp = The date the issue first stopped you submitting the VAT Return must include a {0}
 whenDidBecomeUnable.error.required.two.lsp = The date the issue first stopped you submitting the VAT Return must include a {0} and a {1}
 whenDidBecomeUnable.error.invalid.lsp = The date the issue first stopped you submitting the VAT Return must be a real date
 
-agent.whenDidBecomeUnable.headingAndTitle.clientMissedDeadline = When did the issue first stop your client getting information to you?
-agent.whenDidBecomeUnable.error.required.all.clientMissedDeadline = Tell us when the issue first stopped your client getting information to you
+agent.whenDidBecomeUnable.headingAndTitle.clientMissedDeadline = Pryd wnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf?
+agent.whenDidBecomeUnable.error.required.all.clientMissedDeadline = Rhowch wybod i ni pryd y gwnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf
 agent.whenDidBecomeUnable.error.notInFuture.clientMissedDeadline = The date when the issue first stopped your client getting information to you must be today or in the past
 agent.whenDidBecomeUnable.error.required.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a {0}
 agent.whenDidBecomeUnable.error.required.two.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a {0} and a {1}
 agent.whenDidBecomeUnable.error.invalid.clientMissedDeadline = The date when the issue first stopped your client getting information to you must be a real date
 
-agent.whenDidBecomeUnable.headingAndTitle.clientIntendedToSubmit = When did the issue first stop your client submitting the VAT Return?
-agent.whenDidBecomeUnable.error.required.all.clientIntendedToSubmit = Tell us when the issue first stopped your client submitting the VAT Return
+agent.whenDidBecomeUnable.headingAndTitle.clientIntendedToSubmit = Pryd wnaeth y mater atal eich cleient rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
+agent.whenDidBecomeUnable.error.required.all.clientIntendedToSubmit = Rhowch wybod i ni pryd y gwnaeth y mater atal eich cleient rhag cyflwyno’r Ffurflen TAW am y tro cyntaf
 agent.whenDidBecomeUnable.error.notInFuture.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must be today or in the past
 agent.whenDidBecomeUnable.error.required.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a {0}
 agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a {0} and a {1}
@@ -156,9 +156,9 @@ whenDidEventHappen.hint = Er enghraifft, 12 3 2018
 
 whenDidBecomeUnable.other.lpp = When did the issue first stop you paying the VAT bill?
 agent.whenDidBecomeUnable.other.lpp = When did the issue first stop your client paying the VAT bill?
-agent.whenDidBecomeUnable.other.clientIntendedToSubmit = When did the issue first stop your client submitting the VAT Return?
-agent.whenDidBecomeUnable.other.clientMissedDeadline = When did the issue first stop your client getting information to you?
-whenDidBecomeUnable.other.lsp = When did the issue first stop you submitting the VAT Return?
+agent.whenDidBecomeUnable.other.clientIntendedToSubmit = Pryd wnaeth y mater atal eich cleient rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
+agent.whenDidBecomeUnable.other.clientMissedDeadline = Pryd wnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf?
+whenDidBecomeUnable.other.lsp = Pryd wnaeth y mater eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
 
 # When did the crime happen page
 # ----------------------------------------------------------
@@ -173,7 +173,7 @@ crimeReason.error.notInFuture = Mae’n rhaid i ddyddiad y drosedd fod heddiw ne
 # ----------------------------------------------------------
 crimeReason.hasBeenReported.headingAndTitle = A roddwyd gwybod i’r heddlu am y drosedd hon?
 crimeReason.hasBeenReported.unknown = Nid wyf yn gwybod
-crimeReason.hasBeenReported.required = Rhowch wybod i ni os yw’r heddlu wedi eu hysbysu am y drosedd
+crimeReason.hasBeenReported.required = Rhowch wybod i ni os yw’r heddlu wedi ei hysbysu am y drosedd
 
 # When did the fire or flood happen page
 # ----------------------------------------------------------
@@ -243,8 +243,8 @@ agent.health.whenHealthIssueHappened.error.required.clientIntendedToSubmit = The
 agent.health.whenHealthIssueHappened.error.required.two.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must include a {0} and a {1}
 agent.health.whenHealthIssueHappened.error.invalid.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must be a real date
 
-health.whenHealthIssueHappened.headingAndTitle.lpp = When did the health issue first stop you paying the VAT bill?
-health.whenHealthIssueHappened.error.required.all.lpp = Tell us when the health issue first stopped you paying the VAT bill
+health.whenHealthIssueHappened.headingAndTitle.lpp = Pryd wnaeth y broblem iechyd eich atal rhag talu’r bil TAW am y tro cyntaf?
+health.whenHealthIssueHappened.error.required.all.lpp = Rhowch wybod i ni pryd y gwnaeth y broblem iechyd eich atal rhag talu’r bil TAW am y tro cyntaf
 health.whenHealthIssueHappened.error.notInFuture.lpp = The date the health issue first stopped you paying the VAT bill must be today or in the past
 health.whenHealthIssueHappened.error.required.lpp = The date the health issue first stopped you paying the VAT bill must include a {0}
 health.whenHealthIssueHappened.error.required.two.lpp = The date the health issue first stopped you paying the VAT bill must include a {0} and a {1}
@@ -318,7 +318,7 @@ otherReason.uploadEvidence.stillTransferring = Mae ffeiliau’n dal i gael eu tr
 # Upload Evidence Question
 # ----------------------------------------------------------
 otherReason.uploadEvidence.question.headingAndTitle = A ydych am uwchlwytho tystiolaeth i gefnogi’ch apêl?
-otherReason.uploadEvidence.question.required = Dewiswch ‘Iawn’ os ydych eisiau uwchlwytho tystiolaeth
+otherReason.uploadEvidence.question.required = Dewiswch iawn os ydych am uwchlwytho tystiolaeth
 otherReason.uploadEvidence.question.hintText = Mae uwchlwytho tystiolaeth yn ddewisol. Byddwn yn dal i adolygu’ch apêl os nad ydych yn uwchlwytho tystiolaeth.
 
 # Upload Evidence (No JS)
@@ -469,12 +469,12 @@ otherRelevantInformation.error.required = Nodwch y rhesymau pam eich bod am apel
 
 # You can appeal this penalty
 # ----------------------------------------------------------
-youCanAppealThisPenalty.headingAndTitle = You can appeal this penalty online
-youCanAppealThisPenalty.p1 = If HMRC reviews this penalty and accepts your appeal, we will remove:
-youCanAppealThisPenalty.li.1 = this penalty
-youCanAppealThisPenalty.li.2 = all other VAT late submission or late payment penalties for the same period
-youCanAppealThisPenalty.p2 = Do you want to appeal this penalty?
-youCanAppealThisPenalty.error.required = Select yes if you want to appeal this penalty
+youCanAppealThisPenalty.headingAndTitle = Gallwch apelio yn erbyn y gosb hon ar-lein
+youCanAppealThisPenalty.p1 = Os bydd CThEM yn adolygu’r gosb hon ac yn derbyn eich apêl, byddwn yn dileu:
+youCanAppealThisPenalty.li.1 = y gosb hon
+youCanAppealThisPenalty.li.2 = pob cosb arall am gyflwyno neu dalu’n hwyr ar gyfer yr un cyfnod
+youCanAppealThisPenalty.p2 = A hoffech apelio yn erbyn y gosb hon?
+youCanAppealThisPenalty.error.required = Dewiswch iawn os hoffech apelio yn erbyn y gosb hon
 
 # Error message for characters more than 5000 in text area
 # ----------------------------------------------------------
