@@ -465,7 +465,7 @@ class AppealSubmissionSpec extends SpecBase {
       result.appealSubmittedBy shouldBe "agent"
       result.agentDetails shouldBe Some(AgentDetails("1234567890", false))
       result.appealInformation shouldBe CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
-        startDateOfEvent = "2022-01-01", reportedIssueToPolice = true, statement = None, lateAppeal = false,
+        startDateOfEvent = "2022-01-01T00:00", reportedIssueToPolice = true, statement = None, lateAppeal = false,
         lateAppealReason = None, isClientResponsibleForSubmission = Some(false), isClientResponsibleForLateSubmission = Some(true)
       )
     }
@@ -485,7 +485,7 @@ class AppealSubmissionSpec extends SpecBase {
       result.appealInformation shouldBe CrimeAppealInformation(
         reasonableExcuse = "crime",
         honestyDeclaration = true,
-        startDateOfEvent = "2022-01-01",
+        startDateOfEvent = "2022-01-01T00:00",
         reportedIssueToPolice = true,
         statement = None,
         lateAppeal = true,
@@ -508,7 +508,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe BereavementAppealInformation(
           reasonableExcuse = "bereavement",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -530,7 +530,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe BereavementAppealInformation(
           reasonableExcuse = "bereavement",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -555,7 +555,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           reportedIssueToPolice = false,
           statement = None,
           lateAppeal = false,
@@ -579,7 +579,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe FireOrFloodAppealInformation(
           reasonableExcuse = "fireOrFlood",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -603,7 +603,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe LossOfStaffAppealInformation(
           reasonableExcuse = "lossOfStaff",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -627,7 +627,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe LossOfStaffAppealInformation(
           reasonableExcuse = "lossOfStaff",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -637,7 +637,7 @@ class AppealSubmissionSpec extends SpecBase {
       }
     }
 
-    "for technical issues" must {
+    "for technical issues" must   {
       "have the startDateOfEvent and endDate of event" in {
         val fakeRequestForTechnicalIssuesJourney = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
           SessionKeys.reasonableExcuse -> "lossOfStaff",
@@ -652,8 +652,8 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
           reasonableExcuse = "technicalIssues",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
-          endDateOfEvent = "2022-01-02",
+          startDateOfEvent = "2022-01-01T00:00",
+          endDateOfEvent = "2022-01-02T23:59:59.999999999",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -678,8 +678,8 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
           reasonableExcuse = "technicalIssues",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
-          endDateOfEvent = "2022-01-02",
+          startDateOfEvent = "2022-01-01T00:00",
+          endDateOfEvent = "2022-01-02T23:59:59.999999999",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -708,8 +708,8 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "health",
           honestyDeclaration = true,
           hospitalStayInvolved = true,
-          startDateOfEvent = Some("2022-01-01"),
-          endDateOfEvent = Some("2022-01-31"),
+          startDateOfEvent = Some("2022-01-01T00:00"),
+          endDateOfEvent = Some("2022-01-31T23:59:59.999999999"),
           eventOngoing = false,
           statement = None,
           lateAppeal = false,
@@ -735,7 +735,7 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "health",
           honestyDeclaration = true,
           hospitalStayInvolved = true,
-          startDateOfEvent = Some("2022-01-01"),
+          startDateOfEvent = Some("2022-01-01T00:00"),
           endDateOfEvent = None,
           eventOngoing = true,
           statement = None,
@@ -761,7 +761,7 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "health",
           honestyDeclaration = true,
           hospitalStayInvolved = false,
-          startDateOfEvent = Some("2022-01-01"),
+          startDateOfEvent = Some("2022-01-01T00:00"),
           endDateOfEvent = None,
           eventOngoing = false,
           statement = None,
@@ -789,7 +789,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           statement = Some("This is a reason."),
           lateAppeal = false,
           lateAppealReason = None,
@@ -815,7 +815,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           statement = Some("This is a reason."),
           lateAppeal = false,
           lateAppealReason = None,
@@ -842,7 +842,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
           honestyDeclaration = true,
-          startDateOfEvent = "2022-01-01",
+          startDateOfEvent = "2022-01-01T00:00",
           statement = Some("This is a reason."),
           lateAppeal = true,
           lateAppealReason = Some("This is a reason for appealing late."),
