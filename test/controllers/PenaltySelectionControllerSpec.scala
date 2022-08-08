@@ -17,24 +17,25 @@
 package controllers
 
 import base.SpecBase
-import models.{NormalMode, PenaltyTypeEnum}
+import models.NormalMode
+import models.session.UserAnswers
 import navigation.Navigation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
-import play.api.test.Helpers.{contentAsString, status}
+import play.api.test.Helpers._
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
-import views.html.{AppealSinglePenaltyPage, PenaltySelectionPage}
-import views.html.{AppealCoverBothPenaltiesPage, PenaltySelectionPage}
-import play.api.test.Helpers._
+import views.html.{AppealCoverBothPenaltiesPage, AppealSinglePenaltyPage, PenaltySelectionPage}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltySelectionControllerSpec extends SpecBase {
   val mockNavigator = mock(classOf[Navigation])
@@ -42,10 +43,12 @@ class PenaltySelectionControllerSpec extends SpecBase {
   val appealSinglePenaltyPage = injector.instanceOf[AppealSinglePenaltyPage]
   val page = injector.instanceOf[PenaltySelectionPage]
   val appealCoverBothPenaltiesPage = injector.instanceOf[AppealCoverBothPenaltiesPage]
-  val fakeRequestWithMultiplePenaltyAppealKeys = fakeRequestWithCorrectKeys.withSession(
+  val multiPenaltyAnswers: JsObject = Json.toJsObject(Map(
     SessionKeys.firstPenaltyAmount -> "4.20",
     SessionKeys.secondPenaltyAmount -> "3000"
-  )
+  ))
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector, mockNavigator)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
@@ -53,18 +56,27 @@ class PenaltySelectionControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
   }
-  val controller = new PenaltySelectionController(penaltySelectionPage, appealCoverBothPenaltiesPage, appealSinglePenaltyPage, mockNavigator)(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction)
+
+  val controller = new PenaltySelectionController(
+    penaltySelectionPage,
+    appealCoverBothPenaltiesPage,
+    appealSinglePenaltyPage,
+    mockNavigator,
+    mockSessionService)(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction, dataRetrievalAction, ec)
 
   "onPageLoadForPenaltySelection" should {
     "return 200" when {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequestWithMultiplePenaltyAppealKeys)
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers))))
+        val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
       "return OK and correct view (pre-populated radio option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(
-          fakeRequestConverter(fakeRequestWithMultiplePenaltyAppealKeys.withSession(SessionKeys.doYouWantToAppealBothPenalties -> "yes")))
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes")))))
+        val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
         val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select("#value").hasAttr("checked") shouldBe true
@@ -73,6 +85,8 @@ class PenaltySelectionControllerSpec extends SpecBase {
 
     "return 500" when {
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -95,27 +109,40 @@ class PenaltySelectionControllerSpec extends SpecBase {
   "onSubmitForPenaltySelection" should {
     "the user is authorised" when {
       "redirect the user to the single penalty page when no is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers))))
+        val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionService.updateAnswers(answerCaptor.capture()))
+          .thenReturn(Future.successful(true))
         when(mockNavigator.nextPage(any(), any(), any())(any()))
           .thenReturn(controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode))
-        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithMultiplePenaltyAppealKeys
-          .withFormUrlEncodedBody("value" -> "no"))
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest
+          .withFormUrlEncodedBody("value" -> "no")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode).url
+        answerCaptor.getValue.data shouldBe correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "no")
       }
 
       "redirect the user to the multiple penalty page when yes is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers))))
+        val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionService.updateAnswers(answerCaptor.capture()))
+          .thenReturn(Future.successful(true))
         when(mockNavigator.nextPage(any(), any(), any())(any()))
           .thenReturn(controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode))
-        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithMultiplePenaltyAppealKeys
-          .withFormUrlEncodedBody("value" -> "yes"))
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestConverter(correctLPPUserAnswers ++ multiPenaltyAnswers, fakeRequest
+          .withFormUrlEncodedBody("value" -> "yes")))
         status(result) shouldBe SEE_OTHER
-
         redirectLocation(result).get shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode).url
+        answerCaptor.getValue.data shouldBe correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes")
       }
 
       "return a 400 (BAD REQUEST) and show page with error when no option has been selected" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithMultiplePenaltyAppealKeys
-          .withFormUrlEncodedBody("value" -> ""))
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers))))
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestConverter(correctLPPUserAnswers ++ multiPenaltyAnswers, fakeRequest
+          .withFormUrlEncodedBody("value" -> "")))
         status(result) shouldBe BAD_REQUEST
       }
     }
@@ -137,27 +164,28 @@ class PenaltySelectionControllerSpec extends SpecBase {
   "onPageLoadForSinglePenaltySelection" should {
     "return 200" when {
       "the user is authorised and has the correct keys in the session - first LPP" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers))))
         when(mockNavigator.nextPage(any(), any(), any())(any()))
           .thenReturn(controllers.routes.AppealStartController.onPageLoad())
-        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestLPPWithCorrectKeys.withSession(
-          SessionKeys.firstPenaltyAmount -> "4.20"
-        ))
+        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
       "the user is authorised and has the correct keys in the session - second LPP" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctAdditionalLPPUserAnswers ++ multiPenaltyAnswers))))
         when(mockNavigator.nextPage(any(), any(), any())(any()))
           .thenReturn(controllers.routes.AppealStartController.onPageLoad())
-        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestLPPWithCorrectKeys.withSession(
-          SessionKeys.secondPenaltyAmount -> "4.20",
-          SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString
-        ))
+        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
     }
 
     "return 500" when {
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -180,16 +208,20 @@ class PenaltySelectionControllerSpec extends SpecBase {
   "onPageLoadForAppealCoverBothPenalties" should {
     "return 200" when {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctAdditionalLPPUserAnswers ++ multiPenaltyAnswers))))
         when(mockNavigator.nextPage(any(), any(), any())(any()))
           .thenReturn(controllers.routes.AppealStartController.onPageLoad())
-        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
     }
 
     "return 500" when {
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest)
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
+        val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }

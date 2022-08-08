@@ -17,10 +17,13 @@
 package controllers
 
 import base.SpecBase
+import models.session.UserAnswers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers.{status, _}
 import testUtils.AuthTestModels
@@ -45,28 +48,34 @@ class YouCanAppealPenaltyControllerSpec extends SpecBase {
 
     val controller: YouCanAppealPenaltyController = new YouCanAppealPenaltyController(
       youCanAppealPenaltyPage,
-      mainNavigator
-    )(mcc, appConfig, authPredicate, dataRequiredAction)
+      mainNavigator,
+      mockSessionService
+    )(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction, ec)
   }
 
   "YouCanAppealPenaltyController" should {
     "onPageLoad" should {
       "the user is authorised" must {
         "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
       }
 
       "return OK and correct view (pre-populated option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequestConverter(fakeRequestWithCorrectKeys.
-          withSession(SessionKeys.youCanAppealThisPenalty -> "yes")))
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.youCanAppealThisPenalty -> "yes")))))
+        val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
         status(result) shouldBe OK
         val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select("#value").hasAttr("checked") shouldBe true
       }
 
       "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -87,14 +96,21 @@ class YouCanAppealPenaltyControllerSpec extends SpecBase {
       "the user is authorised" must {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- routing when a valid option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "yes")))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER
-          await(result).session.get(SessionKeys.youCanAppealThisPenalty).get shouldBe "yes"
+          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.youCanAppealThisPenalty -> "yes")
         }
       }
       "the user is unauthorised" when {
         "return 400 (BAD_REQUEST) when a no option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody("value" -> "")))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "")))
           status(result) shouldBe BAD_REQUEST
         }
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {

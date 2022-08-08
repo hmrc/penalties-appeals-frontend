@@ -16,8 +16,8 @@
 
 package viewtils
 
-import messages.YouCannotAppealMessages._
 import base.SpecBase
+import messages.YouCannotAppealMessages._
 import org.jsoup.Jsoup
 
 class YouCannotAppealHelperSpec extends SpecBase {

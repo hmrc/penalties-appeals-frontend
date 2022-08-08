@@ -22,11 +22,11 @@ import utils.SessionKeys
 object WhenDidYouBecomeUnableHelper {
   def getMessageKeyForPage(msgPrefix: String)(implicit userRequest: UserRequest[_]): String = {
     val isLPPAppeal = {
-      userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) ||
-        userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)
+      userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment) ||
+        userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Additional)
     }
-    val clientMissedDeadline = userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("client")
-    val clientIntendedToSubmit = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
+    val clientMissedDeadline = userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).contains("client")
+    val clientIntendedToSubmit = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("client")
     val isAgent = userRequest.isAgent
     (isLPPAppeal, clientMissedDeadline, clientIntendedToSubmit, isAgent) match {
       case (true, _, _, true) => s"agent.$msgPrefix.lpp"

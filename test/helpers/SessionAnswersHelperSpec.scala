@@ -18,15 +18,18 @@ package helpers
 
 import base.SpecBase
 import models.pages._
+import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.Mockito.{mock, when}
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
-import java.time.LocalDateTime
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -37,96 +40,96 @@ class SessionAnswersHelperSpec extends SpecBase {
   "isAllAnswerPresentForReasonableExcuse" should {
     "for crime" must {
       "return true - when all keys present" in {
-        val fakeRequestWithAllCrimeKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.dateOfCrime -> "2022-01-01"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithAllCrimeKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "crime",
+          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(userRequest)
         result shouldBe true
       }
 
       "return false - when not all keys are present" in {
-        val fakeRequestWithSomeCrimeKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.dateOfCrime -> "2022-01-01"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(fakeRequestWithSomeCrimeKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(userRequest)
         result shouldBe false
       }
     }
 
     "for loss of staff" must {
       "return true - when all keys present" in {
-        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "lossOfStaff",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(userRequest)
         result shouldBe true
       }
 
       "return false - when not all keys are present" in {
-        val fakeRequestWithSomeLossOfStaffKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "lossOfStaff",
-            SessionKeys.hasConfirmedDeclaration -> "true"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(fakeRequestWithSomeLossOfStaffKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.hasConfirmedDeclaration -> "true"
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(userRequest)
         result shouldBe false
       }
     }
 
     "for fire or flood" must {
       "return true - when all keys present" in {
-        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "fireOrFlood",
-            SessionKeys.dateOfFireOrFlood -> "2022-01-01",
-            SessionKeys.hasConfirmedDeclaration -> "true"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "fireOrFlood",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(userRequest)
         result shouldBe true
       }
 
       "return false - when not all keys are present" in {
-        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.dateOfFireOrFlood -> "2022-01-01",
-            SessionKeys.hasConfirmedDeclaration -> "true"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("fireOrFlood")(userRequest)
         result shouldBe false
       }
     }
 
     "for technical issues" must {
       "return true - when all keys present" in {
-        val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "technicalIssues",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
+          SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(userRequest)
         result shouldBe true
       }
 
       "return false - when not all keys are present" in {
-        val fakeRequestWithSomeTechnicalIssuesKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(fakeRequestWithSomeTechnicalIssuesKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
+          SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("technicalIssues")(userRequest)
         result shouldBe false
       }
     }
@@ -134,103 +137,103 @@ class SessionAnswersHelperSpec extends SpecBase {
     "for health" must {
       "return true" when {
         "the keys are present for no hospital stay journey" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequest
-            .withSession(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
-              SessionKeys.wasHospitalStayRequired -> "no",
-              SessionKeys.whenHealthIssueHappened -> "2022-01-01"
-            )
-          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllNonHospitalStayKeysPresent)
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.wasHospitalStayRequired -> "no",
+            SessionKeys.whenHealthIssueHappened -> LocalDate.parse("2022-01-01")
+          ))
+          val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(userRequest)
           result shouldBe true
         }
 
         "the keys are present for ongoing hospital stay journey" in {
-          val fakeRequestWithAllOngoingHospitalStayKeysPresent = fakeRequest
-            .withSession(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
-              SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.hasHealthEventEnded -> "no",
-              SessionKeys.whenHealthIssueStarted -> "2022-01-01"
-            )
-          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllOngoingHospitalStayKeysPresent)
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.wasHospitalStayRequired -> "yes",
+            SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
+            SessionKeys.hasHealthEventEnded -> "no"
+          ))
+          val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(userRequest)
           result shouldBe true
         }
 
         "the keys are present for an ended hospital stay" in {
-          val fakeRequestWithAllEndedHospitalStayKeysPresent = fakeRequest
-            .withSession(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
-              SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.hasHealthEventEnded -> "yes",
-              SessionKeys.whenHealthIssueStarted -> "2022-01-01",
-              SessionKeys.whenHealthIssueEnded -> "2022-01-02"
-            )
-          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithAllEndedHospitalStayKeysPresent)
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.wasHospitalStayRequired -> "yes",
+            SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
+            SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-01"),
+            SessionKeys.hasHealthEventEnded -> "yes"
+          ))
+          val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(userRequest)
           result shouldBe true
         }
       }
 
       "return false" when {
         "there was a hospital stay but there event ongoing question hasn't been answered" in {
-          val fakeRequestWithNoEventOngoingKeyPresent = fakeRequest
-            .withSession(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
-              SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.whenHealthIssueStarted -> "2022-01-01"
-            )
-          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.wasHospitalStayRequired -> "yes",
+            SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
+          ))
+          val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(userRequest)
           result shouldBe false
         }
 
         "the hospital stay question hasn't been answered" in {
-          val fakeRequestWithNoEventOngoingKeyPresent = fakeRequest
-            .withSession(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
-              SessionKeys.hasHealthEventEnded -> "yes",
-              SessionKeys.whenHealthIssueStarted -> "2022-01-01"
-            )
-          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.hasHealthEventEnded -> "yes",
+            SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
+          ))
+          val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(userRequest)
           result shouldBe false
         }
 
         "there is an ongoing hospital stay but no startDate has been provided" in {
-          val fakeRequestWithNoEventOngoingKeyPresent = fakeRequest
-            .withSession(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
-              SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.hasHealthEventEnded -> "no"
-            )
-          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.hasHealthEventEnded -> "no",
+            SessionKeys.wasHospitalStayRequired -> "yes"
+          ))
+          val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(userRequest)
           result shouldBe false
         }
 
         "there is a hospital stay that has ended but no end date has been provided" in {
-          val fakeRequestWithNoEventOngoingKeyPresent = fakeRequest
-            .withSession(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
-              SessionKeys.wasHospitalStayRequired -> "yes",
-              SessionKeys.hasHealthEventEnded -> "yes",
-              SessionKeys.whenHealthIssueStarted -> "2022-01-01"
-            )
-          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithNoEventOngoingKeyPresent)
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
+            SessionKeys.wasHospitalStayRequired -> "yes",
+            SessionKeys.hasHealthEventEnded -> "yes"
+          ))
+          val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(userRequest)
           result shouldBe false
         }
 
         "not all keys are present" in {
-          val fakeRequestWithSomeHealthKeysPresent = fakeRequest
-            .withSession(
-              SessionKeys.hasConfirmedDeclaration -> "true",
-              SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-              SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
-            )
-          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(fakeRequestWithSomeHealthKeysPresent)
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
+            SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
+          ))
+          val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("health")(userRequest)
           result shouldBe false
         }
       }
@@ -238,26 +241,26 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "for other" must {
       "return true - when all keys present" in {
-        val fakeRequestWithAllOtherReasonKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-            SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-            SessionKeys.isUploadEvidence -> "yes"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithAllOtherReasonKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+          SessionKeys.isUploadEvidence -> "yes"
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(userRequest)
         result shouldBe true
       }
 
       "return false - when not all keys are present" in {
-        val fakeRequestWithSomeOtherReasonKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenDidBecomeUnable -> "2022-01-01"
-          )
-        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(fakeRequestWithSomeOtherReasonKeysPresent)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("other")(userRequest)
         result shouldBe false
       }
     }
@@ -266,13 +269,12 @@ class SessionAnswersHelperSpec extends SpecBase {
   "getContentForReasonableExcuseCheckYourAnswersPage" should {
     "for crime" must {
       "return all the keys from the session ready to be passed to the view" in {
-        val fakeRequestWithAllCrimeKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.dateOfCrime -> "2022-01-01"
-          ))
+        val fakeRequestWithAllCrimeKeysPresent = fakeRequestConverter(Json.obj(
+          SessionKeys.reasonableExcuse -> "crime",
+          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfCrime -> "2022-01-01"), fakeRequest
+        )
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
         result.head.key shouldBe "Reason for missing the VAT deadline"
@@ -296,14 +298,13 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val fakeRequestWithAllCrimeKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.dateOfCrime -> "2022-01-01",
-            SessionKeys.lateAppealReason -> "Lorem ipsum"
-          ))
+        val fakeRequestWithAllCrimeKeysPresent = fakeRequestConverter(Json.obj(
+          SessionKeys.reasonableExcuse -> "crime",
+          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfCrime -> "2022-01-01",
+          SessionKeys.lateAppealReason -> "Lorem ipsum"), fakeRequest
+        )
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("crime")(fakeRequestWithAllCrimeKeysPresent, implicitly)
         result.head.key shouldBe "Reason for missing the VAT deadline"
@@ -335,12 +336,12 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "for fire or flood" must {
       "return all the keys from the session ready to be passed to the view" in {
-        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "fireOrFlood",
-            SessionKeys.dateOfFireOrFlood -> "2022-01-01",
-            SessionKeys.hasConfirmedDeclaration -> "true"
-          ))
+        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequestConverter(Json.obj(
+          SessionKeys.reasonableExcuse -> "fireOrFlood",
+          SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+          SessionKeys.hasConfirmedDeclaration -> "true"),
+          fakeRequest
+        )
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
         result.head.key shouldBe "Reason for missing the VAT deadline"
         result.head.value shouldBe "Fire or flood"
@@ -357,13 +358,12 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "fireOrFlood",
-            SessionKeys.dateOfFireOrFlood -> "2022-01-01",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.lateAppealReason -> "Lorem ipsum"
-          ))
+        val fakeRequestWithAllFireOrFloodKeysPresent = fakeRequestConverter(Json.obj(
+          SessionKeys.reasonableExcuse -> "fireOrFlood",
+          SessionKeys.dateOfFireOrFlood -> "2022-01-01",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.lateAppealReason -> "Lorem ipsum"
+        ), fakeRequest)
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("fireOrFlood")(fakeRequestWithAllFireOrFloodKeysPresent, implicitly)
         result.head.key shouldBe "Reason for missing the VAT deadline"
         result.head.value shouldBe "Fire or flood"
@@ -388,12 +388,12 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "for loss of staff" must {
       "return all the keys from the session ready to be passed to the view" in {
-        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "lossOfStaff",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"
-          ))
+        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequestConverter( Json.obj(
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01"),
+          fakeRequest
+          )
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
         result.head.key shouldBe "Reason for missing the VAT deadline"
@@ -411,13 +411,13 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "lossOfStaff",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
-            SessionKeys.lateAppealReason -> "Lorem ipsum"
-          ))
+        val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequestConverter(Json.obj(
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenPersonLeftTheBusiness -> "2022-01-01",
+          SessionKeys.lateAppealReason -> "Lorem ipsum"),
+          fakeRequest
+          )
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("lossOfStaff")(fakeRequestWithAllLossOfStaffKeysPresent, implicitly)
         result.head.key shouldBe "Reason for missing the VAT deadline"
@@ -443,13 +443,13 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "for technical issues" must {
       "return all the keys from the session ready to be passed to the view" in {
-        val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
-          ))
+        val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequestConverter(Json.obj(
+          SessionKeys.reasonableExcuse -> "technicalIssues",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
+          SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02"
+          ),
+          fakeRequest)
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
           "technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
@@ -474,14 +474,14 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
+        val fakeRequestWithAllTechnicalIssuesKeysPresent = fakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
             SessionKeys.lateAppealReason -> "Lorem ipsum"
-          ))
+          ),
+          fakeRequest)
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
           "technicalIssues")(fakeRequestWithAllTechnicalIssuesKeysPresent, implicitly)
@@ -514,16 +514,15 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "for LPP on other journey" must {
       "display the correct wording for trader" in {
-        val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+        val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(Json.obj(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
             SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
             SessionKeys.isUploadEvidence -> "no"
-          ))
+          ), fakeRequest)
 
         val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
           "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
@@ -564,10 +563,9 @@ class SessionAnswersHelperSpec extends SpecBase {
       "for health" must {
         "for no hospital stay" should {
           "return all the keys from the session ready to be passed to the view" in {
-            val fakeRequestWithNoHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-              .withSession(
+            val fakeRequestWithNoHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
                 SessionKeys.reasonableExcuse -> "health",
-                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.hasConfirmedDeclaration -> true,
                 SessionKeys.wasHospitalStayRequired -> "no",
                 SessionKeys.whenHealthIssueHappened -> "2022-01-01",
                 SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
@@ -596,10 +594,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           }
 
           "return all keys and the 'Reason for appealing after 30 days' text" in {
-            val fakeRequestWithNoHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-              .withSession(
+            val fakeRequestWithNoHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
                 SessionKeys.reasonableExcuse -> "health",
-                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.hasConfirmedDeclaration -> true,
                 SessionKeys.wasHospitalStayRequired -> "no",
                 SessionKeys.whenHealthIssueHappened -> "2022-01-01",
                 SessionKeys.lateAppealReason -> "Lorem ipsum",
@@ -639,11 +636,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       "for other" must {
         "display the correct wording for agent" when {
           "the client planned to submit" in {
-            val request = agentFakeRequestConverter(agentRequest
-              .withSession(
-                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+            val request = agentFakeRequestConverter(Json.obj(
+                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
                 SessionKeys.reasonableExcuse -> "other",
-                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.hasConfirmedDeclaration -> true,
                 SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
                 SessionKeys.whenDidBecomeUnable -> "2022-01-01",
                 SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -661,11 +657,10 @@ class SessionAnswersHelperSpec extends SpecBase {
           }
 
           "the agent planned to submit and client missed deadline" in {
-            val request = agentFakeRequestConverter(agentRequest
-              .withSession(
-                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+            val request = agentFakeRequestConverter(Json.obj(
+                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
                 SessionKeys.reasonableExcuse -> "other",
-                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.hasConfirmedDeclaration -> true,
                 SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
                 SessionKeys.whenDidBecomeUnable -> "2022-01-01",
                 SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -684,11 +679,10 @@ class SessionAnswersHelperSpec extends SpecBase {
           }
 
           "the agent planned to submit and missed deadline" in {
-            val request = agentFakeRequestConverter(agentRequest
-              .withSession(
-                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+            val request = agentFakeRequestConverter(Json.obj(
+                SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
                 SessionKeys.reasonableExcuse -> "other",
-                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.hasConfirmedDeclaration -> true,
                 SessionKeys.whyReturnSubmittedLate -> "This is why my VAT payment was late.",
                 SessionKeys.whenDidBecomeUnable -> "2022-01-01",
                 SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -708,11 +702,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for no upload" in {
-          val fakeRequestWithOtherNoUploadKeysPresent = agentFakeRequestConverter(agentRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithOtherNoUploadKeysPresent = agentFakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
@@ -752,11 +745,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for no upload - and late appeal" in {
-          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = agentFakeRequestConverter(agentRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = agentFakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -800,11 +792,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for upload" in {
-          val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(agentRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
@@ -844,11 +835,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for upload - and late appeal" in {
-          val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(agentRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -896,11 +886,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "for LPP - appeal both penalties available - agent selects no" in {
-        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
-          .withSession(
+        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -953,11 +942,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "for LPP - appeal both penalties available - agent selects yes" in {
-        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
-          .withSession(
+        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -976,11 +964,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "for LPP" in {
-        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(agentRequest
-          .withSession(
+        val fakeRequestWithLPPKeysPresent = agentFakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -1025,11 +1012,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "display no upload details row if the user has uploaded files but has changed their mind and selects 'no' - 'hide' the files uploaded" in {
-        val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(agentRequest
-          .withSession(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+        val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(Json.obj(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
             SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -1073,11 +1059,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "display no upload details row if the user selected no to uploading files" in {
-        val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(agentRequest
-          .withSession(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+        val fakeRequestWithNoLateAppealButUploadPresent = agentFakeRequestConverter(Json.obj(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
             SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -1124,11 +1109,10 @@ class SessionAnswersHelperSpec extends SpecBase {
     "when a VAT trader is on the page" should {
 
       "for LPP - appeal both penalties available - trader selects yes" in {
-        val fakeRequestWithLPPKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+        val fakeRequestWithLPPKeysPresent = fakeRequestConverter(Json.obj(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
             SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.wasHospitalStayRequired -> "no",
             SessionKeys.whenHealthIssueHappened -> "2022-01-01",
             SessionKeys.doYouWantToAppealBothPenalties -> "yes"
@@ -1162,11 +1146,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "for LPP - appeal both penalties available - trader selects no" in {
-        val fakeRequestWithLPPKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+        val fakeRequestWithLPPKeysPresent = fakeRequestConverter(Json.obj(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
             SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.wasHospitalStayRequired -> "no",
             SessionKeys.whenHealthIssueHappened -> "2022-01-01",
             SessionKeys.doYouWantToAppealBothPenalties -> "no"
@@ -1184,10 +1167,9 @@ class SessionAnswersHelperSpec extends SpecBase {
       "for health" must {
         "for no hospital stay" should {
           "return all the keys from the session ready to be passed to the view" in {
-            val fakeRequestWithNoHospitalStayKeysPresent = fakeRequestConverter(fakeRequest
-              .withSession(
+            val fakeRequestWithNoHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
                 SessionKeys.reasonableExcuse -> "health",
-                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.hasConfirmedDeclaration -> true,
                 SessionKeys.wasHospitalStayRequired -> "no",
                 SessionKeys.whenHealthIssueHappened -> "2022-01-01"
               ))
@@ -1215,10 +1197,9 @@ class SessionAnswersHelperSpec extends SpecBase {
           }
 
           "return all keys and the 'Reason for appealing after 30 days' text" in {
-            val fakeRequestWithNoHospitalStayKeysPresent = fakeRequestConverter(fakeRequest
-              .withSession(
+            val fakeRequestWithNoHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
                 SessionKeys.reasonableExcuse -> "health",
-                SessionKeys.hasConfirmedDeclaration -> "true",
+                SessionKeys.hasConfirmedDeclaration -> true,
                 SessionKeys.wasHospitalStayRequired -> "no",
                 SessionKeys.whenHealthIssueHappened -> "2022-01-01",
                 SessionKeys.lateAppealReason -> "Lorem ipsum"
@@ -1256,11 +1237,10 @@ class SessionAnswersHelperSpec extends SpecBase {
 
       "for other" must {
         "for no upload" in {
-          val fakeRequestWithOtherNoUploadKeysPresent = fakeRequestConverter(fakeRequest
-            .withSession(
+          val fakeRequestWithOtherNoUploadKeysPresent = fakeRequestConverter(Json.obj(
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.isUploadEvidence -> "yes"
@@ -1298,11 +1278,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for no upload - and late appeal" in {
-          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -1347,11 +1326,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for upload" in {
-          val fakeRequestWithNoLateAppealButUploadPresent = fakeRequestConverter(fakeRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithNoLateAppealButUploadPresent = fakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.isUploadEvidence -> "yes"
@@ -1389,11 +1367,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for upload - and late appeal" in {
-          val fakeRequestWithNoLateAppealButUploadPresent = fakeRequestConverter(fakeRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithNoLateAppealButUploadPresent = fakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -1438,11 +1415,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "when the user clicked no to upload don't show the upload evidence row" in {
-          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -1484,11 +1460,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "when the user has changed their answer and does not want to upload files - but existing files have been uploaded - 'hide' the row" in {
-          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(fakeRequest
-            .withSession(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(Json.obj(
+              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
               SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
               SessionKeys.whenDidBecomeUnable -> "2022-01-01",
               SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
@@ -1536,10 +1511,9 @@ class SessionAnswersHelperSpec extends SpecBase {
     "when an agent is on the page" should {
       "when there is no hospital stay" should {
         "return rows of answers" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-            .withSession(
+          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
               SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.wasHospitalStayRequired -> "no",
               SessionKeys.whenHealthIssueHappened -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
@@ -1568,10 +1542,9 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "when the client intended to submit the VAT return" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-            .withSession(
+          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
               SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.wasHospitalStayRequired -> "no",
               SessionKeys.whenHealthIssueHappened -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "client"
@@ -1599,10 +1572,9 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "when the agent intended to submit but missed the deadline" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-            .withSession(
+          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
               SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.wasHospitalStayRequired -> "no",
               SessionKeys.whenHealthIssueHappened -> "2022-01-01",
               SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
@@ -1632,11 +1604,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "when it is an LPP show the correct message" in {
-        val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(agentRequest
-          .withSession(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+        val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
             SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.wasHospitalStayRequired -> "no",
             SessionKeys.whenHealthIssueHappened -> "2022-01-01"
           ))
@@ -1666,10 +1637,9 @@ class SessionAnswersHelperSpec extends SpecBase {
     "when a VAT trader is on the page" should {
       "when there is no hospital stay" should {
         "return rows of answers" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequestConverter(fakeRequest
-            .withSession(
+          val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
               SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> "true",
+              SessionKeys.hasConfirmedDeclaration -> true,
               SessionKeys.wasHospitalStayRequired -> "no",
               SessionKeys.whenHealthIssueHappened -> "2022-01-01"
             ))
@@ -1697,11 +1667,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "when it is an LPP show the correct message" in {
-        val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
+        val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
             SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.wasHospitalStayRequired -> "no",
             SessionKeys.whenHealthIssueHappened -> "2022-01-01"
           ))
@@ -1730,10 +1699,9 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when there is hospital stay ended" should {
       "return a Seq[String, String, String, String, String] of answers" in {
-        val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
+        val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.wasHospitalStayRequired -> "yes",
             SessionKeys.whenHealthIssueStarted -> "2022-01-01",
             SessionKeys.hasHealthEventEnded -> "yes",
@@ -1775,10 +1743,9 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
     "when there is hospital stay not ended" should {
       "return a Seq[String, String, String, String] of answers" in {
-        val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
+        val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.wasHospitalStayRequired -> "yes",
             SessionKeys.whenHealthIssueStarted -> "2022-01-01",
             SessionKeys.hasHealthEventEnded -> "no"
@@ -1813,10 +1780,9 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "throw a MatchError when the user has invalid health data in the session" in {
-      val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(fakeRequest
-        .withSession(
+      val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
           SessionKeys.reasonableExcuse -> "health",
-          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.hasConfirmedDeclaration -> true,
           SessionKeys.whenHealthIssueStarted -> "2022-01-01",
           SessionKeys.hasHealthEventEnded -> "no"
         ))
@@ -1828,15 +1794,14 @@ class SessionAnswersHelperSpec extends SpecBase {
 
   "for bereavement (someone died)" must {
     "return all the keys from the session ready to be passed to the view" in {
-      val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequestConverter(fakeRequest
-        .withSession(
-          SessionKeys.reasonableExcuse -> "bereavement",
-          SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.whenDidThePersonDie -> "2022-01-01"
-        ))
-
+      val userAnswers = UserAnswers("1234", Json.obj(
+        SessionKeys.reasonableExcuse -> "bereavement",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
+      ))
+      val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
       val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-        "bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
+        "bereavement")(userRequest, implicitly)
       result.head.key shouldBe "Reason for missing the VAT deadline"
       result.head.value shouldBe "Bereavement (someone died)"
       result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1852,16 +1817,15 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "return all keys and the 'Reason for appealing after 30 days' text" in {
-      val fakeRequestWithAllLossOfStaffKeysPresent = fakeRequestConverter(fakeRequest
-        .withSession(
-          SessionKeys.reasonableExcuse -> "bereavement",
-          SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.whenDidThePersonDie -> "2022-01-01",
-          SessionKeys.lateAppealReason -> "Lorem ipsum"
-        ))
-
+      val userAnswers = UserAnswers("1234", Json.obj(
+        SessionKeys.reasonableExcuse -> "bereavement",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01"),
+        SessionKeys.lateAppealReason -> "Lorem ipsum"
+      ))
+      val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
       val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-        "bereavement")(UserRequest("123456789")(fakeRequestWithAllLossOfStaffKeysPresent), implicitly)
+        "bereavement")(userRequest, implicitly)
       result.head.key shouldBe "Reason for missing the VAT deadline"
       result.head.value shouldBe "Bereavement (someone died)"
       result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1886,12 +1850,11 @@ class SessionAnswersHelperSpec extends SpecBase {
   "getContentForAgentsCheckYourAnswersPage" should {
     "when the client planned to submit VAT return (so no cause Of LateSubmission chosen)" should {
       "return rows of answers" in {
-        val fakeRequestWithClientPresent = fakeRequest
-          .withSession(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "client"
-          )
-
-        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithClientPresent, implicitly)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(userRequest, implicitly)
         result.head.key shouldBe "Before the deadline, who planned to submit the return?"
         result.head.value shouldBe "My client did"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1903,13 +1866,12 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when the agent planned to submit VAT return with cause Of LateSubmission being agent" should {
       "return rows of answers" in {
-        val fakeRequestWithAgentKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
-          )
-
-        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(userRequest, implicitly)
         result.head.key shouldBe "Before the deadline, who planned to submit the return?"
         result.head.value shouldBe "I did"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1928,13 +1890,12 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when the agent planned to submit VAT return with cause Of LateSubmission being client" should {
       "return rows of answers" in {
-        val fakeRequestWithAgentKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "client"
-          )
-
-        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequestWithAgentKeysPresent, implicitly)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+        ))
+        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(userRequest, implicitly)
         result.head.key shouldBe "Before the deadline, who planned to submit the return?"
         result.head.value shouldBe "I did"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1955,10 +1916,9 @@ class SessionAnswersHelperSpec extends SpecBase {
     "when agent session is present" should {
       "return getAllTheContentForCheckYourAnswersPage as list of getContentForAgentsCheckYourAnswersPage and  " +
         "getContentForReasonableExcuseCheckYourAnswersPage" in {
-        val fakeRequest = agentFakeRequestConverter(agentRequest
-          .withSession(
+        val fakeRequest = agentFakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
             SessionKeys.agentSessionVrn -> "123456789",
@@ -1973,11 +1933,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage when it is a LPP appeal" in {
-        val fakeRequest = agentFakeRequestConverter(agentRequest
-          .withSession(
+        val fakeRequest = agentFakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
             SessionKeys.agentSessionVrn -> "123456789"
@@ -1992,11 +1951,10 @@ class SessionAnswersHelperSpec extends SpecBase {
 
       "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage" +
         " when it is a LPP appeal (Additional)" in {
-        val fakeRequest = agentFakeRequestConverter(agentRequest
-          .withSession(
+        val fakeRequest = agentFakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Additional.toString,
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.appealType -> PenaltyTypeEnum.Additional,
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
             SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
             SessionKeys.agentSessionVrn -> "123456789"
@@ -2011,13 +1969,13 @@ class SessionAnswersHelperSpec extends SpecBase {
     "agent session is not present" when {
       "the appeal is against the obligation" must {
         "show the obligation variation of the page" in {
-          val fakeRequestForAppealingTheObligation = UserRequest(vrn)(fakeRequest.withSession(
-            SessionKeys.isObligationAppeal -> "true",
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.isObligationAppeal -> true,
             SessionKeys.otherRelevantInformation -> "This is some relevant information",
             SessionKeys.isUploadEvidence -> "yes"
           ))
-
-          val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(fakeRequestForAppealingTheObligation, implicitly)
+          val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(userRequest, implicitly)
           result.head.key shouldBe "Tell us why you want to appeal the penalty"
           result.head.value shouldBe "This is some relevant information"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -2036,13 +1994,13 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "show the obligation variation of the page - 'hide' the files uploaded if user selected no to uploading files" in {
-          val fakeRequestForAppealingTheObligation = UserRequest(vrn)(fakeRequest.withSession(
-            SessionKeys.isObligationAppeal -> "true",
+          val userAnswers = UserAnswers("1234", Json.obj(
+            SessionKeys.isObligationAppeal -> true,
             SessionKeys.otherRelevantInformation -> "This is some relevant information",
             SessionKeys.isUploadEvidence -> "no"
           ))
-
-          val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(fakeRequestForAppealingTheObligation, implicitly)
+          val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
+          val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(userRequest, implicitly)
           result.head.key shouldBe "Tell us why you want to appeal the penalty"
           result.head.value shouldBe "This is some relevant information"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -2060,17 +2018,17 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return getAllTheContentForCheckYourAnswersPage as list of getContentForReasonableExcuseCheckYourAnswersPage only" in {
-        val fakeRequestWithCorrectKeysAndReasonableExcuseSet = (reasonableExcuse: String) => UserRequest(vrn)(fakeRequest
-          .withSession(SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.hasConfirmedDeclaration -> "true",
-            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
-            (SessionKeys.reasonableExcuse, reasonableExcuse)))
-
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "technicalIssues",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
+          SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
+        ))
+        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
         val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-          "technicalIssues")(fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
+          "technicalIssues")(userRequest, implicitly)
         val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(
-          fakeRequestWithCorrectKeysAndReasonableExcuseSet("technicalIssues"), implicitly)
+          userRequest, implicitly)
 
         resultReasonableExcuses shouldBe resultAllContent
 
@@ -2081,12 +2039,12 @@ class SessionAnswersHelperSpec extends SpecBase {
   "getContentForObligationAppealCheckYourAnswersPage" should {
     "when no evidence file uploaded" should {
       "return rows of answers" in {
-        val fakeRequestWithObligationKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.otherRelevantInformation -> "Some Information",
-            SessionKeys.isUploadEvidence -> "yes"
-          )
-        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.otherRelevantInformation -> "Some Information",
+          SessionKeys.isUploadEvidence -> "yes"
+        ))
+        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(userRequest, implicitly)
         result.head.key shouldBe "Tell us why you want to appeal the penalty"
         result.head.value shouldBe "Some Information"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -2105,12 +2063,12 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return rows of answers - without uploaded files row" in {
-        val fakeRequestWithObligationKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.otherRelevantInformation -> "Some Information",
-            SessionKeys.isUploadEvidence -> "no"
-          )
-        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(fakeRequestWithObligationKeysPresent, implicitly)
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.otherRelevantInformation -> "Some Information",
+          SessionKeys.isUploadEvidence -> "no"
+        ))
+        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
+        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(userRequest, implicitly)
         result.head.key shouldBe "Tell us why you want to appeal the penalty"
         result.head.value shouldBe "Some Information"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -2129,13 +2087,13 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when evidence file is uploaded" should {
       "return rows of answers" in {
-        val fakeRequestWithObligationKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.otherRelevantInformation -> "Some Information",
-            SessionKeys.isUploadEvidence -> "yes"
-          )
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.otherRelevantInformation -> "Some Information",
+          SessionKeys.isUploadEvidence -> "yes"
+        ))
+        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
         val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(
-          Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
+          Some("some-file-name.txt"))(userRequest, implicitly)
         result.head.key shouldBe "Tell us why you want to appeal the penalty"
         result.head.value shouldBe "Some Information"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -2154,13 +2112,13 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "the user has selected no to uploaded files - 'hide' the row" in {
-        val fakeRequestWithObligationKeysPresent = fakeRequest
-          .withSession(
-            SessionKeys.otherRelevantInformation -> "Some Information",
-            SessionKeys.isUploadEvidence -> "no"
-          )
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.otherRelevantInformation -> "Some Information",
+          SessionKeys.isUploadEvidence -> "no"
+        ))
+        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
         val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(
-          Some("some-file-name.txt"))(fakeRequestWithObligationKeysPresent, implicitly)
+          Some("some-file-name.txt"))(userRequest, implicitly)
         result.head.key shouldBe "Tell us why you want to appeal the penalty"
         result.head.value shouldBe "Some Information"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -2180,13 +2138,12 @@ class SessionAnswersHelperSpec extends SpecBase {
 
   "getPreviousUploadsFileNames" should {
     "return the file names" in {
-      val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+      val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(correctUserAnswers ++ Json.obj(
         SessionKeys.reasonableExcuse -> "other",
-        SessionKeys.hasConfirmedDeclaration -> "true",
+        SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-        SessionKeys.whenDidBecomeUnable -> "2022-01-02",
-        SessionKeys.journeyId -> "4321"
-      ))
+        SessionKeys.whenDidBecomeUnable -> "2022-01-02"
+      ), fakeRequest)
       val callBackModel: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.READY,
@@ -2199,7 +2156,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           size = 2
         ))
       )
-      when(mockRepository.getUploadsForJourney(Some("4321"))).thenReturn(Future.successful(Option(Seq(callBackModel))))
+      when(mockRepository.getUploadsForJourney(Some("1234"))).thenReturn(Future.successful(Option(Seq(callBackModel))))
       await(sessionAnswersHelper.getPreviousUploadsFileNames()(fakeRequestForOtherJourney)) shouldBe "file1.txt"
     }
   }
@@ -2207,15 +2164,14 @@ class SessionAnswersHelperSpec extends SpecBase {
   "getContentWithExistingUploadFileNames" should {
     "when reason is 'other' (that requires a file upload call)" should {
       "return the rows for CYA page" in {
-        val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
+        val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(correctUserAnswers ++ Json.obj(
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
           SessionKeys.reasonableExcuse -> "other",
-          SessionKeys.hasConfirmedDeclaration -> "true",
+          SessionKeys.hasConfirmedDeclaration -> true,
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
           SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.journeyId -> "4321",
           SessionKeys.isUploadEvidence -> "yes"
-        ))
+        ), fakeRequest)
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForOtherJourney, messages))
         result.head.key shouldBe "Reason for missing the VAT deadline"
         result.head.value shouldBe "The reason does not fit into any of the other categories"
@@ -2249,12 +2205,11 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when there's an Obligation Appeal Journey (that requires a file upload call) " should {
       "return the rows for CYA page " in {
-        val fakeRequestForAppealingTheObligation: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
-          SessionKeys.journeyId -> "4321",
-          SessionKeys.isObligationAppeal -> "true",
+        val fakeRequestForAppealingTheObligation: UserRequest[AnyContent] = fakeRequestConverter(correctUserAnswers ++ Json.obj(
+          SessionKeys.isObligationAppeal -> true,
           SessionKeys.otherRelevantInformation -> "This is some relevant information",
           SessionKeys.isUploadEvidence -> "yes"
-        ))
+        ), fakeRequest)
         val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
         result.head.key shouldBe "Tell us why you want to appeal the penalty"
         result.head.value shouldBe "This is some relevant information"
@@ -2275,9 +2230,9 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "when the user has files uploaded - but changed their mind - 'hide' the files uploaded" in {
-      val fakeRequestForAppealingTheObligation: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+      val fakeRequestForAppealingTheObligation: UserRequest[AnyContent] = fakeRequestConverter(correctUserAnswers ++ Json.obj(
         SessionKeys.journeyId -> "4321",
-        SessionKeys.isObligationAppeal -> "true",
+        SessionKeys.isObligationAppeal -> true,
         SessionKeys.otherRelevantInformation -> "This is some relevant information",
         SessionKeys.isUploadEvidence -> "no"
       ))
@@ -2299,10 +2254,9 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when reason is 'bereavement' (that doesn't require a file upload call)" should {
       "return the rows for CYA page " in {
-        val fakeRequestWithBereavementKeysPresent = fakeRequestConverter(fakeRequest
-          .withSession(
+        val fakeRequestWithBereavementKeysPresent = fakeRequestConverter(Json.obj(
             SessionKeys.reasonableExcuse -> "bereavement",
-            SessionKeys.hasConfirmedDeclaration -> "true",
+            SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whenDidThePersonDie -> "2022-01-01",
             SessionKeys.lateAppealReason -> "Lorem ipsum",
             SessionKeys.isUploadEvidence -> "yes"

@@ -19,11 +19,12 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.HasHospitalStayEndedForm
 import messages.HasTheHospitalStayEndedMessages._
-import models.NormalMode
 import models.appeals.HospitalStayEndInput
 import models.pages.{DidHospitalStayEndPage, PageMode}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.HasTheHospitalStayEndedPage
@@ -36,6 +37,7 @@ class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
     val conditionalRadioHelper = injector.instanceOf[ConditionalRadioHelper]
     val sampleStartDate = LocalDate.parse("2020-01-01")
 
+    implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
     val hasTheHospitalStayEndedPage: HasTheHospitalStayEndedPage = injector.instanceOf[HasTheHospitalStayEndedPage]
     object Selectors extends BaseSelectors {
       val collapsableYesText = "#conditional-hasStayEnded div > fieldset > legend"
@@ -50,7 +52,7 @@ class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
     val radioOptions = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded")
     def applyView(form: Form[_]): HtmlFormat.Appendable = {
       hasTheHospitalStayEndedPage.apply(form, radioOptions, controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(NormalMode),
-        pageMode = PageMode(DidHospitalStayEndPage, NormalMode))
+        pageMode = PageMode(DidHospitalStayEndPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView(formProvider))

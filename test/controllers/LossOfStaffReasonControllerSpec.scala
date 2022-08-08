@@ -17,11 +17,14 @@
 package controllers
 
 import base.SpecBase
+import models.session.UserAnswers
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -31,24 +34,27 @@ import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.lossOfStaff.WhenDidThePersonLeaveBusinessPage
 
 import java.time.LocalDate
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class LossOfStaffReasonControllerSpec extends SpecBase {
   val whenDidThePersonLeaveTheBusinessPage: WhenDidThePersonLeaveBusinessPage = injector.instanceOf[WhenDidThePersonLeaveBusinessPage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockSessionService)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
+    when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
 
     val controller: LossOfStaffReasonController = new LossOfStaffReasonController(
       whenDidThePersonLeaveTheBusinessPage,
-      mainNavigator
-    )(authPredicate, dataRequiredAction, appConfig, mcc)
+      mainNavigator,
+      mockSessionService
+    )(authPredicate, dataRequiredAction, dataRetrievalAction, ec,  appConfig, mcc)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
@@ -63,8 +69,9 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onPageLoad(NormalMode)(
-          fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(SessionKeys.whenPersonLeftTheBusiness -> "2021-01-01")))
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-01-01"))))))
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
         val documentParsed: Document = Jsoup.parse(contentAsString(result))
         documentParsed.select(".govuk-date-input__input").get(0).attr("value") shouldBe "1"
@@ -73,6 +80,7 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
       }
 
       "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -97,32 +105,36 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
     "the user is authorised" must {
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- routing to CYA when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+        val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionService.updateAnswers(answerCaptor.capture()))
+          .thenReturn(Future.successful(true))
+        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "1",
           "date.month" -> "2",
           "date.year" -> "2021")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        await(result).session.get(SessionKeys.whenPersonLeftTheBusiness).get shouldBe LocalDate.of(
-          2021, 2, 1).toString
+        answerCaptor.getValue shouldBe userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-02-01")))
       }
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit(CheckMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+        val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionService.updateAnswers(answerCaptor.capture()))
+          .thenReturn(Future.successful(true))
+        val result: Future[Result] = controller.onSubmit(CheckMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "1",
           "date.month" -> "2",
           "date.year" -> "2021")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        await(result).session.get(SessionKeys.whenPersonLeftTheBusiness).get shouldBe LocalDate.of(
-          2021, 2, 1).toString
+        answerCaptor.getValue shouldBe userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-02-01")))
       }
 
       "return 400 (BAD_REQUEST)" when {
 
         "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+          val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
             "date.day" -> "what",
             "date.month" -> "is",
             "date.year" -> "this")))
@@ -130,7 +142,7 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
         }
 
         "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
+          val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
             "date.day" -> "31",
             "date.month" -> "2",
             "date.year" -> "2021")))
@@ -138,10 +150,10 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
         }
 
         "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(
-            "date.day" -> "123456",
+          val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
+            "date.day" -> "1234567",
             "date.month" -> "432567",
-            "date.year" -> "3124567")))
+            "date.year" -> "123456")))
           status(result) shouldBe BAD_REQUEST
         }
       }

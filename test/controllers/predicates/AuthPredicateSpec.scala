@@ -16,7 +16,7 @@
 
 package controllers.predicates
 
-import models.UserRequest
+import models.AuthRequest
 import play.api.http.Status
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Action, AnyContent, Request, Result}
@@ -32,7 +32,7 @@ class AuthPredicateSpec extends AuthMocks {
   }
 
   def targetAgent(request: Request[AnyContent]): Future[Result] = mockAuthPredicate.authoriseAsAgent({
-    _: UserRequest[_] => Future.successful(Ok("welcome"))
+    _: AuthRequest[_] => Future.successful(Ok("welcome"))
   })(request)
 
   "AuthPredicate" should {

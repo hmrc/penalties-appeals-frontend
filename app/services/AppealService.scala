@@ -23,7 +23,7 @@ import helpers.DateTimeHelper
 import models.appeals.{AppealSubmission, MultiplePenaltiesData}
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
-import models.{AppealData, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
+import models.{AppealData, AuthRequest, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.Configuration
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, JsValue, Json}
@@ -46,7 +46,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
   def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
-                                      (implicit user: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
+                                      (implicit user: AuthRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
       _.fold[Option[AppealData]](
         None
@@ -66,7 +66,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   def validateMultiplePenaltyDataForEnrolmentKey(penaltyId: String)
-                                                (implicit user: UserRequest[_],
+                                                (implicit user: AuthRequest[_],
                                                  hc: HeaderCarrier,
                                                  ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
     val enrolmentKey = EnrolmentKeys.constructMTDVATEnrolmentKey(user.vrn)
@@ -105,12 +105,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
 
   def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
     val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
-    val appealType = userRequest.session.get(SessionKeys.appealType)
-    val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)
+    val appealType = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
+    val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)
     val agentReferenceNo = userRequest.arn
-    val penaltyNumber = userRequest.session.get(SessionKeys.penaltyNumber).get
+    val penaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.penaltyNumber).get
     val correlationId: String = idGenerator.generateUUID
-    val userHasUploadedFiles = userRequest.session.get(SessionKeys.isUploadEvidence).contains("yes")
+    val userHasUploadedFiles = userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).contains("yes")
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
       readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
@@ -122,7 +122,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       response.status match {
         case OK =>
           if (isLPP) {
-            if (appealType.contains(PenaltyTypeEnum.Late_Payment.toString)) {
+            if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, correlationId, uploads))
             } else {
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, correlationId, uploads))
@@ -149,7 +149,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
 
   private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
     val dateTimeNow: LocalDate = dateTimeHelper.dateNow
-    val dateSentParsed: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.dateCommunicationSent).get)
+    val dateSentParsed: LocalDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
     dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
   }
 

@@ -17,8 +17,11 @@
 package controllers
 
 import base.SpecBase
+import models.session.UserAnswers
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -27,14 +30,15 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.HonestyDeclarationPage
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class HonestyDeclarationControllerSpec extends SpecBase {
 
  val honestyDeclarationPage: HonestyDeclarationPage = injector.instanceOf[HonestyDeclarationPage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockSessionService)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -44,13 +48,15 @@ class HonestyDeclarationControllerSpec extends SpecBase {
     val controller: HonestyDeclarationController = new HonestyDeclarationController(
       honestyDeclarationPage,
       errorHandler,
-      mainNavigator
-    )(mcc, appConfig, config, authPredicate, dataRequiredAction)
+      mainNavigator,
+      mockSessionService
+    )(mcc, appConfig, config, authPredicate, dataRequiredAction, dataRetrievalAction, ec)
   }
 
   "onPageLoad" should {
     "return 200" when {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "crime")))))
         val result: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
         status(result) shouldBe OK
       }
@@ -58,11 +64,13 @@ class HonestyDeclarationControllerSpec extends SpecBase {
 
     "return 500" when {
       "the user hasn't selected an option on the reasonable excuse page" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -84,58 +92,41 @@ class HonestyDeclarationControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "return 303" when {
-      "the reasonable excuse selected is 'crime' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
-          .withSession((SessionKeys.reasonableExcuse, "crime"))))
-        status(result) shouldBe SEE_OTHER
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
+      def onSubmitTest(reasonableExcuse: String) = {
+        s"the reasonable excuse selected is '$reasonableExcuse' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> reasonableExcuse)))))
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
+          val result: Future[Result] = controller.onSubmit()(userRequestWithCorrectKeys)
+          status(result) shouldBe SEE_OTHER
+          answerCaptor.getValue shouldBe userAnswers(correctUserAnswers ++ Json.obj(
+            SessionKeys.hasConfirmedDeclaration -> true,
+            SessionKeys.reasonableExcuse -> reasonableExcuse
+          ))
+        }
       }
 
-      "the reasonable excuse selected is 'fireOrFlood' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
-          .withSession((SessionKeys.reasonableExcuse, "fireOrFlood"))))
-        status(result) shouldBe SEE_OTHER
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
-        await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "fireOrFlood"
-      }
+      onSubmitTest("crime")
+      onSubmitTest("lossOfStaff")
+      onSubmitTest("fireOrFlood")
+      onSubmitTest("bereavement")
+      onSubmitTest("other")
+      onSubmitTest("technicalIssues")
+      onSubmitTest("health")
 
-      "the reasonable excuse selected is 'lossOfStaff' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
-          .withSession((SessionKeys.reasonableExcuse, "lossOfStaff"))))
-        status(result) shouldBe SEE_OTHER
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
-        await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "lossOfStaff"
-      }
-
-      "the reasonable excuse selected is 'technicalIssues' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
-          .withSession((SessionKeys.reasonableExcuse, "technicalIssues"))))
-        status(result) shouldBe SEE_OTHER
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
-        await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "technicalIssues"
-      }
-
-      "the reasonable excuse selected is 'health' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequestWithCorrectKeys
-        .withSession((SessionKeys.reasonableExcuse, "health"))))
-        status(result) shouldBe SEE_OTHER
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).isDefined shouldBe true
-        await(result).session.get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
-        await(result).session.get(SessionKeys.reasonableExcuse).get shouldBe "health"
-      }
     }
 
     "return 500" when {
       "the user hasn't selected an option on the reasonable excuse page" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+
         val result: Future[Result] = controller.onSubmit()(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onSubmit()(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }

@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.WhenDidPersonLeaveTheBusinessForm
 import helpers.FormProviderHelper
 import models.Mode
@@ -25,40 +25,49 @@ import models.pages.{PageMode, WhenDidPersonLeaveTheBusinessPage}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.lossOfStaff.WhenDidThePersonLeaveBusinessPage
 
+import java.time.LocalDate
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class LossOfStaffReasonController @Inject()(whenDidThePersonLeaveBusinessPage: WhenDidThePersonLeaveBusinessPage,
-                                             navigation: Navigation)
+                                            navigation: Navigation,
+                                            sessionService: SessionService)
                                            (implicit authorise: AuthPredicate,
                                             dataRequired: DataRequiredAction,
+                                            dataRetrieval: DataRetrievalAction,
+                                            executionContext: ExecutionContext,
                                             appConfig: AppConfig,
                                             mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(WhenDidPersonLeaveTheBusinessPage, mode)
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
         WhenDidPersonLeaveTheBusinessForm.whenDidPersonLeaveTheBusinessForm(),
-        SessionKeys.whenPersonLeftTheBusiness
+        SessionKeys.whenPersonLeftTheBusiness,
+        userRequest.answers
       )
       val postAction = controllers.routes.LossOfStaffReasonController.onSubmit(mode)
       Ok(whenDidThePersonLeaveBusinessPage(formProvider, postAction, pageMode(mode)))
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       val postAction = controllers.routes.LossOfStaffReasonController.onSubmit(mode)
       WhenDidPersonLeaveTheBusinessForm.whenDidPersonLeaveTheBusinessForm().bindFromRequest().fold(
-        formWithErrors => BadRequest(whenDidThePersonLeaveBusinessPage(formWithErrors, postAction, pageMode(mode))),
+        formWithErrors => Future(BadRequest(whenDidThePersonLeaveBusinessPage(formWithErrors, postAction, pageMode(mode)))),
         whenPersonLeft => {
-          Redirect(navigation.nextPage(WhenDidPersonLeaveTheBusinessPage, mode, None))
-            .addingToSession(SessionKeys.whenPersonLeftTheBusiness -> whenPersonLeft.toString)
+          val updatedAnswers = userRequest.answers.setAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness, whenPersonLeft)
+          sessionService.updateAnswers(updatedAnswers).map {
+            _=> Redirect(navigation.nextPage(WhenDidPersonLeaveTheBusinessPage, mode, None))
+          }
         }
       )
     }

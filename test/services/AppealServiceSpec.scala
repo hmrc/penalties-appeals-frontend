@@ -22,7 +22,7 @@ import connectors.PenaltiesConnector
 import connectors.httpParsers.{InvalidJson, UnexpectedFailure}
 import models.appeals.MultiplePenaltiesData
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
-import models.{AppealData, ReasonableExcuse, UserRequest}
+import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
@@ -32,7 +32,6 @@ import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{SessionKeys, UUIDGenerator}
-import java.time.LocalDate
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,31 +43,36 @@ class AppealServiceSpec extends SpecBase {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
-  val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForCrimeJourney: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
     SessionKeys.reasonableExcuse -> "crime",
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-    SessionKeys.hasConfirmedDeclaration -> "true",
-    SessionKeys.dateOfCrime -> "2022-01-01",
-    SessionKeys.journeyId -> "1234")
-  )
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+    SessionKeys.penaltyNumber -> "123456789",
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+  )))(fakeRequest)
 
-  val fakeRequestForOtherJourney: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForOtherJourney: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
     SessionKeys.reasonableExcuse -> "other",
-    SessionKeys.hasConfirmedDeclaration -> "true",
-    SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-    SessionKeys.journeyId -> "1234",
-    SessionKeys.isUploadEvidence -> "yes")
-  )
+    SessionKeys.isUploadEvidence -> "yes",
+    SessionKeys.penaltyNumber -> "123456789",
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+  )))(fakeRequest)
 
-  val fakeRequestForOtherJourneyDeclinedUploads: UserRequest[AnyContent] = UserRequest("123456789")(fakeRequestWithCorrectKeys.withSession(
+  val fakeRequestForOtherJourneyDeclinedUploads: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
     SessionKeys.reasonableExcuse -> "other",
-    SessionKeys.hasConfirmedDeclaration -> "true",
-    SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-    SessionKeys.journeyId -> "1234",
-    SessionKeys.isUploadEvidence -> "no"
-  ))
+    SessionKeys.isUploadEvidence -> "no",
+    SessionKeys.penaltyNumber -> "123456789"
+  )))(fakeRequest)
 
   val appealDataAsJson: JsValue = Json.parse(
     """
@@ -109,7 +113,7 @@ class AppealServiceSpec extends SpecBase {
     secondPenaltyChargeReference = "123456790",
     secondPenaltyAmount = 101.02,
     firstPenaltyCommunicationDate = LocalDate.parse("2022-01-01"),
-    secondPenaltyCommunicationDate = LocalDate.parse("2022-01-02"),
+    secondPenaltyCommunicationDate = LocalDate.parse("2022-01-02")
   )
 
   class Setup {
@@ -128,7 +132,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
-        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -138,7 +142,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
       val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
-        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -148,7 +152,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(appealDataAsJson)))
 
       val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
-        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
 
@@ -158,7 +162,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(appealDataAsJsonLPP)))
 
       val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = false)(
-        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
 
@@ -167,7 +171,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Some(appealDataAsJsonLPPAdditional)))
 
       val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true)(
-        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
   }
@@ -178,7 +182,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned"))))
 
       val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
-        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -187,7 +191,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Left(InvalidJson)))
 
       val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
-        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
@@ -196,7 +200,7 @@ class AppealServiceSpec extends SpecBase {
         .thenReturn(Future.successful(Right(multiplePenaltiesModel)))
 
       val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
-        new UserRequest[AnyContent]("123456789")(fakeRequest), implicitly, implicitly)
+        new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
   }

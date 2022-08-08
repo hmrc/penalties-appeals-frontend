@@ -20,11 +20,10 @@ import base.{BaseSelectors, SpecBase}
 import forms.WhenDidHealthIssueHappenForm
 import messages.WhenDidHealthReasonHappenMessages._
 import models.pages.{PageMode, WhenDidHealthIssueHappenPage}
-import models.{NormalMode, PenaltyTypeEnum, UserRequest}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
-import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.WhenDidHealthReasonHappenPage
 
@@ -66,7 +65,7 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
 
 
       "display the LPP variation when the appeal is for a LPP" must {
-        val userRequest = UserRequest("123456789")(fakeRequest.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
+        val userRequest = userRequestLPPWithCorrectKeys
         implicit val doc: Document = asDocument(applyVATTraderView(vatTraderFormProvider, userRequest))
 
         val expectedContent = Seq(

@@ -17,8 +17,9 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
-import models.NormalMode
+import models.{NormalMode, PenaltyTypeEnum}
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -31,37 +32,33 @@ import java.time.LocalDate
 class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
   val controller: CrimeReasonController = injector.instanceOf[CrimeReasonController]
   "GET /when-did-the-crime-happen" should {
-    "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-crime-happen").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234")
-      )
-      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeys))
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-crime-happen").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-crime-happen").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -73,59 +70,53 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
   }
 
   "POST /when-did-the-crime-happen" should {
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234")
-      ).withFormUrlEncodedBody(
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
         "date.year" -> "2021"
       )
-      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode).url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.dateOfCrime).get shouldBe LocalDate.parse("2021-02-08").toString
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.dateOfCrime).get shouldBe LocalDate.parse("2021-02-08")
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the date submitted is in the future" in {
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        ).withFormUrlEncodedBody(
+      "the date submitted is in the future" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
           "date.year" -> "2025"
         )
-        val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+        val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the date submitted is in the future - relative to the time machine" in {
+      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
         setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        ).withFormUrlEncodedBody(
+        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "02",
           "date.month" -> "01",
           "date.year" -> "2022"
@@ -135,32 +126,26 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         setFeatureDate(None)
       }
 
-      "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        )
-        val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the date submitted is missing a field" in {
-        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        )
+      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
 
         val noDayJsonBody: Seq[(String, String)] = Seq(
           "date.day" -> "",
@@ -179,34 +164,33 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
           "date.month" -> "02",
           "date.year" -> ""
         )
-        val requestNoDay = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noDayJsonBody: _*)))
+        val requestNoDay = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequest.withFormUrlEncodedBody(noDayJsonBody: _*)))
         requestNoDay.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoMonth = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noMonthJsonBody: _*)))
+        val requestNoMonth = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequest.withFormUrlEncodedBody(noMonthJsonBody: _*)))
         requestNoMonth.header.status shouldBe Status.BAD_REQUEST
 
-        val requestNoYear = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithCorrectKeys.withFormUrlEncodedBody(noYearJsonBody: _*)))
+        val requestNoYear = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequest.withFormUrlEncodedBody(noYearJsonBody: _*)))
         requestNoYear.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -218,37 +202,33 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
   }
 
   "GET /has-this-crime-been-reported" should {
-    "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234")
-      )
-      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeys))
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -260,90 +240,80 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
   }
 
   "POST /has-this-crime-been-reported" should {
-    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(1).toString),
-        (SessionKeys.journeyId, "1234")
-      ).withFormUrlEncodedBody("value" -> "yes")
-      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
+    ))) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
+      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
     }
 
-    "return 303 (SEE_OTHER) to CYA page when appeal IS late and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(31).toString),
-        (SessionKeys.journeyId, "1234")
-      ).withFormUrlEncodedBody("value" -> "yes")
+    "return 303 (SEE_OTHER) to CYA page when appeal IS late and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(31)
+    ))) {
+      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.hasCrimeBeenReportedToPolice).get shouldBe "yes"
     }
 
 
     "return 400 (BAD_REQUEST)" when {
-      "the value is invalid" in {
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        ).withFormUrlEncodedBody("value" -> "fake_value")
-        val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+      "the value is invalid" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
+        val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        )
-        val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 

@@ -16,9 +16,10 @@
 
 package controllers
 
-import models.{NormalMode, UserRequest}
+import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.Jsoup
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -26,103 +27,93 @@ import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
+import java.time.LocalDate
+
 class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
   val controller: HonestyDeclarationController = injector.instanceOf[HonestyDeclarationController]
 
   "GET /honesty-declaration" should {
-    "return 200 (OK) when the user is authorised and has the correct keys" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234"),
-        (SessionKeys.reasonableExcuse, "crime")
-      )
-      val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
+    "return 200 (OK) when the user is authorised and has the correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.reasonableExcuse -> "crime"
+    ))) {
+      val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 200 (OK) when the user is authorised and has the correct keys - and show one more bullet when reasonable excuse is 'lossOfStaff'" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234"),
-        (SessionKeys.reasonableExcuse, "lossOfStaff")
-      )
-      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+    "return 200 (OK) when the user is authorised and has the correct keys - and show one more bullet when reasonable excuse is 'lossOfStaff'" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.reasonableExcuse -> "lossOfStaff"
+    ))) {
+      val request = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
       parsedBody.select(
         "#main-content .govuk-list--bullet > li:nth-child(2)").text() shouldBe "the staff member did not return or get replaced before the due date"
     }
 
-    "return 200 (OK) when the user is authorised and has the correct keys - and no custom no extraText when reasonable excuse is 'other'" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234"),
-        (SessionKeys.reasonableExcuse, "other")
-      )
-      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+    "return 200 (OK) when the user is authorised and has the correct keys - and no custom no extraText when reasonable excuse is 'other'" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.reasonableExcuse -> "other"
+    ))) {
+      val request = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
       parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("I was unable to submit the VAT Return due on ")
     }
 
-    "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the user is appealing an obligation" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        SessionKeys.dateCommunicationSent -> "2020-02-08",
-        (SessionKeys.reasonableExcuse, "obligation"),
-        (SessionKeys.isObligationAppeal, "true"),
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
+    "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the user is appealing an obligation" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.reasonableExcuse -> "obligation",
+      SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+      SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+    ))) {
+      val request = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
       parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("HMRC has been asked to cancel the VAT registration")
       parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith("I believe there was no VAT Return due for the period")
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234")
-      )
-      val request = await(controller.onPageLoad()(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -134,45 +125,36 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
 
 
     "when an agent is authorised and has the correct keys" must {
-      "return 200 (OK) and the correct message - show agent context messages" in {
+      "return 200 (OK) and the correct message - show agent context messages" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+        SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+      ))) {
         AuthStub.agentAuthorised()
-        val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(FakeRequest("GET", "/honesty-declaration")
-          .withSession(
-            authToken -> "1234",
-            (SessionKeys.agentSessionVrn, "VRN1234"),
-            (SessionKeys.penaltyNumber, "1234"),
-            (SessionKeys.appealType, "Late_Submission"),
-            (SessionKeys.startDateOfPeriod, "2020-01-01"),
-            (SessionKeys.endDateOfPeriod, "2020-01-01"),
-            (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-            SessionKeys.dateCommunicationSent -> "2020-02-08",
-            (SessionKeys.reasonableExcuse, "crime"),
-            (SessionKeys.whoPlannedToSubmitVATReturn, "agent"),
-            (SessionKeys.whatCausedYouToMissTheDeadline, "client"),
-            SessionKeys.journeyId -> "1234")
-        )
-        val request = controller.onPageLoad()(agentUserSessionKeys)
+        val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
+        val request = controller.onPageLoad()(agentFakeRequest)
         await(request).header.status shouldBe Status.OK
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text should startWith("because my client was affected by a crime")
       }
 
 
-      "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the agent is appealing an obligation" in {
-        val fakeRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest("123456789",
-          arn = Some("AGENT1"))(FakeRequest("GET", "/honesty-declaration").withSession(
-          authToken -> "1234",
-          (SessionKeys.agentSessionVrn, "VRN1234"),
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          SessionKeys.dateCommunicationSent -> "2020-02-08",
-          (SessionKeys.reasonableExcuse, "obligation"),
-          (SessionKeys.isObligationAppeal, "true"),
-          SessionKeys.journeyId -> "1234"
-        ))
+      "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the agent is appealing an obligation" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.isObligationAppeal -> true
+      ))) {
+        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
         val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
         await(request).header.status shouldBe Status.OK
         val parsedBody = Jsoup.parse(contentAsString(request))
@@ -183,45 +165,40 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /honesty-declaration" should {
-    "return 303 (SEE OTHER) when the user POSTs valid data - and the calls succeed - adding the key to the session" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234"),
-        (SessionKeys.reasonableExcuse, "crime")
-      ).withFormUrlEncodedBody("value" -> "true")
-
-      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+    "return 303 (SEE OTHER) when the user POSTs valid data - and the calls succeed - adding the key to the session" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.reasonableExcuse -> "crime"
+    ))) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "true")
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
-      request.session(fakeRequestWithCorrectKeys).get(SessionKeys.hasConfirmedDeclaration).get shouldBe "true"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get shouldBe true
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234")
-      )
-      val request = await(controller.onSubmit()(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 

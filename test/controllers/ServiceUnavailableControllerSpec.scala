@@ -32,7 +32,7 @@ class ServiceUnavailableControllerSpec extends SpecBase {
   val serviceUnavailablePage: ServiceUnavailablePage = injector.instanceOf[ServiceUnavailablePage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockSessionService)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -41,11 +41,13 @@ class ServiceUnavailableControllerSpec extends SpecBase {
 
     val controller: ServiceUnavailableController = new ServiceUnavailableController(
       serviceUnavailablePage
-    )(mcc, appConfig, authPredicate)
+    )(mcc, appConfig, authPredicate, dataRetrievalAction)
   }
 
   "onPageLoad" should {
     "show the page with 500 status code" in new Setup(AuthTestModels.successfulAuthResult) {
+      when(mockSessionService.getUserAnswers(any()))
+        .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
       val result: Future[Result] = controller.onPageLoad()(fakeRequest)
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }

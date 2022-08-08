@@ -19,10 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.YouCanAppealPenaltyForm
 import messages.YouCanAppealThisPenaltyMessages._
-import models.NormalMode
 import models.pages.{PageMode, YouCanAppealThisPenaltyPage}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.obligation.YouCanAppealPenaltyPage
@@ -30,6 +31,8 @@ import viewtils.RadioOptionHelper
 
 class YouCanAppealPenaltyPageSpec extends SpecBase with ViewBehaviours {
   "YouCanAppealPenaltyPage" should {
+    implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
+
     val youCanAppealPenaltyPage: YouCanAppealPenaltyPage = injector.instanceOf[YouCanAppealPenaltyPage]
     object Selectors extends BaseSelectors {
       val legend = ".govuk-fieldset__legend"

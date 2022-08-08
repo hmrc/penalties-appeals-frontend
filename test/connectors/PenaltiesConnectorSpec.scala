@@ -28,9 +28,8 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
-import java.time.LocalDate
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltiesConnectorSpec extends SpecBase {
@@ -320,7 +319,7 @@ class PenaltiesConnectorSpec extends SpecBase {
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
           2020, 1, 1, 0, 0, 0), isLPP = true, appealSubmittedBy = "client",
         agentDetails = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
-          startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false,
+          startDateOfEvent = LocalDate.of(2020, 1, 1).atStartOfDay(), reportedIssueToPolice = true, statement = None, lateAppeal = false,
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
@@ -337,7 +336,7 @@ class PenaltiesConnectorSpec extends SpecBase {
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
           2020, 1, 1, 0, 0, 0), isLPP = true, appealSubmittedBy = "client",
         agentDetails = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
-          startDateOfEvent = "2020-01-01T13:00:00.000Z", reportedIssueToPolice = true, statement = None, lateAppeal = false,
+          startDateOfEvent = LocalDate.of(2020, 1, 1).atStartOfDay(), reportedIssueToPolice = true, statement = None, lateAppeal = false,
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )

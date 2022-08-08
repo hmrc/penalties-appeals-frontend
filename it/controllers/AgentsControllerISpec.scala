@@ -16,8 +16,9 @@
 
 package controllers
 
-import models.NormalMode
+import models.{NormalMode, PenaltyTypeEnum}
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -31,37 +32,33 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
   val controller: AgentsController = injector.instanceOf[AgentsController]
 
   "GET /what-caused-you-to-miss-the-deadline" should {
-    "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/what-caused-you-to-miss-the-deadline").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234")
-      )
-      val request = await(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeys))
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/what-caused-you-to-miss-the-deadline").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/what-caused-you-to-miss-the-deadline").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -73,72 +70,64 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /what-caused-you-to-miss-the-deadline" should {
-    "return 303 (SEE_OTHER) to 'reasonable excuse selection' page and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(1).toString),
-        (SessionKeys.journeyId, "1234")
-      ).withFormUrlEncodedBody("value" -> "client")
-      val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+    "return 303 (SEE_OTHER) to 'reasonable excuse selection' page and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
+    ))) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "client")
+      val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whatCausedYouToMissTheDeadline).get shouldBe "client"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).get shouldBe "client"
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the value is invalid" in {
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        ).withFormUrlEncodedBody("value" -> "fake_value")
-        val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+      "the value is invalid" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
+        val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        )
-        val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/what-caused-you-to-miss-the-deadline").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -149,37 +138,33 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
     }
   }
   "GET /who-planned-to-submit-vat-return" should {
-    "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/who-planned-to-submit-vat-return").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, "2020-02-08"),
-        (SessionKeys.journeyId, "1234")
-      )
-      val request = await(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeys))
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/who-planned-to-submit-vat-return").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/who-planned-to-submit-vat-return").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -191,72 +176,64 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /who-planned-to-submit-vat-return" should {
-    "return 303 (SEE_OTHER) to who planned to submit vat return page and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        (SessionKeys.dateCommunicationSent, LocalDate.now.minusDays(1).toString),
-        (SessionKeys.journeyId, "1234")
-      ).withFormUrlEncodedBody("value" -> "client")
-      val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeysAndCorrectBody))
+    "return 303 (SEE_OTHER) to who planned to submit vat return page and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
+    ))) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "client")
+      val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.whoPlannedToSubmitVATReturn).get shouldBe "client"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).get shouldBe "client"
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the value is invalid" in {
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        ).withFormUrlEncodedBody("value" -> "fake_value")
-        val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
+      "the value is invalid" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
+      ))) {
+        val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
+        val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          (SessionKeys.dateCommunicationSent, "2020-02-08"),
-          (SessionKeys.journeyId, "1234")
-        )
-        val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectKeysAndNoBody))
+      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
+      ))) {
+        val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/who-planned-to-submit-vat-return").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 

@@ -51,7 +51,7 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
         CheckYourAnswersRow("Key 3", "Value 3", "href2#")
       ),
       pageMode = PageMode(CheckYourAnswersPage, NormalMode)
-    )
+    )(userRequestWithCorrectKeys, implicitly, implicitly)
 
     implicit val doc: Document = asDocument(applyView())
 

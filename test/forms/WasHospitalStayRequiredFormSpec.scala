@@ -30,7 +30,7 @@ class WasHospitalStayRequiredFormSpec extends FormBehaviours with SpecBase {
   implicit val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   override implicit val config: Configuration = mock(classOf[Configuration])
   "when a VAT trader is in session" must {
-    val vatTraderUserRequest = UserRequest("123456789")(FakeRequest("GET", "/"))
+    val vatTraderUserRequest = UserRequest("123456789", answers = userAnswers(correctUserAnswers))(FakeRequest("GET", "/"))
     val vatTraderForm = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(vatTraderUserRequest)
     behave like mandatoryField(vatTraderForm, "value", FormError("value", "healthReason.wasHospitalStayRequired.error.required"))
 
@@ -41,7 +41,7 @@ class WasHospitalStayRequiredFormSpec extends FormBehaviours with SpecBase {
   }
 
   "when an agent is in session" must {
-    val agentUserRequest: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(FakeRequest("GET", "/")
+    val agentUserRequest: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers))(FakeRequest("GET", "/")
       .withSession(
         SessionKeys.agentSessionVrn -> "VRN1234",
         SessionKeys.whoPlannedToSubmitVATReturn -> "agent",

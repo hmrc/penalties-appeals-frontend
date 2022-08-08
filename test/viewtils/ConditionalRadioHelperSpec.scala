@@ -18,14 +18,17 @@ package viewtils
 
 import base.SpecBase
 import forms.HasHospitalStayEndedForm
+import models.UserRequest
 import models.appeals.HospitalStayEndInput
 import play.api.data.Form
+import play.api.mvc.AnyContent
 
 import java.time.LocalDate
 
 class ConditionalRadioHelperSpec extends SpecBase {
   val sampleStartDate: LocalDate = LocalDate.parse("2020-01-01")
   val radioHelper: ConditionalRadioHelper = injector.instanceOf[ConditionalRadioHelper]
+  implicit val userRequest: UserRequest[AnyContent] = userRequestWithCorrectKeys
   "conditionalYesNoOptions" should {
     "select the radio option if the form has a prefilled value - for yes" in {
       val form: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)

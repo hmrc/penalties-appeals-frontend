@@ -16,6 +16,8 @@
 
 package controllers
 
+import models.PenaltyTypeEnum
+import org.mongodb.scala.Document
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, _}
@@ -23,11 +25,17 @@ import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
+import java.time.LocalDate
+
 class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
   val controller: InitialiseAppealController = injector.instanceOf[InitialiseAppealController]
 
+  class Setup {
+    await(userAnswersRepository.collection.deleteMany(Document()).toFuture())
+  }
+
   "GET /initialise-appeal" should {
-    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned" in {
+    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
@@ -35,17 +43,17 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onPageLoad("1234", isLPP = false, isAdditional = false)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
-      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
-      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
-      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
-    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned for LPP" in {
+    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned for LPP" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
@@ -53,17 +61,18 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onPageLoad("1234", isLPP = true, isAdditional = false)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
-      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
-      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe false
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
-      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
-    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned for LPP additional" in {
+    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned for LPP additional" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
@@ -71,17 +80,18 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onPageLoad("1234", isLPP = true, isAdditional = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
-      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
-      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe false
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
-      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
     }
 
-    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned for LPP - multiple penalties" in {
+    "call the service to validate the penalty ID and redirect to the Appeal Start page when data is returned for LPP - multiple penalties" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
@@ -90,27 +100,24 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onPageLoad("1234", isLPP = true, isAdditional = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
-      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
-      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe false
+      userAnswers.getAnswer[String](SessionKeys.firstPenaltyAmount).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.secondPenaltyAmount).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.firstPenaltyChargeReference).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.secondPenaltyChargeReference).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.secondPenaltyCommunicationDate).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
-      await(result).session.get(SessionKeys.isObligationAppeal).isDefined shouldBe false
-      await(result).session.get(SessionKeys.firstPenaltyAmount).isDefined shouldBe true
-      await(result).session.get(SessionKeys.firstPenaltyAmount).get shouldBe "101.01"
-      await(result).session.get(SessionKeys.secondPenaltyAmount).isDefined shouldBe true
-      await(result).session.get(SessionKeys.secondPenaltyAmount).get shouldBe "101.02"
-      await(result).session.get(SessionKeys.firstPenaltyChargeReference).isDefined shouldBe true
-      await(result).session.get(SessionKeys.firstPenaltyChargeReference).get shouldBe "123456789"
-      await(result).session.get(SessionKeys.secondPenaltyChargeReference).isDefined shouldBe true
-      await(result).session.get(SessionKeys.secondPenaltyChargeReference).get shouldBe "123456790"
-      await(result).session.get(SessionKeys.firstPenaltyCommunicationDate).isDefined shouldBe true
-      await(result).session.get(SessionKeys.firstPenaltyCommunicationDate).get shouldBe "2022-01-01"
     }
 
-    "render an ISE when the appeal data can not be retrieved" in {
+    "render an ISE when the appeal data can not be retrieved" in new Setup {
       failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       val result = controller.onPageLoad("1234", isLPP = false, isAdditional = false)(FakeRequest().withSession(
         authToken -> "1234"
@@ -120,7 +127,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "GET /initialise-appeal-against-the-obligation" should {
-    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" in {
+    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
@@ -128,18 +135,19 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onPageLoadForObligation("1234", isLPP = false, isAdditional = false)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
-      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
-      await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
 
     }
 
-    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned for LPP additional" in {
+    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned for LPP additional" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
@@ -147,17 +155,17 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onPageLoadForObligation("1234", isLPP = true, isAdditional = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-      await(result).session.get(SessionKeys.appealType).isDefined shouldBe true
-      await(result).session.get(SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.penaltyNumber).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      await(result).session.get(SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
-      await(result).session.get(SessionKeys.isObligationAppeal) shouldBe Some("true")
+      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
     }
 
-    "render an ISE when the appeal data can not be retrieved" in {
+    "render an ISE when the appeal data can not be retrieved" in new Setup {
       failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       val result = controller.onPageLoadForObligation("1234", isLPP = false, isAdditional = false)(FakeRequest().withSession(
         authToken -> "1234"

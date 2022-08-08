@@ -19,11 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.OtherRelevantInformationForm
 import messages.OtherRelevantInformationMessages._
-import models.NormalMode
 import models.pages.{OtherRelevantInformationPage, PageMode}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.mvc.Call
+import play.api.mvc.{AnyContent, Call}
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.obligation.OtherRelevantInformationPage
@@ -33,6 +33,7 @@ class OtherRelevantInformationPageSpec extends SpecBase with ViewBehaviours {
     val otherRelevantInformationPage: OtherRelevantInformationPage = injector.instanceOf[OtherRelevantInformationPage]
     object Selectors extends BaseSelectors
     val postAction: Call = controllers.routes.AppealAgainstObligationController.onSubmit(NormalMode)
+    implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
     def applyView(form: Form[_]): HtmlFormat.Appendable = otherRelevantInformationPage.apply(form, postAction, pageMode = PageMode(OtherRelevantInformationPage, NormalMode))
 
     val formProvider = OtherRelevantInformationForm.otherRelevantInformationForm

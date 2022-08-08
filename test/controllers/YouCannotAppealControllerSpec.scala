@@ -32,15 +32,16 @@ import scala.concurrent.Future
 class YouCannotAppealControllerSpec extends SpecBase {
   val youCannotAppealPage: YouCannotAppealPage = injector.instanceOf[YouCannotAppealPage]
   val youCannotAppealHelper: YouCannotAppealHelper = injector.instanceOf[YouCannotAppealHelper]
+
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockSessionService)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
     val controller: YouCannotAppealController = new YouCannotAppealController(
-      youCannotAppealPage, youCannotAppealHelper)(mcc, appConfig, authPredicate, dataRequiredAction)
+      youCannotAppealPage, youCannotAppealHelper)(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction)
   }
 
   "YouCannotAppealController" should{
@@ -48,6 +49,8 @@ class YouCannotAppealControllerSpec extends SpecBase {
     "onPageLoad" when {
       "the user is authorised" must {
         "return 200 (OK) and the correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }

@@ -29,7 +29,7 @@
 @(upscanResponse: UpscanInitiateResponseModel,
   form: Form[_],
   fileListPage: String,
-  pageMode: PageMode)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+  pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @detailsContent = {
         @p(Html(messages("otherReason.uploadEvidence.details.p1")))

@@ -18,6 +18,7 @@ package helpers
 
 import base.SpecBase
 import models.{PenaltyTypeEnum, UserRequest}
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import utils.SessionKeys
 
@@ -35,12 +36,12 @@ class HonestyDeclarationHelperSpec extends SpecBase {
 
       "for other reason" should {
         "the agent planned to submit - client missed deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
             SessionKeys.whatCausedYouToMissTheDeadline -> "client",
             SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
-          )
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+          )))
           reasonTest("other", "of an issue affecting my client", agentUserSessionKeys)
         }
       }
@@ -48,31 +49,31 @@ class HonestyDeclarationHelperSpec extends SpecBase {
       "non crime/bereavement reason" should {
 
         "the agent planned to submit - agent missed the deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
             SessionKeys.whatCausedYouToMissTheDeadline -> "agent",
             SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
-          )
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+          )))
           reasonTest("technicalIssues", "of technology issues", agentUserSessionKeys)
         }
 
         "the agent planned to submit - client missed the deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
             SessionKeys.whatCausedYouToMissTheDeadline -> "client",
             SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
-          )
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+          )))
           reasonTest("technicalIssues", "my client was affected by technology issues", agentUserSessionKeys)
         }
 
         "the client planned to submit" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
             SessionKeys.whoPlannedToSubmitVATReturn -> "client",
             SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
-          )
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+          )))
           reasonTest("technicalIssues", "of technology issues", agentUserSessionKeys)
         }
       }
@@ -80,31 +81,31 @@ class HonestyDeclarationHelperSpec extends SpecBase {
       "crime/bereavement reason" should {
 
         "the agent planned to submit - agent missed the deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
             SessionKeys.whatCausedYouToMissTheDeadline -> "agent",
             SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
-          )
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+          )))
           reasonTest("crime", "I was affected by a crime", agentUserSessionKeys)
         }
 
         "the agent planned to submit - client missed the deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
             SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
             SessionKeys.whatCausedYouToMissTheDeadline -> "client",
             SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
-          )
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+          )))
           reasonTest("crime", "my client was affected by a crime", agentUserSessionKeys)
         }
 
         "the client planned to submit" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"))(agentRequest.withSession(
+          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
             SessionKeys.whoPlannedToSubmitVATReturn -> "client",
             SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString)
-          )
+            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+          )))
           reasonTest("crime", "my client was affected by a crime", agentUserSessionKeys)
         }
       }

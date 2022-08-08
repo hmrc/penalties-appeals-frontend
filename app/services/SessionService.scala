@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
+package services
 
-@this(govukDetails: GovukDetails)
+import models.session.UserAnswers
+import repositories.UserAnswersRepository
 
-@(summary: String, content: Html)(implicit userRequest: UserRequest[_], messages: Messages)
+import javax.inject.Inject
+import scala.concurrent.Future
 
-@govukDetails(Details(summary = HtmlContent(messages(summary)), content = HtmlContent(content)))
+class SessionService @Inject()(userAnswersRepository: UserAnswersRepository){
+
+  def getUserAnswers(journeyId: String): Future[Option[UserAnswers]] = {
+    userAnswersRepository.getUserAnswer(journeyId)
+  }
+
+  def updateAnswers(data: UserAnswers): Future[Boolean] = {
+    userAnswersRepository.upsertUserAnswer(data)
+  }
+}

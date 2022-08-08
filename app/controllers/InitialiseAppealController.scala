@@ -19,20 +19,23 @@ package controllers
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import models.appeals.MultiplePenaltiesData
-import models.{AppealData, UserRequest}
+import models.session.UserAnswers
+import models.{AppealData, AuthRequest, PenaltyTypeEnum}
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import services.AppealService
+import services.{AppealService, SessionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.{CurrencyFormatter, SessionKeys}
 
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class InitialiseAppealController @Inject()(appealService: AppealService,
+                                           sessionService: SessionService,
                                            errorHandler: ErrorHandler)(implicit mcc: MessagesControllerComponents, authorise: AuthPredicate)
   extends FrontendController(mcc) with I18nSupport {
 
@@ -41,20 +44,20 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
       for {
         appealData <- appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional)
         multiPenaltyData <- if(isLPP) appealService.validateMultiplePenaltyDataForEnrolmentKey(penaltyId) else Future.successful(None)
+        result <- if (appealData.isDefined) {
+          removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData.get, multiPenaltyData, isAppealAgainstObligation = false)
+        } else Future(errorHandler.showInternalServerError)
       } yield {
-        if (appealData.isDefined)
-          removeExistingKeysFromSessionAndRedirect(
-            routes.AppealStartController.onPageLoad(), penaltyId, appealData.get, multiPenaltyData, isAppealAgainstObligation = false)
-        else errorHandler.showInternalServerError
+        result
       }
     }
   }
 
   def onPageLoadForObligation(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional).map {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional).flatMap {
         _.fold(
-          errorHandler.showInternalServerError
+          Future(errorHandler.showInternalServerError)
         )(
           appealData => {
             removeExistingKeysFromSessionAndRedirect(
@@ -69,14 +72,22 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
                                                           penaltyNumber: String,
                                                           appealModel: AppealData,
                                                           multiPenaltiesModel: Option[MultiplePenaltiesData] = None,
-                                                          isAppealAgainstObligation: Boolean)(implicit user: UserRequest[A]): Result = {
+                                                          isAppealAgainstObligation: Boolean)(implicit user: AuthRequest[A]): Future[Result] = {
     logger.debug(s"[InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Resetting appeals session: removing keys from session" +
       s" and replacing with new keys")
     val journeyId: String = UUID.randomUUID().toString
     logger.debug(s"InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - Setting journeyId to: $journeyId")
     logger.debug(s"InitialiseAppealController][removeExistingKeysFromSessionAndRedirect] - MultiPenaltyData is defined: $multiPenaltiesModel")
 
-    val multiPenaltiesModelData = multiPenaltiesModel.map {
+    val baseUserAnswers = UserAnswers(journeyId)
+      .setAnswer[String](SessionKeys.penaltyNumber, penaltyNumber)
+      .setAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType, appealModel.`type`)
+      .setAnswer[LocalDate](SessionKeys.startDateOfPeriod, appealModel.startDate)
+      .setAnswer[LocalDate](SessionKeys.endDateOfPeriod, appealModel.endDate)
+      .setAnswer[LocalDate](SessionKeys.dueDateOfPeriod, appealModel.dueDate)
+      .setAnswer[LocalDate](SessionKeys.dateCommunicationSent, appealModel.dateCommunicationSent)
+
+    val userAnswersWithPossibleMultiplePenaltiesData = multiPenaltiesModel.map {
       data => {
         val parsedFirstPenaltyAmount = CurrencyFormatter.parseBigDecimalToFriendlyValue(data.firstPenaltyAmount)
         val firstPenaltyChargeReference = data.firstPenaltyChargeReference
@@ -85,28 +96,25 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
         val firstPenaltyCommunicationDate = data.firstPenaltyCommunicationDate
         val secondPenaltyCommunicationDate = data.secondPenaltyCommunicationDate
 
-        Seq(
-          (SessionKeys.firstPenaltyChargeReference, firstPenaltyChargeReference),
-          (SessionKeys.firstPenaltyAmount, parsedFirstPenaltyAmount),
-          (SessionKeys.secondPenaltyChargeReference, secondPenaltyChargeReference),
-          (SessionKeys.secondPenaltyAmount, parsedSecondPenaltyAmount),
-          (SessionKeys.firstPenaltyCommunicationDate, firstPenaltyCommunicationDate.toString),
-          (SessionKeys.secondPenaltyCommunicationDate, secondPenaltyCommunicationDate.toString)
-        )
+        baseUserAnswers
+          .setAnswer[String](SessionKeys.firstPenaltyChargeReference, firstPenaltyChargeReference)
+          .setAnswer[String](SessionKeys.firstPenaltyAmount, parsedFirstPenaltyAmount)
+          .setAnswer[String](SessionKeys.secondPenaltyChargeReference, secondPenaltyChargeReference)
+          .setAnswer[String](SessionKeys.secondPenaltyAmount, parsedSecondPenaltyAmount)
+          .setAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate, firstPenaltyCommunicationDate)
+          .setAnswer[LocalDate](SessionKeys.secondPenaltyCommunicationDate, secondPenaltyCommunicationDate)
       }
-    }.getOrElse(Seq.empty)
+    }.getOrElse(baseUserAnswers)
 
-    Redirect(urlToRedirectTo)
-      .removingFromSession(SessionKeys.allKeys: _*)
-      .addingToSession((SessionKeys.penaltyNumber, penaltyNumber))
-      .addingToSession((SessionKeys.appealType, appealModel.`type`.toString))
-      .addingToSession((SessionKeys.startDateOfPeriod, appealModel.startDate.toString))
-      .addingToSession((SessionKeys.endDateOfPeriod, appealModel.endDate.toString))
-      .addingToSession((SessionKeys.dueDateOfPeriod, appealModel.dueDate.toString))
-      .addingToSession((SessionKeys.dateCommunicationSent, appealModel.dateCommunicationSent.toString))
-      .addingToSession((SessionKeys.journeyId, journeyId))
-      .addingToSession(multiPenaltiesModelData: _*)
-      .addingToSession(if (isAppealAgainstObligation) (SessionKeys.isObligationAppeal, isAppealAgainstObligation.toString) else ("", ""))
+    val allUserAnswers = {
+      if(isAppealAgainstObligation) {
+        userAnswersWithPossibleMultiplePenaltiesData.setAnswer[Boolean](SessionKeys.isObligationAppeal, isAppealAgainstObligation)
+      } else userAnswersWithPossibleMultiplePenaltiesData
+    }
+    sessionService.updateAnswers(allUserAnswers).map {
+      _ => Redirect(urlToRedirectTo)
+        .removingFromSession(SessionKeys.allKeys: _*)
+        .addingToSession((SessionKeys.journeyId, journeyId))
+    }
   }
-
 }

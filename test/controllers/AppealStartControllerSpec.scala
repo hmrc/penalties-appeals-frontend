@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -35,7 +36,7 @@ class AppealStartControllerSpec extends SpecBase {
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
@@ -44,20 +45,24 @@ class AppealStartControllerSpec extends SpecBase {
 
   object Controller extends AppealStartController(
     page
-  )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction)
+  )(stubMessagesControllerComponents(), implicitly, implicitly, authPredicate, dataRequiredAction, dataRetrievalAction)
 
-  "IndexController" should {
+  "AppealStartController" should {
 
     "onPageLoad" when {
 
       "the user is authorised" must {
 
         "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           val result: Future[Result] = Controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
 
         "user does not have the correct session keys to start an appeal" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }

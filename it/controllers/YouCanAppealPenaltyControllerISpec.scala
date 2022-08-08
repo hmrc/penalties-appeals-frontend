@@ -16,7 +16,9 @@
 
 package controllers
 
+import models.PenaltyTypeEnum
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -24,38 +26,39 @@ import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
+import java.time.LocalDate
+
 class YouCanAppealPenaltyControllerISpec extends IntegrationSpecCommonBase {
   val controller: YouCanAppealPenaltyController = injector.instanceOf[YouCanAppealPenaltyController]
+
   "GET /you-can-appeal-this-penalty" should {
-    "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/you-can-appeal-this-penalty").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        SessionKeys.dateCommunicationSent -> "2020-02-08",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoad()(fakeRequestWithCorrectKeys))
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.OK
     }
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/you-can-appeal-this-penalty").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/you-can-appeal-this-penalty").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onPageLoad()(fakeRequestWithIncompleteKeys))
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
     
@@ -67,71 +70,66 @@ class YouCanAppealPenaltyControllerISpec extends IntegrationSpecCommonBase {
   }
   
   "POST /you-can-appeal-this-penalty" should {
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/you-can-appeal-this-penalty").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        SessionKeys.dateCommunicationSent -> "2020-02-08",
-        SessionKeys.journeyId -> "1234"
-      ).withFormUrlEncodedBody("value" -> "yes")
-      val request = await(controller.onSubmit()(fakeRequestWithCorrectKeysAndCorrectBody))
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
+      val request = await(controller.onSubmit()(fakeRequestCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.AppealStartController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.youCanAppealThisPenalty).get shouldBe "yes"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.youCanAppealThisPenalty).get shouldBe "yes"
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/you-can-appeal-this-penalty").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          SessionKeys.dateCommunicationSent -> "2020-02-08",
-          SessionKeys.journeyId -> "1234"
-        )
-        val request = await(controller.onSubmit()(fakeRequestWithCorrectKeysAndNoBody))
+      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
-      "the value is invalid" in {
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/you-can-appeal-this-penalty").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          SessionKeys.dateCommunicationSent -> "2020-02-08",
-          SessionKeys.journeyId -> "1234"
-        ).withFormUrlEncodedBody("value" -> "fake_value")
-        val request = await(controller.onSubmit()(fakeRequestWithCorrectKeysAndInvalidBody))
+
+      "the value is invalid" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val fakeRequestInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
+        val request = await(controller.onSubmit()(fakeRequestInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/you-can-appeal-this-penalty").withSession(
-        authToken -> "1234"
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithNoKeys))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/you-can-appeal-this-penalty").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onSubmit()(fakeRequestWithIncompleteKeys))
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
+
     "return 303 (SEE_OTHER) when the user is not authorised" in {
       AuthStub.unauthorised()
       val request = await(buildClientForRequestToApp(uri = "/you-can-appeal-this-penalty").post(""))

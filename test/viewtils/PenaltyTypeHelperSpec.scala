@@ -18,11 +18,11 @@ package viewtils
 
 import base.SpecBase
 import config.AppConfig
-import models.PenaltyTypeEnum
+import models.{PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, reset, when}
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
-import play.api.test.FakeRequest
 import utils.SessionKeys
 
 import java.time.LocalDate
@@ -38,36 +38,27 @@ class PenaltyTypeHelperSpec extends SpecBase {
   "convertPenaltyTypeToContentString" should {
     s"attempt to convert a string to a $PenaltyTypeEnum " when {
       s"the string matches an enum value - return $Some with the correct message for Late_Submission" in new Setup {
-        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString("Late_Submission")
-        result.isDefined shouldBe true
-        result.get shouldBe messages("penaltyType.lateSubmission")
+        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString(PenaltyTypeEnum.Late_Submission)(userRequestWithCorrectKeys, implicitly)
+        result shouldBe messages("penaltyType.lateSubmission")
       }
 
       s"the string matches an enum value - return $Some with the correct message for Late_Payment" in new Setup {
-        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString("Late_Payment")
-        result.isDefined shouldBe true
-        result.get shouldBe messages("penaltyType.latePayment")
+        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString(PenaltyTypeEnum.Late_Payment)(userRequestLPPWithCorrectKeys, implicitly)
+        result shouldBe messages("penaltyType.latePayment")
       }
 
       s"the string matches an enum value - return $Some with the correct message for Additional" in new Setup {
-        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString("Additional")
-        result.isDefined shouldBe true
-        result.get shouldBe messages("penaltyType.latePayment")
+        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString(PenaltyTypeEnum.Additional)(userRequestLPPWithCorrectKeys, implicitly)
+        result shouldBe messages("penaltyType.latePayment")
       }
 
       s"return $Some with the correct message for appealing multiple penalties" in new Setup {
-        val fakeRequestForAppealingMultiplePenalties: FakeRequest[AnyContent] = fakeRequest.withSession(
-            SessionKeys.doYouWantToAppealBothPenalties -> "yes",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString
-        )
-        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString("Late_Payment")(fakeRequestForAppealingMultiplePenalties, implicitly)
-        result.isDefined shouldBe true
-        result.get shouldBe messages("penaltyType.latePayment.multiple")
-      }
-
-      s"the string does not match an enum value - return $None" in new Setup {
-        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString("what")
-        result.isDefined shouldBe false
+        val fakeRequestForAppealingMultiplePenalties: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
+          SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment
+        )))
+        val result = PenaltyTypeHelper.convertPenaltyTypeToContentString(PenaltyTypeEnum.Late_Payment)(fakeRequestForAppealingMultiplePenalties, implicitly)
+        result shouldBe messages("penaltyType.latePayment.multiple")
       }
     }
   }
@@ -76,16 +67,14 @@ class PenaltyTypeHelperSpec extends SpecBase {
     s"return $Some $Seq String when all the keys exist in the session and the enum can be parsed" in {
       when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
         .thenReturn(true)
-      val fakeRequestWithCorrectKeysForNewAPI: FakeRequest[AnyContent] = fakeRequest
-        .withSession(
-          SessionKeys.penaltyNumber -> "123",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission.toString,
-          SessionKeys.startDateOfPeriod -> "2020-01-01",
-          SessionKeys.endDateOfPeriod -> "2020-01-31",
-          SessionKeys.dueDateOfPeriod -> "2020-02-07",
-          SessionKeys.dateCommunicationSent -> "2020-02-08",
-          SessionKeys.journeyId -> "1234"
-        )
+      val fakeRequestWithCorrectKeysForNewAPI: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.penaltyNumber -> "123",
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-08"),
+        SessionKeys.journeyId -> "1234"
+      )))
       val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithCorrectKeysForNewAPI, implicitly)
       result.isDefined shouldBe true
       result.get.head shouldBe messages("penaltyType.lateSubmission")
@@ -96,22 +85,22 @@ class PenaltyTypeHelperSpec extends SpecBase {
     s"return $None when all the keys exist in the session and the enum can not be parsed" in {
       when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
         .thenReturn(true)
-      val fakeRequestWithWrongAppealType: FakeRequest[AnyContent] = fakeRequest.withSession(
-        (SessionKeys.appealType, "invalid"),
-        (SessionKeys.penaltyNumber, "123"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01")
-      )
+      val fakeRequestWithWrongAppealType: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
+        SessionKeys.appealType -> "invalid",
+        SessionKeys.penaltyNumber -> "123",
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+      )))
       val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithWrongAppealType, implicitly)
       result.isDefined shouldBe false
     }
 
     s"return $None when some of the keys do not exist in the session" in {
-      val fakeRequestWithSomeKeysNotExisting: FakeRequest[AnyContent] = FakeRequest().withSession(
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.penaltyNumber, "123"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01T12:00:00.500")
-      )
+      val fakeRequestWithSomeKeysNotExisting: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.penaltyNumber -> "123",
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+      )))
       val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithSomeKeysNotExisting, implicitly)
       result.isDefined shouldBe false
     }
@@ -120,12 +109,12 @@ class PenaltyTypeHelperSpec extends SpecBase {
     s"return $None when the dates stored in the session can not be parsed" in {
       when(mockAppConfig.isEnabled(ArgumentMatchers.any()))
         .thenReturn(true)
-      val fakeRequestWithInvalidDates: FakeRequest[AnyContent] = fakeRequest.withSession(
-        (SessionKeys.appealType, "invalid"),
-        (SessionKeys.penaltyNumber, "123"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01over5thousand"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01")
-      )
+      val fakeRequestWithInvalidDates: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
+        SessionKeys.appealType -> "invalid",
+        SessionKeys.penaltyNumber -> "123",
+        SessionKeys.startDateOfPeriod -> "2020-01-01over5thousand",
+        SessionKeys.endDateOfPeriod -> "2020-01-01"
+      )))
       val result = PenaltyTypeHelper.getKeysFromSession()(fakeRequestWithInvalidDates, implicitly)
       result.isDefined shouldBe false
     }

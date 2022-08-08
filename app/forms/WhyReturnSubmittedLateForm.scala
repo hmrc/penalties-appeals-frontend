@@ -28,7 +28,7 @@ object WhyReturnSubmittedLateForm extends Mappings {
     Form[String](
       single(
         "why-return-submitted-late-text" -> text(errorKey =
-          if(userRequest.session.get(SessionKeys.appealType).get.equals(PenaltyTypeEnum.Late_Submission.toString))
+          if(userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get.equals(PenaltyTypeEnum.Late_Submission))
             "otherReason.whyReturnSubmittedLate.error.required"
           else
             "otherReason.whyReturnSubmittedLate.lpp.error.required"

@@ -16,7 +16,7 @@
 
 @this(layout: Layout)
 
-@()(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
+@()(implicit userRequest: UserRequest[_], messages: Messages, appConfig: config.AppConfig)
 
 @layout(
     pageTitle = messages("serviceUnavailable.headingAndTitle"),

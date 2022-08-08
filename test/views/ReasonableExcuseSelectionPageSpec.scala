@@ -23,6 +23,7 @@ import models.pages.{PageMode, ReasonableExcuseSelectionPage}
 import models.{NormalMode, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.SessionKeys
@@ -83,7 +84,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
 
     "an agent is on the page" must {
       implicit val doc: Document = asDocument(applyView(
-        formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(fakeRequestWithCorrectKeys)))
+        formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers)))
 
       val expectedContent = Seq(
         Selectors.title -> agentTitle,
@@ -108,9 +109,8 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
       }
 
       "show the correct heading content when appealing a late payment penalty" in {
-        implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(
-          fakeRequestWithCorrectKeys.withSession(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString))
-        ))
+        val answers = Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment)
+        implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers ++ answers)))
 
         doc.select(Selectors.title).text shouldBe title
         doc.select(Selectors.h1).text shouldBe h1

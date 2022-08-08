@@ -19,11 +19,13 @@ package controllers.predicates
 import base.SpecBase
 import models.UserRequest
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
 import play.api.test.Helpers._
 import utils.SessionKeys
 
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRequiredActionSpec extends SpecBase {
@@ -31,13 +33,13 @@ class DataRequiredActionSpec extends SpecBase {
 
   val testAction: Request[_] => Future[Result] = _ => Future.successful(Ok(""))
 
-  class Harness(requiredAction: DataRequiredAction, request: UserRequest[_] = UserRequest("123456789", active = true, None)(fakeRequest)) {
+  class Harness(requiredAction: DataRequiredAction, request: UserRequest[_] = UserRequest("123456789", active = true, None, userAnswers(correctUserAnswers))(fakeRequest)) {
     def onPageLoad(): Future[Result] = requiredAction.invokeBlock(request, testAction)
   }
 
   "refine" should {
     s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when all of the data is missing as part of the session" in {
-      val requestWithNoSessionKeys = UserRequest("123456789")(fakeRequest)
+      val requestWithNoSessionKeys = UserRequest("123456789", answers = userAnswers(Json.obj()))
       val fakeController = new Harness(
         requiredAction = new DataRequiredActionImpl(
           errorHandler
@@ -49,8 +51,13 @@ class DataRequiredActionSpec extends SpecBase {
     }
 
     s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when some of the data is missing as part of the session" in {
-      val requestWithPartSessionKeys = UserRequest("123456789")(fakeRequest
-        .withSession((SessionKeys.penaltyNumber, "123"), (SessionKeys.appealType, "this is an appeal"), (SessionKeys.startDateOfPeriod, "date")))
+      val requestWithPartSessionKeys = UserRequest("123456789", answers = userAnswers(
+        Json.obj(
+          SessionKeys.penaltyNumber -> "123",
+          SessionKeys.appealType -> "this is an appeal",
+          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+        )
+      ))
       val fakeController = new Harness(
         requiredAction = new DataRequiredActionImpl(
           errorHandler

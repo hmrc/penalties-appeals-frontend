@@ -19,9 +19,9 @@
 
 @this()
 
-@(pageHeader: String)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
+@(pageHeader: String)(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
 
-@appealBothPenalties = @{request.session.get(SessionKeys.doYouWantToAppealBothPenalties)}
+@appealBothPenalties = @{userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties)}
 
 @captionPenaltyAppeal = @{if(appealBothPenalties.contains("yes")) messages("common.penaltiesYouAreAppealing") else messages("common.penaltyYouAreAppealing")}
 

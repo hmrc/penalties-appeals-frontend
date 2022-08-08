@@ -16,48 +16,43 @@
 
 package controllers
 
+import models.PenaltyTypeEnum
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
+
+import java.time.LocalDate
 
 class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
   val controller: CancelVATRegistrationController = injector.instanceOf[CancelVATRegistrationController]
   "GET /cancel-vat-registration" should {
-    "return 200 (OK) when the user is authorised" in {
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/cancel-vat-registration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        SessionKeys.dateCommunicationSent -> "2020-02-08",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequestWithCorrectKeys))
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/cancel-vat-registration").withSession(
-        authToken -> "1234"
-      )
-      val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequestWithNoKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
+      val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/cancel-vat-registration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
@@ -67,73 +62,62 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       request.status shouldBe Status.SEE_OTHER
     }
   }
+
   "POST /cancel-vat-registration" should {
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in {
-      val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01"),
-        (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-        SessionKeys.dateCommunicationSent -> "2020-02-08",
-        SessionKeys.journeyId -> "1234"
-      ).withFormUrlEncodedBody("value" -> "yes")
-      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndCorrectBody))
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
+      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.YouCanAppealPenaltyController.onPageLoad().url
-      request.session(fakeRequestWithCorrectKeysAndCorrectBody).get(SessionKeys.cancelVATRegistration).get shouldBe "yes"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.cancelVATRegistration).get shouldBe "yes"
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "no body is submitted" in {
-        val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          SessionKeys.dateCommunicationSent -> "2020-02-08",
-          SessionKeys.journeyId -> "1234"
-        )
-        val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndNoBody))
+      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the value is invalid" in {
-        val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
-          authToken -> "1234",
-          (SessionKeys.penaltyNumber, "1234"),
-          (SessionKeys.appealType, "Late_Submission"),
-          (SessionKeys.startDateOfPeriod, "2020-01-01"),
-          (SessionKeys.endDateOfPeriod, "2020-01-01"),
-          (SessionKeys.dueDateOfPeriod, "2020-02-07"),
-          SessionKeys.dateCommunicationSent -> "2020-02-08",
-          SessionKeys.journeyId -> "1234"
-        ).withFormUrlEncodedBody("value" -> "fake_value")
-        val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectKeysAndInvalidBody))
+      "the value is invalid" in new UserAnswersSetup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
+        val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
-        authToken -> "1234"
-      )
-      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithNoKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
+      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/cancel-vat-registration").withSession(
-        authToken -> "1234",
-        (SessionKeys.penaltyNumber, "1234"),
-        (SessionKeys.appealType, "Late_Submission"),
-        (SessionKeys.startDateOfPeriod, "2020-01-01"),
-        (SessionKeys.endDateOfPeriod, "2020-01-01")
-      )
-      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithIncompleteKeys))
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 

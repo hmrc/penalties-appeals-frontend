@@ -34,7 +34,7 @@ sealed trait AppealInformation {
 case class BereavementAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         startDateOfEvent: String,
+                                         startDateOfEvent: LocalDateTime,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -82,7 +82,7 @@ object BereavementAppealInformation {
 case class CrimeAppealInformation(
                                    reasonableExcuse: String,
                                    honestyDeclaration: Boolean,
-                                   startDateOfEvent: String,
+                                   startDateOfEvent: LocalDateTime,
                                    reportedIssueToPolice: Boolean,
                                    statement: Option[String],
                                    lateAppeal: Boolean,
@@ -132,7 +132,7 @@ object CrimeAppealInformation {
 case class FireOrFloodAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         startDateOfEvent: String,
+                                         startDateOfEvent: LocalDateTime,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -180,7 +180,7 @@ object FireOrFloodAppealInformation {
 case class LossOfStaffAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         startDateOfEvent: String,
+                                         startDateOfEvent: LocalDateTime,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -228,8 +228,8 @@ object LossOfStaffAppealInformation {
 case class TechnicalIssuesAppealInformation(
                                              reasonableExcuse: String,
                                              honestyDeclaration: Boolean,
-                                             startDateOfEvent: String,
-                                             endDateOfEvent: String,
+                                             startDateOfEvent: LocalDateTime,
+                                             endDateOfEvent: LocalDateTime,
                                              statement: Option[String],
                                              lateAppeal: Boolean,
                                              lateAppealReason: Option[String],
@@ -279,8 +279,8 @@ case class HealthAppealInformation(
                                     reasonableExcuse: String,
                                     honestyDeclaration: Boolean,
                                     hospitalStayInvolved: Boolean,
-                                    startDateOfEvent: Option[String],
-                                    endDateOfEvent: Option[String],
+                                    startDateOfEvent: Option[LocalDateTime],
+                                    endDateOfEvent: Option[LocalDateTime],
                                     eventOngoing: Boolean,
                                     statement: Option[String],
                                     lateAppeal: Boolean,
@@ -342,7 +342,7 @@ object HealthAppealInformation {
 case class OtherAppealInformation(
                                    reasonableExcuse: String,
                                    honestyDeclaration: Boolean,
-                                   startDateOfEvent: String,
+                                   startDateOfEvent: LocalDateTime,
                                    statement: Option[String],
                                    supportingEvidence: Option[Evidence],
                                    lateAppeal: Boolean,
@@ -473,19 +473,19 @@ object AppealSubmission {
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
           dateOfAppeal = LocalDateTime.now(),
-          isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+          isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = BereavementAppealInformation(
             reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            startDateOfEvent = LocalDate.parse(userRequest.session.get(SessionKeys.whenDidThePersonDie).get).atStartOfDay.toString,
+            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidThePersonDie).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
-            isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = if (userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
-              userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
+            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
+            isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+              userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
             } else None
           )
         )
@@ -496,20 +496,20 @@ object AppealSubmission {
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
           dateOfAppeal = LocalDateTime.now(),
-          isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+          isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = CrimeAppealInformation(
             reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            startDateOfEvent = LocalDate.parse(userRequest.session.get(SessionKeys.dateOfCrime).get).atStartOfDay.toString,
-            reportedIssueToPolice = userRequest.session.get(SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
+            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfCrime).get.atStartOfDay(),
+            reportedIssueToPolice = userRequest.answers.getAnswer[String](SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
-            isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = if (userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
-              userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
+            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
+            isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+              userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
             } else None
           )
         )
@@ -520,20 +520,20 @@ object AppealSubmission {
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
           dateOfAppeal = LocalDateTime.now(),
-          isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+          isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = FireOrFloodAppealInformation(
             reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            startDateOfEvent = LocalDate.parse(userRequest.session.get(SessionKeys.dateOfFireOrFlood).get).atStartOfDay.toString,
+            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
-            isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = if (userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
-              userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
-            } else None
+            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
+            isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+              userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
+            } else  None
           )
         )
 
@@ -543,20 +543,20 @@ object AppealSubmission {
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
           dateOfAppeal = LocalDateTime.now(),
-          isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+          isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = LossOfStaffAppealInformation(
             reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            startDateOfEvent = LocalDate.parse(userRequest.session.get(SessionKeys.whenPersonLeftTheBusiness).get).atStartOfDay.toString,
+            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
-            isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = if (userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
-              userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
-            } else None
+            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
+            isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+              userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
+            } else  None
           )
         )
 
@@ -566,51 +566,49 @@ object AppealSubmission {
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
           dateOfAppeal = LocalDateTime.now(),
-          isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+          isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = TechnicalIssuesAppealInformation(
             reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            startDateOfEvent = LocalDate.parse(userRequest.session.get(SessionKeys.whenDidTechnologyIssuesBegin).get).atStartOfDay.toString,
-            endDateOfEvent = LocalDate.parse(userRequest.session.get(SessionKeys.whenDidTechnologyIssuesEnd).get).atTime(LocalTime.MAX).toString,
+            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).get.atStartOfDay(),
+            endDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get.atTime(LocalTime.MAX),
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
-            isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = if (userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
-              userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
-            } else None
+            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
+            isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+              userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
+            } else  None
           )
         )
 
       case "health" =>
-        val isHospitalStay = userRequest.session.get(SessionKeys.wasHospitalStayRequired).get == "yes"
-        val isOngoingHospitalStay = userRequest.session.get(SessionKeys.hasHealthEventEnded).contains("no")
+        val isHospitalStay = userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).get == "yes"
+        val isOngoingHospitalStay = userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).contains("no")
         AppealSubmission(
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
           dateOfAppeal = LocalDateTime.now(),
-          isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+          isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = HealthAppealInformation(
             reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
+            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             hospitalStayInvolved = isHospitalStay,
-            startDateOfEvent = if (isHospitalStay) userRequest.session.get(SessionKeys.whenHealthIssueStarted).map(LocalDate.parse(_).atStartOfDay.toString)
-            else userRequest.session.get(SessionKeys.whenHealthIssueHappened).map(LocalDate.parse(_).atStartOfDay.toString),
-            endDateOfEvent = if (isHospitalStay && isOngoingHospitalStay) None else
-              userRequest.session.get(SessionKeys.whenHealthIssueEnded).map(LocalDate.parse(_).atTime(LocalTime.MAX).toString),
+            startDateOfEvent = (if (isHospitalStay) userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted) else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened)).map(_.atStartOfDay()),
+            endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).map(_.atTime(LocalTime.MAX)),
             eventOngoing = isOngoingHospitalStay,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
-            isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = if (userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
-              userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
-            } else None
+            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
+            isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+              userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
+            } else  None
           )
         )
 
@@ -620,22 +618,22 @@ object AppealSubmission {
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
           dateOfAppeal = LocalDateTime.now(),
-          isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+          isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = OtherAppealInformation(
             reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            startDateOfEvent = LocalDate.parse(userRequest.session.get(SessionKeys.whenDidBecomeUnable).get).atStartOfDay.toString,
-            statement = userRequest.session.get(SessionKeys.whyReturnSubmittedLate),
+            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidBecomeUnable).get.atStartOfDay(),
+            statement = userRequest.answers.getAnswer[String](SessionKeys.whyReturnSubmittedLate),
             supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => Some(Evidence(files.size))),
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.session.get(SessionKeys.lateAppealReason),
-            isClientResponsibleForSubmission = userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
-            isClientResponsibleForLateSubmission = if (userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
-              userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
-            } else None,
-            uploadedFiles = if (uploadedFiles.isDefined) uploadedFiles else None
+            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
+            isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
+              userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
+            } else  None,
+              uploadedFiles = if (uploadedFiles.isDefined) uploadedFiles else None
           )
         )
       case "obligation" =>
@@ -644,13 +642,13 @@ object AppealSubmission {
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
           dateOfAppeal = LocalDateTime.now(),
-          isLPP = !userRequest.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString),
+          isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
           appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = ObligationAppealInformation(
             reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.session.get(SessionKeys.hasConfirmedDeclaration).get == "true",
-            statement = userRequest.session.get(SessionKeys.otherRelevantInformation),
+            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+            statement = userRequest.answers.getAnswer[String](SessionKeys.otherRelevantInformation),
             supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => Some(Evidence(files.size))),
             isClientResponsibleForSubmission = None,
             isClientResponsibleForLateSubmission = None,

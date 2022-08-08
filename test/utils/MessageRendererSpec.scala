@@ -18,7 +18,9 @@ package utils
 
 import base.SpecBase
 import models.UserRequest
+import models.session.UserAnswers
 import play.api.i18n.DefaultMessagesApi
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 
 class MessageRendererSpec extends SpecBase {
@@ -33,18 +35,21 @@ class MessageRendererSpec extends SpecBase {
   "getMessage" should {
     "load the relevant agent message" when {
       "the user is an agent" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.
-          withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "client"))
+        val answer = UserAnswers("123456789", Json.obj(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.whatCausedYouToMissTheDeadline -> "client"))
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answer)(fakeRequest.
+          withSession())
         val fakeMessageKey = "message.key"
         val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, fakeAgentRequest)
         result shouldBe "agent.message.key"
       }
 
       "apply the given arguments" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest
-          withSession(SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+        val answer = UserAnswers("123456789", Json.obj(
+          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
           SessionKeys.whatCausedYouToMissTheDeadline -> "client"))
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answer)(fakeRequest)
         val messagesApi = new DefaultMessagesApi(testMessages)
         val messages = messagesApi.preferred(FakeRequest("GET", "/"))
         val fakeMessageKey = "test.message"
@@ -55,14 +60,16 @@ class MessageRendererSpec extends SpecBase {
 
     "load the normal message" when {
       "the user is a VAT trader" in {
-        val fakeVATTraderRequest = UserRequest(vrn = "123456789")(fakeRequest)
+        val answer = UserAnswers("123456789")
+        val fakeVATTraderRequest = UserRequest(vrn = "123456789", answers = answer)(fakeRequest)
         val fakeMessageKey = "message.key"
         val result = MessageRenderer.getMessage(fakeMessageKey)(implicitly, fakeVATTraderRequest)
         result shouldBe "message.key"
       }
 
       "apply the given arguments" in {
-        val fakeVATTraderRequest = UserRequest(vrn = "123456789")(fakeRequest)
+        val answer = UserAnswers("123456789")
+        val fakeVATTraderRequest = UserRequest(vrn = "123456789", answers = answer)(fakeRequest)
         val messagesApi = new DefaultMessagesApi(testMessages)
         val messages = messagesApi.preferred(FakeRequest("GET", "/"))
         val fakeMessageKey = "test.message"
@@ -91,16 +98,17 @@ class MessageRendererSpec extends SpecBase {
   "didClientCauseLateSubmission" should {
     "return true" when {
       "the client planned to submit" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
-          SessionKeys.whoPlannedToSubmitVATReturn -> "client"))
+        val answer = UserAnswers("123456789", Json.obj(SessionKeys.whoPlannedToSubmitVATReturn -> "client"))
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers =  answer)(fakeRequest)
         val result = MessageRenderer.didClientCauseLateSubmission()(fakeAgentRequest)
         result shouldBe true
       }
 
       "the agent planned to submit but the client missed the deadline" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+        val answer = UserAnswers("123456789", Json.obj(
           SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
           SessionKeys.whatCausedYouToMissTheDeadline -> "client"))
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answer)(fakeRequest)
         val result = MessageRenderer.didClientCauseLateSubmission()(fakeAgentRequest)
         result shouldBe true
       }
@@ -108,9 +116,11 @@ class MessageRendererSpec extends SpecBase {
 
     "return false" when {
       "when the agent planned to submit and missed the deadline" in {
-        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+        val answer = UserAnswers("123456789", Json.obj(
           SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
           SessionKeys.whatCausedYouToMissTheDeadline -> "agent"))
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answer)(fakeRequest)
+
         val result = MessageRenderer.didClientCauseLateSubmission()(fakeAgentRequest)
         result shouldBe false
       }
@@ -119,15 +129,17 @@ class MessageRendererSpec extends SpecBase {
 
   "didClientPlanToSubmit" should {
     "return true when client planned to submit" in {
-      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+      val answer = UserAnswers("123456789", Json.obj(
         SessionKeys.whoPlannedToSubmitVATReturn -> "client"))
+      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answer)(fakeRequest)
       val result = MessageRenderer.didClientPlanToSubmit()(fakeAgentRequest)
       result shouldBe true
     }
 
     "return false when agent planned to submit" in {
-      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+      val answer = UserAnswers("123456789", Json.obj(
         SessionKeys.whoPlannedToSubmitVATReturn -> "agent"))
+      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answer)(fakeRequest)
       val result = MessageRenderer.didClientPlanToSubmit()(fakeAgentRequest)
       result shouldBe false
     }
@@ -135,17 +147,19 @@ class MessageRendererSpec extends SpecBase {
 
   "didAgentPlanToSubmitAndClientMissedDeadline" should {
     "return true when agent planned to submit and client missed deadline" in {
-      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+      val answer = UserAnswers("123456789", Json.obj(
         SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
         SessionKeys.whatCausedYouToMissTheDeadline -> "client"))
+      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answer)(fakeRequest)
       val result = MessageRenderer.didAgentPlanToSubmitAndClientMissedDeadline()(fakeAgentRequest)
       result shouldBe true
     }
 
     "return false for any other scenario" in {
-      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"))(fakeRequest.withSession(
+      val answer = UserAnswers("123456789", Json.obj(
         SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
         SessionKeys.whatCausedYouToMissTheDeadline -> "agent"))
+      val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answer)(fakeRequest)
       val result = MessageRenderer.didAgentPlanToSubmitAndClientMissedDeadline()(fakeAgentRequest)
       result shouldBe false
     }

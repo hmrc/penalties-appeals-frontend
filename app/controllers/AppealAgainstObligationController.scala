@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
+  import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.OtherRelevantInformationForm
 import helpers.FormProviderHelper
 import models.Mode
@@ -26,42 +26,50 @@ import navigation.Navigation
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
 import views.html.obligation.OtherRelevantInformationPage
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: OtherRelevantInformationPage,
-                                                  navigation: Navigation)
+                                                  navigation: Navigation,
+                                                  sessionService: SessionService)
                                                  (implicit authorise: AuthPredicate,
                                                   dataRequired: DataRequiredAction,
                                                   appConfig: AppConfig,
-                                                  mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
+                                                  mcc: MessagesControllerComponents,
+                                                  dataRetrieval: DataRetrievalAction,
+                                                  executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(OtherRelevantInformationPage, mode)
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen  dataRetrieval andThen dataRequired) {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         OtherRelevantInformationForm.otherRelevantInformationForm,
-        SessionKeys.otherRelevantInformation
+        SessionKeys.otherRelevantInformation,
+        request.answers
       )
       val postAction = controllers.routes.AppealAgainstObligationController.onSubmit(mode)
       Ok(otherRelevantInformationPage(formProvider, postAction, pageMode(mode)))
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen dataRequired) {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
       OtherRelevantInformationForm.otherRelevantInformationForm.bindFromRequest.fold(
         formWithErrors => {
           val postAction = controllers.routes.AppealAgainstObligationController.onSubmit(mode)
-          BadRequest(otherRelevantInformationPage(formWithErrors, postAction, pageMode(mode)))
+          Future(BadRequest(otherRelevantInformationPage(formWithErrors, postAction, pageMode(mode))))
         },
         otherInformationForAppealAgainstObligation => {
-          Redirect(navigation.nextPage(OtherRelevantInformationPage, mode))
-            .addingToSession(SessionKeys.otherRelevantInformation -> otherInformationForAppealAgainstObligation)
+          val updatedAnswers = request.answers.setAnswer[String](SessionKeys.otherRelevantInformation, otherInformationForAppealAgainstObligation)
+          sessionService.updateAnswers(updatedAnswers).map {
+            _ => Redirect(navigation.nextPage(OtherRelevantInformationPage, mode))
+          }
         }
       )
     }

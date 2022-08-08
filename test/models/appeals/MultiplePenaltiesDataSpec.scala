@@ -19,6 +19,7 @@ package models.appeals
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
+
 import java.time.LocalDate
 
 class MultiplePenaltiesDataSpec extends AnyWordSpec with Matchers {

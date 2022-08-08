@@ -17,11 +17,12 @@
 package controllers.predicates
 
 import config.ErrorHandler
-import models.UserRequest
+import models.{PenaltyTypeEnum, UserRequest}
 import play.api.mvc.{ActionRefiner, Result}
 import utils.Logger.logger
 import utils.SessionKeys
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,12 +31,12 @@ trait DataRequiredAction extends ActionRefiner[UserRequest, UserRequest]
 class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
 
   override protected def refine[A](request: UserRequest[A]): Future[Either[Result, UserRequest[A]]] = {
-    (request.session.get(SessionKeys.penaltyNumber),
-      request.session.get(SessionKeys.appealType),
-      request.session.get(SessionKeys.startDateOfPeriod),
-      request.session.get(SessionKeys.endDateOfPeriod),
-      request.session.get(SessionKeys.dueDateOfPeriod),
-      request.session.get(SessionKeys.dateCommunicationSent),
+    (request.answers.getAnswer[String](SessionKeys.penaltyNumber),
+      request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType),
+      request.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod),
+      request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod),
+      request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod),
+      request.answers.getAnswer[String](SessionKeys.dateCommunicationSent),
       request.session.get(SessionKeys.journeyId)) match {
       case (Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_)) =>
         Future.successful(Right(request))
@@ -43,13 +44,13 @@ class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val 
         logger.error("[DataRequiredAction][refine] - Some data was missing from the session - rendering ISE")
         logger.debug(s"[DataRequiredAction][refine] - Required data from session: ${
           Seq(
-          request.session.get(SessionKeys.penaltyNumber),
-          request.session.get(SessionKeys.appealType),
-          request.session.get(SessionKeys.startDateOfPeriod),
-          request.session.get(SessionKeys.endDateOfPeriod),
-          request.session.get(SessionKeys.dueDateOfPeriod),
-          request.session.get(SessionKeys.dateCommunicationSent),
-          request.session.get(SessionKeys.journeyId))
+            request.answers.getAnswer[String](SessionKeys.penaltyNumber),
+            request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType),
+            request.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod),
+            request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod),
+            request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod),
+            request.answers.getAnswer[String](SessionKeys.dateCommunicationSent),
+            request.session.get(SessionKeys.journeyId))
         }")
         Future.successful(Left(errorHandler.showInternalServerError(request)))
     }

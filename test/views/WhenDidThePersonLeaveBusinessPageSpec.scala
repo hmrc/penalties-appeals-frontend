@@ -19,11 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidPersonLeaveTheBusinessForm
 import messages.WhenDidThePersonLeaveBusinessMessages._
-import models.NormalMode
 import models.pages.{PageMode, WhenDidPersonLeaveTheBusinessPage}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.mvc.Call
+import play.api.mvc.{AnyContent, Call}
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.lossOfStaff.WhenDidThePersonLeaveBusinessPage
@@ -35,6 +35,8 @@ class WhenDidThePersonLeaveBusinessPageSpec extends SpecBase with ViewBehaviours
     val whenDidThePersonLeaveBusinessPage: WhenDidThePersonLeaveBusinessPage = injector.instanceOf[WhenDidThePersonLeaveBusinessPage]
     val whenDidThePersonLeaveBusinessForm: Form[LocalDate] = WhenDidPersonLeaveTheBusinessForm.whenDidPersonLeaveTheBusinessForm()
     val postAction: Call = controllers.routes.LossOfStaffReasonController.onPageLoad(NormalMode)
+    implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
+
     object Selectors extends BaseSelectors
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidThePersonLeaveBusinessPage.apply(form, postAction, pageMode = PageMode(WhenDidPersonLeaveTheBusinessPage, NormalMode))

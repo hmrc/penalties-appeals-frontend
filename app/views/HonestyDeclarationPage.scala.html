@@ -25,7 +25,7 @@
 
 @(reasonableExcuse: String, reasonText: String, friendlyDueDate: String, friendlyStartDate: String, friendlyEndDate: String, extraBullets: Seq[String], isObligationAppeal: Boolean = false, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
-@appealType = @{userRequest.session.get(SessionKeys.appealType)}
+@appealType = @{userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
 
 @layout(pageTitle = messages("honestyDeclaration.headingAndTitle"),
     isPageFullWidth = false,
@@ -42,7 +42,7 @@
             }
 
             @if(!isObligationAppeal) {
-                @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+                @if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
                     @if(userRequest.isAgent) {
                         @if(reasonableExcuse.equals("crime") || reasonableExcuse.equals("bereavement")) {
                             @getMessage("honestyDeclaration.lpp.li.1.2", friendlyDueDate)
@@ -54,7 +54,7 @@
                     }
                 } else {
                     @if(userRequest.isAgent) {
-                        @if(userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")){
+                        @if(userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")){
                             @messages("honestyDeclaration.li.1.2", friendlyDueDate)
                         } else {
                             @if(reasonableExcuse.equals("crime") || reasonableExcuse.equals("bereavement")) {
@@ -76,20 +76,20 @@
         }
         <li>
             @if(isObligationAppeal) {
-                @if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+                @if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
                     @messages("honestyDeclaration.obligation.lpp.li.2", friendlyStartDate, friendlyEndDate)
                 } else {
                     @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
                 }
-            } else if(appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) {
+            } else if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
                     @getMessage("honestyDeclaration.lpp.li.2")
-            } else if(userRequest.isAgent && userRequest.session.get(SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") && userRequest.session.get(SessionKeys.whatCausedYouToMissTheDeadline).contains("client")) {
+            } else if(userRequest.isAgent && userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") && userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).contains("client")) {
                 @messages("agent.honestyDeclaration.li.2.extra")
             } else {
                 @getMessage("honestyDeclaration.li.2")
             }
         </li>
-        @if((appealType.contains(PenaltyTypeEnum.Late_Payment.toString) || appealType.contains(PenaltyTypeEnum.Additional.toString)) && userRequest.session.get(SessionKeys.reasonableExcuse).contains("technicalIssues")) {
+        @if((appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) && userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).contains("technicalIssues")) {
             <li>
             @messages("honestyDeclaration.li.extra.technicalIssues")
             </li>

@@ -21,6 +21,7 @@ import forms.HasHospitalStayEndedForm
 import models.appeals.HospitalStayEndInput
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json._
 import utils.SessionKeys
 
 import java.time.LocalDate
@@ -31,36 +32,17 @@ class FormProviderHelperSpec extends SpecBase {
     "fill the form with the data stored in the session - if it exists" in {
       val mockForm: Form[String] = Form(single("value" -> nonEmptyText))
       val expectedResult = mockForm.fill("this-is-a-value")
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(mockForm, SessionKeys.reasonableExcuse)(fakeRequest.withSession(
+      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(mockForm, SessionKeys.reasonableExcuse, userAnswers(correctUserAnswers ++ Json.obj(
         SessionKeys.reasonableExcuse -> "this-is-a-value"
-      ))
+      )))
       result shouldBe expectedResult
     }
 
     "keep the existing (empty) form when the key in the session" in {
       val mockForm: Form[String] = Form(single("value" -> nonEmptyText))
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(mockForm, SessionKeys.reasonableExcuse)(fakeRequest.withSession(
+      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(mockForm, SessionKeys.reasonableExcuse, userAnswers(correctUserAnswers ++ Json.obj(
         "this-is-a-key" -> "this-is-a-value"
-      ))
-      result shouldBe mockForm
-    }
-  }
-
-  "getSessionKeyAndAttemptToFillAnswerAsOptionString" should {
-    "fill the form with the data stored in the session - if it exists" in {
-      val mockForm: Form[Option[String]] = Form(optional(single("value" -> text)))
-      val expectedResult = mockForm.fill(Some("Lorem ipsum"))
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsOptionString(mockForm, SessionKeys.lateAppealReason)(fakeRequest.withSession(
-        SessionKeys.lateAppealReason -> "Lorem ipsum"
-      ))
-      result shouldBe expectedResult
-    }
-
-    "keep the existing (empty) form when the key in the session" in {
-      val mockForm: Form[Option[String]] = Form(optional(single("value" -> text)))
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsOptionString(mockForm, SessionKeys.lateAppealReason)(fakeRequest.withSession(
-        "this-is-a-key" -> "this-is-a-value"
-      ))
+      )))
       result shouldBe mockForm
     }
   }
@@ -69,17 +51,17 @@ class FormProviderHelperSpec extends SpecBase {
     "fill the form with the data stored in the session - if it exists" in {
       val mockForm: Form[LocalDate] = Form(single("value" -> localDate))
       val expectedResult = mockForm.fill(LocalDate.parse("2021-01-01"))
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.dateOfCrime)(fakeRequest.withSession(
-        SessionKeys.dateOfCrime -> "2021-01-01"
-      ))
+      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.dateOfCrime, userAnswers(correctUserAnswers ++ Json.obj(
+        SessionKeys.dateOfCrime -> LocalDate.parse("2021-01-01")
+      )))
       result shouldBe expectedResult
     }
 
     "keep the existing (empty) form when the key in the session" in {
       val mockForm: Form[LocalDate] = Form(single("value" -> localDate))
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.reasonableExcuse)(fakeRequest.withSession(
+      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.reasonableExcuse, userAnswers(correctUserAnswers ++ Json.obj(
         "this-is-a-key" -> "this-is-a-value"
-      ))
+      )))
       result shouldBe mockForm
     }
   }
@@ -90,7 +72,7 @@ class FormProviderHelperSpec extends SpecBase {
     "fill only the first answer if the second answer is not present" in {
       val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
       val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm,
-        (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))(fakeRequest.withSession(SessionKeys.hasHealthEventEnded -> "yes"))
+        (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded), userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.hasHealthEventEnded -> "yes")))
       val expectedResult = mockForm.fill(HospitalStayEndInput("yes", None))
       result shouldBe expectedResult
     }
@@ -98,9 +80,10 @@ class FormProviderHelperSpec extends SpecBase {
     "fill both answers when both exist in the session" in {
       val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
       val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(mockForm,
-        (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))(fakeRequest.withSession(
-        SessionKeys.hasHealthEventEnded -> "yes",
-        SessionKeys.whenHealthIssueEnded -> "2022-01-01"))
+        (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded), userAnswers(correctUserAnswers ++ Json.obj(
+          SessionKeys.hasHealthEventEnded -> "yes",
+          SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-01")
+        )))
       val expectedResult = mockForm.fill(HospitalStayEndInput("yes", Some(LocalDate.parse("2022-01-01"))))
       result shouldBe expectedResult
     }
@@ -108,7 +91,7 @@ class FormProviderHelperSpec extends SpecBase {
     "leave the form as is when no answers exist" in {
       val mockForm: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
       val result = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(
-        mockForm, (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded))
+        mockForm, (SessionKeys.hasHealthEventEnded, SessionKeys.whenHealthIssueEnded), userAnswers(correctUserAnswers))
       result shouldBe mockForm
     }
   }

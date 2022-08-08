@@ -19,10 +19,11 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.WhenDidThePersonDieForm
 import messages.WhenDidThePersonDiePageMessages._
-import models.NormalMode
 import models.pages.{PageMode, WhenDidThePersonDiePage}
+import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.bereavement.WhenDidThePersonDiePage
@@ -31,6 +32,7 @@ import java.time.LocalDate
 
 class WhenDidThePersonDiePageSpec extends SpecBase with ViewBehaviours {
   val whenDidThePersonDiePage: WhenDidThePersonDiePage = injector.instanceOf[WhenDidThePersonDiePage]
+  implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
   object Selectors extends BaseSelectors
   def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidThePersonDiePage.apply(form,

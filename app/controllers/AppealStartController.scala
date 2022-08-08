@@ -16,38 +16,40 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
-import controllers.predicates.{AuthPredicate, DataRequiredAction}
-import javax.inject.Inject
-import models.NormalMode
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import models.pages.{AppealStartPage, PageMode}
+import models.{NormalMode, PenaltyTypeEnum, UserRequest}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.AppealStartPage
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.Future
 
 class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit mcc: MessagesControllerComponents,
                                                                         appConfig: AppConfig,
                                                                         val config: Configuration,
                                                                         authorise: AuthPredicate,
-                                                                        dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRequired).async { implicit request => {
+                                                                        dataRequired: DataRequiredAction,
+                                                                        dataRetrieval: DataRetrievalAction) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+    implicit userRequest => {
       logger.debug(s"[AppealStartController][onPageLoad] - Session keys received: \n" +
-        s"Appeal Type = ${request.session.get(SessionKeys.appealType)}, \n" +
-        s"Penalty Number = ${request.session.get(SessionKeys.penaltyNumber)}, \n" +
-        s"Start date of period = ${request.session.get(SessionKeys.startDateOfPeriod)}, \n" +
-        s"End date of period = ${request.session.get(SessionKeys.endDateOfPeriod)}, \n" +
-        s"Due date of period = ${request.session.get(SessionKeys.dueDateOfPeriod)}, \n" +
-        s"Date communication sent of period = ${request.session.get(SessionKeys.dateCommunicationSent)}, \n")
-      val isObligationAppeal = request.session.get(SessionKeys.isObligationAppeal).isDefined
+        s"Appeal Type = ${userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}, \n" +
+        s"Penalty Number = ${userRequest.answers.getAnswer[String](SessionKeys.penaltyNumber)}, \n" +
+        s"Start date of period = ${userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod)}, \n" +
+        s"End date of period = ${userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod)}, \n" +
+        s"Due date of period = ${userRequest.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod)}, \n" +
+        s"Is obligation = ${userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal)}, \n" +
+        s"Date communication sent of period = ${userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent)}, \n")
+      val isObligationAppeal = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined
       Future.successful(Ok(appealStartPage(
         isAppealLate,
         isObligationAppeal,
@@ -56,8 +58,8 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
     }
   }
 
-  private def isAppealLate()(implicit request: Request[_]): Boolean = {
-      val dateCommunicationSentParsedAsLocalDate = LocalDate.parse(request.session.get(SessionKeys.dateCommunicationSent).get)
+  private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
+      val dateCommunicationSentParsedAsLocalDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
       dateCommunicationSentParsedAsLocalDate.isBefore(getFeatureDate.minusDays(appConfig.daysRequiredForLateAppeal))
   }
 }

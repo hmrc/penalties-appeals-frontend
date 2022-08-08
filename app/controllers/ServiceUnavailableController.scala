@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.AuthPredicate
+import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -28,10 +28,10 @@ import javax.inject.Inject
 class ServiceUnavailableController @Inject()(serviceUnavailablePage: ServiceUnavailablePage)
                                             (implicit mcc: MessagesControllerComponents,
                                              appConfig: AppConfig,
-                                             authorise: AuthPredicate) extends FrontendController(mcc) with I18nSupport {
+                                             authorise: AuthPredicate,
+                                             dataRetrieval: DataRetrievalAction) extends FrontendController(mcc) with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = authorise {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval) {
     implicit request => InternalServerError(serviceUnavailablePage())
   }
-
 }

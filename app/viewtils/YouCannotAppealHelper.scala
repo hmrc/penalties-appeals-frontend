@@ -30,8 +30,8 @@ class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
                                               extends ViewUtils {
 
   def getHeaderAndTitle(implicit user: UserRequest[_]): String = {
-    val isLPP = user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) ||
-      user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)
+    val isLPP = user.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment) ||
+      user.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Additional)
     (isLPP, user.isAgent) match {
       case (true, true) =>
         "agent.youCannotAppeal.headingAndTitle.lpp"
@@ -67,8 +67,8 @@ class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
   }
 
   def getContent(implicit messages: Messages, user: UserRequest[_]): Html = {
-    val isLPP = user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment.toString) ||
-      user.session.get(SessionKeys.appealType).contains(PenaltyTypeEnum.Additional.toString)
+    val isLPP = user.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment) ||
+      user.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Additional)
     val isAgent = user.isAgent
     if(isLPP) lppHtml(isAgent) else lspHtml
   }
