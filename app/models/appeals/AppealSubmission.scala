@@ -34,7 +34,7 @@ sealed trait AppealInformation {
 case class BereavementAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         startDateOfEvent: LocalDate,
+                                         startDateOfEvent: LocalDateTime,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -82,7 +82,7 @@ object BereavementAppealInformation {
 case class CrimeAppealInformation(
                                    reasonableExcuse: String,
                                    honestyDeclaration: Boolean,
-                                   startDateOfEvent: LocalDate,
+                                   startDateOfEvent: LocalDateTime,
                                    reportedIssueToPolice: Boolean,
                                    statement: Option[String],
                                    lateAppeal: Boolean,
@@ -132,7 +132,7 @@ object CrimeAppealInformation {
 case class FireOrFloodAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         startDateOfEvent: LocalDate,
+                                         startDateOfEvent: LocalDateTime,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -180,7 +180,7 @@ object FireOrFloodAppealInformation {
 case class LossOfStaffAppealInformation(
                                          reasonableExcuse: String,
                                          honestyDeclaration: Boolean,
-                                         startDateOfEvent: LocalDate,
+                                         startDateOfEvent: LocalDateTime,
                                          statement: Option[String],
                                          lateAppeal: Boolean,
                                          lateAppealReason: Option[String],
@@ -228,8 +228,8 @@ object LossOfStaffAppealInformation {
 case class TechnicalIssuesAppealInformation(
                                              reasonableExcuse: String,
                                              honestyDeclaration: Boolean,
-                                             startDateOfEvent: LocalDate,
-                                             endDateOfEvent: LocalDate,
+                                             startDateOfEvent: LocalDateTime,
+                                             endDateOfEvent: LocalDateTime,
                                              statement: Option[String],
                                              lateAppeal: Boolean,
                                              lateAppealReason: Option[String],
@@ -279,8 +279,8 @@ case class HealthAppealInformation(
                                     reasonableExcuse: String,
                                     honestyDeclaration: Boolean,
                                     hospitalStayInvolved: Boolean,
-                                    startDateOfEvent: Option[LocalDate],
-                                    endDateOfEvent: Option[LocalDate],
+                                    startDateOfEvent: Option[LocalDateTime],
+                                    endDateOfEvent: Option[LocalDateTime],
                                     eventOngoing: Boolean,
                                     statement: Option[String],
                                     lateAppeal: Boolean,
@@ -342,7 +342,7 @@ object HealthAppealInformation {
 case class OtherAppealInformation(
                                    reasonableExcuse: String,
                                    honestyDeclaration: Boolean,
-                                   startDateOfEvent: LocalDate,
+                                   startDateOfEvent: LocalDateTime,
                                    statement: Option[String],
                                    supportingEvidence: Option[Evidence],
                                    lateAppeal: Boolean,
@@ -479,7 +479,7 @@ object AppealSubmission {
           appealInformation = BereavementAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidThePersonDie).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidThePersonDie).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
@@ -502,7 +502,7 @@ object AppealSubmission {
           appealInformation = CrimeAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfCrime).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfCrime).get.atStartOfDay(),
             reportedIssueToPolice = userRequest.answers.getAnswer[String](SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
             statement = None,
             lateAppeal = isLateAppeal,
@@ -526,7 +526,7 @@ object AppealSubmission {
           appealInformation = FireOrFloodAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
@@ -549,7 +549,7 @@ object AppealSubmission {
           appealInformation = LossOfStaffAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
@@ -572,8 +572,8 @@ object AppealSubmission {
           appealInformation = TechnicalIssuesAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).get,
-            endDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).get.atStartOfDay(),
+            endDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get.atTime(LocalTime.MAX),
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
@@ -599,8 +599,8 @@ object AppealSubmission {
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             hospitalStayInvolved = isHospitalStay,
-            startDateOfEvent = if (isHospitalStay) userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted) else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened),
-            endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded),
+            startDateOfEvent = (if (isHospitalStay) userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted) else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened)).map(_.atStartOfDay()),
+            endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).map(_.atTime(LocalTime.MAX)),
             eventOngoing = isOngoingHospitalStay,
             statement = None,
             lateAppeal = isLateAppeal,
@@ -624,7 +624,7 @@ object AppealSubmission {
           appealInformation = OtherAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidBecomeUnable).get,
+            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidBecomeUnable).get.atStartOfDay(),
             statement = userRequest.answers.getAnswer[String](SessionKeys.whyReturnSubmittedLate),
             supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => Some(Evidence(files.size))),
             lateAppeal = isLateAppeal,

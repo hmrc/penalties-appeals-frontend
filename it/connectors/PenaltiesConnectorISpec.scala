@@ -201,7 +201,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         appealInformation = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23"),
+          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
           reportedIssueToPolice = true,
           statement = None,
           lateAppeal = false,
@@ -227,7 +227,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         appealInformation = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23"),
+          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
           reportedIssueToPolice = true,
           statement = None,
           lateAppeal = false,

@@ -23,7 +23,7 @@ import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 class AppealAuditModelSpec extends SpecBase {
 
@@ -64,7 +64,7 @@ class AppealAuditModelSpec extends SpecBase {
     val bereavementAppealInformation: BereavementAppealInformation = BereavementAppealInformation(
       reasonableExcuse = "bereavement",
       honestyDeclaration = true,
-      startDateOfEvent = LocalDate.parse("2021-04-23"),
+      startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
@@ -80,7 +80,7 @@ class AppealAuditModelSpec extends SpecBase {
     val crimeAppealInformation: CrimeAppealInformation = CrimeAppealInformation(
       reasonableExcuse = "crime",
       honestyDeclaration = true,
-      startDateOfEvent = LocalDate.parse("2021-04-23"),
+      startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
       reportedIssueToPolice = true,
       statement = None,
       lateAppeal = false,
@@ -92,7 +92,7 @@ class AppealAuditModelSpec extends SpecBase {
     val fireOrFloodAppealInformation: FireOrFloodAppealInformation = FireOrFloodAppealInformation(
       reasonableExcuse = "fireOrFlood",
       honestyDeclaration = true,
-      startDateOfEvent = LocalDate.parse("2021-04-23"),
+      startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
@@ -103,7 +103,7 @@ class AppealAuditModelSpec extends SpecBase {
     val lossOfStaffAppealInformation: LossOfStaffAppealInformation = LossOfStaffAppealInformation(
       reasonableExcuse = "lossOfStaff",
       honestyDeclaration = true,
-      startDateOfEvent = LocalDate.parse("2021-04-23"),
+      startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
@@ -114,8 +114,8 @@ class AppealAuditModelSpec extends SpecBase {
     val technicalIssuesAppealInformation: TechnicalIssuesAppealInformation = TechnicalIssuesAppealInformation(
       reasonableExcuse = "technicalIssues",
       honestyDeclaration = true,
-      startDateOfEvent = LocalDate.parse("2021-04-23"),
-      endDateOfEvent = LocalDate.parse("2021-04-25"),
+      startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
+      endDateOfEvent = LocalDate.parse("2021-04-25").atTime(LocalTime.MAX),
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
@@ -127,8 +127,8 @@ class AppealAuditModelSpec extends SpecBase {
       reasonableExcuse = "health",
       honestyDeclaration = true,
       hospitalStayInvolved = true,
-      startDateOfEvent = Some(LocalDate.parse("2021-04-23")),
-      endDateOfEvent = Some(LocalDate.parse("2021-04-25")),
+      startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()),
+      endDateOfEvent = Some(LocalDate.parse("2021-04-25").atTime(LocalTime.MAX)),
       eventOngoing = false,
       statement = None,
       lateAppeal = false,
@@ -139,12 +139,12 @@ class AppealAuditModelSpec extends SpecBase {
 
     val healthAppealInformationOngoingHospitalStay = healthAppealInformation.copy(endDateOfEvent = None, eventOngoing = true)
     val healthAppealInformationNoHospitalStay = healthAppealInformation.copy(
-      startDateOfEvent = Some(LocalDate.parse("2021-04-23")), endDateOfEvent = None, eventOngoing = false, hospitalStayInvolved = false)
+      startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()), endDateOfEvent = None, eventOngoing = false, hospitalStayInvolved = false)
 
     val otherAppealInformation: OtherAppealInformation = OtherAppealInformation(
       reasonableExcuse = "other",
       honestyDeclaration = true,
-      startDateOfEvent = LocalDate.parse("2021-04-23"),
+      startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
       statement = Some("this is a reason"),
       supportingEvidence = None,
       lateAppeal = false,
@@ -240,7 +240,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -256,7 +256,7 @@ class AppealAuditModelSpec extends SpecBase {
         "appealInformation" -> Json.obj(
           "type" -> "crime",
           "reportedIssue" -> true,
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -271,7 +271,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "fireOrFlood",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -286,7 +286,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "lossOfStaff",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -301,8 +301,8 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "technicalIssues",
-          "startDateOfEvent" -> "2021-04-23",
-          "endDateOfEvent" -> "2021-04-25",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
+          "endDateOfEvent" -> "2021-04-25T23:59:59.999999999",
           "lateAppeal" -> false
         )
       )
@@ -317,8 +317,8 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "unexpectedHospitalStay",
-          "startDateOfEvent" -> "2021-04-23",
-          "endDateOfEvent" -> "2021-04-25",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
+          "endDateOfEvent" -> "2021-04-25T23:59:59.999999999",
           "lateAppeal" -> false
         )
       )
@@ -333,7 +333,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "seriousOrLifeThreateningIllHealth",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -346,7 +346,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "unexpectedHospitalStay",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -361,7 +361,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "other",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "statement" -> "this is a reason",
           "noOfUploadedFiles" -> "0",
           "lateAppeal" -> false
@@ -376,7 +376,7 @@ class AppealAuditModelSpec extends SpecBase {
         "penaltyType" -> "LPP",
         "appealInformation" -> Json.obj(
           "type" -> "other",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "statement" -> "this is a reason",
           "noOfUploadedFiles" -> "2",
           "uploadedFiles" -> Json.arr(
@@ -460,7 +460,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -475,7 +475,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> true,
           "lateAppealReason" -> "this is a very good reason"
         )
@@ -491,7 +491,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -506,7 +506,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -521,7 +521,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -536,7 +536,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -551,7 +551,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
@@ -566,7 +566,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23",
+          "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
       )
