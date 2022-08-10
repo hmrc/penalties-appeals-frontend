@@ -79,7 +79,7 @@ reasonableExcuses.error.required = Dewiswch reswm dros fethu’r dyddiad cau ar 
 honestyDeclaration.headingAndTitle = Datganiad gonestrwydd
 honestyDeclaration.p1 = Rwy’n cadarnhau’r canlynol:
 honestyDeclaration.li.1.1 = oherwydd {0},
-honestyDeclaration.obligation.li.1 = Gofynnwyd i CThEM ganslo’r cofrestriad TAW
+honestyDeclaration.obligation.li.1 = gofynnwyd i CThEM ganslo’r cofrestriad TAW
 honestyDeclaration.li.1.2 = nid oeddwn yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
 agent.honestyDeclaration.li.1.2 = nid oedd yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
 agent.honestyDeclaration.li.1.2.myClient = nid oedd fy nghleient yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
@@ -91,7 +91,7 @@ agent.honestyDeclaration.li.2 = nid oedd neb arall ar gael i gyflwyno ar ei ran
 agent.honestyDeclaration.li.2.extra = nid oedd neb arall ar gael i roi’r wybodaeth i mi
 honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar fy rhan
 agent.honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar ei ran
-honestyDeclaration.obligation.li.2 = Rwyf o’r farn nad oedd Ffurflen TAW yn ddyledus ar gyfer y cyfnod o {0} o {1}
+honestyDeclaration.obligation.li.2 = rwyf o’r farn nad oedd Ffurflen TAW yn ddyledus ar gyfer y cyfnod o {0} i {1}
 honestyDeclaration.obligation.lpp.li.2 = nid oedd TAW yn ddyledus ar gyfer y cyfnod o {0} i {1}
 honestyDeclaration.li.3 = byddaf yn rhoi gwybodaeth onest a chywir yn yr apêl hon
 honestyDeclaration.li.extra.lossOfStaff = nid oedd yr aelod o staff wedi dychwelyd i’r gwaith ac nid oedd neb wedi dod i gymryd ei le cyn y dyddiad dyledus
@@ -145,8 +145,8 @@ whenDidBecomeUnable.error.required.lpp = The date the issue first stopped you pa
 whenDidBecomeUnable.error.required.two.lpp = The date the issue first stopped you paying the VAT bill must include a {0} and a {1}
 whenDidBecomeUnable.error.invalid.lpp = The date the issue first stopped you paying the VAT bill must be a real date
 
-agent.whenDidBecomeUnable.headingAndTitle.lpp = When did the issue first stop your client paying the VAT bill?
-agent.whenDidBecomeUnable.error.required.all.lpp = Tell us when the issue first stopped your client paying the VAT bill
+agent.whenDidBecomeUnable.headingAndTitle.lpp = Pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf?
+agent.whenDidBecomeUnable.error.required.all.lpp = Rhowch wybod i ni pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf
 agent.whenDidBecomeUnable.error.notInFuture.lpp = The date when the issue first stopped your client paying the VAT bill must be today or in the past
 agent.whenDidBecomeUnable.error.required.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0}
 agent.whenDidBecomeUnable.error.required.two.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0} and a {1}
@@ -155,7 +155,7 @@ agent.whenDidBecomeUnable.error.invalid.lpp = The date when the issue first stop
 whenDidEventHappen.hint = Er enghraifft, 12 3 2018
 
 whenDidBecomeUnable.other.lpp = When did the issue first stop you paying the VAT bill?
-agent.whenDidBecomeUnable.other.lpp = When did the issue first stop your client paying the VAT bill?
+agent.whenDidBecomeUnable.other.lpp = Pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.other.clientIntendedToSubmit = Pryd wnaeth y mater atal eich cleient rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.other.clientMissedDeadline = Pryd wnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf?
 whenDidBecomeUnable.other.lsp = Pryd wnaeth y mater eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
@@ -196,23 +196,23 @@ lossOfStaffReason.error.notInFuture = Mae’n rhaid i’r dyddiad y gwnaeth y pe
 
 # When did the technology issues begin page
 # ----------------------------------------------------------
-technicalIssues.begin.headingAndTitle = Pryd dechreuodd y trafferthion technoleg?
+technicalIssues.begin.headingAndTitle = Pryd ddechreuodd y trafferthion technoleg?
 # Need to confirm that these errors are correct
-technicalIssues.begin.error.required.all = Rhowch wybod i ni pryd dechreuodd y trafferthion technoleg
-technicalIssues.begin.error.required.two = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg gynnwys {0} a {1}
-technicalIssues.begin.error.required = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg gynnwys {0}
-technicalIssues.begin.error.invalid = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg fod yn ddyddiad go iawn
-technicalIssues.begin.error.notInFuture = Mae’n rhaid i’r dyddiad y dechreuodd y trafferthion technoleg fod heddiw neu yn y gorffennol
+technicalIssues.begin.error.required.all = Rhowch wybod i ni pryd ddechreuodd y trafferthion technoleg
+technicalIssues.begin.error.required.two = Mae’n rhaid i’r dyddiad y ddechreuodd y trafferthion technoleg gynnwys {0} a {1}
+technicalIssues.begin.error.required = Mae’n rhaid i’r dyddiad y ddechreuodd y trafferthion technoleg gynnwys {0}
+technicalIssues.begin.error.invalid = Mae’n rhaid i’r dyddiad y ddechreuodd y trafferthion technoleg fod yn ddyddiad go iawn
+technicalIssues.begin.error.notInFuture = Mae’n rhaid i’r dyddiad y ddechreuodd y trafferthion technoleg fod heddiw neu yn y gorffennol
 
 # When did the technology issues end page
 # ----------------------------------------------------------
-technicalIssues.end.headingAndTitle = Pryd daeth y trafferthion technoleg i ben?
+technicalIssues.end.headingAndTitle = Pryd ddaeth y trafferthion technoleg i ben?
 technicalIssues.end.error.required.all = Rhowch wybod i ni pryd ddaeth y trafferthion technoleg i ben
-technicalIssues.end.error.required.two = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben gynnwys {0} a {1}
-technicalIssues.end.error.required = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben gynnwys {0}
-technicalIssues.end.error.invalid = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod yn ddyddiad go iawn
-technicalIssues.end.error.notInFuture = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod heddiw neu yn y gorffennol
-technicalIssues.end.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod naill ai ar yr un dyddiad y gwnaethant ddechrau neu wedi’r dyddiad hwnnw
+technicalIssues.end.error.required.two = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben gynnwys {0} a {1}
+technicalIssues.end.error.required = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben gynnwys {0}
+technicalIssues.end.error.invalid = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben fod yn ddyddiad go iawn
+technicalIssues.end.error.notInFuture = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben fod heddiw neu yn y gorffennol
+technicalIssues.end.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben fod naill ai ar yr un dyddiad y gwnaethant ddechrau neu wedi’r dyddiad hwnnw
 
 # Was hospital stay required page
 # ----------------------------------------------------------
@@ -259,12 +259,12 @@ agent.health.whenHealthIssueHappened.error.invalid.lpp = The date the health iss
 
 # When did the hospital stay begin page
 # ----------------------------------------------------------
-healthReason.whenDidHospitalStayBegin.headingAndTitle = Pryd y dechreuodd yr arhosiad yn yr ysbyty?
-healthReason.whenDidHospitalStayBegin.error.required.all = Nodwch y dyddiad y dechreuodd yr arhosiad yn yr ysbyty
-healthReason.whenDidHospitalStayBegin.error.required.two = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty gynnwys {0} a {1}
-healthReason.whenDidHospitalStayBegin.error.required = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty gynnwys {0}
-healthReason.whenDidHospitalStayBegin.error.invalid = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty fod yn ddyddiad go iawn
-healthReason.whenDidHospitalStayBegin.error.notInFuture = Mae’n rhaid i’r dyddiad y dechreuodd yr arhosiad yn yr ysbyty fod heddiw neu yn y gorffennol
+healthReason.whenDidHospitalStayBegin.headingAndTitle = Pryd y ddechreuodd yr arhosiad yn yr ysbyty?
+healthReason.whenDidHospitalStayBegin.error.required.all = Nodwch y dyddiad y ddechreuodd yr arhosiad yn yr ysbyty
+healthReason.whenDidHospitalStayBegin.error.required.two = Mae’n rhaid i’r dyddiad y ddechreuodd yr arhosiad yn yr ysbyty gynnwys {0} a {1}
+healthReason.whenDidHospitalStayBegin.error.required = Mae’n rhaid i’r dyddiad y ddechreuodd yr arhosiad yn yr ysbyty gynnwys {0}
+healthReason.whenDidHospitalStayBegin.error.invalid = Mae’n rhaid i’r dyddiad y ddechreuodd yr arhosiad yn yr ysbyty fod yn ddyddiad go iawn
+healthReason.whenDidHospitalStayBegin.error.notInFuture = Mae’n rhaid i’r dyddiad y ddechreuodd yr arhosiad yn yr ysbyty fod heddiw neu yn y gorffennol
 
 
 # Why was the return submitted late page
@@ -308,7 +308,7 @@ otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel neu PowerPoint)
 otherReason.uploadEvidence.details.li.5 = Fformat Dogfen Agored (ODF)
 otherReason.uploadEvidence.file = Ffeil
 otherReason.uploadEvidence.addAnother = Ychwanegu ffeil arall
-otherReason.uploadEvidence.status.uploaded = BAROD I GYFLWYNO
+otherReason.uploadEvidence.status.uploaded = BAROD I’W CHYFLWYNO
 otherReason.uploadEvidence.status.pending = Ar y gweill
 otherReason.uploadEvidence.button.remove = Tynnu
 otherReason.uploadEvidence.button.remove.hiddenText = ffeil {0}
@@ -335,11 +335,11 @@ otherReason.uploadList.youHaveUploadedFile.headingAndTitle = Rydych wedi uwchlwy
 otherReason.uploadList.uploadAnotherFile = A ydych eisiau uwchlwytho ffeil arall?
 otherReason.uploadList.uploadAnotherFile.required = Rhowch wybod i ni a ydych eisiau uwchlwytho ffeil arall
 otherReason.uploadList.rowTitle = Ffeil {0}
-otherReason.uploadList.duplicateInsetText = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeil {1}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
-otherReason.uploadList.duplicateInsetText.2 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1} a {2}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
-otherReason.uploadList.duplicateInsetText.3 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2} a {3}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
-otherReason.uploadList.duplicateInsetText.4 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2}, {3} a {4}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Dileu’.
-otherReason.uploadList.multipleDuplicateInsetText = Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.
+otherReason.uploadList.duplicateInsetText = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeil {1}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
+otherReason.uploadList.duplicateInsetText.2 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1} a {2}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
+otherReason.uploadList.duplicateInsetText.3 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2} a {3}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
+otherReason.uploadList.duplicateInsetText.4 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2}, {3} a {4}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
+otherReason.uploadList.multipleDuplicateInsetText = Mae rhai ffeiliau â’r un cynnwys â’i gilydd. Gwiriwch y ffeiliau rydych wedi’u huwchlwytho a dileu ffeiliau sydd wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
@@ -386,7 +386,7 @@ healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = Mae�
 # When did the person die page
 # ----------------------------------------------------------
 bereavementReason.headingAndTitle = Pryd y bu farw’r person?
-bereavementReason.error.required.all = Nodwch bryd y bu farw’r person
+bereavementReason.error.required.all = Nodwch y dyddiad y bu farw’r person
 bereavementReason.error.required.two = Mae’n rhaid i’r dyddiad gynnwys {0} a {1}
 bereavementReason.error.required = Mae’n rhaid i’r dyddiad gynnwys {0}
 bereavementReason.error.invalid = Mae’n rhaid i’r dyddiad fod yn ddyddiad go iawn
@@ -421,9 +421,9 @@ checkYourAnswers.other.fileEvidence = Tystiolaeth i gefnogi’r apêl hon
 checkYourAnswers.other.noFileUpload = Heb ddarparu
 
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.client = My client did
-checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = I did
-checkYourAnswers.agents.whatCausedYouToMissTheDeadline.client = My client did not get information to me on time
-checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Something else happened to delay me
+checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = Fi
+checkYourAnswers.agents.whatCausedYouToMissTheDeadline.client = Nid oedd fy nghleient wedi rhoi’r wybodaeth i mi mewn pryd
+checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Roedd rhywbeth arall wedi digwydd a oedd wedi achosi oedi
 
 # Appeal Confirmation page
 # ----------------------------------------------------------
