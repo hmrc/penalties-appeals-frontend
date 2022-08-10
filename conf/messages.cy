@@ -44,8 +44,8 @@ appealStart.obligation.li.2.1 = manylion am unrhyw ohebiaeth â CThEM am ganslo�
 appealStart.li.2.2 = y dyddiadau y mae eich rheswm yn ymwneud â hwy
 appealStart.obligation.li.2.2 = unrhyw wybodaeth ychwanegol i gefnogi’ch apêl (dewisol)
 appealStart.li.2.3 = manylion am y rheswm nad oeddech wedi apelio’n gynt
-appealStart.p5 = In some cases, we might also ask you to upload evidence to support the appeal.
-appealStart.p6 = Dim ond yr wybodaeth yr ydym wedi gofyn amdani sydd angen arnom. Nid oes angen i chi roi manylion ychwanegol oni bai ein bod yn gofyn amdano.
+appealStart.p5 = In some cases, we’ll ask if you want to upload evidence to support the appeal.
+appealStart.p6 = Dim ond yr wybodaeth yr ydym wedi gofyn amdani sydd angen arnom. Nid oes angen i chi roi manylion ychwanegol oni bai ein bod yn gofyn amdanynt.
 
 
 
@@ -94,7 +94,7 @@ agent.honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar ei ran
 honestyDeclaration.obligation.li.2 = Rwyf o’r farn nad oedd Ffurflen TAW yn ddyledus ar gyfer y cyfnod o {0} o {1}
 honestyDeclaration.obligation.lpp.li.2 = nid oedd TAW yn ddyledus ar gyfer y cyfnod o {0} i {1}
 honestyDeclaration.li.3 = byddaf yn rhoi gwybodaeth onest a chywir yn yr apêl hon
-honestyDeclaration.li.extra.lossOfStaff = nid oedd yr aelod o staff wedi dychwelyd i’r gwaith ac nid oedd neb wedi dod i gymryd ei le erbyn y dyddiad dyledus
+honestyDeclaration.li.extra.lossOfStaff = nid oedd yr aelod o staff wedi dychwelyd i’r gwaith ac nid oedd neb wedi dod i gymryd ei le cyn y dyddiad dyledus
 honestyDeclaration.li.extra.health = roedd amseriad y broblem iechyd yn annisgwyl
 honestyDeclaration.li.extra.technicalIssues = nid diffyg arian oedd y rheswm dros y methiant technegol
 honestyDeclaration.crime = effeithiwyd arnaf gan drosedd
@@ -103,7 +103,7 @@ honestyDeclaration.bereavement = effeithiwyd arnaf gan farwolaeth rhywun
 agent.honestyDeclaration.bereavement = effeithiwyd ar fy nghleient gan farwolaeth rhywun
 honestyDeclaration.fireOrFlood = tân neu lifogydd
 agent.honestyDeclaration.fireOrFlood = effeithiwyd ar fy nghleient gan dân neu lifogydd
-honestyDeclaration.health = oherwydd problem iechyd
+honestyDeclaration.health = problem iechyd
 agent.honestyDeclaration.health = effeithiwyd ar fy nghleient gan broblem iechyd
 honestyDeclaration.technicalIssues = problemau technegol
 agent.honestyDeclaration.technicalIssues = effeithiwyd ar fy nghleient gan broblemau technegol
@@ -250,8 +250,8 @@ health.whenHealthIssueHappened.error.required.lpp = The date the health issue fi
 health.whenHealthIssueHappened.error.required.two.lpp = The date the health issue first stopped you paying the VAT bill must include a {0} and a {1}
 health.whenHealthIssueHappened.error.invalid.lpp = The date the health issue first stopped you paying the VAT bill must be a real date
 
-agent.health.whenHealthIssueHappened.headingAndTitle.lpp = When did the health issue first stop your client paying the VAT bill?
-agent.health.whenHealthIssueHappened.error.required.all.lpp = Tell us the date the health issue first stopped your client paying the VAT bill
+agent.health.whenHealthIssueHappened.headingAndTitle.lpp = Pryd rwystrodd y broblem iechyd eich cleient rhag talu’r bil TAW am y tro cyntaf?
+agent.health.whenHealthIssueHappened.error.required.all.lpp = Rhowch wybod i ni am ddyddiad y rhwystrodd y broblem iechyd eich cleient rhag talu’r bil TAW am y tro cyntaf
 agent.health.whenHealthIssueHappened.error.notInFuture.lpp = The date the health issue first stopped your client paying the VAT bill must be today or in the past
 agent.health.whenHealthIssueHappened.error.required.lpp = The date the health issue first stopped your client paying the VAT bill must include a {0}
 agent.health.whenHealthIssueHappened.error.required.two.lpp = The date the health issue first stopped your client paying the VAT bill must include a {0} and a {1}
@@ -303,9 +303,9 @@ otherReason.uploadEvidence.details.heading = Mathau o ffeiliau y gallwch eu huwc
 otherReason.uploadEvidence.details.p1 = Caniateir y mathau hyn o ffeiliau:
 otherReason.uploadEvidence.details.li.1 = delwedd (.jpg, .jpeg, .png neu .tiff)
 otherReason.uploadEvidence.details.li.2 = PDF (.pdf)
-otherReason.uploadEvidence.details.li.3 = email (.txt or .msg)
+otherReason.uploadEvidence.details.li.3 = e-bost (.txt neu .msg)
 otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel neu PowerPoint)
-otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
+otherReason.uploadEvidence.details.li.5 = Fformat Dogfen Agored (ODF)
 otherReason.uploadEvidence.file = Ffeil
 otherReason.uploadEvidence.addAnother = Ychwanegu ffeil arall
 otherReason.uploadEvidence.status.uploaded = BAROD I GYFLWYNO
@@ -394,8 +394,8 @@ bereavementReason.error.notInFuture = Mae’n rhaid i’r dyddiad fod heddiw neu
 
 # Cancel VAT Registration Page
 # -----------------------------------------------------------
-cancelVATRegistration.headingAndTitle = A ofynnwyd i CThEM ganslo cofrestriad TAW ar gyfer y busnes hwn?
-cancelVATRegistration.hintText = Mae’n rhaid i fusnes ganslo’i gofrestriad TAW os yw’n rhoi’r gorau i fasnachu, yn datgofrestru ar gyfer TAW neu os yw perchnogaeth y busnes yn cael ei drosglwyddo.
+cancelVATRegistration.headingAndTitle = A ofynnwyd i CThEM ganslo’r cofrestriad TAW ar gyfer y busnes hwn?
+cancelVATRegistration.hintText = Mae’n rhaid i fusnes ganslo’i gofrestriad TAW os yw’n rhoi’r gorau i fasnachu, yn datgofrestru ar gyfer TAW neu os yw perchnogaeth y busnes yn cael ei throsglwyddo.
 cancelVATRegistration.error.required = Rhowch wybod i ni a ofynnwyd i CThEM ganslo’r cofrestriad TAW
 
 # Date input fields
@@ -410,7 +410,7 @@ date.year = Blwyddyn
 checkYourAnswers.headingAndTitle = Gwirio’ch atebion
 checkYourAnswers.appealDetails.h2 = Manylion yr apêl
 checkYourAnswers.declaration.h2 = Datganiad
-checkYourAnswers.declaration.p1 = Wrth gyflwyno’r apêl hon, rydych yn gwneud datganiad cyfreithlon bod yr wybodaeth yn gywir a’n gyflawn hyd eithaf eich gwybodaeth a’ch cred.
+checkYourAnswers.declaration.p1 = Wrth gyflwyno’r apêl hon, rydych yn gwneud datganiad cyfreithlon bod yr wybodaeth yn gywir ac yn gyflawn hyd eithaf eich gwybodaeth a’ch cred.
 checkYourAnswers.declaration.p2 = Gall datganiad ffug arwain at erlyniad.
 checkYourAnswers.reasonableExcuse = Rheswm dros fethu’r dyddiad cau ar gyfer TAW
 checkYourAnswers.change.text = Newid
@@ -433,7 +433,7 @@ appealConfirmation.typeAndPeriod = {0}: {1} i {2}
 appealConfirmation.p1 = You do not need a reference number.
 appealConfirmation.p2 = We have logged this appeal under the VAT registration number (VRN) for the business. Quote the VRN if you need to call HMRC about this appeal.
 appealConfirmation.whatHappensNext = Yr hyn sy’n digwydd nesaf
-appealConfirmation.whatHappensNext.p1 = Byddwn yn gwneud penderfyniad am eich apêl yn seiliedig ar yr hyn rydych wedi’i rhoi gwybod i ni amdano.
+appealConfirmation.whatHappensNext.p1 = Byddwn yn gwneud penderfyniad am eich apêl yn seiliedig ar yr hyn rydych wedi’i roi gwybod i ni amdano.
 appealConfirmation.whatHappensNext.obligation.p = Bydd ein penderfyniad yn ystyried pob cosb am gyflwyno neu dalu’n hwyr yn yr un cyfnod TAW. Nid oes angen i chi apelio yn erbyn y cosbau hyn ar wahân.
 appealConfirmation.whatHappensNext.p2 = Anelwn at wneud penderfyniad ar gyfer pob apêl cyn pen 45 diwrnod.
 appealConfirmation.whatHappensNext.p3 = Byddwch yn cael llythyr yn rhoi gwybod i chi am ganlyniad yr apêl hon a’r rhesymau dros ein penderfyniad.
