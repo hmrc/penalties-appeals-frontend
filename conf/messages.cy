@@ -420,7 +420,7 @@ checkYourAnswers.whyYouDidNotAppealSooner = Rheswm dros apelio ar ôl 30 diwrnod
 checkYourAnswers.other.fileEvidence = Tystiolaeth i gefnogi’r apêl hon
 checkYourAnswers.other.noFileUpload = Heb ddarparu
 
-checkYourAnswers.agents.whoPlannedToSubmitVATReturn.client = My client did
+checkYourAnswers.agents.whoPlannedToSubmitVATReturn.client = Fy nghleient
 checkYourAnswers.agents.whoPlannedToSubmitVATReturn.agent = Fi
 checkYourAnswers.agents.whatCausedYouToMissTheDeadline.client = Nid oedd fy nghleient wedi rhoi’r wybodaeth i mi mewn pryd
 checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Roedd rhywbeth arall wedi digwydd a oedd wedi achosi oedi
