@@ -138,7 +138,7 @@ agent.whenDidBecomeUnable.error.required.clientIntendedToSubmit = The date when 
 agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a {0} and a {1}
 agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must be a real date
 
-whenDidBecomeUnable.headingAndTitle.lpp = When did the issue first stop you paying the VAT bill?
+whenDidBecomeUnable.headingAndTitle.lpp = Pryd wnaeth y mater eich atal rhag talu’r bil TAW am y tro cyntaf?
 whenDidBecomeUnable.error.required.all.lpp = Tell us when the issue first stopped you paying the VAT bill
 whenDidBecomeUnable.error.notInFuture.lpp = The date the issue first stopped you paying the VAT bill must be today or in the past
 whenDidBecomeUnable.error.required.lpp = The date the issue first stopped you paying the VAT bill must include a {0}
@@ -154,7 +154,7 @@ agent.whenDidBecomeUnable.error.invalid.lpp = The date when the issue first stop
 
 whenDidEventHappen.hint = Er enghraifft, 12 3 2018
 
-whenDidBecomeUnable.other.lpp = When did the issue first stop you paying the VAT bill?
+whenDidBecomeUnable.other.lpp = Pryd wnaeth y mater eich atal rhag talu’r bil TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.other.lpp = Pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.other.clientIntendedToSubmit = Pryd wnaeth y mater atal eich cleient rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.other.clientMissedDeadline = Pryd wnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf?
@@ -222,8 +222,8 @@ agent.healthReason.wasHospitalStayRequired.error.required = Rhowch wybod i ni a 
 
 # When did health event happen page
 # ----------------------------------------------------------
-health.whenHealthIssueHappened.headingAndTitle.lsp = When did the health issue first stop you submitting the VAT Return?
-health.whenHealthIssueHappened.error.required.all.lsp = Tell us when the health issue first stopped you submitting the VAT Return
+health.whenHealthIssueHappened.headingAndTitle.lsp = Pryd wnaeth y broblem iechyd eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
+health.whenHealthIssueHappened.error.required.all.lsp = Rhowch wybod i ni pryd y gwnaeth y broblem iechyd eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf
 health.whenHealthIssueHappened.error.notInFuture.lsp = The date the health issue first stopped you submitting the VAT Return must be today or in the past
 health.whenHealthIssueHappened.error.required.lsp = The date the health issue first stopped you submitting the VAT Return must include a {0}
 health.whenHealthIssueHappened.error.required.two.lsp = The date the health issue first stopped you submitting the VAT Return must include a {0} and a {1}
@@ -437,7 +437,7 @@ appealConfirmation.whatHappensNext.p1 = Byddwn yn gwneud penderfyniad am eich ap
 appealConfirmation.whatHappensNext.obligation.p = Bydd ein penderfyniad yn ystyried pob cosb am gyflwyno neu dalu’n hwyr yn yr un cyfnod TAW. Nid oes angen i chi apelio yn erbyn y cosbau hyn ar wahân.
 appealConfirmation.whatHappensNext.p2 = Anelwn at wneud penderfyniad ar gyfer pob apêl cyn pen 45 diwrnod.
 appealConfirmation.whatHappensNext.p3 = Byddwch yn cael llythyr yn rhoi gwybod i chi am ganlyniad yr apêl hon a’r rhesymau dros ein penderfyniad.
-appealConfirmation.whatHappensNext.p4 = Rydych wedi cadarnhau cyfeiriad e-bost ar eich cyfrif TAW, byddwn hefyd yn anfon neges ddiogelwch atoch.
+appealConfirmation.whatHappensNext.p4 = Os oes gennych gyfeiriad e-bost sydd wedi’i gadarnhau ar eich cyfrif TAW, byddwn hefyd yn anfon neges ddiogel atoch.
 
 appealConfirmation.returnToPenalties = Yn ôl i’ch cosbau TAW
 agent.appealConfirmation.returnToPenalties = Yn ôl i gosbau TAW eich cleient
