@@ -544,6 +544,7 @@ describe('Multi File Upload component', () => {
                     expect(container.querySelector('.multi-file-upload__remove-item').classList.contains('hidden')).toBeFalse();
                     done();
                 });
+
                 it('Then the remove button has fileName', (done) => {
                     expect(container.querySelector('.multi-file-upload__remove-item .multi-file-upload__file-name').textContent).toEqual('test.txt');
                     done();
