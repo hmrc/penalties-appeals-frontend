@@ -335,6 +335,7 @@ export class MultiFileUpload {
         this.removeError(file.id);
 
         this.getFileNameElement(item).textContent = fileName;
+        this.getRemoveButtonFromItem(item).querySelector(`.${this.classes.fileName}`).textContent = fileName;
 
         this.uploadData[file.id].uploadHandle = this.uploadFile(file);
     }
@@ -703,6 +704,7 @@ export class MultiFileUpload {
         this.setItemState(item, status.Uploaded);
         this.getFileNameElement(item).textContent = fileName;
         this.toggleRemoveButtons();
+        this.getRemoveButtonFromItem(item).querySelector(`.${this.classes.fileName}`).textContent = fileName;
         file.dataset.multiFileUploadFileRef = fileData['reference'];
 
         return item;

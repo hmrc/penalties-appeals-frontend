@@ -95,7 +95,7 @@ describe('Multi File Upload component', () => {
 
                     <button type="button" class="multi-file-upload__remove-item govuk-link">
                       Remove
-                      <span class="govuk-visually-hidden">File <span class="multi-file-upload__number">{fileNumber}</span></span>
+                      <span class="govuk-visually-hidden">File <span class="multi-file-upload__number">{fileNumber}</span><span class="multi-file-upload__file-name"></span></span>
                     </button>
                     <span class="multi-file-upload__removing">Removing...</span>
                   </div>
@@ -496,6 +496,10 @@ describe('Multi File Upload component', () => {
                     expect(container.querySelector('.multi-file-upload__remove-item').classList.contains('hidden')).toBeFalse();
                     done();
                 });
+                it('Then the remove button has fileName', (done) => {
+                    expect(container.querySelector('.multi-file-upload__remove-item .multi-file-upload__file-name').textContent).toEqual('test.txt');
+                    done();
+                });
             });
         });
 
@@ -538,6 +542,10 @@ describe('Multi File Upload component', () => {
 
                 it('Then the remove button is present', (done) => {
                     expect(container.querySelector('.multi-file-upload__remove-item').classList.contains('hidden')).toBeFalse();
+                    done();
+                });
+                 it('Then the remove button has fileName', (done) => {
+                    expect(container.querySelector('.multi-file-upload__remove-item .multi-file-upload__file-name').textContent).toEqual('test.txt');
                     done();
                 });
             });
