@@ -491,4 +491,63 @@ class AppealServiceSpec extends SpecBase {
       verify(mockAuditService, times(1)).audit(any())(any(), any(), any())
     }
   }
+
+  "isAppealLate" should {
+    val fakeRequestForAppealingBothPenalties: (LocalDate, LocalDate) => UserRequest[AnyContent] = (lpp1Date: LocalDate, lpp2Date: LocalDate) =>
+      UserRequest("123456789", answers = userAnswers(Json.obj(
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+        SessionKeys.penaltyNumber -> "123456789",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.firstPenaltyCommunicationDate -> lpp1Date,
+        SessionKeys.secondPenaltyCommunicationDate -> lpp2Date
+      )))(fakeRequest)
+
+    val fakeRequestForAppealingSinglePenalty: LocalDate => UserRequest[AnyContent] = (date: LocalDate) => UserRequest("123456789", answers = userAnswers(Json.obj(
+      SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.dateCommunicationSent -> date,
+      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+      SessionKeys.penaltyNumber -> "123456789",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment
+    )))(fakeRequest)
+
+    "return true" when {
+      "communication date of penalty > 30 days ago" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 1, 1))
+        val result = service.isAppealLate()(fakeRequestForAppealingSinglePenalty(LocalDate.of(2021, 12, 1)))
+        result shouldBe true
+      }
+
+      "appealing both penalties and LPP1 is late" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 1, 1))
+        val result = service.isAppealLate()(fakeRequestForAppealingBothPenalties(LocalDate.of(2021, 12, 1), LocalDate.of(2022, 1, 1)))
+        result shouldBe true
+      }
+
+      "appealing both penalties and both are late" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 4, 1))
+        val result = service.isAppealLate()(fakeRequestForAppealingBothPenalties(LocalDate.of(2021, 12, 1), LocalDate.of(2022, 1, 1)))
+        result shouldBe true
+      }
+    }
+
+    "return false" when {
+      "communication date of penalty < 30 days ago" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 1, 1))
+        val result = service.isAppealLate()(fakeRequestForAppealingSinglePenalty(LocalDate.of(2021, 12, 31)))
+        result shouldBe false
+      }
+
+      "appealing both penalties and LPP1 and LPP2 are not late" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 1, 1))
+        val result = service.isAppealLate()(fakeRequestForAppealingBothPenalties(LocalDate.of(2021, 12, 31), LocalDate.of(2021, 12, 31)))
+        result shouldBe false
+      }
+    }
+  }
 }

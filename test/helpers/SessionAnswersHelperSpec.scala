@@ -17,6 +17,7 @@
 package helpers
 
 import base.SpecBase
+import config.AppConfig
 import models.pages._
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
@@ -35,8 +36,11 @@ import scala.concurrent.Future
 
 class SessionAnswersHelperSpec extends SpecBase {
   val mockRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
-  val sessionAnswersHelper = new SessionAnswersHelper(mockRepository)
+  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+  val sessionAnswersHelper = new SessionAnswersHelper(mockRepository, mockAppConfig, mockDateTimeHelper)
 
+  when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 1, 1))
+  when(mockAppConfig.daysRequiredForLateAppeal).thenReturn(30)
   "isAllAnswerPresentForReasonableExcuse" should {
     "for crime" must {
       "return true - when all keys present" in {
@@ -892,6 +896,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.whyReturnSubmittedLate -> "This is why my VAT bill was paid late.",
             SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+            SessionKeys.dateCommunicationSent -> "2019-12-01",
             SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
             SessionKeys.isUploadEvidence -> "yes",
             SessionKeys.doYouWantToAppealBothPenalties -> "no"
@@ -1503,6 +1508,57 @@ class SessionAnswersHelperSpec extends SpecBase {
             MakingALateAppealPage.toString
           ).url
         }
+      }
+
+      "not show the late appeal reason when the user initially selected to appeal both penalties but now does not want to (LPP2 selected, LPP1 is late)" in {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 1, 1))
+        when(mockAppConfig.daysRequiredForLateAppeal).thenReturn(30)
+        val fakeRequestWithOtherLateAppealPresentButNotAppealingBoth = fakeRequestConverter(Json.obj(
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.doYouWantToAppealBothPenalties -> "no",
+          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-01-01"),
+          SessionKeys.firstPenaltyCommunicationDate -> LocalDate.parse("2019-11-01"),
+          SessionKeys.secondPenaltyCommunicationDate -> LocalDate.parse("2020-01-01"),
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
+          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
+          SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
+          SessionKeys.isUploadEvidence -> "no"
+        ))
+        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+          "other", None)(fakeRequestWithOtherLateAppealPresentButNotAppealingBoth, implicitly)
+        result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
+        result.head.value shouldBe "No"
+        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
+          PenaltySelectionPage.toString
+        ).url
+        result(1).key shouldBe "Reason for missing the VAT deadline"
+        result(1).value shouldBe "The reason does not fit into any of the other categories"
+        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.ReasonableExcuseController.onPageLoad().url,
+          ReasonableExcuseSelectionPage.toString
+        ).url
+        result(2).key shouldBe "When did the issue first stop you submitting the VAT Return?"
+        result(2).value shouldBe "1 January 2022"
+        result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
+          WhenDidBecomeUnablePage.toString
+        ).url
+        result(3).key shouldBe "Why was the return submitted late?"
+        result(3).value shouldBe "This is why my VAT return was late."
+        result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
+          WhyWasReturnSubmittedLatePage.toString
+        ).url
+        result(4).key shouldBe "Do you want to upload evidence to support your appeal?"
+        result(4).value shouldBe "No"
+        result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
+          UploadEvidenceQuestionPage.toString
+        ).url
+        result.size shouldBe 5
       }
     }
   }

@@ -147,10 +147,16 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       Left(INTERNAL_SERVER_ERROR)
   }
 
-  private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
+  def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
     val dateTimeNow: LocalDate = dateTimeHelper.dateNow
-    val dateSentParsed: LocalDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
-    dateSentParsed.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal))
+    val dateWhereLateAppealIsApplicable: LocalDate = dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal)
+    if(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
+      userRequest.answers.getAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate).exists(_.isBefore(dateWhereLateAppealIsApplicable)) ||
+        userRequest.answers.getAnswer[LocalDate](SessionKeys.secondPenaltyCommunicationDate).exists(_.isBefore(dateWhereLateAppealIsApplicable))
+    } else {
+      val dateSentParsed: LocalDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
+      dateSentParsed.isBefore(dateWhereLateAppealIsApplicable)
+    }
   }
 
   def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])
