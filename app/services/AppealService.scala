@@ -16,14 +16,17 @@
 
 package services
 
+import java.time.LocalDate
+
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
+import javax.inject.Inject
 import models.appeals.{AppealSubmission, MultiplePenaltiesData}
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
 import models.upload.{UploadJourney, UploadStatusEnum}
-import models.{AppealData, AuthRequest, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
+import models._
 import play.api.Configuration
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, JsValue, Json}
@@ -34,8 +37,6 @@ import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
 import utils.{EnrolmentKeys, SessionKeys, UUIDGenerator}
 
-import java.time.LocalDate
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
@@ -108,16 +109,29 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val appealType = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
     val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)
     val agentReferenceNo = userRequest.arn
-    val penaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.penaltyNumber).get
     val correlationId: String = idGenerator.generateUUID
     val userHasUploadedFiles = userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).contains("yes")
+    if (userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
+      multipleAppeal(enrolmentKey, appealType, isLPP, correlationId, agentReferenceNo, userHasUploadedFiles, reasonableExcuse)
+    } else {
+      singleAppeal(enrolmentKey, appealType, isLPP, correlationId, agentReferenceNo, userHasUploadedFiles, reasonableExcuse)
+    }
+  }
+
+  private def singleAppeal(enrolmentKey: String, appealType: Option[PenaltyTypeEnum.Value], isLPP: Boolean,
+                           correlationId: String, agentReferenceNo: Option[String], userHasUploadedFiles: Boolean,
+                           reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
-      readyOrDuplicateFileUploads = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
+      readyOrDuplicateFileUploads = fileUploads.map(_.filter(file =>
+        file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
       uploads = if (userHasUploadedFiles) readyOrDuplicateFileUploads else None
       modelFromRequest: AppealSubmission = AppealSubmission
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
-      response <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId)
+      penaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.penaltyNumber).get
+      response <- {
+        penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId)
+      }
     } yield {
       response.status match {
         case OK =>
@@ -131,19 +145,66 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
             auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, correlationId, uploads))
           }
           sendAuditIfDuplicatesExist(uploads)
-          logger.debug("[AppealService][submitAppeal] - Received OK from the appeal submission call")
+          logger.debug("[AppealService][singleAppeal] - Received OK from the appeal submission call")
           Right((): Unit)
         case _ =>
-          logger.error(s"[AppealService][submitAppeal] - Received unknown status code from connector: ${response.status}")
+          logger.error(s"[AppealService][singleAppeal] - Received unknown status code from connector: ${response.status}")
           Left(response.status)
       }
     }
   }.recover {
     case e: UpstreamErrorResponse =>
-      logger.error(s"[AppealService][submitAppeal] - Received 4xx/5xx response, error message: ${e.getMessage}")
+      logger.error(s"[AppealService][singleAppeal] - Received 4xx/5xx response, error message: ${e.getMessage}")
       Left(e.statusCode)
     case e =>
-      logger.error(s"[AppealService][submitAppeal] - An unknown error occurred, error message: ${e.getMessage}")
+      logger.error(s"[AppealService][singleAppeal] - An unknown error occurred, error message: ${e.getMessage}")
+      Left(INTERNAL_SERVER_ERROR)
+  }
+
+  private def multipleAppeal(enrolmentKey: String, appealType: Option[PenaltyTypeEnum.Value], isLPP: Boolean,
+                             correlationId: String, agentReferenceNo: Option[String], userHasUploadedFiles: Boolean,
+                             reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
+
+    for {
+      fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
+      readyOrDuplicateFileUploads = fileUploads.map(_.filter(file =>
+        file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
+      uploads = if (userHasUploadedFiles) readyOrDuplicateFileUploads else None
+      modelFromRequest: AppealSubmission = AppealSubmission
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
+      firstPenaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyChargeReference).get
+      secondPenaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyChargeReference).get
+      firstResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, firstPenaltyNumber, correlationId)
+      secondResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, secondPenaltyNumber, correlationId)
+    } yield {
+      (firstResponse.status, secondResponse.status) match {
+        case (OK, OK) =>
+          if (isLPP) {
+            if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, correlationId, uploads))
+            } else {
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, correlationId, uploads))
+            }
+          } else {
+            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, correlationId, uploads))
+          }
+          sendAuditIfDuplicatesExist(uploads)
+          logger.debug("[AppealService][multipleAppeal] - Received OK from the appeal submission call")
+          Right((): Unit)
+        case _ =>
+          logger.error(s"[AppealService][multipleAppeal] - Received unknown status code from connector:" +
+            s" First response: ${firstResponse.status}, Second response: ${secondResponse.status}")
+          Left(firstResponse.status)
+          //TODO: Add error handling for one failure
+      }
+    }
+
+  }.recover {
+    case e: UpstreamErrorResponse =>
+      logger.error(s"[AppealService][multipleAppeal] - Received 4xx/5xx response, error message: ${e.getMessage}")
+      Left(e.statusCode)
+    case e =>
+      logger.error(s"[AppealService][multipleAppeal] - An unknown error occurred, error message: ${e.getMessage}")
       Left(INTERNAL_SERVER_ERROR)
   }
 

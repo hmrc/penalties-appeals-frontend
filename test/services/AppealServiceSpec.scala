@@ -50,7 +50,21 @@ class AppealServiceSpec extends SpecBase {
     SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
     SessionKeys.penaltyNumber -> "123456789",
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+    SessionKeys.doYouWantToAppealBothPenalties -> "no"
+  )))(fakeRequest)
+
+  val fakeRequestForCrimeJourneyMultiple: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
+    SessionKeys.reasonableExcuse -> "crime",
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
+    SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+    SessionKeys.penaltyNumber -> "123456789",
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+    SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+    SessionKeys.firstPenaltyChargeReference -> "123456789",
+    SessionKeys.secondPenaltyChargeReference -> "123456788"
   )))(fakeRequest)
 
   val fakeRequestForOtherJourney: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
@@ -61,7 +75,8 @@ class AppealServiceSpec extends SpecBase {
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
     SessionKeys.isUploadEvidence -> "yes",
     SessionKeys.penaltyNumber -> "123456789",
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+    SessionKeys.doYouWantToAppealBothPenalties -> "no"
   )))(fakeRequest)
 
   val fakeRequestForOtherJourneyDeclinedUploads: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
@@ -71,7 +86,8 @@ class AppealServiceSpec extends SpecBase {
     SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
     SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
     SessionKeys.isUploadEvidence -> "no",
-    SessionKeys.penaltyNumber -> "123456789"
+    SessionKeys.penaltyNumber -> "123456789",
+    SessionKeys.doYouWantToAppealBothPenalties -> "no"
   )))(fakeRequest)
 
   val appealDataAsJson: JsValue = Json.parse(
@@ -306,6 +322,18 @@ class AppealServiceSpec extends SpecBase {
         ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
     }
 
+    "parse the session keys into a model and return true when the connector call is successful and audit the response" +
+      " - for appealing multiple penalties" in new Setup {
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(None))
+      val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
+      result shouldBe Right((): Unit)
+      verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
+        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+    }
+
     "parse the session keys into a model and audit the response - for duplicate file upload" in new Setup {
       val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 1, 1)
       val uploadAsDuplicate: UploadJourney = UploadJourney(
@@ -404,6 +432,15 @@ class AppealServiceSpec extends SpecBase {
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
         val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
+        result shouldBe Left(BAD_GATEWAY)
+      }
+
+      "the connector returns a non-200 response for multiple submissions" in new Setup {
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
+          .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
+        when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+          .thenReturn(Future.successful(None))
+        val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
         result shouldBe Left(BAD_GATEWAY)
       }
 
