@@ -25,7 +25,7 @@ class UpscanMessageHelperSpec extends SpecBase {
     "routing through the js journey " should {
       "return virus message when status is QUARANTINE" in {
         val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, true, Some(1))
-        result shouldBe "File 1 contains a virus. Remove the file and try again."
+        result shouldBe "File 1 contains a virus. Choose another file."
       }
 
       "return MIME type message when status is REJECTED" in {
@@ -35,7 +35,7 @@ class UpscanMessageHelperSpec extends SpecBase {
 
       "return try again message when status is UNKNOWN" in {
         val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, true, Some(1))
-        result shouldBe "File 1 could not be uploaded. Remove the file and try again."
+        result shouldBe "File 1 could not be uploaded. Choose another file."
       }
     }
 
@@ -62,12 +62,12 @@ class UpscanMessageHelperSpec extends SpecBase {
     "routing through the js journey " should {
       "return empty file message when errorCode is EntityTooSmall" in {
         val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", true, Some(1))
-        result shouldBe "File 1 is empty. Remove the file and try again."
+        result shouldBe "File 1 is empty. Choose another file."
       }
 
       "return file too large message when errorCode is EntityTooLarge" in {
         val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooLarge", true, Some(1))
-        result shouldBe "File 1 must be smaller than 6MB. Remove the file and try again."
+        result shouldBe "File 1 must be smaller than 6MB. Choose another file."
       }
 
       "return select a file message when errorCode is InvalidArgument" in {
@@ -77,7 +77,7 @@ class UpscanMessageHelperSpec extends SpecBase {
 
       "return try again message when errorCode is not matched" in {
         val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", true, Some(1))
-        result shouldBe "File 1 could not be uploaded. Remove the file and try again."
+        result shouldBe "File 1 could not be uploaded. Choose another file."
       }
     }
 
