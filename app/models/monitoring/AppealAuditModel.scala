@@ -52,7 +52,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "type" -> appealInfo.reasonableExcuse,
           "startDateOfEvent" -> appealInfo.startDateOfEvent,
         "lateAppeal" -> appealInfo.lateAppeal,
-        "lateAppealReason" -> appealInfo.lateAppealReason
+        "lateAppealReason" -> (if(appealInfo.lateAppeal) appealInfo.lateAppealReason else None)
       )
       case crime if crime.isInstanceOf[CrimeAppealInformation] =>
         val appealInfo = crime.asInstanceOf[CrimeAppealInformation]
@@ -61,7 +61,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "reportedIssue" -> appealInfo.reportedIssueToPolice,
         "startDateOfEvent" -> appealInfo.startDateOfEvent,
         "lateAppeal" -> appealInfo.lateAppeal,
-        "lateAppealReason" -> appealInfo.lateAppealReason
+        "lateAppealReason" -> (if(appealInfo.lateAppeal) appealInfo.lateAppealReason else None)
       )
       case fireOrFlood if fireOrFlood.isInstanceOf[FireOrFloodAppealInformation] =>
         val appealInfo = fireOrFlood.asInstanceOf[FireOrFloodAppealInformation]
@@ -69,7 +69,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "type" -> appealInfo.reasonableExcuse,
           "startDateOfEvent" -> appealInfo.startDateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
-          "lateAppealReason" -> appealInfo.lateAppealReason
+          "lateAppealReason" -> (if(appealInfo.lateAppeal) appealInfo.lateAppealReason else None)
         )
       case lossOfStaff if lossOfStaff.isInstanceOf[LossOfStaffAppealInformation] =>
         val appealInfo = lossOfStaff.asInstanceOf[LossOfStaffAppealInformation]
@@ -77,7 +77,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "type" -> appealInfo.reasonableExcuse,
             "startDateOfEvent" -> appealInfo.startDateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
-          "lateAppealReason" -> appealInfo.lateAppealReason
+          "lateAppealReason" -> (if(appealInfo.lateAppeal) appealInfo.lateAppealReason else None)
         )
       case technicalIssues if technicalIssues.isInstanceOf[TechnicalIssuesAppealInformation] =>
         val appealInfo = technicalIssues.asInstanceOf[TechnicalIssuesAppealInformation]
@@ -86,7 +86,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "startDateOfEvent" -> appealInfo.startDateOfEvent,
           "endDateOfEvent" -> appealInfo.endDateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
-          "lateAppealReason" -> appealInfo.lateAppealReason
+          "lateAppealReason" -> (if(appealInfo.lateAppeal) appealInfo.lateAppealReason else None)
         )
       case health if health.isInstanceOf[HealthAppealInformation] =>
         val appealInfo = health.asInstanceOf[HealthAppealInformation]
@@ -96,7 +96,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
           "startDateOfEvent" -> appealInfo.startDateOfEvent,
           "endDateOfEvent" -> appealInfo.endDateOfEvent,
           "lateAppeal" -> appealInfo.lateAppeal,
-          "lateAppealReason" -> appealInfo.lateAppealReason
+          "lateAppealReason" -> (if(appealInfo.lateAppeal) appealInfo.lateAppealReason else None)
         )
       case other if other.isInstanceOf[OtherAppealInformation] =>
         val appealInfo = other.asInstanceOf[OtherAppealInformation]
@@ -122,7 +122,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Str
             } else None
           },
           "lateAppeal" -> appealInfo.lateAppeal,
-          "lateAppealReason" -> appealInfo.lateAppealReason
+          "lateAppealReason" -> (if(appealInfo.lateAppeal) appealInfo.lateAppealReason else None)
         )
       case obligation if obligation.isInstanceOf[ObligationAppealInformation] =>
         val appealInfo = obligation.asInstanceOf[ObligationAppealInformation]

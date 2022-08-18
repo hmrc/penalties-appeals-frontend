@@ -482,7 +482,7 @@ object AppealSubmission {
             startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidThePersonDie).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
             isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
             isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
               userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
@@ -506,7 +506,7 @@ object AppealSubmission {
             reportedIssueToPolice = userRequest.answers.getAnswer[String](SessionKeys.hasCrimeBeenReportedToPolice).get == "yes",
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
             isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
             isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
               userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
@@ -529,7 +529,7 @@ object AppealSubmission {
             startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
             isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
             isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
               userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
@@ -552,7 +552,7 @@ object AppealSubmission {
             startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness).get.atStartOfDay(),
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
             isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
             isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
               userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
@@ -576,7 +576,7 @@ object AppealSubmission {
             endDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get.atTime(LocalTime.MAX),
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
             isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
             isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
               userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
@@ -604,7 +604,7 @@ object AppealSubmission {
             eventOngoing = isOngoingHospitalStay,
             statement = None,
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
             isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
             isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
               userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")
@@ -628,7 +628,7 @@ object AppealSubmission {
             statement = userRequest.answers.getAnswer[String](SessionKeys.whyReturnSubmittedLate),
             supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => Some(Evidence(files.size))),
             lateAppeal = isLateAppeal,
-            lateAppealReason = userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason),
+            lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
             isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
             isClientResponsibleForLateSubmission = if (userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent")) {
               userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).map(_ == "client")

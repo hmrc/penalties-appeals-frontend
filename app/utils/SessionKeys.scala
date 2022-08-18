@@ -62,7 +62,6 @@ object SessionKeys {
   val firstPenaltyCommunicationDate = "firstPenaltyCommunicationDate"
   val secondPenaltyCommunicationDate = "secondPenaltyCommunicationDate"
 
-
   val allKeys: Seq[String] = Seq(
     appealType,
     startDateOfPeriod,

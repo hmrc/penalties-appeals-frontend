@@ -16,6 +16,7 @@
 
 package helpers
 
+import config.AppConfig
 import models.appeals.CheckYourAnswersRow
 import models.pages._
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
@@ -28,7 +29,9 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository)(implicit ec: ExecutionContext) extends ImplicitDateFormatter {
+class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository,
+                                     appConfig: AppConfig,
+                                     dateTimeHelper: DateTimeHelper)(implicit ec: ExecutionContext) extends ImplicitDateFormatter {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
     "bereavement" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidThePersonDie, SessionKeys.hasConfirmedDeclaration),
     "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
@@ -247,15 +250,21 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
       multiplePenaltiesContent ++ reasonableExcuseContent
     )(
       reason => {
-        multiplePenaltiesContent ++ reasonableExcuseContent :+ (
-          CheckYourAnswersRow(messages("checkYourAnswers.whyYouDidNotAppealSooner"),
-            reason,
-            changeAnswerUrl(
-              controllers.routes.MakingALateAppealController.onPageLoad().url,
-              MakingALateAppealPage
+        if(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).isEmpty ||
+          userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes") ||
+          isAppealingOnlySinglePenalty) {
+          multiplePenaltiesContent ++ reasonableExcuseContent :+ (
+            CheckYourAnswersRow(messages("checkYourAnswers.whyYouDidNotAppealSooner"),
+              reason,
+              changeAnswerUrl(
+                controllers.routes.MakingALateAppealController.onPageLoad().url,
+                MakingALateAppealPage
+              )
             )
-          )
-          )
+            )
+        } else {
+          multiplePenaltiesContent ++ reasonableExcuseContent
+        }
       }
     )
   }
@@ -455,5 +464,11 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
   def changeAnswerUrl(continueUrl: String, page: Page): String = {
     controllers.routes.CheckYourAnswersController.changeAnswer(continueUrl, page.toString).url
+  }
+
+  private def isAppealingOnlySinglePenalty()(implicit userRequest: UserRequest[_]) = {
+    val dateTimeNow: LocalDate = dateTimeHelper.dateNow
+    userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("no") &&
+      userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).exists(_.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal)))
   }
 }
