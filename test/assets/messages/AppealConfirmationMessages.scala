@@ -17,13 +17,27 @@
 package messages
 
 object AppealConfirmationMessages {
-  val title = "You have asked us to review a penalty - Appeal a VAT penalty - GOV.UK"
+  val titleSinglePenalty = "You have asked us to review your penalty - Appeal a VAT penalty - GOV.UK"
 
-  val headingPanelH1 = "You have asked us to review a penalty"
+  val headingPanelSinglePenalty = "You have asked us to review your penalty"
+
+  val titleSinglePenaltyAgent = "You have asked us to review your client’s penalty - Appeal a VAT penalty - GOV.UK"
+
+  val headingPanelSinglePenaltyAgent = "You have asked us to review your client’s penalty"
+
+  val titleBothPenalties = "You have asked us to review your penalties - Appeal a VAT penalty - GOV.UK"
+
+  val headingPanelBothPenalties = "You have asked us to review your penalties"
+
+  val titleBothPenaltiesAgent = "You have asked us to review your client’s penalties - Appeal a VAT penalty - GOV.UK"
+
+  val headingPanelBothPenaltiesAgent = "You have asked us to review your client’s penalties"
 
   val headingPanelBodyLSP = "Late submission penalty: 1 July 2023 to 31 July 2023"
 
   val headingPanelBodyLPP = "Late payment penalty: 1 July 2023 to 31 July 2023"
+
+  val headingPanelBodyLPPenalties = "Late payment penalties: 1 July 2023 to 31 July 2023"
 
   val p1 = "You do not need a reference number."
 

@@ -15,6 +15,9 @@
  *@
 
 @import config.AppConfig
+@import helpers.AppealConfirmationHelper.getPluralOrSingular
+@import viewtils.PenaltyTypeHelper.convertPenaltyTypeToContentString
+@import utils.SessionKeys
 
 @this(layout: Layout,
         bullets: components.bullets,
@@ -22,16 +25,34 @@
 
 @(penaltyTypeMsgKey: String, periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
+@appealType = @{userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
+
+@bothPenalties = @{userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties)}
+
 @penaltyType = @{
-    messages(penaltyTypeMsgKey)
+    convertPenaltyTypeToContentString(appealType.get)
 }
 
-@layout(pageTitle = messages("appealConfirmation.headingAndTitle"),
-    isPageFullWidth = false,
-    backLinkEnabled = false) {
+@layout(pageTitle = {
+                        if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined) {
+                            getPluralOrSingular(bothPenalties)("agent.appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
+                        } else {
+                            getPluralOrSingular(bothPenalties)("appealConfirmation.headingAndTitle.penalty", "appealConfirmation.headingAndTitle.penalties").toString()
+                        }
+                    },
+        isPageFullWidth = false,
+        backLinkEnabled = false) {
 
     <div class="govuk-panel govuk-panel--confirmation">
-        <h1 class="govuk-panel__title" id="page-heading">@messages("appealConfirmation.headingAndTitle")</h1>
+        <h1 class="govuk-panel__title" id="page-heading">
+            @{
+            if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined) {
+                getPluralOrSingular(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties))("agent.appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
+            } else {
+                getPluralOrSingular(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties))("appealConfirmation.headingAndTitle.penalty", "appealConfirmation.headingAndTitle.penalties").toString()
+                }
+            }
+        </h1>
         <div class="govuk-panel__body">
             @messages("appealConfirmation.typeAndPeriod", penaltyType, periodStart, periodEnd)
         </div>
