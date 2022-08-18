@@ -110,7 +110,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     FileListPage -> ((answer, request) => routeForUploadList(answer, request, CheckMode)),
     UploadEvidenceQuestionPage -> ((answer, request) => routeForUploadEvidenceQuestion(answer, request, CheckMode)),
     AppealSinglePenaltyPage -> ((_, _) => routes.CheckYourAnswersController.onPageLoad()),
-    AppealCoverBothPenaltiesPage -> ((_, _) => routes.CheckYourAnswersController.onPageLoad()),
+    AppealCoverBothPenaltiesPage -> ((_, request) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     PenaltySelectionPage -> ((answer, _) => routingForPenaltySelectionPage(answer, CheckMode))
   )
 

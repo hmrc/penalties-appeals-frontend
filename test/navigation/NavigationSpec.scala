@@ -506,6 +506,18 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
+      s"called with $AppealCoverBothPenaltiesPage - one appeal is > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 1, 1))
+        val result: Call = mainNavigator.nextPage(AppealCoverBothPenaltiesPage, CheckMode, None)(userRequestWithCorrectKeys.copy(
+          answers = userAnswers(correctUserAnswers ++ Json.obj(
+            SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+            SessionKeys.firstPenaltyCommunicationDate -> "2021-12-01",
+            SessionKeys.secondPenaltyCommunicationDate -> "2022-01-01"
+          ))
+        ))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      }
+
       s"called with $PenaltySelectionPage - redirects to single appeal page when user selects yes" in new Setup {
         val result: Call = mainNavigator.nextPage(PenaltySelectionPage, CheckMode, Some("yes"))(userRequestWithCorrectKeys)
         result.url shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(CheckMode).url

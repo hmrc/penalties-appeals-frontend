@@ -199,7 +199,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
   }
 
   "GET /appeal-cover-for-both-penalties" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+    "return 200 (OK) when the user is authorised - appeal < 30 days late" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -207,6 +207,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
+      setFeatureDate(Some(LocalDate.parse("2020-02-28")))
       val normalModeRequest = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest)
       await(normalModeRequest).header.status shouldBe Status.OK
       Jsoup.parse(contentAsString(normalModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -214,6 +215,24 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       val checkModeRequest = controller.onPageLoadForAppealCoverBothPenalties(CheckMode)(fakeRequest)
       await(checkModeRequest).header.status shouldBe Status.OK
       Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+    }
+
+    "return 200 (OK) when the user is authorised - appeal > 30 days late" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      setFeatureDate(None)
+      val normalModeRequest = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest)
+      await(normalModeRequest).header.status shouldBe Status.OK
+      Jsoup.parse(contentAsString(normalModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+
+      val checkModeRequest = controller.onPageLoadForAppealCoverBothPenalties(CheckMode)(fakeRequest)
+      await(checkModeRequest).header.status shouldBe Status.OK
+      Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
