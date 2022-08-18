@@ -37,7 +37,7 @@ The service can be tested in SBT
 To run testing with coverage and scalastyle in SBT
 
     sbt clean scalastyle coverage test it:test coverageReport
-
+ 
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
