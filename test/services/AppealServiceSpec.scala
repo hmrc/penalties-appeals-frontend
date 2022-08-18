@@ -436,7 +436,9 @@ class AppealServiceSpec extends SpecBase {
       }
 
       "the connector returns a non-200 response for multiple submissions" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any())(any(), any()))
+          .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
