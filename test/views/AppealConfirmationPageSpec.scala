@@ -56,13 +56,21 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
 
     implicit val vatTraderLPP1Doc: Document = asDocument(applyLPP1VATTraderView("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
 
-    def applyLPP2VATTraderView(penaltyTypeMsgKey: String,
-                           periodStart: String,
-                           periodEnd: String,
-                           isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
+    def applyLPP2VATTraderViewBothPenalties(penaltyTypeMsgKey: String,
+                          periodStart: String,
+                          periodEnd: String,
+                          isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
       penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)(vatTraderLPP2UserRequest, messages, appConfig)
 
-    implicit val vatTraderLPP2Doc: Document = asDocument(applyLPP2VATTraderView("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
+    implicit val vatTraderLPP2Doc: Document = asDocument(applyLPP2VATTraderViewBothPenalties("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
+
+    def applyLPP2VATAgentViewBothPenalties(penaltyTypeMsgKey: String,
+                             periodStart: String,
+                             periodEnd: String,
+                             isObligationAppeal: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
+      penaltyTypeMsgKey, periodStart, periodEnd, isObligationAppeal)(vatAgentLPP2UserRequest, messages, appConfig)
+
+    implicit val vatAgentLPP2Doc: Document = asDocument(applyLPP2VATAgentViewBothPenalties("penaltyType.latePayment", "1 July 2023", "31 July 2023"))
 
     def applyAgentView(penaltyTypeMsgKey: String,
                        periodStart: String,
@@ -74,8 +82,8 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
 
     "when agent is on the page " must {
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
+        Selectors.title -> titleSinglePenaltyAgent,
+        Selectors.h1 -> headingPanelSinglePenaltyAgent,
         Selectors.h2 -> h2WhatHappensNext,
         Selectors.penaltyType -> headingPanelBodyLSP,
         Selectors.paragraph(2) -> p1,
@@ -95,11 +103,34 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
       }
     }
 
+    "when agent is on the page with both penalties " must {
+      val expectedContent = Seq(
+        Selectors.title -> titleBothPenaltiesAgent,
+        Selectors.h1 -> headingPanelBothPenaltiesAgent,
+        Selectors.h2 -> h2WhatHappensNext,
+        Selectors.penaltyType -> headingPanelBodyLPPenalties,
+        Selectors.paragraph(2) -> p1,
+        Selectors.paragraph(3) -> p2,
+        Selectors.paragraph(5) -> whatHappensNextP1,
+        Selectors.paragraph(6) -> whatHappensNextP2,
+        Selectors.paragraph(7) -> whatHappensNextP3,
+        Selectors.penaltiesLink -> returnToPenaltiesAgentText,
+        Selectors.vatAccountLink -> goToVatVCAgentText,
+        Selectors.feedbackLink -> goToFeedback
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)(vatAgentLPP2Doc)
+
+      "not show the secure/email message" in {
+        vatAgentLPP2Doc.select(Selectors.paragraph(8)).text.isEmpty shouldBe true
+      }
+    }
+
     "when VAT trader is on page in LSP appeal" must {
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
+        Selectors.title -> titleSinglePenalty,
+        Selectors.h1 -> headingPanelSinglePenalty,
         Selectors.h2 -> h2WhatHappensNext,
         Selectors.penaltyType -> headingPanelBodyLSP,
         Selectors.paragraph(2) -> p1,
@@ -127,8 +158,8 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
     "when VAT trader is on page in LPP1 appeal" must {
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
+        Selectors.title -> titleSinglePenalty,
+        Selectors.h1 -> headingPanelSinglePenalty,
         Selectors.h2 -> h2WhatHappensNext,
         Selectors.penaltyType -> headingPanelBodyLPP,
         Selectors.paragraph(2) -> p1,
@@ -156,10 +187,10 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
     "when VAT trader is on page in LPP2 appeal" must {
 
       val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> headingPanelH1,
+        Selectors.title -> titleBothPenalties,
+        Selectors.h1 -> headingPanelBothPenalties,
         Selectors.h2 -> h2WhatHappensNext,
-        Selectors.penaltyType -> headingPanelBodyLPP,
+        Selectors.penaltyType -> headingPanelBodyLPPenalties,
         Selectors.paragraph(2) -> p1,
         Selectors.paragraph(3) -> p2,
         Selectors.paragraph(5) -> whatHappensNextP1,

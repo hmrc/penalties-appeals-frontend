@@ -192,8 +192,17 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
     Json.obj(
       SessionKeys.appealType -> PenaltyTypeEnum.Additional,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.doYouWantToAppealBothPenalties -> "yes"
     )))(fakeRequest)
+
+  val vatAgentLPP2UserRequest: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234",
+    Json.obj(
+      SessionKeys.appealType -> PenaltyTypeEnum.Additional,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.doYouWantToAppealBothPenalties -> "yes"
+    )))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
   val agentUserAgentSubmitButClientWasLateSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234", Json.obj(
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,

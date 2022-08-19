@@ -428,7 +428,10 @@ checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Something else ha
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
-appealConfirmation.headingAndTitle = You have asked us to review a penalty
+appealConfirmation.headingAndTitle.penalty = You have asked us to review your penalty
+agent.appealConfirmation.headingAndTitle.penalty = You have asked us to review your client’s penalty
+appealConfirmation.headingAndTitle.penalties = You have asked us to review your penalties
+agent.appealConfirmation.headingAndTitle.penalties = You have asked us to review your client’s penalties
 appealConfirmation.typeAndPeriod = {0}: {1} to {2}
 appealConfirmation.p1 = You do not need a reference number.
 appealConfirmation.p2 = We have logged this appeal under the VAT registration number (VRN) for the business. Quote the VRN if you need to call HMRC about this appeal.
