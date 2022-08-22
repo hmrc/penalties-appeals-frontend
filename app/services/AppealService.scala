@@ -111,7 +111,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val agentReferenceNo = userRequest.arn
     val correlationId: String = idGenerator.generateUUID
     val userHasUploadedFiles = userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).contains("yes")
-    if (userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
+    if (!userRequest.answers.getAnswer[String](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString) && userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
       multipleAppeal(enrolmentKey, appealType, isLPP, correlationId, agentReferenceNo, userHasUploadedFiles, reasonableExcuse)
     } else {
       singleAppeal(enrolmentKey, appealType, isLPP, correlationId, agentReferenceNo, userHasUploadedFiles, reasonableExcuse)

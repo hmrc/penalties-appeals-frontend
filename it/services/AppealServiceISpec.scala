@@ -319,11 +319,11 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
     }
 
     "return true when appealing two penalties at the same time" in {
-      successfulAppealSubmission(isLPP = false, "1234")
-      successfulAppealSubmission(isLPP = false, "5678")
+      successfulAppealSubmission(isLPP = true, "1234")
+      successfulAppealSubmission(isLPP = true, "5678")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
@@ -385,11 +385,11 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       }
 
       "when one of multiple appeal submissions fails" in {
-        failedAppealSubmissionWithFault(isLPP = false, "1234")
-        successfulAppealSubmission(isLPP = false, "5678")
+        failedAppealSubmissionWithFault(isLPP = true, "1234")
+        successfulAppealSubmission(isLPP = true, "5678")
         val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
           SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
           SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
           SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
           SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
