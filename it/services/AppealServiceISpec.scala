@@ -37,7 +37,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
-  val appealService = injector.instanceOf[AppealService]
+  val appealService: AppealService = injector.instanceOf[AppealService]
   val correlationId: String = "correlationId"
 
   "submitAppeal" should {
@@ -318,6 +318,29 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       }
     }
 
+    "return true when appealing two penalties at the same time" in {
+      successfulAppealSubmission(isLPP = true, "1234")
+      successfulAppealSubmission(isLPP = true, "5678")
+      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+        SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+        SessionKeys.firstPenaltyChargeReference -> "1234",
+        SessionKeys.secondPenaltyChargeReference -> "5678"
+      )))(fakeRequest)
+      val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      result shouldBe Right((): Unit)
+    }
+
     "return false" when {
       "the connector returns a fault" in {
         failedAppealSubmissionWithFault(isLPP = false, "1234")
@@ -354,12 +377,33 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
         result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
-    }
 
-    "return an exception" when {
       "not all keys are present in the session" in {
         val userRequest = UserRequest("123456789", answers = UserAnswers("", Json.obj()))(FakeRequest("POST", "/check-your-answers"))
-        intercept[Exception](await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly)))
+        val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+        result shouldBe Left(INTERNAL_SERVER_ERROR)
+      }
+
+      "when one of multiple appeal submissions fails" in {
+        failedAppealSubmissionWithFault(isLPP = true, "1234")
+        successfulAppealSubmission(isLPP = true, "5678")
+        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+          SessionKeys.penaltyNumber -> "1234",
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+          SessionKeys.reasonableExcuse -> "crime",
+          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+          SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+          SessionKeys.firstPenaltyChargeReference -> "1234",
+          SessionKeys.secondPenaltyChargeReference -> "5678"
+        )))(fakeRequest)
+        val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+        result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
     }
   }
