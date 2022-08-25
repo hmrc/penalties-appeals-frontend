@@ -71,7 +71,17 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val whatYouOweUrl: String = config.get[String]("urls.whatYouOwe")
 
-  lazy val feedbackUrl: String = config.get[String]("urls.feedbackUrl")
+  lazy val contactFrontendUrl: String = config.get[String]("feedback.url")
+
+  lazy val contactFrontendServiceId: String = config.get[String]("contact-frontend.serviceId")
+
+  lazy val contactFrontendHost: String = servicesConfig.baseUrl("contact-frontend")
+
+  def backUrl(url: String): String =  SafeRedirectUrl(config.get[String]("host") + url).encodedUrl
+
+  lazy val csatFeedbackUrl: String = config.get[String]("urls.feedbackUrl")
+
+  def betaFeedbackUrl(redirectUrl: String): String = s"$contactFrontendHost/$contactFrontendUrl?service=$contactFrontendServiceId&backUrl=${backUrl(redirectUrl)}"
 
   lazy val daysRequiredForLateAppeal: Int = config.get[Int]("constants.daysRequiredForLateAppeal")
 
