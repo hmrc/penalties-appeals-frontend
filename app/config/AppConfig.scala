@@ -77,7 +77,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   def betaFeedbackBackUrl(url: String): String =  SafeRedirectUrl(url).encodedUrl
 
-  def betaFeedbackUrl(redirectUrl: String): String = s"${config.get[String]("urls.betaFeedbackUrl")}?service=$contactFrontendServiceId&backUrl=${betaFeedbackBackUrl(redirectUrl)}"
+  def betaFeedbackUrl(redirectUrl: String): String = s"${config.get[String]("urls.betaFeedbackUrl")}?service=$contactFrontendServiceId&backURL=${betaFeedbackBackUrl(redirectUrl)}"
 
   lazy val daysRequiredForLateAppeal: Int = config.get[Int]("constants.daysRequiredForLateAppeal")
 
