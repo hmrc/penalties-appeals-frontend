@@ -20,7 +20,7 @@
 
 @feedbackBanner = {
 @messages("feedback.before")
-    <a class='govuk-link' href='@{appConfig.feedbackUrl(request.uri)}'>@messages("feedback.link")</a>
+    <a class='govuk-link' href='@{appConfig.betaFeedbackUrl(request.uri)}'>@messages("feedback.link")</a>
 @messages("feedback.after")
 }
 
