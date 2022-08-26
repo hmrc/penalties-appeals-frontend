@@ -71,29 +71,24 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val whatYouOweUrl: String = config.get[String]("urls.whatYouOwe")
 
-  lazy val contactFrontendUrl: String = config.get[String]("feedback.url")
-
   lazy val contactFrontendServiceId: String = config.get[String]("contact-frontend.serviceId")
 
-  lazy val contactFrontendHost: String = servicesConfig.baseUrl("contact-frontend")
+  lazy val csatFeedbackUrl: String = config.get[String]("urls.csatFeedbackUrl")
 
-  def backUrl(url: String): String =  SafeRedirectUrl(config.get[String]("host") + url).encodedUrl
+  def betaFeedbackBackUrl(url: String): String =  SafeRedirectUrl(url).encodedUrl
 
-  lazy val csatFeedbackUrl: String = config.get[String]("urls.feedbackUrl")
-
-  def betaFeedbackUrl(redirectUrl: String): String = s"$contactFrontendHost/$contactFrontendUrl?service=$contactFrontendServiceId&backUrl=${backUrl(redirectUrl)}"
+  def betaFeedbackUrl(redirectUrl: String): String = s"${config.get[String]("urls.betaFeedbackUrl")}?service=$contactFrontendServiceId&backURL=${betaFeedbackBackUrl(redirectUrl)}"
 
   lazy val daysRequiredForLateAppeal: Int = config.get[Int]("constants.daysRequiredForLateAppeal")
 
   lazy val numberOfCharsInTextArea: Int = config.get[Int]("constants.numberOfCharsInTextArea")
-
 
   val vatAgentClientLookupFrontendHost: String = "vat-agent-client-lookup-frontend.host"
   val vatAgentClientLookupFrontendStartUrl: String = "vat-agent-client-lookup-frontend.startUrl"
 
   private lazy val agentClientLookupHost = servicesConfig.getConfString(vatAgentClientLookupFrontendHost, "")
 
-  private lazy val platformHost = servicesConfig.getString("host")
+  private lazy val platformHost = servicesConfig.getString("penalties-frontend-host")
 
   val appName: String = servicesConfig.getString("appName")
 
