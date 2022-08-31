@@ -75,9 +75,9 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val csatFeedbackUrl: String = config.get[String]("urls.csatFeedbackUrl")
 
-  def betaFeedbackBackUrl(url: String): String =  SafeRedirectUrl(url).encodedUrl
+  def betaFeedbackBackUrl(url: String): String =  SafeRedirectUrl(platformHost ++ url).encodedUrl
 
-  def betaFeedbackUrl(redirectUrl: String): String = s"${config.get[String]("urls.betaFeedbackUrl")}?service=$contactFrontendServiceId&backURL=${betaFeedbackBackUrl(redirectUrl)}"
+  def betaFeedbackUrl(redirectUrl: String): String = s"${config.get[String]("urls.betaFeedbackUrl")}?service=$contactFrontendServiceId&backUrl=${betaFeedbackBackUrl(redirectUrl)}"
 
   lazy val daysRequiredForLateAppeal: Int = config.get[Int]("constants.daysRequiredForLateAppeal")
 
@@ -88,7 +88,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   private lazy val agentClientLookupHost = servicesConfig.getConfString(vatAgentClientLookupFrontendHost, "")
 
-  private lazy val platformHost = servicesConfig.getString("penalties-frontend-host")
+  private lazy val platformHost = servicesConfig.getString("penalties-appeals-frontend-host")
 
   val appName: String = servicesConfig.getString("appName")
 
