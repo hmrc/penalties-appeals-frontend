@@ -253,25 +253,29 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       }
 
       "return ISE" when {
+        "the user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      s"return SEE_OTHER" when {
         "the user has not selected a reasonable excuse" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourneyNoReasonableExcuse)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
         }
 
         "the user has not completed all required answers" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(crimeMissingAnswers))))
           val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourneyWithoutSomeAnswers)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
-        }
-
-        "the user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
-          val result: Future[Result] = Controller.onPageLoad()(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
         }
       }
     }
@@ -336,19 +340,23 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
+      }
 
+      "redirect the user to the session data incomplete page" when {
         "there is no reasonable excuse selected" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(crimeNoReasonAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourneyNoReasonableExcuse)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
         }
 
         "not all session keys are present" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(crimeMissingAnswers))))
           val result: Future[Result] = Controller.onSubmit()(fakeRequestForCrimeJourneyWithoutSomeAnswers)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
         }
       }
 

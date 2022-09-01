@@ -1,0 +1,41 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+        layout: Layout,
+        link: components.link,
+        pageHeader: components.pageHeader
+)
+
+@(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)(implicit messages: Messages, appConfig: AppConfig, request: UserRequest[_])
+
+@layout(
+  pageTitle = messages("incompleteSessionData.headingAndTitle"),
+  isPageFullWidth = false,
+  backLinkEnabled = false
+) {
+  @pageHeader(messages("incompleteSessionData.headingAndTitle"))
+
+  <p class="govuk-body">@messages("incompleteSessionData.p1")</p>
+
+  <p class="govuk-body">
+    @link(
+      link = controllers.routes.InitialiseAppealController.onPageLoad(penaltyId, isLPP, isAdditional).url,
+      messageKey = "incompleteSessionData.link",
+      button = false
+    )
+  </p>
+}

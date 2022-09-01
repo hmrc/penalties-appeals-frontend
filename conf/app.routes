@@ -196,3 +196,6 @@ POST       /multiple-penalties-for-this-period/change          controllers.Penal
 # Appeal single penalty
 GET        /appeal-single-penalty                              controllers.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode: Mode = NormalMode)
 GET        /appeal-single-penalty/change                       controllers.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode: Mode = CheckMode)
+
+# Incomplete session data
+GET        /incomplete-answers                                 controllers.IncompleteSessionDataController.onPageLoad()
