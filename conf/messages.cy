@@ -577,3 +577,9 @@ appealSinglePenalty.p2 = You can still appeal other penalties separately.
 # -----------------------------------------------------------
 appealCoverBothPenalties.headingAndTitle = The appeal will cover both penalties
 appealCoverBothPenalties.p1 = This allows you to enter appeal details once for penalties linked to the same charge. However, we will still review each penalty separately.
+
+# Incomplete session data page
+# -----------------------------------------------------------
+incompleteSessionData.headingAndTitle = Sorry, something has gone wrong
+incompleteSessionData.p1 = There’s been a technical error. You need to start your appeal again. We have not saved your data.
+incompleteSessionData.link = Return to the appeal start page

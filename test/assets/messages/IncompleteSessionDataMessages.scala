@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package services
+package messages
 
-import models.session.UserAnswers
-import repositories.UserAnswersRepository
+object IncompleteSessionDataMessages {
+  val title = "Sorry, something has gone wrong - Appeal a VAT penalty - GOV.UK"
 
-import javax.inject.Inject
-import scala.concurrent.Future
+  val heading = "Sorry, something has gone wrong"
 
-class SessionService @Inject()(userAnswersRepository: UserAnswersRepository) {
+  val p1 = "There’s been a technical error. You need to start your appeal again. We have not saved your data."
 
-  def getUserAnswers(journeyId: String): Future[Option[UserAnswers]] = {
-    userAnswersRepository.getUserAnswer(journeyId)
-  }
-
-  def updateAnswers(data: UserAnswers): Future[Boolean] = {
-    userAnswersRepository.upsertUserAnswer(data)
-  }
+  val link = "Return to the appeal start page"
 }

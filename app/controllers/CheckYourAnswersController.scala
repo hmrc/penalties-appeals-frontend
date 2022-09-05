@@ -17,18 +17,18 @@
 package controllers
 
 import java.time.LocalDate
-
 import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import helpers.SessionAnswersHelper
+
 import javax.inject.Inject
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import models.pages.{CheckYourAnswersPage, PageMode}
 import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.UploadJourneyRepository
 import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -68,7 +68,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
           }
         } else {
           logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
-          Future(errorHandler.showInternalServerError)
+          Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
         }
       })(
         reasonableExcuse => {
@@ -83,7 +83,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
             logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${userRequest.session.data} " +
               s"and tried to load page with reasonable excuse: $reasonableExcuse")
-            Future(errorHandler.showInternalServerError)
+            Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
           }
         }
       )
@@ -97,7 +97,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
           handleAppealSubmission("obligation")
         } else {
           logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
-          Future(errorHandler.showInternalServerError)
+          Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
         }
       })(
         reasonableExcuse => {
@@ -106,14 +106,14 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             handleAppealSubmission(reasonableExcuse)
           } else {
             logger.error(s"[CheckYourAnswersController][onSubmit] User did not have all answers for reasonable excuse: $reasonableExcuse")
-            Future(errorHandler.showInternalServerError)
+            Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
           }
         }
       )
     }
   }
 
-  private def handleAppealSubmission(reasonableExcuse: String)(implicit userRequest: UserRequest[_]) = {
+  private def handleAppealSubmission(reasonableExcuse: String)(implicit userRequest: UserRequest[_]): Future[Result] = {
     appealService.submitAppeal(reasonableExcuse).flatMap(_.fold(
       {
         case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))

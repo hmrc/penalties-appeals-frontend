@@ -570,7 +570,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
 
-    "return 500 (ISE) when the user hasn't selected a reasonable excuse option" in new UserAnswersSetup(userAnswers(Json.obj(
+    "return 303 (SEE_OTHER) when the user hasn't selected a reasonable excuse option" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -579,10 +579,11 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
       val request = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
     }
 
-    "return 500 (ISE) when the user has selected a reasonable excuse option but hasn't completed the journey" in new UserAnswersSetup(userAnswers(Json.obj(
+    "return 303 (SEE_OTHER) when the user has selected a reasonable excuse option but hasn't completed the journey" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -594,7 +595,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
     ))) {
       val request = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {
@@ -958,19 +960,22 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
 
-    "redirect the user to the InternalServerError on failure" in new UserAnswersSetup(userAnswers(Json.obj(
+    "redirect the user to the service unavailable page on unmatched fault" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text"
+      SessionKeys.otherRelevantInformation -> "some text",
+      SessionKeys.isUploadEvidence -> "no"
     ))) {
       PenaltiesStub.failedAppealSubmissionWithFault(isLPP = false, "1234")
-      val request = await(controller.onSubmit()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      val request = controller.onSubmit()(fakeRequest)
+      status(request) shouldBe SEE_OTHER
+      redirectLocation(request).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
     }
 
     "redirect to service unavailable page when downstream returns SERVICE_UNAVAILABLE" in new UserAnswersSetup(userAnswers(Json.obj(
