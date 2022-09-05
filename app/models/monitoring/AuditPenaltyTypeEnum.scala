@@ -18,6 +18,6 @@ package models.monitoring
 
 object AuditPenaltyTypeEnum extends Enumeration {
   val LSP: AuditPenaltyTypeEnum.Value = Value("LSP")
-  val LPP: AuditPenaltyTypeEnum.Value = Value("LPP")
-  val Additional: AuditPenaltyTypeEnum.Value = Value("Additional")
+  val FirstLPP: AuditPenaltyTypeEnum.Value = Value("LPP1")
+  val SecondLPP: AuditPenaltyTypeEnum.Value = Value("LPP2")
 }

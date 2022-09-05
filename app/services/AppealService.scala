@@ -137,12 +137,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         case OK =>
           if (isLPP) {
             if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, correlationId, uploads))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads))
             } else {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, correlationId, uploads))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads))
             }
           } else {
-            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, correlationId, uploads))
+            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads))
           }
           sendAuditIfDuplicatesExist(uploads)
           logger.debug("[AppealService][singleAppeal] - Received OK from the appeal submission call")
@@ -181,12 +181,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         case (OK, OK) =>
           if (isLPP) {
             if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LPP.toString, correlationId, uploads))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads))
             } else {
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.Additional.toString, correlationId, uploads))
+              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads))
             }
           } else {
-            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP.toString, correlationId, uploads))
+            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads))
           }
           sendAuditIfDuplicatesExist(uploads)
           logger.debug("[AppealService][multipleAppeal] - Received OK from the appeal submission call")

@@ -198,30 +198,27 @@ class AppealAuditModelSpec extends SpecBase {
 
     implicit val userRequest: UserRequest[AnyContent] = fakeRequestWithCorrectKeysAndHonestyDeclarationSet
     val correlationId = "someUUID"
-    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LPP", correlationId, None)
-    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), "LPP", correlationId, None)
-    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), "LPP", correlationId, None)
-    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), "LPP", correlationId, None)
-    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), "LPP", correlationId, None)
-    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), "LPP", correlationId, None)
-    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), "LPP", correlationId, None)
-    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), "LPP", correlationId, None)
-    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), "LPP", correlationId, None)
-    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), "LPP", correlationId, Some(seqOfUploads))
-    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), "LPP", correlationId, None)
-    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), "LPP", correlationId, Some(seqOfUploads))
+    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads))
+    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads))
 
-    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), "LPP", correlationId, None)
-    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), "LPP", correlationId, None)
+    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
+    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None)
 
-    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSP", correlationId, None)
-    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSP", correlationId, None)
+    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None)
+    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None)
 
-    val lsppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "LSPP", correlationId, None)
-    val lsppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "LSPP", correlationId, None)
-
-    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), "Additional", correlationId, None)
-    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), "Additional", correlationId, None)
+    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None)
+    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None)
 
     "have the correct auditType" in {
       lppBereavementModel.auditType shouldBe "PenaltyAppealSubmitted"
@@ -236,7 +233,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
@@ -251,7 +248,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "crime",
@@ -267,7 +264,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "fireOrFlood",
@@ -282,7 +279,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "lossOfStaff",
@@ -297,7 +294,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "technicalIssues",
@@ -313,7 +310,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "unexpectedHospitalStay",
@@ -329,7 +326,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "seriousOrLifeThreateningIllHealth",
@@ -342,7 +339,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "unexpectedHospitalStay",
@@ -357,7 +354,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "other",
@@ -373,7 +370,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "appealInformation" -> Json.obj(
           "type" -> "other",
           "startDateOfEvent" -> "2021-04-23T00:00:00",
@@ -408,7 +405,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "obligation",
@@ -423,7 +420,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "appealInformation" -> Json.obj(
           "type" -> "obligation",
           "statement" -> "this is another reason",
@@ -456,7 +453,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "agent",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
@@ -471,7 +468,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "LPP",
+        "penaltyType" -> "LPP1",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
@@ -512,42 +509,12 @@ class AppealAuditModelSpec extends SpecBase {
       )
     }
 
-    "output the correct details for a lspp appeal submission with correlationID" in {
-      lsppBereavementModel.detail shouldBe Json.obj(
-        "submittedBy" -> "client",
-        "taxIdentifier" -> "123456789",
-        "identifierType" -> "VRN",
-        "penaltyType" -> "LSPP",
-        "correlationId" -> "someUUID",
-        "appealInformation" -> Json.obj(
-          "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "lateAppeal" -> false
-        )
-      )
-    }
-
-    "output the correct details for a lspp appeal submission by an agent with correlationID" in {
-      lsppAgentBereavementModel.detail shouldBe Json.obj(
-        "submittedBy" -> "agent",
-        "taxIdentifier" -> "123456789",
-        "identifierType" -> "VRN",
-        "penaltyType" -> "LSPP",
-        "correlationId" -> "someUUID",
-        "appealInformation" -> Json.obj(
-          "type" -> "bereavement",
-          "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "lateAppeal" -> false
-        )
-      )
-    }
-
     "output the correct details for a additional penalty appeal submission with correlationID" in {
       additionalBereavementModel.detail shouldBe Json.obj(
         "submittedBy" -> "client",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "Additional",
+        "penaltyType" -> "LPP2",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
@@ -562,7 +529,7 @@ class AppealAuditModelSpec extends SpecBase {
         "submittedBy" -> "agent",
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
-        "penaltyType" -> "Additional",
+        "penaltyType" -> "LPP2",
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "bereavement",
