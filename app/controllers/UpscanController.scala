@@ -94,8 +94,11 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
             },
             responseModel => {
               logger.debug(s"[UpscanController][initiateCallToUpscan] - Retrieving response model for journey: $journeyId")
-              val uploadJourney = UploadJourney(responseModel.reference, UploadStatusEnum.WAITING,
-                uploadFields = Some(responseModel.uploadRequest.fields))
+              val uploadJourney = UploadJourney(
+                reference = responseModel.reference,
+                fileStatus = UploadStatusEnum.WAITING,
+                uploadFields = Some(responseModel.uploadRequest.fields)
+              )
               repository.updateStateOfFileUpload(journeyId, uploadJourney, isInitiateCall = true).map(
                 _ => {
                   Ok(Json.toJson(responseModel)(UpscanInitiateResponseModel.formats))

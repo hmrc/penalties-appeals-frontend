@@ -109,6 +109,10 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val upscanStatusCheckDelay: Int = config.get[Int]("upscan.statusCheckDelay")
 
+  lazy val upscanCallbackDelayEnabled: Boolean = config.get[Boolean]("upscan.delayCallbackUpdate")
+
+  lazy val upscanCallbackUpdateDelay: Int = config.get[Int]("upscan.callbackUpdateDelay")
+
   lazy val upscanSuccessUrl: String = config.get[String]("upscan.successUrl")
 
   lazy val upscanFailureUrl: String = config.get[String]("upscan.failureUrl")
