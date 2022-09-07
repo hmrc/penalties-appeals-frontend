@@ -17,7 +17,7 @@
 @this(layout: Layout,
 bullets: components.bullets,
 formHelper: FormWithCSRF,
-govukButton: GovukButton,
+button: components.button,
 radios: components.radios)
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -34,6 +34,6 @@ radios: components.radios)
             hint = Some(Html(messages("cancelVATRegistration.hintText"))),
             items = radioOptions
         )
-    @govukButton(Button(content = Text(messages("common.continue"))))
+    @button("common.continue")
     }
 }

@@ -17,7 +17,7 @@
 @this(layout: Layout,
         bullets: components.bullets,
         formHelper: FormWithCSRF,
-        govukButton: GovukButton,
+        button: components.button,
         radios: components.radios,
         pageHeader: components.pageHeader)
 
@@ -46,6 +46,6 @@
             items = radioOptions,
             showPenaltyInformation = false
         )
-        @govukButton(Button(content = Text(messages("common.continue"))))
+        @button("common.continue")
     }
 }

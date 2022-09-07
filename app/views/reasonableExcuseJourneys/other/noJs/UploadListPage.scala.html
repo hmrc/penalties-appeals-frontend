@@ -19,7 +19,7 @@
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
-        govukButton: GovukButton,
+        button: components.button,
         p: components.p,
         radios: components.radios,
         govukSummaryList : GovukSummaryList,
@@ -57,6 +57,6 @@
                 showPenaltyInformation = false
             )
         }
-        @govukButton(Button(content = Text(messages("common.continue"))))
+        @button("common.continue")
     }
 }

@@ -22,7 +22,7 @@
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
-        govukButton: GovukButton,
+        button: components.button,
         pageHeader: components.pageHeader)
 
 @(postAction: Call)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -33,6 +33,6 @@
     @pageHeader(messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle"))
 
     @formHelper(action = postAction) {
-        @govukButton(Button(content = Text(messages("otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain"))))
+        @button("otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain")otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain"))))
     }
 }

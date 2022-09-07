@@ -20,7 +20,7 @@
 @this(layout: Layout,
         bullets: components.bullets,
         formHelper: FormWithCSRF,
-        govukButton: GovukButton,
+        button: components.button,
         radios: components.radios,
         link: components.link
 )
@@ -42,7 +42,7 @@
             items = radioOptions
         )
 
-        @govukButton(Button(content = Text(messages("common.continue"))))
+        @button("common.continue")
     }
 
 
