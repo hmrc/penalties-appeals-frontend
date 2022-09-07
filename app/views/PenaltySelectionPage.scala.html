@@ -21,7 +21,7 @@
         layout: Layout,
         bullets: components.bullets,
         formHelper: FormWithCSRF,
-        govukButton: GovukButton,
+        button: components.button,
         radios: components.radios,
         pageHeader: components.pageHeader
 )
@@ -54,6 +54,6 @@
       showPenaltyInformation = false,
       legendClasses = "govuk-fieldset__legend govuk-fieldset__legend--m"
     )
-    @govukButton(Button(content = Text(messages("common.continue"))))
+    @button("common.continue")
   }
 }

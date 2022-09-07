@@ -20,7 +20,7 @@
 
 @this(layout: Layout,
         link: components.link,
-        govukButton: GovukButton,
+        button: components.button,
         characterCount: components.characterCount,
         formHelper: FormWithCSRF)
 
@@ -40,6 +40,6 @@
             maxLength = Some(5000)
         )
 
-        @govukButton(Button(content = Text(messages("common.continue"))))
+        @button("common.continue")
     }
 }

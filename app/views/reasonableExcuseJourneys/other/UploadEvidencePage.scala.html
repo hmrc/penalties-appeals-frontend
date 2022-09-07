@@ -22,7 +22,7 @@
 @this(layout: Layout,
         formHelper: FormWithCSRF,
         govukFileUpload: GovukFileUpload,
-        govukButton: GovukButton,
+        button: components.button,
         details: components.details,
         p: components.p,
         bullets: components.bullets,
@@ -111,7 +111,7 @@
             <script type="text/x-template" id="error-manager-message-tpl">@errorManager.message(messages)</script>
 
             <p>
-                @govukButton(Button(content = Text(messages("common.continue"))))
+                @button("common.continue")
             </p>
         }
 }

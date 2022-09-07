@@ -19,7 +19,7 @@
 
 @this(layout: Layout,
         link: components.link,
-        govukButton: GovukButton,
+        button: components.button,
         formHelper: FormWithCSRF,
         pageHeader: components.pageHeader)
 
@@ -101,6 +101,6 @@
     </ul>
 
     @formHelper(action = controllers.routes.HonestyDeclarationController.onSubmit()) {
-        @govukButton(Button(content = Text(messages("common.acceptAndContinue"))))
+        @button("common.acceptAndContinue")
     }
 }
