@@ -23,6 +23,7 @@ import org.scalatest.concurrent.Eventually.eventually
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
+import services.upscan.UpscanService
 import uk.gov.hmrc.mongo.cache.DataKey
 
 import java.time.LocalDateTime
@@ -30,7 +31,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class UpscanCallbackControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
-  val controller: UpscanCallbackController = new UpscanCallbackController(repository)(stubMessagesControllerComponents())
+  val service: UpscanService = injector.instanceOf[UpscanService]
+  val controller: UpscanCallbackController = new UpscanCallbackController(repository, service)(stubMessagesControllerComponents())
 
   class Setup {
     await(repository.collection.deleteMany(Document()).toFuture())

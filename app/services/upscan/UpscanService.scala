@@ -108,6 +108,16 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
     }
   }
 
+  def scheduleCallbackOperation(block: => Future[Result])(implicit ec: ExecutionContext): Future[Result] = {
+    if(appConfig.upscanCallbackDelayEnabled) {
+      after(duration = FiniteDuration(appConfig.upscanCallbackUpdateDelay, "ms"), using = scheduler.scheduler)(
+        block
+      )
+    } else {
+      block
+    }
+  }
+
   def removeFileFromJourney(journeyId: String, fileReference: String): Future[Unit] = {
     uploadJourneyRepository.removeFileForJourney(journeyId, fileReference)
   }

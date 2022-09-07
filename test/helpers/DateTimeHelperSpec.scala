@@ -32,11 +32,4 @@ class DateTimeHelperSpec extends SpecBase with FeatureSwitching {
       dateTimeHelper.dateNow shouldBe getFeatureDate
     }
   }
-
-  "dateTimeNow" should {
-    lazy val dateTimeNow: LocalDateTime = LocalDateTime.now()
-    "return the current date time of now" in {
-      dateTimeHelper.dateTimeNow shouldBe dateTimeNow
-    }
-  }
 }
