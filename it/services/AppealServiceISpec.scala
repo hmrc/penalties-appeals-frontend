@@ -20,6 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{PenaltyTypeEnum, UserRequest}
+import org.scalatest.concurrent.Eventually.eventually
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -41,24 +42,6 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
   val correlationId: String = "correlationId"
 
   "submitAppeal" should {
-    "return true when the connector call succeeds for crime" in  {
-      successfulAppealSubmission(isLPP = false, "1234")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "crime",
-        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
-      )))(fakeRequest)
-      val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-      result shouldBe Right((): Unit)
-    }
 
     "return true when the connector call succeeds for loss of staff" in  {
       successfulAppealSubmission(isLPP = false, "1234")
@@ -74,7 +57,30 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("lossOfStaff")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      eventually {
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      }
+      result shouldBe Right((): Unit)
+    }
+
+    "return true when the connector call succeeds for crime" in {
+      successfulAppealSubmission(isLPP = false, "1234")
+      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+      )))(fakeRequest)
+      val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+      eventually {
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      }
       result shouldBe Right((): Unit)
     }
 
@@ -93,7 +99,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("technicalIssues")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      eventually {
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      }
       result shouldBe Right((): Unit)
     }
 
@@ -111,7 +119,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("fireOrFlood")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      eventually {
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      }
       result shouldBe Right((): Unit)
     }
 
@@ -129,7 +139,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("bereavement")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      eventually {
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      }
       result shouldBe Right((): Unit)
     }
 
@@ -148,7 +160,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("other")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      eventually {
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      }
       result shouldBe Right((): Unit)
     }
 
@@ -253,7 +267,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenHealthIssueHappened -> LocalDate.parse("2022-01-01")
         )))(fakeRequest)
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        eventually {
+          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        }
         result shouldBe Right((): Unit)
       }
 
@@ -273,7 +289,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
         )))(fakeRequest)
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        eventually {
+          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        }
         result shouldBe Right((): Unit)
       }
 
@@ -294,7 +312,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-02")
         )))(fakeRequest)
         val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        eventually {
+          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        }
         result shouldBe Right((): Unit)
       }
 
@@ -313,7 +333,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
           SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
         )))(fakeRequest)
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        eventually {
+          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        }
         result shouldBe Right((): Unit)
       }
     }
@@ -337,7 +359,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         SessionKeys.secondPenaltyChargeReference -> "5678"
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      eventually {
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+      }
       result shouldBe Right((): Unit)
     }
 
