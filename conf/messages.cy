@@ -10,7 +10,7 @@ common.acceptAndSend = Derbyn ac anfon
 common.radioOption.yes = Iawn
 common.radioOption.no = Na
 common.radioOption.unknown = Nid wyf yn gwybod
-common.penaltyYouAreAppealing = The penalty you are appealing is
+common.penaltyYouAreAppealing = Y gosb yr ydych yn apelio yn ei herbyn yw
 common.penaltiesYouAreAppealing = The penalties you are appealing are
 
 app.common.back = Yn ôl
@@ -126,17 +126,17 @@ whenDidBecomeUnable.error.invalid.lsp = The date the issue first stopped you sub
 
 agent.whenDidBecomeUnable.headingAndTitle.clientMissedDeadline = Pryd wnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf?
 agent.whenDidBecomeUnable.error.required.all.clientMissedDeadline = Rhowch wybod i ni pryd y gwnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf
-agent.whenDidBecomeUnable.error.notInFuture.clientMissedDeadline = The date when the issue first stopped your client getting information to you must be today or in the past
-agent.whenDidBecomeUnable.error.required.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a {0}
-agent.whenDidBecomeUnable.error.required.two.clientMissedDeadline = The date when the issue first stopped your client getting information to you must include a {0} and a {1}
-agent.whenDidBecomeUnable.error.invalid.clientMissedDeadline = The date when the issue first stopped your client getting information to you must be a real date
+agent.whenDidBecomeUnable.error.notInFuture.clientMissedDeadline = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch fod heddiw neu yn y gorffennol
+agent.whenDidBecomeUnable.error.required.clientMissedDeadline = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch gynnwys {0}
+agent.whenDidBecomeUnable.error.required.two.clientMissedDeadline = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch gynnwys {0} a {1}
+agent.whenDidBecomeUnable.error.invalid.clientMissedDeadline = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch fod yn ddyddiad go iawn
 
 agent.whenDidBecomeUnable.headingAndTitle.clientIntendedToSubmit = Pryd wnaeth y mater atal eich cleient rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.error.required.all.clientIntendedToSubmit = Rhowch wybod i ni pryd y gwnaeth y mater atal eich cleient rhag cyflwyno’r Ffurflen TAW am y tro cyntaf
-agent.whenDidBecomeUnable.error.notInFuture.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must be today or in the past
-agent.whenDidBecomeUnable.error.required.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a {0}
-agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must include a {0} and a {1}
-agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit = The date when the issue first stopped your client submitting the VAT Return must be a real date
+agent.whenDidBecomeUnable.error.notInFuture.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod heddiw neu yn y gorffennol
+agent.whenDidBecomeUnable.error.required.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW gynnwys {0}
+agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW gynnwys {0} a {1}
+agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod yn ddyddiad go iawn
 
 whenDidBecomeUnable.headingAndTitle.lpp = Pryd wnaeth y mater eich atal rhag talu’r bil TAW am y tro cyntaf?
 whenDidBecomeUnable.error.required.all.lpp = Tell us when the issue first stopped you paying the VAT bill
@@ -147,10 +147,10 @@ whenDidBecomeUnable.error.invalid.lpp = The date the issue first stopped you pay
 
 agent.whenDidBecomeUnable.headingAndTitle.lpp = Pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.error.required.all.lpp = Rhowch wybod i ni pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf
-agent.whenDidBecomeUnable.error.notInFuture.lpp = The date when the issue first stopped your client paying the VAT bill must be today or in the past
-agent.whenDidBecomeUnable.error.required.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0}
-agent.whenDidBecomeUnable.error.required.two.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0} and a {1}
-agent.whenDidBecomeUnable.error.invalid.lpp = The date when the issue first stopped your client paying the VAT bill must be a real date
+agent.whenDidBecomeUnable.error.notInFuture.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW fod heddiw neu yn y gorffennol
+agent.whenDidBecomeUnable.error.required.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW gynnwys {0}
+agent.whenDidBecomeUnable.error.required.two.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW gynnwys {0} a {1}
+agent.whenDidBecomeUnable.error.invalid.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW fod yn ddyddiad go iawn
 
 whenDidEventHappen.hint = Er enghraifft, 12 3 2018
 
@@ -224,38 +224,38 @@ agent.healthReason.wasHospitalStayRequired.error.required = Rhowch wybod i ni a 
 # ----------------------------------------------------------
 health.whenHealthIssueHappened.headingAndTitle.lsp = Pryd wnaeth y broblem iechyd eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
 health.whenHealthIssueHappened.error.required.all.lsp = Rhowch wybod i ni pryd y gwnaeth y broblem iechyd eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf
-health.whenHealthIssueHappened.error.notInFuture.lsp = The date the health issue first stopped you submitting the VAT Return must be today or in the past
-health.whenHealthIssueHappened.error.required.lsp = The date the health issue first stopped you submitting the VAT Return must include a {0}
-health.whenHealthIssueHappened.error.required.two.lsp = The date the health issue first stopped you submitting the VAT Return must include a {0} and a {1}
-health.whenHealthIssueHappened.error.invalid.lsp = The date the health issue first stopped you submitting the VAT Return must be a real date
+health.whenHealthIssueHappened.error.notInFuture.lsp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd eich rhwystro am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod heddiw neu yn y gorffennol
+health.whenHealthIssueHappened.error.required.lsp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd eich rhwystro am y tro cyntaf rhag cyflwyno’r Ffurflen TAW gynnwys {0}
+health.whenHealthIssueHappened.error.required.two.lsp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd eich rhwystro am y tro cyntaf rhag cyflwyno’r Ffurflen TAW gynnwys {0} a {1}
+health.whenHealthIssueHappened.error.invalid.lsp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd eich rhwystro am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod yn ddyddiad go iawn
 
-agent.health.whenHealthIssueHappened.headingAndTitle.clientMissedDeadline = When did the health issue first stop your client getting information to you?
-agent.health.whenHealthIssueHappened.error.required.all.clientMissedDeadline = Tell us the date the health issue first stopped your client getting information to you
-agent.health.whenHealthIssueHappened.error.notInFuture.clientMissedDeadline = The date the health issue first stopped your client getting information to you must be today or in the past
-agent.health.whenHealthIssueHappened.error.required.clientMissedDeadline = The date the health issue first stopped your client getting information to you must include a {0}
-agent.health.whenHealthIssueHappened.error.required.two.clientMissedDeadline = The date the health issue first stopped your client getting information to you must include a {0} and a {1}
-agent.health.whenHealthIssueHappened.error.invalid.clientMissedDeadline = The date the health issue first stopped your client getting information to you must be a real date
+agent.health.whenHealthIssueHappened.headingAndTitle.clientMissedDeadline = Pryd gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch?
+agent.health.whenHealthIssueHappened.error.required.all.clientMissedDeadline = Rhowch wybod i ni beth yw’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch
+agent.health.whenHealthIssueHappened.error.notInFuture.clientMissedDeadline = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch fod heddiw neu yn y gorffennol
+agent.health.whenHealthIssueHappened.error.required.clientMissedDeadline = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch gynnwys {0}
+agent.health.whenHealthIssueHappened.error.required.two.clientMissedDeadline = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch gynnwys {0} a {1}
+agent.health.whenHealthIssueHappened.error.invalid.clientMissedDeadline = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag anfon gwybodaeth atoch fod yn ddyddiad go iawn
 
-agent.health.whenHealthIssueHappened.headingAndTitle.clientIntendedToSubmit = When did the health issue first stop your client submitting the VAT Return?
-agent.health.whenHealthIssueHappened.error.required.all.clientIntendedToSubmit = Tell us the date the health issue first stopped your client submitting the VAT Return
-agent.health.whenHealthIssueHappened.error.notInFuture.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must be today or in the past
-agent.health.whenHealthIssueHappened.error.required.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must include a {0}
-agent.health.whenHealthIssueHappened.error.required.two.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must include a {0} and a {1}
-agent.health.whenHealthIssueHappened.error.invalid.clientIntendedToSubmit = The date the health issue first stopped your client submitting the VAT Return must be a real date
+agent.health.whenHealthIssueHappened.headingAndTitle.clientIntendedToSubmit = Pryd gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW?
+agent.health.whenHealthIssueHappened.error.required.all.clientIntendedToSubmit = Rhowch wybod i ni beth yw’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW
+agent.health.whenHealthIssueHappened.error.notInFuture.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod heddiw neu yn y gorffennol
+agent.health.whenHealthIssueHappened.error.required.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW gynnwys {0}
+agent.health.whenHealthIssueHappened.error.required.two.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW gynnwys {0} a {1}
+agent.health.whenHealthIssueHappened.error.invalid.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod yn ddyddiad go iawn
 
 health.whenHealthIssueHappened.headingAndTitle.lpp = Pryd wnaeth y broblem iechyd eich atal rhag talu’r bil TAW am y tro cyntaf?
 health.whenHealthIssueHappened.error.required.all.lpp = Rhowch wybod i ni pryd y gwnaeth y broblem iechyd eich atal rhag talu’r bil TAW am y tro cyntaf
-health.whenHealthIssueHappened.error.notInFuture.lpp = The date the health issue first stopped you paying the VAT bill must be today or in the past
-health.whenHealthIssueHappened.error.required.lpp = The date the health issue first stopped you paying the VAT bill must include a {0}
-health.whenHealthIssueHappened.error.required.two.lpp = The date the health issue first stopped you paying the VAT bill must include a {0} and a {1}
-health.whenHealthIssueHappened.error.invalid.lpp = The date the health issue first stopped you paying the VAT bill must be a real date
+health.whenHealthIssueHappened.error.notInFuture.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd eich rhwystro am y tro cyntaf rhag talu’r bil TAW fod heddiw neu yn y gorffennol
+health.whenHealthIssueHappened.error.required.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd eich rhwystro am y tro cyntaf rhag talu’r bil TAW gynnwys {0}
+health.whenHealthIssueHappened.error.required.two.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd eich rhwystro am y tro cyntaf rhag talu’r bil TAW gynnwys {0} a {1}
+health.whenHealthIssueHappened.error.invalid.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd eich rhwystro am y tro cyntaf rhag talu’r bil TAW fod yn ddyddiad go iawn
 
 agent.health.whenHealthIssueHappened.headingAndTitle.lpp = Pryd rwystrodd y broblem iechyd eich cleient rhag talu’r bil TAW am y tro cyntaf?
 agent.health.whenHealthIssueHappened.error.required.all.lpp = Rhowch wybod i ni am ddyddiad y rhwystrodd y broblem iechyd eich cleient rhag talu’r bil TAW am y tro cyntaf
-agent.health.whenHealthIssueHappened.error.notInFuture.lpp = The date the health issue first stopped your client paying the VAT bill must be today or in the past
-agent.health.whenHealthIssueHappened.error.required.lpp = The date the health issue first stopped your client paying the VAT bill must include a {0}
-agent.health.whenHealthIssueHappened.error.required.two.lpp = The date the health issue first stopped your client paying the VAT bill must include a {0} and a {1}
-agent.health.whenHealthIssueHappened.error.invalid.lpp = The date the health issue first stopped your client paying the VAT bill must be a real date
+agent.health.whenHealthIssueHappened.error.notInFuture.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW fod heddiw neu yn y gorffennol
+agent.health.whenHealthIssueHappened.error.required.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW gynnwys {0}
+agent.health.whenHealthIssueHappened.error.required.two.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW gynnwys {0} a {1}
+agent.health.whenHealthIssueHappened.error.invalid.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem iechyd rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW fod yn ddyddiad go iawn
 
 # When did the hospital stay begin page
 # ----------------------------------------------------------
@@ -433,8 +433,8 @@ agent.appealConfirmation.headingAndTitle.penalty = You have asked us to review y
 appealConfirmation.headingAndTitle.penalties = You have asked us to review your penalties
 agent.appealConfirmation.headingAndTitle.penalties = You have asked us to review your client’s penalties
 appealConfirmation.typeAndPeriod = {0}: {1} i {2}
-appealConfirmation.p1 = You do not need a reference number.
-appealConfirmation.p2 = We have logged this appeal under the VAT registration number (VRN) for the business. Quote the VRN if you need to call HMRC about this appeal.
+appealConfirmation.p1 = Does dim angen cyfeirnod arnoch.
+appealConfirmation.p2 = Rydym wedi cofnodi’r apêl hon o dan rif cofrestru TAW (VRN) y busnes. Nodwch y VRN os oes angen i chi ffonio CThEM ynghylch yr apêl hon.
 appealConfirmation.whatHappensNext = Yr hyn sy’n digwydd nesaf
 appealConfirmation.whatHappensNext.p1 = Byddwn yn gwneud penderfyniad am eich apêl yn seiliedig ar yr hyn rydych wedi’i roi gwybod i ni amdano.
 appealConfirmation.whatHappensNext.obligation.p = Bydd ein penderfyniad yn ystyried pob cosb am gyflwyno neu dalu’n hwyr yn yr un cyfnod TAW. Nid oes angen i chi apelio yn erbyn y cosbau hyn ar wahân.
