@@ -119,10 +119,10 @@ site.opensInNewTab = (yn agor tab newydd)
 # ----------------------------------------------------------
 whenDidBecomeUnable.headingAndTitle.lsp = Pryd wnaeth y mater eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf?
 whenDidBecomeUnable.error.required.all.lsp = Rhowch wybod i ni pryd y gwnaeth y mater eich atal rhag cyflwyno’r Ffurflen TAW am y tro cyntaf
-whenDidBecomeUnable.error.notInFuture.lsp = The date the issue first stopped you submitting the VAT Return must be today or in the past
-whenDidBecomeUnable.error.required.lsp = The date the issue first stopped you submitting the VAT Return must include a {0}
-whenDidBecomeUnable.error.required.two.lsp = The date the issue first stopped you submitting the VAT Return must include a {0} and a {1}
-whenDidBecomeUnable.error.invalid.lsp = The date the issue first stopped you submitting the VAT Return must be a real date
+whenDidBecomeUnable.error.notInFuture.lsp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem eich rhwystro am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod heddiw neu yn y gorffennol
+whenDidBecomeUnable.error.required.lsp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem eich rhwystro am y tro cyntaf rhag cyflwyno’r Ffurflen TAW gynnwys {0}
+whenDidBecomeUnable.error.required.two.lsp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem eich rhwystro am y tro cyntaf rhag cyflwyno’r Ffurflen TAW gynnwys {0} a {1}
+whenDidBecomeUnable.error.invalid.lsp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem eich rhwystro am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod yn ddyddiad go iawn
 
 agent.whenDidBecomeUnable.headingAndTitle.clientMissedDeadline = Pryd wnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf?
 agent.whenDidBecomeUnable.error.required.all.clientMissedDeadline = Rhowch wybod i ni pryd y gwnaeth y mater atal eich cleient rhag rhoi’r wybodaeth i chi am y tro cyntaf
@@ -139,11 +139,11 @@ agent.whenDidBecomeUnable.error.required.two.clientIntendedToSubmit = Mae’n rh
 agent.whenDidBecomeUnable.error.invalid.clientIntendedToSubmit = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag cyflwyno’r Ffurflen TAW fod yn ddyddiad go iawn
 
 whenDidBecomeUnable.headingAndTitle.lpp = Pryd wnaeth y mater eich atal rhag talu’r bil TAW am y tro cyntaf?
-whenDidBecomeUnable.error.required.all.lpp = Tell us when the issue first stopped you paying the VAT bill
-whenDidBecomeUnable.error.notInFuture.lpp = The date the issue first stopped you paying the VAT bill must be today or in the past
-whenDidBecomeUnable.error.required.lpp = The date the issue first stopped you paying the VAT bill must include a {0}
-whenDidBecomeUnable.error.required.two.lpp = The date the issue first stopped you paying the VAT bill must include a {0} and a {1}
-whenDidBecomeUnable.error.invalid.lpp = The date the issue first stopped you paying the VAT bill must be a real date
+whenDidBecomeUnable.error.required.all.lpp = Rhowch wybod i ni pryd gwnaeth y broblem eich rhwystro am y tro cyntaf rhag talu’r bil TAW
+whenDidBecomeUnable.error.notInFuture.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem eich rhwystro am y tro cyntaf rhag talu’r bil TAW fod heddiw neu yn y gorffennol
+whenDidBecomeUnable.error.required.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem eich rhwystro am y tro cyntaf rhag talu’r bil TAW gynnwys {0}
+whenDidBecomeUnable.error.required.two.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem eich rhwystro am y tro cyntaf rhag talu’r bil TAW gynnwys {0} a {1}
+whenDidBecomeUnable.error.invalid.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem eich rhwystro am y tro cyntaf rhag talu’r bil TAW fod yn ddyddiad go iawn
 
 agent.whenDidBecomeUnable.headingAndTitle.lpp = Pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.error.required.all.lpp = Rhowch wybod i ni pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf
@@ -353,13 +353,13 @@ otherReason.uploadAnotherDocument.noJs.button.cancel = Canslo
 
 # Upscan failure messages
 # ----------------------------------------------------------
-upscan.invalidMimeType = File {0} must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
-upscan.fileTooLarge = File {0} must be smaller than 6MB. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.fileEmpty = File {0} is empty. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.fileHasVirus = File {0} contains a virus. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.unableToUpload = File {0} could not be uploaded. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
-upscan.fileUploaded = {0} {1} has been uploaded
-upscan.fileUploading = Uploading {0}
+upscan.invalidMimeType = Mae’n rhaid i ffeil {0} fod yn ffeil JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.fileTooLarge = Rhaid i ffeil {0} fod yn llai na 6MB. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileEmpty = Mae ffeil {0} yn wag. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileHasVirus = Mae ffeil {0} yn cynnwys feirws. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.unableToUpload = Nid oedd modd uwchlwytho ffeil {0}. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
+upscan.fileUploaded = Uwchlwythwyd {0} {1}
+upscan.fileUploading = Wrthi’n uwchlwytho {0}
 upscan.fileRemoved = Remove {0} {1}
 upscan.fileNotSpecified = Dewiswch ffeil.
 
@@ -533,7 +533,7 @@ month.12 = Rhagfyr
 # Remove file page
 # -----------------------------------------------------------
 otherReason.uploadEvidence.removeFile.headingAndTitle = A ydych yn siŵr eich bod am dynnu ffeil {0}?
-otherReason.uploadEvidence.removeFile.error.required = Select yes if you want to remove this file
+otherReason.uploadEvidence.removeFile.error.required = Dewiswch ‘Iawn’ os ydych am dynnu’r ffeil hon
 
 # You Cannot Appeal page
 # -----------------------------------------------------------
@@ -563,7 +563,7 @@ penaltySelection.p1 = Y rhain yw:
 agent.penaltySelection.p2 = Gallwch wneud apêl gyfunol os yw’r rheswm pam na wnaeth eich cleient dalu’r TAW mewn pryd yr un peth ar gyfer y ddwy gosb.
 penaltySelection.p2 = Gallwch wneud apêl gyfunol os yw’r rheswm pam na wnaethoch dalu’r TAW mewn pryd yr un peth ar gyfer y ddwy gosb.
 penaltySelection.form.heading = A ydych yn bwriadu apelio yn erbyn y ddwy gosb am yr un rheswm?
-penaltySelection.error.required = Tell us if you intend to appeal both penalties for the same reason
+penaltySelection.error.required = Rhowch wybod i ni a ydych yn bwriadu apelio yn erbyn y ddwy gosb am yr un rheswm
 penaltySelection.lpp1 = *cosb gyntaf o £{0} am dalu’n hwyr
 penaltySelection.lpp2 = *ail gosb o £{0} am dalu’n hwyr
 
