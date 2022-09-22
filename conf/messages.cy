@@ -44,7 +44,7 @@ appealStart.obligation.li.2.1 = manylion am unrhyw ohebiaeth â CThEM am ganslo�
 appealStart.li.2.2 = y dyddiadau y mae eich rheswm yn ymwneud â hwy
 appealStart.obligation.li.2.2 = unrhyw wybodaeth ychwanegol i gefnogi’ch apêl (dewisol)
 appealStart.li.2.3 = manylion am y rheswm nad oeddech wedi apelio’n gynt
-appealStart.p5 = In some cases, we’ll ask if you want to upload evidence to support the appeal.
+appealStart.p5 = Mewn rhai achosion, byddwn yn gofyn a ydych eisiau uwchlwytho tystiolaeth er mwyn ategu’r apêl
 appealStart.p6 = Dim ond yr wybodaeth yr ydym wedi gofyn amdani sydd angen arnom. Nid oes angen i chi roi manylion ychwanegol oni bai ein bod yn gofyn amdanynt.
 
 
@@ -57,7 +57,7 @@ penaltyInformation.headerText = {0}: {1} i {2}
 # ----------------------------------------------------------
 penaltyType.lateSubmission = Cosb am gyflwyno’n hwyr
 penaltyType.latePayment = Cosb am dalu’n hwyr
-penaltyType.latePayment.multiple = Late payment penalties
+penaltyType.latePayment.multiple = Cosbau am dalu’n hwyr
 
 # Reasonable excuse
 # ----------------------------------------------------------
@@ -110,7 +110,7 @@ agent.honestyDeclaration.technicalIssues = effeithiwyd ar fy nghleient gan brobl
 honestyDeclaration.lossOfStaff = colli staff sy’n hanfodol i’r broses TAW
 agent.honestyDeclaration.lossOfStaff = effeithiwyd ar fy nghleient gan golli staff hanfodol i’r broses TAW
 honestyDeclaration.other =
-agent.honestyDeclaration.other = of an issue affecting my client
+agent.honestyDeclaration.other = problem a oedd yn effeithio ar fy nghleient
 
 
 site.opensInNewTab = (yn agor tab newydd)
@@ -481,7 +481,7 @@ youCanAppealThisPenalty.error.required = Dewiswch iawn os hoffech apelio yn erby
 
 # Error message for characters more than 5000 in text area
 # ----------------------------------------------------------
-explainReason.charsInTextArea.error = Esboniwch y rheswm gan ddefnyddio 5,000 o gymeriadau neu lai
+explainReason.charsInTextArea.error = Esboniwch y rheswm gan ddefnyddio 5,000 o gymeriadau neu lai
 
 # Service Unavailable Page
 # ----------------------------------------------------------
@@ -532,24 +532,24 @@ month.12 = Rhagfyr
 
 # Remove file page
 # -----------------------------------------------------------
-otherReason.uploadEvidence.removeFile.headingAndTitle = Are you sure you want to remove file {0}?
+otherReason.uploadEvidence.removeFile.headingAndTitle = A ydych yn siŵr eich bod am dynnu ffeil {0}?
 otherReason.uploadEvidence.removeFile.error.required = Select yes if you want to remove this file
 
 # You Cannot Appeal page
 # -----------------------------------------------------------
-youCannotAppeal.headingAndTitle.lpp = You cannot use this service until you pay your VAT
-agent.youCannotAppeal.headingAndTitle.lpp = You cannot use this service until your client pays the VAT
-youCannotAppeal.headingAndTitle.lsp = You cannot use this service until you submit your VAT Return
-agent.youCannotAppeal.headingAndTitle.lsp = You cannot use this service until the VAT Return is submitted
+youCannotAppeal.headingAndTitle.lpp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes eich bod wedi talu’ch TAW
+agent.youCannotAppeal.headingAndTitle.lpp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes bod eich cleient wedi talu’r TAW
+youCannotAppeal.headingAndTitle.lsp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes eich bod yn cyflwyno’ch Ffurflen TAW
+agent.youCannotAppeal.headingAndTitle.lsp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes bod y Ffurflen TAW wedi’i chyflwyno
 youCannotAppeal.p1 = You can still write to HMRC and ask us to review the penalty. Details are on the penalty notice we sent you through the post.
-youCannotAppeal.p2.lpp = If you want to use this service to appeal, you need to pay your VAT first.
-agent.youCannotAppeal.p2.lpp = If you want to use this service to appeal, your client needs to pay their VAT first.
+youCannotAppeal.p2.lpp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i chi dalu’ch TAW yn gyntaf.
+agent.youCannotAppeal.p2.lpp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i’ch cleient dalu ei TAW yn gyntaf.
 youCannotAppeal.p2.lsp = If you want to use this service to appeal, you need to submit your VAT Return first.
-agent.youCannotAppeal.p2.lsp = If you want to use this service to appeal, you or your client need to submit the VAT Return first.
-youCannotAppeal.p3.lpp = It can take up to 5 days for the payment to clear and show on your payment history. If you‘ve already paid, keep checking back to see when the payment clears.
-agent.youCannotAppeal.p3.lpp = It can take up to 5 days for the payment to clear and show on their payment history. If they‘ve already paid, keep checking back to see when the payment clears.
-youCannotAppeal.p3.lsp = It can take up to 24 hours before the VAT Return shows on the VAT account. If you‘ve already submitted it, keep checking back to see when it appears in your submission history.
-agent.youCannotAppeal.p3.lsp = It can take up to 24 hours before the VAT Return shows on the VAT account. If it‘s already been submitted it, keep checking back to see when it appears in the submission history.
+agent.youCannotAppeal.p2.lsp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i chi neu’ch cleient gyflwyno’r Ffurflen TAW yn gyntaf.
+youCannotAppeal.p3.lpp = Gall gymryd hyd at 5 diwrnod i’r taliad glirio ac ymddangos ar eich hanes taliadau. Os ydych eisoes wedi talu, cadwch lygad ar yr hanes taliadau i weld pryd y mae’r taliad yn clirio.
+agent.youCannotAppeal.p3.lpp = Gall gymryd hyd at 5 diwrnod i’r taliad glirio ac ymddangos ar ei hanes taliadau. Os yw eisoes wedi talu, cadwch lygad ar yr hanes taliadau i weld pryd y mae’r taliad yn clirio.
+youCannotAppeal.p3.lsp = Gall gymryd hyd at 24 awr cyn i’r Ffurflen TAW ymddangos ar eich cyfrif TAW. Os ydych eisoes wedi’i chyflwyno, cadwch lygad ar eich cyfrif i weld pryd y mae’n ymddangos yn eich hanes cyflwyno.
+agent.youCannotAppeal.p3.lsp = Gall gymryd hyd at 24 awr cyn i’r Ffurflen TAW ymddangos ar y cyfrif TAW. Os yw eisoes wedi’i chyflwyno, cadwch lygad ar y cyfrif i weld pryd y mae’n ymddangos yn yr hanes cyflwyno.
 youCannotAppeal.p4 = If you need to cancel the VAT registration, you can do it through your VAT account.
 agent.youCannotAppeal.p4 = If you need to cancel the VAT registration, you can do it through your client‘s VAT details.
 youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
@@ -558,25 +558,25 @@ agent.youCannotAppeal.returnToVATAccount = Return to your client‘s VAT details
 
 # Multiple penalties for this period page
 # -----------------------------------------------------------
-penaltySelection.headingAndTitle = There are 2 penalties for this VAT charge
-penaltySelection.p1 = These are:
-agent.penaltySelection.p2 = You can do a combined appeal if the reason your client did not pay VAT on time is the same for both penalties.
-penaltySelection.p2 = You can do a combined appeal if the reason you did not pay VAT on time is the same for both penalties.
-penaltySelection.form.heading = Do you intend to appeal both penalties for the same reason?
+penaltySelection.headingAndTitle = Mae dwy gosb ar gyfer y tâl TAW hwn
+penaltySelection.p1 = Y rhain yw:
+agent.penaltySelection.p2 = Gallwch wneud apêl gyfunol os yw’r rheswm pam na wnaeth eich cleient dalu’r TAW mewn pryd yr un peth ar gyfer y ddwy gosb.
+penaltySelection.p2 = Gallwch wneud apêl gyfunol os yw’r rheswm pam na wnaethoch dalu’r TAW mewn pryd yr un peth ar gyfer y ddwy gosb.
+penaltySelection.form.heading = A ydych yn bwriadu apelio yn erbyn y ddwy gosb am yr un rheswm?
 penaltySelection.error.required = Tell us if you intend to appeal both penalties for the same reason
-penaltySelection.lpp1 = £{0} first late payment penalty
-penaltySelection.lpp2 = £{0} second late payment penalty
+penaltySelection.lpp1 = *cosb gyntaf o £{0} am dalu’n hwyr
+penaltySelection.lpp2 = *ail gosb o £{0} am dalu’n hwyr
 
 # Appeal single penalty page
 # -----------------------------------------------------------
-appealSinglePenalty.headingAndTitle = The appeal will cover a single penalty
-appealSinglePenalty.p1 = You have chosen to appeal the {0}.
-appealSinglePenalty.p2 = You can still appeal other penalties separately.
+appealSinglePenalty.headingAndTitle = Bydd yr apêl yn delio â chosb unigol
+appealSinglePenalty.p1 = Rydych wedi dewis apelio yn erbyn {0}.
+appealSinglePenalty.p2 = Gallwch ddal i apelio yn erbyn cosbau eraill ar wahân.
 
 # Appeal Cover Both Penalties page
 # -----------------------------------------------------------
-appealCoverBothPenalties.headingAndTitle = The appeal will cover both penalties
-appealCoverBothPenalties.p1 = This allows you to enter appeal details once for penalties linked to the same charge. However, we will still review each penalty separately.
+appealCoverBothPenalties.headingAndTitle = Bydd yr apêl yn delio â’r ddwy gosb
+appealCoverBothPenalties.p1 = Mae hyn yn eich galluogi i nodi manylion apêl unwaith ar gyfer cosbau sy’n gysylltiedig â’r un tâl. Fodd bynnag, byddwn yn dal i adolygu pob cosb ar wahân.
 
 # Incomplete session data page
 # -----------------------------------------------------------
