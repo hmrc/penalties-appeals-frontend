@@ -73,6 +73,8 @@ class UpscanControllerSpec extends SpecBase {
           val returnModel = UploadStatus(UploadStatusEnum.READY.toString, None)
           when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some(returnModel)))
+          when(repository.getFileIndexForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(1))
           val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
           status(result) shouldBe OK
           contentAsJson(result) shouldBe Json.toJson(returnModel)
@@ -82,6 +84,8 @@ class UpscanControllerSpec extends SpecBase {
           val returnModel = UploadStatus(UploadStatusEnum.READY.toString, None)
           when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some(returnModel)))
+          when(repository.getFileIndexForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(1))
           val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
           status(result) shouldBe OK
           contentAsJson(result) shouldBe Json.toJson(returnModel)
@@ -91,6 +95,8 @@ class UpscanControllerSpec extends SpecBase {
           val returnModel = UploadStatus(FailureReasonEnum.QUARANTINE.toString, Some("upscan.fileHasVirus"))
           when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some(returnModel)))
+          when(repository.getFileIndexForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(1))
           val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
           status(result) shouldBe OK
           contentAsJson(result) shouldBe Json.toJson(returnModel)
