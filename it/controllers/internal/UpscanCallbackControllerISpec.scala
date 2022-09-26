@@ -128,7 +128,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     failureDetails = Some(
       FailureDetails(
         failureReason = FailureReasonEnum.QUARANTINE,
-        message = "File 1 contains a virus. Choose another file."
+        message = "upscan.fileHasVirus"
       )
     )
   )

@@ -319,7 +319,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
         result.header.status shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
-        failureDetailsInRepo.message shouldBe "File 1 is empty. Choose another file."
+        failureDetailsInRepo.message shouldBe "upscan.fileEmpty"
       }
 
       "the failure is because the file is too large" in new Setup {
@@ -335,7 +335,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
         status(result) shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
-        failureDetailsInRepo.message shouldBe "File 1 must be smaller than 6MB. Choose another file."
+        failureDetailsInRepo.message shouldBe "upscan.fileTooLarge"
       }
 
       "the failure is because the file is not specified" in new Setup {
@@ -367,7 +367,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
         status(result) shouldBe NO_CONTENT
         val failureDetailsInRepo: FailureDetails = await(repository.getUploadsForJourney(Some("1234"))).get.head.failureDetails.get
         failureDetailsInRepo.failureReason shouldBe FailureReasonEnum.REJECTED
-        failureDetailsInRepo.message shouldBe "File 1 could not be uploaded. Choose another file."
+        failureDetailsInRepo.message shouldBe "upscan.unableToUpload"
       }
     }
   }

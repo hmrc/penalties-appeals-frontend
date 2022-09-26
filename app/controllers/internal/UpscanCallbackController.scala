@@ -37,35 +37,32 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository,
       service.scheduleCallbackOperation {
         withJsonBody[UploadJourney] {
           callbackModel => {
-            repository.getFileIndexForJourney(journeyId, callbackModel.reference).flatMap(
-              fileIndex => {
-                if (callbackModel.failureDetails.isDefined) {
-                  logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload failed, marking failure in repository")
-                  val failureReason = callbackModel.failureDetails.get.failureReason
-                  val localisedFailureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason, isJsEnabled, Some(fileIndex + 1))
-                  val failureDetails = callbackModel.failureDetails.get.copy(message = localisedFailureReason)
-                  repository.updateStateOfFileUpload(journeyId, callbackModel.copy(failureDetails = Some(failureDetails))).map(_ => NoContent)
-                } else {
-                  repository.getAllChecksumsForJourney(Some(journeyId)).flatMap(
-                    seqOfChecksums => {
-                      repository.getFieldsForFileReference(journeyId, callbackModel.reference).flatMap(
-                        fields =>
-                          if (seqOfChecksums.contains(callbackModel.uploadDetails.get.checksum)) {
-                            logger.debug("[UpscanCallbackController][callbackFromUpscan] - Checksum is already in Mongo. Marking file as duplicate.")
-                            val duplicateCallbackModel = callbackModel.copy(
-                              fileStatus = UploadStatusEnum.DUPLICATE,
-                              uploadFields = fields
-                            )
-                            repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
-                          } else {
-                            logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload was successful, marking success in repository")
-                            repository.updateStateOfFileUpload(journeyId, callbackModel.copy(uploadFields = fields)).map(_ => NoContent)
-                          }
-                      )
-                    }
+            if (callbackModel.failureDetails.isDefined) {
+              logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload failed, marking failure in repository")
+              val failureReason = callbackModel.failureDetails.get.failureReason
+              val localisedFailureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason, isJsEnabled)
+              val failureDetails = callbackModel.failureDetails.get.copy(message = localisedFailureReason)
+              repository.updateStateOfFileUpload(journeyId, callbackModel.copy(failureDetails = Some(failureDetails))).map(_ => NoContent)
+            } else {
+              repository.getAllChecksumsForJourney(Some(journeyId)).flatMap(
+                seqOfChecksums => {
+                  repository.getFieldsForFileReference(journeyId, callbackModel.reference).flatMap(
+                    fields =>
+                      if (seqOfChecksums.contains(callbackModel.uploadDetails.get.checksum)) {
+                        logger.debug("[UpscanCallbackController][callbackFromUpscan] - Checksum is already in Mongo. Marking file as duplicate.")
+                        val duplicateCallbackModel = callbackModel.copy(
+                          fileStatus = UploadStatusEnum.DUPLICATE,
+                          uploadFields = fields
+                        )
+                        repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
+                      } else {
+                        logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload was successful, marking success in repository")
+                        repository.updateStateOfFileUpload(journeyId, callbackModel.copy(uploadFields = fields)).map(_ => NoContent)
+                      }
                   )
                 }
-              })
+              )
+            }
           }
         }
       }

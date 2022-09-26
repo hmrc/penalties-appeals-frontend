@@ -25,25 +25,25 @@ object UpscanMessageHelper {
   val jsPrefix = "upscan"
   val noJsPrefix = "upscan.noJs"
 
-  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean, fileIndex: Option[Int] = None)(implicit messages: Messages): String = {
+  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean)(implicit messages: Messages): String = {
     failureReason match {
-      case FailureReasonEnum.QUARANTINE => messages(getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled), fileIndex.getOrElse(""))
-      case FailureReasonEnum.REJECTED => messages(getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled), fileIndex.getOrElse(""))
-      case FailureReasonEnum.UNKNOWN => messages(getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled), fileIndex.getOrElse(""))
+      case FailureReasonEnum.QUARANTINE => getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled)
+      case FailureReasonEnum.REJECTED => getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled)
+      case FailureReasonEnum.UNKNOWN => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
     }
   }
 
-  def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean, fileIndex: Option[Int] = None)(implicit messages: Messages): String = {
+  def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean)(implicit messages: Messages): String = {
     errorCode match {
-      case "EntityTooSmall" => messages(getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled), fileIndex.getOrElse(""))
-      case "EntityTooLarge" => messages(getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled), fileIndex.getOrElse(""))
+      case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
+      case "EntityTooLarge" => getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
       case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
-      case _ => messages(getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled), fileIndex.getOrElse(""))
+      case _ => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
     }
   }
 
-  def applyMessage(msgKey: String)(implicit messages: Messages): String = {
-    messages(msgKey)
+  def applyMessage(msgKey: String, fileIndex: Int)(implicit messages: Messages): String = {
+    messages(msgKey, fileIndex)
   }
 
   def getPluralOrSingular(total: Int)(msgForSingular: String, msgForPlural: String)(implicit messages: Messages): Html = {

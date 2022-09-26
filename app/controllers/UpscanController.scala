@@ -55,7 +55,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           Future(NotFound(s"File $fileReference in journey $journeyId did not exist."))
         })(
           fileStatus => {
-            if(fileStatus.status == "DUPLICATE") {
+            if (fileStatus.status == "DUPLICATE") {
               evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(
                 insetText => {
                   val newFileStatus = fileStatus.copy(errorMessage = insetText)
@@ -63,11 +63,15 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                 }
               )
             } else {
-              val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_))
-              val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
-              logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
-                s"reference: $fileReference - returning status: $fileStatusWithLocalisedMessage with message: ${fileStatusWithLocalisedMessage.errorMessage}")
-              Future(Ok(Json.toJson(fileStatusWithLocalisedMessage)))
+              repository.getFileIndexForJourney(journeyId, fileReference).map {
+                fileIndex => {
+                  val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_, fileIndex + 1))
+                  val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
+                  logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
+                    s"reference: $fileReference number: ${fileIndex + 1} - returning status: $fileStatusWithLocalisedMessage with message: ${fileStatusWithLocalisedMessage.errorMessage}")
+                  Ok(Json.toJson(fileStatusWithLocalisedMessage))
+                }
+              }
             }
           }
         )
@@ -132,24 +136,20 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
         },
         s3UploadError => {
           val fileReference = s3UploadError.key
-          repository.getFileIndexForJourney(journeyId, fileReference).flatMap(
-            fileIndex => {
-              val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode, isJsEnabled = true, Some(fileIndex + 1))
-              val callbackModel: UploadJourney = UploadJourney(
-                reference = fileReference,
-                fileStatus = UploadStatusEnum.FAILED,
-                downloadUrl = None,
-                uploadDetails = None,
-                failureDetails = Some(
-                  FailureDetails(
-                    failureReason = FailureReasonEnum.REJECTED,
-                    message = messageKeyToSet
-                  )
-                )
+          val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode, isJsEnabled = true)
+          val callbackModel: UploadJourney = UploadJourney(
+            reference = fileReference,
+            fileStatus = UploadStatusEnum.FAILED,
+            downloadUrl = None,
+            uploadDetails = None,
+            failureDetails = Some(
+              FailureDetails(
+                failureReason = FailureReasonEnum.REJECTED,
+                message = messageKeyToSet
               )
-              repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
-            }
+            )
           )
+          repository.updateStateOfFileUpload(journeyId, callbackModel).map(_ => NoContent.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*"))
         }
       )
     }
@@ -189,7 +189,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
 
   def preUpscanCheckFailed(isAddingAnotherDocument: Boolean, mode: Mode): Action[AnyContent] = Action {
     implicit request => {
-      if(isAddingAnotherDocument) {
+      if (isAddingAnotherDocument) {
         Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
           .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
       } else {
@@ -211,7 +211,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, mode, isAddingAnotherDocument, {
             (optFailureDetails, errorMessage) => {
               if (errorMessage.isDefined) {
-                val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled, None)
+                val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled)
                 if (isAddingAnotherDocument) {
                   Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
