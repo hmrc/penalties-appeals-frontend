@@ -46,11 +46,11 @@ class PreviousPageControllerSpec extends SpecBase {
 
   "previousPage" should {
     "redirect to the previous page relative to the given page" in new Setup(AuthTestModels.successfulAuthResult) {
-      when(mockNavigator.previousPage(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockNavigator.previousPage(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Call("", "/url"))
       when(mockSessionService.getUserAnswers(any()))
         .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-      val result = controller.previousPage(ReasonableExcuseSelectionPage.toString, NormalMode)(userRequestWithCorrectKeys)
+      val result = controller.previousPage(ReasonableExcuseSelectionPage.toString, NormalMode, false)(userRequestWithCorrectKeys)
       status(result) shouldBe SEE_OTHER
     }
   }

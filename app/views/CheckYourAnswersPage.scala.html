@@ -43,7 +43,7 @@
                         @row.value
                     </dd>
                     <dd class="govuk-summary-list__actions">
-                        <a class="govuk-link" href="@row.url" aria-label="@messages("checkYourAnswers.change.ariaLabel", row.key)">@messages("checkYourAnswers.change.text")</a>
+                        <a class="govuk-link" href="@row.url" aria-label="@messages("checkYourAnswers.change.ariaLabel", row.key)" @if(row.isUploadRow) {id="upload-row"}>@messages("checkYourAnswers.change.text")</a>
                     </dd>
                 </div>
         }
@@ -60,3 +60,13 @@
         @button("common.acceptAndSend")
     }
 }
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('JavaScript is enabled');
+          const backLink = document.getElementById('back-link');
+          backLink.setAttribute('href', backLink.getAttribute('href').replace('&isJsEnabled=false', '') + '&isJsEnabled=true');
+          const changeLinkForUpload = document.getElementById('upload-row');
+          changeLinkForUpload.setAttribute('href', changeLinkForUpload.getAttribute('href').replace('isJsEnabled=false', '') + 'isJsEnabled=true');
+        });
+</script>

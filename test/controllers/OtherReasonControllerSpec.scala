@@ -226,7 +226,7 @@ class OtherReasonControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
-        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
+        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, true)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
@@ -235,7 +235,7 @@ class OtherReasonControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
-        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
+        val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, true)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
@@ -244,7 +244,7 @@ class OtherReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, true)(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
 
@@ -253,7 +253,7 @@ class OtherReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, true)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
         }
@@ -263,7 +263,7 @@ class OtherReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeysAndJS)
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, true)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
         }
@@ -273,7 +273,7 @@ class OtherReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode)(userRequestWithCorrectKeysAndJS)
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode, true)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
         }
@@ -283,7 +283,7 @@ class OtherReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
           when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode)(userRequestWithCorrectKeysAndJS)
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode, true)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
         }
@@ -292,7 +292,7 @@ class OtherReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(userRequestWithCorrectKeys)
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, true)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
         }
       }
@@ -300,12 +300,12 @@ class OtherReasonControllerSpec extends SpecBase {
       "the user is unauthorised" when {
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, true)(fakeRequest)
           status(result) shouldBe FORBIDDEN
         }
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, true)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }
@@ -376,7 +376,7 @@ class OtherReasonControllerSpec extends SpecBase {
 
       "the user does not have JavaScript enabled" when {
 
-        "return OK when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return OK" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
@@ -384,14 +384,6 @@ class OtherReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
           val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
           status(result) shouldBe OK
-        }
-
-        "return 303 (SEE_OTHER) when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
-          val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeysAndJS)
-          status(result) shouldBe SEE_OTHER
         }
 
         "return BAD_REQUEST and correct view when there is an errorCode in the session" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -553,27 +545,6 @@ class OtherReasonControllerSpec extends SpecBase {
 
       "removeFileUpload" should {
         "the user is authorised" must {
-          "redirect to multi-file upload page when the JS enabled cookie is present and the routing feature switch is off" in
-            new Setup(AuthTestModels.successfulAuthResult) {
-              when(mockSessionService.getUserAnswers(any()))
-                .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-              when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(false)
-              val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest
-                .withFormUrlEncodedBody("fileReference" -> "file1")
-                .withCookies(Cookie("jsenabled", "true"))))
-              status(result) shouldBe SEE_OTHER
-              redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
-            }
-
-          "redirect to multi-file upload page when the JS enabled cookie is present" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("fileReference" -> "file1")
-              .withCookies(Cookie("jsenabled", "true"))))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
-          }
 
           "redirect to the first upload page when the files left is 0" in new Setup(AuthTestModels.successfulAuthResult) {
             when(mockSessionService.getUserAnswers(any()))
@@ -764,9 +735,9 @@ class OtherReasonControllerSpec extends SpecBase {
             when(mockSessionService.updateAnswers(answerCaptor.capture()))
               .thenReturn(Future.successful(true))
             val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("value" -> "yes")))
+              .withFormUrlEncodedBody("value" -> "yes", "isJsEnabled" -> "true")))
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, true).url
             answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "yes")
           }
 

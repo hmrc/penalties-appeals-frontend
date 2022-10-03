@@ -30,7 +30,7 @@
         formErrors = form.errors,
         optPageMode = Some(pageMode)) {
 
-        @formHelper(action = postAction) {
+        @formHelper(action = postAction, args = (Symbol("id"), "upload-evidence-question-form")) {
               @radios(
               form = form,
                   legendContent = messages("otherReason.uploadEvidence.question.headingAndTitle"),
@@ -41,3 +41,15 @@
               @button("common.continue")
     }
 }
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('JavaScript is enabled');
+      const form = document.getElementById('upload-evidence-question-form');
+      const input = document.createElement('input');
+      input.setAttribute('type', 'hidden');
+      input.setAttribute('name', 'isJsEnabled');
+      input.setAttribute('value', 'true');
+      form.appendChild(input);
+    });
+</script>

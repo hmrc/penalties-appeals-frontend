@@ -17,15 +17,17 @@
 package forms.upscan
 
 import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms.single
+import play.api.data.{Form, Forms}
+import play.api.data.Forms.{mapping, optional}
+import models.upload.UploadEvidenceFormModel
 
-object UploadEvidenceQuestionForm  extends Mappings {
+object UploadEvidenceQuestionForm extends Mappings {
   final val options = Seq("yes", "no")
-  val uploadEvidenceQuestionForm: Form[String] = Form[String](
-    single(
+  val uploadEvidenceQuestionForm: Form[UploadEvidenceFormModel] = Form[UploadEvidenceFormModel](
+    mapping(
       "value" -> text("otherReason.uploadEvidence.question.required")
-        .verifying("otherReason.uploadEvidence.question.required", value => options.contains(value))
-    )
+        .verifying("otherReason.uploadEvidence.question.required", value => options.contains(value)),
+      "isJsEnabled" -> optional(Forms.boolean)
+    )(UploadEvidenceFormModel.apply)(UploadEvidenceFormModel.unapply)
   )
 }

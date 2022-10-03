@@ -79,7 +79,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
                        mode: Mode,
                        isJsEnabled: Boolean)(implicit userRequest: UserRequest[_]): Future[Result] = {
     val backUrl = {
-      if (isJsEnabled) controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode)
+      if (isJsEnabled) controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode, true)
       else controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)
     }
     upscanService.getFileNameForJourney(journeyId, fileReference).map {
@@ -104,7 +104,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
 
   private def routeToUploadPage(isJsEnabled: Boolean, mode: Mode): Result = {
     if (isJsEnabled) {
-      Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode))
+      Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(mode, true))
     } else {
       //Relying on upload list to handle further routing if no files are left
       Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))

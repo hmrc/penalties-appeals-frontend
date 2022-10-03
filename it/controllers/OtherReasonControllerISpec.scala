@@ -223,8 +223,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
-      val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = fakeRequest.withCookies(Cookie("jsenabled", "true"))
-      val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndJS))
+      val request = await(controller.onPageLoadForUploadEvidence(NormalMode, true)(fakeRequest))
       request.header.status shouldBe OK
     }
 
@@ -237,7 +236,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
       disableFeatureSwitch(NonJSRouting)
-      val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest))
+      val request = await(controller.onPageLoadForUploadEvidence(NormalMode, false)(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       enableFeatureSwitch(NonJSRouting)
     }
@@ -251,7 +250,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
       enableFeatureSwitch(NonJSRouting)
-      val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest))
+      val request = await(controller.onPageLoadForUploadEvidence(NormalMode, false)(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       disableFeatureSwitch(NonJSRouting)
     }
@@ -265,8 +264,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
       disableFeatureSwitch(NonJSRouting)
-      val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = fakeRequest.withCookies(Cookie("jsenabled", "true"))
-      val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithCorrectKeysAndJS))
+      val request = await(controller.onPageLoadForUploadEvidence(NormalMode, true)(fakeRequest))
       request.header.status shouldBe OK
       enableFeatureSwitch(NonJSRouting)
     }
@@ -276,7 +274,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         authToken -> "1234",
         SessionKeys.journeyId -> "1234"
       )
-      val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequestWithNoKeys))
+      val request = await(controller.onPageLoadForUploadEvidence(NormalMode, true)(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
@@ -285,13 +283,13 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
     ))) {
-      val request = await(controller.onPageLoadForUploadEvidence(NormalMode)(fakeRequest))
+      val request = await(controller.onPageLoadForUploadEvidence(NormalMode, true)(fakeRequest))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
       AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-evidence-for-the-appeal").get())
+      val request = await(buildClientForRequestToApp(uri = "/upload-evidence-for-the-appeal?isJsEnabled=true").get())
       request.status shouldBe SEE_OTHER
     }
   }
@@ -414,31 +412,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       request.header.status shouldBe OK
     }
 
-    "return 303 (SEE_OTHER) when the users has JS active but the feature switch is disabled" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
-      disableFeatureSwitch(NonJSRouting)
-      successfulInitiateCall(
-        """
-          |{
-          | "reference": "12345",
-          | "uploadRequest": {
-          |   "href": "12345",
-          |   "fields": {}
-          | }
-          |}
-          |""".stripMargin)
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest.withCookies(Cookie("jsenabled", "true"))
-      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
-      request.header.status shouldBe SEE_OTHER
-      enableFeatureSwitch(NonJSRouting)
-    }
-
     "return 200 (OK) when the users has JS active and the feature switch is enabled" in new Setup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
@@ -458,8 +431,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
           | }
           |}
           |""".stripMargin)
-      val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest.withCookies(Cookie("jsenabled", "true"))
-      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithCorrectKeys))
+      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest))
       request.header.status shouldBe OK
       disableFeatureSwitch(NonJSRouting)
     }
@@ -1038,7 +1010,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.isUploadEvidence).get shouldBe "no"
     }
 
-    "return 303 (SEE_OTHER), navigate to upload evidence question and add the session key to the session - when the user answers yes" in new Setup(userAnswers(Json.obj(
+    "return 303 (SEE_OTHER), navigate to upload evidence and add the session key to the session - when the user answers yes" in new Setup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -1046,10 +1018,25 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
-      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes", "isJsEnabled" -> "true")
       val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, true).url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.isUploadEvidence).get shouldBe "yes"
+    }
+
+    "return 303 (SEE_OTHER), navigate to first upload page and add the session key to the session - when the user answers yes, JS is disabled" in new Setup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes", "isJsEnabled" -> "false")
+      val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, false).url
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.isUploadEvidence).get shouldBe "yes"
     }
 

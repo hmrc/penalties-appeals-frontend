@@ -18,15 +18,23 @@ package forms.upscan
 
 import base.SpecBase
 import forms.FormBehaviours
+import models.upload.UploadEvidenceFormModel
 import play.api.data.{Form, FormError}
 
 class UploadEvidenceQuestionFormSpec extends FormBehaviours with SpecBase {
-  val form: Form[String] = UploadEvidenceQuestionForm.uploadEvidenceQuestionForm
+  val form: Form[UploadEvidenceFormModel] = UploadEvidenceQuestionForm.uploadEvidenceQuestionForm
 
   behave like mandatoryField(form, "value", FormError("value", "otherReason.uploadEvidence.question.required"))
 
   "the value entered does not exist in the possible, valid values" in {
     val result = form.bind(Map("value" -> "what_is_this")).apply("value")
     result.errors.headOption shouldBe Some(FormError("value", "otherReason.uploadEvidence.question.required"))
+  }
+
+  "populate the isJsEnabled field if included in the payload" in {
+    val result = form.bind(Map("value" -> "yes", "isJsEnabled" -> "true"))
+    result.hasErrors shouldBe false
+    result.get.value shouldBe "yes"
+    result.get.jsEnabled shouldBe Some(true)
   }
 }

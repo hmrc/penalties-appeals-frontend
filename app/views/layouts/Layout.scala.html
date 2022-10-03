@@ -47,7 +47,7 @@
     @if(appConfig.welshLanguageSupportEnabled) {@languageSelect()}
 
     @if(backLinkEnabled) {
-        @govukBackLink(BackLink(href = customBackLink.fold(controllers.routes.PreviousPageController.previousPage(optPageMode.get.page.toString, optPageMode.get.mode).url)(identity),
+        @govukBackLink(BackLink(href = customBackLink.fold(controllers.routes.PreviousPageController.previousPage(optPageMode.get.page.toString, optPageMode.get.mode, false).url)(identity),
             content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
     }
 }
