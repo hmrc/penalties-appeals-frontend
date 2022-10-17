@@ -21,8 +21,11 @@ import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
+import utils.Logger.logger
+import utils.PagerDutyHelper.PagerDutyKeys
 
-class UpscanInitiateHttpParserSpec extends SpecBase {
+class UpscanInitiateHttpParserSpec extends SpecBase with LogCapturing {
 
   class Setup(status: Int, optJson: Option[JsValue] = None, responseHeaders: Map[String, Seq[String]] = Map.empty) {
 
@@ -55,15 +58,30 @@ class UpscanInitiateHttpParserSpec extends SpecBase {
     }
 
     s"return invalid Json if ${Status.OK} and json is invalid" in new Setup(Status.OK, optJson = Some(Json.obj())){
-      readResponse shouldBe Left(InvalidJson)
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          readResponse shouldBe Left(InvalidJson)
+          logs.exists(_.getMessage.contains(PagerDutyKeys.INVALID_JSON_RECEIVED_FROM_UPSCAN.toString)) shouldBe true
+        }
+      }
     }
 
     s"return $BadRequest if ${Status.BAD_REQUEST} returned" in new Setup(Status.BAD_REQUEST, optJson = Some(Json.obj())) {
-      readResponse shouldBe Left(BadRequest)
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          readResponse shouldBe Left(BadRequest)
+          logs.exists(_.getMessage.contains(PagerDutyKeys.RECEIVED_4XX_FROM_UPSCAN.toString)) shouldBe true
+        }
+      }
     }
 
     s"return $UnexpectedFailure if random non Success status code returned" in new Setup(Status.INTERNAL_SERVER_ERROR, optJson = Some(Json.obj())) {
-      readResponse shouldBe Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, "Unexpected response, status 500 returned"))
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          readResponse shouldBe Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, "Unexpected response, status 500 returned"))
+          logs.exists(_.getMessage.contains(PagerDutyKeys.RECEIVED_5XX_FROM_UPSCAN.toString)) shouldBe true
+        }
+      }
     }
   }
 

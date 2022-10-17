@@ -27,11 +27,14 @@ import services.upscan.UpscanService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
+import utils.Logger.logger
+import utils.PagerDutyHelper.PagerDutyKeys
 import views.html.reasonableExcuseJourneys.other.RemoveFilePage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveFileControllerSpec extends SpecBase {
+class RemoveFileControllerSpec extends SpecBase with LogCapturing {
   val removeFilePage: RemoveFilePage = injector.instanceOf[RemoveFilePage]
   val mockUpscanService: UpscanService = mock(classOf[UpscanService])
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
@@ -148,18 +151,30 @@ class RemoveFileControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockUpscanService.removeFileFromJourney(any(), any())).thenReturn(Future.failed(new Exception("broken :(")))
-          val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-            fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes")))
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+                fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes")))
+              logs.head.toString
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_REMOVAL_FAILURE_UPSCAN.toString)) shouldBe true
+              status(result) shouldBe INTERNAL_SERVER_ERROR
+            }
+          }
         }
 
         "the file name can not be retrieved - on form error" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.failed(new Exception("this is an exception :)")))
-          val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-            fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "what")))
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+                fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "what")))
+              logs.head.toString
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_RETRIEVAL_FAILURE_UPSCAN.toString)) shouldBe true
+              status(result) shouldBe INTERNAL_SERVER_ERROR
+            }
+          }
         }
       }
 

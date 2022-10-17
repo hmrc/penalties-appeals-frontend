@@ -28,11 +28,14 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
+import utils.Logger.logger
+import utils.PagerDutyHelper.PagerDutyKeys
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
 
-class PenaltiesConnectorSpec extends SpecBase {
+class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
@@ -217,10 +220,29 @@ class PenaltiesConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(HttpResponse(Status.IM_A_TEAPOT, "")))
       when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
         .thenReturn("http://url/url")
-
-      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
-      result.isDefined shouldBe false
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+          logs.exists(_.getMessage.contains(PagerDutyKeys.RECEIVED_4XX_FROM_PENALTIES.toString)) shouldBe true
+          result.isDefined shouldBe false
+        }
+      }
     }
+
+    s"return $None when the connector returns an exception" in new Setup {
+      when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.failed(new Exception("Some exception mesage.")))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
+        .thenReturn("http://url/url")
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+          logs.exists(_.getMessage.contains(PagerDutyKeys.UNKNOWN_EXCEPTION_CALLING_PENALTIES.toString)) shouldBe true
+          result.isDefined shouldBe false
+        }
+      }
+    }
+
   }
 
   "getMultiplePenaltiesForPrincipleCharge" should {

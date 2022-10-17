@@ -31,6 +31,9 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
+import utils.Logger.logger
+import utils.PagerDutyHelper.PagerDutyKeys
 import utils.SessionKeys
 import viewtils.EvidenceFileUploadsHelper
 
@@ -38,7 +41,7 @@ import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UpscanControllerSpec extends SpecBase {
+class UpscanControllerSpec extends SpecBase with LogCapturing {
   val repository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
   val connector: UpscanConnector = mock(classOf[UpscanConnector])
@@ -151,8 +154,13 @@ class UpscanControllerSpec extends SpecBase {
         "the user does not have an upload state in the database" in {
           when(connector.initiateToUpscan(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Left(InvalidJson)))
-          val result = controller.initiateCallToUpscan("1234")(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result = controller.initiateCallToUpscan("1234")(fakeRequest)
+              status(result) shouldBe INTERNAL_SERVER_ERROR
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
+            }
+          }
         }
       }
     }
@@ -171,16 +179,26 @@ class UpscanControllerSpec extends SpecBase {
         "the repository fails to delete the specified journey-file combination" in {
           when(repository.removeFileForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.failed(new Exception("Something *spooky* went wrong.")))
-          val result = controller.removeFile("J1234", "F1234")(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result = controller.removeFile("J1234", "F1234")(fakeRequest)
+              status(result) shouldBe INTERNAL_SERVER_ERROR
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_REMOVAL_FAILURE_UPSCAN.toString)) shouldBe true
+            }
+          }
         }
       }
     }
 
     "uploadFailure" should {
       "return a BAD_REQUEST when the S3 service doesn't match the expected response model" in {
-        val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody())
-        status(result) shouldBe BAD_REQUEST
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody())
+            status(result) shouldBe BAD_REQUEST
+            logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe true
+          }
+        }
       }
 
       "return NO_CONTENT" when {
@@ -230,7 +248,6 @@ class UpscanControllerSpec extends SpecBase {
           status(result) shouldBe NO_CONTENT
         }
       }
-    }
 
     "preFlightUpload" should {
       "return a Created response with the CORS Allow Origin header" in {
@@ -299,12 +316,13 @@ class UpscanControllerSpec extends SpecBase {
         contentAsJson(result) shouldBe Json.obj()
       }
 
-      "return Some when there is duplicates in the repository" in {
-        when(helper.getInsetTextForUploadsInRepository(ArgumentMatchers.any())(ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Some("this is some text to display")))
-        val result = controller.getDuplicateFiles("1234567")(FakeRequest())
-        status(result) shouldBe OK
-        contentAsJson(result) shouldBe Json.obj("message" -> "this is some text to display")
+        "return Some when there is duplicates in the repository" in {
+          when(helper.getInsetTextForUploadsInRepository(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some("this is some text to display")))
+          val result = controller.getDuplicateFiles("1234567")(FakeRequest())
+          status(result) shouldBe OK
+          contentAsJson(result) shouldBe Json.obj("message" -> "this is some text to display")
+        }
       }
     }
   }

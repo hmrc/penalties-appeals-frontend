@@ -21,6 +21,8 @@ import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.json.JsSuccess
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.Logger.logger
+import utils.PagerDutyHelper
+import utils.PagerDutyHelper.PagerDutyKeys._
 
 object UpscanInitiateHttpParser {
   type UpscanInitiateResponse = Either[ErrorResponse, UpscanInitiateResponseModel]
@@ -32,12 +34,16 @@ object UpscanInitiateHttpParser {
         case OK =>
           response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.formats) match {
             case JsSuccess(model, _) => Right(model)
-            case _ => Left(InvalidJson)
+            case _ =>
+              PagerDutyHelper.log("UpscanInitiateResponseReads",INVALID_JSON_RECEIVED_FROM_UPSCAN)
+              Left(InvalidJson)
           }
         case BAD_REQUEST =>
+          PagerDutyHelper.log("UpscanInitiateResponseReads",RECEIVED_4XX_FROM_UPSCAN)
           logger.debug(s"[UpScanInitiateResponseReads][read]: Bad request returned with reason: ${response.body}")
           Left(BadRequest)
         case status =>
+          PagerDutyHelper.logStatusCode("UpscanInitiateResponseReads", status)(RECEIVED_4XX_FROM_UPSCAN, RECEIVED_5XX_FROM_UPSCAN)
           logger.warn(s"[UpScanInitiateResponseReads][read]: Unexpected response, status $status returned")
           Left(UnexpectedFailure(status, s"Unexpected response, status $status returned"))
       }
