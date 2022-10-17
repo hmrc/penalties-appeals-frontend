@@ -61,7 +61,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
               }
             }.recover {
               case _ => {
-                PagerDutyHelper.log("removeFileUpscan", FILE_REMOVAL_FAILURE_UPSCAN)
+                PagerDutyHelper.log("[RemoveFileController][onSubmit]", FILE_REMOVAL_FAILURE_UPSCAN)
                 logger.error("[RemoveFileController][onSubmit] - Could not remove file from user journey")
                 errorHandler.showInternalServerError
               }

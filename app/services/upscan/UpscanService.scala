@@ -55,7 +55,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
     upscanConnector.initiateToUpscan(initiateRequestModel).flatMap {
       _.fold(
         error => {
-          PagerDutyHelper.logStatusCode("initiateSynchronousCallToUpscan",error.status)(RECEIVED_4XX_FROM_UPSCAN, RECEIVED_5XX_FROM_UPSCAN)
+          PagerDutyHelper.logStatusCode("initiateSynchronousCallToUpscan", error.status)(RECEIVED_4XX_FROM_UPSCAN, RECEIVED_5XX_FROM_UPSCAN)
           logger.error(s"[UpscanService][initiateSynchronousCallToUpscan] - Initiate call to Upscan failed with error: ${error.body} and status: ${error.status}")
           Future(Left(error))
         },
