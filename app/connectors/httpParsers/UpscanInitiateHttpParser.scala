@@ -35,11 +35,11 @@ object UpscanInitiateHttpParser {
           response.json.validate[UpscanInitiateResponseModel](UpscanInitiateResponseModel.formats) match {
             case JsSuccess(model, _) => Right(model)
             case _ =>
-              PagerDutyHelper.log("UpscanInitiateResponseReads",INVALID_JSON_RECEIVED_FROM_UPSCAN)
+              PagerDutyHelper.log("UpscanInitiateResponseReads", INVALID_JSON_RECEIVED_FROM_UPSCAN)
               Left(InvalidJson)
           }
         case BAD_REQUEST =>
-          PagerDutyHelper.log("UpscanInitiateResponseReads",RECEIVED_4XX_FROM_UPSCAN)
+          PagerDutyHelper.log("UpscanInitiateResponseReads", RECEIVED_4XX_FROM_UPSCAN)
           logger.debug(s"[UpScanInitiateResponseReads][read]: Bad request returned with reason: ${response.body}")
           Left(BadRequest)
         case status =>

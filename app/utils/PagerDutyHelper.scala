@@ -33,9 +33,8 @@ object PagerDutyHelper {
     final val UPLOAD_FAILURE_UPSCAN = Value
     final val FILE_REMOVAL_FAILURE_UPSCAN = Value
     final val FILE_VERIFICATION_FAILURE_UPSCAN = Value
-    final val FILE_RETRIEVAL_FAILURE_UPSCAN = Value
-
-    final val RECEIVED_ERROR_FILE_UPLOAD = Value
+    final val FILE_NAME_RETRIEVAL_FAILURE_UPSCAN = Value
+    final val FILE_POSTED_FAILURE_UPSCAN = Value
   }
 
   def log(methodName: String, pagerDutyKey: PagerDutyKeys.Value): Unit = {

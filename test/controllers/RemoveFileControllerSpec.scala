@@ -169,7 +169,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
             logs => {
               val result = await(controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
                 fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "what"))))
-              logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_RETRIEVAL_FAILURE_UPSCAN.toString)) shouldBe true
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_NAME_RETRIEVAL_FAILURE_UPSCAN.toString)) shouldBe true
               result.header.status shouldBe INTERNAL_SERVER_ERROR
             }
           }

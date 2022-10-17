@@ -426,7 +426,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
             logs => {
               val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
               status(result) shouldBe INTERNAL_SERVER_ERROR
-              logs.exists(_.getMessage.contains(PagerDutyKeys.RECEIVED_ERROR_FILE_UPLOAD.toString)) shouldBe true
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
               val content: String = contentAsString(result)
               content.contains("Sorry, the service is unavailable") shouldBe true
               content.contains("We have not saved your answers.") shouldBe true
@@ -544,7 +544,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
             logs => {
               val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(userRequestWithCorrectKeys)
               status(result) shouldBe INTERNAL_SERVER_ERROR
-              logs.exists(_.getMessage.contains(PagerDutyKeys.RECEIVED_ERROR_FILE_UPLOAD.toString)) shouldBe true
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
             }
           }
         }

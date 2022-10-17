@@ -315,8 +315,13 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
         .thenReturn(Future.successful(HttpResponse(Status.INTERNAL_SERVER_ERROR, "")))
       when(mockAppConfig.reasonableExcuseFetchUrl)
         .thenReturn("http://url/url")
-      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
-      result.isDefined shouldBe false
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
+          logs.exists(_.getMessage.contains(PagerDutyKeys.UNKNOWN_EXCEPTION_CALLING_PENALTIES.toString)) shouldBe true
+          result.isDefined shouldBe false
+        }
+      }
     }
 
     s"return $None when an unknown response  is returned from the call" in new Setup {

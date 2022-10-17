@@ -69,7 +69,12 @@ class MultiplePenaltiesHttpParserSpec extends SpecBase with LogCapturing {
 
 
     s"return InvalidJson if the status is ${Status.OK} but the model can not be parsed" in new Setup(Status.OK, Some(invalidJson)) {
-      readResponse shouldBe Left(InvalidJson)
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          readResponse shouldBe Left(InvalidJson)
+          logs.exists(_.getMessage.contains(PagerDutyKeys.INVALID_JSON_RECEIVED_FROM_PENALTIES.toString)) shouldBe true
+        }
+      }
     }
 
     s"return NoContent if the status is ${Status.NO_CONTENT}" in new Setup(Status.NO_CONTENT, Some(Json.obj())) {

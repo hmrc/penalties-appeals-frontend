@@ -120,9 +120,14 @@ class UpscanControllerSpec extends SpecBase with LogCapturing {
       "return NOT FOUND" when {
         "the database does not contain such values specified" in {
           when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          val result =
-            controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
-          status(result) shouldBe NOT_FOUND
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result =
+                await(controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest))
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_UPLOAD_STATUS_NOT_FOUND_UPSCAN.toString)) shouldBe true
+              result.header.status shouldBe NOT_FOUND
+            }
+          }
         }
       }
     }
@@ -259,8 +264,13 @@ class UpscanControllerSpec extends SpecBase with LogCapturing {
 
     "filePosted" should {
       "return Bad Request when the query parameters can not be bound" in {
-        val result = controller.filePosted("J1234")(fakeRequest)
-        status(result) shouldBe BAD_REQUEST
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result = await(controller.filePosted("J1234")(fakeRequest))
+            logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_POSTED_FAILURE_UPSCAN.toString)) shouldBe true
+            result.header.status shouldBe BAD_REQUEST
+          }
+        }
       }
 
       "return No Content and update the file upload when called" in {
@@ -295,8 +305,13 @@ class UpscanControllerSpec extends SpecBase with LogCapturing {
 
     "fileVerification" should {
       "show an ISE if the form fails to bind" in {
-        val result = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1"))
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result = await(controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1")))
+            logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_VERIFICATION_FAILURE_UPSCAN.toString)) shouldBe true
+            result.header.status shouldBe INTERNAL_SERVER_ERROR
+          }
+        }
       }
 
       "run the block passed to the service if the form binds and run the result" in {

@@ -40,7 +40,7 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
-import utils.PagerDutyHelper.PagerDutyKeys.RECEIVED_ERROR_FILE_UPLOAD
+import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.{PagerDutyHelper, SessionKeys}
 import views.html.errors.ServiceUnavailablePage
 import views.html.reasonableExcuseJourneys.other._
@@ -172,7 +172,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         upscanService.initiateSynchronousCallToUpscan(userRequest.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = false, mode).map(
           _.fold(
             _ => {
-              PagerDutyHelper.log("OtherReasonController onPageLoadForFirstFileUpload", RECEIVED_ERROR_FILE_UPLOAD)
+              PagerDutyHelper.log("OtherReasonController onPageLoadForFirstFileUpload", FAILED_INITIATE_CALL_UPSCAN)
               logger.error("[OtherReasonController][onPageLoadForFirstFileUpload] - Received error back from initiate request rendering ISE.")
               InternalServerError(serviceUnavailablePage())
             },
@@ -205,7 +205,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       upscanService.initiateSynchronousCallToUpscan(userRequest.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = true, mode).map(
         _.fold(
           _ => {
-            PagerDutyHelper.log("OtherReasonController: onPageLoadForAnotherFileUpload", RECEIVED_ERROR_FILE_UPLOAD)
+            PagerDutyHelper.log("OtherReasonController: onPageLoadForAnotherFileUpload", FAILED_INITIATE_CALL_UPSCAN)
             logger.error("[OtherReasonController][onPageLoadForAnotherFileUpload] - Received error back from initiate request rendering ISE.")
             InternalServerError(serviceUnavailablePage())
           },

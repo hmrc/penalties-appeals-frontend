@@ -84,6 +84,7 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
         logger.error(s"$startOfLogMsg Returned 404 from penalties. With message: ${notFoundException.getMessage}")
         None
       case internalServerException: InternalServerException =>
+        PagerDutyHelper.log("getListOfReasonableExcuses", RECEIVED_5XX_FROM_PENALTIES)
         logger.error(s"$startOfLogMsg Returned 500 from penalties. With message: ${internalServerException.getMessage}")
         None
       case e =>
