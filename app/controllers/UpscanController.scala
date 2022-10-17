@@ -29,7 +29,7 @@ import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
-import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_INITIATE_CALL_UPSCAN, FILE_VERIFICATION_FAILURE_UPSCAN, FILE_UPLOAD_STATUS_NOT_FOUND_UPSCAN, FILE_REMOVAL_FAILURE_UPSCAN, UPLOAD_FAILURE_UPSCAN}
+import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.{PagerDutyHelper, SessionKeys}
 
 import javax.inject.Inject

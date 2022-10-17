@@ -28,7 +28,7 @@ import play.api.mvc.{Request, Result}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logger.logger
-import utils.PagerDutyHelper.PagerDutyKeys.{RECEIVED_4XX_FROM_UPSCAN, RECEIVED_5XX_FROM_UPSCAN}
+import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.{PagerDutyHelper, SessionKeys}
 
 import javax.inject.Inject

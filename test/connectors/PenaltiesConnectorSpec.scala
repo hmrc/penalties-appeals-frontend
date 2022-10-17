@@ -242,7 +242,6 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
         }
       }
     }
-
   }
 
   "getMultiplePenaltiesForPrincipleCharge" should {

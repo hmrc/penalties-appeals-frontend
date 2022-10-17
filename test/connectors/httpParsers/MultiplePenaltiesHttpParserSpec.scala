@@ -85,4 +85,5 @@ class MultiplePenaltiesHttpParserSpec extends SpecBase with LogCapturing {
       }
     }
   }
+
 }

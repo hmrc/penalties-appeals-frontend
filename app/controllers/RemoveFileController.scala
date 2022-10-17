@@ -27,7 +27,7 @@ import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.PagerDutyHelper
-import utils.PagerDutyHelper.PagerDutyKeys.{FILE_REMOVAL_FAILURE_UPSCAN, FILE_RETRIEVAL_FAILURE_UPSCAN}
+import utils.PagerDutyHelper.PagerDutyKeys._
 import views.html.reasonableExcuseJourneys.other.RemoveFilePage
 import viewtils.RadioOptionHelper
 
@@ -61,7 +61,6 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
               }
             }.recover {
               case _ => {
-                println("FILE_REMOVAL_FAILURE_UPSCAN")
                 PagerDutyHelper.log("removeFileUpscan",FILE_REMOVAL_FAILURE_UPSCAN)
                 logger.error("[RemoveFileController][onSubmit] - Could not remove file from user journey")
                 errorHandler.showInternalServerError
@@ -100,7 +99,6 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
       })
     }.recover {
       case _ => {
-        println("FILE_RETRIEVAL_FAILURE_UPSCAN")
         PagerDutyHelper.log("RemoveFileController: onPageLoad", FILE_RETRIEVAL_FAILURE_UPSCAN)
         logger.error("[RemoveFileController][onPageLoad] - Failed to retrieve file name for file removal")
         errorHandler.showInternalServerError

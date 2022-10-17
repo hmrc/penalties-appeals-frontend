@@ -153,11 +153,10 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           when(mockUpscanService.removeFileFromJourney(any(), any())).thenReturn(Future.failed(new Exception("broken :(")))
           withCaptureOfLoggingFrom(logger) {
             logs => {
-              val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-                fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes")))
-              logs.head.toString
-              logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_REMOVAL_FAILURE_UPSCAN.toString)) shouldBe true
-              status(result) shouldBe INTERNAL_SERVER_ERROR
+              val result = await(controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+                fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes"))))
+               logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_REMOVAL_FAILURE_UPSCAN.toString)) shouldBe true
+              result.header.status shouldBe INTERNAL_SERVER_ERROR
             }
           }
         }
@@ -168,11 +167,10 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.failed(new Exception("this is an exception :)")))
           withCaptureOfLoggingFrom(logger) {
             logs => {
-              val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
-                fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "what")))
-              logs.head.toString
+              val result = await(controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+                fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "what"))))
               logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_RETRIEVAL_FAILURE_UPSCAN.toString)) shouldBe true
-              status(result) shouldBe INTERNAL_SERVER_ERROR
+              result.header.status shouldBe INTERNAL_SERVER_ERROR
             }
           }
         }
