@@ -205,7 +205,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       upscanService.initiateSynchronousCallToUpscan(userRequest.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = true, mode).map(
         _.fold(
           _ => {
-            PagerDutyHelper.log("OtherReasonController: onPageLoadForAnotherFileUpload", FAILED_INITIATE_CALL_UPSCAN)
+            PagerDutyHelper.log("OtherReasonController onPageLoadForAnotherFileUpload", FAILED_INITIATE_CALL_UPSCAN)
             logger.error("[OtherReasonController][onPageLoadForAnotherFileUpload] - Received error back from initiate request rendering ISE.")
             InternalServerError(serviceUnavailablePage())
           },
