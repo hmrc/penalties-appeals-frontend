@@ -23,8 +23,9 @@ import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}
-import utils.EnrolmentKeys
 import utils.Logger.logger
+import utils.PagerDutyHelper.PagerDutyKeys._
+import utils.{EnrolmentKeys, PagerDutyHelper}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,11 +54,13 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
             logger.info(s"$startOfLogMsg Returned 404 from Penalties backend - with body: ${response.body}")
             None
           case _ =>
+            PagerDutyHelper.logStatusCode("getAppealsDataForPenalty", response.status)(RECEIVED_4XX_FROM_PENALTIES, RECEIVED_5XX_FROM_PENALTIES)
             logger.warn(s"$startOfLogMsg Returned unknown response ${response.status} with body: ${response.body}")
             None
         }
     }.recover {
       case e =>
+        PagerDutyHelper.log("getAppealsDataForPenalty", UNKNOWN_EXCEPTION_CALLING_PENALTIES)
         logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
         None
     }
@@ -81,9 +84,11 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
         logger.error(s"$startOfLogMsg Returned 404 from penalties. With message: ${notFoundException.getMessage}")
         None
       case internalServerException: InternalServerException =>
+        PagerDutyHelper.log("getListOfReasonableExcuses", RECEIVED_5XX_FROM_PENALTIES)
         logger.error(s"$startOfLogMsg Returned 500 from penalties. With message: ${internalServerException.getMessage}")
         None
       case e =>
+        PagerDutyHelper.log("getListOfReasonableExcuses", UNKNOWN_EXCEPTION_CALLING_PENALTIES)
         logger.error(s"$startOfLogMsg Returned an exception with message: ${e.getMessage}")
         None
     }

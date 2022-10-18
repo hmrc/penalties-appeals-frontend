@@ -29,7 +29,8 @@ import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
-import utils.SessionKeys
+import utils.PagerDutyHelper.PagerDutyKeys._
+import utils.{PagerDutyHelper, SessionKeys}
 
 import javax.inject.Inject
 import viewtils.EvidenceFileUploadsHelper
@@ -50,6 +51,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
       logger.debug(s"[UpscanController][getStatusOfFileUpload] - File upload status requested for journey: $journeyId with file reference: $fileReference")
       repository.getStatusOfFileUpload(journeyId, fileReference).flatMap(
         _.fold({
+          PagerDutyHelper.log("getStatusOfFileUpload", FILE_UPLOAD_STATUS_NOT_FOUND_UPSCAN)
           logger.error(
             s"[UpscanController][getStatusOfFileUpload] - File upload status was not found for journey: $journeyId with file reference: $fileReference")
           Future(NotFound(s"File $fileReference in journey $journeyId did not exist."))
@@ -92,6 +94,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
         response => {
           response.fold(
             error => {
+              PagerDutyHelper.log("initiateCallToUpscan", FAILED_INITIATE_CALL_UPSCAN)
               logger.error(s"[UpscanController][initiateCallToUpscan] - Upscan call failure with status: ${error.status} and body: ${error.body}")
               logger.error(s"[UpscanController][initiateCallToUpscan] - Failed to map response for journey: $journeyId")
               Future(InternalServerError("An exception has occurred."))
@@ -121,6 +124,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
       _ => NoContent
     }.recover {
       case e =>
+        PagerDutyHelper.log("removeFile", FILE_REMOVAL_FAILURE_UPSCAN)
         logger.error(s"[UpscanController][removeFile] - Failed to delete file: $fileReference for journey: $journeyId with error: ${e.getMessage}")
         InternalServerError("An exception has occurred.")
     }
@@ -128,6 +132,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
 
   def uploadFailure(journeyId: String): Action[AnyContent] = Action.async {
     implicit request => {
+      PagerDutyHelper.log("uploadFailure", UPLOAD_FAILURE_UPSCAN)
       logger.error(s"[UpscanController][uploadFailure] - Error redirect initiated for journey: $journeyId")
       S3UploadErrorForm.form.bindFromRequest().fold(
         error => {
@@ -163,6 +168,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
     implicit request => {
       S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
         errors => {
+          PagerDutyHelper.log("filePosted", FILE_POSTED_FAILURE_UPSCAN)
           logger.error(s"[UpscanController][filePosted] - Could not bind form based on request with errors: ${errors.errors}")
           Future(BadRequest(""))
         },
@@ -203,7 +209,8 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
     implicit request => {
       S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
         errors => {
-          logger.error(s"[UpscanController][filePosted] - Could not bind form based on request with errors: ${errors.errors}")
+          PagerDutyHelper.log("fileVerification", FILE_VERIFICATION_FAILURE_UPSCAN)
+          logger.error(s"[UpscanController][fileVerification] - Could not bind form based on request with errors: ${errors.errors}")
           Future(errorHandler.showInternalServerError)
         },
         upload => {

@@ -21,10 +21,13 @@ import models.appeals.MultiplePenaltiesData
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
+import utils.Logger.logger
+import utils.PagerDutyHelper.PagerDutyKeys
 
 import java.time.LocalDate
 
-class MultiplePenaltiesHttpParserSpec extends SpecBase {
+class MultiplePenaltiesHttpParserSpec extends SpecBase with LogCapturing {
 
   val multiplePenaltiesModel: MultiplePenaltiesData = MultiplePenaltiesData(
     firstPenaltyChargeReference = "123456789",
@@ -66,7 +69,12 @@ class MultiplePenaltiesHttpParserSpec extends SpecBase {
 
 
     s"return InvalidJson if the status is ${Status.OK} but the model can not be parsed" in new Setup(Status.OK, Some(invalidJson)) {
-      readResponse shouldBe Left(InvalidJson)
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          readResponse shouldBe Left(InvalidJson)
+          logs.exists(_.getMessage.contains(PagerDutyKeys.INVALID_JSON_RECEIVED_FROM_PENALTIES.toString)) shouldBe true
+        }
+      }
     }
 
     s"return NoContent if the status is ${Status.NO_CONTENT}" in new Setup(Status.NO_CONTENT, Some(Json.obj())) {
@@ -74,7 +82,12 @@ class MultiplePenaltiesHttpParserSpec extends SpecBase {
     }
 
     s"return $UnexpectedFailure if random non Success status code returned" in new Setup(Status.INTERNAL_SERVER_ERROR, optJson = Some(Json.obj())) {
-      readResponse shouldBe Left(UnexpectedFailure(500, "Unexpected response, status 500 returned"))
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          readResponse shouldBe Left(UnexpectedFailure(500, "Unexpected response, status 500 returned"))
+          logs.exists(_.getMessage.contains(PagerDutyKeys.RECEIVED_5XX_FROM_PENALTIES.toString)) shouldBe true
+        }
+      }
     }
   }
 

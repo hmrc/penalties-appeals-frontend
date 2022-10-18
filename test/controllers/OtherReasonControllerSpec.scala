@@ -35,6 +35,9 @@ import services.upscan.UpscanService
 import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
+import utils.Logger.logger
+import utils.PagerDutyHelper.PagerDutyKeys
 import utils.SessionKeys
 import views.html.errors.ServiceUnavailablePage
 import views.html.reasonableExcuseJourneys.other._
@@ -44,7 +47,7 @@ import viewtils.EvidenceFileUploadsHelper
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
-class OtherReasonControllerSpec extends SpecBase {
+class OtherReasonControllerSpec extends SpecBase with LogCapturing {
   val whenDidYouBecomeUnablePage: WhenDidBecomeUnablePage = injector.instanceOf[WhenDidBecomeUnablePage]
   val whyReturnSubmittedLatePage: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
   val uploadEvidencePage: UploadEvidencePage = injector.instanceOf[UploadEvidencePage]
@@ -419,15 +422,18 @@ class OtherReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
-          val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
-          val content: String = contentAsString(result)
-
-          status(result) shouldBe INTERNAL_SERVER_ERROR
-          content.contains("Sorry, the service is unavailable") shouldBe true
-          content.contains("We have not saved your answers.") shouldBe true
-          content.contains("You will be able to use the service later.") shouldBe true
-          content.contains("If you prefer, you can appeal by letter. Write to:") shouldBe true
-
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
+              status(result) shouldBe INTERNAL_SERVER_ERROR
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
+              val content: String = contentAsString(result)
+              content.contains("Sorry, the service is unavailable") shouldBe true
+              content.contains("We have not saved your answers.") shouldBe true
+              content.contains("You will be able to use the service later.") shouldBe true
+              content.contains("If you prefer, you can appeal by letter. Write to:") shouldBe true
+            }
+          }
         }
 
         "the user is unauthorised" when {
@@ -534,8 +540,13 @@ class OtherReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
-          val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(userRequestWithCorrectKeys)
+              status(result) shouldBe INTERNAL_SERVER_ERROR
+              logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
+            }
+          }
         }
 
         "the user is unauthorised" when {

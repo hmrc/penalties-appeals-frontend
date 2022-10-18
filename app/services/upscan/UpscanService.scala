@@ -28,7 +28,8 @@ import play.api.mvc.{Request, Result}
 import repositories.UploadJourneyRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logger.logger
-import utils.SessionKeys
+import utils.PagerDutyHelper.PagerDutyKeys._
+import utils.{PagerDutyHelper, SessionKeys}
 
 import javax.inject.Inject
 import scala.concurrent.duration.FiniteDuration
@@ -54,6 +55,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
     upscanConnector.initiateToUpscan(initiateRequestModel).flatMap {
       _.fold(
         error => {
+          PagerDutyHelper.logStatusCode("initiateSynchronousCallToUpscan", error.status)(RECEIVED_4XX_FROM_UPSCAN, RECEIVED_5XX_FROM_UPSCAN)
           logger.error(s"[UpscanService][initiateSynchronousCallToUpscan] - Initiate call to Upscan failed with error: ${error.body} and status: ${error.status}")
           Future(Left(error))
         },
