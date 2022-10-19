@@ -55,7 +55,6 @@ class AgentsController @Inject()(navigation: Navigation,
     implicit userRequest => {
       logger.debug("[AgentsController][onPageLoadForWhatCausedYouToMissTheDeadline] - Loaded 'what caused you to miss the deadline' page as user is agent")
       val postAction = controllers.routes.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(mode)
-
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(WhatCausedYouToMissTheDeadlineForm.whatCausedYouToMissTheDeadlineForm,
         SessionKeys.whatCausedYouToMissTheDeadline,
         userRequest.answers
@@ -107,11 +106,7 @@ class AgentsController @Inject()(navigation: Navigation,
         whoPlannedToSubmitReturn => {
           val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn, whoPlannedToSubmitReturn)
             whoPlannedToSubmitReturn.toLowerCase match {
-            case "agent" =>
-              sessionService.updateAnswers(updatedAnswers).map {
-                _ => Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(whoPlannedToSubmitReturn)))
-              }
-            case "client" =>
+            case "agent" | "client" =>
               sessionService.updateAnswers(updatedAnswers).map {
                 _ => Redirect(navigation.nextPage(WhoPlannedToSubmitVATReturnAgentPage, mode, Some(whoPlannedToSubmitReturn)))
               }

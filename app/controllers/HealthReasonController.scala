@@ -187,7 +187,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
                   val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.hasHealthEventEnded, formAnswers.hasStayEnded)
                   sessionService.updateAnswers(updatedAnswers).map(_ => Redirect(navigation.nextPage(DidHospitalStayEndPage, mode)))
                 case _ =>
-                  logger.debug("[HealthReasonController][onSubmitForHasHospitalStayEnded]- Something went wrong with 'valid' for answers")
+                  logger.error("[HealthReasonController][onSubmitForHasHospitalStayEnded] - User did not enter an end date or did not select an radio option")
                   Future(errorHandler.showInternalServerError)
               }
             }

@@ -36,13 +36,12 @@ class IncompleteSessionDataController @Inject()(incompleteSessionDataPage: Incom
                                                 dataRetrieval: DataRetrievalAction
                                                 ) extends FrontendController(mcc) with I18nSupport {
 
-  //Assuming that the page before this has completed all the basic session data checks
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
       val penaltyId = request.answers.getAnswer[String](SessionKeys.penaltyNumber).get
       val isLPP = request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(Late_Payment)
       val isAdditional = request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(Additional)
-      Ok(incompleteSessionDataPage(penaltyId, isLPP, isAdditional))
+      BadRequest(incompleteSessionDataPage(penaltyId, isLPP, isAdditional))
     }
   }
 }

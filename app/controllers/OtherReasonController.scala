@@ -242,6 +242,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
       } yield {
         if (previousUploadsState.isEmpty ||
           previousUploadsState.exists(!_.exists(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))) {
+          logger.debug("[OtherReasonController][onPageLoadForUploadComplete] - No file uploads left to render - routing to first file upload page")
           Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
         } else {
           val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(file =>
@@ -336,15 +337,18 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             if (errorMessage.isDefined) {
               val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled)
               if (isAddingAnotherDocument) {
+                logger.debug("[OtherReasonController][onSubmitForUploadTakingLongerThanExpected] - user is adding another document - routing user back to another document upload with errors")
                 Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
                   .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
                   .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
               } else {
+                logger.debug("[OtherReasonController][onSubmitForUploadTakingLongerThanExpected] - user is uploading first document - routing user back to uploading first document with errors")
                 Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                   .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason)
                   .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
               }
             } else {
+              logger.debug("[OtherReasonController][onSubmitForUploadTakingLongerThanExpected] - file upload succeeded - rendering upload list page")
               Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
                 .removingFromSession(SessionKeys.isAddingAnotherDocument, SessionKeys.fileReference))
             }

@@ -49,9 +49,10 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
                                       (implicit user: AuthRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
     penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
-      _.fold[Option[AppealData]](
+      _.fold[Option[AppealData]]({
+        logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Found no appeal data for penalty ID: $penaltyId")
         None
-      )(
+      })(
         jsValue => {
           val parsedAppealDataModel = Json.fromJson(jsValue)(AppealData.format)
           parsedAppealDataModel.fold(
@@ -87,9 +88,10 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
 
   def getReasonableExcuseListAndParse()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[ReasonableExcuse]]] = {
     penaltiesConnector.getListOfReasonableExcuses().map {
-      _.fold[Option[Seq[ReasonableExcuse]]](
+      _.fold[Option[Seq[ReasonableExcuse]]]({
+        logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Found no reasonable excuses")
         None
-      )(
+      })(
         jsValue => {
           val resultOfParsing: JsResult[Seq[ReasonableExcuse]] = Json.fromJson[Seq[ReasonableExcuse]](jsValue)(ReasonableExcuse.seqReads)
           resultOfParsing.fold(
@@ -137,15 +139,18 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         case OK =>
           if (isLPP) {
             if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
+              logger.info("[AppealService][singleAppeal] - Auditing first LPP appeal payload")
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads))
             } else {
+              logger.info("[AppealService][singleAppeal] - Auditing second LPP appeal payload")
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads))
             }
           } else {
+            logger.info("[AppealService][singleAppeal] - Auditing LSP appeal payload")
             auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads))
           }
           sendAuditIfDuplicatesExist(uploads)
-          logger.debug("[AppealService][singleAppeal] - Received OK from the appeal submission call")
+          logger.info("[AppealService][singleAppeal] - Received OK from the appeal submission call")
           Right((): Unit)
         case _ =>
           logger.error(s"[AppealService][singleAppeal] - Received unknown status code from connector: ${response.status}")
@@ -181,11 +186,14 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         case (OK, OK) =>
           if (isLPP) {
             if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
+              logger.info("[AppealService][multipleAppeal] - Auditing first LPP appeal payload")
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads))
             } else {
+              logger.info("[AppealService][multipleAppeal] - Auditing second LPP appeal payload")
               auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads))
             }
           } else {
+            logger.info("[AppealService][multipleAppeal] - Auditing LSP appeal payload")
             auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads))
           }
           sendAuditIfDuplicatesExist(uploads)

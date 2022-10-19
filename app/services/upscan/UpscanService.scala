@@ -60,11 +60,14 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
           Future(Left(error))
         },
         responseModel => {
-          logger.debug(s"[UpscanController][initiateCallToUpscan] - Retrieving response model for journey: $journeyId")
+          logger.info(s"[UpscanController][initiateSynchronousCallToUpscan] - Retrieving response model for journey: $journeyId")
           val uploadJourney = UploadJourney(responseModel.reference, UploadStatusEnum.WAITING,
             uploadFields = Some(responseModel.uploadRequest.fields))
           uploadJourneyRepository.updateStateOfFileUpload(journeyId, uploadJourney, isInitiateCall = true).map {
-            _ => Right(responseModel)
+            _ => {
+              logger.info(s"[UpscanController][initiateSynchronousCallToUpscan] - Stored init state of file upload for journey: $journeyId")
+              Right(responseModel)
+            }
           }
         }
       )
@@ -84,9 +87,9 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
         Future(errorHandler.showInternalServerError)
       })(
         uploadStatus => {
-          logger.debug("[UpscanService][waitForStatus] - Running status check for upload")
+          logger.info(s"[UpscanService][waitForStatus] - Running status check for upload for journey: $journeyId and file: $fileReference")
           if(uploadStatus.status != "WAITING") {
-            logger.debug("[UpscanService][waitForStatus] - Upload callback received")
+            logger.info(s"[UpscanService][waitForStatus] - Upload callback received for journey: $journeyId and file: $fileReference")
             uploadJourneyRepository.getUploadsForJourney(Some(journeyId)).flatMap {
               uploads => {
                 val uploadForFile = uploads.get.find(_.reference == fileReference).get
@@ -100,7 +103,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
               SessionKeys.isAddingAnotherDocument -> s"$isAddingAnotherDocument"
             ))
           } else {
-            logger.debug(s"[UpscanService][waitForStatus] - Upload still in waiting state - waiting ${appConfig.upscanStatusCheckDelay}ms before running check again")
+            logger.info(s"[UpscanService][waitForStatus] - Upload still in waiting state - waiting ${appConfig.upscanStatusCheckDelay}ms before running check again for journey: $journeyId and file: $fileReference")
             after(duration = FiniteDuration(appConfig.upscanStatusCheckDelay, "ms"), using = scheduler.scheduler)(
               waitForStatus(journeyId, fileReference, timeoutNano, mode, isAddingAnotherDocument, block)
             )

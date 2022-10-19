@@ -87,10 +87,8 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
       val originalAppealPenalty = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get
       val isLPP2 = originalAppealPenalty.equals(PenaltyTypeEnum.Additional)
       val penaltyAmount = {
-        if (isLPP2)
-          userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).get
-        else
-          userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get
+        if (isLPP2) userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).get
+        else userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get
       }
       Ok(appealSinglePenaltyPage(pageMode(AppealSinglePenaltyPage, mode), nextPageUrl, penaltyAmount, isLPP2))
     }
