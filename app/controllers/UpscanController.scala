@@ -220,13 +220,16 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
               if (errorMessage.isDefined) {
                 val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled)
                 if (isAddingAnotherDocument) {
+                  logger.debug("[UpscanController][fileVerification] - user is uploading another document - routing user back to uploading another document with errors")
                   Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 } else {
+                  logger.debug("[UpscanController][fileVerification] - user is uploading first document - routing user back to uploading first document with errors")
                   Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 }
               } else {
+                logger.debug("[UpscanController][fileVerification] - file upload succeeded - rendering upload list page")
                 Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)))
               }
             }

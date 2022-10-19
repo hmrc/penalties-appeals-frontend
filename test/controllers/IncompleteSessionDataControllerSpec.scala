@@ -45,10 +45,10 @@ class IncompleteSessionDataControllerSpec extends SpecBase {
   "onPageLoad" when {
     "the user is authorised" should {
 
-      "return 200 (OK)" in new Setup(AuthTestModels.successfulAuthResult) {
+      "return 400 (BAD_REQUEST)" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        status(controller.onPageLoad()(userRequestWithCorrectKeys)) shouldBe OK
+        status(controller.onPageLoad()(userRequestWithCorrectKeys)) shouldBe BAD_REQUEST
       }
 
       "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {

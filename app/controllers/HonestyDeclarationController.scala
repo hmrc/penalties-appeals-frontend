@@ -74,16 +74,9 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
       tryToGetExcuseDatesAndObligationFromSession({
         (reasonableExcuse, _, _, _, isObligation) => {
           logger.debug(s"[HonestyDeclarationController][onSubmit] - Adding 'true' to session for key: ${SessionKeys.hasConfirmedDeclaration}")
-          if (isObligation) {
-            val updatedAnswers = request.answers.setAnswer[Boolean](SessionKeys.hasConfirmedDeclaration, true)
-            sessionService.updateAnswers(updatedAnswers).map {
-              _ => Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, None))
-            }
-          } else {
-            val updatedAnswers = request.answers.setAnswer[Boolean](SessionKeys.hasConfirmedDeclaration, true)
-            sessionService.updateAnswers(updatedAnswers).map {
-              _ => Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, Some(reasonableExcuse)))
-            }
+          val updatedAnswers = request.answers.setAnswer[Boolean](SessionKeys.hasConfirmedDeclaration, true)
+          sessionService.updateAnswers(updatedAnswers).map {
+            _ => Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, if(!isObligation) Some(reasonableExcuse) else None))
           }
         }
       }

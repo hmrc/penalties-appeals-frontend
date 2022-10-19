@@ -45,11 +45,12 @@ class UploadJourneyRepository @Inject()(
       document => {
         if (document.isDefined || isInitiateCall) {
           put(journeyId)(DataKey(callbackModel.reference), callbackModel).map(item => {
-            logger.debug(s"[UploadJourneyRepository][updateStateOfFileUpload] - updating state of file (reference: ${callbackModel.reference}) upload in repository: " +
+            logger.info(s"[UploadJourneyRepository][updateStateOfFileUpload] - updating state of file (reference: ${callbackModel.reference}) upload in repository: " +
               s"is document defined: ${document.isDefined}, isInitiateCall: $isInitiateCall")
             item.id
           }).map(Some(_))
         } else {
+          logger.info(s"[UploadJourneyRepository][updateStateOfFileUpload] - found no existing file in Mongo for file ref: ${callbackModel.reference}")
           Future.successful(None)
         }
       }
@@ -68,6 +69,7 @@ class UploadJourneyRepository @Inject()(
             }
           ))
         } else {
+          logger.info(s"[UploadJourneyRepository][getFieldsForFileReference] - found no existing file in Mongo for file ref: $fileReference")
           None
         }
       }
@@ -85,7 +87,7 @@ class UploadJourneyRepository @Inject()(
               UploadStatus(failureDetails.failureReason.toString, Some(failureDetails.message))
             }))
         } else {
-          logger.debug(s"[UploadJourneyRepository][getStatusOfFileUpload] - Success response returned for journey: $journeyId")
+          logger.info(s"[UploadJourneyRepository][getStatusOfFileUpload] - Success response returned for journey: $journeyId and file reference: $fileReference")
           upload.map(file => UploadStatus(file.fileStatus.toString))
         }
       }

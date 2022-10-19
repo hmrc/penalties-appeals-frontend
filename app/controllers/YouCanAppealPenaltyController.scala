@@ -51,7 +51,6 @@ class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request =>
-
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         youCanAppealPenaltyForm,
         SessionKeys.youCanAppealThisPenalty,
