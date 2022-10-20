@@ -31,10 +31,10 @@ class PreviousPageController @Inject()(navigation: Navigation)
                                        authorise: AuthPredicate,
                                        dataRetrieval: DataRetrievalAction,
                                        dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
-  def previousPage(pageName: String, mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+  def previousPage(pageName: String, mode: Mode, isJsEnabled: Boolean): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
       val page = Page.find(pageName)
-      Redirect(navigation.previousPage(page, mode))
+      Redirect(navigation.previousPage(page, mode, isJsEnabled))
     }
   }
 }

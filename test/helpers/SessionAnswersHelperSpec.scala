@@ -745,7 +745,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "Not provided"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
         }
 
         "for no upload - and late appeal" in {
@@ -835,7 +835,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
         }
 
         "for upload - and late appeal" in {
@@ -879,7 +879,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
           result(5).key shouldBe "Reason for appealing after 30 days"
           result(5).value shouldBe "This is the reason why my appeal was late."
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -936,7 +936,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(5).key shouldBe "Evidence to support this appeal"
         result(5).value shouldBe "file.docx"
-        result(5).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(5).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
 
         result(6).key shouldBe "Reason for appealing after 30 days"
         result(6).value shouldBe "This is the reason why my appeal was late."
@@ -1007,7 +1007,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(4).key shouldBe "Evidence to support this appeal"
         result(4).value shouldBe "file.docx"
-        result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
         result(5).key shouldBe "Reason for appealing after 30 days"
         result(5).value shouldBe "This is the reason why my appeal was late."
         result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1279,7 +1279,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "Not provided"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
         }
 
         "for no upload - and late appeal" in {
@@ -1321,7 +1321,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "Not provided"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
           result(5).key shouldBe "Reason for appealing after 30 days"
           result(5).value shouldBe "This is the reason why my appeal was late."
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1368,7 +1368,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
         }
 
         "for upload - and late appeal" in {
@@ -1410,7 +1410,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
           result(5).key shouldBe "Reason for appealing after 30 days"
           result(5).value shouldBe "This is the reason why my appeal was late."
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -2046,7 +2046,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(2).key shouldBe "Evidence to support this appeal"
           result(2).value shouldBe "file.txt"
-          result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+          result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
         }
 
         "show the obligation variation of the page - 'hide' the files uploaded if user selected no to uploading files" in {
@@ -2115,7 +2115,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(2).key shouldBe "Evidence to support this appeal"
         result(2).value shouldBe "Not provided"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
       }
 
       "return rows of answers - without uploaded files row" in {
@@ -2164,7 +2164,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(2).key shouldBe "Evidence to support this appeal"
         result(2).value shouldBe "some-file-name.txt"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
       }
 
       "the user has selected no to uploaded files - 'hide' the row" in {
@@ -2255,7 +2255,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(4).key shouldBe "Evidence to support this appeal"
         result(4).value shouldBe "file1.txt"
-        result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
       }
     }
 
@@ -2281,7 +2281,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(2).key shouldBe "Evidence to support this appeal"
         result(2).value shouldBe "file1.txt"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
       }
     }
 

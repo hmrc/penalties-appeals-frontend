@@ -239,7 +239,8 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
           base :+ CheckYourAnswersRow(
             messages("checkYourAnswers.other.fileEvidence"),
             if (fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
-            controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+            controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url,
+            isUploadRow = true
           )
         } else {
           base
@@ -431,7 +432,8 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
       base :+ CheckYourAnswersRow(
         messages("checkYourAnswers.other.fileEvidence"),
         if (fileNames.contains("") || fileNames.isEmpty) messages("checkYourAnswers.other.noFileUpload") else fileNames.get,
-        controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+        controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url,
+        isUploadRow = true
       )
     } else {
       base

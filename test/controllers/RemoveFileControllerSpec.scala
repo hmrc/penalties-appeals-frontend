@@ -100,7 +100,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "no")))
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, true).url
         }
 
         "the user clicks yes - removing the file" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -110,7 +110,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode).url
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, true).url
         }
       }
 

@@ -121,7 +121,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
         .withFormUrlEncodedBody("value" -> "yes")))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 0
       result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+      result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, true).url
     }
 
     "return 303 (SEE_OTHER) redirecting back to upload list page when the user answers no (js disabled)" in new Setup(userAnswers) {
@@ -141,7 +141,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
         .withFormUrlEncodedBody("value" -> "no")))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
       result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode).url
+      result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, true).url
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup(userAnswers(Json.obj())) {
