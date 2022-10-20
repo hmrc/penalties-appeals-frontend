@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package models.appeals
+package models.upload
 
-case class CheckYourAnswersRow(
-                                key: String,
-                                value: String,
-                                url: String,
-                                isUploadRow: Boolean = false
-                              )
+case class UploadEvidenceFormModel(
+                                    value: String,
+                                    jsEnabled: Option[Boolean]
+                                  )

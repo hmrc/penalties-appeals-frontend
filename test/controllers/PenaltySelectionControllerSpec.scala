@@ -114,7 +114,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
         val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         when(mockSessionService.updateAnswers(answerCaptor.capture()))
           .thenReturn(Future.successful(true))
-        when(mockNavigator.nextPage(any(), any(), any())(any()))
+        when(mockNavigator.nextPage(any(), any(), any(), any())(any()))
           .thenReturn(controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode))
         val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest
           .withFormUrlEncodedBody("value" -> "no")))
@@ -129,7 +129,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
         val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         when(mockSessionService.updateAnswers(answerCaptor.capture()))
           .thenReturn(Future.successful(true))
-        when(mockNavigator.nextPage(any(), any(), any())(any()))
+        when(mockNavigator.nextPage(any(), any(), any(), any())(any()))
           .thenReturn(controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode))
         val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestConverter(correctLPPUserAnswers ++ multiPenaltyAnswers, fakeRequest
           .withFormUrlEncodedBody("value" -> "yes")))
@@ -166,7 +166,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
       "the user is authorised and has the correct keys in the session - first LPP" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers))))
-        when(mockNavigator.nextPage(any(), any(), any())(any()))
+        when(mockNavigator.nextPage(any(), any(), any(), any())(any()))
           .thenReturn(controllers.routes.AppealStartController.onPageLoad())
         val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
@@ -175,7 +175,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
       "the user is authorised and has the correct keys in the session - second LPP" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctAdditionalLPPUserAnswers ++ multiPenaltyAnswers))))
-        when(mockNavigator.nextPage(any(), any(), any())(any()))
+        when(mockNavigator.nextPage(any(), any(), any(), any())(any()))
           .thenReturn(controllers.routes.AppealStartController.onPageLoad())
         val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
@@ -210,7 +210,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctAdditionalLPPUserAnswers ++ multiPenaltyAnswers))))
-        when(mockNavigator.nextPage(any(), any(), any())(any()))
+        when(mockNavigator.nextPage(any(), any(), any(), any())(any()))
           .thenReturn(controllers.routes.AppealStartController.onPageLoad())
         val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK

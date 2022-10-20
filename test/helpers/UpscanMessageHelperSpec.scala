@@ -127,14 +127,14 @@ class UpscanMessageHelperSpec extends SpecBase {
   }
 
   "getJsOrNonJsFailureMessage" when {
-    "a request cookie contains 'jsenabled' and nonJsRoute is disabled" should {
+    "a request has 'jsenabled' and nonJsRoute is disabled" should {
       "return a message with the 'jsPrefix'" in {
         val result: String = UpscanMessageHelper.getJsOrNonJsFailureMessage("foo", true)
         result shouldBe "upscan.foo"
       }
     }
 
-    "a request cookie does not contain 'jsenabled' and nonJsRoute is enabled" should {
+    "a request has 'jsenabled' and nonJsRoute is enabled" should {
       "return a message with the 'noJsPrefix'" in {
         val result = UpscanMessageHelper.getJsOrNonJsFailureMessage("bar", false)
         result shouldBe "upscan.noJs.bar"

@@ -132,15 +132,11 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
     SessionKeys.journeyId -> "1234"
   )
 
-  val fakeRequestWithCorrectKeysAndJS: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.journeyId -> "1234").withCookies(Cookie("jsenabled", "true"))
-
   val userRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
 
   val userRequestLPPWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
 
   val userRequestAdditionalWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctAdditionalLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
-
-  val userRequestWithCorrectKeysAndJS: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequestWithCorrectKeysAndJS)
 
   val fakeRequestWithCorrectKeysAndReasonableExcuseSet: String => UserRequest[AnyContent] = (reasonableExcuse: String) =>
     UserRequest(vrn, answers = UserAnswers("1234", correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> reasonableExcuse)))(fakeRequest)
