@@ -31,12 +31,10 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.{PagerDutyHelper, SessionKeys}
-
-import javax.inject.Inject
 import viewtils.EvidenceFileUploadsHelper
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class UpscanController @Inject()(repository: UploadJourneyRepository,
                                  connector: UpscanConnector,
@@ -44,7 +42,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                                  evidenceFileUploadsHelper: EvidenceFileUploadsHelper)
                                 (implicit appConfig: AppConfig,
                                  errorHandler: ErrorHandler,
-                                 mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+                                 mcc: MessagesControllerComponents, ec: ExecutionContext) extends FrontendController(mcc) {
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
     implicit request => {
@@ -70,7 +68,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                   val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_, fileIndex + 1))
                   val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
                   logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
-                    s"reference: $fileReference number: ${fileIndex + 1} - returning status: $fileStatusWithLocalisedMessage with message: ${fileStatusWithLocalisedMessage.errorMessage}")
+                    s"reference: $fileReference number: ${fileIndex + 1} - returning status: ${fileStatusWithLocalisedMessage.status} with message: ${fileStatusWithLocalisedMessage.errorMessage}")
                   Ok(Json.toJson(fileStatusWithLocalisedMessage))
                 }
               }

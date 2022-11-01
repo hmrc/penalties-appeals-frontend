@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import controllers.predicates.AuthPredicate
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
 import models.{AppealData, PenaltyTypeEnum}
@@ -24,7 +25,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
 import services.AppealService
 import testUtils.AuthTestModels
@@ -33,12 +34,13 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 
 import java.time.LocalDate
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class InitialiseAppealControllerSpec extends SpecBase {
   val mockAppealsService: AppealService = mock(classOf[AppealService])
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], expectedContent: Option[MultiplePenaltiesData] = None) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], expectedContent: Option[MultiplePenaltiesData] = None){
     reset(mockAuthConnector, mockAppealsService, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -50,7 +52,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       mockAppealsService,
       mockSessionService,
       errorHandler
-    )(mcc, authPredicate)
+    )
   }
 
   val sampleExamplePenalties: MultiplePenaltiesData = MultiplePenaltiesData(

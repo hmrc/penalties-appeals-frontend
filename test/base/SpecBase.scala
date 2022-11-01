@@ -68,9 +68,9 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   val cyMessages: Messages = messagesApi.preferred(fakeRequest.withTransientLang("cy"))
 
-  val mcc: MessagesControllerComponents = injector.instanceOf[MessagesControllerComponents]
+  implicit val mcc: MessagesControllerComponents = injector.instanceOf[MessagesControllerComponents]
 
-  lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
+  implicit lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
 
   val sessionService: SessionService = injector.instanceOf[SessionService]
 
@@ -152,7 +152,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
       SessionKeys.hasConfirmedDeclaration -> "true"
     ))
 
-  lazy val authPredicate: AuthPredicate = new AuthPredicate(
+  implicit lazy val authPredicate: AuthPredicate = new AuthPredicate(
     messagesApi,
     mcc,
     mockAuthService,

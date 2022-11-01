@@ -20,6 +20,8 @@ import config.featureSwitches.NonJSRouting
 import play.api.test.Helpers._
 import utils.IntegrationSpecCommonBase
 
+import scala.language.postfixOps
+
 class FeatureSwitchControllerISpec extends IntegrationSpecCommonBase {
   class Setup {
     sys.props -= NonJSRouting.name

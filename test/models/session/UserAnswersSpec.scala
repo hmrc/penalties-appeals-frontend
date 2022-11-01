@@ -75,7 +75,7 @@ class UserAnswersSpec extends AnyWordSpec with Matchers {
           "key1" -> "value1",
           "key2" -> "value2"
         ))
-        val result = answers.getAnswer("key2")
+        val result = answers.getAnswer[String]("key2")
         result.isDefined shouldBe true
         result.get shouldBe "value2"
       }
@@ -87,7 +87,7 @@ class UserAnswersSpec extends AnyWordSpec with Matchers {
           "key1" -> "value1",
           "key2" -> "value2"
         ))
-        val result = answers.getAnswer("key3")
+        val result = answers.getAnswer[String]("key3")
         result.isEmpty shouldBe true
       }
     }
