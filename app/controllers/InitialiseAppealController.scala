@@ -31,12 +31,14 @@ import utils.{CurrencyFormatter, SessionKeys}
 import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class InitialiseAppealController @Inject()(appealService: AppealService,
                                            sessionService: SessionService,
-                                           errorHandler: ErrorHandler)(implicit mcc: MessagesControllerComponents, authorise: AuthPredicate)
+                                           errorHandler: ErrorHandler)(
+                                                                       implicit val mcc: MessagesControllerComponents,
+                                                                       authorise: AuthPredicate,
+                                                                       ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {

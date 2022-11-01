@@ -52,7 +52,7 @@ class UpscanControllerSpec extends SpecBase with LogCapturing {
     connector,
     service,
     helper
-  )(appConfig, errorHandler, stubMessagesControllerComponents())
+  )
 
   val uploadJourneyModel: UploadJourney = UploadJourney(
     reference = "ref1",
@@ -96,13 +96,14 @@ class UpscanControllerSpec extends SpecBase with LogCapturing {
 
         "the user has a failed file upload in the database" in {
           val returnModel = UploadStatus(FailureReasonEnum.QUARANTINE.toString, Some("upscan.fileHasVirus"))
+          val resultModel = returnModel.copy(errorMessage = Some("File 2 contains a virus. Choose another file."))
           when(repository.getStatusOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some(returnModel)))
           when(repository.getFileIndexForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(1))
           val result = controller.getStatusOfFileUpload("1234", "ref1")(fakeRequest)
           status(result) shouldBe OK
-          contentAsJson(result) shouldBe Json.toJson(returnModel)
+          contentAsJson(result) shouldBe Json.toJson(resultModel)
         }
 
         "the user has a duplicate file upload in the database - it should call to get an up-to-date inset text message" in {

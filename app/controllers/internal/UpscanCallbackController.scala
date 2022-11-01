@@ -26,11 +26,11 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 class UpscanCallbackController @Inject()(repository: UploadJourneyRepository,
                                          service: UpscanService)
-                                        (implicit mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+                                        (implicit mcc: MessagesControllerComponents, ec: ExecutionContext) extends FrontendController(mcc) {
 
   def callbackFromUpscan(journeyId: String, isJsEnabled: Boolean): Action[JsValue] = Action.async(parse.json) {
     implicit request => {

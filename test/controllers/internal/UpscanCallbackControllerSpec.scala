@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class UpscanCallbackControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val service: UpscanService = injector.instanceOf[UpscanService]
-  val controller: UpscanCallbackController = new UpscanCallbackController(repository, service)(stubMessagesControllerComponents())
+  val controller: UpscanCallbackController = new UpscanCallbackController(repository, service)
 
   class Setup {
     await(repository.collection.deleteMany(Document()).toFuture())
