@@ -543,7 +543,7 @@ youCannotAppeal.headingAndTitle.lpp = You cannot use this service until you pay 
 agent.youCannotAppeal.headingAndTitle.lpp = You cannot use this service until your client pays the VAT
 youCannotAppeal.headingAndTitle.lsp = You cannot use this service until you submit your VAT Return
 agent.youCannotAppeal.headingAndTitle.lsp = You cannot use this service until the VAT Return is submitted
-youCannotAppeal.p1 = You can still write to HMRC and ask us to review the penalty. Details are on the penalty notice we sent you through the post.
+youCannotAppeal.p1 = You can still write to HMRC to ask us to review the penalty. Details are on the penalty notice we sent you through the post.
 youCannotAppeal.p2.lpp = If you want to use this service to appeal, you need to pay your VAT first.
 agent.youCannotAppeal.p2.lpp = If you want to use this service to appeal, your client needs to pay their VAT first.
 youCannotAppeal.p2.lsp = If you want to use this service to appeal, you need to submit your VAT Return first.
@@ -573,6 +573,8 @@ penaltySelection.lpp2 = £{0} second late payment penalty
 # -----------------------------------------------------------
 appealSinglePenalty.headingAndTitle = The appeal will cover a single penalty
 appealSinglePenalty.p1 = You have chosen to appeal the {0}.
+appealSinglePenalty.penaltySelection.lpp1 = £{0} first late payment penalty
+appealSinglePenalty.penaltySelection.lpp2 = £{0} second late payment penalty
 appealSinglePenalty.p2 = You can still appeal other penalties separately.
 
 # Appeal Cover Both Penalties page

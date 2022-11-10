@@ -543,10 +543,10 @@ youCannotAppeal.headingAndTitle.lpp = Ni allwch ddefnyddio’r gwasanaeth hwn hy
 agent.youCannotAppeal.headingAndTitle.lpp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes bod eich cleient wedi talu’r TAW
 youCannotAppeal.headingAndTitle.lsp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes eich bod yn cyflwyno’ch Ffurflen TAW
 agent.youCannotAppeal.headingAndTitle.lsp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes bod y Ffurflen TAW wedi’i chyflwyno
-youCannotAppeal.p1 = You can still write to HMRC and ask us to review the penalty. Details are on the penalty notice we sent you through the post.
+youCannotAppeal.p1 = Gallwch ddal i ysgrifennu at CThEM i ofyn i ni adolygu’r gosb. Mae manylion ar yr hysbysiad o gosb a anfonom atoch drwy’r post.
 youCannotAppeal.p2.lpp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i chi dalu’ch TAW yn gyntaf.
 agent.youCannotAppeal.p2.lpp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i’ch cleient dalu ei TAW yn gyntaf.
-youCannotAppeal.p2.lsp = If you want to use this service to appeal, you need to submit your VAT Return first.
+youCannotAppeal.p2.lsp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i chi gyflwyno’r Ffurflen TAW yn gyntaf.
 agent.youCannotAppeal.p2.lsp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i chi neu’ch cleient gyflwyno’r Ffurflen TAW yn gyntaf.
 youCannotAppeal.p3.lpp = Gall gymryd hyd at 5 diwrnod i’r taliad glirio ac ymddangos ar eich hanes taliadau. Os ydych eisoes wedi talu, cadwch lygad ar yr hanes taliadau i weld pryd y mae’r taliad yn clirio.
 agent.youCannotAppeal.p3.lpp = Gall gymryd hyd at 5 diwrnod i’r taliad glirio ac ymddangos ar ei hanes taliadau. Os yw eisoes wedi talu, cadwch lygad ar yr hanes taliadau i weld pryd y mae’r taliad yn clirio.
@@ -566,13 +566,15 @@ agent.penaltySelection.p2 = Gallwch wneud apêl gyfunol os yw’r rheswm pam na 
 penaltySelection.p2 = Gallwch wneud apêl gyfunol os yw’r rheswm pam na wnaethoch dalu’r TAW mewn pryd yr un peth ar gyfer y ddwy gosb.
 penaltySelection.form.heading = A ydych yn bwriadu apelio yn erbyn y ddwy gosb am yr un rheswm?
 penaltySelection.error.required = Rhowch wybod i ni a ydych yn bwriadu apelio yn erbyn y ddwy gosb am yr un rheswm
-penaltySelection.lpp1 = *cosb gyntaf o £{0} am dalu’n hwyr
-penaltySelection.lpp2 = *ail gosb o £{0} am dalu’n hwyr
+penaltySelection.lpp1 = cosb gyntaf o £{0} am dalu’n hwyr
+penaltySelection.lpp2 = ail gosb o £{0} am dalu’n hwyr
 
 # Appeal single penalty page
 # -----------------------------------------------------------
 appealSinglePenalty.headingAndTitle = Bydd yr apêl yn delio â chosb unigol
 appealSinglePenalty.p1 = Rydych wedi dewis apelio yn erbyn {0}.
+appealSinglePenalty.penaltySelection.lpp1 = y gosb gyntaf am dalu’n hwyr, sef £{0}
+appealSinglePenalty.penaltySelection.lpp2 = yr ail gosb am dalu’n hwyr, sef £{0}
 appealSinglePenalty.p2 = Gallwch ddal i apelio yn erbyn cosbau eraill ar wahân.
 
 # Appeal Cover Both Penalties page

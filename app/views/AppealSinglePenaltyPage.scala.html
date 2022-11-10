@@ -26,7 +26,7 @@
 @(pageMode: PageMode, nextPage: String, penaltyAmount: String, isLPP2: Boolean)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @penaltyTypeMessage = @{
-    if(isLPP2) messages("penaltySelection.lpp2", penaltyAmount) else messages("penaltySelection.lpp1", penaltyAmount)
+    if(isLPP2) messages("appealSinglePenalty.penaltySelection.lpp2", penaltyAmount) else messages("appealSinglePenalty.penaltySelection.lpp1", penaltyAmount)
 }
 
 @layout(pageTitle = messages("appealSinglePenalty.headingAndTitle"),
