@@ -49,11 +49,15 @@ object HonestyDeclarationMessages {
 
   val li2 = "no one else was available to make the submission for me"
 
+  val li2LossOfStaff = "no one else was available to make the submission"
+
   val li2AgentText = "no one else was available to make the submission for them"
 
   val li2AgentTextLPP = "no one else was available to make the payment for them"
 
   val li2Lpp = "no one else was available to make the payment for me"
+
+  val li2LossOfStaffLPP = "no one else was available to make the payment"
 
   val liLppTechIssues = "the technical failure was not due to lack of funds"
 

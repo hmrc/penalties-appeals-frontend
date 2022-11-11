@@ -81,8 +81,14 @@
                 } else {
                     @messages("honestyDeclaration.obligation.li.2", friendlyStartDate, friendlyEndDate)
                 }
+            } else if(reasonableExcuse.equals("lossOfStaff")) {
+                @if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
+                    @messages("honestyDeclaration.lossOfStaff.lpp.li.2")
+                } else {
+                    @messages("honestyDeclaration.lossOfStaff.li.2")
+                }
             } else if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
-                    @getMessage("honestyDeclaration.lpp.li.2")
+                @getMessage("honestyDeclaration.lpp.li.2")
             } else if(userRequest.isAgent && userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") && userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).contains("client")) {
                 @messages("agent.honestyDeclaration.li.2.extra")
             } else {

@@ -154,7 +154,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
               val expectedContent = Seq(
                 Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2
+                Selectors.listIndexWithElementIndex(3, 2) -> li2LossOfStaff
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -241,7 +241,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
               val expectedContent = Seq(
                 Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
+                Selectors.listIndexWithElementIndex(3, 2) -> li2LossOfStaff
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -332,7 +332,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
             val expectedContent = Seq(
               Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClient(messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022"),
-              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+              Selectors.listIndexWithElementIndex(3, 2) -> li2LossOfStaff
             )
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -436,7 +436,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
           val expectedContent = Seq(
             Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
-            Selectors.listIndexWithElementIndex(3, 2) -> extraLiForLossOfStaff
+            Selectors.listIndexWithElementIndex(3, 2) -> extraLiForLossOfStaff,
+            Selectors.listIndexWithElementIndex(3, 3) -> li2LossOfStaff
           )
 
           behave like pageWithExpectedMessages(expectedContent)(doc)
@@ -552,6 +553,25 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           Selectors.listIndexWithElementIndex(3, 1) -> li1Lpp(messages("honestyDeclaration.technicalIssues"), "1 January 2022"),
           Selectors.listIndexWithElementIndex(3, 2) -> li2Lpp,
           Selectors.listIndexWithElementIndex(3, 3) -> liLppTechIssues,
+          Selectors.listIndexWithElementIndex(3, 4) -> li3,
+          Selectors.button -> acceptAndContinueButton
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)(doc)
+      }
+
+      "it is a LPP appeal and the reason is lossOfStaff" must {
+        implicit val doc: Document = asDocument(applyVATTraderView(reasonableExcuse = "lossOfStaff", reasonText = messages("honestyDeclaration.lossOfStaff"),
+          dueDate = "1 January 2022", startDate = "1 January 2021", endDate = "31 January 2021",
+          extraBullets = Seq("honestyDeclaration.li.extra.lossOfStaff"), userRequest = UserRequest("123456789", answers = userAnswers(correctLPPUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "lossOfStaff")))))
+
+        val expectedContent = Seq(
+          Selectors.title -> title,
+          Selectors.h1 -> h1,
+          Selectors.pElementIndex(2) -> p1,
+          Selectors.listIndexWithElementIndex(3, 1) -> li1Lpp(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
+          Selectors.listIndexWithElementIndex(3, 2) -> extraLiForLossOfStaff,
+          Selectors.listIndexWithElementIndex(3, 3) -> li2LossOfStaffLPP,
           Selectors.listIndexWithElementIndex(3, 4) -> li3,
           Selectors.button -> acceptAndContinueButton
         )
