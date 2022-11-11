@@ -21,8 +21,6 @@ import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import org.mockito.Mockito.mock
 
-import java.time.LocalDateTime
-
 class DateTimeHelperSpec extends SpecBase with FeatureSwitching {
   val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val dateTimeHelper: DateTimeHelper = injector.instanceOf[DateTimeHelper]
