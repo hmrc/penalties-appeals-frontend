@@ -276,13 +276,6 @@ otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Why was the VAT bill pa
 otherReason.whyReturnSubmittedLate.lpp.error.required = Explain why the VAT bill was paid late
 otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
 
-# When did you become unable page
-# ----------------------------------------------------------
-otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>
-agent.otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped your client from working on or making this submission.<br><br>
-otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped you from making this payment.<br><br>
-agent.otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped your client from making this payment.<br><br>
-
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
 agents.whoPlannedToSubmitVATReturn.headingAndTitle = Before the deadline, who planned to submit the return?

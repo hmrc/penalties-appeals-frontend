@@ -276,13 +276,6 @@ otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Pam y talwyd y bil TAW 
 otherReason.whyReturnSubmittedLate.lpp.error.required = Eglurwch pam y talwyd y bil TAW yn hwyr
 otherReason.whyReturnSubmittedLate.error.required = Eglurwch pam y cyflwynwyd y Ffurflen TAW yn hwyr
 
-# When did you become unable page
-# ----------------------------------------------------------
-otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped you from working on or making this submission.<br><br>
-agent.otherReason.whenDidBecomeUnable.hintText = Tell us the date when this issue first stopped your client from working on or making this submission.<br><br>
-otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped you from making this payment.<br><br>
-agent.otherReason.whenDidBecomeUnable.lpp.hintText = Tell us the date when this issue first stopped your client from making this payment.<br><br>
-
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
 agents.whoPlannedToSubmitVATReturn.headingAndTitle = Cyn y dyddiad cau, pwy oedd yn bwriadu cyflwyno’r Ffurflen TAW?
