@@ -241,7 +241,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
               val expectedContent = Seq(
                 Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2LossOfStaff
+                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
