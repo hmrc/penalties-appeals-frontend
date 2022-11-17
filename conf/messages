@@ -424,7 +424,7 @@ checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Something else ha
 # ----------------------------------------------------------
 
 appealConfirmation.headingAndTitle.penalty = You have asked us to review your penalty
-agent.appealConfirmation.headingAndTitle.penalty = You have asked us to review your client’s penalty
+agent.appealConfirmation.headingAndTitle.penalty = You have asked us to review a penalty
 appealConfirmation.headingAndTitle.penalties = You have asked us to review your penalties
 agent.appealConfirmation.headingAndTitle.penalties = You have asked us to review your client’s penalties
 appealConfirmation.typeAndPeriod = {0}: {1} to {2}

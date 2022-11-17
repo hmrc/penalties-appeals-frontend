@@ -21,9 +21,9 @@ object AppealConfirmationMessages {
 
   val headingPanelSinglePenalty = "You have asked us to review your penalty"
 
-  val titleSinglePenaltyAgent = "You have asked us to review your client’s penalty - Appeal a VAT penalty - GOV.UK"
+  val titleSinglePenaltyAgent = "You have asked us to review a penalty - Appeal a VAT penalty - GOV.UK"
 
-  val headingPanelSinglePenaltyAgent = "You have asked us to review your client’s penalty"
+  val headingPanelSinglePenaltyAgent = "You have asked us to review a penalty"
 
   val titleBothPenalties = "You have asked us to review your penalties - Appeal a VAT penalty - GOV.UK"
 
