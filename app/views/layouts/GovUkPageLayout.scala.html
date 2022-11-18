@@ -55,7 +55,7 @@
  if(formHasErrors && pageTitle.isDefined) {
         Some(messages("error.prefix") + " " + pageTitle.get)
     } else {
-        pageTitle
+        Some(pageTitle.get +"- Agent")
     }
 }
 
