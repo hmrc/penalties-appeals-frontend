@@ -423,8 +423,8 @@ checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Roedd rhywbeth ar
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
-appealConfirmation.headingAndTitle.penalty = You have asked us to review a penalty
-agent.appealConfirmation.headingAndTitle.penalty = You have asked us to review your client’s penalty
+appealConfirmation.headingAndTitle.penalty = You have asked us to review your penalty
+agent.appealConfirmation.headingAndTitle.penalty = Rydych wedi gofyn i ni adolygu cosb
 appealConfirmation.headingAndTitle.penalties = You have asked us to review your penalties
 agent.appealConfirmation.headingAndTitle.penalties = You have asked us to review your client’s penalties
 appealConfirmation.typeAndPeriod = {0}: {1} i {2}
