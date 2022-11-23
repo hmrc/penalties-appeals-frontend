@@ -22,13 +22,15 @@ object WhenDidHealthReasonHappenMessages {
 
   val titleLSP = s"$headingLSP - Appeal a VAT penalty - GOV.UK"
 
+  val titleAgentLSP = s"$headingLSP - Agent - Appeal a VAT penalty - GOV.UK"
+
   val headingAgentSubmitClientLate = "When did the health issue first stop your client getting information to you?"
 
-  val titleAgentSubmitClientLate = s"$headingAgentSubmitClientLate - Appeal a VAT penalty - GOV.UK"
+  val titleAgentSubmitClientLate = s"$headingAgentSubmitClientLate - Agent - Appeal a VAT penalty - GOV.UK"
 
   val headingAgentClientSubmit = "When did the health issue first stop your client submitting the VAT Return?"
 
-  val titleAgentClientSubmit = s"$headingAgentClientSubmit - Appeal a VAT penalty - GOV.UK"
+  val titleAgentClientSubmit = s"$headingAgentClientSubmit - Agent - Appeal a VAT penalty - GOV.UK"
 
   val headingLPP = "When did the health issue first stop you paying the VAT bill?"
 
@@ -36,7 +38,7 @@ object WhenDidHealthReasonHappenMessages {
 
   val headingAgentLPP = "When did the health issue first stop your client paying the VAT bill?"
 
-  val titleAgentLPP = s"$headingAgentLPP - Appeal a VAT penalty - GOV.UK"
+  val titleAgentLPP = s"$headingAgentLPP - Agent - Appeal a VAT penalty - GOV.UK"
 
   val hintText = "For example, 12 3 2018"
 

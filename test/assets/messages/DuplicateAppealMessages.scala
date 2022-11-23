@@ -20,6 +20,8 @@ object DuplicateAppealMessages {
 
   val title = "We have already been asked to review this penalty - Appeal a VAT penalty - GOV.UK"
 
+  val agentTitle = "We have already been asked to review this penalty - Agent - Appeal a VAT penalty - GOV.UK"
+
   val heading = "We have already been asked to review this penalty"
 
   val p1 = "You cannot submit a duplicate request for the same penalty."

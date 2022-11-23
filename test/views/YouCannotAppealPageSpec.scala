@@ -47,7 +47,7 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLPP))
 
       val expectedContent = Seq(
-        Selectors.title -> (titleHeaderLPPAgent + titleAppend),
+        Selectors.title -> (titleHeaderLPPAgent + agentTitleAppend),
         Selectors.h1 -> titleHeaderLPPAgent,
         Selectors.p1 -> p1,
         Selectors.p2 -> agentLPPp2,
@@ -56,12 +56,13 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
         Selectors.link -> returnToClientVATDetails
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
-      }
+    }
+
     "when agent is on the page with Additional Appeal" must {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLPPAdditional))
 
       val expectedContent = Seq(
-        Selectors.title -> (titleHeaderLPPAgent + titleAppend),
+        Selectors.title -> (titleHeaderLPPAgent + agentTitleAppend),
         Selectors.h1 -> titleHeaderLPPAgent,
         Selectors.p1 -> p1,
         Selectors.p2 -> agentLPPp2,
@@ -70,11 +71,12 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
+
     "when agent is on the page with LSP Appeal" must {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLSP))
 
       val expectedContent = Seq(
-        Selectors.title -> (titleHeaderLSPAgent + titleAppend),
+        Selectors.title -> (titleHeaderLSPAgent + agentTitleAppend),
         Selectors.h1 -> titleHeaderLSPAgent,
         Selectors.p1 -> p1,
         Selectors.p2 -> agentLSPp2,
@@ -84,6 +86,7 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
+
     "when VAT trader is on the page with LSP Appeal" must {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserLSP))
 
@@ -126,5 +129,5 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
-    }
   }
+}

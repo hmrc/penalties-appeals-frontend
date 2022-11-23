@@ -55,7 +55,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
     "when an agent is on the page" must {
 
       val expectedContent = Seq(
-        Selectors.title -> title,
+        Selectors.title -> titleAgent,
         Selectors.h1 -> h1,
         Selectors.pElementIndex(2) -> p1,
         Selectors.listIndexWithElementIndex(3, 1) -> li1("of agent context reason", "1 January 2022"),
@@ -71,7 +71,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           "1 January 2022", "1 January 2021", "31 January 2021", isObligation = true))
 
         val expectedContent = Seq(
-          Selectors.title -> title,
+          Selectors.title -> titleAgent,
           Selectors.h1 -> h1,
           Selectors.pElementIndex(2) -> p1,
           Selectors.listIndexWithElementIndex(3, 1) -> li1Obligation,

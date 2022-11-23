@@ -20,6 +20,8 @@ object PenaltySelectionMessages {
 
   val title = "There are 2 penalties for this VAT charge - Appeal a VAT penalty - GOV.UK"
 
+  val agentTitle = "There are 2 penalties for this VAT charge - Agent - Appeal a VAT penalty - GOV.UK"
+
   val heading = "There are 2 penalties for this VAT charge"
 
   val p1 = "These are:"

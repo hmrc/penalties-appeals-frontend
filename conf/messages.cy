@@ -4,6 +4,7 @@ service.homePageUrl = /penalties-appeals
 # Common
 # ----------------------------------------------------------
 common.pageTitle = {0} - {1} - GOV.UK
+common.agent.pageTitle = {0} - Asiant - {1} - GOV.UK
 common.continue = Yn eich blaen
 common.acceptAndContinue = Derbyn ac yn eich blaen
 common.acceptAndSend = Derbyn ac anfon

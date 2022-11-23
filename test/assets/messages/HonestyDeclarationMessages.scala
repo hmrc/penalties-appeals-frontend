@@ -19,6 +19,8 @@ package messages
 object HonestyDeclarationMessages {
   val title = "Honesty declaration - Appeal a VAT penalty - GOV.UK"
 
+  val titleAgent = "Honesty declaration - Agent - Appeal a VAT penalty - GOV.UK"
+
   val h1 = "Honesty declaration"
 
   val p1 = "I confirm that:"

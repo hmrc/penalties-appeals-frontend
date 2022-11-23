@@ -112,7 +112,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         val answers = Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment)
         implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers ++ answers)))
 
-        doc.select(Selectors.title).text shouldBe title
+        doc.select(Selectors.title).text shouldBe agentTitleLPP
         doc.select(Selectors.h1).text shouldBe h1
       }
     }
