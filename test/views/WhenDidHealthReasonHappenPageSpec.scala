@@ -122,7 +122,7 @@ class WhenDidHealthReasonHappenPageSpec extends SpecBase with ViewBehaviours {
             implicit val doc: Document = asDocument(applyAgentView(agentFormProvider, agentUserAgentMissedSessionKeys))
 
             val expectedContent = Seq(
-              Selectors.title -> titleLSP,
+              Selectors.title -> titleAgentLSP,
               Selectors.h1 -> headingLSP,
               Selectors.hintText -> hintText,
               Selectors.dateEntry(1) -> dayEntry,

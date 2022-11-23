@@ -55,7 +55,7 @@ class DuplicateAppealPageSpec extends SpecBase with ViewBehaviours {
 
     "when an agent is on the page" must {
       val expectedContent = Seq(
-        Selectors.title -> title,
+        Selectors.title -> agentTitle,
         Selectors.h1 -> heading,
         Selectors.p1 -> p1,
         Selectors.link -> linkAgent

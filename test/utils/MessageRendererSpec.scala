@@ -164,4 +164,23 @@ class MessageRendererSpec extends SpecBase {
       result shouldBe false
     }
   }
+
+  "getPageTitle" should {
+    "return the correct title when the user is an agent" when {
+
+      "the user is an agent" in {
+        val answers = UserAnswers("123456789")
+        val fakeAgentRequest = UserRequest(vrn = "123456789", arn = Some("AGENT1"), answers = answers)(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
+        val result = MessageRenderer.getPageTitle("Page name", "Service name")(implicitly, fakeAgentRequest)
+        result shouldBe "Page name - Agent - Service name - GOV.UK"
+      }
+
+      "the user is a trader" in {
+        val answers = UserAnswers("123456789")
+        val request = UserRequest(vrn = "123456789", arn = None, answers = answers)(fakeRequest)
+        val result = MessageRenderer.getPageTitle("Page name", "Service name")(implicitly, request)
+        result shouldBe "Page name - Service name - GOV.UK"
+      }
+    }
+  }
 }

@@ -18,6 +18,7 @@ package utils
 
 import models.UserRequest
 import play.api.i18n.Messages
+import play.api.mvc.Request
 
 object MessageRenderer {
 
@@ -36,6 +37,14 @@ object MessageRenderer {
       messages.apply(s"agent.$msgKey", msgArgs: _*)
     } else {
       messages.apply(msgKey, msgArgs: _*)
+    }
+  }
+
+  def getPageTitle(msgArgs: Any*)(implicit messages: Messages, request: Request[_]): String = {
+    if(request.session.get(SessionKeys.agentSessionVrn).isDefined) {
+      messages.apply("common.agent.pageTitle", msgArgs: _*)
+    } else {
+      messages.apply("common.pageTitle", msgArgs: _*)
     }
   }
 

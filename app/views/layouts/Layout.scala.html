@@ -80,7 +80,7 @@
 }}
 
 @govukLayout(
-    pageTitle = Some(messages("common.pageTitle", pageTitle, messages("service.name"))),
+    pageTitle = Some(getPageTitle(pageTitle, messages("service.name"))),
     headBlock = Some(headBlock),
     headerBlock = Some(header(showSignOut)),
     scriptsBlock = Some(scripts),

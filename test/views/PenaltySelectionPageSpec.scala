@@ -57,7 +57,7 @@ class PenaltySelectionPageSpec extends SpecBase with ViewBehaviours {
     implicit val document = asDocument(page(form, yesNoOptions, "50.12", "526.10", PageMode(PenaltySelectionPage, NormalMode))(agentFakeRequestConverter(), implicitly, implicitly))
 
     val expectedContent = Seq(
-      Selectors.title -> title,
+      Selectors.title -> agentTitle,
       Selectors.h1 -> heading,
       Selectors.pElementIndex(2) -> p1,
       Selectors.listIndexWithElementIndex(3, 1) -> firstPenalty("50.12"),

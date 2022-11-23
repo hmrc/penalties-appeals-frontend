@@ -27,6 +27,8 @@ object YouCannotAppealMessages {
 
   val titleAppend = " - Appeal a VAT penalty - GOV.UK"
 
+  val agentTitleAppend = " - Agent - Appeal a VAT penalty - GOV.UK"
+
   val p1 = "You can still write to HMRC to ask us to review the penalty. Details are on the penalty notice we sent you through the post."
 
   val agentLSPp2 = "If you want to use this service to appeal, you or your client need to submit the VAT Return first."
