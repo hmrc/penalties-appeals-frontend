@@ -12,7 +12,7 @@ common.radioOption.yes = Iawn
 common.radioOption.no = Na
 common.radioOption.unknown = Nid wyf yn gwybod
 common.penaltyYouAreAppealing = Y gosb yr ydych yn apelio yn ei herbyn yw
-common.penaltiesYouAreAppealing = The penalties you are appealing are
+common.penaltiesYouAreAppealing = Y cosbau yr ydych yn apelio yn eu herbyn yw
 
 app.common.back = Yn ôl
 
@@ -356,7 +356,7 @@ upscan.fileHasVirus = Mae ffeil {0} yn cynnwys feirws. Ewch ati i ddileu’r ffe
 upscan.unableToUpload = Nid oedd modd uwchlwytho ffeil {0}. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
 upscan.fileUploaded = Uwchlwythwyd {0} {1}
 upscan.fileUploading = Wrthi’n uwchlwytho {0}
-upscan.fileRemoved = Remove {0} {1}
+upscan.fileRemoved = Tynnu {0} {1}
 upscan.fileNotSpecified = Dewiswch ffeil.
 
 # Upscan failure messages (NO JS)
@@ -424,10 +424,10 @@ checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Roedd rhywbeth ar
 # Appeal Confirmation page
 # ----------------------------------------------------------
 
-appealConfirmation.headingAndTitle.penalty = You have asked us to review your penalty
+appealConfirmation.headingAndTitle.penalty = Rydych wedi gofyn i ni adolygu cosb
 agent.appealConfirmation.headingAndTitle.penalty = Rydych wedi gofyn i ni adolygu cosb
-appealConfirmation.headingAndTitle.penalties = You have asked us to review your penalties
-agent.appealConfirmation.headingAndTitle.penalties = You have asked us to review your client’s penalties
+appealConfirmation.headingAndTitle.penalties = Rydych wedi gofyn i ni adolygu’ch cosbau
+agent.appealConfirmation.headingAndTitle.penalties = Rydych wedi gofyn i ni adolygu cosbau eich cleientiaid
 appealConfirmation.typeAndPeriod = {0}: {1} i {2}
 appealConfirmation.p1 = Does dim angen cyfeirnod arnoch.
 appealConfirmation.p2 = Rydym wedi cofnodi’r apêl hon o dan rif cofrestru TAW (VRN) y busnes. Nodwch y VRN os oes angen i chi ffonio CThEM ynghylch yr apêl hon.
@@ -448,8 +448,8 @@ appealConfirmation.feedbackLink.2 = (mae’n cymryd 30 eiliad)
 # Making a late appeal page
 # ----------------------------------------------------------
 makingALateAppeal.headingAndTitle = Codwyd y gosb fwy na 30 diwrnod yn ôl
-makingALateAppeal.headingAndTitle.multi = The penalties were issued more than 30 days ago
-makingALateAppeal.headingAndTitle.first = The first penalty was issued more than 30 days ago
+makingALateAppeal.headingAndTitle.multi = Codwyd y cosbau fwy na 30 diwrnod yn ôl
+makingALateAppeal.headingAndTitle.first = Codwyd y gosb gyntaf fwy na 30 diwrnod yn ôl
 makingALateAppeal.p1 = Fel arfer mae angen i chi apelio cyn pen 30 diwrnod o ddyddiad yr hysbysiad o gosb. Rhowch wybod i ni pam nad oeddech wedi gallu apelio cyn pen 30 diwrnod.
 makingALateAppeal.error.required = Mae’n rhaid i chi roi ychydig o wybodaeth i ni ynglŷn â pham nad oeddech wedi apelio’n gynt
 
@@ -508,7 +508,7 @@ error.summary.headingAndTitle = Mae problem wedi codi
 # Timeout page
 # -----------------------------------------------------------
 timeout.headingAndTitle = Er eich diogelwch, gwnaethom eich allgofnodi
-timeout.p1 = We did not save your answers.
+timeout.p1 = Ni wnaethom gadw’ch atebion.
 timeout.signIn = Mewngofnodi
 
 # Months
@@ -546,11 +546,11 @@ youCannotAppeal.p3.lpp = Gall gymryd hyd at 5 diwrnod i’r taliad glirio ac ymd
 agent.youCannotAppeal.p3.lpp = Gall gymryd hyd at 5 diwrnod i’r taliad glirio ac ymddangos ar ei hanes taliadau. Os yw eisoes wedi talu, cadwch lygad ar yr hanes taliadau i weld pryd y mae’r taliad yn clirio.
 youCannotAppeal.p3.lsp = Gall gymryd hyd at 24 awr cyn i’r Ffurflen TAW ymddangos ar eich cyfrif TAW. Os ydych eisoes wedi’i chyflwyno, cadwch lygad ar eich cyfrif i weld pryd y mae’n ymddangos yn eich hanes cyflwyno.
 agent.youCannotAppeal.p3.lsp = Gall gymryd hyd at 24 awr cyn i’r Ffurflen TAW ymddangos ar y cyfrif TAW. Os yw eisoes wedi’i chyflwyno, cadwch lygad ar y cyfrif i weld pryd y mae’n ymddangos yn yr hanes cyflwyno.
-youCannotAppeal.p4 = If you need to cancel the VAT registration, you can do it through your VAT account.
-agent.youCannotAppeal.p4 = If you need to cancel the VAT registration, you can do it through your client‘s VAT details.
-youCannotAppeal.checkWhatYouOwe = Check and pay what you owe
-youCannotAppeal.returnToVATAccount = Return to your VAT account
-agent.youCannotAppeal.returnToVATAccount = Return to your client‘s VAT details
+youCannotAppeal.p4 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy’ch cyfrif TAW.
+agent.youCannotAppeal.p4 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy gyfrif TAW eich cleient.
+youCannotAppeal.checkWhatYouOwe = Gwirio'r hyn sydd arnoch a'i thalu
+youCannotAppeal.returnToVATAccount = Yn ôl i’ch cyfrif TAW
+agent.youCannotAppeal.returnToVATAccount = Yn ôl i fanylion TAW eich cleient
 
 # Multiple penalties for this period page
 # -----------------------------------------------------------
@@ -578,6 +578,6 @@ appealCoverBothPenalties.p1 = Mae hyn yn eich galluogi i nodi manylion apêl unw
 
 # Incomplete session data page
 # -----------------------------------------------------------
-incompleteSessionData.headingAndTitle = Sorry, something has gone wrong
-incompleteSessionData.p1 = There’s been a technical error. You need to start your appeal again. We have not saved your data.
-incompleteSessionData.link = Return to the appeal start page
+incompleteSessionData.headingAndTitle = Mae’n ddrwg gennym, mae rhywbeth wedi mynd o’i le
+incompleteSessionData.p1 = Mae problem dechnegol wedi codi. Bydd yn rhaid i chi ddechrau’ch apêl eto. Nid ydym wedi cadw’ch data.
+incompleteSessionData.link = Dychwelyd i’r dudalen gychwyn ar gyfer apeliadau
