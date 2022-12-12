@@ -548,7 +548,7 @@ youCannotAppeal.p3.lsp = Gall gymryd hyd at 24 awr cyn i’r Ffurflen TAW ymddan
 agent.youCannotAppeal.p3.lsp = Gall gymryd hyd at 24 awr cyn i’r Ffurflen TAW ymddangos ar y cyfrif TAW. Os yw eisoes wedi’i chyflwyno, cadwch lygad ar y cyfrif i weld pryd y mae’n ymddangos yn yr hanes cyflwyno.
 youCannotAppeal.p4 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy’ch cyfrif TAW.
 agent.youCannotAppeal.p4 = Os oes angen i chi ganslo’r cofrestriad TAW, gallwch wneud hyn drwy gyfrif TAW eich cleient.
-youCannotAppeal.checkWhatYouOwe = Gwirio'r hyn sydd arnoch a'i thalu
+youCannotAppeal.checkWhatYouOwe = Gwirio’r hyn sydd arnoch a’i thalu
 youCannotAppeal.returnToVATAccount = Yn ôl i’ch cyfrif TAW
 agent.youCannotAppeal.returnToVATAccount = Yn ôl i fanylion TAW eich cleient
 
