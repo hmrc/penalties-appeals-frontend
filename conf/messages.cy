@@ -425,7 +425,6 @@ checkYourAnswers.agents.whatCausedYouToMissTheDeadline.agent = Roedd rhywbeth ar
 # ----------------------------------------------------------
 
 appealConfirmation.headingAndTitle.penalty = Rydych wedi gofyn i ni adolygu cosb
-agent.appealConfirmation.headingAndTitle.penalty = Rydych wedi gofyn i ni adolygu cosb
 appealConfirmation.headingAndTitle.penalties = Rydych wedi gofyn i ni adolygu’ch cosbau
 agent.appealConfirmation.headingAndTitle.penalties = Rydych wedi gofyn i ni adolygu cosbau eich cleientiaid
 appealConfirmation.typeAndPeriod = {0}: {1} i {2}
