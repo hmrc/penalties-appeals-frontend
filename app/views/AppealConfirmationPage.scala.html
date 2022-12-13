@@ -35,7 +35,7 @@
 
 @layout(pageTitle = {
                         if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined) {
-                            getPluralOrSingular(bothPenalties)("agent.appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
+                            getPluralOrSingular(bothPenalties)("appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
                         } else {
                             getPluralOrSingular(bothPenalties)("appealConfirmation.headingAndTitle.penalty", "appealConfirmation.headingAndTitle.penalties").toString()
                         }
@@ -47,7 +47,7 @@
         <h1 class="govuk-panel__title" id="page-heading">
             @{
             if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined) {
-                getPluralOrSingular(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties))("agent.appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
+                getPluralOrSingular(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties))("appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
             } else {
                 getPluralOrSingular(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties))("appealConfirmation.headingAndTitle.penalty", "appealConfirmation.headingAndTitle.penalties").toString()
                 }
