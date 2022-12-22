@@ -233,7 +233,6 @@ describe('Multi File Upload component', () => {
 
                     promise.then(() => {
                         instance.handleProvisionUploadCompleted(file, response);
-                        done();
                     });
 
                     return promise;
@@ -293,7 +292,6 @@ describe('Multi File Upload component', () => {
 
                     promise.then(() => {
                         instance.handleProvisionUploadCompleted(file, response);
-                        done();
                     });
 
                     return promise;
@@ -389,7 +387,6 @@ describe('Multi File Upload component', () => {
 
                             promise.then(() => {
                                 instance.handleProvisionUploadCompleted(file, response);
-                                done();
                             });
 
                             return promise;
@@ -451,7 +448,6 @@ describe('Multi File Upload component', () => {
 
                     promise.then(() => {
                         instance.handleProvisionUploadCompleted(file, response);
-                        done();
                     });
 
                     return promise;
