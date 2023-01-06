@@ -82,7 +82,7 @@
             .orElse(form(s"$id.day").error)
             .orElse(form(s"$id.month").error)
             .orElse(form(s"$id.year").error)
-            .map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*))))
+            .map(err => ErrorMessage.errorMessageWithDefaultStringsTranslated(content = Text(messages(err.message, err.args: _*))))
   }
 
 ))
