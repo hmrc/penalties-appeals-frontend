@@ -75,6 +75,8 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val csatFeedbackUrl: String = config.get[String]("urls.csatFeedbackUrl")
 
+  lazy val reasonableExcusesGuidanceLinkUrl: String = config.get[String]("urls.reasonableExcusesGuidanceLinkUrl")
+
   def betaFeedbackBackUrl(url: String): String =  SafeRedirectUrl(platformHost ++ url).encodedUrl
 
   def betaFeedbackUrl(redirectUrl: String): String = s"${config.get[String]("urls.betaFeedbackUrl")}?service=$contactFrontendServiceId&backUrl=${betaFeedbackBackUrl(redirectUrl)}"

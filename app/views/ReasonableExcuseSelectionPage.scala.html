@@ -47,7 +47,6 @@
 
 
     <p class="govuk-body">
-        @* TODO: Link to external guidance *@
-        @link("#", "reasonableExcuses.externalGuidanceLinkText", id = Some("external-guidance-link"), isExternal = true, classes = "govuk-link")
+        @link(appConfig.reasonableExcusesGuidanceLinkUrl, "reasonableExcuses.externalGuidanceLinkText", id = Some("external-guidance-link"), isExternal = true, classes = "govuk-link")
     </p>
 }
