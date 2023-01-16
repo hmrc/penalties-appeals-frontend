@@ -104,8 +104,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)
 
       "have a link to external guidance" in {
-        //TODO: Change to next page link
-        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "#"
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
       }
 
       "show the correct heading content when appealing a late payment penalty" in {
@@ -138,8 +137,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)
 
       "have a link to external guidance" in {
-        //TODO: Change to next page link
-        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "#"
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
       }
     }
   }
