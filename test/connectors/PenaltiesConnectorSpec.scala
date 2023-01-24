@@ -353,7 +353,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
       result.status shouldBe OK
     }
 
-    "return an exception when something unexpected goes wrong" in new Setup {
+    "return an ISE when something unexpected goes wrong" in new Setup {
       when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Exception("something went wrong.")))
       when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any()))
@@ -366,9 +366,10 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
-      val result: Exception = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel,
-        "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false)))
-      result.getMessage shouldBe "something went wrong."
+      val result: HttpResponse = await(connector.submitAppeal(appealSubmissionModel,
+        "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
+      result.status shouldBe INTERNAL_SERVER_ERROR
+      result.body shouldBe "An issue occurred whilst appealing a penalty with error: something went wrong."
     }
   }
 }
