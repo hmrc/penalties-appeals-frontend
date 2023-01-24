@@ -25,7 +25,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 
 import java.time.LocalDate
-import scala.collection.JavaConverters
+import scala.jdk.CollectionConverters._
 
 object PenaltiesStub {
   private val appealUriForLSP = "/penalties/appeals-data/late-submissions"
@@ -107,10 +107,11 @@ object PenaltiesStub {
 
   def successfulAppealSubmission(isLPP: Boolean, penaltyNumber: String): StubMapping = {
     stubFor(
-      post(urlPathMatching(submitAppealUri)).withQueryParams(JavaConverters.mapAsJavaMap(submitAppealQueryParams(isLPP, penaltyNumber)))
+      post(urlPathMatching(submitAppealUri)).withQueryParams(submitAppealQueryParams(isLPP, penaltyNumber).asJava)
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
+            .withBody("PR-1234")
         )
     )
   }
@@ -147,7 +148,7 @@ object PenaltiesStub {
 
   def failedAppealSubmissionWithFault(isLPP: Boolean, penaltyNumber: String): StubMapping = {
     stubFor(
-      post(urlPathMatching(submitAppealUri)).withQueryParams(JavaConverters.mapAsJavaMap(submitAppealQueryParams(isLPP, penaltyNumber)))
+      post(urlPathMatching(submitAppealUri)).withQueryParams(submitAppealQueryParams(isLPP, penaltyNumber).asJava)
         .willReturn(
           aResponse()
             .withFault(Fault.CONNECTION_RESET_BY_PEER)
@@ -157,10 +158,11 @@ object PenaltiesStub {
 
   def failedAppealSubmission(isLPP: Boolean, penaltyNumber: String, status: Option[Int] = None): StubMapping = {
     stubFor(
-      post(urlPathMatching(submitAppealUri)).withQueryParams(JavaConverters.mapAsJavaMap(submitAppealQueryParams(isLPP, penaltyNumber)))
+      post(urlPathMatching(submitAppealUri)).withQueryParams(submitAppealQueryParams(isLPP, penaltyNumber).asJava)
         .willReturn(
           aResponse()
             .withStatus(status.fold(Status.INTERNAL_SERVER_ERROR)(identity))
+            .withBody("Some issue with document storage")
         )
     )
   }

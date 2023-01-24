@@ -210,7 +210,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           isClientResponsibleForLateSubmission = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId))
+      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = true))
       result.status shouldBe OK
     }
 
@@ -236,7 +236,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           isClientResponsibleForLateSubmission = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId))
+      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
       result.status shouldBe OK
     }
   }

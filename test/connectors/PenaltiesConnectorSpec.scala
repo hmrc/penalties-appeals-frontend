@@ -339,7 +339,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
       when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(),
         any(), ArgumentMatchers.eq(hc.copy(authorization = None, otherHeaders = hc.otherHeaders)), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
-      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any()))
+      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
@@ -349,14 +349,14 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
-      val result: HttpResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId))
+      val result: HttpResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
       result.status shouldBe OK
     }
 
     "return an exception when something unexpected goes wrong" in new Setup {
       when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Exception("something went wrong.")))
-      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any()))
+      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any()))
         .thenReturn("http://url/url")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
@@ -367,7 +367,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
         )
       )
       val result: Exception = intercept[Exception](await(connector.submitAppeal(appealSubmissionModel,
-        "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId)))
+        "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false)))
       result.getMessage shouldBe "something went wrong."
     }
   }
