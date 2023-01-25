@@ -210,7 +210,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           isClientResponsibleForLateSubmission = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId))
+      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = true))
       result.status shouldBe OK
     }
 
@@ -236,8 +236,35 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           isClientResponsibleForLateSubmission = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId))
+      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
       result.status shouldBe OK
+    }
+
+    "return ISE if an exception occurs" in {
+      failedAppealSubmissionWithFault(isLPP = true, penaltyNumber = "123456789")
+      val model = AppealSubmission(
+        sourceSystem = "MDTP",
+        taxRegime = "VAT",
+        customerReferenceNo = "VRN123456789",
+        dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
+        isLPP = true,
+        appealSubmittedBy = "client",
+        agentDetails = None,
+        appealInformation = CrimeAppealInformation(
+          reasonableExcuse = "crime",
+          honestyDeclaration = true,
+          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
+          reportedIssueToPolice = true,
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None,
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
+        )
+      )
+      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
+      result.status shouldBe INTERNAL_SERVER_ERROR
+      result.body shouldBe "An issue occurred whilst appealing a penalty with error: Connection reset by peer"
     }
   }
 }

@@ -27,6 +27,8 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
+import utils.Logger.logger
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.{LocalDate, LocalDateTime}
@@ -34,7 +36,7 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
 
-class AppealServiceISpec extends IntegrationSpecCommonBase {
+class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
@@ -43,7 +45,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
 
   "submitAppeal" should {
 
-    "return true when the connector call succeeds for loss of staff" in  {
+    "return Right when the connector call succeeds for loss of staff" in  {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
@@ -63,7 +65,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true when the connector call succeeds for crime" in {
+    "return Right when the connector call succeeds for crime" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
@@ -84,7 +86,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true when the connector call succeeds for technical issues" in {
+    "return Right when the connector call succeeds for technical issues" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
@@ -105,7 +107,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true when the connector call succeeds for fire or flood" in {
+    "return Right when the connector call succeeds for fire or flood" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
@@ -125,7 +127,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true when the connector call succeeds for bereavement" in {
+    "return Right when the connector call succeeds for bereavement" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
@@ -145,7 +147,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true when the connector call succeeds for other - no file upload" in {
+    "return Right when the connector call succeeds for other - no file upload" in {
       successfulAppealSubmission(isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
@@ -166,7 +168,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true when the connector call succeeds for other - file upload with duplicates" in {
+    "return Right when the connector call succeeds for other - file upload with duplicates" in {
       val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       val uploadAsReady: UploadJourney = UploadJourney(
         reference = "ref1",
@@ -211,7 +213,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true when the connector call succeeds for other - user selects no to uploading files (some files already uploaded)" in {
+    "return Right when the connector call succeeds for other - user selects no to uploading files (some files already uploaded)" in {
       val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       val uploadAsReady: UploadJourney = UploadJourney(
         reference = "ref1",
@@ -251,7 +253,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return true for hospital stay" when {
+    "return Right for hospital stay" when {
       "there is no hospital stay" in  {
         successfulAppealSubmission(isLPP = false, "1234")
         val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
@@ -318,7 +320,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         result shouldBe Right((): Unit)
       }
 
-      "return true when the connector call succeeds for LPP" in {
+      "return Right when the connector call succeeds for LPP" in {
         successfulAppealSubmission(isLPP = true, "1234")
         val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
           SessionKeys.penaltyNumber -> "1234",
@@ -340,7 +342,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       }
     }
 
-    "return true when appealing two penalties at the same time" in {
+    "return Right when appealing two penalties at the same time" in {
       successfulAppealSubmission(isLPP = true, "1234")
       successfulAppealSubmission(isLPP = true, "5678")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
@@ -365,7 +367,63 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
       result shouldBe Right((): Unit)
     }
 
-    "return false" when {
+    "return Right when both of multiple appeal submissions fails (logging a PD)" in {
+      failedAppealSubmission(isLPP = true, "1234")
+      successfulAppealSubmission(isLPP = true, "5678")
+      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+        SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+        SessionKeys.firstPenaltyChargeReference -> "1234",
+        SessionKeys.secondPenaltyChargeReference -> "5678"
+      )))(fakeRequest)
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+          result shouldBe Right((): Unit)
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed." +
+            s" Issue was LPP1 failed due to Some issue with document storage, the successful Case Id was PR-1234") shouldBe true
+        }
+      }
+    }
+
+    "return Right when both of multiple appeal submissions fails because of a fault (logging a PD)" in {
+      failedAppealSubmissionWithFault(isLPP = true, "1234")
+      successfulAppealSubmission(isLPP = true, "5678")
+      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+        SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+        SessionKeys.firstPenaltyChargeReference -> "1234",
+        SessionKeys.secondPenaltyChargeReference -> "5678"
+      )))(fakeRequest)
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+          result shouldBe Right((): Unit)
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed." +
+            s" Issue was LPP1 failed due to An issue occurred whilst appealing a penalty with error: Connection reset by peer, the successful Case Id was PR-1234") shouldBe true
+        }
+      }
+    }
+
+    "return Left" when {
       "the connector returns a fault" in {
         failedAppealSubmissionWithFault(isLPP = false, "1234")
         val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
@@ -408,9 +466,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase {
         result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
 
-      "when one of multiple appeal submissions fails" in {
+      "when both of multiple appeal submissions fails" in {
         failedAppealSubmissionWithFault(isLPP = true, "1234")
-        successfulAppealSubmission(isLPP = true, "5678")
+        failedAppealSubmissionWithFault(isLPP = true, "5678")
         val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
           SessionKeys.penaltyNumber -> "1234",
           SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,

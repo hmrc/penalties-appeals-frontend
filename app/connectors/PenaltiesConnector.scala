@@ -94,9 +94,14 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     }
   }
 
-  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String)
+  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String, isMultiAppeal: Boolean)
                   (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
     logger.debug(s"[PenaltiesConnector][submitAppeal] - Submitting appeal model send to backend: ${Json.toJson(appealSubmission)}")
-    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyNumber, correlationId), appealSubmission)
+    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyNumber, correlationId, isMultiAppeal), appealSubmission).recover {
+      case e => {
+        logger.error(s"[PenaltiesConnector][submitAppeal] - An issue occurred whilst submitting appeal to penalties backend, error message: ${e.getMessage}")
+        HttpResponse.apply(INTERNAL_SERVER_ERROR, s"An issue occurred whilst appealing a penalty with error: ${e.getMessage}")
+      }
+    }
   }
 }

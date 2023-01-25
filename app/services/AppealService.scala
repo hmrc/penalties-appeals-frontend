@@ -17,11 +17,11 @@
 package services
 
 import java.time.LocalDate
-
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import connectors.PenaltiesConnector
 import helpers.DateTimeHelper
+
 import javax.inject.Inject
 import models.appeals.{AppealSubmission, MultiplePenaltiesData}
 import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
@@ -32,7 +32,7 @@ import play.api.http.Status._
 import play.api.libs.json.{JsResult, JsValue, Json}
 import repositories.UploadJourneyRepository
 import services.monitoring.AuditService
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UpstreamErrorResponse}
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
 import utils.Logger.logger
 import utils.{EnrolmentKeys, SessionKeys, UUIDGenerator}
@@ -132,23 +132,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
       penaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.penaltyNumber).get
       response <- {
-        penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId)
+        penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId, isMultiAppeal = false)
       }
     } yield {
       response.status match {
         case OK =>
-          if (isLPP) {
-            if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
-              logger.info("[AppealService][singleAppeal] - Auditing first LPP appeal payload")
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads))
-            } else {
-              logger.info("[AppealService][singleAppeal] - Auditing second LPP appeal payload")
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads))
-            }
-          } else {
-            logger.info("[AppealService][singleAppeal] - Auditing LSP appeal payload")
-            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads))
-          }
+          sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = false, appealType)
           sendAuditIfDuplicatesExist(uploads)
           logger.info("[AppealService][singleAppeal] - Received OK from the appeal submission call")
           Right((): Unit)
@@ -169,7 +158,6 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   private def multipleAppeal(enrolmentKey: String, appealType: Option[PenaltyTypeEnum.Value], isLPP: Boolean,
                              correlationId: String, agentReferenceNo: Option[String], userHasUploadedFiles: Boolean,
                              reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
-
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
       readyOrDuplicateFileUploads = fileUploads.map(_.filter(file =>
@@ -179,34 +167,14 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
       firstPenaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyChargeReference).get
       secondPenaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyChargeReference).get
-      firstResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, firstPenaltyNumber, correlationId)
-      secondResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, secondPenaltyNumber, correlationId)
+      firstResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, firstPenaltyNumber, correlationId, isMultiAppeal = true)
+      secondResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, secondPenaltyNumber, correlationId, isMultiAppeal = true)
+      vrn = userRequest.vrn
+      dateFrom = userRequest.answers.getAnswer[String](SessionKeys.startDateOfPeriod).get
+      dateTo = userRequest.answers.getAnswer[String](SessionKeys.endDateOfPeriod).get
     } yield {
-      (firstResponse.status, secondResponse.status) match {
-        case (OK, OK) =>
-          if (isLPP) {
-            if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
-              logger.info("[AppealService][multipleAppeal] - Auditing first LPP appeal payload")
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads))
-            } else {
-              logger.info("[AppealService][multipleAppeal] - Auditing second LPP appeal payload")
-              auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads))
-            }
-          } else {
-            logger.info("[AppealService][multipleAppeal] - Auditing LSP appeal payload")
-            auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads))
-          }
-          sendAuditIfDuplicatesExist(uploads)
-          logger.debug("[AppealService][multipleAppeal] - Received OK from the appeal submission call")
-          Right((): Unit)
-        case _ =>
-          logger.error(s"[AppealService][multipleAppeal] - Received unknown status code from connector:" +
-            s" First response: ${firstResponse.status}, Second response: ${secondResponse.status}")
-          Left(firstResponse.status)
-          //TODO: Add error handling for one failure
-      }
+      handleMultipleAppealResponse(firstResponse, secondResponse, isLPP, appealType, modelFromRequest, uploads, vrn, dateFrom, dateTo, correlationId)
     }
-
   }.recover {
     case e: UpstreamErrorResponse =>
       logger.error(s"[AppealService][multipleAppeal] - Received 4xx/5xx response, error message: ${e.getMessage}")
@@ -240,5 +208,70 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         auditService.audit(DuplicateFilesAuditModel(duplicateUploadsInAuditFormat))
       }
     }
+  }
+
+  private def handleMultipleAppealResponse(firstResponse: HttpResponse,
+                                           secondResponse: HttpResponse,
+                                           isLPP: Boolean,
+                                           appealType: Option[PenaltyTypeEnum.Value],
+                                           modelFromRequest: AppealSubmission,
+                                           uploads: Option[Seq[UploadJourney]],
+                                           vrn: String,
+                                           dateFrom: String,
+                                           dateTo: String,
+                                           correlationId: String)(implicit ec: ExecutionContext, headerCarrier: HeaderCarrier, userRequest: UserRequest[_]) = {
+    (firstResponse.status, secondResponse.status) match {
+      case (OK, OK) =>
+        sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
+        sendAuditIfDuplicatesExist(uploads)
+        logger.debug("[AppealService][multipleAppeal] - Received OK from the appeal submission call")
+        Right((): Unit)
+      case (OK, _) =>
+        logPartialFailureOfMultipleAppeal(secondResponse, firstResponse, vrn, dateFrom, dateTo)(didLPP1Fail = false)
+        sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
+        sendAuditIfDuplicatesExist(uploads)
+        logger.debug("[AppealService][multipleAppeal] - First penalty was appealed successfully, second penalty had issues")
+        Right((): Unit)
+      case (_, OK) =>
+        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(didLPP1Fail = true)
+        sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
+        sendAuditIfDuplicatesExist(uploads)
+        logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
+        Right((): Unit)
+      case _ =>
+        logger.error(s"[AppealService][multipleAppeal] - Received unknown status code from connector:" +
+          s" First response: ${firstResponse.status}, Second response: ${secondResponse.status}")
+        Left(firstResponse.status)
+    }
+  }
+
+  private def sendAppealAudit(modelFromRequest: AppealSubmission,
+                              uploads: Option[Seq[UploadJourney]],
+                              correlationId: String,
+                              isLPP: Boolean,
+                              isMultipleAppeal: Boolean,
+                              appealType: Option[PenaltyTypeEnum.Value])(implicit ec: ExecutionContext,
+                                                                         headerCarrier: HeaderCarrier,
+                                                                         userRequest: UserRequest[_]): Unit = {
+    val startOfLog = s"[AppealService][${if(isMultipleAppeal) "multipleAppeal" else "singleAppeal"}"
+    if (isLPP) {
+      if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
+        logger.info(s"$startOfLog - Auditing first LPP appeal payload")
+        auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads))
+      } else {
+        logger.info(s"$startOfLog - Auditing second LPP appeal payload")
+        auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads))
+      }
+    } else {
+      logger.info(s"$startOfLog - Auditing LSP appeal payload")
+      auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads))
+    }
+  }
+
+  private def logPartialFailureOfMultipleAppeal(failedResponse: HttpResponse, successfulResponse: HttpResponse,
+                                                vrn: String, dateFrom: String, dateTo: String)(didLPP1Fail: Boolean): Unit = {
+    val errorDetail = if(didLPP1Fail) s"LPP1 failed due to" else "LPP2 failed due to"
+      logger.error(s"MULTI_APPEAL_FAILURE Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn failed." +
+      s" Issue was $errorDetail ${failedResponse.body}, the successful Case Id was ${successfulResponse.body}")
   }
 }
