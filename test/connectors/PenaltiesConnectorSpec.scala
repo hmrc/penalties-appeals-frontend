@@ -345,7 +345,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
           2020, 1, 1, 0, 0, 0), isLPP = true, appealSubmittedBy = "client",
         agentDetails = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
-          startDateOfEvent = LocalDate.of(2020, 1, 1).atStartOfDay(), reportedIssueToPolice = true, statement = None, lateAppeal = false,
+          startDateOfEvent = LocalDate.of(2020, 1, 1).atStartOfDay(), reportedIssueToPolice = "yes", statement = None, lateAppeal = false,
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
@@ -362,7 +362,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
           2020, 1, 1, 0, 0, 0), isLPP = true, appealSubmittedBy = "client",
         agentDetails = None, appealInformation = CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
-          startDateOfEvent = LocalDate.of(2020, 1, 1).atStartOfDay(), reportedIssueToPolice = true, statement = None, lateAppeal = false,
+          startDateOfEvent = LocalDate.of(2020, 1, 1).atStartOfDay(), reportedIssueToPolice = "yes", statement = None, lateAppeal = false,
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )

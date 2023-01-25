@@ -33,7 +33,7 @@ class AppealSubmissionSpec extends SpecBase {
       |   "reasonableExcuse": "crime",
       |   "honestyDeclaration": true,
       |   "startDateOfEvent": "2021-04-23T00:00:00",
-      |   "reportedIssueToPolice": true,
+      |   "reportedIssueToPolice": "yes",
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
       |   "isClientResponsibleForLateSubmission": true
@@ -262,7 +262,7 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "crime",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          reportedIssueToPolice = true,
+          reportedIssueToPolice = "yes",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -467,7 +467,7 @@ class AppealSubmissionSpec extends SpecBase {
       result.appealSubmittedBy shouldBe "agent"
       result.agentDetails shouldBe Some(AgentDetails("AGENT1", false))
       result.appealInformation shouldBe CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
-        startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(), reportedIssueToPolice = true, statement = None, lateAppeal = false,
+        startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(), reportedIssueToPolice = "yes", statement = None, lateAppeal = false,
         lateAppealReason = None, isClientResponsibleForSubmission = Some(false), isClientResponsibleForLateSubmission = Some(true)
       )
     }
@@ -489,7 +489,7 @@ class AppealSubmissionSpec extends SpecBase {
         reasonableExcuse = "crime",
         honestyDeclaration = true,
         startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
-        reportedIssueToPolice = true,
+        reportedIssueToPolice = "yes",
         statement = None,
         lateAppeal = true,
         lateAppealReason = Some("Some Reason"),
@@ -546,7 +546,7 @@ class AppealSubmissionSpec extends SpecBase {
     }
 
     "for crime" must {
-      "change reported issue to false - when the answer for has crime been reported to police is NOT yes" in {
+      "change reported issue to unknown - when the answer for has crime been reported to police is unknown" in {
         val userAnswers = UserAnswers("1234", Json.obj(
           SessionKeys.reasonableExcuse -> "crime",
           SessionKeys.hasCrimeBeenReportedToPolice -> "unknown",
@@ -562,7 +562,32 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "crime",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
-          reportedIssueToPolice = false,
+          reportedIssueToPolice = "unknown",
+          statement = None,
+          lateAppeal = false,
+          lateAppealReason = None,
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None
+        )
+      }
+
+      "change reported issue to no - when the answer for has crime been reported to police is no" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "crime",
+          SessionKeys.hasCrimeBeenReportedToPolice -> "no",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+        ) ++ correctUserAnswers)
+        val fakeRequestForCrimeJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false,
+          None, None)(fakeRequestForCrimeJourney)
+        result.appealSubmittedBy shouldBe "client"
+        result.appealInformation shouldBe CrimeAppealInformation(
+          reasonableExcuse = "crime",
+          honestyDeclaration = true,
+          startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
+          reportedIssueToPolice = "no",
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -977,7 +1002,7 @@ class AppealSubmissionSpec extends SpecBase {
             reasonableExcuse = "crime",
             honestyDeclaration = true,
             startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-            reportedIssueToPolice = true,
+            reportedIssueToPolice = "yes",
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
@@ -996,7 +1021,7 @@ class AppealSubmissionSpec extends SpecBase {
             "reasonableExcuse" -> "crime",
             "honestyDeclaration" -> true,
             "startDateOfEvent" -> "2021-04-23T00:00:00",
-            "reportedIssueToPolice" -> true,
+            "reportedIssueToPolice" -> "yes",
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
             "isClientResponsibleForLateSubmission" -> true
@@ -1631,7 +1656,7 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "crime",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          reportedIssueToPolice = true,
+          reportedIssueToPolice = "yes",
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
@@ -1643,7 +1668,7 @@ class AppealSubmissionSpec extends SpecBase {
           "reasonableExcuse" -> "crime",
           "honestyDeclaration" -> true,
           "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "reportedIssueToPolice" -> true,
+          "reportedIssueToPolice" -> "yes",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
           "isClientResponsibleForSubmission" -> false,
