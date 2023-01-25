@@ -21,6 +21,7 @@ import models.{PenaltyTypeEnum, UserRequest}
 import play.api.libs.json._
 import utils.SessionKeys
 
+import java.time.temporal.ChronoUnit
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 sealed trait AppealInformation {
@@ -452,9 +453,9 @@ object AppealSubmission {
     payload.reasonableExcuse match {
       case "bereavement" => Json.toJson(payload.asInstanceOf[BereavementAppealInformation])(BereavementAppealInformation.bereavementAppealWrites)
       case "crime" => Json.toJson(payload.asInstanceOf[CrimeAppealInformation])(CrimeAppealInformation.crimeAppealWrites)
-      case "fireOrFlood" => Json.toJson(payload.asInstanceOf[FireOrFloodAppealInformation])(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
-      case "lossOfStaff" => Json.toJson(payload.asInstanceOf[LossOfStaffAppealInformation])(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
-      case "technicalIssues" => Json.toJson(
+      case "fireandflood" => Json.toJson(payload.asInstanceOf[FireOrFloodAppealInformation])(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
+      case "lossOfEssentialStaff" => Json.toJson(payload.asInstanceOf[LossOfStaffAppealInformation])(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
+      case "technicalIssue" => Json.toJson(
         payload.asInstanceOf[TechnicalIssuesAppealInformation])(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
       case "health" => Json.toJson(payload.asInstanceOf[HealthAppealInformation])(HealthAppealInformation.healthAppealWrites)
       case "other" => Json.toJson(payload.asInstanceOf[OtherAppealInformation])(OtherAppealInformation.otherAppealInformationWrites)
@@ -472,9 +473,9 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
           isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
-          appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
+          appealSubmittedBy = if (userRequest.isAgent) "agent" else "customer",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = BereavementAppealInformation(
             reasonableExcuse = reasonableExcuse,
@@ -495,9 +496,9 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
           isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
-          appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
+          appealSubmittedBy = if (userRequest.isAgent) "agent" else "customer",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = CrimeAppealInformation(
             reasonableExcuse = reasonableExcuse,
@@ -519,12 +520,12 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
           isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
-          appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
+          appealSubmittedBy = if (userRequest.isAgent) "agent" else "customer",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = FireOrFloodAppealInformation(
-            reasonableExcuse = reasonableExcuse,
+            reasonableExcuse = "fireandflood", //API spec outlines this - how can it be a fire AND flood? TODO: may change later
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get.atStartOfDay(),
             statement = None,
@@ -542,12 +543,12 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
           isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
-          appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
+          appealSubmittedBy = if (userRequest.isAgent) "agent" else "customer",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = LossOfStaffAppealInformation(
-            reasonableExcuse = reasonableExcuse,
+            reasonableExcuse = "lossOfEssentialStaff",
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness).get.atStartOfDay(),
             statement = None,
@@ -565,15 +566,15 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
           isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
-          appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
+          appealSubmittedBy = if (userRequest.isAgent) "agent" else "customer",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = TechnicalIssuesAppealInformation(
-            reasonableExcuse = reasonableExcuse,
+            reasonableExcuse = "technicalIssue",
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).get.atStartOfDay(),
-            endDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get.atTime(LocalTime.MAX),
+            endDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get.atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS),
             statement = None,
             lateAppeal = isLateAppeal,
             lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
@@ -591,16 +592,16 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
           isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
-          appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
+          appealSubmittedBy = if (userRequest.isAgent) "agent" else "customer",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = HealthAppealInformation(
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             hospitalStayInvolved = isHospitalStay,
             startDateOfEvent = (if (isHospitalStay) userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted) else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened)).map(_.atStartOfDay()),
-            endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).map(_.atTime(LocalTime.MAX)),
+            endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).map(_.atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS)),
             eventOngoing = isOngoingHospitalStay,
             statement = None,
             lateAppeal = isLateAppeal,
@@ -617,9 +618,9 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
           isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
-          appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
+          appealSubmittedBy = if (userRequest.isAgent) "agent" else "customer",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = OtherAppealInformation(
             reasonableExcuse = reasonableExcuse,
@@ -641,9 +642,9 @@ object AppealSubmission {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = s"VRN${userRequest.vrn}",
-          dateOfAppeal = LocalDateTime.now(),
+          dateOfAppeal = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
           isLPP = !userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
-          appealSubmittedBy = if (userRequest.isAgent) "agent" else "client",
+          appealSubmittedBy = if (userRequest.isAgent) "agent" else "customer",
           agentDetails = constructAgentDetails(agentReferenceNo),
           appealInformation = ObligationAppealInformation(
             reasonableExcuse = reasonableExcuse,

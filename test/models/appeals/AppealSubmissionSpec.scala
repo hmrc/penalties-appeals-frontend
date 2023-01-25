@@ -23,6 +23,7 @@ import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import play.api.libs.json.{JsValue, Json}
 import utils.SessionKeys
 
+import java.time.temporal.ChronoUnit
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 class AppealSubmissionSpec extends SpecBase {
@@ -44,7 +45,7 @@ class AppealSubmissionSpec extends SpecBase {
   val lossOfStaffAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "reasonableExcuse": "lossOfStaff",
+      |   "reasonableExcuse": "lossOfEssentialStaff",
       |   "honestyDeclaration": true,
       |   "startDateOfEvent": "2021-04-23T00:00:00",
       |   "lateAppeal": false,
@@ -57,10 +58,10 @@ class AppealSubmissionSpec extends SpecBase {
   val technicalIssuesAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "reasonableExcuse": "technicalIssues",
+      |   "reasonableExcuse": "technicalIssue",
       |   "honestyDeclaration": true,
       |   "startDateOfEvent": "2021-04-23T00:00:00",
-      |   "endDateOfEvent": "2021-04-24T23:59:59.999999999",
+      |   "endDateOfEvent": "2021-04-24T23:59:59",
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
       |   "isClientResponsibleForLateSubmission": true
@@ -71,7 +72,7 @@ class AppealSubmissionSpec extends SpecBase {
   val fireOrFloodAppealInformationJson: JsValue = Json.parse(
     """
       |{
-      |   "reasonableExcuse": "fireOrFlood",
+      |   "reasonableExcuse": "fireandflood",
       |   "honestyDeclaration": true,
       |   "startDateOfEvent": "2021-04-23T00:00:00",
       |   "lateAppeal": false,
@@ -87,7 +88,7 @@ class AppealSubmissionSpec extends SpecBase {
       |   "reasonableExcuse": "health",
       |   "honestyDeclaration": true,
       |   "startDateOfEvent": "2021-04-23T00:00:00",
-      |   "endDateOfEvent": "2021-04-24T23:59:59.999999999",
+      |   "endDateOfEvent": "2021-04-24T23:59:59",
       |   "eventOngoing": false,
       |   "hospitalStayInvolved": true,
       |   "lateAppeal": false,
@@ -277,7 +278,7 @@ class AppealSubmissionSpec extends SpecBase {
     "for fire or flood" must {
       "parse the appeal information model into a JsObject" in {
         val model = FireOrFloodAppealInformation(
-          reasonableExcuse = "fireOrFlood",
+          reasonableExcuse = "fireandflood",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
           statement = None,
@@ -294,7 +295,7 @@ class AppealSubmissionSpec extends SpecBase {
     "for loss of staff" must {
       "parse the appeal information model into a JsObject" in {
         val model = LossOfStaffAppealInformation(
-          reasonableExcuse = "lossOfStaff",
+          reasonableExcuse = "lossOfEssentialStaff",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
           statement = None,
@@ -311,10 +312,10 @@ class AppealSubmissionSpec extends SpecBase {
     "for technical issues" must {
       "parse the appeal information model into a JsObject" in {
         val model = TechnicalIssuesAppealInformation(
-          reasonableExcuse = "technicalIssues",
+          reasonableExcuse = "technicalIssue",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          endDateOfEvent = LocalDate.parse("2021-04-24").atTime(LocalTime.MAX),
+          endDateOfEvent = LocalDate.parse("2021-04-24").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS),
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -332,7 +333,7 @@ class AppealSubmissionSpec extends SpecBase {
           reasonableExcuse = "health",
           honestyDeclaration = true,
           startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()),
-          endDateOfEvent = Some(LocalDate.parse("2021-04-24").atTime(LocalTime.MAX)),
+          endDateOfEvent = Some(LocalDate.parse("2021-04-24").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS)),
           eventOngoing = false,
           hospitalStayInvolved = true,
           statement = None,
@@ -472,7 +473,7 @@ class AppealSubmissionSpec extends SpecBase {
       )
     }
 
-    "show submitted by client - when the user is a client" in {
+    "show submitted by customer - when the user is a customer" in {
       val userAnswers = UserAnswers("1234", Json.obj(
         SessionKeys.reasonableExcuse -> "crime",
         SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
@@ -484,7 +485,7 @@ class AppealSubmissionSpec extends SpecBase {
 
       val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = true,
         None, None)(fakeRequestForCrimeJourney)
-      result.appealSubmittedBy shouldBe "client"
+      result.appealSubmittedBy shouldBe "customer"
       result.appealInformation shouldBe CrimeAppealInformation(
         reasonableExcuse = "crime",
         honestyDeclaration = true,
@@ -508,7 +509,7 @@ class AppealSubmissionSpec extends SpecBase {
         val fakeRequestForBereavementJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement",
           isLateAppeal = false, None, None)(fakeRequestForBereavementJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe BereavementAppealInformation(
           reasonableExcuse = "bereavement",
           honestyDeclaration = true,
@@ -557,7 +558,7 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false,
           None, None)(fakeRequestForCrimeJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
@@ -582,7 +583,7 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false,
           None, None)(fakeRequestForCrimeJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
@@ -607,9 +608,9 @@ class AppealSubmissionSpec extends SpecBase {
         val fakeRequestForFireOrFloodJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood",
           isLateAppeal = false, None, None)(fakeRequestForFireOrFloodJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe FireOrFloodAppealInformation(
-          reasonableExcuse = "fireOrFlood",
+          reasonableExcuse = "fireandflood",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
           statement = None,
@@ -624,7 +625,7 @@ class AppealSubmissionSpec extends SpecBase {
     "for loss of staff" must {
       "show only the event date (when person left the business)" in {
         val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "fireOrFlood",
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
           SessionKeys.hasConfirmedDeclaration -> true,
           SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
         ) ++ correctUserAnswers)
@@ -632,9 +633,9 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff",
           isLateAppeal = false, None, None)(fakeRequestForLossOfStaffJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe LossOfStaffAppealInformation(
-          reasonableExcuse = "lossOfStaff",
+          reasonableExcuse = "lossOfEssentialStaff",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
           statement = None,
@@ -659,7 +660,7 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealSubmittedBy shouldBe "agent"
         result.agentDetails shouldBe Some(AgentDetails("AGENT1", false))
         result.appealInformation shouldBe LossOfStaffAppealInformation(
-          reasonableExcuse = "lossOfStaff",
+          reasonableExcuse = "lossOfEssentialStaff",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
           statement = None,
@@ -680,15 +681,14 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
         ) ++ correctUserAnswers)
         val fakeRequestForTechnicalIssuesJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
-
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues",
           isLateAppeal = false, None, None)(fakeRequestForTechnicalIssuesJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
-          reasonableExcuse = "technicalIssues",
+          reasonableExcuse = "technicalIssue",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
-          endDateOfEvent = LocalDate.parse("2022-01-02").atTime(LocalTime.MAX),
+          endDateOfEvent = LocalDate.parse("2022-01-02").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS),
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -712,10 +712,10 @@ class AppealSubmissionSpec extends SpecBase {
         result.appealSubmittedBy shouldBe "agent"
         result.agentDetails shouldBe Some(AgentDetails("AGENT1", false))
         result.appealInformation shouldBe TechnicalIssuesAppealInformation(
-          reasonableExcuse = "technicalIssues",
+          reasonableExcuse = "technicalIssue",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
-          endDateOfEvent = LocalDate.parse("2022-01-02").atTime(LocalTime.MAX),
+          endDateOfEvent = LocalDate.parse("2022-01-02").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS),
           statement = None,
           lateAppeal = false,
           lateAppealReason = None,
@@ -747,7 +747,7 @@ class AppealSubmissionSpec extends SpecBase {
           honestyDeclaration = true,
           hospitalStayInvolved = true,
           startDateOfEvent = Some(LocalDate.parse("2022-01-01").atStartOfDay()),
-          endDateOfEvent = Some(LocalDate.parse("2022-01-31").atTime(LocalTime.MAX)),
+          endDateOfEvent = Some(LocalDate.parse("2022-01-31").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS)),
           eventOngoing = false,
           statement = None,
           lateAppeal = false,
@@ -769,7 +769,7 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false,
           None, None)(fakeRequestForHealthJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe HealthAppealInformation(
           reasonableExcuse = "health",
           honestyDeclaration = true,
@@ -796,7 +796,7 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health", isLateAppeal = false,
           None, None)(fakeRequestForHealthJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe HealthAppealInformation(
           reasonableExcuse = "health",
           honestyDeclaration = true,
@@ -826,7 +826,7 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false,
           None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForOtherJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
           honestyDeclaration = true,
@@ -849,11 +849,11 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
           SessionKeys.isUploadEvidence -> "no"
         ) ++ correctUserAnswers)
-        val fakeRequestForLossOfStaffJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
+        val fakeRequestForObligationJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false,
-          None, uploadedFiles = None)(fakeRequestForLossOfStaffJourney)
-        result.appealSubmittedBy shouldBe "client"
+          None, uploadedFiles = None)(fakeRequestForObligationJourney)
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
           honestyDeclaration = true,
@@ -877,11 +877,11 @@ class AppealSubmissionSpec extends SpecBase {
           SessionKeys.lateAppealReason -> "This is a reason for appealing late.",
           SessionKeys.isUploadEvidence -> "yes"
         ) ++ correctUserAnswers)
-        val fakeRequestForLossOfStaffJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
+        val fakeRequestForObligationJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = true,
-          None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForLossOfStaffJourney)
-        result.appealSubmittedBy shouldBe "client"
+          None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForObligationJourney)
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe OtherAppealInformation(
           reasonableExcuse = "other",
           honestyDeclaration = true,
@@ -911,7 +911,7 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false,
           None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForObligationJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe ObligationAppealInformation(
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
@@ -933,7 +933,7 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false,
           None, None)(fakeRequestForObligationJourney)
-        result.appealSubmittedBy shouldBe "client"
+        result.appealSubmittedBy shouldBe "customer"
         result.appealInformation shouldBe ObligationAppealInformation(
           reasonableExcuse = "obligation",
           honestyDeclaration = true,
@@ -955,7 +955,7 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = false,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = BereavementAppealInformation(
             reasonableExcuse = "bereavement",
@@ -974,7 +974,7 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> false,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "bereavement",
             "honestyDeclaration" -> true,
@@ -996,7 +996,7 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = CrimeAppealInformation(
             reasonableExcuse = "crime",
@@ -1016,7 +1016,7 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "crime",
             "honestyDeclaration" -> true,
@@ -1041,10 +1041,10 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = FireOrFloodAppealInformation(
-            reasonableExcuse = "fireOrFlood",
+            reasonableExcuse = "fireandflood",
             honestyDeclaration = true,
             startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
             statement = None,
@@ -1061,9 +1061,9 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
-            "reasonableExcuse" -> "fireOrFlood",
+            "reasonableExcuse" -> "fireandflood",
             "honestyDeclaration" -> true,
             "startDateOfEvent" -> "2021-04-23T00:00:00",
             "lateAppeal" -> false,
@@ -1085,10 +1085,10 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = LossOfStaffAppealInformation(
-            reasonableExcuse = "lossOfStaff",
+            reasonableExcuse = "lossOfEssentialStaff",
             honestyDeclaration = true,
             startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
             statement = None,
@@ -1104,9 +1104,9 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
-            "reasonableExcuse" -> "lossOfStaff",
+            "reasonableExcuse" -> "lossOfEssentialStaff",
             "honestyDeclaration" -> true,
             "startDateOfEvent" -> "2021-04-23T00:00:00",
             "lateAppeal" -> false,
@@ -1128,13 +1128,13 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = TechnicalIssuesAppealInformation(
-            reasonableExcuse = "technicalIssues",
+            reasonableExcuse = "technicalIssue",
             honestyDeclaration = true,
             startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-            endDateOfEvent = LocalDate.parse("2021-04-24").atTime(LocalTime.MAX),
+            endDateOfEvent = LocalDate.parse("2021-04-24").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS),
             statement = None,
             lateAppeal = false,
             lateAppealReason = None,
@@ -1149,12 +1149,12 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
-            "reasonableExcuse" -> "technicalIssues",
+            "reasonableExcuse" -> "technicalIssue",
             "honestyDeclaration" -> true,
             "startDateOfEvent" -> "2021-04-23T00:00:00",
-            "endDateOfEvent" -> "2021-04-24T23:59:59.999999999",
+            "endDateOfEvent" -> "2021-04-24T23:59:59",
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
             "isClientResponsibleForLateSubmission" -> true
@@ -1175,13 +1175,13 @@ class AppealSubmissionSpec extends SpecBase {
             customerReferenceNo = "VRN1234567890",
             dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
             isLPP = true,
-            appealSubmittedBy = "client",
+            appealSubmittedBy = "customer",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
               honestyDeclaration = true,
               startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()),
-              endDateOfEvent = Some(LocalDate.parse("2021-04-24").atTime(LocalTime.MAX)),
+              endDateOfEvent = Some(LocalDate.parse("2021-04-24").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS)),
               eventOngoing = false,
               hospitalStayInvolved = true,
               statement = None,
@@ -1197,12 +1197,12 @@ class AppealSubmissionSpec extends SpecBase {
             "customerReferenceNo" -> "VRN1234567890",
             "dateOfAppeal" -> "2020-01-01T00:00:00",
             "isLPP" -> true,
-            "appealSubmittedBy" -> "client",
+            "appealSubmittedBy" -> "customer",
             "appealInformation" -> Json.obj(
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
               "startDateOfEvent" -> "2021-04-23T00:00:00",
-              "endDateOfEvent" -> "2021-04-24T23:59:59.999999999",
+              "endDateOfEvent" -> "2021-04-24T23:59:59",
               "eventOngoing" -> false,
               "hospitalStayInvolved" -> true,
               "lateAppeal" -> true,
@@ -1222,7 +1222,7 @@ class AppealSubmissionSpec extends SpecBase {
             customerReferenceNo = "VRN1234567890",
             dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
             isLPP = true,
-            appealSubmittedBy = "client",
+            appealSubmittedBy = "customer",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
@@ -1244,7 +1244,7 @@ class AppealSubmissionSpec extends SpecBase {
             "customerReferenceNo" -> "VRN1234567890",
             "dateOfAppeal" -> "2020-01-01T00:00:00",
             "isLPP" -> true,
-            "appealSubmittedBy" -> "client",
+            "appealSubmittedBy" -> "customer",
             "appealInformation" -> Json.obj(
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
@@ -1269,7 +1269,7 @@ class AppealSubmissionSpec extends SpecBase {
             customerReferenceNo = "VRN1234567890",
             dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
             isLPP = true,
-            appealSubmittedBy = "client",
+            appealSubmittedBy = "customer",
             agentDetails = None,
             appealInformation = HealthAppealInformation(
               reasonableExcuse = "health",
@@ -1291,7 +1291,7 @@ class AppealSubmissionSpec extends SpecBase {
             "customerReferenceNo" -> "VRN1234567890",
             "dateOfAppeal" -> "2020-01-01T00:00:00",
             "isLPP" -> true,
-            "appealSubmittedBy" -> "client",
+            "appealSubmittedBy" -> "customer",
             "appealInformation" -> Json.obj(
               "reasonableExcuse" -> "health",
               "honestyDeclaration" -> true,
@@ -1318,7 +1318,7 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
@@ -1342,7 +1342,7 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "other",
             "honestyDeclaration" -> true,
@@ -1396,7 +1396,7 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
@@ -1418,7 +1418,7 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "other",
             "honestyDeclaration" -> true,
@@ -1441,7 +1441,7 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = OtherAppealInformation(
             reasonableExcuse = "other",
@@ -1465,7 +1465,7 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "other",
             "honestyDeclaration" -> true,
@@ -1522,7 +1522,7 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = ObligationAppealInformation(
             reasonableExcuse = "obligation",
@@ -1541,7 +1541,7 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "obligation",
             "honestyDeclaration" -> true,
@@ -1591,7 +1591,7 @@ class AppealSubmissionSpec extends SpecBase {
           customerReferenceNo = "VRN1234567890",
           dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
           isLPP = true,
-          appealSubmittedBy = "client",
+          appealSubmittedBy = "customer",
           agentDetails = None,
           appealInformation = ObligationAppealInformation(
             reasonableExcuse = "obligation",
@@ -1608,7 +1608,7 @@ class AppealSubmissionSpec extends SpecBase {
           "customerReferenceNo" -> "VRN1234567890",
           "dateOfAppeal" -> "2020-01-01T00:00:00",
           "isLPP" -> true,
-          "appealSubmittedBy" -> "client",
+          "appealSubmittedBy" -> "customer",
           "appealInformation" -> Json.obj(
             "reasonableExcuse" -> "obligation",
             "honestyDeclaration" -> true,
@@ -1682,7 +1682,7 @@ class AppealSubmissionSpec extends SpecBase {
     "fireOrFloodAppealWrites" must {
       "write the appeal model to Json" in {
         val model = FireOrFloodAppealInformation(
-          reasonableExcuse = "fireOrFlood",
+          reasonableExcuse = "fireandflood",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
           statement = None,
@@ -1693,7 +1693,7 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val result = Json.toJson(model)(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
         result shouldBe Json.obj(
-          "reasonableExcuse" -> "fireOrFlood",
+          "reasonableExcuse" -> "fireandflood",
           "honestyDeclaration" -> true,
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> true,
@@ -1709,7 +1709,7 @@ class AppealSubmissionSpec extends SpecBase {
     "lossOfStaffAppealWrites" must {
       "write the appeal model to JSON" in {
         val model = LossOfStaffAppealInformation(
-          reasonableExcuse = "lossOfStaff",
+          reasonableExcuse = "lossOfEssentialStaff",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
           statement = None,
@@ -1720,7 +1720,7 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val result = Json.toJson(model)(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
         result shouldBe Json.obj(
-          "reasonableExcuse" -> "lossOfStaff",
+          "reasonableExcuse" -> "lossOfEssentialStaff",
           "honestyDeclaration" -> true,
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> true,
@@ -1736,10 +1736,10 @@ class AppealSubmissionSpec extends SpecBase {
     "technicalIssuesAppealWrites" must {
       "write the appeal model to JSON" in {
         val model = TechnicalIssuesAppealInformation(
-          reasonableExcuse = "technicalIssues",
+          reasonableExcuse = "technicalIssue",
           honestyDeclaration = true,
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          endDateOfEvent = LocalDate.parse("2021-04-24").atTime(LocalTime.MAX),
+          endDateOfEvent = LocalDate.parse("2021-04-24").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS),
           statement = None,
           lateAppeal = true,
           lateAppealReason = Some("Reason"),
@@ -1748,10 +1748,10 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val result = Json.toJson(model)(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
         result shouldBe Json.obj(
-          "reasonableExcuse" -> "technicalIssues",
+          "reasonableExcuse" -> "technicalIssue",
           "honestyDeclaration" -> true,
           "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "endDateOfEvent" -> "2021-04-24T23:59:59.999999999",
+          "endDateOfEvent" -> "2021-04-24T23:59:59",
           "lateAppeal" -> true,
           "lateAppealReason" -> "Reason",
           "isClientResponsibleForSubmission" -> false,
@@ -1769,7 +1769,7 @@ class AppealSubmissionSpec extends SpecBase {
             reasonableExcuse = "health",
             honestyDeclaration = true,
             startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()),
-            endDateOfEvent = Some(LocalDate.parse("2021-04-24").atTime(LocalTime.MAX)),
+            endDateOfEvent = Some(LocalDate.parse("2021-04-24").atTime(LocalTime.MAX).truncatedTo(ChronoUnit.SECONDS)),
             eventOngoing = false,
             hospitalStayInvolved = true,
             statement = None,
@@ -1783,7 +1783,7 @@ class AppealSubmissionSpec extends SpecBase {
             "reasonableExcuse" -> "health",
             "honestyDeclaration" -> true,
             "startDateOfEvent" -> "2021-04-23T00:00:00",
-            "endDateOfEvent" -> "2021-04-24T23:59:59.999999999",
+            "endDateOfEvent" -> "2021-04-24T23:59:59",
             "eventOngoing" -> false,
             "hospitalStayInvolved" -> true,
             "lateAppeal" -> true,
