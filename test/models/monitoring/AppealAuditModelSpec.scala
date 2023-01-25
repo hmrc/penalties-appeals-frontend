@@ -81,7 +81,7 @@ class AppealAuditModelSpec extends SpecBase {
       reasonableExcuse = "crime",
       honestyDeclaration = true,
       startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-      reportedIssueToPolice = true,
+      reportedIssueToPolice = "yes",
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
@@ -252,7 +252,7 @@ class AppealAuditModelSpec extends SpecBase {
         "correlationId" -> "someUUID",
         "appealInformation" -> Json.obj(
           "type" -> "crime",
-          "reportedIssue" -> true,
+          "reportedIssue" -> "yes",
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         )
