@@ -446,11 +446,11 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       }
     }
 
-    "succeed if an error occurs during file notification storage and log a PD (LPP1 fails)" in new Setup {
+    "succeed if one of 2 appeal submissions fail and log a PD (LPP2 fails)" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Some issue with document storage")))
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "PR-1234")))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "Some issue with submission")))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       withCaptureOfLoggingFrom(logger) {
@@ -458,29 +458,50 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
           logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
-            s" Issue was LPP1 failed due to Some issue with document storage, the successful Case Id was PR-1234") shouldBe true
+            s" Issue was LPP2 failed due to Some issue with submission, the successful Case Id was PR-1234") shouldBe true
         }
       }
     }
 
-    "succeed if an error occurs during file notification storage and log a PD (LPP2 fails)" in new Setup {
+    "succeed if an error occurs during file notification storage and the other submission fails and log a PD (LPP1 docs fail, LPP2 fails submission)" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "PR-1234")))
+        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator")))
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Some issue with document storage")))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "Some issue with submission")))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       withCaptureOfLoggingFrom(logger) {
         logs => {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
-          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
-            s" Issue was LPP2 failed due to Some issue with document storage, the successful Case Id was PR-1234") shouldBe true
+          val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
+            s" Issue was LPP2 failed due to Some issue with submission, the details for the LPP1 are Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator"
+          println(logMessage)
+          logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }
     }
 
-    "succeed if an error occurs during file notification storage for both submissions and log a PD " in new Setup {
+    "succeed if an error occurs during file notification storage and the other submission fails and log a PD (LPP2 docs fail, LPP1 fails submission)" in new Setup {
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "Some issue with submission")))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator")))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(None))
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
+          result shouldBe Right((): Unit)
+          val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
+            s" Issue was LPP1 failed due to Some issue with submission, the details for the LPP2 are Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator"
+          println(logMessage)
+          logs.exists(_.getMessage == logMessage) shouldBe true
+        }
+      }
+    }
+
+    "succeed if an error occurs during file notification storage for both submissions and log a PD" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator")))
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))

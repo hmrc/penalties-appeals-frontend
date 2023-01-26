@@ -226,20 +226,21 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - Received OK from the appeal submission call")
         Right((): Unit)
-      case (OK, _) =>
-        logPartialFailureOfMultipleAppeal(secondResponse, firstResponse, vrn, dateFrom, dateTo)(didLPP1Fail = false)
-        sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
-        sendAuditIfDuplicatesExist(uploads)
-        logger.debug("[AppealService][multipleAppeal] - First penalty was appealed successfully, second penalty had issues")
-        Right((): Unit)
-      case (_, OK) =>
-        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(didLPP1Fail = true)
+      case (MULTI_STATUS, MULTI_STATUS) =>
+        logFileNotificationStorageErrorOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)
         sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
         Right((): Unit)
-      case (MULTI_STATUS, MULTI_STATUS) =>
-        logFileNotificationStorgaeErrorOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)
+      case (OK | MULTI_STATUS, _) =>
+        firstResponse.status == OK
+        logPartialFailureOfMultipleAppeal(secondResponse, firstResponse, vrn, dateFrom, dateTo)(didLPP1Fail = false, wasPartSuccess = firstResponse.status == MULTI_STATUS)
+        sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
+        sendAuditIfDuplicatesExist(uploads)
+        logger.debug("[AppealService][multipleAppeal] - First penalty was appealed successfully, second penalty had issues")
+        Right((): Unit)
+      case (_, OK | MULTI_STATUS) =>
+        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(didLPP1Fail = true,  wasPartSuccess = secondResponse.status == MULTI_STATUS)
         sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
@@ -275,13 +276,16 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   private def logPartialFailureOfMultipleAppeal(failedResponse: HttpResponse, successfulResponse: HttpResponse,
-                                                vrn: String, dateFrom: String, dateTo: String)(didLPP1Fail: Boolean): Unit = {
+                                                vrn: String, dateFrom: String, dateTo: String)(didLPP1Fail: Boolean, wasPartSuccess: Boolean): Unit = {
     val errorDetail = if(didLPP1Fail) s"LPP1 failed due to" else "LPP2 failed due to"
+    val caseIdOrDocIssueDetails = if(wasPartSuccess)
+      s"the details for the ${if(didLPP1Fail) "LPP2" else  "LPP1"} are ${successfulResponse.body}" else
+      s"the successful Case Id was ${successfulResponse.body}"
       logger.error(s"MULTI_APPEAL_FAILURE Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn failed." +
-      s" Issue was $errorDetail ${failedResponse.body}, the successful Case Id was ${successfulResponse.body}")
+        s" Issue was $errorDetail ${failedResponse.body}, $caseIdOrDocIssueDetails")
   }
 
-  private def logFileNotificationStorgaeErrorOfMultipleAppeal(lpp1Response: HttpResponse, lpp2Response: HttpResponse,
+  private def logFileNotificationStorageErrorOfMultipleAppeal(lpp1Response: HttpResponse, lpp2Response: HttpResponse,
                                                               vrn: String, dateFrom: String, dateTo: String): Unit = {
     logger.error {
       s"MULTI_APPEAL_FAILURE Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn partially succeeded." +
