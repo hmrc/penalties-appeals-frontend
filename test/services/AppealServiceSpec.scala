@@ -440,8 +440,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         logs => {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
-          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
-            s" Issue was LPP1 failed due to Some issue with submission, the successful Case Id was PR-1234") shouldBe true
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
+            s"LPP1 appeal was not submitted successfully, Reason given Some issue with submission. " +
+            s"LPP2 appeal was submitted successfully, Case Id is PR-1234.") shouldBe true
         }
       }
     }
@@ -457,8 +458,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         logs => {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
-          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
-            s" Issue was LPP2 failed due to Some issue with submission, the successful Case Id was PR-1234") shouldBe true
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
+            s"LPP1 appeal was submitted successfully, Case Id is PR-1234. " +
+            s"LPP2 appeal was not submitted successfully, Reason given Some issue with submission.") shouldBe true
         }
       }
     }
@@ -474,8 +476,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         logs => {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
-          val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
-            s" Issue was LPP2 failed due to Some issue with submission, the details for the LPP1 are Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator"
+          val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
+            s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). " +
+            s"LPP2 appeal was not submitted successfully, Reason given Some issue with submission."
           logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }
@@ -492,8 +495,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         logs => {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
-          val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
-            s" Issue was LPP1 failed due to Some issue with submission, the details for the LPP2 are Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator"
+          val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
+            s"LPP1 appeal was not submitted successfully, Reason given Some issue with submission. " +
+            s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator)."
           logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }
@@ -510,10 +514,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         logs => {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
-          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 partially succeeded." +
-            s" Issue was file notification storage failed for both LPPs, the details for both submissions were " +
-            s"LPP1=(Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator) and " +
-            s"LPP2=(Appeal submitted (case ID: PR-1235) but received 500 response from file notification orchestrator)") shouldBe true
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
+            s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). " +
+            s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1235) but received 500 response from file notification orchestrator).") shouldBe true
         }
       }
     }

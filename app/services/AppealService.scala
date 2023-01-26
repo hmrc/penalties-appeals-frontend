@@ -187,7 +187,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
     val dateTimeNow: LocalDate = dateTimeHelper.dateNow
     val dateWhereLateAppealIsApplicable: LocalDate = dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal)
-    if(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
+    if (userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
       userRequest.answers.getAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate).exists(_.isBefore(dateWhereLateAppealIsApplicable)) ||
         userRequest.answers.getAnswer[LocalDate](SessionKeys.secondPenaltyCommunicationDate).exists(_.isBefore(dateWhereLateAppealIsApplicable))
     } else {
@@ -227,21 +227,31 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         logger.debug("[AppealService][multipleAppeal] - Received OK from the appeal submission call")
         Right((): Unit)
       case (MULTI_STATUS, MULTI_STATUS) =>
-        logFileNotificationStorageErrorOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)
+        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(
+          didLPP1SubmissionSucceed = true,
+          didLPP1DocumentUploadSucceed = false,
+          didLPP2SubmissionSucceed = true,
+          didLPP2DocumentUploadSucceed = false)
         sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - Both penalties were appealed successfully, but the uploads had issues")
         Right((): Unit)
       case (OK | MULTI_STATUS, _) =>
-        logPartialFailureOfMultipleAppeal(secondResponse, firstResponse, vrn, dateFrom, dateTo)(didLPP1Fail = false, wasPartSuccess = firstResponse.status == MULTI_STATUS)
+        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(
+          didLPP1SubmissionSucceed = true,
+          didLPP1DocumentUploadSucceed = firstResponse.status == OK,
+          didLPP2SubmissionSucceed = false,
+          didLPP2DocumentUploadSucceed = false)
         sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - First penalty was appealed successfully, second penalty had issues")
         Right((): Unit)
       case (_, OK | MULTI_STATUS) =>
-        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(didLPP1Fail = true, wasPartSuccess = secondResponse.status == MULTI_STATUS)
-        sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
-        sendAuditIfDuplicatesExist(uploads)
+        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(
+          didLPP1SubmissionSucceed = false,
+          didLPP1DocumentUploadSucceed = false,
+          didLPP2SubmissionSucceed = true,
+          didLPP2DocumentUploadSucceed = secondResponse.status == OK)
         logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
         Right((): Unit)
       case _ =>
@@ -259,7 +269,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               appealType: Option[PenaltyTypeEnum.Value])(implicit ec: ExecutionContext,
                                                                          headerCarrier: HeaderCarrier,
                                                                          userRequest: UserRequest[_]): Unit = {
-    val startOfLog = s"[AppealService][${if(isMultipleAppeal) "multipleAppeal" else "singleAppeal"}"
+    val startOfLog = s"[AppealService][${if (isMultipleAppeal) "multipleAppeal" else "singleAppeal"}"
     if (isLPP) {
       if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
         logger.info(s"$startOfLog - Auditing first LPP appeal payload")
@@ -274,22 +284,24 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
-  private def logPartialFailureOfMultipleAppeal(failedResponse: HttpResponse, successfulResponse: HttpResponse,
-                                                vrn: String, dateFrom: String, dateTo: String)(didLPP1Fail: Boolean, wasPartSuccess: Boolean): Unit = {
-    val errorDetail = if(didLPP1Fail) s"LPP1 failed due to" else "LPP2 failed due to"
-    val caseIdOrDocIssueDetails = if(wasPartSuccess)
-      s"the details for the ${if(didLPP1Fail) "LPP2" else  "LPP1"} are ${successfulResponse.body}" else
-      s"the successful Case Id was ${successfulResponse.body}"
-      logger.error(s"MULTI_APPEAL_FAILURE Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn failed." +
-        s" Issue was $errorDetail ${failedResponse.body}, $caseIdOrDocIssueDetails")
-  }
+  private def logPartialFailureOfMultipleAppeal(lpp1Response: HttpResponse, lpp2Response: HttpResponse,
+                                                vrn: String, dateFrom: String, dateTo: String)(
+    didLPP1SubmissionSucceed: Boolean,
+    didLPP1DocumentUploadSucceed: Boolean,
+    didLPP2SubmissionSucceed: Boolean,
+    didLPP2DocumentUploadSucceed: Boolean): Unit = {
 
-  private def logFileNotificationStorageErrorOfMultipleAppeal(lpp1Response: HttpResponse, lpp2Response: HttpResponse,
-                                                              vrn: String, dateFrom: String, dateTo: String): Unit = {
-    logger.error {
-      s"MULTI_APPEAL_FAILURE Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn partially succeeded." +
-        s" Issue was file notification storage failed for both LPPs, the details for both submissions were LPP1=(${lpp1Response.body}) and " +
-        s"LPP2=(${lpp2Response.body})"
+    val lpp1Message = (didLPP1SubmissionSucceed, didLPP1DocumentUploadSucceed) match {
+      case (true, true) => s"LPP1 appeal was submitted successfully, Case Id is ${lpp1Response.body}. "
+      case (true, false) => s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (${lpp1Response.body}). "
+      case (false, _) => s"LPP1 appeal was not submitted successfully, Reason given ${lpp1Response.body}. "
     }
+    val lpp2Message = (didLPP2SubmissionSucceed, didLPP2DocumentUploadSucceed) match {
+      case (true, true) => s"LPP2 appeal was submitted successfully, Case Id is ${lpp2Response.body}."
+      case (true, false) => s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (${lpp2Response.body})."
+      case (false, _) => s"LPP2 appeal was not submitted successfully, Reason given ${lpp2Response.body}."
+    }
+
+    logger.error(s"MULTI_APPEAL_FAILURE Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn failed. " + lpp1Message + lpp2Message)
   }
 }
