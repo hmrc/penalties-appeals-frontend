@@ -238,6 +238,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
         Right((): Unit)
+      case (MULTI_STATUS, MULTI_STATUS) =>
+        logFileNotificationStorgaeErrorOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)
+        sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
+        sendAuditIfDuplicatesExist(uploads)
+        logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
+        Right((): Unit)
       case _ =>
         logger.error(s"[AppealService][multipleAppeal] - Received unknown status code from connector:" +
           s" First response: ${firstResponse.status}, Second response: ${secondResponse.status}")
@@ -273,5 +279,14 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     val errorDetail = if(didLPP1Fail) s"LPP1 failed due to" else "LPP2 failed due to"
       logger.error(s"MULTI_APPEAL_FAILURE Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn failed." +
       s" Issue was $errorDetail ${failedResponse.body}, the successful Case Id was ${successfulResponse.body}")
+  }
+
+  private def logFileNotificationStorgaeErrorOfMultipleAppeal(lpp1Response: HttpResponse, lpp2Response: HttpResponse,
+                                                              vrn: String, dateFrom: String, dateTo: String): Unit = {
+    logger.error {
+      s"MULTI_APPEAL_FAILURE Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn partially succeeded." +
+        s" Issue was file notification storage failed for both LPPs, the details for both submissions were LPP1=(${lpp1Response.body}) and " +
+        s"LPP2=(${lpp2Response.body})"
+    }
   }
 }

@@ -446,11 +446,28 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       }
     }
 
-    "succeed if one of 2 appeal submissions fail and log a PD (LPP2 fails)" in new Setup {
+    "succeed if an error occurs during file notification storage and log a PD (LPP1 fails)" in new Setup {
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Some issue with document storage")))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, "PR-1234")))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(None))
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
+          result shouldBe Right((): Unit)
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
+            s" Issue was LPP1 failed due to Some issue with document storage, the successful Case Id was PR-1234") shouldBe true
+        }
+      }
+    }
+
+    "succeed if an error occurs during file notification storage and log a PD (LPP2 fails)" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "PR-1234")))
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "Some issue with document storage")))
+        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Some issue with document storage")))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       withCaptureOfLoggingFrom(logger) {
@@ -459,6 +476,25 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           result shouldBe Right((): Unit)
           logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
             s" Issue was LPP2 failed due to Some issue with document storage, the successful Case Id was PR-1234") shouldBe true
+        }
+      }
+    }
+
+    "succeed if an error occurs during file notification storage for both submissions and log a PD " in new Setup {
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator")))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1235) but received 500 response from file notification orchestrator")))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(None))
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
+          result shouldBe Right((): Unit)
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 partially succeeded." +
+            s" Issue was file notification storage failed for both LPPs, the details for both submissions were " +
+            s"LPP1=(Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator) and " +
+            s"LPP2=(Appeal submitted (case ID: PR-1235) but received 500 response from file notification orchestrator)") shouldBe true
         }
       }
     }
