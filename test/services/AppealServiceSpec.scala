@@ -476,7 +476,6 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           result shouldBe Right((): Unit)
           val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
             s" Issue was LPP2 failed due to Some issue with submission, the details for the LPP1 are Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator"
-          println(logMessage)
           logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }
@@ -495,7 +494,6 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           result shouldBe Right((): Unit)
           val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed." +
             s" Issue was LPP1 failed due to Some issue with submission, the details for the LPP2 are Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator"
-          println(logMessage)
           logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }

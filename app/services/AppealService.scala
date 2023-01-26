@@ -230,17 +230,16 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         logFileNotificationStorageErrorOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)
         sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
         sendAuditIfDuplicatesExist(uploads)
-        logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
+        logger.debug("[AppealService][multipleAppeal] - Both penalties were appealed successfully, but the uploads had issues")
         Right((): Unit)
       case (OK | MULTI_STATUS, _) =>
-        firstResponse.status == OK
         logPartialFailureOfMultipleAppeal(secondResponse, firstResponse, vrn, dateFrom, dateTo)(didLPP1Fail = false, wasPartSuccess = firstResponse.status == MULTI_STATUS)
         sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - First penalty was appealed successfully, second penalty had issues")
         Right((): Unit)
       case (_, OK | MULTI_STATUS) =>
-        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(didLPP1Fail = true,  wasPartSuccess = secondResponse.status == MULTI_STATUS)
+        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(didLPP1Fail = true, wasPartSuccess = secondResponse.status == MULTI_STATUS)
         sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
