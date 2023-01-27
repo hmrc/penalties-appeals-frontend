@@ -236,23 +236,25 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         sendAuditIfDuplicatesExist(uploads)
         logger.debug("[AppealService][multipleAppeal] - Both penalties were appealed successfully, but the uploads had issues")
         Right((): Unit)
-      case (OK | MULTI_STATUS, _) =>
+      case (lpp1Response@(OK | MULTI_STATUS), lpp2Response) =>
         logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(
-          didLPP1SubmissionSucceed = true,
-          didLPP1DocumentUploadSucceed = firstResponse.status == OK,
-          didLPP2SubmissionSucceed = false,
-          didLPP2DocumentUploadSucceed = false)
+          didLPP1SubmissionSucceed = lpp1Response == OK || lpp1Response == MULTI_STATUS,
+          didLPP1DocumentUploadSucceed = lpp1Response == OK,
+          didLPP2SubmissionSucceed = lpp2Response == OK || lpp2Response == MULTI_STATUS,
+          didLPP2DocumentUploadSucceed = lpp2Response == OK)
         sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
         sendAuditIfDuplicatesExist(uploads)
-        logger.debug("[AppealService][multipleAppeal] - First penalty was appealed successfully, second penalty had issues")
+        logger.debug(s"[AppealService][multipleAppeal] - First penalty was $lpp1Response, second penalty was $lpp2Response")
         Right((): Unit)
-      case (_, OK | MULTI_STATUS) =>
+      case (lpp1Response, lpp2Response@(OK | MULTI_STATUS)) =>
         logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)(
-          didLPP1SubmissionSucceed = false,
-          didLPP1DocumentUploadSucceed = false,
-          didLPP2SubmissionSucceed = true,
-          didLPP2DocumentUploadSucceed = secondResponse.status == OK)
-        logger.debug("[AppealService][multipleAppeal] - Second penalty was appealed successfully, first penalty had issues")
+          didLPP1SubmissionSucceed = lpp1Response == OK || lpp1Response == MULTI_STATUS,
+          didLPP1DocumentUploadSucceed = lpp1Response == OK,
+          didLPP2SubmissionSucceed = lpp2Response == OK || lpp2Response == MULTI_STATUS,
+          didLPP2DocumentUploadSucceed = lpp2Response == OK)
+        sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = true, appealType)
+        sendAuditIfDuplicatesExist(uploads)
+        logger.debug(s"[AppealService][multipleAppeal] - Second penalty was $lpp2Response, first penalty was $lpp1Response")
         Right((): Unit)
       case _ =>
         logger.error(s"[AppealService][multipleAppeal] - Received unknown status code from connector:" +
