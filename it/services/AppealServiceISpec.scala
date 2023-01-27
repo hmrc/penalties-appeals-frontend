@@ -389,8 +389,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
         logs => {
           val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
           result shouldBe Right((): Unit)
-          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed." +
-            s" Issue was LPP1 failed due to Some issue with document storage, the successful Case Id was PR-1234") shouldBe true
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. " +
+            s"LPP1 appeal was not submitted successfully, Reason given Some issue with document storage. " +
+            s"LPP2 appeal was submitted successfully, Case Id is PR-1234.") shouldBe true
         }
       }
     }
@@ -417,8 +418,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
         logs => {
           val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
           result shouldBe Right((): Unit)
-          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed." +
-            s" Issue was LPP1 failed due to An issue occurred whilst appealing a penalty with error: Connection reset by peer, the successful Case Id was PR-1234") shouldBe true
+          logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. " +
+            s"LPP1 appeal was not submitted successfully, Reason given An issue occurred whilst appealing a penalty with error: Connection reset by peer. " +
+            s"LPP2 appeal was submitted successfully, Case Id is PR-1234.") shouldBe true
         }
       }
     }
