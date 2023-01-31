@@ -627,7 +627,7 @@ object AppealSubmission {
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidBecomeUnable).get.atStartOfDay(),
             statement = userRequest.answers.getAnswer[String](SessionKeys.whyReturnSubmittedLate),
-            supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => Some(Evidence(files.size))),
+            supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => if(files.isEmpty) None else Some(Evidence(files.size))),
             lateAppeal = isLateAppeal,
             lateAppealReason = if(isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
             isClientResponsibleForSubmission = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).map(_ == "client"),
@@ -650,7 +650,7 @@ object AppealSubmission {
             reasonableExcuse = reasonableExcuse,
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             statement = userRequest.answers.getAnswer[String](SessionKeys.otherRelevantInformation),
-            supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => Some(Evidence(files.size))),
+            supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => if(files.isEmpty) None else Some(Evidence(files.size))),
             isClientResponsibleForSubmission = None,
             isClientResponsibleForLateSubmission = None,
             uploadedFiles = if (uploadedFiles.isDefined) uploadedFiles else None

@@ -868,6 +868,33 @@ class AppealSubmissionSpec extends SpecBase {
         )
       }
 
+      "parse the session keys to a model - remove supportingEvidence object when no files have been uploaded" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+          SessionKeys.isUploadEvidence -> "yes"
+        ) ++ correctUserAnswers)
+        val fakeRequestForOtherJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other", isLateAppeal = false,
+          None, Some(Seq()))(fakeRequestForOtherJourney)
+        result.appealSubmittedBy shouldBe "customer"
+        result.appealInformation shouldBe OtherAppealInformation(
+          reasonableExcuse = "other",
+          honestyDeclaration = true,
+          startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
+          statement = Some("This is a reason."),
+          lateAppeal = false,
+          lateAppealReason = None,
+          supportingEvidence = None,
+          isClientResponsibleForSubmission = None,
+          isClientResponsibleForLateSubmission = None,
+          uploadedFiles = Some(Seq())
+        )
+      }
+
       "parse the session keys to a model - for late appeal" in {
         val userAnswers = UserAnswers("1234", Json.obj(
           SessionKeys.reasonableExcuse -> "other",
@@ -918,6 +945,29 @@ class AppealSubmissionSpec extends SpecBase {
           statement = Some("This is a reason."),
           supportingEvidence = Some(Evidence(noOfUploadedFiles = 2)),
           uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
+        )
+      }
+
+      "parse the session keys to a model - remove supportingEvidence object when no files have been uploaded" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+          SessionKeys.otherRelevantInformation -> "This is a reason.",
+          SessionKeys.isObligationAppeal -> true,
+          SessionKeys.isUploadEvidence -> "yes"
+        ) ++ correctUserAnswers)
+        val fakeRequestForObligationJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false,
+          None, Some(Seq()))(fakeRequestForObligationJourney)
+        result.appealSubmittedBy shouldBe "customer"
+        result.appealInformation shouldBe ObligationAppealInformation(
+          reasonableExcuse = "obligation",
+          honestyDeclaration = true,
+          statement = Some("This is a reason."),
+          supportingEvidence = None,
+          uploadedFiles = Some(Seq())
         )
       }
 
