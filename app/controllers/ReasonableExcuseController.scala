@@ -72,7 +72,7 @@ class ReasonableExcuseController @Inject()(
         identity,
         reasonableExcuses => {
           val formProvider: Form[String] = ReasonableExcuseForm.reasonableExcuseForm(reasonableExcuses.map(_.`type`))
-          formProvider.bindFromRequest.fold(
+          formProvider.bindFromRequest().fold(
             formWithErrors => {
               logger.debug(s"[ReasonableExcuseController][onSubmit] form errors ${formWithErrors.errors.head.message}")
               Future(BadRequest(reasonableExcuseSelectionPage(formWithErrors,

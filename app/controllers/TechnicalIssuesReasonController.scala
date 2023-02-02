@@ -50,7 +50,7 @@ class TechnicalIssuesReasonController @Inject()(technicalIssuesDatePage: Technol
   def onPageLoadForWhenTechnologyIssuesBegan(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
-        WhenDidTechnologyIssuesBeginForm.whenDidTechnologyIssuesBeginForm,
+        WhenDidTechnologyIssuesBeginForm.whenDidTechnologyIssuesBeginForm(),
         SessionKeys.whenDidTechnologyIssuesBegin,
         userRequest.answers
       )

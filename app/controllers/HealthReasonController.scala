@@ -59,7 +59,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
   def onPageLoadForWasHospitalStayRequired(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-        WasHospitalStayRequiredForm.wasHospitalStayRequiredForm,
+        WasHospitalStayRequiredForm.wasHospitalStayRequiredForm(),
         SessionKeys.wasHospitalStayRequired,
         userRequest.answers
       )
@@ -71,7 +71,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
 
   def onSubmitForWasHospitalStayRequired(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest =>
-      WasHospitalStayRequiredForm.wasHospitalStayRequiredForm.bindFromRequest.fold(
+      WasHospitalStayRequiredForm.wasHospitalStayRequiredForm().bindFromRequest().fold(
         formWithErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)
           val postAction = controllers.routes.HealthReasonController.onSubmitForWasHospitalStayRequired(mode)
@@ -100,7 +100,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
 
   def onSubmitForWhenHealthReasonHappened(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm.bindFromRequest().fold(
+      WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm().bindFromRequest().fold(
         formWithErrors => {
           val postAction = controllers.routes.HealthReasonController.onSubmitForWhenHealthReasonHappened(mode)
           Future(BadRequest(whenDidHealthReasonHappenPage(formWithErrors, postAction, pageMode(WhenDidHealthIssueHappenPage, mode))))
@@ -128,7 +128,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
 
   def onSubmitForWhenDidHospitalStayBegin(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm.bindFromRequest().fold(
+      WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm().bindFromRequest().fold(
         formWithErrors => {
           val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode)
           Future(BadRequest(whenDidHospitalStayBeginPage(formWithErrors, postAction, pageMode(WhenDidHospitalStayBeginPage, mode))))

@@ -66,7 +66,7 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
   def onSubmitForWhenCrimeHappened(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       val postAction = controllers.routes.CrimeReasonController.onSubmitForWhenCrimeHappened(mode)
-      WhenDidCrimeHappenForm.whenCrimeHappenedForm.bindFromRequest().fold(
+      WhenDidCrimeHappenForm.whenCrimeHappenedForm().bindFromRequest().fold(
         formWithErrors => {
           Future(BadRequest(whenDidCrimeHappenPage(formWithErrors, postAction, pageMode(WhenDidCrimeHappenPage, mode))))
         },
@@ -94,7 +94,7 @@ class CrimeReasonController @Inject()(whenDidCrimeHappenPage: WhenDidCrimeHappen
 
   def onSubmitForHasCrimeBeenReported(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      HasCrimeBeenReportedForm.hasCrimeBeenReportedForm.bindFromRequest.fold(
+      HasCrimeBeenReportedForm.hasCrimeBeenReportedForm.bindFromRequest().fold(
         formHasErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForHasCrimeBeenReportedPage(formHasErrors)
           val postAction = controllers.routes.CrimeReasonController.onSubmitForHasCrimeBeenReported(mode)

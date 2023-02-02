@@ -62,7 +62,7 @@ class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit request =>
-    youCanAppealPenaltyForm.bindFromRequest.fold(
+    youCanAppealPenaltyForm.bindFromRequest().fold(
       formWithErrors => {
         logger.debug(s"[YouCanAppealPenaltyController][onSubmit] - Form errors: ${formWithErrors.errors}")
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formWithErrors)

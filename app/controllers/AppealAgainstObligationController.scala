@@ -49,7 +49,7 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen  dataRetrieval andThen dataRequired) {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-        OtherRelevantInformationForm.otherRelevantInformationForm,
+        OtherRelevantInformationForm.otherRelevantInformationForm(),
         SessionKeys.otherRelevantInformation,
         request.answers
       )
@@ -60,7 +60,7 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
-      OtherRelevantInformationForm.otherRelevantInformationForm.bindFromRequest.fold(
+      OtherRelevantInformationForm.otherRelevantInformationForm().bindFromRequest().fold(
         formWithErrors => {
           val postAction = controllers.routes.AppealAgainstObligationController.onSubmit(mode)
           Future(BadRequest(otherRelevantInformationPage(formWithErrors, postAction, pageMode(mode))))
