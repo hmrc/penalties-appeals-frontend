@@ -129,7 +129,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
       uploads = if (userHasUploadedFiles) readyOrDuplicateFileUploads else None
       modelFromRequest: AppealSubmission = AppealSubmission
-        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate(), agentReferenceNo, uploads)
       penaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.penaltyNumber).get
       response <- {
         penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId, isMultiAppeal = false)
@@ -164,7 +164,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
       uploads = if (userHasUploadedFiles) readyOrDuplicateFileUploads else None
       modelFromRequest: AppealSubmission = AppealSubmission
-        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate, agentReferenceNo, uploads)
+        .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate(), agentReferenceNo, uploads)
       firstPenaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyChargeReference).get
       secondPenaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyChargeReference).get
       firstResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, firstPenaltyNumber, correlationId, isMultiAppeal = true)

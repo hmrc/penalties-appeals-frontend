@@ -64,7 +64,7 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
 
   def onSubmitForPenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      PenaltySelectionForm.doYouWantToAppealBothPenalties.bindFromRequest.fold(
+      PenaltySelectionForm.doYouWantToAppealBothPenalties.bindFromRequest().fold(
         errors => {
           val radioOptions = RadioOptionHelper.yesNoRadioOptions(errors)
           val firstPenalty = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get

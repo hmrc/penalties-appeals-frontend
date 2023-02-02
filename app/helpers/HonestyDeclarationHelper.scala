@@ -24,12 +24,12 @@ object HonestyDeclarationHelper {
   //scalastyle:off
   def getReasonText(reasonableExcuse: String)(implicit messages: Messages, user: UserRequest[_]): String = {
     reasonableExcuse match {
-      case _ if (user.isAgent && didClientPlanToSubmit && (reasonableExcuse.equals("crime") || reasonableExcuse.equals("bereavement"))) => {
+      case _ if (user.isAgent && didClientPlanToSubmit() && (reasonableExcuse.equals("crime") || reasonableExcuse.equals("bereavement"))) => {
         messages(s"agent.honestyDeclaration.$reasonableExcuse")
       }
-      case _ if (user.isAgent && didClientPlanToSubmit && !reasonableExcuse.equals("other")) => messages(s"honestyDeclaration.$reasonableExcuse")
-      case _ if (user.isAgent && didClientCauseLateSubmission && !reasonableExcuse.equals("other")) => messages(s"agent.honestyDeclaration.$reasonableExcuse")
-      case _ if (user.isAgent && didAgentPlanToSubmitAndClientMissedDeadline && reasonableExcuse.equals("other")) => messages("agent.honestyDeclaration.other")
+      case _ if (user.isAgent && didClientPlanToSubmit() && !reasonableExcuse.equals("other")) => messages(s"honestyDeclaration.$reasonableExcuse")
+      case _ if (user.isAgent && didClientCauseLateSubmission() && !reasonableExcuse.equals("other")) => messages(s"agent.honestyDeclaration.$reasonableExcuse")
+      case _ if (user.isAgent && didAgentPlanToSubmitAndClientMissedDeadline() && reasonableExcuse.equals("other")) => messages("agent.honestyDeclaration.other")
       case excuse if excuse == "crime" || excuse == "bereavement" => getMessage(s"honestyDeclaration.$reasonableExcuse")
       case _ => messages(s"honestyDeclaration.$reasonableExcuse")
     }

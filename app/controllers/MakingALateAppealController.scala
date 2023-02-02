@@ -49,7 +49,7 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
     implicit userRequest => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         MakingALateAppealForm.makingALateAppealForm(), SessionKeys.lateAppealReason, userRequest.answers)
-      Ok(makingALateAppealPage(formProvider, getHeadingAndTitle, pageMode(NormalMode)))
+      Ok(makingALateAppealPage(formProvider, getHeadingAndTitle(), pageMode(NormalMode)))
     }
   }
 
@@ -72,7 +72,7 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       MakingALateAppealForm.makingALateAppealForm().bindFromRequest().fold(
-        formWithErrors => Future(BadRequest(makingALateAppealPage(formWithErrors, getHeadingAndTitle, pageMode(NormalMode)))),
+        formWithErrors => Future(BadRequest(makingALateAppealPage(formWithErrors, getHeadingAndTitle(), pageMode(NormalMode)))),
         lateAppealReason => {
           val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.lateAppealReason, lateAppealReason)
           sessionService.updateAnswers(updatedAnswers).map(_ => Redirect(routes.CheckYourAnswersController.onPageLoad()))

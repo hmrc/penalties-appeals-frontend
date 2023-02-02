@@ -115,7 +115,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onSubmitForWhyReturnSubmittedLate(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      whyReturnSubmittedLateForm.bindFromRequest().fold(
+      whyReturnSubmittedLateForm().bindFromRequest().fold(
         formWithErrors => {
           val postAction = controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(mode)
           Future(BadRequest(whyReturnSubmittedLatePage(formWithErrors, postAction, pageMode(WhyWasReturnSubmittedLatePage, mode))))
@@ -251,7 +251,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
 
   def onSubmitForUploadComplete(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      UploadListForm.youHaveUploadedForm.bindFromRequest.fold(
+      UploadListForm.youHaveUploadedForm.bindFromRequest().fold(
         formHasErrors => {
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formHasErrors)
           val postAction = controllers.routes.OtherReasonController.onSubmitForUploadComplete(mode)
@@ -279,7 +279,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
   def removeFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       val journeyId = userRequest.session.get(SessionKeys.journeyId).get
-      RemoveFileForm.form.bindFromRequest.fold(
+      RemoveFileForm.form.bindFromRequest().fold(
         error => {
           logger.error("[OtherReasonController][removeFileUpload] - Tried to remove file but fileReference was not in the request")
           logger.debug(s"[OtherReasonController][removeFileUpload] - Form errors: ${error.errors}")

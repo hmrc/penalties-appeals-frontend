@@ -25,7 +25,7 @@ object UpscanMessageHelper {
   val jsPrefix = "upscan"
   val noJsPrefix = "upscan.noJs"
 
-  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean)(implicit messages: Messages): String = {
+  def getLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, isJsEnabled: Boolean): String = {
     failureReason match {
       case FailureReasonEnum.QUARANTINE => getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled)
       case FailureReasonEnum.REJECTED => getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled)
@@ -33,7 +33,7 @@ object UpscanMessageHelper {
     }
   }
 
-  def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean)(implicit messages: Messages): String = {
+  def getUploadFailureMessage(errorCode: String, isJsEnabled: Boolean): String = {
     errorCode match {
       case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
       case "EntityTooLarge" => getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)

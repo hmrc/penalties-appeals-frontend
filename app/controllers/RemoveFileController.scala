@@ -51,7 +51,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
 
   def onSubmit(fileReference: String, isJsEnabled: Boolean, mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
-      RemoveFileQuestionForm.form.bindFromRequest.fold(
+      RemoveFileQuestionForm.form.bindFromRequest().fold(
         formWithErrors => showPage(request.answers.journeyId, fileReference, formWithErrors, BadRequest, mode, isJsEnabled),
         answer => {
           if (answer == "yes") {

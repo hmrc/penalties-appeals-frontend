@@ -164,7 +164,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
 
   def filePosted(journeyId: String): Action[AnyContent] = Action.async {
     implicit request => {
-      S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
+      S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest().fold(
         errors => {
           PagerDutyHelper.log("filePosted", FILE_POSTED_FAILURE_UPSCAN)
           logger.error(s"[UpscanController][filePosted] - Could not bind form based on request with errors: ${errors.errors}")
@@ -205,7 +205,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
 
   def fileVerification(isAddingAnotherDocument: Boolean, mode: Mode, isJsEnabled: Boolean): Action[AnyContent] = Action.async {
     implicit request => {
-      S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest.fold(
+      S3UploadSuccessForm.upscanUploadSuccessForm.bindFromRequest().fold(
         errors => {
           PagerDutyHelper.log("fileVerification", FILE_VERIFICATION_FAILURE_UPSCAN)
           logger.error(s"[UpscanController][fileVerification] - Could not bind form based on request with errors: ${errors.errors}")

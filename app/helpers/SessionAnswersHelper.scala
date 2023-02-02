@@ -92,7 +92,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
   //scalastyle:off
   def getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse: String, fileNames: Option[String] = None, isLPP: Boolean = false)(implicit userRequest: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
-    val multiplePenaltiesContent = if (userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).isDefined) getMultiplePenaltiesForThisPeriodRows else Seq.empty
+    val multiplePenaltiesContent = if (userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).isDefined) getMultiplePenaltiesForThisPeriodRows() else Seq.empty
     val reasonableExcuseContent = reasonableExcuse match {
       case "bereavement" => Seq(
         CheckYourAnswersRow(
@@ -194,7 +194,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
         )
       )
 
-      case "health" => getHealthReasonAnswers
+      case "health" => getHealthReasonAnswers()
 
       case "other" =>
         val statementOfLatenessForLPPOrLSP: String = {
@@ -253,7 +253,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
       reason => {
         if(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).isEmpty ||
           userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes") ||
-          isAppealingOnlySinglePenalty) {
+          isAppealingOnlySinglePenalty()) {
           multiplePenaltiesContent ++ reasonableExcuseContent :+ (
             CheckYourAnswersRow(messages("checkYourAnswers.whyYouDidNotAppealSooner"),
               reason,

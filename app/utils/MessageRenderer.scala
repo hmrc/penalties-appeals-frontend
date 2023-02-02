@@ -23,7 +23,7 @@ import play.api.mvc.Request
 object MessageRenderer {
 
   def getMessageKey(msgKey: String)(implicit user: UserRequest[_]): String = {
-    if (user.isAgent && (didClientCauseLateSubmission || (user.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).isEmpty
+    if (user.isAgent && (didClientCauseLateSubmission() || (user.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).isEmpty
       && user.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).isEmpty))) {
       s"agent.$msgKey"
     } else {
@@ -32,7 +32,7 @@ object MessageRenderer {
   }
 
   def getMessage(msgKey: String, msgArgs: Any*)(implicit messages: Messages, user: UserRequest[_]): String = {
-    if (user.isAgent && (didClientCauseLateSubmission ||
+    if (user.isAgent && (didClientCauseLateSubmission() ||
       (user.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).isEmpty && user.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline).isEmpty))) {
       messages.apply(s"agent.$msgKey", msgArgs: _*)
     } else {
