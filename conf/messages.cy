@@ -33,15 +33,15 @@ base.signOut = Allgofnodi
 # Appeal Start Page
 # ----------------------------------------------------------
 appealStart.p1 = Er mwyn apelio yn erbyn cosb am ‘dreth anuniongyrchol’ (er enghraifft, TAW), gallwch naill ai:
-appealStart.li.1.1 = gofyn i CThEM adolygu’r gosb
+appealStart.li.1.1 = gofyn i CThEF adolygu’r gosb
 appealStart.li.1.2 = apelio’n syth i’r tribiwnlys treth
-appealStart.p2 = Defnyddiwch y gwasanaeth hwn i ofyn i CThEM adolygu cosb.
-appealStart.p3 = Byddwch yn dal i allu apelio i’r tribiwnlys treth os nad ydych yn fodlon ar ganlyniad adolygiad CThEM.
+appealStart.p2 = Defnyddiwch y gwasanaeth hwn i ofyn i CThEF adolygu cosb.
+appealStart.p3 = Byddwch yn dal i allu apelio i’r tribiwnlys treth os nad ydych yn fodlon ar ganlyniad adolygiad CThEF.
 appealStart.h2 = Cyn i chi ddechrau
 appealStart.p4 = Bydd angen y canlynol arnoch:
-appealStart.li.2.1 = rheswm dros gyflwyno’r Ffurflen TAW yn hwyr (mae CThEM yn galw hyn yn ‘esgus rhesymol’)
-appealStart.lpp.li.2.1 = rheswm dros dalu’r TAW yn hwyr (mae CThEM yn galw hyn yn ‘esgus rhesymol’)
-appealStart.obligation.li.2.1 = manylion am unrhyw ohebiaeth â CThEM am ganslo’r cofrestriad TAW
+appealStart.li.2.1 = rheswm dros gyflwyno’r Ffurflen TAW yn hwyr (mae CThEF yn galw hyn yn ‘esgus rhesymol’)
+appealStart.lpp.li.2.1 = rheswm dros dalu’r TAW yn hwyr (mae CThEF yn galw hyn yn ‘esgus rhesymol’)
+appealStart.obligation.li.2.1 = manylion am unrhyw ohebiaeth â CThEF am ganslo’r cofrestriad TAW
 appealStart.li.2.2 = y dyddiadau y mae eich rheswm yn ymwneud â hwy
 appealStart.obligation.li.2.2 = unrhyw wybodaeth ychwanegol i gefnogi’ch apêl (dewisol)
 appealStart.li.2.3 = manylion am y rheswm nad oeddech wedi apelio’n gynt
@@ -80,7 +80,7 @@ reasonableExcuses.error.required = Dewiswch reswm dros fethu’r dyddiad cau ar 
 honestyDeclaration.headingAndTitle = Datganiad gonestrwydd
 honestyDeclaration.p1 = Rwy’n cadarnhau’r canlynol:
 honestyDeclaration.li.1.1 = oherwydd {0},
-honestyDeclaration.obligation.li.1 = gofynnwyd i CThEM ganslo’r cofrestriad TAW
+honestyDeclaration.obligation.li.1 = gofynnwyd i CThEF ganslo’r cofrestriad TAW
 honestyDeclaration.li.1.2 = nid oeddwn yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
 agent.honestyDeclaration.li.1.2 = nid oedd yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
 agent.honestyDeclaration.li.1.2.myClient = nid oedd fy nghleient yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
@@ -390,9 +390,9 @@ bereavementReason.error.notInFuture = Mae’n rhaid i’r dyddiad fod heddiw neu
 
 # Cancel VAT Registration Page
 # -----------------------------------------------------------
-cancelVATRegistration.headingAndTitle = A ofynnwyd i CThEM ganslo’r cofrestriad TAW ar gyfer y busnes hwn?
+cancelVATRegistration.headingAndTitle = A ofynnwyd i CThEF ganslo’r cofrestriad TAW ar gyfer y busnes hwn?
 cancelVATRegistration.hintText = Mae’n rhaid i fusnes ganslo’i gofrestriad TAW os yw’n rhoi’r gorau i fasnachu, yn datgofrestru ar gyfer TAW neu os yw perchnogaeth y busnes yn cael ei throsglwyddo.
-cancelVATRegistration.error.required = Rhowch wybod i ni a ofynnwyd i CThEM ganslo’r cofrestriad TAW
+cancelVATRegistration.error.required = Rhowch wybod i ni a ofynnwyd i CThEF ganslo’r cofrestriad TAW
 
 # Date input fields
 # ----------------------------------------------------------
@@ -429,7 +429,7 @@ appealConfirmation.headingAndTitle.penalties = Rydych wedi gofyn i ni adolygu’
 agent.appealConfirmation.headingAndTitle.penalties = Rydych wedi gofyn i ni adolygu cosbau eich cleientiaid
 appealConfirmation.typeAndPeriod = {0}: {1} i {2}
 appealConfirmation.p1 = Does dim angen cyfeirnod arnoch.
-appealConfirmation.p2 = Rydym wedi cofnodi’r apêl hon o dan rif cofrestru TAW (VRN) y busnes. Nodwch y VRN os oes angen i chi ffonio CThEM ynghylch yr apêl hon.
+appealConfirmation.p2 = Rydym wedi cofnodi’r apêl hon o dan rif cofrestru TAW (VRN) y busnes. Nodwch y VRN os oes angen i chi ffonio CThEF ynghylch yr apêl hon.
 appealConfirmation.whatHappensNext = Yr hyn sy’n digwydd nesaf
 appealConfirmation.whatHappensNext.p1 = Byddwn yn gwneud penderfyniad am eich apêl yn seiliedig ar yr hyn rydych wedi’i roi gwybod i ni amdano.
 appealConfirmation.whatHappensNext.obligation.p = Bydd ein penderfyniad yn ystyried pob cosb am gyflwyno neu dalu’n hwyr yn yr un cyfnod TAW. Nid oes angen i chi apelio yn erbyn y cosbau hyn ar wahân.
@@ -462,13 +462,13 @@ agents.whatCausedYouToMissTheDeadline.error.invalid = Rhowch wybod i ni beth oed
 # Other Relevant Information Page - Appeal against obligation
 # ----------------------------------------------------------
 otherRelevantInformation.headingAndTitle = Rhowch wybod i ni pam yr ydych am apelio yn erbyn y gosb
-otherRelevantInformation.hintText = Dylech gynnwys manylion am unrhyw ohebiaeth â CThEM am ganslo’r cofrestriad TAW.
+otherRelevantInformation.hintText = Dylech gynnwys manylion am unrhyw ohebiaeth â CThEF am ganslo’r cofrestriad TAW.
 otherRelevantInformation.error.required = Nodwch y rhesymau pam eich bod am apelio yn erbyn y gosb
 
 # You can appeal this penalty
 # ----------------------------------------------------------
 youCanAppealThisPenalty.headingAndTitle = Gallwch apelio yn erbyn y gosb hon ar-lein
-youCanAppealThisPenalty.p1 = Os bydd CThEM yn adolygu’r gosb hon ac yn derbyn eich apêl, byddwn yn dileu:
+youCanAppealThisPenalty.p1 = Os bydd CThEF yn adolygu’r gosb hon ac yn derbyn eich apêl, byddwn yn dileu:
 youCanAppealThisPenalty.li.1 = y gosb hon
 youCanAppealThisPenalty.li.2 = pob cosb arall am gyflwyno neu dalu’n hwyr ar gyfer yr un cyfnod
 youCanAppealThisPenalty.p2 = A hoffech apelio yn erbyn y gosb hon?
@@ -536,7 +536,7 @@ youCannotAppeal.headingAndTitle.lpp = Ni allwch ddefnyddio’r gwasanaeth hwn hy
 agent.youCannotAppeal.headingAndTitle.lpp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes bod eich cleient wedi talu’r TAW
 youCannotAppeal.headingAndTitle.lsp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes eich bod yn cyflwyno’ch Ffurflen TAW
 agent.youCannotAppeal.headingAndTitle.lsp = Ni allwch ddefnyddio’r gwasanaeth hwn hyd nes bod y Ffurflen TAW wedi’i chyflwyno
-youCannotAppeal.p1 = Gallwch ddal i ysgrifennu at CThEM i ofyn i ni adolygu’r gosb. Mae manylion ar yr hysbysiad o gosb a anfonom atoch drwy’r post.
+youCannotAppeal.p1 = Gallwch ddal i ysgrifennu at CThEF i ofyn i ni adolygu’r gosb. Mae manylion ar yr hysbysiad o gosb a anfonom atoch drwy’r post.
 youCannotAppeal.p2.lpp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i chi dalu’ch TAW yn gyntaf.
 agent.youCannotAppeal.p2.lpp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i’ch cleient dalu ei TAW yn gyntaf.
 youCannotAppeal.p2.lsp = Os ydych am ddefnyddio’r gwasanaeth hwn er mwyn gwneud apêl, mae angen i chi gyflwyno’r Ffurflen TAW yn gyntaf.
