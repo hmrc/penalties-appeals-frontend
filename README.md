@@ -1,6 +1,4 @@
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/hmrc/penalties-appeals-frontend) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/hmrc/penalties-appeals-frontend) ![GitHub last commit](https://img.shields.io/github/last-commit/hmrc/penalties-appeals-frontend)
-
-# penalties-appeals-frontend
+# Penalties Appeals Frontend
 
 The penalties and appeals service is a frontend microservice only applicable for MTD VAT users.
 
@@ -10,7 +8,7 @@ Features:
 - Supports both JavaScript and non-JavaScript journeys
 - Interacts with file upload services to upload supporting documents
 
-### Running the service locally
+## Running the service locally
 
 Pre-requisite: Install Service Manager, MongoDB(4.2) and Node v16.14.2.
 
@@ -26,19 +24,19 @@ Now to run the penalties_appeals_frontend service
 
 The service when started listens on port 9181
 
-### Testing
+## Testing
 
 The service can be tested in SBT
 
   `sbt test it:test` 
 
-### Testing with coverage
+## Testing with coverage
 
 To run testing with coverage and scalastyle in SBT
 
     sbt clean scalastyle coverage test it:test coverageReport
 
-### License
+## License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
 
