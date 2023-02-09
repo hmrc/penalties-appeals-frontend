@@ -450,7 +450,7 @@ makingALateAppeal.headingAndTitle = This penalty was issued more than 30 days ag
 makingALateAppeal.headingAndTitle.multi = The penalties were issued more than 30 days ago
 makingALateAppeal.headingAndTitle.first = The first penalty was issued more than 30 days ago
 makingALateAppeal.p1 = You usually need to appeal within 30 days of the date on the penalty notice.
-makingALateAppeal.callToAction = Tell us here why you could not appeal within 30 days
+makingALateAppeal.textAreaLabel = Tell us here why you could not appeal within 30 days
 makingALateAppeal.error.required = You must provide some information about why you did not appeal sooner
 
 # Agents 'What caused you to miss the deadline?'

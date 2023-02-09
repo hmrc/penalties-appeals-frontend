@@ -450,7 +450,7 @@ makingALateAppeal.headingAndTitle = Codwyd y gosb fwy na 30 diwrnod yn ôl
 makingALateAppeal.headingAndTitle.multi = Codwyd y cosbau fwy na 30 diwrnod yn ôl
 makingALateAppeal.headingAndTitle.first = Codwyd y gosb gyntaf fwy na 30 diwrnod yn ôl
 makingALateAppeal.p1 = Fel arfer mae angen i chi apelio cyn pen 30 diwrnod o ddyddiad yr hysbysiad o gosb.
-makingALateAppeal.callToAction = Rhowch wybod i ni pam nad oeddech wedi gallu apelio cyn pen 30 diwrnod
+makingALateAppeal.textAreaLabel = Rhowch wybod i ni pam nad oeddech wedi gallu apelio cyn pen 30 diwrnod
 makingALateAppeal.error.required = Mae’n rhaid i chi roi ychydig o wybodaeth i ni ynglŷn â pham nad oeddech wedi apelio’n gynt
 
 # Agents 'What caused you to miss the deadline?'
