@@ -32,7 +32,9 @@ import views.html.MakingALateAppealPage
 class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
   "MakingALateAppealPage" should {
     val makingALateAppealPage: MakingALateAppealPage = injector.instanceOf[MakingALateAppealPage]
-    object Selectors extends BaseSelectors
+    object Selectors extends BaseSelectors {
+      val textAreaLabel = ".govuk-label--m"
+    }
     "when a single penalty is appealed" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = makingALateAppealPage.apply(form,
         "This penalty was issued more than 30 days ago", pageMode = PageMode(MakingALateAppealPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
@@ -43,7 +45,8 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> heading,
-        Selectors.hintText -> hintText,
+        Selectors.pElementIndex(2) -> captionText,
+        Selectors.textAreaLabel -> textAreaLabel,
         Selectors.button -> continueBtn
       )
 
@@ -60,7 +63,8 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> titleMulti,
         Selectors.h1 -> headingMulti,
-        Selectors.hintText -> hintText,
+        Selectors.pElementIndex(2) -> captionText,
+        Selectors.textAreaLabel -> textAreaLabel,
         Selectors.button -> continueBtn
       )
 
@@ -77,7 +81,8 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> titleFirst,
         Selectors.h1 -> headingFirst,
-        Selectors.hintText -> hintText,
+        Selectors.pElementIndex(2) -> captionText,
+        Selectors.textAreaLabel -> textAreaLabel,
         Selectors.button -> continueBtn
       )
 
@@ -94,7 +99,8 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> heading,
-        Selectors.hintText -> hintText,
+        Selectors.pElementIndex(2) -> captionText,
+        Selectors.textAreaLabel -> textAreaLabel,
         Selectors.button -> continueBtn
       )
 

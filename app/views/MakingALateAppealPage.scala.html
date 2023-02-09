@@ -22,32 +22,40 @@
         link: components.link,
         button: components.button,
         characterCount: components.characterCount,
+        header: components.pageHeader,
+        p: components.p,
         formHelper: FormWithCSRF)
 
 @(form: Form[_], headingAndTitle: String, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = headingAndTitle,
-    isPageFullWidth = false,
-    formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors,
-    optPageMode = Some(pageMode)) {
+  isPageFullWidth = false,
+  formHasErrors = form.errors.nonEmpty,
+  formErrors = form.errors,
+  optPageMode = Some(pageMode)) {
 
-    @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
-        @characterCount(
-            form("late-appeal-text"),
-            label = headingAndTitle,
-            hint = Some(HtmlContent(messages("makingALateAppeal.p1"))),
-            maxLength = Some(5000)
-        )
+  @header(headingAndTitle)
 
-        @button("common.continue")
-    }
+  @p(Html(messages("makingALateAppeal.p1")))
+
+  @formHelper(action = controllers.routes.MakingALateAppealController.onSubmit()) {
+
+    @characterCount(
+      form("late-appeal-text"),
+      label = messages("makingALateAppeal.callToAction"),
+      hint = None,
+      maxLength = Some(5000),
+      isLabelPageHeading = false
+    )
+
+    @button("common.continue")
+  }
 }
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('JavaScript is enabled');
-      const backLink = document.getElementById('back-link');
-      backLink.setAttribute('href', backLink.getAttribute('href').replace('&isJsEnabled=false', '') + '&isJsEnabled=true');
-    });
+        document.addEventListener('DOMContentLoaded', function () {
+          console.log('JavaScript is enabled');
+          const backLink = document.getElementById('back-link');
+          backLink.setAttribute('href', backLink.getAttribute('href').replace('&isJsEnabled=false', '') + '&isJsEnabled=true');
+        });
 </script>
