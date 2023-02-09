@@ -29,7 +29,9 @@ object MakingALateAppealMessages {
 
   val headingFirst = "The first penalty was issued more than 30 days ago"
 
-  val hintText = "You usually need to appeal within 30 days of the date on the penalty notice. Tell us here why you could not appeal within 30 days."
+  val captionText = "You usually need to appeal within 30 days of the date on the penalty notice."
+
+  val textAreaLabel = "Tell us here why you could not appeal within 30 days"
 
   val continueBtn = "Continue"
 }
