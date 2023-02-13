@@ -42,11 +42,9 @@
             items = radioOptions
         )
 
+        <p class="govuk-body">
+            @link(appConfig.reasonableExcusesGuidanceLinkUrl, "reasonableExcuses.externalGuidanceLinkText", id = Some("external-guidance-link"), isExternal = true, classes = "govuk-link")
+        </p>
         @button("common.continue")
     }
-
-
-    <p class="govuk-body">
-        @link(appConfig.reasonableExcusesGuidanceLinkUrl, "reasonableExcuses.externalGuidanceLinkText", id = Some("external-guidance-link"), isExternal = true, classes = "govuk-link")
-    </p>
 }
