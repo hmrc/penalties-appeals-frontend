@@ -66,7 +66,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     PenaltySelectionPage -> ((_, _) => routes.AppealStartController.onPageLoad()),
     AppealSinglePenaltyPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
     AppealCoverBothPenaltiesPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
-    AppealByLetterKickOutPage -> ((_, _) => routes.YouCannotAppealController.onPageLoadAppealByLetter())
+    AppealByLetterKickOutPage -> ((_, _) => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration())
   )
 
   def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
@@ -83,7 +83,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case WhenDidTechnologyIssuesEndPage => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode)
       case WhatCausedYouToMissTheDeadlinePage => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)
       case AppealSinglePenaltyPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
-      case AppealCoverBothPenaltiesPage => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+      case AppealCoverBothPenaltiesPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
     }
   }
 
