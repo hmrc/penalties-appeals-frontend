@@ -28,7 +28,7 @@ object AppealByLetterKickOutMessages {
   val bullet4 = "this penalty"
   val bullet5 = "all other VAT late submission or late payment penalties for the same period"
   val inset1 = "Write to:"
-  val inset2 = "Solicitor’s Office and Legal Service"
+  val inset2 = "Solicitor’s Office and Legal Services"
   val inset3 = "HMRC"
   val inset4 = "BX9 1ZT"
   val link = "Return to your VAT penalties"

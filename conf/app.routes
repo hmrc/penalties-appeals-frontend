@@ -201,4 +201,4 @@ GET        /appeal-single-penalty/change                       controllers.Penal
 GET        /incomplete-answers                                 controllers.IncompleteSessionDataController.onPageLoad()
 
 # Appeal by letter
-GET        /appeal-by-letter                                   controllers.AppealByLetterKickOutController.onPageLoad()
+GET        /appeal-by-letter                                   controllers.YouCannotAppealController.onPageLoadAppealByLetter()

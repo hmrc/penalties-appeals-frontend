@@ -120,7 +120,8 @@ object Page {
     RemoveFilePage,
     PenaltySelectionPage,
     AppealSinglePenaltyPage,
-    AppealCoverBothPenaltiesPage
+    AppealCoverBothPenaltiesPage,
+    AppealByLetterKickOutPage
   )
 
   def find(pageName: String): Page = allPages.find(_.toString == pageName).get

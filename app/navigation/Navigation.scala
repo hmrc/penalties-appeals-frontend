@@ -65,7 +65,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     CheckYourAnswersPage -> ((request, jsEnabled) => reverseRouteForCYAPage(request, NormalMode, jsEnabled)),
     PenaltySelectionPage -> ((_, _) => routes.AppealStartController.onPageLoad()),
     AppealSinglePenaltyPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
-    AppealCoverBothPenaltiesPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode))
+    AppealCoverBothPenaltiesPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
+    AppealByLetterKickOutPage -> ((_, _) => routes.YouCannotAppealController.onPageLoadAppealByLetter())
   )
 
   def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
