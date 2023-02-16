@@ -83,7 +83,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case WhenDidTechnologyIssuesEndPage => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode)
       case WhatCausedYouToMissTheDeadlinePage => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)
       case AppealSinglePenaltyPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
-      case AppealCoverBothPenaltiesPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
+      case AppealCoverBothPenaltiesPage => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
     }
   }
 

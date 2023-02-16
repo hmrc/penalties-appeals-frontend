@@ -592,4 +592,4 @@ appealByLetter.li.1.3 = any other information you’d like to include to support
 appealByLetter.p2 = If HMRC accepts your appeal, we will remove:
 appealByLetter.li.2.1 = this penalty
 appealByLetter.li.2.2 = all other VAT late submission or late payment penalties for the same period
-appealByLetter.inset.1 = Ysgrifennwch at:
+appealByLetter.inset.1 = Write to:
