@@ -13,6 +13,11 @@ common.radioOption.no = Na
 common.radioOption.unknown = Nid wyf yn gwybod
 common.penaltyYouAreAppealing = Y gosb yr ydych yn apelio yn ei herbyn yw
 common.penaltiesYouAreAppealing = Y cosbau yr ydych yn apelio yn eu herbyn yw
+common.returnToPenalties = Yn ôl i’ch cosbau TAW
+agent.common.returnToPenalties = Yn ôl i gosbau TAW eich cleient
+common.address.1 = Swyddfa’r Cyfreithiwr a Gwasanaethau Cyfreithiol / Solicitor’s Office and Legal Services
+common.address.2 = HMRC
+common.address.3 = BX9 1ZT
 
 app.common.back = Yn ôl
 
@@ -437,8 +442,6 @@ appealConfirmation.whatHappensNext.p2 = Anelwn at wneud penderfyniad ar gyfer po
 appealConfirmation.whatHappensNext.p3 = Byddwch yn cael llythyr yn rhoi gwybod i chi am ganlyniad yr apêl hon a’r rhesymau dros ein penderfyniad.
 appealConfirmation.whatHappensNext.p4 = Os oes gennych gyfeiriad e-bost sydd wedi’i gadarnhau ar eich cyfrif TAW, byddwn hefyd yn anfon neges ddiogel atoch.
 
-appealConfirmation.returnToPenalties = Yn ôl i’ch cosbau TAW
-agent.appealConfirmation.returnToPenalties = Yn ôl i gosbau TAW eich cleient
 appealConfirmation.returnToVatVc = Bwrw golwg dros eich cyfrif TAW
 agent.appealConfirmation.returnToVatVc = Bwrw golwg ar gyfrif TAW eich cleient
 appealConfirmation.feedbackLink.1 = Beth oedd eich barn am y gwasanaeth hwn?
@@ -485,9 +488,6 @@ serviceUnavailable.headingAndTitle = Mae’n ddrwg gennym, nid yw’r gwasanaeth
 serviceUnavailable.p1 = Nid ydym wedi cadw’ch atebion.
 serviceUnavailable.p2 = Byddwch yn gallu defnyddio’r gwasanaeth yn nes ymlaen.
 serviceUnavailable.p3 = Os oes well gennych, gallwch ysgrifennu llythyr i apelio. Ysgrifennwch at:
-serviceUnavailable.p4 = Swyddfa’r Cyfreithiwr a Gwasanaethau Cyfreithiol / Solicitor’s Office and Legal Services
-serviceUnavailable.p5 = HMRC
-serviceUnavailable.p6 = BX9 1ZT
 
 # Problem with service page
 # ----------------------------------------------------------
@@ -581,3 +581,15 @@ appealCoverBothPenalties.p1 = Mae hyn yn eich galluogi i nodi manylion apêl unw
 incompleteSessionData.headingAndTitle = Mae’n ddrwg gennym, mae rhywbeth wedi mynd o’i le
 incompleteSessionData.p1 = Mae problem dechnegol wedi codi. Bydd yn rhaid i chi ddechrau’ch apêl eto. Nid ydym wedi cadw’ch data.
 incompleteSessionData.link = Dychwelyd i’r dudalen gychwyn ar gyfer apeliadau
+
+# Appeal by letter kick out page
+# -----------------------------------------------------------
+appealByLetter.headingAndTitle = You can appeal this penalty by letter
+appealByLetter.p1 = To ask HMRC to review this penalty, send us:
+appealByLetter.li.1.1 = details of the steps taken to cancel the VAT registration
+appealByLetter.li.1.2 = dates of any contact with HMRC on this matter
+appealByLetter.li.1.3 = any other information you’d like to include to support an appeal
+appealByLetter.p2 = If HMRC accepts your appeal, we will remove:
+appealByLetter.li.2.1 = this penalty
+appealByLetter.li.2.2 = all other VAT late submission or late payment penalties for the same period
+appealByLetter.inset.1 = Write to:

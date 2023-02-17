@@ -13,6 +13,11 @@ common.radioOption.no = No
 common.radioOption.unknown = I do not know
 common.penaltyYouAreAppealing = The penalty you are appealing is
 common.penaltiesYouAreAppealing = The penalties you are appealing are
+common.returnToPenalties = Return to your VAT penalties
+agent.common.returnToPenalties = Return to your client’s VAT penalties
+common.address.1 = Solicitor’s Office and Legal Services
+common.address.2 = HMRC
+common.address.3 = BX9 1ZT
 
 app.common.back = Back
 
@@ -437,8 +442,6 @@ appealConfirmation.whatHappensNext.p2 = We aim to make all appeal decisions with
 appealConfirmation.whatHappensNext.p3 = You’ll receive a letter telling you the outcome of this appeal and the reasons for our decision.
 appealConfirmation.whatHappensNext.p4 = If you have a confirmed email address on your VAT account, we’ll also send you a secure message.
 
-appealConfirmation.returnToPenalties = Return to your VAT penalties
-agent.appealConfirmation.returnToPenalties = Return to your client’s VAT penalties
 appealConfirmation.returnToVatVc = View your VAT account
 agent.appealConfirmation.returnToVatVc = View your client’s VAT account
 appealConfirmation.feedbackLink.1 = What did you think of this service?
@@ -485,9 +488,6 @@ serviceUnavailable.headingAndTitle = Sorry, the service is unavailable
 serviceUnavailable.p1 = We have not saved your answers.
 serviceUnavailable.p2 = You will be able to use the service later.
 serviceUnavailable.p3 = If you prefer, you can appeal by letter. Write to:
-serviceUnavailable.p4 = Solicitor‘s Office and Legal Services
-serviceUnavailable.p5 = HMRC
-serviceUnavailable.p6 = BX9 1ZT
 
 # Problem with service page
 # ----------------------------------------------------------
@@ -581,3 +581,15 @@ appealCoverBothPenalties.p1 = This allows you to enter appeal details once for p
 incompleteSessionData.headingAndTitle = Sorry, something has gone wrong
 incompleteSessionData.p1 = There’s been a technical error. You need to start your appeal again. We have not saved your data.
 incompleteSessionData.link = Return to the appeal start page
+
+# Appeal by letter kick out page
+# -----------------------------------------------------------
+appealByLetter.headingAndTitle = You can appeal this penalty by letter
+appealByLetter.p1 = To ask HMRC to review this penalty, send us:
+appealByLetter.li.1.1 = details of the steps taken to cancel the VAT registration
+appealByLetter.li.1.2 = dates of any contact with HMRC on this matter
+appealByLetter.li.1.3 = any other information you’d like to include to support an appeal
+appealByLetter.p2 = If HMRC accepts your appeal, we will remove:
+appealByLetter.li.2.1 = this penalty
+appealByLetter.li.2.2 = all other VAT late submission or late payment penalties for the same period
+appealByLetter.inset.1 = Write to:

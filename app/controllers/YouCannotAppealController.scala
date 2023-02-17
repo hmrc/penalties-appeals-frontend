@@ -19,22 +19,26 @@ package controllers
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import models.NormalMode
-import models.pages.{PageMode, YouCannotAppealPage}
+import models.pages.{AppealByLetterKickOutPage, PageMode, YouCannotAppealPage}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.obligation.YouCannotAppealPage
+import views.html.obligation.{AppealByLetterKickOutPage, YouCannotAppealPage}
 import viewtils.YouCannotAppealHelper
-
 import javax.inject.Inject
 
 class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage,
-                                          pageHelper: YouCannotAppealHelper)
+                                          pageHelper: YouCannotAppealHelper,
+                                          appealByLetterPage: AppealByLetterKickOutPage)
                                          (implicit mcc: MessagesControllerComponents,
                                           appConfig: AppConfig, authorise: AuthPredicate,
                                           dataRequired: DataRequiredAction,
                                           dataRetrieval: DataRetrievalAction) extends FrontendController(mcc) with I18nSupport {
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => Ok(youCannotAppealPage(pageHelper.getContent, pageHelper.getHeaderAndTitle, PageMode(YouCannotAppealPage, NormalMode)))
+  }
+
+  def onPageLoadAppealByLetter(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+    implicit request => Ok(appealByLetterPage(PageMode(AppealByLetterKickOutPage, NormalMode)))
   }
 }

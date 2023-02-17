@@ -19,12 +19,13 @@ package controllers
 import base.SpecBase
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.obligation.YouCannotAppealPage
+import views.html.obligation.{AppealByLetterKickOutPage, YouCannotAppealPage}
 import viewtils.YouCannotAppealHelper
 
 import scala.concurrent.Future
@@ -32,6 +33,7 @@ import scala.concurrent.Future
 class YouCannotAppealControllerSpec extends SpecBase {
   val youCannotAppealPage: YouCannotAppealPage = injector.instanceOf[YouCannotAppealPage]
   val youCannotAppealHelper: YouCannotAppealHelper = injector.instanceOf[YouCannotAppealHelper]
+  val appealByLetterPage: AppealByLetterKickOutPage = injector.instanceOf[AppealByLetterKickOutPage]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector, mockSessionService)
@@ -41,7 +43,7 @@ class YouCannotAppealControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
     val controller: YouCannotAppealController = new YouCannotAppealController(
-      youCannotAppealPage, youCannotAppealHelper)(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction)
+      youCannotAppealPage, youCannotAppealHelper, appealByLetterPage)(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction)
   }
 
   "YouCannotAppealController" should{
@@ -64,6 +66,34 @@ class YouCannotAppealControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onPageLoadAppealByLetter" when {
+      "the user is authorised" must {
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val result: Future[Result] = controller.onPageLoadAppealByLetter()(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+
+        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
+          val result: Future[Result] = controller.onPageLoadAppealByLetter()(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "the user is unauthorised" when {
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadAppealByLetter()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadAppealByLetter()(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }
