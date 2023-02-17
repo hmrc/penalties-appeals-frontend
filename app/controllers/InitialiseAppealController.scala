@@ -71,7 +71,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
   }
 
-  def onPageLoadForObligationEstimatedLPP(taxPeriodStartDate: String, taxPeriodEndDate: String): Action[AnyContent] = authorise.async{
+  def onPageLoadForObligationEstimatedLPP(taxPeriodStartDate: String, taxPeriodEndDate: String): Action[AnyContent] = authorise.async {
     implicit user =>
       try {
         val penaltyNumberNotApplicable: String = "NA"

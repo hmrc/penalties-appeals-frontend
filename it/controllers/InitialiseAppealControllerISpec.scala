@@ -184,8 +184,13 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
     }
 
     "render an ISE when the date format is incorrect" in new Setup {
