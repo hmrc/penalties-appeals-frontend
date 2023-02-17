@@ -64,8 +64,7 @@ class NavigationSpec extends SpecBase {
         (FileListPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url),
         (UploadEvidenceQuestionPage, controllers.routes.CheckYourAnswersController.onPageLoad().url),
         (AppealSinglePenaltyPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url),
-        (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url),
-        (AppealByLetterKickOutPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url)
+        (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url)
       ))
 
       "the user is on the original page they were routed to - route back to CYA" in {
