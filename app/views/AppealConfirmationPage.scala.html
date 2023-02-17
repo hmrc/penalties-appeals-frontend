@@ -23,7 +23,7 @@
         bullets: components.bullets,
         link: components.link)
 
-@(penaltyTypeMsgKey: String, periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(penaltyTypeMsgKey: String, periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false, showDigitalCommsMessage: Boolean)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
 
@@ -73,8 +73,8 @@
 
     <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.p3")</p>
 
-    @if(!userRequest.isAgent){
-        <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.p4")</p>
+    @if(!userRequest.isAgent && showDigitalCommsMessage){
+        <p class="govuk-body" id="digital-comms-message">@messages("appealConfirmation.whatHappensNext.p4")</p>
     }
 
     <ul class="govuk-list">

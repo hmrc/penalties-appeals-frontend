@@ -17,7 +17,7 @@
 package controllers
 
 import java.time.LocalDate
-import config.featureSwitches.FeatureSwitching
+import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import helpers.SessionAnswersHelper
@@ -139,7 +139,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         (dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get),
           dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get))
       val isObligationAppeal: Boolean = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)
-      Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal))
+      val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
+      Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage))
         .removingFromSession(SessionKeys.allKeys: _*)
     }
   }
