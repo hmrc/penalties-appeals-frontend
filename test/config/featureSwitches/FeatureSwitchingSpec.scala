@@ -33,17 +33,19 @@ class FeatureSwitchingSpec extends SpecBase {
       override implicit val config: Configuration = mockConfig
     }
     sys.props -= NonJSRouting.name
+    sys.props -= ShowDigitalCommsMessage.name
     sys.props -= featureSwitching.TIME_MACHINE_NOW
   }
 
   override protected def afterAll(): Unit = {
     super.afterAll()
     sys.props -= NonJSRouting.name
+    sys.props -= ShowDigitalCommsMessage.name
   }
 
   "listOfAllFeatureSwitches" should {
     "be all the featureswitches in the app" in {
-      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting)
+      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, ShowDigitalCommsMessage)
     }
   }
 
@@ -77,12 +79,22 @@ class FeatureSwitchingSpec extends SpecBase {
       featureSwitching.enableFeatureSwitch(NonJSRouting)
       (sys.props get NonJSRouting.name get) shouldBe "true"
     }
+
+    s"set ${ShowDigitalCommsMessage.name} property to true" in new Setup {
+      featureSwitching.enableFeatureSwitch(ShowDigitalCommsMessage)
+      (sys.props get ShowDigitalCommsMessage.name get) shouldBe "true"
+    }
   }
 
   "disableFeatureSwitch" should {
     s"set ${NonJSRouting.name} property to false" in new Setup {
       featureSwitching.disableFeatureSwitch(NonJSRouting)
       (sys.props get NonJSRouting.name get) shouldBe "false"
+    }
+
+    s"set ${ShowDigitalCommsMessage.name} property to false" in new Setup {
+      featureSwitching.disableFeatureSwitch(ShowDigitalCommsMessage)
+      (sys.props get ShowDigitalCommsMessage.name get) shouldBe "false"
     }
   }
 
