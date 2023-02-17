@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage,
                                           pageHelper: YouCannotAppealHelper,
-                                          appealByLetter: AppealByLetterKickOutPage)
+                                          appealByLetterPage: AppealByLetterKickOutPage)
                                          (implicit mcc: MessagesControllerComponents,
                                           appConfig: AppConfig, authorise: AuthPredicate,
                                           dataRequired: DataRequiredAction,
@@ -39,6 +39,6 @@ class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPa
   }
 
   def onPageLoadAppealByLetter(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
-    implicit request => Ok(appealByLetter(PageMode(AppealByLetterKickOutPage, NormalMode)))
+    implicit request => Ok(appealByLetterPage(PageMode(AppealByLetterKickOutPage, NormalMode)))
   }
 }
