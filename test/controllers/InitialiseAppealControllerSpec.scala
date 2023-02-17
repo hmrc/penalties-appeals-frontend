@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import controllers.predicates.AuthPredicate
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
 import models.{AppealData, PenaltyTypeEnum}
@@ -25,7 +24,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.AppealService
 import testUtils.AuthTestModels
@@ -40,7 +39,7 @@ import scala.concurrent.Future
 class InitialiseAppealControllerSpec extends SpecBase {
   val mockAppealsService: AppealService = mock(classOf[AppealService])
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], expectedContent: Option[MultiplePenaltiesData] = None){
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], expectedContent: Option[MultiplePenaltiesData] = None) {
     reset(mockAuthConnector, mockAppealsService, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -228,92 +227,113 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Result = await(controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
+
+    "call the penalties backend and handle a success response and add the keys to the session " +
+      "- redirect to Cancel VAT Registration page" in new Setup(AuthTestModels.successfulAuthResult) {
+      val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      val userAnswersToReturn = userAnswers(Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
+        SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
+        SessionKeys.penaltyNumber -> "12345",
+        SessionKeys.dueDateOfPeriod -> LocalDate.of(2020, 3, 7),
+        SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8),
+        SessionKeys.isObligationAppeal -> true
+      ))
+      val appealDataToReturn: AppealData = AppealData(
+        `type` = PenaltyTypeEnum.Late_Submission,
+        startDate = LocalDate.of(2020, 1, 1),
+        endDate = LocalDate.of(2020, 1, 31),
+        dueDate = LocalDate.of(2020, 3, 7),
+        dateCommunicationSent = LocalDate.of(2020, 3, 8)
+      )
+      when(mockSessionService.updateAnswers(answerCaptor.capture()))
+        .thenReturn(Future.successful(true))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(appealDataToReturn)))
+      val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest)
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      await(result).header.status shouldBe SEE_OTHER
+      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+    }
+
+    "call the penalties backend and handle a success response and add the keys to the session " +
+      "- redirect to Cancel VAT Registration page for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
+      val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      val userAnswersToReturn = userAnswers(Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
+        SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
+        SessionKeys.penaltyNumber -> "12345",
+        SessionKeys.dueDateOfPeriod -> LocalDate.of(2020, 3, 7),
+        SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8),
+        SessionKeys.isObligationAppeal -> true
+      ))
+      val appealDataToReturn: AppealData = AppealData(
+        `type` = PenaltyTypeEnum.Late_Payment,
+        startDate = LocalDate.of(2020, 1, 1),
+        endDate = LocalDate.of(2020, 1, 31),
+        dueDate = LocalDate.of(2020, 3, 7),
+        dateCommunicationSent = LocalDate.of(2020, 3, 8)
+      )
+      when(mockSessionService.updateAnswers(answerCaptor.capture()))
+        .thenReturn(Future.successful(true))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(appealDataToReturn)))
+      val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = false)(fakeRequest)
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      await(result).header.status shouldBe SEE_OTHER
+      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+    }
+    "call the penalties backend and handle a success response and add the keys to the session " +
+      "- redirect to Cancel VAT Registration page for LPP additional" in new Setup(AuthTestModels.successfulAuthResult) {
+      val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      val userAnswersToReturn = userAnswers(Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Additional,
+        SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
+        SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
+        SessionKeys.penaltyNumber -> "12345",
+        SessionKeys.dueDateOfPeriod -> LocalDate.of(2020, 3, 7),
+        SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8),
+        SessionKeys.isObligationAppeal -> true
+      ))
+      val appealDataToReturn: AppealData = AppealData(
+        `type` = PenaltyTypeEnum.Additional,
+        startDate = LocalDate.of(2020, 1, 1),
+        endDate = LocalDate.of(2020, 1, 31),
+        dueDate = LocalDate.of(2020, 3, 7),
+        dateCommunicationSent = LocalDate.of(2020, 3, 8)
+      )
+      when(mockSessionService.updateAnswers(answerCaptor.capture()))
+        .thenReturn(Future.successful(true))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(appealDataToReturn)))
+      val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = true)(fakeRequest)
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      await(result).header.status shouldBe SEE_OTHER
+      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+    }
   }
 
-  "call the penalties backend and handle a success response and add the keys to the session " +
-    "- redirect to Cancel VAT Registration page" in new Setup(AuthTestModels.successfulAuthResult) {
-    val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-    val userAnswersToReturn = userAnswers(Json.obj(
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
-      SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
-      SessionKeys.penaltyNumber -> "12345",
-      SessionKeys.dueDateOfPeriod -> LocalDate.of(2020, 3, 7),
-      SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8),
-      SessionKeys.isObligationAppeal -> true
-    ))
-    val appealDataToReturn: AppealData = AppealData(
-      `type` = PenaltyTypeEnum.Late_Submission,
-      startDate = LocalDate.of(2020, 1, 1),
-      endDate = LocalDate.of(2020, 1, 31),
-      dueDate = LocalDate.of(2020, 3, 7),
-      dateCommunicationSent = LocalDate.of(2020, 3, 8)
-    )
-    when(mockSessionService.updateAnswers(answerCaptor.capture()))
-      .thenReturn(Future.successful(true))
-    when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
-      .thenReturn(Future.successful(Some(appealDataToReturn)))
-    val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest)
-    redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-    await(result).header.status shouldBe SEE_OTHER
-    answerCaptor.getValue.data shouldBe userAnswersToReturn.data
-  }
-
-  "call the penalties backend and handle a success response and add the keys to the session " +
-    "- redirect to Cancel VAT Registration page for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
-    val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-    val userAnswersToReturn = userAnswers(Json.obj(
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
-      SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
-      SessionKeys.penaltyNumber -> "12345",
-      SessionKeys.dueDateOfPeriod -> LocalDate.of(2020, 3, 7),
-      SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8),
-      SessionKeys.isObligationAppeal -> true
-    ))
-    val appealDataToReturn: AppealData = AppealData(
-      `type` = PenaltyTypeEnum.Late_Payment,
-      startDate = LocalDate.of(2020, 1, 1),
-      endDate = LocalDate.of(2020, 1, 31),
-      dueDate = LocalDate.of(2020, 3, 7),
-      dateCommunicationSent = LocalDate.of(2020, 3, 8)
-    )
-    when(mockSessionService.updateAnswers(answerCaptor.capture()))
-      .thenReturn(Future.successful(true))
-    when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
-      .thenReturn(Future.successful(Some(appealDataToReturn)))
-    val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = false)(fakeRequest)
-    redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-    await(result).header.status shouldBe SEE_OTHER
-    answerCaptor.getValue.data shouldBe userAnswersToReturn.data
-  }
-  "call the penalties backend and handle a success response and add the keys to the session " +
-    "- redirect to Cancel VAT Registration page for LPP additional" in new Setup(AuthTestModels.successfulAuthResult) {
-    val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-    val userAnswersToReturn = userAnswers(Json.obj(
-      SessionKeys.appealType -> PenaltyTypeEnum.Additional,
-      SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
-      SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
-      SessionKeys.penaltyNumber -> "12345",
-      SessionKeys.dueDateOfPeriod -> LocalDate.of(2020, 3, 7),
-      SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8),
-      SessionKeys.isObligationAppeal -> true
-    ))
-    val appealDataToReturn: AppealData = AppealData(
-      `type` = PenaltyTypeEnum.Additional,
-      startDate = LocalDate.of(2020, 1, 1),
-      endDate = LocalDate.of(2020, 1, 31),
-      dueDate = LocalDate.of(2020, 3, 7),
-      dateCommunicationSent = LocalDate.of(2020, 3, 8)
-    )
-    when(mockSessionService.updateAnswers(answerCaptor.capture()))
-      .thenReturn(Future.successful(true))
-    when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
-      .thenReturn(Future.successful(Some(appealDataToReturn)))
-    val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = true)(fakeRequest)
-    redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-    await(result).header.status shouldBe SEE_OTHER
-    answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+  "onPageLoadForObligationEstimatedLPP" should {
+    "redirect to the Cancel VAT page and add the keys to the session when valid tax period dates are given" in new Setup(AuthTestModels.successfulAuthResult) {
+      val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      val userAnswersToReturn = userAnswers(Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.startDateOfPeriod -> LocalDate.of(2025, 1, 1),
+        SessionKeys.endDateOfPeriod -> LocalDate.of(2025, 3, 31),
+        SessionKeys.penaltyNumber -> "NA",
+        SessionKeys.dueDateOfPeriod -> LocalDate.now(),
+        SessionKeys.dateCommunicationSent -> LocalDate.now(),
+        SessionKeys.isObligationAppeal -> true
+      ))
+      when(mockSessionService.updateAnswers(answerCaptor.capture()))
+        .thenReturn(Future.successful(true))
+      val result: Future[Result] = controller.onPageLoadForObligationEstimatedLPP("2025-01-01", "2025-03-31")(fakeRequest)
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      await(result).header.status shouldBe SEE_OTHER
+      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+    }
   }
 }
 
