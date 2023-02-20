@@ -22,9 +22,9 @@ function getStatusResponseWaiting() {
     };
 }
 
-function getProvisionResponse() {
+function getProvisionResponse(fileReference) {
     return {
-        reference: '123',
+        reference: fileReference,
         uploadRequest: {
             fields: {},
             href: 'uploadUrl'
@@ -60,8 +60,10 @@ describe('Multi File Upload component', () => {
           data-multi-file-upload-file-uploaded="{fileNumber} {fileName} has been uploaded"
           data-multi-file-upload-file-removed="{fileNumber} {fileName} has been removed"
           data-multi-file-upload-remove-page-url-tpl="/remove-file/{fileRef}"
-          data-multi-file-upload-error-prefix="Error:"
-          >
+          data-multi-file-upload-number-uploaded-files="You have successfully uploaded {numberOfFiles} files"
+          data-multi-file-upload-one-file-uploaded="You have successfully uploaded {numberOfFiles} file"
+          data-multi-file-upload-new-upload-row="You have added a new row for file upload"
+          data-multi-file-upload-error-prefix="Error:">
           <ul class="multi-file-upload__item-list"></ul>
 
           <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">Add another file</button>
@@ -97,7 +99,6 @@ describe('Multi File Upload component', () => {
                       Remove
                       <span class="govuk-visually-hidden">File <span class="multi-file-upload__number">{fileNumber}</span><span class="multi-file-upload__file-name"></span></span>
                     </button>
-                    <span class="multi-file-upload__removing">Removing...</span>
                   </div>
                 </div>
               </div>
@@ -141,7 +142,7 @@ describe('Multi File Upload component', () => {
                     instance = new MultiFileUpload(container);
                     spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                     spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
-                        const response = getProvisionResponse();
+                        const response = getProvisionResponse('123');
                         const promise = Promise.resolve(response);
 
                         promise.then(() => {
@@ -185,7 +186,7 @@ describe('Multi File Upload component', () => {
 
                     describe('When "Add another" button is clicked', () => {
                         beforeEach(() => {
-                            spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse()));
+                            spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse('123')));
                         });
 
                         it('Then 2 rows should be present', () => {
@@ -228,7 +229,7 @@ describe('Multi File Upload component', () => {
             beforeEach((done) => {
                 instance = new MultiFileUpload(container);
                 spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
-                    const response = getProvisionResponse();
+                    const response = getProvisionResponse('123');
                     const promise = Promise.resolve(response);
 
                     promise.then(() => {
@@ -287,7 +288,7 @@ describe('Multi File Upload component', () => {
             beforeEach((done) => {
                 instance = new MultiFileUpload(container);
                 spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
-                    const response = getProvisionResponse();
+                    const response = getProvisionResponse('123');
                     const promise = Promise.resolve(response);
 
                     promise.then(() => {
@@ -382,7 +383,7 @@ describe('Multi File Upload component', () => {
                     beforeEach((done) => {
                         instance = new MultiFileUpload(container);
                         spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
-                            const response = getProvisionResponse();
+                            const response = getProvisionResponse('123');
                             const promise = Promise.resolve(response);
 
                             promise.then(() => {
@@ -443,7 +444,7 @@ describe('Multi File Upload component', () => {
             beforeEach((done) => {
                 instance = new MultiFileUpload(container);
                 spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
-                    const response = getProvisionResponse();
+                    const response = getProvisionResponse('123');
                     const promise = Promise.resolve(response);
 
                     promise.then(() => {
@@ -471,7 +472,6 @@ describe('Multi File Upload component', () => {
 
             describe('When file is uploaded', () => {
                 beforeEach((done) => {
-
                     input.files = createFileList([new File([''], '/path/to/test.txt')]);
                     input.dispatchEvent(new Event('change'));
                     done();
@@ -484,7 +484,8 @@ describe('Multi File Upload component', () => {
 
                 it('Then "file uploaded" message is placed in aria live region', (done) => {
                     const notifications = container.querySelector('.multi-file-upload__notifications');
-                    expect(notifications.textContent.trim()).toEqual('File 1 test.txt has been uploaded');
+                    expect(notifications.textContent.trim()).toContain('File 1 test.txt has been uploaded');
+                    expect(notifications.textContent.trim()).toContain('You have successfully uploaded 1 file');
                     done();
                 });
 
@@ -496,6 +497,66 @@ describe('Multi File Upload component', () => {
                     expect(container.querySelector('.multi-file-upload__remove-item .multi-file-upload__file-name').textContent).toEqual('test.txt');
                     done();
                 });
+            });
+        });
+
+        describe('And component is initialised', () => {
+            beforeEach((done) => {
+                instance = new MultiFileUpload(container);
+                let hasRequestProvisionUploadBeenCalled = false;
+                spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
+                    let response;
+                    if(!hasRequestProvisionUploadBeenCalled) {
+                        response = getProvisionResponse('123');
+                        hasRequestProvisionUploadBeenCalled = true;
+                    } else {
+                        response = getProvisionResponse('456');
+                    }
+                    let promise = Promise.resolve(response);
+                    promise.then(() => {
+                        instance.handleProvisionUploadCompleted(file, response);
+                    });
+
+                    return promise;
+                });
+                spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
+                spyOn(instance, 'uploadFile').and.callFake((file) => {
+                    instance.handleUploadFileCompleted(file.dataset.multiFileUploadFileRef);
+                });
+                spyOn(instance, 'requestUploadStatus').and.callFake((fileRef) => {
+                    instance.handleRequestUploadStatusCompleted(fileRef, getStatusResponse());
+                });
+                spyOn(instance, 'delayedRequestUploadStatus').and.callFake((fileRef) => {
+                    instance.requestUploadStatus(fileRef);
+                });
+
+                instance.init();
+                item = container.querySelector('.multi-file-upload__item');
+                input = container.querySelector('.multi-file-upload__file');
+                done();
+            });
+
+            describe('When 2 files are uploaded', () => {
+                beforeEach((done) => {
+                    input.files = createFileList([new File([''], '/path/to/test.txt')]);
+                    input.dispatchEvent(new Event('change'));
+                    container.querySelector('.multi-file-upload__add-another').click();
+                    done();
+                });
+
+                it('Then "file uploaded" message is placed in aria live region for both uploads', (done) => {
+                    const input2 = container.querySelector('#file-2');
+                    input2.files = createFileList([new File([''], '/path/to/test2.txt')]);
+                    input2.dispatchEvent(new Event('change'));
+                    const notifications = container.querySelector('.multi-file-upload__notifications');
+                    expect(notifications.textContent.trim()).toContain('File 1 test.txt has been uploaded');
+                    expect(notifications.textContent.trim()).toContain('You have added a new row for file upload');
+                    expect(notifications.textContent.trim()).toContain('You have successfully uploaded 1 file');
+                    expect(notifications.textContent.trim()).toContain('File 2 test2.txt has been uploaded');
+                    expect(notifications.textContent.trim()).toContain('You have successfully uploaded 2 files');
+                    done();
+                });
+
             });
         });
 
@@ -514,7 +575,7 @@ describe('Multi File Upload component', () => {
                 beforeEach(() => {
                     instance = new MultiFileUpload(container);
                     spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
-                    spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse()));
+                    spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse('123')));
 
                     instance.init();
 
@@ -551,7 +612,7 @@ describe('Multi File Upload component', () => {
                 beforeEach(() => {
                     instance = new MultiFileUpload(container);
 
-                    spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse()));
+                    spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse('123')));
                     spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                     spyOn(instance, 'redirectToFileRemovalPage');
 

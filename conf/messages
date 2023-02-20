@@ -363,6 +363,9 @@ upscan.fileUploaded = {0} {1} has been uploaded
 upscan.fileUploading = Uploading {0}
 upscan.fileRemoved = Remove {0} {1}
 upscan.fileNotSpecified = Select a file.
+upscan.numberOfUploadedFiles = You have successfully uploaded {0} files
+upscan.uploadedOneFile = You have successfully uploaded {0} file
+upscan.addedNewRow = You have added a new row for file upload
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------
