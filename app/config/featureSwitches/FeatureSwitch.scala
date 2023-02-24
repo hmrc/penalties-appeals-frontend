@@ -35,3 +35,8 @@ case object ShowDigitalCommsMessage extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-digital-comms-message"
   override val displayText: String = "To enable routing to JS pages"
 }
+
+case object WarnForDuplicateFiles extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.warn-for-duplicate-files"
+  override val displayText: String = "To enable warnings for duplicate files"
+}

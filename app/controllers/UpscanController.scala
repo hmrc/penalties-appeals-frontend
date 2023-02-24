@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
 import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import forms.upscan.{S3UploadErrorForm, S3UploadSuccessForm}
@@ -32,8 +33,9 @@ import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.{PagerDutyHelper, SessionKeys}
 import viewtils.EvidenceFileUploadsHelper
-
 import javax.inject.Inject
+import play.api.Configuration
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpscanController @Inject()(repository: UploadJourneyRepository,
@@ -42,7 +44,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                                  evidenceFileUploadsHelper: EvidenceFileUploadsHelper)
                                 (implicit appConfig: AppConfig,
                                  errorHandler: ErrorHandler,
-                                 mcc: MessagesControllerComponents, ec: ExecutionContext) extends FrontendController(mcc) {
+                                 mcc: MessagesControllerComponents, ec: ExecutionContext, val config: Configuration) extends FrontendController(mcc) with FeatureSwitching {
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
     implicit request => {
@@ -238,6 +240,10 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
   }
 
   def getDuplicateFiles(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request => evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(_.fold(Ok(Json.obj()))(message => Ok(Json.obj("message" -> message))))
+    implicit request => if(isEnabled(WarnForDuplicateFiles)){
+      evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(_.fold(Ok(Json.obj()))(message => Ok(Json.obj("message" -> message))))
+    } else {
+      Future(Ok(Json.obj()))
+    }
   }
 }
