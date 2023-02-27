@@ -34,6 +34,7 @@ class FeatureSwitchingSpec extends SpecBase {
     }
     sys.props -= NonJSRouting.name
     sys.props -= ShowDigitalCommsMessage.name
+    sys.props -= WarnForDuplicateFiles.name
     sys.props -= featureSwitching.TIME_MACHINE_NOW
   }
 
@@ -41,6 +42,7 @@ class FeatureSwitchingSpec extends SpecBase {
     super.afterAll()
     sys.props -= NonJSRouting.name
     sys.props -= ShowDigitalCommsMessage.name
+    sys.props -= WarnForDuplicateFiles.name
   }
 
   "listOfAllFeatureSwitches" should {
@@ -84,6 +86,11 @@ class FeatureSwitchingSpec extends SpecBase {
       featureSwitching.enableFeatureSwitch(ShowDigitalCommsMessage)
       (sys.props get ShowDigitalCommsMessage.name get) shouldBe "true"
     }
+
+    s"set ${WarnForDuplicateFiles.name} property to true" in new Setup {
+      featureSwitching.enableFeatureSwitch(WarnForDuplicateFiles)
+      (sys.props get WarnForDuplicateFiles.name get) shouldBe "true"
+    }
   }
 
   "disableFeatureSwitch" should {
@@ -95,6 +102,11 @@ class FeatureSwitchingSpec extends SpecBase {
     s"set ${ShowDigitalCommsMessage.name} property to false" in new Setup {
       featureSwitching.disableFeatureSwitch(ShowDigitalCommsMessage)
       (sys.props get ShowDigitalCommsMessage.name get) shouldBe "false"
+    }
+
+    s"set ${WarnForDuplicateFiles.name} property to false" in new Setup {
+      featureSwitching.disableFeatureSwitch(WarnForDuplicateFiles)
+      (sys.props get WarnForDuplicateFiles.name get) shouldBe "false"
     }
   }
 
