@@ -36,12 +36,14 @@ import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys
 import utils.SessionKeys
 import viewtils.EvidenceFileUploadsHelper
-
 import java.time.LocalDateTime
+
+import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UpscanControllerSpec extends SpecBase with LogCapturing {
+class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitching {
   val repository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
   val connector: UpscanConnector = mock(classOf[UpscanConnector])
@@ -331,14 +333,26 @@ class UpscanControllerSpec extends SpecBase with LogCapturing {
         status(result) shouldBe OK
         contentAsJson(result) shouldBe Json.obj()
       }
-
+      "WarnForDuplicateFiles is enabled" must {
         "return Some when there is duplicates in the repository" in {
+            enableFeatureSwitch(WarnForDuplicateFiles)
+            when(helper.getInsetTextForUploadsInRepository(ArgumentMatchers.any())(ArgumentMatchers.any()))
+              .thenReturn(Future.successful(Some("this is some text to display")))
+            val result = controller.getDuplicateFiles("1234567")(FakeRequest())
+            status(result) shouldBe OK
+            contentAsJson(result) shouldBe Json.obj("message" -> "this is some text to display")
+          }
+        }
+      "WarnForDuplicateFiles is disabled" must {
+        "return None when there is duplicates in the repository" in {
+          disableFeatureSwitch(WarnForDuplicateFiles)
           when(helper.getInsetTextForUploadsInRepository(ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("this is some text to display")))
           val result = controller.getDuplicateFiles("1234567")(FakeRequest())
           status(result) shouldBe OK
-          contentAsJson(result) shouldBe Json.obj("message" -> "this is some text to display")
+          contentAsJson(result) shouldBe Json.obj()
         }
+       }
       }
     }
   }

@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, NonJSRouting}
+import config.featureSwitches.{FeatureSwitching, NonJSRouting, WarnForDuplicateFiles}
 import models.session.UserAnswers
 import models.upload._
 import models.{NormalMode, PenaltyTypeEnum}
@@ -32,8 +32,8 @@ import stubs.AuthStub
 import stubs.UpscanStub.successfulInitiateCall
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
 import java.time.{LocalDate, LocalDateTime}
+
 import scala.concurrent.Future
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
@@ -42,6 +42,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
 
   class Setup(sessionDataToStore: UserAnswers = UserAnswers("1234", Json.obj())) extends UserAnswersSetup(sessionDataToStore) {
     await(repository.collection.deleteMany(Document()).toFuture())
+    disableFeatureSwitch(WarnForDuplicateFiles)
   }
 
   "GET /when-inability-to-manage-account-happened" should {
@@ -544,7 +545,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       status(request) shouldBe OK
     }
 
-    "return OK and the correct view - showing the inset text for duplicate uploads" in new Setup(userAnswers(Json.obj(
+    "return OK and the correct view - when their are duplicate uploads - when WarnForDuplicateFiles is disabled" in new Setup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -572,10 +573,10 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       val request = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
       status(request) shouldBe OK
       val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select(".govuk-inset-text").text() should startWith("File 1 has the same contents as File 2.")
+      parsedBody.select(".govuk-inset-text").isEmpty shouldBe true
     }
 
-    "return OK and the correct view - showing the inset text for multiple duplicate uploads" in new Setup(userAnswers(Json.obj(
+    "return OK and the correct view - showing the inset text for duplicate uploads - when WarnForDuplicateFiles is enabled" in new Setup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -583,6 +584,40 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
+      enableFeatureSwitch(WarnForDuplicateFiles)
+      val callbackModel: UploadJourney = UploadJourney(
+        reference = "ref1",
+        fileStatus = UploadStatusEnum.READY,
+        downloadUrl = Some("download.file/url"),
+        uploadDetails = Some(UploadDetails(
+          fileName = "file1.txt",
+          fileMimeType = "text/plain",
+          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+          checksum = "check1234",
+          size = 2
+        ))
+      )
+      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", callbackModel.copy(
+        reference = "ref2",
+        fileStatus = UploadStatusEnum.DUPLICATE),
+        isInitiateCall = true))
+      val request = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
+      status(request) shouldBe OK
+      val parsedBody = Jsoup.parse(contentAsString(request))
+      parsedBody.select(".govuk-inset-text").text() should startWith("File 1 has the same contents as File 2.")
+    }
+
+    "return OK and the correct view - showing the inset text for multiple duplicate uploads - when WarnForDuplicateFiles is enabled" in new Setup(
+      userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      enableFeatureSwitch(WarnForDuplicateFiles)
       val callbackModel: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.READY,

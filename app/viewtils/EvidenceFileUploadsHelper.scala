@@ -16,6 +16,7 @@
 
 package viewtils
 
+import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
 import models.upload.{UploadJourney, UploadStatusEnum}
 import models.{Mode, UserRequest}
 import play.api.i18n.Messages
@@ -23,8 +24,8 @@ import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{InsetText, Text}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
 import views.html.components.upload.uploadList
-
 import javax.inject.Inject
+import play.api.Configuration
 import repositories.UploadJourneyRepository
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
                                           uploadJourneyRepository: UploadJourneyRepository,
                                           uploadList: uploadList
-                                         )(implicit ec: ExecutionContext) {
+                                         )(implicit ec: ExecutionContext, val config: Configuration) extends FeatureSwitching {
 
   def displayContentForFileUploads(uploadedFiles: Seq[(UploadJourney, Int)], mode: Mode)(implicit messages: Messages, request: UserRequest[_]): Seq[Html] = {
     uploadedFiles.map(uploadWithIndex =>
@@ -58,7 +59,7 @@ class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
   def getInsetTextMessage(uploadedFiles: Seq[(UploadJourney, Int)])(implicit messages: Messages): Option[String] = {
     val mappedDuplicates: Map[Option[String], Seq[(UploadJourney, Int)]] = uploadedFiles.groupBy(_._1.uploadDetails.map(_.checksum))
     val multipleDuplicates = mappedDuplicates.filter(_._2.size > 1)
-    if (multipleDuplicates.isEmpty) {
+    if (multipleDuplicates.isEmpty || !isEnabled(WarnForDuplicateFiles)) {
       None
     } else if (multipleDuplicates.size > 1) {
       Some(messages("otherReason.uploadList.multipleDuplicateInsetText"))
