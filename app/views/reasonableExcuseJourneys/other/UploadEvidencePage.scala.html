@@ -83,6 +83,9 @@
         (Symbol("data-multi-file-upload-still-transferring"), messages("otherReason.uploadEvidence.stillTransferring")),
         (Symbol("data-multi-file-upload-error-generic"), messages("upscan.unableToUpload", "{fileNumber}")),
         (Symbol("data-multi-file-upload-file-uploading"), messages("upscan.fileUploading", "{fileNumber}", "{fileName}")),
+        (Symbol("data-multi-file-upload-new-upload-row"), messages("upscan.addedNewRow")),
+        (Symbol("data-multi-file-upload-number-uploaded-files"), messages("upscan.numberOfUploadedFiles", "{numberOfFiles}")),
+        (Symbol("data-multi-file-upload-one-file-uploaded"), messages("upscan.uploadedOneFile", "{numberOfFiles}")),
         (Symbol("data-multi-file-upload-file-removed"), messages("upscan.fileRemoved", "{fileNumber}", "{fileName}")),
         (Symbol("data-multi-file-upload-error-prefix"), messages("error.prefix")),
         (Symbol("data-multi-file-upload-file-uploaded"), messages("upscan.fileUploaded", "{fileNumber}", "{fileName}"))) {
@@ -103,7 +106,7 @@
                 <span class="file-upload__spinner ccms-loader"></span>
             </p>
 
-            <div class="multi-file-upload__notifications govuk-visually-hidden" aria-live="assertive" role="status"></div>
+            <div class="multi-file-upload__notifications govuk-visually-hidden" aria-live="polite" role="status"></div>
 
             <script type="text/x-template" id="multi-file-upload-item-tpl">@uploadItem(appConfig.acceptedFileTypes)</script>
             <script type="text/x-template" id="error-manager-summary-tpl">@errorManager.summary(messages)</script>

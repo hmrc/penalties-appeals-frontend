@@ -363,6 +363,9 @@ upscan.fileUploaded = Uwchlwythwyd {0} {1}
 upscan.fileUploading = Wrthi’n uwchlwytho {0}
 upscan.fileRemoved = Tynnu {0} {1}
 upscan.fileNotSpecified = Dewiswch ffeil.
+upscan.numberOfUploadedFiles = You have successfully uploaded {0} files
+upscan.uploadedOneFile = You have successfully uploaded {0} file
+upscan.addedNewRow = You have added a new row for file upload
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------

@@ -68,6 +68,9 @@ export class MultiFileUpload {
             stillTransferring: form.dataset.multiFileUploadStillTransferring,
             fileUploaded: form.dataset.multiFileUploadFileUploaded,
             fileUploading: form.dataset.multiFileUploadFileUploading,
+            numberOfUploadedFiles: form.dataset.multiFileUploadNumberUploadedFiles,
+            uploadedOneFile: form.dataset.multiFileUploadOneFileUploaded,
+            newUploadRow: form.dataset.multiFileUploadNewUploadRow,
             fileRemoved: form.dataset.multiFileUploadFileRemoved,
             errorPrefix: form.dataset.multiFileUploadErrorPrefix
         };
@@ -592,6 +595,16 @@ export class MultiFileUpload {
         this.setItemState(item, status.Uploaded);
         this.updateButtonVisibility();
         this.updateFormStatusVisibility();
+        const numberOfUploadedFiles = this.findNumberOfFilesUploaded();
+        if(numberOfUploadedFiles === 1) {
+            this.addNotification(this.parseTemplate(this.messages.uploadedOneFile, {
+                numberOfFiles: numberOfUploadedFiles
+            }));
+        } else {
+            this.addNotification(this.parseTemplate(this.messages.numberOfUploadedFiles, {
+                numberOfFiles: numberOfUploadedFiles
+            }));
+        }
     }
 
     /** F43 */
@@ -641,7 +654,6 @@ export class MultiFileUpload {
     /** F49 */
     handleProvisionUploadCompleted(file, response) {
         const fileRef = response['reference'];
-
         file.dataset.multiFileUploadFileRef = fileRef;
         this.uploadData[file.id].reference = fileRef;
         this.uploadData[file.id].fields = response['uploadRequest']['fields'];
@@ -723,7 +735,7 @@ export class MultiFileUpload {
     handleAddItem() {
         const item = this.addItem(false, false);
         const file = this.getFileFromItem(item);
-
+        this.addNotification(this.messages.newUploadRow);
         file.focus();
     }
 
@@ -881,6 +893,10 @@ export class MultiFileUpload {
 
     redirectToFileRemovalPage(fileRef) {
         window.location.href = this.parseTemplate(this.config.removePageUrl, {fileRef: fileRef});
+    }
+
+    findNumberOfFilesUploaded() {
+        return this.itemList.querySelectorAll(`.${this.classes.uploaded}`).length;
     }
 }
 
