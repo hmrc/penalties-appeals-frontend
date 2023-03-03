@@ -28,7 +28,9 @@ import views.html.AppealStartPage
 class AppealStartPageSpec extends SpecBase with ViewBehaviours {
   "AppealStartPage" should {
     val appealStartPage: AppealStartPage = injector.instanceOf[AppealStartPage]
-    object Selectors extends BaseSelectors
+    object Selectors extends BaseSelectors {
+      override val h2 = "h2:nth-of-type(2)"
+    }
 
     s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
@@ -38,17 +40,17 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
-        Selectors.pElementIndex(2) -> p1,
-        Selectors.listIndexWithElementIndex(3, 1) -> li1,
-        Selectors.listIndexWithElementIndex(3, 2) -> li2,
-        Selectors.pElementIndex(4) -> p2,
-        Selectors.pElementIndex(5) -> p3,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1,
+        Selectors.listIndexWithElementIndex(4, 2) -> li2,
+        Selectors.pElementIndex(5) -> p2,
+        Selectors.pElementIndex(6) -> p3,
         Selectors.h2 -> h2,
-        Selectors.pElementIndex(7) -> p4,
-        Selectors.listIndexWithElementIndex(8, 1) -> li3,
-        Selectors.listIndexWithElementIndex(8, 2) -> li4,
-        Selectors.pElementIndex(9) -> p5,
-        Selectors.pElementIndex(10) -> p6,
+        Selectors.pElementIndex(8) -> p4,
+        Selectors.listIndexWithElementIndex(9, 1) -> li3,
+        Selectors.listIndexWithElementIndex(9, 2) -> li4,
+        Selectors.pElementIndex(10) -> p5,
+        Selectors.pElementIndex(11) -> p6,
         Selectors.button -> button
       )
 
@@ -63,18 +65,18 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
-        Selectors.pElementIndex(2) -> p1,
-        Selectors.listIndexWithElementIndex(3, 1) -> li1,
-        Selectors.listIndexWithElementIndex(3, 2) -> li2,
-        Selectors.pElementIndex(4) -> p2,
-        Selectors.pElementIndex(5) -> p3,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1,
+        Selectors.listIndexWithElementIndex(4, 2) -> li2,
+        Selectors.pElementIndex(5) -> p2,
+        Selectors.pElementIndex(6) -> p3,
         Selectors.h2 -> h2,
-        Selectors.pElementIndex(7) -> p4,
-        Selectors.listIndexWithElementIndex(8, 1) -> li3,
-        Selectors.listIndexWithElementIndex(8, 2) -> li4,
-        Selectors.listIndexWithElementIndex(8, 3) -> li5,
-        Selectors.pElementIndex(9) -> p5,
-        Selectors.pElementIndex(10) -> p6,
+        Selectors.pElementIndex(8) -> p4,
+        Selectors.listIndexWithElementIndex(9, 1) -> li3,
+        Selectors.listIndexWithElementIndex(9, 2) -> li4,
+        Selectors.listIndexWithElementIndex(9, 3) -> li5,
+        Selectors.pElementIndex(10) -> p5,
+        Selectors.pElementIndex(11) -> p6,
         Selectors.button -> button
       )
 
@@ -90,18 +92,18 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
-        Selectors.pElementIndex(2) -> p1,
-        Selectors.listIndexWithElementIndex(3, 1) -> li1,
-        Selectors.listIndexWithElementIndex(3, 2) -> li2,
-        Selectors.pElementIndex(4) -> p2,
-        Selectors.pElementIndex(5) -> p3,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1,
+        Selectors.listIndexWithElementIndex(4, 2) -> li2,
+        Selectors.pElementIndex(5) -> p2,
+        Selectors.pElementIndex(6) -> p3,
         Selectors.h2 -> h2,
-        Selectors.pElementIndex(7) -> p4,
-        Selectors.listIndexWithElementIndex(8, 1) -> li3Lpp,
-        Selectors.listIndexWithElementIndex(8, 2) -> li4,
-        Selectors.listIndexWithElementIndex(8, 3) -> li5,
-        Selectors.pElementIndex(9) -> p5,
-        Selectors.pElementIndex(10) -> p6,
+        Selectors.pElementIndex(8) -> p4,
+        Selectors.listIndexWithElementIndex(9, 1) -> li3Lpp,
+        Selectors.listIndexWithElementIndex(9, 2) -> li4,
+        Selectors.listIndexWithElementIndex(9, 3) -> li5,
+        Selectors.pElementIndex(10) -> p5,
+        Selectors.pElementIndex(11) -> p6,
         Selectors.button -> button
       )
 
@@ -117,15 +119,15 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
-        Selectors.pElementIndex(2) -> p1,
-        Selectors.listIndexWithElementIndex(3, 1) -> li1,
-        Selectors.listIndexWithElementIndex(3, 2) -> li2,
-        Selectors.pElementIndex(4) -> p2,
-        Selectors.pElementIndex(5) -> p3,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1,
+        Selectors.listIndexWithElementIndex(4, 2) -> li2,
+        Selectors.pElementIndex(5) -> p2,
+        Selectors.pElementIndex(6) -> p3,
         Selectors.h2 -> h2,
-        Selectors.pElementIndex(7) -> p4,
-        Selectors.listIndexWithElementIndex(8, 1) -> li3Obl,
-        Selectors.listIndexWithElementIndex(8, 2) -> li4Obl,
+        Selectors.pElementIndex(8) -> p4,
+        Selectors.listIndexWithElementIndex(9, 1) -> li3Obl,
+        Selectors.listIndexWithElementIndex(9, 2) -> li4Obl,
         Selectors.button -> button
       )
 

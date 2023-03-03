@@ -57,10 +57,10 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> titleAgent,
         Selectors.h1 -> h1,
-        Selectors.pElementIndex(2) -> p1,
-        Selectors.listIndexWithElementIndex(3, 1) -> li1("of agent context reason", "1 January 2022"),
-        Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent,
-        Selectors.listIndexWithElementIndex(3, 3) -> li3,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1("of agent context reason", "1 January 2022"),
+        Selectors.listIndexWithElementIndex(4, 2) -> extraLiForAgent,
+        Selectors.listIndexWithElementIndex(4, 3) -> li3,
         Selectors.button -> acceptAndContinueButton
       )
 
@@ -73,10 +73,10 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         val expectedContent = Seq(
           Selectors.title -> titleAgent,
           Selectors.h1 -> h1,
-          Selectors.pElementIndex(2) -> p1,
-          Selectors.listIndexWithElementIndex(3, 1) -> li1Obligation,
-          Selectors.listIndexWithElementIndex(3, 2) -> li2Obligation("1 January 2021", "31 January 2021"),
-          Selectors.listIndexWithElementIndex(3, 3) -> li3,
+          Selectors.pElementIndex(3) -> p1,
+          Selectors.listIndexWithElementIndex(4, 1) -> li1Obligation,
+          Selectors.listIndexWithElementIndex(4, 2) -> li2Obligation("1 January 2021", "31 January 2021"),
+          Selectors.listIndexWithElementIndex(4, 3) -> li3,
           Selectors.button -> acceptAndContinueButton
         )
 
@@ -93,8 +93,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.crime"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.crime"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> li2
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -105,8 +105,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.bereavement"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.bereavement"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> li2
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -117,8 +117,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.fireOrFlood"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.fireOrFlood"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> li2
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -129,8 +129,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.health"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.health"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> li2
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -141,8 +141,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.technicalIssues"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.technicalIssues"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> li2
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -153,8 +153,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2LossOfStaff
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> li2LossOfStaff
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -166,8 +166,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1Other("1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> li2
+                Selectors.listIndexWithElementIndex(4, 1) -> li1Other("1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> li2
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -180,8 +180,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 messages("agent.honestyDeclaration.crime"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> extraLiForAgent
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -192,8 +192,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 messages("agent.honestyDeclaration.bereavement"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> extraLiForAgent
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -204,8 +204,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 messages("agent.honestyDeclaration.fireOrFlood"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.fireOrFlood"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("agent.honestyDeclaration.fireOrFlood"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> extraLiForAgent
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -216,8 +216,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.health"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("agent.honestyDeclaration.health"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> extraLiForAgent
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -228,8 +228,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 messages("agent.honestyDeclaration.technicalIssues"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.technicalIssues"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("agent.honestyDeclaration.technicalIssues"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> extraLiForAgent
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -240,8 +240,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> extraLiForAgent
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -253,8 +253,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                 "1 January 2022", "1 January 2021", "31 January 2021"))
 
               val expectedContent = Seq(
-                Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("agent.honestyDeclaration.other"), "1 January 2022"),
-                Selectors.listIndexWithElementIndex(3, 2) -> extraLiForAgent
+                Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("agent.honestyDeclaration.other"), "1 January 2022"),
+                Selectors.listIndexWithElementIndex(4, 2) -> extraLiForAgent
               )
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -271,8 +271,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
-              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+              Selectors.listIndexWithElementIndex(4, 1) -> li1AgentText(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(4, 2) -> li2AgentText
             )
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -283,8 +283,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentText(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
-              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+              Selectors.listIndexWithElementIndex(4, 1) -> li1AgentText(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(4, 2) -> li2AgentText
             )
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -295,8 +295,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClient(messages("honestyDeclaration.fireOrFlood"), "1 January 2022"),
-              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+              Selectors.listIndexWithElementIndex(4, 1) -> li1AgentTextMyClient(messages("honestyDeclaration.fireOrFlood"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(4, 2) -> li2AgentText
             )
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -307,8 +307,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClient(messages("agent.honestyDeclaration.health"), "1 January 2022"),
-              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+              Selectors.listIndexWithElementIndex(4, 1) -> li1AgentTextMyClient(messages("agent.honestyDeclaration.health"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(4, 2) -> li2AgentText
             )
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -319,8 +319,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClient(messages("agent.honestyDeclaration.technicalIssues"), "1 January 2022"),
-              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+              Selectors.listIndexWithElementIndex(4, 1) -> li1AgentTextMyClient(messages("agent.honestyDeclaration.technicalIssues"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(4, 2) -> li2AgentText
             )
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -331,8 +331,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClient(messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022"),
-              Selectors.listIndexWithElementIndex(3, 2) -> li2LossOfStaff
+              Selectors.listIndexWithElementIndex(4, 1) -> li1AgentTextMyClient(messages("agent.honestyDeclaration.lossOfStaff"), "1 January 2022"),
+              Selectors.listIndexWithElementIndex(4, 2) -> li2LossOfStaff
             )
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -344,8 +344,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserClientPlannedSessionKeys))
 
             val expectedContent = Seq(
-              Selectors.listIndexWithElementIndex(3, 1) -> li1AgentOther("1 January 2022"),
-              Selectors.listIndexWithElementIndex(3, 2) -> li2AgentText
+              Selectors.listIndexWithElementIndex(4, 1) -> li1AgentOther("1 January 2022"),
+              Selectors.listIndexWithElementIndex(4, 2) -> li2AgentText
             )
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -359,8 +359,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextLPP(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
-            Selectors.listIndexWithElementIndex(3, 2) -> li2AgentTextLPP
+            Selectors.listIndexWithElementIndex(4, 1) -> li1AgentTextLPP(messages("agent.honestyDeclaration.crime"), "1 January 2022"),
+            Selectors.listIndexWithElementIndex(4, 2) -> li2AgentTextLPP
           )
 
           behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -371,8 +371,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextLPP(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
-            Selectors.listIndexWithElementIndex(3, 2) -> li2AgentTextLPP
+            Selectors.listIndexWithElementIndex(4, 1) -> li1AgentTextLPP(messages("agent.honestyDeclaration.bereavement"), "1 January 2022"),
+            Selectors.listIndexWithElementIndex(4, 2) -> li2AgentTextLPP
           )
 
           behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -383,8 +383,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1AgentTextMyClientLPP(messages("agent.honestyDeclaration.health"), "1 January 2022"),
-            Selectors.listIndexWithElementIndex(3, 2) -> li2AgentTextLPP
+            Selectors.listIndexWithElementIndex(4, 1) -> li1AgentTextMyClientLPP(messages("agent.honestyDeclaration.health"), "1 January 2022"),
+            Selectors.listIndexWithElementIndex(4, 2) -> li2AgentTextLPP
           )
 
           behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -395,7 +395,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserLPP))
 
           val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1AgentOtherLPP("1 January 2022")
+            Selectors.listIndexWithElementIndex(4, 1) -> li1AgentOtherLPP("1 January 2022")
           )
 
           behave like pageWithExpectedMessages(expectedContent)(agentDoc)
@@ -408,10 +408,10 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
-        Selectors.pElementIndex(2) -> p1,
-        Selectors.listIndexWithElementIndex(3, 1) -> li1("of reason", "1 January 2022"),
-        Selectors.listIndexWithElementIndex(3, 2) -> li2,
-        Selectors.listIndexWithElementIndex(3, 3) -> li3,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1("of reason", "1 January 2022"),
+        Selectors.listIndexWithElementIndex(4, 2) -> li2,
+        Selectors.listIndexWithElementIndex(4, 3) -> li3,
         Selectors.button -> acceptAndContinueButton
       )
 
@@ -423,7 +423,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           "1 January 2022", "1 January 2021", "31 January 2021"))
 
           val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.crime"), "1 January 2022")
+            Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.crime"), "1 January 2022")
           )
 
           behave like pageWithExpectedMessages(expectedContent)(doc)
@@ -435,9 +435,9 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             Seq("honestyDeclaration.li.extra.lossOfStaff")))
 
           val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
-            Selectors.listIndexWithElementIndex(3, 2) -> extraLiForLossOfStaff,
-            Selectors.listIndexWithElementIndex(3, 3) -> li2LossOfStaff
+            Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
+            Selectors.listIndexWithElementIndex(4, 2) -> extraLiForLossOfStaff,
+            Selectors.listIndexWithElementIndex(4, 3) -> li2LossOfStaff
           )
 
           behave like pageWithExpectedMessages(expectedContent)(doc)
@@ -449,7 +449,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             Seq()))
 
           val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.fireOrFlood"), "1 January 2022")
+            Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.fireOrFlood"), "1 January 2022")
           )
 
           behave like pageWithExpectedMessages(expectedContent)(doc)
@@ -461,7 +461,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
             Seq()))
 
           val expectedContent = Seq(
-            Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.technicalIssues"), "1 January 2022")
+            Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.technicalIssues"), "1 January 2022")
           )
 
           behave like pageWithExpectedMessages(expectedContent)(doc)
@@ -474,7 +474,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           Seq()))
 
         val expectedContent = Seq(
-          Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.bereavement"), "1 January 2022")
+          Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.bereavement"), "1 January 2022")
         )
 
         behave like pageWithExpectedMessages(expectedContent)(doc)
@@ -486,8 +486,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           Seq("honestyDeclaration.li.extra.health")))
 
         val expectedContent = Seq(
-          Selectors.listIndexWithElementIndex(3, 1) -> li1(messages("honestyDeclaration.health"), "1 January 2022"),
-          Selectors.listIndexWithElementIndex(3, 2) -> extraLiForHealth
+          Selectors.listIndexWithElementIndex(4, 1) -> li1(messages("honestyDeclaration.health"), "1 January 2022"),
+          Selectors.listIndexWithElementIndex(4, 2) -> extraLiForHealth
         )
 
         behave like pageWithExpectedMessages(expectedContent)(doc)
@@ -499,7 +499,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           Seq()))
 
         val expectedContent = Seq(
-          Selectors.listIndexWithElementIndex(3, 1) -> li1Other("1 January 2022")
+          Selectors.listIndexWithElementIndex(4, 1) -> li1Other("1 January 2022")
         )
 
         behave like pageWithExpectedMessages(expectedContent)(doc)
@@ -513,10 +513,10 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         val expectedContent = Seq(
           Selectors.title -> title,
           Selectors.h1 -> h1,
-          Selectors.pElementIndex(2) -> p1,
-          Selectors.listIndexWithElementIndex(3, 1) -> li1Lpp(messages("honestyDeclaration.crime"), "1 January 2022"),
-          Selectors.listIndexWithElementIndex(3, 2) -> li2Lpp,
-          Selectors.listIndexWithElementIndex(3, 3) -> li3,
+          Selectors.pElementIndex(3) -> p1,
+          Selectors.listIndexWithElementIndex(4, 1) -> li1Lpp(messages("honestyDeclaration.crime"), "1 January 2022"),
+          Selectors.listIndexWithElementIndex(4, 2) -> li2Lpp,
+          Selectors.listIndexWithElementIndex(4, 3) -> li3,
           Selectors.button -> acceptAndContinueButton
         )
 
@@ -531,10 +531,10 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         val expectedContent = Seq(
           Selectors.title -> title,
           Selectors.h1 -> h1,
-          Selectors.pElementIndex(2) -> p1,
-          Selectors.listIndexWithElementIndex(3,1) -> li1Obligation,
-          Selectors.listIndexWithElementIndex(3, 2) -> li2Obligation("1 January 2021", "31 January 2021"),
-          Selectors.listIndexWithElementIndex(3, 3) -> li3,
+          Selectors.pElementIndex(3) -> p1,
+          Selectors.listIndexWithElementIndex(4, 1) -> li1Obligation,
+          Selectors.listIndexWithElementIndex(4, 2) -> li2Obligation("1 January 2021", "31 January 2021"),
+          Selectors.listIndexWithElementIndex(4, 3) -> li3,
           Selectors.button -> acceptAndContinueButton
         )
 
@@ -549,11 +549,11 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         val expectedContent = Seq(
           Selectors.title -> title,
           Selectors.h1 -> h1,
-          Selectors.pElementIndex(2) -> p1,
-          Selectors.listIndexWithElementIndex(3, 1) -> li1Lpp(messages("honestyDeclaration.technicalIssues"), "1 January 2022"),
-          Selectors.listIndexWithElementIndex(3, 2) -> li2Lpp,
-          Selectors.listIndexWithElementIndex(3, 3) -> liLppTechIssues,
-          Selectors.listIndexWithElementIndex(3, 4) -> li3,
+          Selectors.pElementIndex(3) -> p1,
+          Selectors.listIndexWithElementIndex(4, 1) -> li1Lpp(messages("honestyDeclaration.technicalIssues"), "1 January 2022"),
+          Selectors.listIndexWithElementIndex(4, 2) -> li2Lpp,
+          Selectors.listIndexWithElementIndex(4, 3) -> liLppTechIssues,
+          Selectors.listIndexWithElementIndex(4, 4) -> li3,
           Selectors.button -> acceptAndContinueButton
         )
 
@@ -568,11 +568,11 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
         val expectedContent = Seq(
           Selectors.title -> title,
           Selectors.h1 -> h1,
-          Selectors.pElementIndex(2) -> p1,
-          Selectors.listIndexWithElementIndex(3, 1) -> li1Lpp(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
-          Selectors.listIndexWithElementIndex(3, 2) -> extraLiForLossOfStaff,
-          Selectors.listIndexWithElementIndex(3, 3) -> li2LossOfStaffLPP,
-          Selectors.listIndexWithElementIndex(3, 4) -> li3,
+          Selectors.pElementIndex(3) -> p1,
+          Selectors.listIndexWithElementIndex(4, 1) -> li1Lpp(messages("honestyDeclaration.lossOfStaff"), "1 January 2022"),
+          Selectors.listIndexWithElementIndex(4, 2) -> extraLiForLossOfStaff,
+          Selectors.listIndexWithElementIndex(4, 3) -> li2LossOfStaffLPP,
+          Selectors.listIndexWithElementIndex(4, 4) -> li3,
           Selectors.button -> acceptAndContinueButton
         )
 

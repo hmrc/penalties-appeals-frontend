@@ -33,8 +33,8 @@ class AppealSinglePenaltyPageSpec extends SpecBase with ViewBehaviours {
   val expectedContent = Seq(
     Selectors.title -> title,
     Selectors.h1 -> heading,
-    Selectors.pElementIndex(2) -> p1,
-    Selectors.pElementIndex(3) -> p2,
+    Selectors.pElementIndex(3) -> p1,
+    Selectors.pElementIndex(4) -> p2,
     Selectors.button -> continueBtn
   )
 
