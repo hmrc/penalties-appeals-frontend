@@ -27,7 +27,7 @@ class IncompleteSessionDataPageSpec extends SpecBase with ViewBehaviours {
   val incompleteSessionDataPage: IncompleteSessionDataPage = injector.instanceOf[IncompleteSessionDataPage]
 
   object Selectors extends BaseSelectors {
-    val link = "#main-content > div > div > p:nth-child(3) > a"
+    val link = "#main-content > div > div > p:nth-child(4) > a"
   }
 
   def applyView(): Html = incompleteSessionDataPage("123456789", isLPP = false, isAdditional = false)(implicitly, implicitly, userRequestWithCorrectKeys)
@@ -38,7 +38,7 @@ class IncompleteSessionDataPageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> heading,
-      Selectors.pElementIndex(2) -> p1,
+      Selectors.pElementIndex(3) -> p1,
       Selectors.link -> link
     )
 

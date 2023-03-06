@@ -45,7 +45,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> heading,
-        Selectors.pElementIndex(2) -> captionText,
+        Selectors.pElementIndex(3) -> captionText,
         Selectors.textAreaLabel -> textAreaLabel,
         Selectors.button -> continueBtn
       )
@@ -63,7 +63,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> titleMulti,
         Selectors.h1 -> headingMulti,
-        Selectors.pElementIndex(2) -> captionText,
+        Selectors.pElementIndex(3) -> captionText,
         Selectors.textAreaLabel -> textAreaLabel,
         Selectors.button -> continueBtn
       )
@@ -81,7 +81,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> titleFirst,
         Selectors.h1 -> headingFirst,
-        Selectors.pElementIndex(2) -> captionText,
+        Selectors.pElementIndex(3) -> captionText,
         Selectors.textAreaLabel -> textAreaLabel,
         Selectors.button -> continueBtn
       )
@@ -99,7 +99,7 @@ class MakingALateAppealPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> heading,
-        Selectors.pElementIndex(2) -> captionText,
+        Selectors.pElementIndex(3) -> captionText,
         Selectors.textAreaLabel -> textAreaLabel,
         Selectors.button -> continueBtn
       )

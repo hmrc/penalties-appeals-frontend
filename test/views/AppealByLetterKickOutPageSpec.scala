@@ -33,8 +33,8 @@ class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
     }
 
     object Selectors extends BaseSelectors {
-      val p1 = "#main-content > div > div > p:nth-child(2)"
-      val p2 = "#main-content > div > div > p:nth-child(4)"
+      val p1 = "#main-content > div > div > p:nth-child(3)"
+      val p2 = "#main-content > div > div > p:nth-child(5)"
       val bullet: (Int, Int) => String = (section: Int, number: Int) => s"#main-content > div > div > ul:nth-child($section) > li:nth-child($number)"
       val inset: Int => String = (number: Int) => s"#main-content > div > div > div > p:nth-child($number)"
       val link = "p > .govuk-link"
@@ -47,12 +47,12 @@ class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
         Selectors.title -> title,
         Selectors.h1 -> heading,
         Selectors.p1 -> p1,
-        Selectors.bullet(3, 1) -> bullet1,
-        Selectors.bullet(3, 2) -> bullet2,
-        Selectors.bullet(3, 3) -> bullet3,
+        Selectors.bullet(4, 1) -> bullet1,
+        Selectors.bullet(4, 2) -> bullet2,
+        Selectors.bullet(4, 3) -> bullet3,
         Selectors.p2 -> p2,
-        Selectors.bullet(5, 1) -> bullet4,
-        Selectors.bullet(5, 2) -> bullet5,
+        Selectors.bullet(6, 1) -> bullet4,
+        Selectors.bullet(6, 2) -> bullet5,
         Selectors.inset(1) -> inset1,
         Selectors.inset(2) -> inset2,
         Selectors.inset(3) -> inset3,
@@ -70,12 +70,12 @@ class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
         Selectors.title -> titleAgent,
         Selectors.h1 -> heading,
         Selectors.p1 -> p1,
-        Selectors.bullet(3, 1) -> bullet1,
-        Selectors.bullet(3, 2) -> bullet2,
-        Selectors.bullet(3, 3) -> bullet3,
+        Selectors.bullet(4, 1) -> bullet1,
+        Selectors.bullet(4, 2) -> bullet2,
+        Selectors.bullet(4, 3) -> bullet3,
         Selectors.p2 -> p2,
-        Selectors.bullet(5, 1) -> bullet4,
-        Selectors.bullet(5, 2) -> bullet5,
+        Selectors.bullet(6, 1) -> bullet4,
+        Selectors.bullet(6, 2) -> bullet5,
         Selectors.inset(1) -> inset1,
         Selectors.inset(2) -> inset2,
         Selectors.inset(3) -> inset3,

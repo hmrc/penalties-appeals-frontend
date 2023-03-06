@@ -31,10 +31,10 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
     val youCannotAppealPage: YouCannotAppealPage = injector.instanceOf[YouCannotAppealPage]
     val youCannotHelper = injector.instanceOf[YouCannotAppealHelper]
     object Selectors extends BaseSelectors {
-      val p1 = "#main-content > div > div > p:nth-child(2)"
-      val p2 = "#main-content > div > div > p:nth-child(3)"
-      val p3 = "#main-content > div > div > p:nth-child(4)"
-      val p4 = "#main-content > div > div > p:nth-child(5)"
+      val p1 = "#main-content > div > div > p:nth-child(3)"
+      val p2 = "#main-content > div > div > p:nth-child(4)"
+      val p3 = "#main-content > div > div > p:nth-child(5)"
+      val p4 = "#main-content > div > div > p:nth-child(6)"
       val link = "p > .govuk-link"
     }
 

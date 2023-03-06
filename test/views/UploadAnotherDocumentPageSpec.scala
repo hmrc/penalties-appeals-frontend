@@ -70,8 +70,8 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> h1,
-      Selectors.pElementIndex(2) -> p1,
-      Selectors.pElementIndex(3) -> p2,
+      Selectors.pElementIndex(3) -> p1,
+      Selectors.pElementIndex(4) -> p2,
       Selectors.detailsHeading -> detailsHeading,
       Selectors.detailsContentP1 -> detailsP1,
       Selectors.detailsContentLi(1) -> detailsLi1,
