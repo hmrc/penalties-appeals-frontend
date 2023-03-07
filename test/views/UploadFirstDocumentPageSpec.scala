@@ -41,6 +41,8 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
 
       val uploadButton = "#file-upload-form .govuk-button"
 
+      val skipFileUploadButton = "#skip-file-upload"
+
       val chooseYourFirstFile = "#file-upload-form-group > label"
     }
 
@@ -54,7 +56,7 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
     )
     def applyView(request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = {
       uploadFirstDocumentPage.apply(mockUpscanInitiateResponseModel, form,
-        pageMode = PageMode(UploadFirstDocumentPage, NormalMode))(request, implicitly, implicitly)
+        pageMode = PageMode(UploadFirstDocumentPage, NormalMode), "/next-page")(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView(userRequestWithCorrectKeys))
@@ -74,7 +76,8 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentLi(4) -> detailsLi4,
       Selectors.detailsContentLi(5) -> detailsLi5,
       Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-      Selectors.uploadButton -> uploadButton
+      Selectors.uploadButton -> uploadButton,
+      Selectors.skipFileUploadButton -> skipFileUploadButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)
@@ -97,7 +100,8 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.uploadButton -> uploadButton
+        Selectors.uploadButton -> uploadButton,
+        Selectors.skipFileUploadButton -> skipFileUploadButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)(lppDoc)
@@ -122,7 +126,8 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.uploadButton -> uploadButton
+        Selectors.uploadButton -> uploadButton,
+        Selectors.skipFileUploadButton -> skipFileUploadButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
@@ -146,7 +151,8 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.uploadButton -> uploadButton
+        Selectors.uploadButton -> uploadButton,
+        Selectors.skipFileUploadButton -> skipFileUploadButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)(lppAdditionalDoc)
@@ -172,10 +178,16 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         Selectors.detailsContentLi(4) -> detailsLi4,
         Selectors.detailsContentLi(5) -> detailsLi5,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.uploadButton -> uploadButton
+        Selectors.uploadButton -> uploadButton,
+        Selectors.skipFileUploadButton -> skipFileUploadButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "link to the next page in the journey when the user skips file upload" in {
+      implicit val doc: Document = asDocument(applyView(fakeRequestConverter(correctLPPUserAnswers)))
+      doc.select(Selectors.skipFileUploadButton).attr("href") shouldBe "/next-page"
     }
   }
 }

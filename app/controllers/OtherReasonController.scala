@@ -166,6 +166,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
   def onPageLoadForFirstFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       val formProvider = UploadDocumentForm.form
+      //Skip file upload and continue down the journey
+      val nextPageURL = navigation.nextPage(FileListPage, mode).url
       upscanService.initiateSynchronousCallToUpscan(userRequest.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = false, mode).map(
         _.fold(
           _ => {
@@ -177,15 +179,15 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             val optErrorCode: Option[String] = userRequest.session.get(SessionKeys.errorCodeFromUpscan)
             val optFailureFromUpscan: Option[String] = userRequest.session.get(SessionKeys.failureMessageFromUpscan)
             if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
-              Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, pageMode(UploadFirstDocumentPage, mode)))
+              Ok(uploadFirstDocumentPage(upscanResponseModel, formProvider, pageMode(UploadFirstDocumentPage, mode), nextPageURL))
             } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
               val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get, isJsEnabled = false)
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
-              BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, pageMode(UploadFirstDocumentPage, mode)))
+              BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, pageMode(UploadFirstDocumentPage, mode), nextPageURL))
                 .removingFromSession(SessionKeys.errorCodeFromUpscan)
             } else {
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", optFailureFromUpscan.get))
-              BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, pageMode(UploadFirstDocumentPage, mode)))
+              BadRequest(uploadFirstDocumentPage(upscanResponseModel, formWithErrors, pageMode(UploadFirstDocumentPage, mode), nextPageURL))
                 .removingFromSession(SessionKeys.failureMessageFromUpscan)
             }
           }
@@ -197,6 +199,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
   def onPageLoadForAnotherFileUpload(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest =>
       val formProvider = UploadDocumentForm.form
+      //Skip file upload and continue down the journey
+      val nextPageURL = navigation.nextPage(FileListPage, mode).url
       upscanService.initiateSynchronousCallToUpscan(userRequest.session.get(SessionKeys.journeyId).get, isAddingAnotherDocument = true, mode).map(
         _.fold(
           _ => {
@@ -207,18 +211,17 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           upscanResponseModel => {
             val optErrorCode: Option[String] = userRequest.session.get(SessionKeys.errorCodeFromUpscan)
             val optFailureFromUpscan: Option[String] = userRequest.session.get(SessionKeys.failureMessageFromUpscan)
-            val fileListPage = navigation.nextPage(UploadAnotherDocumentPage, mode)
             if (optErrorCode.isEmpty && optFailureFromUpscan.isEmpty) {
-              Ok(uploadAnotherDocumentPage(upscanResponseModel, formProvider, fileListPage.url, pageMode(UploadAnotherDocumentPage, mode)))
+              Ok(uploadAnotherDocumentPage(upscanResponseModel, formProvider, nextPageURL, pageMode(UploadAnotherDocumentPage, mode)))
 
             } else if (optErrorCode.isDefined && optFailureFromUpscan.isEmpty) {
               val localisedFailureReason = UpscanMessageHelper.getUploadFailureMessage(optErrorCode.get, isJsEnabled = false)
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", localisedFailureReason))
-              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors, fileListPage.url, pageMode(UploadAnotherDocumentPage, mode)))
+              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors, nextPageURL, pageMode(UploadAnotherDocumentPage, mode)))
                 .removingFromSession(SessionKeys.errorCodeFromUpscan)
             } else {
               val formWithErrors = UploadDocumentForm.form.withError(FormError("file", optFailureFromUpscan.get))
-              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors, fileListPage.url, pageMode(UploadAnotherDocumentPage, mode)))
+              BadRequest(uploadAnotherDocumentPage(upscanResponseModel, formWithErrors, nextPageURL, pageMode(UploadAnotherDocumentPage, mode)))
                 .removingFromSession(SessionKeys.failureMessageFromUpscan)
             }
           }

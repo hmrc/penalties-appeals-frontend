@@ -47,7 +47,7 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
 
     val uploadButton = "#file-upload-form .govuk-button"
 
-    val cancelButton = "#file-upload-form .govuk-button--secondary"
+    val skipFileUploadButton = "#skip-file-upload"
   }
 
   val form: Form[String] = UploadDocumentForm.form
@@ -58,9 +58,9 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
       fields = Map.empty
     )
   )
-  val fileListPage: Call = controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)
+
   def applyView(request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = {
-    uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form, fileListPage.url, pageMode = PageMode(UploadAnotherDocumentPage, NormalMode))(request, implicitly, implicitly)
+    uploadAnotherDocumentPage.apply(mockUpscanInitiateResponseModel, form, "/next-page", pageMode = PageMode(UploadAnotherDocumentPage, NormalMode))(request, implicitly, implicitly)
   }
 
   implicit val doc: Document = asDocument(applyView(userRequestWithCorrectKeys))
@@ -81,10 +81,14 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
       Selectors.detailsContentLi(5) -> detailsLi5,
       Selectors.chooseYourNextFile -> chooseYourNextFile,
       Selectors.uploadButton -> uploadButton,
-      Selectors.cancelButton -> cancelButton
+      Selectors.skipFileUploadButton -> skipFileUploadButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)
-  }
 
+    "link to the next page in the journey when the user skips file upload" in {
+      implicit val doc: Document = asDocument(applyView(fakeRequestConverter(correctLPPUserAnswers)))
+      doc.select(Selectors.skipFileUploadButton).attr("href") shouldBe "/next-page"
+    }
+  }
 }

@@ -26,6 +26,7 @@
         button: components.button,
         details: components.details,
         p: components.p,
+        link: components.link,
         bullets: components.bullets,
         pageHeader: components.pageHeader,
         fileUploadDialog: components.upload.fileUploadDialog)
@@ -33,7 +34,9 @@
 @(
     upscanResponse: UpscanInitiateResponseModel,
     form: Form[_],
-    pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+    pageMode: PageMode,
+    nextPageURL: String
+)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
 @detailsContent = {
@@ -78,6 +81,9 @@
         <div id="file-upload-form-group" class="govuk-form-group">
             @fileUploadDialog(form)
         </div>
+      <div class="govuk-button-group">
         @button("otherReason.uploadEvidence.noJs.button.uploadFile")
+        @link(nextPageURL, "fileUpload.skipFileUpload.button.text", id = Some("skip-file-upload"), button = true, classes = "govuk-button govuk-button--secondary")
+      </div>
     </form>
 }

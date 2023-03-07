@@ -292,7 +292,7 @@ agents.whoPlannedToSubmitVATReturn.error.required = Rhowch wybod i ni pwy oedd y
 
 # Upload Evidence
 # ----------------------------------------------------------
-otherReason.uploadEvidence.headingAndTitle = Tystiolaeth i gefnogi’r apêl hon (dewisol)
+otherReason.uploadEvidence.headingAndTitle = Tystiolaeth i gefnogi’r apêl hon
 otherReason.uploadEvidence.p1 = Defnyddiwch y dudalen hon i uwchlwytho unrhyw dystiolaeth i’n helpu i adolygu’r gosb.
 otherReason.uploadEvidence.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam y cyflwynwyd y Ffurflen TAW yn hwyr.
 otherReason.uploadEvidence.lpp.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam y talwyd y bil TAW yn hwyr.
@@ -342,6 +342,10 @@ otherReason.uploadList.duplicateInsetText.3 = Mae cynnwys Ffeil {0} yr un fath �
 otherReason.uploadList.duplicateInsetText.4 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2}, {3} a {4}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
 otherReason.uploadList.multipleDuplicateInsetText = Mae rhai ffeiliau â’r un cynnwys â’i gilydd. Gwiriwch y ffeiliau rydych wedi’u huwchlwytho a dileu ffeiliau sydd wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
 
+# Upload Evidence common messages
+# ----------------------------------------------------------
+fileUpload.skipFileUpload.button.text = Skip file upload
+
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
 otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle = Mae’n cymryd hirach na’r disgwyl i uwchlwytho’r ffeil hwn
@@ -349,8 +353,7 @@ otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Ail-lwyt
 
 # Upload Another Document (No JS)
 # ----------------------------------------------------------
-otherReason.uploadAnotherDocument.noJs.headingAndTitle = Ychwanegu ffeil arall (dewisol)
-otherReason.uploadAnotherDocument.noJs.button.cancel = Canslo
+otherReason.uploadAnotherDocument.noJs.headingAndTitle = Ychwanegu ffeil arall
 
 # Upscan failure messages
 # ----------------------------------------------------------

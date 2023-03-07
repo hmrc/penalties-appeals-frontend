@@ -21,6 +21,7 @@
         govukFileUpload: GovukFileUpload,
         button: components.button,
         p: components.p,
+        link: components.link,
         details: components.details,
         bullets: components.bullets,
         pageHeader: components.pageHeader,
@@ -28,7 +29,7 @@
 
 @(upscanResponse: UpscanInitiateResponseModel,
   form: Form[_],
-  fileListPage: String,
+  nextPageURL: String,
   pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @detailsContent = {
@@ -55,15 +56,15 @@
     @details("otherReason.uploadEvidence.details.heading", detailsContent)
 
     <form method="POST" action="@upscanResponse.uploadRequest.href" id="file-upload-form" enctype="multipart/form-data">
-            @for(field <- upscanResponse.uploadRequest.fields) {
-                    <input type="hidden" name="@field._1" value="@field._2"/>
-            }
-            <div id="file-upload-form-group" class="govuk-form-group">
-                    @fileUploadDialog(form, isAddingAnotherDocument = true)
-            </div>
-            <span>
-                    @button("otherReason.uploadEvidence.noJs.button.uploadFile")
-                    <a href="@fileListPage" class="govuk-button govuk-button--secondary">@messages("otherReason.uploadAnotherDocument.noJs.button.cancel")</a>
-            </span>
+        @for(field <- upscanResponse.uploadRequest.fields) {
+            <input type="hidden" name="@field._1" value="@field._2"/>
+        }
+        <div id="file-upload-form-group" class="govuk-form-group">
+            @fileUploadDialog(form, isAddingAnotherDocument = true)
+        </div>
+        <div class="govuk-button-group">
+            @button("otherReason.uploadEvidence.noJs.button.uploadFile")
+            @link(nextPageURL, "fileUpload.skipFileUpload.button.text", id = Some("skip-file-upload"), button = true, classes = "govuk-button govuk-button--secondary")
+        </div>
     </form>
 }

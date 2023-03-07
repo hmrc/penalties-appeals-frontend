@@ -292,7 +292,7 @@ agents.whoPlannedToSubmitVATReturn.error.required = Tell us who planned to submi
 
 # Upload Evidence
 # ----------------------------------------------------------
-otherReason.uploadEvidence.headingAndTitle = Evidence to support this appeal (optional)
+otherReason.uploadEvidence.headingAndTitle = Evidence to support this appeal
 otherReason.uploadEvidence.p1 = Use this page to upload any evidence to help us review the penalty.
 otherReason.uploadEvidence.p2 = Evidence might include documents or letters that show why the return was submitted late.
 otherReason.uploadEvidence.lpp.p2 = Evidence might include documents or letters that show why the VAT bill was paid late.
@@ -342,6 +342,10 @@ otherReason.uploadList.duplicateInsetText.3 = File {0} has the same contents as 
 otherReason.uploadList.duplicateInsetText.4 = File {0} has the same contents as Files {1}, {2}, {3} and {4}. You can remove duplicate files using the ’Remove’ link.
 otherReason.uploadList.multipleDuplicateInsetText = Some of the files have the same contents. Check your uploaded files and remove duplicates using the ’Remove’ link.
 
+# Upload Evidence common messages
+# ----------------------------------------------------------
+fileUpload.skipFileUpload.button.text = Skip file upload
+
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
 otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle = It’s taking longer than expected to upload this file
@@ -349,8 +353,7 @@ otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain = Reload t
 
 # Upload Another Document (No JS)
 # ----------------------------------------------------------
-otherReason.uploadAnotherDocument.noJs.headingAndTitle = Add another file (optional)
-otherReason.uploadAnotherDocument.noJs.button.cancel = Cancel
+otherReason.uploadAnotherDocument.noJs.headingAndTitle = Add another file
 
 # Upscan failure messages
 # ----------------------------------------------------------

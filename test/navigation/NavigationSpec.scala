@@ -467,12 +467,6 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
       }
 
-      s"called with $UploadAnotherDocumentPage redirects to File Upload List Page" in new Setup {
-        val result: Call = mainNavigator.nextPage(UploadAnotherDocumentPage, CheckMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
-        )
-        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
-      }
-
       s"called with $FileListPage redirects to $UploadAnotherDocumentPage when the user selects yes" in new Setup {
         val result: Call = mainNavigator.nextPage(FileListPage, CheckMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
@@ -709,12 +703,6 @@ class NavigationSpec extends SpecBase {
 
       s"called with $UploadFirstDocumentPage redirects to File Upload List Page" in new Setup {
         val result: Call = mainNavigator.nextPage(UploadFirstDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
-        )
-        result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
-      }
-
-      s"called with $UploadAnotherDocumentPage redirects to File Upload List Page" in new Setup {
-        val result: Call = mainNavigator.nextPage(UploadAnotherDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
       }
