@@ -18,9 +18,9 @@ package messages
 
 object UploadFirstDocumentMessages {
 
-  val title = "Evidence to support this appeal (optional) - Appeal a VAT penalty - GOV.UK"
+  val title = "Evidence to support this appeal - Appeal a VAT penalty - GOV.UK"
 
-  val h1 = "Evidence to support this appeal (optional)"
+  val h1 = "Evidence to support this appeal"
 
   val p1 = "Use this page to upload your first file. You can upload additional files afterwards. We will use any evidence to help us review the penalty."
 
@@ -53,4 +53,6 @@ object UploadFirstDocumentMessages {
   val chooseYourFirstFile = "Choose your first file"
 
   val uploadButton = "Upload selected file"
+
+  val skipFileUploadButton = "Skip file upload"
 }

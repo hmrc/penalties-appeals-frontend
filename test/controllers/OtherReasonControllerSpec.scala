@@ -28,8 +28,8 @@ import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.Configuration
 import play.api.libs.json.Json
+import play.api.mvc.Result
 import play.api.mvc.Results.Ok
-import play.api.mvc.{Cookie, Result}
 import play.api.test.Helpers._
 import services.upscan.UpscanService
 import testUtils.{AuthTestModels, UploadData}
@@ -368,431 +368,423 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
     }
 
     "onPageLoadForFirstFileUpload" should {
+      "return OK" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
+        val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
+        documentParsed.select("#skip-file-upload").attr("href") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      "return BAD_REQUEST and correct view when there is an errorCode in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val request = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.errorCodeFromUpscan -> "EntityTooLarge"))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
+        val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(request)
+        status(result) shouldBe BAD_REQUEST
+      }
+
+      "return BAD_REQUEST and correct view when there is an failureMessageFromUpscan in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val request = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile"))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
+        val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(request)
+        status(result) shouldBe BAD_REQUEST
+      }
+
+      "return ISE when the call to initiate file upload fails" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
+            status(result) shouldBe INTERNAL_SERVER_ERROR
+            logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
+            val content: String = contentAsString(result)
+            content.contains("Sorry, the service is unavailable") shouldBe true
+            content.contains("We have not saved your answers.") shouldBe true
+            content.contains("You will be able to use the service later.") shouldBe true
+            content.contains("If you prefer, you can appeal by letter. Write to:") shouldBe true
+          }
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onPageLoadForUploadComplete" should {
+      "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
+        val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+      }
+
+      "return OK and correct view - for duplicate uploads" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(
+          callBackModel.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE),
+          callBackModel.copy(reference = "ref3", fileStatus = UploadStatusEnum.DUPLICATE)
+        ))))
+        val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+      }
+
+      "redirect to first upload page" when {
+        "there is no uploads" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
+          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+        }
+
+        "there is no successful uploads" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val duplicateCallbackModel = UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(duplicateCallbackModel))))
+          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onPageLoadForAnotherFileUpload" should {
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
-        val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
+        val result = controller.onPageLoadForAnotherFileUpload(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
+        documentParsed.select("#skip-file-upload").attr("href") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      "return BAD_REQUEST and correct view when there is an errorCode in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val request = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.errorCodeFromUpscan -> "EntityTooLarge"))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
+        val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(request)
+        status(result) shouldBe BAD_REQUEST
+      }
+
+      "return BAD_REQUEST and correct view when there is an failureMessageFromUpscan in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val request = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile"))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
+        val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(request)
+        status(result) shouldBe BAD_REQUEST
+      }
+
+      "return ISE when the call to initiate file upload fails" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(userRequestWithCorrectKeys)
+            status(result) shouldBe INTERNAL_SERVER_ERROR
+            logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
+          }
+        }
+      }
+
+      "the user is unauthorised" when {
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "removeFileUpload" should {
+      "the user is authorised" must {
+
+        "redirect to the first upload page when the files left is 0" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockUpscanService.removeFileFromJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful((): Unit))
+          when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(0))
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("fileReference" -> "file1")
+          ))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+        }
+
+        "reload the upload list page when the files left is > 0" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockUpscanService.removeFileFromJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful((): Unit))
+          when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(1))
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("fileReference" -> "file2")
+          ))
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onPageLoadForUploadTakingLongerThanExpected" should {
+      "the user is authorised" must {
+        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+      }
+
+      "the user is unauthorised" when {
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmitForUploadTakingLongerThanExpected" should {
+      "run the block" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        when(mockUpscanService.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future(Ok("")))
+        val result = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withSession(
+          SessionKeys.fileReference -> "F1234")))
         status(result) shouldBe OK
       }
 
-      "the user does not have JavaScript enabled" when {
+      "the user is unauthorised" when {
 
-        "return OK" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-          when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
-          val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
+          status(result) shouldBe FORBIDDEN
         }
 
-        "return BAD_REQUEST and correct view when there is an errorCode in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val request = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.errorCodeFromUpscan -> "EntityTooLarge"))
-          when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
-          val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(request)
-          status(result) shouldBe BAD_REQUEST
-        }
-
-        "return BAD_REQUEST and correct view when there is an failureMessageFromUpscan in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val request = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile"))
-          when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
-          val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(request)
-          status(result) shouldBe BAD_REQUEST
-        }
-
-        "return ISE when the call to initiate file upload fails" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
-          withCaptureOfLoggingFrom(logger) {
-            logs => {
-              val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(userRequestWithCorrectKeys)
-              status(result) shouldBe INTERNAL_SERVER_ERROR
-              logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
-              val content: String = contentAsString(result)
-              content.contains("Sorry, the service is unavailable") shouldBe true
-              content.contains("We have not saved your answers.") shouldBe true
-              content.contains("You will be able to use the service later.") shouldBe true
-              content.contains("If you prefer, you can appeal by letter. Write to:") shouldBe true
-            }
-          }
-        }
-
-        "the user is unauthorised" when {
-
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
-        }
-      }
-
-      "onPageLoadForUploadComplete" should {
-        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
-          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
-        }
-
-        "return OK and correct view - for duplicate uploads" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(
-            callBackModel.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE),
-            callBackModel.copy(reference = "ref3", fileStatus = UploadStatusEnum.DUPLICATE)
-          ))))
-          val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
-        }
-
-        "redirect to first upload page" when {
-          "there is no uploads" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(None))
-            val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
-          }
-
-          "there is no successful uploads" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val duplicateCallbackModel = UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))
-            when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(duplicateCallbackModel))))
-            val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
-          }
-        }
-
-        "the user is unauthorised" when {
-
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
-        }
-      }
-
-      "onPageLoadForAnotherFileUpload" should {
-        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
-          val result = controller.onPageLoadForAnotherFileUpload(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
-        }
-
-        "return BAD_REQUEST and correct view when there is an errorCode in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val request = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.errorCodeFromUpscan -> "EntityTooLarge"))
-          when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
-          val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(request)
-          status(result) shouldBe BAD_REQUEST
-        }
-
-        "return BAD_REQUEST and correct view when there is an failureMessageFromUpscan in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val request = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile"))
-          when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
-          val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(request)
-          status(result) shouldBe BAD_REQUEST
-        }
-
-        "return ISE when the call to initiate file upload fails" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(Left(UnexpectedFailure(500, ""))))
-          withCaptureOfLoggingFrom(logger) {
-            logs => {
-              val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(userRequestWithCorrectKeys)
-              status(result) shouldBe INTERNAL_SERVER_ERROR
-              logs.exists(_.getMessage.contains(PagerDutyKeys.FAILED_INITIATE_CALL_UPSCAN.toString)) shouldBe true
-            }
-          }
-        }
-
-        "the user is unauthorised" when {
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
-        }
-      }
-
-      "removeFileUpload" should {
-        "the user is authorised" must {
-
-          "redirect to the first upload page when the files left is 0" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            when(mockUpscanService.removeFileFromJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
-              .thenReturn(Future.successful((): Unit))
-            when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
-              .thenReturn(Future.successful(0))
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("fileReference" -> "file1")
-            ))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
-          }
-
-          "reload the upload list page when the files left is > 0" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            when(mockUpscanService.removeFileFromJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
-              .thenReturn(Future.successful((): Unit))
-            when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
-              .thenReturn(Future.successful(1))
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("fileReference" -> "file2")
-            ))
-            status(result) shouldBe SEE_OTHER
-          }
-        }
-
-        "the user is unauthorised" when {
-
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.removeFileUpload(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
-        }
-      }
-
-      "onPageLoadForUploadTakingLongerThanExpected" should {
-        "the user is authorised" must {
-          "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(userRequestWithCorrectKeys)
-            status(result) shouldBe OK
-          }
-        }
-
-        "the user is unauthorised" when {
-
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
-        }
-      }
-
-      "onSubmitForUploadTakingLongerThanExpected" should {
-        "run the block" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockUpscanService.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future(Ok("")))
-          val result = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withSession(
-            SessionKeys.fileReference -> "F1234")))
-          status(result) shouldBe OK
-        }
-
-        "the user is unauthorised" when {
-
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
-        }
-      }
-
-      "onSubmitForUploadComplete" should {
-        "the user is authorised" must {
-          "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-            "- routing to non-JS evidence upload page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("value" -> "no")))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          }
-
-          "return 400 (BAD_REQUEST) when the user does not enter an option" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
-              .thenReturn(Future.successful(0))
-            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("value" -> "")))
-            status(result) shouldBe BAD_REQUEST
-          }
-
-          "return 303 (SEE_OTHER) when the files uploaded is 5" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            when(mockUploadJourneyRepository.getUploadsForJourney(Some("1234")))
-              .thenReturn(Future.successful(Option(Seq(callBackModel, callBackModel, callBackModel, callBackModel, callBackModel))))
-            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("value" -> "yes")))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
-
-          }
-
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoadForUploadTakingLongerThanExpected(NormalMode)(fakeRequest)
+          status(result) shouldBe SEE_OTHER
         }
       }
     }
 
-    "onPageLoadForUploadEvidenceQuestion" should {
+    "onSubmitForUploadComplete" should {
       "the user is authorised" must {
-
-        "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing to non-JS evidence upload page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "no")))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
         }
 
-        "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return 400 (BAD_REQUEST) when the user does not enter an option" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no")))))
-          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
-          val documentParsed: Document = Jsoup.parse(contentAsString(result))
-          documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockUpscanService.getAmountOfFilesUploadedForJourney(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(0))
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "")))
+          status(result) shouldBe BAD_REQUEST
         }
 
-        "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return 303 (SEE_OTHER) when the files uploaded is 5" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
-          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
-        }
-      }
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(Some("1234")))
+            .thenReturn(Future.successful(Option(Seq(callBackModel, callBackModel, callBackModel, callBackModel, callBackModel))))
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "yes")))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
 
-      "the user is unauthorised" when {
+        }
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequest)
           status(result) shouldBe FORBIDDEN
         }
-
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }
     }
+  }
 
-    "onSubmitForUploadEvidenceQuestion" should {
+  "onPageLoadForUploadEvidenceQuestion" should {
+    "the user is authorised" must {
 
-      "user submits the form" when {
-        "the validation is performed against possible values - redirect on success and set the session key value" in
-          new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-            when(mockSessionService.updateAnswers(answerCaptor.capture()))
-              .thenReturn(Future.successful(true))
-            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("value" -> "yes", "isJsEnabled" -> "true")))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, true).url
-            answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "yes")
-          }
-
-        "the validation is performed against possible values - value does not appear in options list" in
-          new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("value" -> "this_is_fake")))
-            status(result) shouldBe BAD_REQUEST
-          }
-
-        "the validation is performed against an empty value - value is an empty string" in
-          new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
-              .withFormUrlEncodedBody("value" -> "")))
-            status(result) shouldBe BAD_REQUEST
-          }
+      "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
       }
 
-      "return 500" when {
-        "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+      "return OK and correct view (pre-selected option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no")))))
+        val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe OK
+        val documentParsed: Document = Jsoup.parse(contentAsString(result))
+        documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
+      }
+
+      "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
+        val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "the user is unauthorised" when {
+
+      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+        val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+        status(result) shouldBe FORBIDDEN
+      }
+
+      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+        val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
+
+  "onSubmitForUploadEvidenceQuestion" should {
+
+    "user submits the form" when {
+      "the validation is performed against possible values - redirect on success and set the session key value" in
+        new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
-          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest
-            .withFormUrlEncodedBody("value" -> "no"))
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
+          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "yes", "isJsEnabled" -> "true")))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, true).url
+          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "yes")
         }
 
+      "the validation is performed against possible values - value does not appear in options list" in
+        new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "this_is_fake")))
+          status(result) shouldBe BAD_REQUEST
+        }
+
+      "the validation is performed against an empty value - value is an empty string" in
+        new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "")))
+          status(result) shouldBe BAD_REQUEST
+        }
+    }
+
+    "return 500" when {
+      "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
+        val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest
+          .withFormUrlEncodedBody("value" -> "no"))
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
-      "the user is unauthorised" when {
+    }
 
-        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest)
-          status(result) shouldBe FORBIDDEN
-        }
+    "the user is unauthorised" when {
 
-        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-        }
+      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+        val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+        status(result) shouldBe FORBIDDEN
+      }
+
+      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+        val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest)
+        status(result) shouldBe SEE_OTHER
       }
     }
   }

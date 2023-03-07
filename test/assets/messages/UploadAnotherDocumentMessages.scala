@@ -18,9 +18,9 @@ package messages
 
 object UploadAnotherDocumentMessages {
 
-  val title = "Add another file (optional) - Appeal a VAT penalty - GOV.UK"
+  val title = "Add another file - Appeal a VAT penalty - GOV.UK"
 
-  val h1 = "Add another file (optional)"
+  val h1 = "Add another file"
 
   val p1 = "You can upload up to 5 files."
 
@@ -46,6 +46,5 @@ object UploadAnotherDocumentMessages {
 
   val uploadButton = "Upload selected file"
 
-  val cancelButton = "Cancel"
-
+  val skipFileUploadButton = "Skip file upload"
 }

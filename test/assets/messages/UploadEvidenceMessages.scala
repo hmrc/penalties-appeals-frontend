@@ -18,9 +18,9 @@ package messages
 
 object UploadEvidenceMessages {
 
-  val title = "Evidence to support this appeal (optional) - Appeal a VAT penalty - GOV.UK"
+  val title = "Evidence to support this appeal - Appeal a VAT penalty - GOV.UK"
 
-  val h1 = "Evidence to support this appeal (optional)"
+  val h1 = "Evidence to support this appeal"
 
   val p1 = "Use this page to upload any evidence to help us review the penalty."
 
