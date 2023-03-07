@@ -42,7 +42,9 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       val addAnotherButton = ".multi-file-upload__add-another"
 
-      val continueButton = "#multi-upload-form > p > button"
+      val continueButton = "#multi-upload-form > .govuk-button-group > p > button"
+
+      val skipButton = "#skip-file-upload"
 
       val multiUploadForm = "#multi-upload-form"
 
@@ -78,7 +80,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         previousUploadsToString(previousUploads),
         controllers.routes.UpscanController.getDuplicateFiles("1234"),
         controllers.routes.ProblemWithServiceController.onPageLoad(),
-        pageMode = PageMode(EvidencePage, NormalMode))(request, implicitly, implicitly)
+        pageMode = PageMode(EvidencePage, NormalMode),
+        controllers.routes.MakingALateAppealController.onPageLoad().url)(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView())
@@ -98,7 +101,8 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentLi(4) -> detailsLi4,
       Selectors.detailsContentLi(5) -> detailsLi5,
       Selectors.addAnotherButton -> addAnotherButton,
-      Selectors.continueButton -> continueButton
+      Selectors.continueButton -> continueButton,
+      Selectors.skipButton -> skipButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)

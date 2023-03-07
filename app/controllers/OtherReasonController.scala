@@ -43,12 +43,13 @@ import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.{PagerDutyHelper, SessionKeys}
 import views.html.errors.ServiceUnavailablePage
-import views.html.reasonableExcuseJourneys.other._
+import views.html.reasonableExcuseJourneys.other.{UploadEvidencePage, _}
 import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage, UploadListPage, UploadTakingLongerThanExpectedPage}
 import viewtils.{EvidenceFileUploadsHelper, RadioOptionHelper}
-
 import java.time.LocalDate
+
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
@@ -156,7 +157,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           val postAction = navigation.nextPage(EvidencePage, mode)
           val getDuplicatesUrl = controllers.routes.UpscanController.getDuplicateFiles(userRequest.session.get(SessionKeys.journeyId).get)
           val getErrorServiceUrl = controllers.routes.ProblemWithServiceController.onPageLoad()
-          val call = uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, removeFilePageUrl, previousUploads, getDuplicatesUrl, getErrorServiceUrl, pageMode(EvidencePage, mode))
+          val call = uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, removeFilePageUrl, previousUploads, getDuplicatesUrl, getErrorServiceUrl, pageMode(EvidencePage, mode), postAction.url)
           if (mode == CheckMode && userRequest.session.get(SessionKeys.originatingChangePage).isEmpty) Ok(call).addingToSession(SessionKeys.originatingChangePage -> EvidencePage.toString) else Ok(call)
         }
       }
