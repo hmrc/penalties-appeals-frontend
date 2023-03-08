@@ -18,8 +18,7 @@
 bullets: components.bullets,
 formHelper: FormWithCSRF,
 button: components.button,
-radios: components.radios,
-pageHeader: components.pageHeader)
+radios: components.radios)
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
@@ -28,14 +27,12 @@ pageHeader: components.pageHeader)
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
-    @pageHeader(messages("cancelVATRegistration.headingAndTitle"))
     @formHelper(action = postAction) {
         @radios(
             form = form,
-            legendContent = "",
+            legendContent = messages("cancelVATRegistration.headingAndTitle"),
             hint = Some(Html(messages("cancelVATRegistration.hintText"))),
-            items = radioOptions,
-            showPenaltyInformation = false
+            items = radioOptions
         )
     @button("common.continue")
     }
