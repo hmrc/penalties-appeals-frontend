@@ -19,6 +19,7 @@
 @this(layout: Layout,
         formHelper: FormWithCSRF,
         button: components.button,
+        pageHeader: components.pageHeader,
         radios: components.radios)
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -28,11 +29,14 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
+    @pageHeader(messages("agents.whatCausedYouToMissTheDeadline.headingAndTitle"), showPageHeader = false)
     @formHelper(action = postAction) {
         @radios(
             form = form,
             legendContent = messages("agents.whatCausedYouToMissTheDeadline.headingAndTitle"),
-            items = radioOptions
+            items = radioOptions,
+            legendClasses = "govuk-fieldset__legend--l",
+            showPenaltyInformation = false
         )
 
         @button("common.continue")

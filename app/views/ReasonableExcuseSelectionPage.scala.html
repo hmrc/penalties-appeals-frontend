@@ -22,6 +22,7 @@
         formHelper: FormWithCSRF,
         button: components.button,
         radios: components.radios,
+        pageHeader: components.pageHeader,
         link: components.link
 )
 
@@ -34,12 +35,15 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
+    @pageHeader(if(userRequest.isAgent && userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission)){messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")}, showPageHeader = false)
     @formHelper(action = controllers.routes.ReasonableExcuseController.onSubmit()) {
 
         @radios(
             form = form,
             legendContent = if(userRequest.isAgent && userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission)){messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")},
-            items = radioOptions
+            items = radioOptions,
+            legendClasses = "govuk-fieldset__legend--l",
+            showPenaltyInformation = false
         )
 
         <p class="govuk-body">

@@ -20,6 +20,7 @@
         bullets: components.bullets,
         formHelper: FormWithCSRF,
         button: components.button,
+        pageHeader: components.pageHeader,
         radios: components.radios)
 
 @(
@@ -36,11 +37,14 @@
   optPageMode = None,
   customBackLink = Some(backLink)) {
 
+  @pageHeader(messages("otherReason.uploadEvidence.removeFile.headingAndTitle", fileName), false)
   @formHelper(action = postAction) {
     @radios(
       form = form,
       legendContent = messages("otherReason.uploadEvidence.removeFile.headingAndTitle", fileName),
-      items = radioOptions
+      items = radioOptions,
+      legendClasses = "govuk-fieldset__legend--l",
+      showPenaltyInformation = false
     )
 
     @button("common.continue")
