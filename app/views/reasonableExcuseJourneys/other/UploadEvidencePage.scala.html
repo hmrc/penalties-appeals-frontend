@@ -38,8 +38,7 @@
         previousUploads: String,
         getDuplicatesUrl: Call,
         getErrorServiceUrl: Call,
-        pageMode: PageMode,
-        nextPageUrl: String)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
+        pageMode: PageMode)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
 @detailsContent = {
@@ -118,7 +117,7 @@
             <div class="govuk-button-group">
                 <p>
                     @button("common.continue")
-                    @link(nextPageUrl, "fileUpload.skipFileUpload.button.text", id = Some("skip-file-upload"), button = true, classes = "govuk-button govuk-button--secondary")
+                    @link(postAction.url, "fileUpload.skipFileUpload.button.text", id = Some("skip-file-upload"), button = true, classes = "govuk-button govuk-button--secondary")
                 </p>
             </div>
         }

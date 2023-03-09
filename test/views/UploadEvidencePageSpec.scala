@@ -80,8 +80,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         previousUploadsToString(previousUploads),
         controllers.routes.UpscanController.getDuplicateFiles("1234"),
         controllers.routes.ProblemWithServiceController.onPageLoad(),
-        pageMode = PageMode(EvidencePage, NormalMode),
-        controllers.routes.MakingALateAppealController.onPageLoad().url)(request, implicitly, implicitly)
+        pageMode = PageMode(EvidencePage, NormalMode))(request, implicitly, implicitly)
     }
 
     implicit val doc: Document = asDocument(applyView())
