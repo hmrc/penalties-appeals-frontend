@@ -40,4 +40,6 @@ class BaseSelectors {
 
   val insetText = "#main-content > div > div > div.govuk-inset-text"
 
+  val legend = ".govuk-fieldset__legend"
+
 }

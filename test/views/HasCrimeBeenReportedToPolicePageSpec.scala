@@ -42,7 +42,7 @@ class HasCrimeBeenReportedToPolicePageSpec extends SpecBase with ViewBehaviours 
 
     val expectedContent = Seq(
       Selectors.title -> title,
-      Selectors.h1 -> h1,
+      Selectors.legend -> h1,
       Selectors.labelForRadioButton(1) -> yesOption,
       Selectors.labelForRadioButton(2) -> noOption,
       Selectors.labelForRadioButton(3) -> unknownOption,

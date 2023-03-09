@@ -32,9 +32,7 @@ class PenaltySelectionPageSpec extends SpecBase with ViewBehaviours {
   val page: PenaltySelectionPage = injector.instanceOf[PenaltySelectionPage]
   val form: Form[String] = PenaltySelectionForm.doYouWantToAppealBothPenalties
   val yesNoOptions: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
-  object Selectors extends BaseSelectors {
-    val legend = ".govuk-fieldset__legend"
-  }
+  object Selectors extends BaseSelectors
 
   implicit val document = asDocument(page(form, yesNoOptions, "50.12", "526.10", PageMode(PenaltySelectionPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly))
 

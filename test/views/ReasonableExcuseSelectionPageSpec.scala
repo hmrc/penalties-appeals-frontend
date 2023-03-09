@@ -88,7 +88,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
 
       val expectedContent = Seq(
         Selectors.title -> agentTitle,
-        Selectors.h1 -> agentH1,
+        Selectors.legend -> agentH1,
         Selectors.labelForRadioButton(1) -> radioOption1,
         Selectors.labelForRadioButton(2) -> radioOption2,
         Selectors.labelForRadioButton(3) -> radioOption3,
@@ -112,7 +112,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers ++ answers)))
 
         doc.select(Selectors.title).text shouldBe agentTitleLPP
-        doc.select(Selectors.h1).text shouldBe h1
+        doc.select(Selectors.legend).text shouldBe h1
       }
     }
 
@@ -121,7 +121,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
 
       val expectedContent = Seq(
         Selectors.title -> title,
-        Selectors.h1 -> h1,
+        Selectors.legend -> h1,
         Selectors.labelForRadioButton(1) -> radioOption1,
         Selectors.labelForRadioButton(2) -> radioOption2,
         Selectors.labelForRadioButton(3) -> radioOption3,

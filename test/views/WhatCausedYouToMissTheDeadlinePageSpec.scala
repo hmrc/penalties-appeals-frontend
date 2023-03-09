@@ -48,7 +48,7 @@ class WhatCausedYouToMissTheDeadlinePageSpec extends SpecBase with ViewBehaviour
 
     val expectedContent = Seq(
       Selectors.title -> title,
-      Selectors.h1 -> heading,
+      Selectors.legend -> heading,
       Selectors.labelForRadioButton(1) -> clientRadioOption,
       Selectors.labelForRadioButton(2) -> agentRadioOption,
       Selectors.button -> continueButton

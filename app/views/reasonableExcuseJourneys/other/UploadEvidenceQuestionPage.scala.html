@@ -31,7 +31,7 @@
         formErrors = form.errors,
         optPageMode = Some(pageMode)) {
 
-        @pageHeader("otherReason.uploadEvidence.question.headingAndTitle", false)
+        @pageHeader(messages("otherReason.uploadEvidence.question.headingAndTitle"), false)
 
         @formHelper(action = postAction, args = (Symbol("id"), "upload-evidence-question-form")) {
               @radios(
