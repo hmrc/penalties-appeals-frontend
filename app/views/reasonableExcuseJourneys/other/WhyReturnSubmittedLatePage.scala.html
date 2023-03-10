@@ -22,6 +22,7 @@
         link: components.link,
         button: components.button,
         characterCount: components.characterCount,
+        pageHeader: components.pageHeader,
         formHelper: FormWithCSRF)
 
 @(form: Form[_], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -41,6 +42,8 @@
   formHasErrors = form.errors.nonEmpty,
   formErrors = form.errors,
   optPageMode = Some(pageMode)) {
+
+  @pageHeader()
 
   @formHelper(action = postAction) {
     @characterCount(

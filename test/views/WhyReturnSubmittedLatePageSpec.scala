@@ -33,7 +33,9 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     val whyReturnSubmittedLate: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
     implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
-    object Selectors extends BaseSelectors
+    object Selectors extends BaseSelectors {
+      val label = "#main-content .govuk-label--l"
+    }
 
     def applyView(form: Form[_], request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = whyReturnSubmittedLate.apply(form,
       controllers.routes.OtherReasonController.onSubmitForWhyReturnSubmittedLate(NormalMode),
@@ -45,7 +47,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
 
     val expectedContent = Seq(
       Selectors.title -> title,
-      Selectors.h1 -> heading,
+      Selectors.label -> heading,
       Selectors.button -> continueButton
     )
 
@@ -56,7 +58,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
 
       val expectedContent = Seq(
         Selectors.title -> titleLpp,
-        Selectors.h1 -> headingLpp,
+        Selectors.label -> headingLpp,
         Selectors.button -> continueButton
       )
 
@@ -68,7 +70,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
 
       val expectedContent = Seq(
         Selectors.title -> titleLpp,
-        Selectors.h1 -> headingLpp,
+        Selectors.label -> headingLpp,
         Selectors.button -> continueButton
       )
 

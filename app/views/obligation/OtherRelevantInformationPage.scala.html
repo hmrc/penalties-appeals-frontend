@@ -23,6 +23,7 @@
         bullets: components.bullets,
         formHelper: FormWithCSRF,
         button: components.button,
+        pageHeader: components.pageHeader,
         characterCount: components.characterCount)
 
 @(form: Form[_], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -33,14 +34,16 @@
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
 
-    @formHelper(action = postAction) {
-        @characterCount(
-            form("other-relevant-information-text"),
-            label = messages("otherRelevantInformation.headingAndTitle"),
-            hint = Some(HtmlContent(messages("otherRelevantInformation.hintText"))),
-            maxLength = Some(5000)
-        )
+  @pageHeader()
 
-        @button("common.continue")
-    }
+  @formHelper(action = postAction) {
+      @characterCount(
+          form("other-relevant-information-text"),
+          label = messages("otherRelevantInformation.headingAndTitle"),
+          hint = Some(HtmlContent(messages("otherRelevantInformation.hintText"))),
+          maxLength = Some(5000)
+      )
+
+      @button("common.continue")
+  }
 }
