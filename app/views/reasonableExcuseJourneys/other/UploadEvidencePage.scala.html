@@ -26,7 +26,8 @@
         details: components.details,
         p: components.p,
         bullets: components.bullets,
-        pageHeader: components.pageHeader)
+        pageHeader: components.pageHeader,
+        link: components.link)
 
 @(
         postAction: Call,
@@ -113,8 +114,9 @@
             <script type="text/x-template" id="error-manager-summary-item-tpl">@errorManager.summaryItem(messages)</script>
             <script type="text/x-template" id="error-manager-message-tpl">@errorManager.message(messages)</script>
 
-            <p>
-                @button("common.continue")
-            </p>
+            <div class="govuk-button-group">
+                    @button("common.continue")
+                    @link(postAction.url, "fileUpload.skipFileUpload.button.text", id = Some("skip-file-upload"), button = true, classes = "govuk-button govuk-button--secondary")
+            </div>
         }
 }

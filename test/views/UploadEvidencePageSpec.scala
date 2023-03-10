@@ -42,7 +42,9 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       val addAnotherButton = ".multi-file-upload__add-another"
 
-      val continueButton = "#multi-upload-form > p > button"
+      val continueButton = "#multi-upload-form > .govuk-button-group > button"
+
+      val skipButton = "#skip-file-upload"
 
       val multiUploadForm = "#multi-upload-form"
 
@@ -98,10 +100,15 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       Selectors.detailsContentLi(4) -> detailsLi4,
       Selectors.detailsContentLi(5) -> detailsLi5,
       Selectors.addAnotherButton -> addAnotherButton,
-      Selectors.continueButton -> continueButton
+      Selectors.continueButton -> continueButton,
+      Selectors.skipButton -> skipButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)
+
+    "link to the next page in the journey when the user skips file upload" in {
+      doc.select(Selectors.skipButton).attr("href") shouldBe "/penalties-appeals/making-a-late-appeal"
+    }
 
     "display the LPP variation when the appeal is for a LPP" must {
       implicit val lppDoc: Document = asDocument(applyView(userRequestLPPWithCorrectKeys))
