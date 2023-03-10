@@ -27,7 +27,7 @@
         legendClasses: String = "",
         inline: Boolean = false,
         formFieldId: String = "value",
-        showPenaltyInformation: Boolean = true
+        legendAsPageHeading: Boolean = true
 )(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
 
 @legend = {
@@ -45,7 +45,7 @@
   name = formFieldId,
   fieldset = Some(Fieldset(
     legend = Some(Legend(
-      content = if(showPenaltyInformation) HtmlContent(legend) else Text(legendContent),
+      content = if(legendAsPageHeading) HtmlContent(legend) else Text(legendContent),
       isPageHeading = false,
       classes = if(legendClasses.nonEmpty) legendClasses else "govuk-fieldset__legend--xl"
     ))
