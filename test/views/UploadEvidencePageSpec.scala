@@ -42,7 +42,7 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
 
       val addAnotherButton = ".multi-file-upload__add-another"
 
-      val continueButton = "#multi-upload-form > .govuk-button-group > p > button"
+      val continueButton = "#multi-upload-form > .govuk-button-group > button"
 
       val skipButton = "#skip-file-upload"
 
