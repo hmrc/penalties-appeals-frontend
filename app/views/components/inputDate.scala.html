@@ -24,7 +24,7 @@
         legendClasses: Option[String] = None,
         id: String = "date",
         hintText: Option[String] = None,
-        showPenaltyInformation: Boolean = true)(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
+        legendAsHeading: Boolean = true)(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
 
 @legend = {
   <h1 class="govuk-fieldset__heading" id ="page-heading">
@@ -36,7 +36,7 @@
   fieldset = Some(Fieldset(
     legend = Some(
       Legend(
-        content = if(showPenaltyInformation) HtmlContent(legend) else Text(legendContent),
+        content = if(legendAsHeading) HtmlContent(legend) else Text(legendContent),
         isPageHeading = false,
         classes = legendClasses.getOrElse("")
       )
