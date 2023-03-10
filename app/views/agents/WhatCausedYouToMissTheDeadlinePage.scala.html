@@ -29,14 +29,14 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
-    @pageHeader(messages("agents.whatCausedYouToMissTheDeadline.headingAndTitle"), showPageHeader = false)
+    @pageHeader()
     @formHelper(action = postAction) {
         @radios(
             form = form,
             legendContent = messages("agents.whatCausedYouToMissTheDeadline.headingAndTitle"),
             items = radioOptions,
             legendClasses = "govuk-fieldset__legend--l",
-            showPenaltyInformation = false
+            showPenaltyInformation = true
         )
 
         @button("common.continue")

@@ -28,7 +28,7 @@ radios: components.radios)
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
-    @pageHeader(messages("cancelVATRegistration.headingAndTitle"), showPageHeader = false)
+    @pageHeader()
     @formHelper(action = postAction) {
         @radios(
             form = form,
@@ -36,7 +36,7 @@ radios: components.radios)
             hint = Some(Html(messages("cancelVATRegistration.hintText"))),
             items = radioOptions,
             legendClasses = "govuk-fieldset__legend--l",
-            showPenaltyInformation = false
+            showPenaltyInformation = true
         )
     @button("common.continue")
     }

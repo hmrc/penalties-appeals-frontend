@@ -19,6 +19,7 @@
 @this(layout: Layout,
         formHelper: FormWithCSRF,
         button: components.button,
+        pageHeader: components.pageHeader,
         dateInput: components.inputDate)
 
 @(form: Form[_], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -29,11 +30,11 @@
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
     @formHelper(action = postAction) {
-
+    @pageHeader()
         @dateInput(
             form = form,
             legendContent = messages("healthReason.whenDidHospitalStayBegin.headingAndTitle"),
-            legendClasses = Some("govuk-fieldset__legend--xl"),
+            legendClasses = Some("govuk-fieldset__legend--l"),
             hintText = Some(messages("whenDidEventHappen.hint")),
             legendAsPageHeading = true
         )

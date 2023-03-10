@@ -30,14 +30,14 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
-    @pageHeader(messages("crimeReason.hasBeenReported.headingAndTitle"), false)
+    @pageHeader()
     @formHelper(action = postAction) {
         @radios(
             form = form,
             legendContent = messages("crimeReason.hasBeenReported.headingAndTitle"),
             items = radioOptions,
             legendClasses = "govuk-fieldset__legend--l",
-            showPenaltyInformation = false
+            showPenaltyInformation = true
         )
 
         @button("common.continue")

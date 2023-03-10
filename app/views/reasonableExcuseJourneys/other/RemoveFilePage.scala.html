@@ -37,14 +37,14 @@
   optPageMode = None,
   customBackLink = Some(backLink)) {
 
-  @pageHeader(messages("otherReason.uploadEvidence.removeFile.headingAndTitle", fileName), false)
+  @pageHeader()
   @formHelper(action = postAction) {
     @radios(
       form = form,
       legendContent = messages("otherReason.uploadEvidence.removeFile.headingAndTitle", fileName),
       items = radioOptions,
       legendClasses = "govuk-fieldset__legend--l",
-      showPenaltyInformation = false
+      showPenaltyInformation = true
     )
 
     @button("common.continue")

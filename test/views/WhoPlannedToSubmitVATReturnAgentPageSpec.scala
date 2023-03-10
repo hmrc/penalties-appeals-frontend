@@ -45,7 +45,7 @@ class WhoPlannedToSubmitVATReturnAgentPageSpec extends SpecBase with ViewBehavio
 
     val expectedContent = Seq(
       Selectors.title -> title,
-      Selectors.legend -> heading,
+      Selectors.h1 -> heading,
       Selectors.labelForRadioButton(1) -> agentDidOption,
       Selectors.labelForRadioButton(2) -> clientDidOption,
       Selectors.button -> continueButton

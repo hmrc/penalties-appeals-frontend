@@ -50,7 +50,7 @@
         formHasErrors = form.errors.nonEmpty,
         formErrors = form.errors,
         optPageMode = Some(pageMode)) {
-    @pageHeader(messages("otherReason.uploadAnotherDocument.noJs.headingAndTitle"))
+    @pageHeader(Some(messages("otherReason.uploadAnotherDocument.noJs.headingAndTitle")))
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p4")</p>
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
     @details("otherReason.uploadEvidence.details.heading", detailsContent)

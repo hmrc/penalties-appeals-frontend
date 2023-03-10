@@ -47,7 +47,7 @@ class RemoveFilePageSpec extends SpecBase with ViewBehaviours {
 
     val expectedContent = Seq(
       Selectors.title -> title("file123.txt"),
-      Selectors.legend -> heading("file123.txt"),
+      Selectors.h1 -> heading("file123.txt"),
       Selectors.labelForRadioButton(1) -> yesOption,
       Selectors.labelForRadioButton(2) -> noOption,
       Selectors.button -> continueButton

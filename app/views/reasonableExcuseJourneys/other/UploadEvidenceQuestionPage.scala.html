@@ -31,7 +31,7 @@
         formErrors = form.errors,
         optPageMode = Some(pageMode)) {
 
-        @pageHeader(messages("otherReason.uploadEvidence.question.headingAndTitle"), false)
+        @pageHeader()
 
         @formHelper(action = postAction, args = (Symbol("id"), "upload-evidence-question-form")) {
               @radios(
@@ -40,7 +40,7 @@
                 items = radioOptions,
                 hint = Some(Html(messages("otherReason.uploadEvidence.question.hintText"))),
                 legendClasses = "govuk-fieldset__legend--l",
-                showPenaltyInformation = false
+                showPenaltyInformation = true
               )
 
               @button("common.continue")

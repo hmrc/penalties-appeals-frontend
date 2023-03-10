@@ -36,7 +36,7 @@
   optPageMode = Some(pageMode)
 ) {
 
-  @pageHeader(messages("penaltySelection.headingAndTitle"))
+  @pageHeader(Some(messages("penaltySelection.headingAndTitle")))
   <p class="govuk-body">@messages("penaltySelection.p1")</p>
   @bullets(
     Seq(

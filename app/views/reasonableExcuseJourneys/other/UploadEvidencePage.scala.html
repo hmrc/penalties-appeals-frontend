@@ -67,7 +67,7 @@
     isPageFullWidth = false,
     customJavaScript = Some("multiFileUpload.min.js"),
     optPageMode = Some(pageMode)) {
-    @pageHeader(messages("otherReason.uploadEvidence.headingAndTitle"))
+    @pageHeader(Some(messages("otherReason.uploadEvidence.headingAndTitle")))
 
     @formHelper(action = postAction,
         args =

@@ -88,7 +88,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
 
       val expectedContent = Seq(
         Selectors.title -> agentTitle,
-        Selectors.legend -> agentH1,
+        Selectors.h1 -> agentH1,
         Selectors.labelForRadioButton(1) -> radioOption1,
         Selectors.labelForRadioButton(2) -> radioOption2,
         Selectors.labelForRadioButton(3) -> radioOption3,
@@ -121,7 +121,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
 
       val expectedContent = Seq(
         Selectors.title -> title,
-        Selectors.legend -> h1,
+        Selectors.h1 -> h1,
         Selectors.labelForRadioButton(1) -> radioOption1,
         Selectors.labelForRadioButton(2) -> radioOption2,
         Selectors.labelForRadioButton(3) -> radioOption3,

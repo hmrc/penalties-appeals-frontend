@@ -28,13 +28,13 @@
     formErrors = form.errors,
     optPageMode = Some(pageMode)){
     @formHelper(action = postAction) {
-    @pageHeader("agents.whoPlannedToSubmitVATReturn.headingAndTitle", false)
+    @pageHeader()
         @radios(
             form = form,
             legendContent = messages("agents.whoPlannedToSubmitVATReturn.headingAndTitle"),
             items = radioOptions,
             legendClasses = "govuk-fieldset__legend--l",
-            showPenaltyInformation = false
+            showPenaltyInformation = true
         )
 
         @button("common.continue")

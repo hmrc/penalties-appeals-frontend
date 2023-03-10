@@ -29,14 +29,14 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)){
-    @pageHeader(messages("healthReason.hasTheHospitalStayEnded.headingAndTitle"), false)
+    @pageHeader()
     @formHelper(action = postAction) {
         @radios(
             form = form,
             legendContent = messages("healthReason.hasTheHospitalStayEnded.headingAndTitle"),
             items = radioOptions,
             legendClasses = "govuk-fieldset__legend--l",
-            showPenaltyInformation = false,
+            showPenaltyInformation = true,
             formFieldId = "hasStayEnded"
         )
 
