@@ -469,6 +469,7 @@ describe('Multi File Upload component', () => {
 
                 instance.init();
                 item = container.querySelector('.multi-file-upload__item');
+                expect(item.querySelector('label.govuk-label').innerText).toEqual('File 1');
                 input = container.querySelector('.multi-file-upload__file');
                 done();
             });
@@ -482,6 +483,11 @@ describe('Multi File Upload component', () => {
 
                 it('Then item should be in "uploaded" state', (done) => {
                     expect(item.classList.contains('multi-file-upload__item--uploaded')).toEqual(true);
+                    done();
+                });
+
+                it('Then the file label should change to a heading', (done) => {
+                    expect(item.querySelector('h3.govuk-label').innerText).toEqual('File 1');
                     done();
                 });
 
@@ -598,6 +604,10 @@ describe('Multi File Upload component', () => {
                 it('Then fileName should contain "test.txt"', () => {
                     const fileName = container.querySelector('.multi-file-upload__file-name');
                     expect(fileName.textContent).toEqual('test.txt');
+                });
+
+                it('Then the label should be changed to a heading', () => {
+                    expect(container.querySelector('h3.govuk-label').innerText).toEqual('File 1');
                 });
 
                 it('Then the remove button is present', (done) => {
