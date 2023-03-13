@@ -112,7 +112,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers ++ answers)))
 
         doc.select(Selectors.title).text shouldBe agentTitleLPP
-        doc.select(Selectors.legend).text shouldBe h1
+        doc.select(Selectors.h1).text shouldBe h1
       }
     }
 
