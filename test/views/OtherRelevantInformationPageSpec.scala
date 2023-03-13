@@ -31,7 +31,9 @@ import views.html.obligation.OtherRelevantInformationPage
 class OtherRelevantInformationPageSpec extends SpecBase with ViewBehaviours {
   "OtherRelevantInformationPage" should {
     val otherRelevantInformationPage: OtherRelevantInformationPage = injector.instanceOf[OtherRelevantInformationPage]
-    object Selectors extends BaseSelectors
+    object Selectors extends BaseSelectors {
+      val label = "#main-content .govuk-label--l"
+    }
     val postAction: Call = controllers.routes.AppealAgainstObligationController.onSubmit(NormalMode)
     implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
     def applyView(form: Form[_]): HtmlFormat.Appendable = otherRelevantInformationPage.apply(form, postAction, pageMode = PageMode(OtherRelevantInformationPage, NormalMode))
@@ -41,7 +43,7 @@ class OtherRelevantInformationPageSpec extends SpecBase with ViewBehaviours {
 
     val expectedContent = Seq(
       Selectors.title -> title,
-      Selectors.h1 -> heading,
+      Selectors.label -> heading,
       Selectors.hintText -> hintText,
       Selectors.button -> continueBtn
     )

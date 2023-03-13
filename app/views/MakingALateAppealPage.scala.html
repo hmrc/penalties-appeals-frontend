@@ -22,7 +22,7 @@
         link: components.link,
         button: components.button,
         characterCount: components.characterCount,
-        header: components.pageHeader,
+        pageHeader: components.pageHeader,
         p: components.p,
         formHelper: FormWithCSRF)
 
@@ -34,7 +34,7 @@
   formErrors = form.errors,
   optPageMode = Some(pageMode)) {
 
-  @header(Some(headingAndTitle))
+  @pageHeader(Some(headingAndTitle))
 
   @p(Html(messages("makingALateAppeal.p1")))
 

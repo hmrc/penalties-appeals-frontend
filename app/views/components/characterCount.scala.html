@@ -32,27 +32,11 @@
         isLabelPageHeading: Boolean = true
 )(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
 
-@labelContent = {
-  @if(isLabelPageHeading) {
-    <span class="govuk-caption-l penalty-information-caption" id="penalty-information">
-    @{
-      messages("penaltyInformation.headerText",
-        PenaltyTypeHelper.getKeysFromSession().get.head,
-        PenaltyTypeHelper.getKeysFromSession().get(1),
-        PenaltyTypeHelper.getKeysFromSession().get.last
-      )
-    }
-    </span>
-    <span class="govuk-heading-l" id="page-heading">@label</span>
-  } else {
-    @label
-  }
-}
 @hmrcCharacterCount(CharacterCount(
     label = Label(
-        classes = if(isLabelPageHeading) "govuk-label--xl" else "govuk-label--m",
+        classes = if(isLabelPageHeading) "govuk-label--l" else "govuk-label--m",
         isPageHeading = isLabelPageHeading,
-        content = HtmlContent(labelContent)),
+        content = Text(label)),
     hint =  hint.map(h => Hint(content = h)),
     maxLength = maxLength,
     classes = classes).withFormField(field)
