@@ -20,6 +20,7 @@
        bullets: components.bullets,
        formHelper: FormWithCSRF,
        button: components.button,
+       pageHeader: components.pageHeader,
        radios: components.radios)
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -30,12 +31,16 @@
         formErrors = form.errors,
         optPageMode = Some(pageMode)) {
 
+        @pageHeader()
+
         @formHelper(action = postAction, args = (Symbol("id"), "upload-evidence-question-form")) {
               @radios(
-              form = form,
-                  legendContent = messages("otherReason.uploadEvidence.question.headingAndTitle"),
-              items = radioOptions,
-              hint = Some(Html(messages("otherReason.uploadEvidence.question.hintText")))
+                form = form,
+                legendContent = messages("otherReason.uploadEvidence.question.headingAndTitle"),
+                items = radioOptions,
+                hint = Some(Html(messages("otherReason.uploadEvidence.question.hintText"))),
+                legendClasses = "govuk-fieldset__legend--l",
+                legendAsPageHeading = true
               )
 
               @button("common.continue")

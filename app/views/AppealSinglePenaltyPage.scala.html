@@ -33,7 +33,7 @@
   isPageFullWidth = false,
   optPageMode = Some(pageMode)) {
 
-  @pageHeader(messages("appealSinglePenalty.headingAndTitle"))
+  @pageHeader(Some(messages("appealSinglePenalty.headingAndTitle")))
   <p class="govuk-body">@messages("appealSinglePenalty.p1", penaltyTypeMessage)</p>
   <p class="govuk-body">@messages("appealSinglePenalty.p2")</p>
 

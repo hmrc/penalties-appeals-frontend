@@ -18,7 +18,8 @@
         bullets: components.bullets,
         formHelper: FormWithCSRF,
         button: components.button,
-        dateInput: components.inputDate)
+        dateInput: components.inputDate,
+        pageHeader: components.pageHeader)
 
 @(form: Form[_], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
@@ -27,14 +28,13 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
-
+    @pageHeader()
         @formHelper(action = postAction) {
             @dateInput(
                 form = form,
                 legendContent = messages("bereavementReason.headingAndTitle"),
-                legendClasses = Some("govuk-fieldset__legend--xl"),
-                hintText = Some(messages("whenDidEventHappen.hint")),
-                legendAsPageHeading = true
+                legendClasses = Some("govuk-fieldset__legend--l"),
+                hintText = Some(messages("whenDidEventHappen.hint"))
             )
             @button("common.continue")
         }

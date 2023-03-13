@@ -17,6 +17,7 @@
 @this(layout: Layout,
         formHelper: FormWithCSRF,
         button: components.button,
+        pageHeader: components.pageHeader,
         radios: components.radios)
 
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -27,10 +28,13 @@
     formErrors = form.errors,
     optPageMode = Some(pageMode)){
     @formHelper(action = postAction) {
+    @pageHeader()
         @radios(
             form = form,
             legendContent = messages("agents.whoPlannedToSubmitVATReturn.headingAndTitle"),
-            items = radioOptions
+            items = radioOptions,
+            legendClasses = "govuk-fieldset__legend--l",
+            legendAsPageHeading = true
         )
 
         @button("common.continue")

@@ -29,7 +29,7 @@
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
 
-    @pageHeader(messages("youCanAppealThisPenalty.headingAndTitle"))
+    @pageHeader(Some(messages("youCanAppealThisPenalty.headingAndTitle")))
     <p class="govuk-body">@messages("youCanAppealThisPenalty.p1")</p>
     @bullets(
         Seq(
@@ -44,7 +44,7 @@
             hint = None,
             legendClasses = "govuk-fieldset__legend",
             items = radioOptions,
-            showPenaltyInformation = false
+            legendAsPageHeading = false
         )
         @button("common.continue")
     }

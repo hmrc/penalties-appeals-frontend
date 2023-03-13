@@ -36,7 +36,7 @@
   optPageMode = Some(pageMode)
 ) {
 
-  @pageHeader(messages("penaltySelection.headingAndTitle"))
+  @pageHeader(Some(messages("penaltySelection.headingAndTitle")))
   <p class="govuk-body">@messages("penaltySelection.p1")</p>
   @bullets(
     Seq(
@@ -51,7 +51,7 @@
       form = form,
       legendContent = messages("penaltySelection.form.heading"),
       items = radioOptions,
-      showPenaltyInformation = false,
+      legendAsPageHeading = false,
       legendClasses = "govuk-fieldset__legend govuk-fieldset__legend--m"
     )
     @button("common.continue")

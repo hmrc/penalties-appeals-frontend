@@ -30,7 +30,7 @@
 @layout(pageTitle = messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle"),
     isPageFullWidth = false,
     backLinkEnabled = false) {
-    @pageHeader(messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle"))
+    @pageHeader(Some(messages("otherReason.uploadEvidence.takingLongerThanExpected.headingAndTitle")))
 
     @formHelper(action = postAction) {
         @button("otherReason.uploadEvidence.takingLongerThanExpected.button.checkAgain")

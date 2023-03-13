@@ -35,7 +35,7 @@
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)) {
-        @pageHeader(messages(pageHeadingAndTitle))
+        @pageHeader(Some(messages(pageHeadingAndTitle)))
 
         @if(optInsetText.isDefined){
             @optInsetText.get
@@ -54,7 +54,7 @@
                 items = radioOptions ,
                 hint = None,
                 legendClasses = "govuk-fieldset__legend--m",
-                showPenaltyInformation = false
+                legendAsPageHeading = false
             )
         }
         @button("common.continue")

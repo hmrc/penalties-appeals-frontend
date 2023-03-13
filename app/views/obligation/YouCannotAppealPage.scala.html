@@ -26,6 +26,6 @@ pageHeader: components.pageHeader)
 @layout(pageTitle = messages(headerAndTitle),
     isPageFullWidth = false,
     optPageMode = Some(pageMode)) {
-        @pageHeader(messages(headerAndTitle))
+        @pageHeader(Some(messages(headerAndTitle)))
         @contentToDisplay
 }

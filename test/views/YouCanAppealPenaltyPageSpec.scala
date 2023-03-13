@@ -35,8 +35,6 @@ class YouCanAppealPenaltyPageSpec extends SpecBase with ViewBehaviours {
 
     val youCanAppealPenaltyPage: YouCanAppealPenaltyPage = injector.instanceOf[YouCanAppealPenaltyPage]
     object Selectors extends BaseSelectors {
-      val legend = ".govuk-fieldset__legend"
-
       val p = "p.govuk-body"
 
       val li1 = ".govuk-list > li:first-child"

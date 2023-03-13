@@ -49,7 +49,7 @@
         isPageFullWidth = false,
         optPageMode = Some(pageMode)
 ) {
-    @pageHeader(messages("service.name"))
+    @pageHeader(Some(messages("service.name")))
     <p class="govuk-body">@messages("appealStart.p1")</p>
     @bullets(
         Seq(

@@ -27,7 +27,7 @@
 @layout(pageTitle = messages("appealByLetter.headingAndTitle"),
         isPageFullWidth = false,
         optPageMode = Some(pageMode)) {
-    @pageHeader(messages("appealByLetter.headingAndTitle"))
+    @pageHeader(Some(messages("appealByLetter.headingAndTitle")))
     <p class="govuk-body">@messages("appealByLetter.p1")</p>
     @bullets(
         Seq(

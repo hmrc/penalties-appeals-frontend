@@ -19,7 +19,7 @@
 
 @this()
 
-@(pageHeader: String)(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
+@(pageHeader: Option[String] = None)(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
 
 @appealBothPenalties = @{userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties)}
 
@@ -36,6 +36,8 @@
   }
 </h2>
 
-<h1 class="govuk-heading-l govuk-!-margin-bottom-4" id="page-heading">
-  @pageHeader
-</h1>
+@if(pageHeader.isDefined) {
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4" id="page-heading">
+        @pageHeader.get
+    </h1>
+}
