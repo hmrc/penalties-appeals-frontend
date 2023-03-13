@@ -592,6 +592,7 @@ export class MultiFileUpload {
             fileNumber: item.querySelector('.govuk-label').textContent,
             fileName: this.getFileName(file)
         }));
+        this.changeFileInputToHeading(item);
         this.setItemState(item, status.Uploaded);
         this.updateButtonVisibility();
         this.updateFormStatusVisibility();
@@ -716,6 +717,7 @@ export class MultiFileUpload {
         this.setItemState(item, status.Uploaded);
         this.getFileNameElement(item).textContent = fileName;
         this.toggleRemoveButtons();
+        this.changeFileInputToHeading(item);
         this.getRemoveButtonFromItem(item).querySelector(`.${this.classes.fileName}`).textContent = fileName;
         file.dataset.multiFileUploadFileRef = fileData['reference'];
 
@@ -897,6 +899,16 @@ export class MultiFileUpload {
 
     findNumberOfFilesUploaded() {
         return this.itemList.querySelectorAll(`.${this.classes.uploaded}`).length;
+    }
+
+    changeFileInputToHeading(item) {
+        const fileContainer = item.querySelector(`.${this.classes.inputContainer}`);
+        const fileLabel = item.querySelector(`.${this.classes.label}`);
+        const fileHeading = document.createElement('h3');
+        fileHeading.classList.add(`${this.classes.label}`, 'govuk-!-margin-top-0', 'govuk-!-margin-bottom-0');
+        fileHeading.innerHTML = fileLabel.innerHTML;
+        fileContainer.insertBefore(fileHeading, fileLabel);
+        fileLabel.remove();
     }
 }
 
