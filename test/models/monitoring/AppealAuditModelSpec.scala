@@ -115,7 +115,7 @@ class AppealAuditModelSpec extends SpecBase {
       reasonableExcuse = "technicalIssues",
       honestyDeclaration = true,
       startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-      endDateOfEvent = LocalDate.parse("2021-04-25").atTime(LocalTime.MAX),
+      endDateOfEvent = LocalDate.parse("2021-04-25").atTime(LocalTime.of(0, 0, 1)),
       statement = None,
       lateAppeal = false,
       lateAppealReason = None,
@@ -128,7 +128,7 @@ class AppealAuditModelSpec extends SpecBase {
       honestyDeclaration = true,
       hospitalStayInvolved = true,
       startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()),
-      endDateOfEvent = Some(LocalDate.parse("2021-04-25").atTime(LocalTime.MAX)),
+      endDateOfEvent = Some(LocalDate.parse("2021-04-25").atTime(LocalTime.of(0, 0, 1))),
       eventOngoing = false,
       statement = None,
       lateAppeal = false,
@@ -299,7 +299,7 @@ class AppealAuditModelSpec extends SpecBase {
         "appealInformation" -> Json.obj(
           "type" -> "technicalIssues",
           "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "endDateOfEvent" -> "2021-04-25T23:59:59.999999999",
+          "endDateOfEvent" -> "2021-04-25T00:00:01",
           "lateAppeal" -> false
         )
       )
@@ -315,7 +315,7 @@ class AppealAuditModelSpec extends SpecBase {
         "appealInformation" -> Json.obj(
           "type" -> "unexpectedHospitalStay",
           "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "endDateOfEvent" -> "2021-04-25T23:59:59.999999999",
+          "endDateOfEvent" -> "2021-04-25T00:00:01",
           "lateAppeal" -> false
         )
       )
