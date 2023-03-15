@@ -17,15 +17,15 @@
 package controllers
 
 import java.time.LocalDate
+
 import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import helpers.SessionAnswersHelper
-
 import javax.inject.Inject
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import models.pages.{CheckYourAnswersPage, PageMode}
-import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
+import models.{Mode, NormalMode, PenaltyTypeEnum, ReasonableExcuse, UserRequest}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -141,7 +141,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       val isObligationAppeal: Boolean = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)
       val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
       Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage))
-        .removingFromSession(SessionKeys.allKeys: _*)
+        .removingFromSession(keysToRemove(userRequest): _*)
     }
   }
 
@@ -149,5 +149,25 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     implicit request => {
       Redirect(continueUrl).addingToSession(SessionKeys.originatingChangePage -> pageName)
     }
+  }
+
+  def keysToRemove(userRequest: UserRequest[AnyContent]): Seq[String] = {
+    SessionKeys.allKeys diff (
+      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get match {
+        case "bereavement" =>
+          SessionKeys.bereavementKeys
+        case "crime" =>
+          SessionKeys.crimeKeys
+        case "lossOfStaff" =>
+          SessionKeys.lossOfStaffKeys
+        case "fireOrFlood" =>
+          SessionKeys.fireOrFloodKeys
+        case "technicalIssues" =>
+          SessionKeys.technicalIssuesKeys
+        case "health" =>
+          SessionKeys.healthIssueKeys
+        case "other" =>
+          SessionKeys.otherKeys
+      })
   }
 }

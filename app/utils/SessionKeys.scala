@@ -107,4 +107,56 @@ object SessionKeys {
     firstPenaltyCommunicationDate,
     secondPenaltyCommunicationDate
   )
+
+  val baseKeys = Seq(
+    penaltyNumber,
+    appealType,
+    startDateOfPeriod,
+    endDateOfPeriod,
+    dueDateOfPeriod,
+    dateCommunicationSent,
+    reasonableExcuse,
+    hasConfirmedDeclaration,
+    lateAppealReason,
+    journeyId,
+    youCanAppealThisPenalty,
+    originatingChangePage,
+    doYouWantToAppealBothPenalties,
+    firstPenaltyChargeReference,
+    firstPenaltyAmount,
+    secondPenaltyChargeReference,
+    secondPenaltyAmount,
+    firstPenaltyCommunicationDate,
+    secondPenaltyCommunicationDate
+  )
+
+  val bereavementKeys: Seq[String] = baseKeys.appended(whenDidThePersonDie)
+
+  val crimeKeys: Seq[String] = baseKeys ++ Seq(
+    dateOfCrime,
+    hasCrimeBeenReportedToPolice
+  )
+
+  val lossOfStaffKeys: Seq[String] = baseKeys.appended(whenPersonLeftTheBusiness)
+
+  val fireOrFloodKeys: Seq[String] = baseKeys.appended(dateOfFireOrFlood)
+
+  val technicalIssuesKeys: Seq[String] = baseKeys ++ Seq(
+    whenDidTechnologyIssuesBegin,
+    whenDidTechnologyIssuesEnd
+  )
+
+  val healthIssueKeys: Seq[String] = baseKeys ++ Seq(
+    whenHealthIssueStarted,
+    hasHealthEventEnded,
+    wasHospitalStayRequired,
+    hasHealthEventEnded,
+    whenHealthIssueHappened
+  )
+
+  val otherKeys: Seq[String] = baseKeys ++ Seq(
+    whyReturnSubmittedLate,
+    whenDidBecomeUnable,
+    isUploadEvidence
+  )
 }
