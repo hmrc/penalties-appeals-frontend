@@ -28,7 +28,7 @@
     "karma-spec-reporter": "0.0.36",
     "karma-webpack": "5.0.0",
     "puppeteer": "19.6.3",
-    "webpack": "5.75.0",
+    "webpack": "5.76.1",
     "webpack-cli": "5.0.1",
     "webpack-merge": "5.8.0"
   }
