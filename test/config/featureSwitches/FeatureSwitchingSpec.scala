@@ -35,6 +35,7 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= NonJSRouting.name
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= WarnForDuplicateFiles.name
+    sys.props -= ShowConditionalRadioOptionOnHospitalEndPage.name
     sys.props -= featureSwitching.TIME_MACHINE_NOW
   }
 
@@ -43,11 +44,12 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= NonJSRouting.name
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= WarnForDuplicateFiles.name
+    sys.props -= ShowConditionalRadioOptionOnHospitalEndPage.name
   }
 
   "listOfAllFeatureSwitches" should {
     "be all the featureswitches in the app" in {
-      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, ShowDigitalCommsMessage)
+      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowConditionalRadioOptionOnHospitalEndPage)
     }
   }
 
@@ -77,37 +79,25 @@ class FeatureSwitchingSpec extends SpecBase {
   }
 
   "enableFeatureSwitch" should {
-    s"set ${NonJSRouting.name} property to true" in new Setup {
-      featureSwitching.enableFeatureSwitch(NonJSRouting)
-      (sys.props get NonJSRouting.name get) shouldBe "true"
-    }
-
-    s"set ${ShowDigitalCommsMessage.name} property to true" in new Setup {
-      featureSwitching.enableFeatureSwitch(ShowDigitalCommsMessage)
-      (sys.props get ShowDigitalCommsMessage.name get) shouldBe "true"
-    }
-
-    s"set ${WarnForDuplicateFiles.name} property to true" in new Setup {
-      featureSwitching.enableFeatureSwitch(WarnForDuplicateFiles)
-      (sys.props get WarnForDuplicateFiles.name get) shouldBe "true"
-    }
+    FeatureSwitch.listOfAllFeatureSwitches.foreach(
+      featureSwitch => {
+        s"set ${featureSwitch.name} property to true" in new Setup {
+          featureSwitching.enableFeatureSwitch(featureSwitch)
+          (sys.props get featureSwitch.name get) shouldBe "true"
+        }
+      }
+    )
   }
 
   "disableFeatureSwitch" should {
-    s"set ${NonJSRouting.name} property to false" in new Setup {
-      featureSwitching.disableFeatureSwitch(NonJSRouting)
-      (sys.props get NonJSRouting.name get) shouldBe "false"
-    }
-
-    s"set ${ShowDigitalCommsMessage.name} property to false" in new Setup {
-      featureSwitching.disableFeatureSwitch(ShowDigitalCommsMessage)
-      (sys.props get ShowDigitalCommsMessage.name get) shouldBe "false"
-    }
-
-    s"set ${WarnForDuplicateFiles.name} property to false" in new Setup {
-      featureSwitching.disableFeatureSwitch(WarnForDuplicateFiles)
-      (sys.props get WarnForDuplicateFiles.name get) shouldBe "false"
-    }
+    FeatureSwitch.listOfAllFeatureSwitches.foreach(
+      featureSwitch => {
+        s"set ${featureSwitch.name} property to false" in new Setup {
+          featureSwitching.disableFeatureSwitch(featureSwitch)
+          (sys.props get featureSwitch.name get) shouldBe "false"
+        }
+      }
+    )
   }
 
   "FeatureSwitching setFeatureDate" should {
