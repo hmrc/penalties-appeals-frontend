@@ -18,7 +18,7 @@ package controllers
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
-import forms.{HasHospitalStayEndedForm, WasHospitalStayRequiredForm, WhenDidHealthIssueHappenForm, WhenDidHospitalStayBeginForm}
+import forms.{HasHospitalStayEndedForm, WasHospitalStayRequiredForm, WhenDidHealthIssueHappenForm, WhenDidHospitalStayBeginForm, WhenDidHospitalStayEndForm}
 import helpers.FormProviderHelper
 import models.Mode
 import models.appeals.HospitalStayEndInput
@@ -42,7 +42,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HealthReasonController @Inject()(navigation: Navigation,
                                        wasHospitalStayRequiredPage: WasHospitalStayRequiredPage,
                                        whenDidHealthReasonHappenPage: WhenDidHealthReasonHappenPage,
-                                       whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginPage,
+                                       whenDidHospitalStayBeginOrEndPage: WhenDidHospitalStayBeginAndEndPage,
                                        conditionalRadioHelper: ConditionalRadioHelper,
                                        hasTheHospitalStayEnded: HasTheHospitalStayEndedPage,
                                        errorHandler: ErrorHandler,
@@ -122,16 +122,18 @@ class HealthReasonController @Inject()(navigation: Navigation,
         userRequest.answers
       )
       val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode)
-      Ok(whenDidHospitalStayBeginPage(formProvider, postAction, pageMode(WhenDidHospitalStayBeginPage, mode)))
+      val pageHeadingMessageKey = "healthReason.whenDidHospitalStayBegin.headingAndTitle"
+      Ok(whenDidHospitalStayBeginOrEndPage(formProvider, postAction, pageMode(WhenDidHospitalStayBeginPage, mode), pageHeadingMessageKey))
     }
   }
 
   def onSubmitForWhenDidHospitalStayBegin(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
+      val pageHeadingMessageKey = "healthReason.whenDidHospitalStayBegin.headingAndTitle"
       WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm().bindFromRequest().fold(
         formWithErrors => {
           val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(mode)
-          Future(BadRequest(whenDidHospitalStayBeginPage(formWithErrors, postAction, pageMode(WhenDidHospitalStayBeginPage, mode))))
+          Future(BadRequest(whenDidHospitalStayBeginOrEndPage(formWithErrors, postAction, pageMode(WhenDidHospitalStayBeginPage, mode), pageHeadingMessageKey)))
         },
         whenHospitalStayBegin => {
           val updatedAnswers = userRequest.answers.setAnswer[LocalDate](SessionKeys.whenHealthIssueStarted, whenHospitalStayBegin)
@@ -196,4 +198,51 @@ class HealthReasonController @Inject()(navigation: Navigation,
       )
     }
   }
+
+  def onPageLoadForWhenDidHospitalStayEnd(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+    implicit userRequest => {
+      userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted).fold({
+        logger.error("[HealthReasonController][onSubmitForWhenDidHospitalStayEnd] - Tried to load the hospital stay end page but no" +
+          " date for when hospital stay began was in the session - showing ISE")
+        errorHandler.showInternalServerError
+      })(
+        healthIssueStartDate => {
+          val formProvider: Form[LocalDate] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
+            WhenDidHospitalStayEndForm.whenDidHospitalStayEndForm(healthIssueStartDate),
+            SessionKeys.whenHealthIssueEnded,
+            userRequest.answers
+          )
+          val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayEnd(mode)
+          val pageHeadingMessageKey = "healthReason.whenDidHospitalStayEnd.headingAndTitle"
+          Ok(whenDidHospitalStayBeginOrEndPage(formProvider, postAction, pageMode(WhenDidHospitalStayEndPage, mode), pageHeadingMessageKey))
+        }
+      )
+    }
+  }
+
+  def onSubmitForWhenDidHospitalStayEnd(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+      implicit userRequest => {
+        val pageHeadingMessageKey = "healthReason.whenDidHospitalStayEnd.headingAndTitle"
+        userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted).fold({
+          logger.error("[HealthReasonController][onSubmitForWhenDidHospitalStayEnd] - Tried to submit the hospital stay end page but no" +
+            " date for when hospital stay began was in the session - showing ISE")
+          Future(errorHandler.showInternalServerError)
+        })(
+          healthIssueStartDate => {
+            WhenDidHospitalStayEndForm.whenDidHospitalStayEndForm(healthIssueStartDate).bindFromRequest().fold(
+              formWithErrors => {
+                val postAction = controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayEnd(mode)
+                Future(BadRequest(whenDidHospitalStayBeginOrEndPage(formWithErrors, postAction, pageMode(WhenDidHospitalStayEndPage, mode), pageHeadingMessageKey)))
+              },
+              endDate => {
+                val updatedAnswers = userRequest.answers
+                  .setAnswer[LocalDate](SessionKeys.whenHealthIssueEnded, endDate)
+                sessionService.updateAnswers(updatedAnswers).map(_ => Redirect(navigation.nextPage(WhenDidHospitalStayEndPage, mode)))
+              }
+            )
+          }
+        )
+      }
+  }
 }
+

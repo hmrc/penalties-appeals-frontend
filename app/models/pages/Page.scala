@@ -38,6 +38,8 @@ case object WhenDidHealthIssueHappenPage extends Page
 
 case object WhenDidHospitalStayBeginPage extends Page
 
+case object WhenDidHospitalStayEndPage extends Page
+
 case object DidHospitalStayEndPage extends Page
 
 case object WhenDidBecomeUnablePage extends Page
@@ -121,7 +123,8 @@ object Page {
     PenaltySelectionPage,
     AppealSinglePenaltyPage,
     AppealCoverBothPenaltiesPage,
-    AppealByLetterKickOutPage
+    AppealByLetterKickOutPage,
+    WhenDidHospitalStayEndPage
   )
 
   def find(pageName: String): Page = allPages.find(_.toString == pageName).get

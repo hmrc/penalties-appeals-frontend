@@ -17,9 +17,9 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import forms.WhenDidHospitalStayBeginForm
-import messages.WhenDidHospitalStayBeginMessages._
-import models.pages.{PageMode, WhenDidHospitalStayBeginPage}
+import forms.WhenDidHospitalStayEndForm
+import messages.WhenDidHospitalStayEndMessages._
+import models.pages.{PageMode, WhenDidHospitalStayEndPage}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -30,17 +30,17 @@ import views.html.reasonableExcuseJourneys.health.WhenDidHospitalStayBeginAndEnd
 
 import java.time.LocalDate
 
-class WhenDidHospitalStayBeginPageSpec extends SpecBase with ViewBehaviours{
-  val whenDidHospitalStayBeginPage: WhenDidHospitalStayBeginAndEndPage = injector.instanceOf[WhenDidHospitalStayBeginAndEndPage]
+class WhenDidHospitalStayEndPageSpec extends SpecBase with ViewBehaviours{
+  val whenDidHospitalStayEndPage: WhenDidHospitalStayBeginAndEndPage = injector.instanceOf[WhenDidHospitalStayBeginAndEndPage]
   implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
   object Selectors extends BaseSelectors
-  def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidHospitalStayBeginPage.apply(form,
-    controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayBegin(NormalMode), pageMode = PageMode(WhenDidHospitalStayBeginPage, NormalMode), "healthReason.whenDidHospitalStayBegin.headingAndTitle")
+  def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidHospitalStayEndPage.apply(form,
+    controllers.routes.HealthReasonController.onSubmitForWhenDidHospitalStayEnd(NormalMode), pageMode = PageMode(WhenDidHospitalStayEndPage, NormalMode), "healthReason.whenDidHospitalStayEnd.headingAndTitle")
 
-  val formProvider: Form[LocalDate] = WhenDidHospitalStayBeginForm.whenHospitalStayBeginForm()
+  val formProvider: Form[LocalDate] = WhenDidHospitalStayEndForm.whenDidHospitalStayEndForm(LocalDate.of(2023, 1, 1))
 
-  "WhenDidHospitalStayBeginPage" should {
+  "WhenDidHospitalStayEndPage" should {
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(

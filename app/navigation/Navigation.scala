@@ -111,7 +111,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     UploadEvidenceQuestionPage -> ((answer, request, optJsEnabled) => routeForUploadEvidenceQuestion(answer, request, CheckMode, optJsEnabled)),
     AppealSinglePenaltyPage -> ((_, _, _) => routes.CheckYourAnswersController.onPageLoad()),
     AppealCoverBothPenaltiesPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
-    PenaltySelectionPage -> ((answer, _, _) => routingForPenaltySelectionPage(answer, CheckMode))
+    PenaltySelectionPage -> ((answer, _, _) => routingForPenaltySelectionPage(answer, CheckMode)),
+    WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode))
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Boolean]) => Call] = Map(
@@ -142,7 +143,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     YouCanAppealThisPenaltyPage -> ((answer, _, _) => routeForYouCanAppealPenalty(answer)),
     AppealSinglePenaltyPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     AppealCoverBothPenaltiesPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
-    PenaltySelectionPage -> ((answer, _, _) => routingForPenaltySelectionPage(answer, NormalMode))
+    PenaltySelectionPage -> ((answer, _, _) => routingForPenaltySelectionPage(answer, NormalMode)),
+    WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, jsEnabled: Option[Boolean] = None)
