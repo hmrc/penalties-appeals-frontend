@@ -22,9 +22,9 @@
         pageHeader: components.pageHeader,
         dateInput: components.inputDate)
 
-@(form: Form[_], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], postAction: Call, pageMode: PageMode, pageHeadingMsgKey: String)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("healthReason.whenDidHospitalStayBegin.headingAndTitle"),
+@layout(pageTitle = messages(pageHeadingMsgKey),
     isPageFullWidth = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
@@ -33,13 +33,11 @@
     @pageHeader()
         @dateInput(
             form = form,
-            legendContent = messages("healthReason.whenDidHospitalStayBegin.headingAndTitle"),
+            legendContent = messages(pageHeadingMsgKey),
             legendClasses = Some("govuk-fieldset__legend--l"),
             hintText = Some(messages("whenDidEventHappen.hint"))
         )
 
         @button("common.continue")
     }
-
-
 }

@@ -577,4 +577,213 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Feature
     }
   }
 
+  "GET /when-did-hospital-stay-begin" should {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequest))
+      request.header.status shouldBe Status.OK
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-hospital-stay-begin").withSession(
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
+      )
+      val request = await(controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequest))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/when-did-hospital-stay-begin").get)
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
+  "POST /when-did-hospital-stay-begin" should {
+    "return 303 (SEE_OTHER) to did hospital stay end page and add the session keys to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1)
+    ))) {
+      val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
+      )
+      val request = await(controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequestCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode).url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted).get shouldBe LocalDate.parse("2021-02-08")
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-hospital-stay-begin").withSession(
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
+      )
+      val request = await(controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequest))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/when-did-hospital-stay-begin").post(""))
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
+  "GET /when-did-hospital-stay-end" should {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
+      request.header.status shouldBe Status.OK
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not have the start date" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-the-hospital-stay-ended").withSession(
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
+      )
+      val request = await(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "POST /when-did-hospital-stay-end" should {
+    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session keys to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1),
+      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
+    ))) {
+      val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
+      )
+      val request = await(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode)(fakeRequestCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.parse("2021-02-08")
+    }
+
+    "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
+    ))) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
+        "date.day" -> "08",
+        "date.month" -> "02",
+        "date.year" -> "2021"
+      )
+      val request = await(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode)(fakeRequestWithCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.parse("2021-02-08")
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not have a start date" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      val request = await(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
+      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-hospital-stay-end").withSession(
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1234"
+      )
+      val request = await(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode)(fakeRequestWithNoKeys))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+    ))) {
+      val request = await(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 303 (SEE_OTHER) when the user is not authorised" in {
+      AuthStub.unauthorised()
+      val request = await(buildClientForRequestToApp(uri = "/when-did-hospital-stay-end").post(""))
+      request.status shouldBe Status.SEE_OTHER
+    }
+  }
+
 }
