@@ -97,8 +97,6 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      val appealSubmitted = userRequest.answers.setAnswer[Boolean](SessionKeys.appealSubmitted, true)
-      sessionService.updateAnswers(appealSubmitted)
       userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
         if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {
           handleAppealSubmission("obligation")
@@ -138,6 +136,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
 
   def onPageLoadForConfirmation(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
+      val appealSubmitted = userRequest.answers.setAnswer[Boolean](SessionKeys.appealSubmitted, true)
+      sessionService.updateAnswers(appealSubmitted)
       val penaltyType: String = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get match {
         case Late_Submission => "penaltyType.lateSubmission"
         case Late_Payment | Additional => "penaltyType.latePayment"

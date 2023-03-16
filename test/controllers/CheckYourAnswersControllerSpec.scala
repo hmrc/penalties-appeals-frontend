@@ -152,8 +152,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.whenDidThePersonDie -> "2021-01-01"
   ) ++ correctUserAnswers
 
+
   val fakeRequestForLPPAgentAppeal: UserRequest[AnyContent] = fakeRequestConverter(agentLPPAnswers, fakeRequest)
 
+  val appealSubmittedAnswers: JsObject = Json.obj(
+    SessionKeys.appealSubmitted -> true
+  ) ++ crimeAnswers
+
+  val fakeRequestForAppealSubmitted: UserRequest[AnyContent] = fakeRequestConverter(appealSubmittedAnswers, fakeRequest)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector, mockAppealService, mockSessionService)
@@ -251,6 +257,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Some(userAnswers(agentLPPAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForLPPAgentAppeal)
         status(result) shouldBe OK
+      }
+
+      "redirect when appealSubmitted SessionKey is true" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(appealSubmittedAnswers))))
+        val result = Controller.onPageLoad()(fakeRequestForAppealSubmitted)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
       }
 
       "return ISE" when {
