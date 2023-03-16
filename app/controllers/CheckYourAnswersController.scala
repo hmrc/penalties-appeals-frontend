@@ -140,8 +140,9 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
           dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get))
       val isObligationAppeal: Boolean = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)
       val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
+      val keys = keysToRemove(isObligationAppeal)
       Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage))
-        .removingFromSession(keysToRemove(userRequest): _*)
+        .removingFromSession(keys: _*)
     }
   }
 
@@ -151,23 +152,28 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     }
   }
 
-  def keysToRemove(userRequest: UserRequest[AnyContent]): Seq[String] = {
+  def keysToRemove(isObligationAppeal: Boolean)(implicit userRequest: UserRequest[_]): Seq[String] = {
     SessionKeys.allKeys diff (
-      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get match {
-        case "bereavement" =>
-          SessionKeys.bereavementKeys
-        case "crime" =>
-          SessionKeys.crimeKeys
-        case "lossOfStaff" =>
-          SessionKeys.lossOfStaffKeys
-        case "fireOrFlood" =>
-          SessionKeys.fireOrFloodKeys
-        case "technicalIssues" =>
-          SessionKeys.technicalIssuesKeys
-        case "health" =>
-          SessionKeys.healthIssueKeys
-        case "other" =>
-          SessionKeys.otherKeys
-      })
+      if(isObligationAppeal) {
+        SessionKeys.obligationKeys
+      } else {
+        userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get match {
+          case "bereavement" =>
+            SessionKeys.bereavementKeys
+          case "crime" =>
+            SessionKeys.crimeKeys
+          case "lossOfStaff" =>
+            SessionKeys.lossOfStaffKeys
+          case "fireOrFlood" =>
+            SessionKeys.fireOrFloodKeys
+          case "technicalIssues" =>
+            SessionKeys.technicalIssuesKeys
+          case "health" =>
+            SessionKeys.healthIssueKeys
+          case "other" =>
+            SessionKeys.otherKeys
+        }
+      } ++ (if(userRequest.answers.getAnswer[Boolean](SessionKeys.agentSessionVrn).isDefined) SessionKeys.agentKeys else Seq())
+    )
   }
 }

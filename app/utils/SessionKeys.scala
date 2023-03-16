@@ -159,4 +159,17 @@ object SessionKeys {
     whenDidBecomeUnable,
     isUploadEvidence
   )
+
+  val obligationKeys: Seq[String] = baseKeys ++ Seq(
+    isObligationAppeal,
+    cancelVATRegistration,
+    otherRelevantInformation,
+    isUploadEvidence
+  )
+
+  val agentKeys: Seq[String] = Seq(
+    agentSessionVrn,
+    whoPlannedToSubmitVATReturn,
+    whatCausedYouToMissTheDeadline
+  )
 }
