@@ -57,17 +57,17 @@ object RadioOptionHelper {
     )
   }
 
-  def yesNoRadioOptions(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+  def yesNoRadioOptions(form: Form[_], formKey: String = "value")(implicit messages: Messages): Seq[RadioItem] = {
     Seq(
       RadioItem(
         value = Some("yes"),
         content = Text(messages("common.radioOption.yes")),
-        checked = form("value").value.contains("yes")
+        checked = form(formKey).value.contains("yes")
       ),
       RadioItem(
         value = Some("no"),
         content = Text(messages("common.radioOption.no")),
-        checked = form("value").value.contains("no")
+        checked = form(formKey).value.contains("no")
       )
     )
   }
