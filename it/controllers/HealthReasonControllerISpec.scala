@@ -400,6 +400,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Feature
       SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1),
       SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
     ))) {
+      enableFeatureSwitch(ShowConditionalRadioOptionOnHospitalEndPage)
       val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "hasStayEnded" -> "yes",
         "stayEndDate.day" -> "08",
@@ -411,6 +412,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Feature
       request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.parse("2021-02-08")
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.hasHealthEventEnded).get shouldBe "yes"
+      sys.props -= ShowConditionalRadioOptionOnHospitalEndPage.name
     }
 
     "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -422,6 +424,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Feature
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
     ))) {
+      enableFeatureSwitch(ShowConditionalRadioOptionOnHospitalEndPage)
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "hasStayEnded" -> "no"
       )
@@ -429,6 +432,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Feature
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.hasHealthEventEnded).get shouldBe "no"
+      sys.props -= ShowConditionalRadioOptionOnHospitalEndPage.name
     }
 
     "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and " +
@@ -441,7 +445,6 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Feature
       SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1),
       SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
     ))) {
-      disableFeatureSwitch(ShowConditionalRadioOptionOnHospitalEndPage)
       val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "hasStayEnded" -> "no"
       )
@@ -449,7 +452,6 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Feature
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.hasHealthEventEnded).get shouldBe "no"
-      sys.props -= ShowConditionalRadioOptionOnHospitalEndPage.name
     }
 
     "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and " +
@@ -481,13 +483,12 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Feature
       SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1),
       SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
     ))) {
-      disableFeatureSwitch(ShowConditionalRadioOptionOnHospitalEndPage)
       val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "hasStayEnded" -> "yes"
       )
       val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequestCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-//      request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(NormalMode).url
+      request.header.headers("Location") shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(NormalMode).url
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.hasHealthEventEnded).get shouldBe "yes"
       sys.props -= ShowConditionalRadioOptionOnHospitalEndPage.name
     }

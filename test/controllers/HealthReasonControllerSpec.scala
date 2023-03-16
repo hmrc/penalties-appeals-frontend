@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import models.{CheckMode, NormalMode}
 import models.session.UserAnswers
+import navigation.Navigation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
@@ -47,6 +48,7 @@ class HealthReasonControllerSpec extends SpecBase {
   val hasTheHosptialStayEndedPage: HasTheHospitalStayEndedPage = injector.instanceOf[HasTheHospitalStayEndedPage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   val mockConfig: Configuration = mock(classOf[Configuration])
+  override val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)(mockConfig)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -509,6 +511,7 @@ class HealthReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
             )))))
+
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
@@ -626,12 +629,14 @@ class HealthReasonControllerSpec extends SpecBase {
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
+          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
+            .thenReturn(false)
           val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
               "hasStayEnded" -> "yes"
             )))
           status(result) shouldBe SEE_OTHER
-          //        redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(NormalMode).url
+          redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(NormalMode).url
           answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
             SessionKeys.hasHealthEventEnded -> "yes"
@@ -644,6 +649,8 @@ class HealthReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
             )))))
+          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
+            .thenReturn(false)
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
@@ -652,7 +659,7 @@ class HealthReasonControllerSpec extends SpecBase {
               "hasStayEnded" -> "yes"
             )))
           status(result) shouldBe SEE_OTHER
-//          redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(CheckMode).url
+          redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(CheckMode).url
           answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
             SessionKeys.hasHealthEventEnded -> "yes"
@@ -665,6 +672,8 @@ class HealthReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
             )))))
+          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
+            .thenReturn(false)
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
@@ -684,6 +693,8 @@ class HealthReasonControllerSpec extends SpecBase {
           "- redirects to making a late appeal page when in Normal Mode and user answers no (communications date > 30 days ago)" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
             2021, 2, 1))
+          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
+            .thenReturn(false)
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
@@ -710,6 +721,8 @@ class HealthReasonControllerSpec extends SpecBase {
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
             )))))
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
+            .thenReturn(false)
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
           val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(CheckMode)(
