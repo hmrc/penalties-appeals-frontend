@@ -61,6 +61,7 @@ object SessionKeys {
   val secondPenaltyAmount = "secondPenaltyAmount"
   val firstPenaltyCommunicationDate = "firstPenaltyCommunicationDate"
   val secondPenaltyCommunicationDate = "secondPenaltyCommunicationDate"
+  val appealSubmitted = "appealSubmitted"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -105,7 +106,8 @@ object SessionKeys {
     secondPenaltyChargeReference,
     secondPenaltyAmount,
     firstPenaltyCommunicationDate,
-    secondPenaltyCommunicationDate
+    secondPenaltyCommunicationDate,
+    appealSubmitted
   )
 
   val baseKeys = Seq(
@@ -127,7 +129,8 @@ object SessionKeys {
     secondPenaltyChargeReference,
     secondPenaltyAmount,
     firstPenaltyCommunicationDate,
-    secondPenaltyCommunicationDate
+    secondPenaltyCommunicationDate,
+    appealSubmitted
   )
 
   val bereavementKeys: Seq[String] = baseKeys.appended(whenDidThePersonDie)

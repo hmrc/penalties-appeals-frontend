@@ -25,7 +25,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
-import services.AppealService
+import services.{AppealService, SessionService}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
@@ -169,7 +169,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     confirmationPage,
     errorHandler,
     uploadJourneyRepository,
-    sessionAnswersHelper
+    sessionAnswersHelper,
+    sessionService
   )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction)
 
   "onPageLoad" should {

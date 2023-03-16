@@ -30,7 +30,7 @@ import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.UploadJourneyRepository
-import services.AppealService
+import services.{AppealService, SessionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
@@ -44,7 +44,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
                                            appealConfirmationPage: AppealConfirmationPage,
                                            errorHandler: ErrorHandler,
                                            uploadJourneyRepository: UploadJourneyRepository,
-                                           sessionAnswersHelper: SessionAnswersHelper)
+                                           sessionAnswersHelper: SessionAnswersHelper,
+                                           sessionService: SessionService)
                                           (implicit mcc: MessagesControllerComponents,
                                            ec: ExecutionContext,
                                            val config: Configuration,
@@ -57,41 +58,47 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
 
   def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
-        if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
-          logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
-          for {
-            fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(userRequest)
-          } yield {
-            val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
-            Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
-          }
-        } else {
-          logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
-          Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
-        }
-      })(
-        reasonableExcuse => {
-          if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
+      if(userRequest.answers.getAnswer[Boolean](SessionKeys.appealSubmitted).contains(true)) {
+        Future(Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation()))
+      } else {
+        userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
+          if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
             for {
-              content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)
+              fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(userRequest)
             } yield {
-                Ok(checkYourAnswersPage(content, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
+              val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
+              Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
             }
           } else {
-            logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${userRequest.session.data} " +
-              s"and tried to load page with reasonable excuse: $reasonableExcuse")
+            logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
             Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
           }
-        }
-      )
+        })(
+          reasonableExcuse => {
+            if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+              logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page")
+              for {
+                content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)
+              } yield {
+                Ok(checkYourAnswersPage(content, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
+              }
+            } else {
+              logger.error(s"[CheckYourAnswersController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
+              logger.debug(s"[CheckYourAnswersController][onPageLoad] User has keys: ${userRequest.session.data} " +
+                s"and tried to load page with reasonable excuse: $reasonableExcuse")
+              Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
+            }
+          }
+        )
+      }
     }
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
+      val appealSubmitted = userRequest.answers.setAnswer[Boolean](SessionKeys.appealSubmitted, true)
+      sessionService.updateAnswers(appealSubmitted)
       userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
         if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {
           handleAppealSubmission("obligation")
