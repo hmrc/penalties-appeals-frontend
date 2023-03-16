@@ -17,9 +17,11 @@
 package helpers
 
 import config.AppConfig
+import config.featureSwitches.{FeatureSwitching, ShowConditionalRadioOptionOnHospitalEndPage}
 import models.appeals.CheckYourAnswersRow
 import models.pages._
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
+import play.api.Configuration
 import play.api.i18n.Messages
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
@@ -31,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository,
                                      appConfig: AppConfig,
-                                     dateTimeHelper: DateTimeHelper)(implicit ec: ExecutionContext) extends ImplicitDateFormatter {
+                                     dateTimeHelper: DateTimeHelper)(implicit ec: ExecutionContext, val config: Configuration) extends ImplicitDateFormatter with FeatureSwitching {
   val answersRequiredForReasonableExcuseJourney: Map[String, Seq[String]] = Map(
     "bereavement" -> Seq(SessionKeys.reasonableExcuse, SessionKeys.whenDidThePersonDie, SessionKeys.hasConfirmedDeclaration),
     "crime" -> Seq(SessionKeys.hasCrimeBeenReportedToPolice, SessionKeys.reasonableExcuse, SessionKeys.dateOfCrime, SessionKeys.hasConfirmedDeclaration),
@@ -331,8 +333,8 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
           CheckYourAnswersRow(messages("healthReason.hasTheHospitalStayEnded.yes.heading"),
             dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).get),
             changeAnswerUrl(
-              controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
-              DidHospitalStayEndPage
+              if(isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url else controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(CheckMode).url,
+              if(isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) DidHospitalStayEndPage else WhenDidHospitalStayEndPage
             )
           )
         )
