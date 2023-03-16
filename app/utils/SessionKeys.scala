@@ -62,6 +62,11 @@ object SessionKeys {
   val firstPenaltyCommunicationDate = "firstPenaltyCommunicationDate"
   val secondPenaltyCommunicationDate = "secondPenaltyCommunicationDate"
   val appealSubmitted = "appealSubmitted"
+  val confirmationAppealType = "confirmationAppealType"
+  val confirmationStartDate = "confirmationStartDate"
+  val confirmationEndDate = "confirmationEndDate"
+  val confirmationObligation = "confirmationObligation"
+  val confirmationDigitalComms = "confirmationDigitalComms"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -174,5 +179,12 @@ object SessionKeys {
     agentSessionVrn,
     whoPlannedToSubmitVATReturn,
     whatCausedYouToMissTheDeadline
+  )
+
+  val asdf = Seq(
+    appealSubmitted,
+    appealType,
+    startDateOfPeriod,
+    endDateOfPeriod
   )
 }

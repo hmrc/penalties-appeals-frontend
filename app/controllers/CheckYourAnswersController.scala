@@ -127,8 +127,18 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         case _ => Future(errorHandler.showInternalServerError)
       },
       _ => {
+        val confirmationAppealType = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get.toString
+        val confirmationStartDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get.toString
+        val confirmationEndDate = dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get)
+        val confirmationObligation = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true).toString
         uploadJourneyRepository.removeUploadsForJourney(userRequest.session.get(SessionKeys.journeyId).get).map {
-          _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation())
+          _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation()).addingToSession(
+            List(
+              ("confirmationAppealType", confirmationAppealType),
+              ("confirmationStartDate", confirmationStartDate),
+              ("confirmationEndDate", confirmationEndDate),
+              ("confirmationObligation", confirmationObligation)): _*
+          )
         }
       }
     ))
@@ -138,18 +148,19 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     implicit userRequest => {
       val appealSubmitted = userRequest.answers.setAnswer[Boolean](SessionKeys.appealSubmitted, true)
       sessionService.updateAnswers(appealSubmitted)
-      val penaltyType: String = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get match {
-        case Late_Submission => "penaltyType.lateSubmission"
-        case Late_Payment | Additional => "penaltyType.latePayment"
+      val penaltyType: String = userRequest.session.get(SessionKeys.confirmationAppealType).get match {
+        case "Late_Submission" => "penaltyType.lateSubmission"
+        case "Late_Payment" | "Additional" => "penaltyType.latePayment"
       }
       val (readablePeriodStart, readablePeriodEnd) =
-        (dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get),
-          dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get))
-      val isObligationAppeal: Boolean = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)
+        (userRequest.session.get(SessionKeys.confirmationStartDate).get,
+          userRequest.session.get(SessionKeys.confirmationEndDate).get)
+      val isObligationAppeal: Boolean = userRequest.session.get(SessionKeys.confirmationObligation).get.toBoolean
       val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
+      val keysToDelete = SessionKeys.allKeys diff SessionKeys.asdf.appended(if(isObligationAppeal) SessionKeys.isObligationAppeal)
       val keys = keysToRemove(isObligationAppeal)
       Ok(appealConfirmationPage(penaltyType, readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage))
-        .removingFromSession(keys: _*)
+        .removingFromSession(SessionKeys.allKeys: _*)
     }
   }
 
