@@ -17,7 +17,7 @@
 package navigation
 
 import config.AppConfig
-import config.featureSwitches.FeatureSwitching
+import config.featureSwitches.{FeatureSwitching, ShowConditionalRadioOptionOnHospitalEndPage}
 import controllers.routes
 import helpers.DateTimeHelper
 import models._
@@ -53,6 +53,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidHealthIssueHappenPage -> ((_, _) => routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode)),
     WhenDidHospitalStayBeginPage -> ((_, _) => routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode)),
     DidHospitalStayEndPage -> ((_, _) => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode)),
+    WhenDidHospitalStayEndPage -> ((_, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode)),
     WhenDidPersonLeaveTheBusinessPage -> ((_, _) => routes.HonestyDeclarationController.onPageLoad()),
     WhenDidTechnologyIssuesBeginPage -> ((_, _) => routes.HonestyDeclarationController.onPageLoad()),
     WhenDidTechnologyIssuesEndPage -> ((_, _) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)),
@@ -73,6 +74,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     page match {
       case page if userRequest.session.get(SessionKeys.originatingChangePage).contains(page.toString) => routes.CheckYourAnswersController.onPageLoad()
       case DidHospitalStayEndPage => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode)
+      case WhenDidHospitalStayEndPage => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode)
       case WhenDidHospitalStayBeginPage => routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode)
       case WhenDidHealthIssueHappenPage => routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode)
       case UploadFirstDocumentPage => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode)
@@ -97,7 +99,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WasHospitalStayRequiredPage -> ((answer, request, _) => routingForHospitalStay(CheckMode, answer, request)),
     WhenDidHealthIssueHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidHospitalStayBeginPage -> ((_, _, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode)),
-    DidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
+    DidHospitalStayEndPage -> ((answer, request, _) => routingForHospitalStayEnded(CheckMode, answer, request)),
+    WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhenDidBecomeUnablePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     WhyWasReturnSubmittedLatePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
     EvidencePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, CheckMode)),
@@ -126,7 +129,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WasHospitalStayRequiredPage -> ((answer, request, _) => routingForHospitalStay(NormalMode, answer, request)),
     WhenDidHealthIssueHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidHospitalStayBeginPage -> ((_, _, _) => routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode)),
-    DidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    DidHospitalStayEndPage -> ((answer, request, _) => routingForHospitalStayEnded(NormalMode, answer, request)),
+    WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidBecomeUnablePage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode)),
     WhyWasReturnSubmittedLatePage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
     EvidencePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
@@ -194,6 +198,18 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode)
     } else {
       routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode)
+    }
+  }
+
+  def routingForHospitalStayEnded(mode: Mode, answer: Option[String], userRequest: UserRequest[_]): Call = {
+    if(isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
+      routeToMakingALateAppealOrCYAPage(userRequest, mode)
+    } else {
+      if(answer.get.toLowerCase == "yes") {
+        routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
+      } else {
+        routeToMakingALateAppealOrCYAPage(userRequest, mode)
+      }
     }
   }
 
@@ -315,10 +331,22 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
         case "bereavement" => routes.BereavementReasonController.onPageLoadForWhenThePersonDied(mode)
         case "crime" => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(mode)
         case "fireOrFlood" => routes.FireOrFloodReasonController.onPageLoad(mode)
-        case "health" => if (userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).contains("yes")) routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode) else routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
+        case "health" => if (userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).contains("yes")) reverseRoutingForHospitalStayEnded(userRequest, mode) else routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
         case "lossOfStaff" => routes.LossOfStaffReasonController.onPageLoad(mode)
         case "technicalIssues" => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(mode)
         case "other" => reverseRoutingForUpload(userRequest, mode, jsEnabled)
+      }
+    }
+  }
+
+  private def reverseRoutingForHospitalStayEnded(userRequest: UserRequest[_], mode: Mode) = {
+    if(isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
+      routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode)
+    } else {
+      if(userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).contains("yes")) {
+        routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
+      } else {
+        routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode)
       }
     }
   }
