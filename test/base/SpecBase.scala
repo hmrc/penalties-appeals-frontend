@@ -92,7 +92,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   val arn: Option[String] = Some("AGENT1")
 
-  def fakeRequestConverter(answers: JsObject = correctUserAnswers, fakeRequest: FakeRequest[AnyContent] = fakeRequest): UserRequest[AnyContent] = {
+  def fakeRequestConverter(answers: JsObject = confirmationPageAnswers, fakeRequest: FakeRequest[AnyContent] = fakeRequest): UserRequest[AnyContent] = {
     UserRequest(vrn, answers = userAnswers(answers))(fakeRequest)
   }
 
@@ -109,6 +109,15 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
     SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
     SessionKeys.journeyId -> "1234"
   )
+
+  val confirmationPageAnswers = Json.obj(
+    SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
+    SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01"),
+    SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01"),
+    SessionKeys.confirmationMultipleAppeals -> "no",
+    SessionKeys.confirmationObligation -> "false",
+    SessionKeys.confirmationIsAgent -> "false"
+  ) ++ correctUserAnswers
 
   def userAnswers(answers: JsObject): UserAnswers = UserAnswers("1234", answers)
 

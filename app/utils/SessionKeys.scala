@@ -61,12 +61,13 @@ object SessionKeys {
   val secondPenaltyAmount = "secondPenaltyAmount"
   val firstPenaltyCommunicationDate = "firstPenaltyCommunicationDate"
   val secondPenaltyCommunicationDate = "secondPenaltyCommunicationDate"
-  val appealSubmitted = "appealSubmitted"
   val confirmationAppealType = "confirmationAppealType"
   val confirmationStartDate = "confirmationStartDate"
   val confirmationEndDate = "confirmationEndDate"
   val confirmationObligation = "confirmationObligation"
   val confirmationDigitalComms = "confirmationDigitalComms"
+  val confirmationMultipleAppeals = "confirmationMultipleAppeals"
+  val confirmationIsAgent = "confirmationIsAgent"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -111,80 +112,6 @@ object SessionKeys {
     secondPenaltyChargeReference,
     secondPenaltyAmount,
     firstPenaltyCommunicationDate,
-    secondPenaltyCommunicationDate,
-    appealSubmitted
-  )
-
-  val baseKeys = Seq(
-    penaltyNumber,
-    appealType,
-    startDateOfPeriod,
-    endDateOfPeriod,
-    dueDateOfPeriod,
-    dateCommunicationSent,
-    reasonableExcuse,
-    hasConfirmedDeclaration,
-    lateAppealReason,
-    journeyId,
-    youCanAppealThisPenalty,
-    originatingChangePage,
-    doYouWantToAppealBothPenalties,
-    firstPenaltyChargeReference,
-    firstPenaltyAmount,
-    secondPenaltyChargeReference,
-    secondPenaltyAmount,
-    firstPenaltyCommunicationDate,
-    secondPenaltyCommunicationDate,
-    appealSubmitted
-  )
-
-  val bereavementKeys: Seq[String] = baseKeys.appended(whenDidThePersonDie)
-
-  val crimeKeys: Seq[String] = baseKeys ++ Seq(
-    dateOfCrime,
-    hasCrimeBeenReportedToPolice
-  )
-
-  val lossOfStaffKeys: Seq[String] = baseKeys.appended(whenPersonLeftTheBusiness)
-
-  val fireOrFloodKeys: Seq[String] = baseKeys.appended(dateOfFireOrFlood)
-
-  val technicalIssuesKeys: Seq[String] = baseKeys ++ Seq(
-    whenDidTechnologyIssuesBegin,
-    whenDidTechnologyIssuesEnd
-  )
-
-  val healthIssueKeys: Seq[String] = baseKeys ++ Seq(
-    whenHealthIssueStarted,
-    hasHealthEventEnded,
-    wasHospitalStayRequired,
-    hasHealthEventEnded,
-    whenHealthIssueHappened
-  )
-
-  val otherKeys: Seq[String] = baseKeys ++ Seq(
-    whyReturnSubmittedLate,
-    whenDidBecomeUnable,
-    isUploadEvidence
-  )
-
-  val obligationKeys: Seq[String] = baseKeys ++ Seq(
-    isObligationAppeal,
-    cancelVATRegistration,
-    otherRelevantInformation,
-    isUploadEvidence
-  )
-
-  val agentKeys: Seq[String] = Seq(
-    agentSessionVrn,
-    whoPlannedToSubmitVATReturn,
-    whatCausedYouToMissTheDeadline
-  )
-
-  val asdf = Seq(
-    appealSubmitted,
-    appealType,
-    startDateOfPeriod,
-    endDateOfPeriod
+    secondPenaltyCommunicationDate
   )
 }

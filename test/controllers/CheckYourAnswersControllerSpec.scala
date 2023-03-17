@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import base.SpecBase
 import helpers.SessionAnswersHelper
 import models.{PenaltyTypeEnum, UserRequest}
@@ -155,11 +157,16 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   val fakeRequestForLPPAgentAppeal: UserRequest[AnyContent] = fakeRequestConverter(agentLPPAnswers, fakeRequest)
 
-  val appealSubmittedAnswers: JsObject = Json.obj(
-    SessionKeys.appealSubmitted -> true
+  val confirmationPageKeys: JsObject = Json.obj(
+    SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
+    SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01"),
+    SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01"),
+    SessionKeys.confirmationMultipleAppeals -> "no",
+    SessionKeys.confirmationObligation -> "false",
+    SessionKeys.confirmationIsAgent -> "false"
   ) ++ crimeAnswers
 
-  val fakeRequestForAppealSubmitted: UserRequest[AnyContent] = fakeRequestConverter(appealSubmittedAnswers, fakeRequest)
+  val fakeRequestForAppealSubmitted: UserRequest[AnyContent] = fakeRequestConverter(confirmationPageKeys, fakeRequest)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector, mockAppealService, mockSessionService)
@@ -257,14 +264,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Some(userAnswers(agentLPPAnswers))))
         val result: Future[Result] = Controller.onPageLoad()(fakeRequestForLPPAgentAppeal)
         status(result) shouldBe OK
-      }
-
-      "redirect when appealSubmitted SessionKey is true" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(appealSubmittedAnswers))))
-        val result = Controller.onPageLoad()(fakeRequestForAppealSubmitted)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
       }
 
       "return ISE" when {
