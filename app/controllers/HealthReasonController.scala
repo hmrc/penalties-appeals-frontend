@@ -152,7 +152,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
         errorHandler.showInternalServerError
       )(
         healthIssueStartDate => {
-          //TODO: remove once ShowConditionalRadioOptionOnHospitalEndPage is disabled
+          //TODO: remove once ShowConditionalRadioOptionOnHospitalEndPage is disabled / removed
           if (isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
             val formProvider: Form[HospitalStayEndInput] = FormProviderHelper.getSessionKeysAndAttemptToFillConditionalForm(
               HasHospitalStayEndedForm.hasHospitalStayEndedForm(healthIssueStartDate),
