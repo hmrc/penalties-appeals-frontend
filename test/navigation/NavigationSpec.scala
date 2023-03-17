@@ -17,12 +17,10 @@
 package navigation
 
 import base.SpecBase
-import config.featureSwitches.{ShowConditionalRadioOptionOnHospitalEndPage, ShowFullAppealAgainstTheObligation}
+import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Call}
 import utils.SessionKeys
@@ -30,14 +28,9 @@ import utils.SessionKeys
 import java.time.LocalDate
 
 class NavigationSpec extends SpecBase {
-  val mockConfiguration: Configuration = mock(classOf[Configuration])
-  override val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)(mockConfiguration)
   class Setup {
     reset(mockDateTimeHelper)
-    reset(mockConfiguration)
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 2, 1))
-    when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-      .thenReturn(true)
     when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
       .thenReturn(true)
   }
@@ -170,10 +163,21 @@ class NavigationSpec extends SpecBase {
           controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url,
           fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "fireOrFlood")))
 
-        makingALateAppealReverseNormalRouteTest("health",
+        makingALateAppealReverseNormalRouteTest("health - hospital stay ended",
+          controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(NormalMode).url,
+          fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "health",
+            SessionKeys.wasHospitalStayRequired -> "yes",
+            SessionKeys.hasHealthEventEnded -> "yes",
+            SessionKeys.whenHealthIssueEnded -> "2021-02-01",
+            SessionKeys.whenHealthIssueStarted -> "2021-02-01")))
+
+        makingALateAppealReverseNormalRouteTest("health - hospital stay ongoing",
           controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode).url,
           fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.wasHospitalStayRequired -> "yes")))
+            SessionKeys.wasHospitalStayRequired -> "yes",
+            SessionKeys.hasHealthEventEnded -> "no",
+            SessionKeys.whenHealthIssueStarted -> "2021-02-01")))
+
         makingALateAppealReverseNormalRouteTest("health - no hospital stay",
           controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url,
           fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "health")))
@@ -348,32 +352,19 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
-      s"called with $DidHospitalStayEndPage" in new Setup {
-        val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, CheckMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
-        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-      }
-
-      s"called with $DidHospitalStayEndPage - navigate to when did hospital stay end page when user answers yes " +
-        s"(${ShowConditionalRadioOptionOnHospitalEndPage.name} FS is disabled)" in new Setup {
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-          .thenReturn(false)
+      s"called with $DidHospitalStayEndPage - navigate to when did hospital stay end page when user answers yes" in new Setup {
         val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, CheckMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(CheckMode).url
       }
 
-      s"called with $DidHospitalStayEndPage - navigate to CYA page when user answers no " +
-        s"(${ShowConditionalRadioOptionOnHospitalEndPage.name} FS is disabled)" in new Setup {
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-          .thenReturn(false)
+      s"called with $DidHospitalStayEndPage - navigate to CYA page when user answers no" in new Setup {
         val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, CheckMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
       s"called with $DidHospitalStayEndPage - navigate to making a late page when user answers no " +
-        s"(> 30 days late, ${ShowConditionalRadioOptionOnHospitalEndPage.name} FS is disabled)" in new Setup {
+        s"(appeal > 30 days late)" in new Setup {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-          .thenReturn(false)
         val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, CheckMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
@@ -447,16 +438,6 @@ class NavigationSpec extends SpecBase {
           2020, 4, 1))
         val result: Call = mainNavigator.nextPage(EvidencePage, CheckMode, None)(fakeRequestConverter(correctUserAnswers ++ Json.obj(
           SessionKeys.appealType -> "other"
-        )))
-        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-        reset(mockDateTimeHelper)
-      }
-
-      s"called with $DidHospitalStayEndPage when the appeal > 30 days late" in new Setup {
-        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
-          2020, 4, 1))
-        val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, CheckMode, None)(fakeRequestConverter(correctUserAnswers ++ Json.obj(
-          SessionKeys.appealType -> "health"
         )))
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
@@ -618,14 +599,16 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
 
-      s"called with $DidHospitalStayEndPage" in new Setup {
-        val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
-        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-      }
-
       s"called with $WhenDidHospitalStayEndPage" in new Setup {
         val result: Call = mainNavigator.nextPage(WhenDidHospitalStayEndPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+
+      s"called with $WhenDidHospitalStayEndPage when the appeal > 30 days late" in new Setup {
+        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
+        val result: Call = mainNavigator.nextPage(WhenDidHospitalStayEndPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
+        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        reset(mockDateTimeHelper)
       }
 
       s"called with $WhenDidHospitalStayBeginPage" in new Setup {
@@ -697,43 +680,23 @@ class NavigationSpec extends SpecBase {
         reset(mockDateTimeHelper)
       }
 
-      s"called with $DidHospitalStayEndPage when the appeal > 30 days late" in new Setup {
-        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
-        val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
-        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-        reset(mockDateTimeHelper)
-      }
-
-      s"called with $DidHospitalStayEndPage when the ${ShowConditionalRadioOptionOnHospitalEndPage.name} is disabled (answer is yes)" in new Setup {
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-          .thenReturn(false)
+      s"called with $DidHospitalStayEndPage when the answer is yes" in new Setup {
         val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, NormalMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(NormalMode).url
         reset(mockDateTimeHelper)
       }
 
-      s"called with $DidHospitalStayEndPage when the ${ShowConditionalRadioOptionOnHospitalEndPage.name} is disabled (answer is no - > 30 days late appeal)" in new Setup {
+      s"called with $DidHospitalStayEndPage when the answer is no (> 30 days late appeal)" in new Setup {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-          .thenReturn(false)
         val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
 
-      s"called with $DidHospitalStayEndPage when the ${ShowConditionalRadioOptionOnHospitalEndPage.name} is disabled (answer is no - route to CYA)" in new Setup {
+      s"called with $DidHospitalStayEndPage when the answer is no (route to CYA)" in new Setup {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 3, 1))
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-          .thenReturn(false)
         val result: Call = mainNavigator.nextPage(DidHospitalStayEndPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        reset(mockDateTimeHelper)
-      }
-
-      s"called with $WhenDidHospitalStayEndPage when the appeal > 30 days late" in new Setup {
-        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 4, 1))
-        val result: Call = mainNavigator.nextPage(WhenDidHospitalStayEndPage, NormalMode, None)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("health"))
-        result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
 

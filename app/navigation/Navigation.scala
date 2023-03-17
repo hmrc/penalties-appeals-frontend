@@ -17,12 +17,11 @@
 package navigation
 
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, ShowConditionalRadioOptionOnHospitalEndPage, ShowFullAppealAgainstTheObligation}
+import config.featureSwitches.{FeatureSwitching, ShowFullAppealAgainstTheObligation}
 import controllers.routes
 import helpers.DateTimeHelper
 import models._
 import models.pages._
-import play.api.Configuration
 import play.api.mvc.Call
 import utils.Logger.logger
 import utils.{ReasonableExcuses, SessionKeys}
@@ -31,7 +30,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
-                           appConfig: AppConfig)(implicit val config: Configuration) extends FeatureSwitching {
+                           appConfig: AppConfig) {
 
   lazy val reverseNormalRoutes: Map[Page, (UserRequest[_], Boolean) => Call] = Map(
     CancelVATRegistrationPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl)),
@@ -206,14 +205,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   def routingForHospitalStayEnded(mode: Mode, answer: Option[String], userRequest: UserRequest[_]): Call = {
-    if (isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
-      routeToMakingALateAppealOrCYAPage(userRequest, mode)
+    if (answer.get.toLowerCase == "yes") {
+      routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
     } else {
-      if (answer.get.toLowerCase == "yes") {
-        routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
-      } else {
-        routeToMakingALateAppealOrCYAPage(userRequest, mode)
-      }
+      routeToMakingALateAppealOrCYAPage(userRequest, mode)
     }
   }
 
@@ -344,14 +339,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRoutingForHospitalStayEnded(userRequest: UserRequest[_], mode: Mode) = {
-    if (isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
-      routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode)
+    if (userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).contains("yes")) {
+      routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
     } else {
-      if (userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).contains("yes")) {
-        routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
-      } else {
-        routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode)
-      }
+      routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode)
     }
   }
 

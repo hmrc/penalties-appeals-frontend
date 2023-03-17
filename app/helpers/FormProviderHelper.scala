@@ -16,7 +16,6 @@
 
 package helpers
 
-import models.appeals.HospitalStayEndInput
 import models.session.UserAnswers
 import play.api.data.Form
 
@@ -33,21 +32,6 @@ object FormProviderHelper {
   def getSessionKeyAndAttemptToFillAnswerAsDate(formProvider: Form[LocalDate], sessionKeyToQuery: String, userAnswers: UserAnswers): Form[LocalDate] = {
     userAnswers.getAnswer[LocalDate](sessionKeyToQuery) match {
       case Some(answer) => formProvider.fill(answer)
-      case None => formProvider
-    }
-  }
-
-  def getSessionKeysAndAttemptToFillConditionalForm(formProvider: Form[HospitalStayEndInput], sessionKvs: (String, String), userAnswers: UserAnswers): Form[HospitalStayEndInput] = {
-    userAnswers.getAnswer[String](sessionKvs._1) match {
-      case Some(key1) =>
-        userAnswers.getAnswer[LocalDate](sessionKvs._2) match {
-          case Some(answer) =>
-            val formInput = HospitalStayEndInput(key1, Some(answer))
-            formProvider.fill(formInput)
-          case None =>
-            val formInput = HospitalStayEndInput(key1, None)
-            formProvider.fill(formInput)
-        }
       case None => formProvider
     }
   }

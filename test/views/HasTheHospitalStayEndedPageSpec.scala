@@ -19,7 +19,6 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.HasHospitalStayEndedForm
 import messages.HasTheHospitalStayEndedMessages._
-import models.appeals.HospitalStayEndInput
 import models.pages.{DidHospitalStayEndPage, PageMode}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
@@ -28,14 +27,10 @@ import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.HasTheHospitalStayEndedPage
-import viewtils.ConditionalRadioHelper
-
-import java.time.LocalDate
+import viewtils.RadioOptionHelper
 
 class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
   "HasTheHospitalStayEndedPage" should {
-    val conditionalRadioHelper = injector.instanceOf[ConditionalRadioHelper]
-    val sampleStartDate = LocalDate.parse("2020-01-01")
 
     implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
     val hasTheHospitalStayEndedPage: HasTheHospitalStayEndedPage = injector.instanceOf[HasTheHospitalStayEndedPage]
@@ -48,8 +43,8 @@ class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
 
       override val labelForRadioButton: Int => String = (index: Int) => if(index == 1) "label[for=hasStayEnded]" else s"label[for=hasStayEnded-$index]"
     }
-    val formProvider: Form[HospitalStayEndInput] = HasHospitalStayEndedForm.hasHospitalStayEndedForm(sampleStartDate)
-    val radioOptions = conditionalRadioHelper.conditionalYesNoOptions(formProvider, "healthReason.hasTheHospitalStayEnded")
+    val formProvider: Form[String] = HasHospitalStayEndedForm.hasHospitalStayEndedForm
+    val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider, "hasStayEnded")
     def applyView(form: Form[_]): HtmlFormat.Appendable = {
       hasTheHospitalStayEndedPage.apply(form, radioOptions, controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(NormalMode),
         pageMode = PageMode(DidHospitalStayEndPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
@@ -62,11 +57,6 @@ class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
       Selectors.h1 -> h1,
       Selectors.labelForRadioButton(1) -> yesText,
       Selectors.labelForRadioButton(2) -> noText,
-      Selectors.collapsableYesText -> whenDidItEnd,
-      Selectors.collapsableYesHintText -> hintText,
-      Selectors.dateEntry(1) -> dayEntry,
-      Selectors.dateEntry(2) -> monthEntry,
-      Selectors.dateEntry(3) -> yearEntry,
       Selectors.button -> continue
     )
 

@@ -24,7 +24,6 @@ import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadAnotherDocumentPage
