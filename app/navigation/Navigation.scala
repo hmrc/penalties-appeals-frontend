@@ -17,7 +17,7 @@
 package navigation
 
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, ShowConditionalRadioOptionOnHospitalEndPage}
+import config.featureSwitches.{FeatureSwitching, ShowConditionalRadioOptionOnHospitalEndPage, ShowFullAppealAgainstTheObligation}
 import controllers.routes
 import helpers.DateTimeHelper
 import models._
@@ -186,8 +186,12 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   def routingForCancelVATRegistrationPage(answer: Option[String], request: UserRequest[_]): Call = {
     if (answer.get.toLowerCase == "yes" && request.answers.getAnswer[String](SessionKeys.penaltyNumber).contains("NA")) {
       routes.YouCannotAppealController.onPageLoadAppealByLetter()
-    } else if(answer.get.toLowerCase == "yes") {
-      routes.YouCanAppealPenaltyController.onPageLoad()
+    } else if (answer.get.toLowerCase == "yes") {
+      if (isEnabled(ShowFullAppealAgainstTheObligation)) {
+        routes.YouCanAppealPenaltyController.onPageLoad()
+      } else {
+        routes.YouCannotAppealController.onPageLoadAppealByLetter()
+      }
     } else {
       routes.YouCannotAppealController.onPageLoad
     }
@@ -202,10 +206,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   def routingForHospitalStayEnded(mode: Mode, answer: Option[String], userRequest: UserRequest[_]): Call = {
-    if(isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
+    if (isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
       routeToMakingALateAppealOrCYAPage(userRequest, mode)
     } else {
-      if(answer.get.toLowerCase == "yes") {
+      if (answer.get.toLowerCase == "yes") {
         routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
       } else {
         routeToMakingALateAppealOrCYAPage(userRequest, mode)
@@ -340,10 +344,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   private def reverseRoutingForHospitalStayEnded(userRequest: UserRequest[_], mode: Mode) = {
-    if(isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
+    if (isEnabled(ShowConditionalRadioOptionOnHospitalEndPage)) {
       routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode)
     } else {
-      if(userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).contains("yes")) {
+      if (userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).contains("yes")) {
         routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
       } else {
         routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode)
