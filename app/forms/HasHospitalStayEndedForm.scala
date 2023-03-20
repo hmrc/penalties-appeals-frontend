@@ -16,32 +16,16 @@
 
 package forms
 
-import config.AppConfig
 import forms.mappings.Mappings
-import models.appeals.HospitalStayEndInput
-import play.api.data._
-import play.api.data.Forms._
-import play.api.i18n.Messages
-import uk.gov.voa.play.form.ConditionalMappings
-
-import java.time.LocalDate
+import play.api.data.Form
+import play.api.data.Forms.single
 
 object HasHospitalStayEndedForm extends Mappings {
   final val options = Seq("yes", "no")
-
-  def hasHospitalStayEndedForm(healthIssueStartDate: LocalDate)(implicit messages: Messages, appConfig: AppConfig): Form[HospitalStayEndInput] = {
-    Form(mapping(
+  val hasHospitalStayEndedForm: Form[String] = Form[String](
+    single(
       "hasStayEnded" -> text("healthReason.hasTheHospitalStayEnded.error.required")
-        .verifying("healthReason.hasTheHospitalStayEnded.error.required", value => options.contains(value)),
-      "stayEndDate" -> ConditionalMappings.mandatoryIfEqual("hasStayEnded", "yes", localDate(
-        invalidKey = "healthReason.hasTheHospitalStayEnded.date.error.invalid",
-        allRequiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required.all",
-        twoRequiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required.two",
-        requiredKey = "healthReason.hasTheHospitalStayEnded.date.error.required",
-        futureKey = Some("healthReason.hasTheHospitalStayEnded.date.error.notInFuture"),
-        dateNotEqualOrAfterKeyAndCompareDate = Some(("healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate", healthIssueStartDate))
-      ))
-    )(HospitalStayEndInput.apply)(HospitalStayEndInput.unapply)
+        .verifying("healthReason.hasTheHospitalStayEnded.error.required", value => options.contains(value))
     )
-  }
+  )
 }

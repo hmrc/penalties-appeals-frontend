@@ -23,7 +23,7 @@ sealed trait FeatureSwitch {
 
 object FeatureSwitch {
   val prefix: String = "feature.switch"
-  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowConditionalRadioOptionOnHospitalEndPage, ShowFullAppealAgainstTheObligation)
+  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowFullAppealAgainstTheObligation)
 }
 
 case object NonJSRouting extends FeatureSwitch {
@@ -39,11 +39,6 @@ case object ShowDigitalCommsMessage extends FeatureSwitch {
 case object WarnForDuplicateFiles extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.warn-for-duplicate-files"
   override val displayText: String = "To enable warnings for duplicate files"
-}
-
-case object ShowConditionalRadioOptionOnHospitalEndPage extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.show-conditional-radio-option-on-hospital-end-page"
-  override val displayText: String = "To show conditional radio option on the when did hospital end page"
 }
 
 case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {

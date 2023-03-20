@@ -35,7 +35,6 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= NonJSRouting.name
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= WarnForDuplicateFiles.name
-    sys.props -= ShowConditionalRadioOptionOnHospitalEndPage.name
     sys.props -= ShowFullAppealAgainstTheObligation.name
     sys.props -= featureSwitching.TIME_MACHINE_NOW
   }
@@ -45,13 +44,12 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= NonJSRouting.name
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= WarnForDuplicateFiles.name
-    sys.props -= ShowConditionalRadioOptionOnHospitalEndPage.name
     sys.props -= ShowFullAppealAgainstTheObligation.name
   }
 
   "listOfAllFeatureSwitches" should {
     "be all the featureswitches in the app" in {
-      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowConditionalRadioOptionOnHospitalEndPage, ShowFullAppealAgainstTheObligation)
+      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowFullAppealAgainstTheObligation)
     }
   }
 

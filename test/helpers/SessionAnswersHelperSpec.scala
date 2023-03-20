@@ -18,7 +18,6 @@ package helpers
 
 import base.SpecBase
 import config.AppConfig
-import config.featureSwitches.ShowConditionalRadioOptionOnHospitalEndPage
 import models.pages._
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
@@ -41,7 +40,7 @@ class SessionAnswersHelperSpec extends SpecBase {
   val mockRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val mockConfig: Configuration = mock(classOf[Configuration])
-  val sessionAnswersHelper = new SessionAnswersHelper(mockRepository, mockAppConfig, mockDateTimeHelper)(implicitly, mockConfig)
+  val sessionAnswersHelper = new SessionAnswersHelper(mockRepository, mockAppConfig, mockDateTimeHelper)
 
   when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 1, 1))
   when(mockAppConfig.daysRequiredForLateAppeal).thenReturn(30)
@@ -1760,51 +1759,6 @@ class SessionAnswersHelperSpec extends SpecBase {
     "when there is hospital stay ended" should {
       "return rows of question-answers" in {
         val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
-            SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> true,
-            SessionKeys.wasHospitalStayRequired -> "yes",
-            SessionKeys.whenHealthIssueStarted -> "2022-01-01",
-            SessionKeys.hasHealthEventEnded -> "yes",
-            SessionKeys.whenHealthIssueEnded -> "2022-02-02"
-          ))
-        when(mockConfig.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-          .thenReturn(true)
-        val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
-        result.head.key shouldBe "Reason for missing the VAT deadline"
-        result.head.value shouldBe "Health"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
-        result(1).key shouldBe "Did this health issue include a hospital stay?"
-        result(1).value shouldBe "Yes"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-          WasHospitalStayRequiredPage.toString
-        ).url
-        result(2).key shouldBe "When did the hospital stay begin?"
-        result(2).value shouldBe "1 January 2022"
-        result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
-          WhenDidHospitalStayBeginPage.toString
-        ).url
-        result(3).key shouldBe "Has the hospital stay ended?"
-        result(3).value shouldBe "Yes"
-        result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
-          DidHospitalStayEndPage.toString
-        ).url
-        result(4).key shouldBe "When did it end?"
-        result(4).value shouldBe "2 February 2022"
-        result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(CheckMode).url,
-          DidHospitalStayEndPage.toString
-        ).url
-      }
-
-      "return rows of question-answers (navigating to distinct when did hospital stay end page) " +
-        s"when ${ShowConditionalRadioOptionOnHospitalEndPage.name} is disabled" in {
-        val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
           SessionKeys.reasonableExcuse -> "health",
           SessionKeys.hasConfirmedDeclaration -> true,
           SessionKeys.wasHospitalStayRequired -> "yes",
@@ -1812,8 +1766,6 @@ class SessionAnswersHelperSpec extends SpecBase {
           SessionKeys.hasHealthEventEnded -> "yes",
           SessionKeys.whenHealthIssueEnded -> "2022-02-02"
         ))
-        when(mockConfig.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
-          .thenReturn(false)
         val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
         result.head.key shouldBe "Reason for missing the VAT deadline"
         result.head.value shouldBe "Health"

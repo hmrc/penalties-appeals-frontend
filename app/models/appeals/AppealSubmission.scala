@@ -22,7 +22,7 @@ import play.api.libs.json._
 import utils.SessionKeys
 
 import java.time.temporal.ChronoUnit
-import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.{LocalDate, LocalDateTime}
 
 sealed trait AppealInformation {
   val reasonableExcuse: String

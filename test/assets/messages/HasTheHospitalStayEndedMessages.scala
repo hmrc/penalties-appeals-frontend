@@ -25,15 +25,7 @@ object HasTheHospitalStayEndedMessages {
 
   val noText = "No"
 
-  val whenDidItEnd = "When did it end?"
-
   val hintText = "For example, 12 3 2018"
-
-  val dayEntry = "Day"
-
-  val monthEntry = "Month"
-
-  val yearEntry = "Year"
 
   val continue = "Continue"
 }

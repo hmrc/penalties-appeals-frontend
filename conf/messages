@@ -392,12 +392,6 @@ upscan.noJs.unableToUpload = The selected file could not be uploaded. Choose ano
 healthReason.hasTheHospitalStayEnded.headingAndTitle = Has the hospital stay ended?
 healthReason.hasTheHospitalStayEnded.yes.heading = When did it end?
 healthReason.hasTheHospitalStayEnded.error.required = Tell us if the hospital stay has now ended
-healthReason.hasTheHospitalStayEnded.date.error.required.all = Tell us when the hospital stay ended
-healthReason.hasTheHospitalStayEnded.date.error.required.two = The date the hospital stay ended must include a {0} and a {1}
-healthReason.hasTheHospitalStayEnded.date.error.required = The date the hospital stay ended must include a {0}
-healthReason.hasTheHospitalStayEnded.date.error.invalid = The date the hospital stay ended must be a real date
-healthReason.hasTheHospitalStayEnded.date.error.notInFuture = The date the hospital stay ended must be today or in the past
-healthReason.hasTheHospitalStayEnded.date.error.endDateLessThanStartDate = The date the hospital stay ended must be the same or after it began
 
 # When did the person die page
 # ----------------------------------------------------------

@@ -17,15 +17,14 @@
 package controllers
 
 import base.SpecBase
-import models.{CheckMode, NormalMode}
 import models.session.UserAnswers
+import models.{CheckMode, NormalMode}
 import navigation.Navigation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{mock, reset, when}
-import play.api.Configuration
+import org.mockito.Mockito.{reset, when}
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -34,7 +33,6 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.health._
-import viewtils.ConditionalRadioHelper
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,32 +42,25 @@ class HealthReasonControllerSpec extends SpecBase {
   val hospitalStayPage: WasHospitalStayRequiredPage = injector.instanceOf[WasHospitalStayRequiredPage]
   val whenHealthIssueHappenedPage: WhenDidHealthReasonHappenPage = injector.instanceOf[WhenDidHealthReasonHappenPage]
   val whenDidHospitalStayBeginAndEndPage: WhenDidHospitalStayBeginAndEndPage = injector.instanceOf[WhenDidHospitalStayBeginAndEndPage]
-  val conditionalRadioHelper: ConditionalRadioHelper = injector.instanceOf[ConditionalRadioHelper]
   val hasTheHosptialStayEndedPage: HasTheHospitalStayEndedPage = injector.instanceOf[HasTheHospitalStayEndedPage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-  val mockConfig: Configuration = mock(classOf[Configuration])
-  override val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)(mockConfig)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
-    reset(mockConfig)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
-    when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
-      .thenReturn(true)
 
     val controller: HealthReasonController = new HealthReasonController(
       mainNavigator,
       hospitalStayPage,
       whenHealthIssueHappenedPage,
       whenDidHospitalStayBeginAndEndPage,
-      conditionalRadioHelper,
       hasTheHosptialStayEndedPage,
       errorHandler,
       mockSessionService
-    )(authPredicate, dataRequiredAction, dataRetrievalAction, appConfig, mockConfig, ec, mcc)
+    )(authPredicate, dataRequiredAction, dataRetrievalAction, appConfig, ec, mcc)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
@@ -429,28 +420,14 @@ class HealthReasonControllerSpec extends SpecBase {
 
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"))))))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
-      "return OK and correct view (with no date conditional form when feature switch disabled)" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
-          .thenReturn(false)
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"))))))
-        val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(userRequestWithCorrectKeys)
-        status(result) shouldBe OK
-        val documentParsed: Document = Jsoup.parse(contentAsString(result))
-        documentParsed.select("#stayEndDate").isEmpty shouldBe true
-      }
-
-      "return OK and correct view (pre-populated radio when present in session when feature switch disabled)" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
-          .thenReturn(false)
+      "return OK and correct view (pre-populated radio when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
             SessionKeys.hasHealthEventEnded -> "yes"
           )))))
         val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(userRequestWithCorrectKeys)
@@ -459,33 +436,10 @@ class HealthReasonControllerSpec extends SpecBase {
         documentParsed.select("#hasStayEnded").get(0).hasAttr("checked") shouldBe true
       }
 
-      "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.hasHealthEventEnded -> "yes",
-            SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
-            SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-01")
-          )))))
-        val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(userRequestWithCorrectKeys)
-        status(result) shouldBe OK
-        val documentParsed: Document = Jsoup.parse(contentAsString(result))
-        documentParsed.select("#hasStayEnded").get(0).hasAttr("checked") shouldBe true
-        documentParsed.select("#stayEndDate .govuk-date-input__input").get(0).attr("value") shouldBe "1"
-        documentParsed.select("#stayEndDate .govuk-date-input__input").get(1).attr("value") shouldBe "1"
-        documentParsed.select("#stayEndDate .govuk-date-input__input").get(2).attr("value") shouldBe "2022"
-      }
-
       "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
-
-      "return 500 (ISE) when the user has no start date in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
@@ -506,121 +460,6 @@ class HealthReasonControllerSpec extends SpecBase {
     "onSubmitForHasHospitalStayEnded" should {
       "the user is authorised" when {
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-          "- redirects to CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
-              SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
-            )))))
-
-          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-          when(mockSessionService.updateAnswers(answerCaptor.capture()))
-            .thenReturn(Future.successful(true))
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-            fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
-              "hasStayEnded" -> "yes",
-              "stayEndDate.day" -> "1",
-              "stayEndDate.month" -> "2",
-              "stayEndDate.year" -> "2021"
-            )))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
-            SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
-            SessionKeys.whenHealthIssueEnded -> LocalDate.of(2021, 2, 1),
-            SessionKeys.hasHealthEventEnded -> "yes"
-          )
-        }
-
-        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
-          "redirects to late appeal page when appeal > 30 days late" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
-              SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
-            )))))
-          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-          when(mockSessionService.updateAnswers(answerCaptor.capture()))
-            .thenReturn(Future.successful(true))
-          when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
-            2020, 4, 1))
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-            fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
-              "hasStayEnded" -> "no"
-            )))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
-            SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
-            SessionKeys.hasHealthEventEnded -> "no"
-          )
-        }
-
-        "return 400 (BAD_REQUEST)" when {
-          "the 'yes' option is selected but no date has been entered" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
-                SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
-              )))))
-            when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
-              2020, 2, 1))
-            val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-              fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
-                "hasStayEnded" -> "yes",
-                "stayEndDate.day" -> "",
-                "stayEndDate.month" -> "",
-                "stayEndDate.year" -> ""
-              )
-              ))
-            status(result) shouldBe BAD_REQUEST
-          }
-
-          "no option selected" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
-                SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
-              )))))
-            when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
-              2020, 2, 1))
-            val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-              fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
-                "hasStayEnded" -> ""
-              )))
-            status(result) shouldBe BAD_REQUEST
-          }
-        }
-
-        "return 500 (ISE)" when {
-          "the user does not have a start date in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any()))
-              .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
-              fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
-                "hasStayEnded" -> "yes",
-                "stayEndDate.day" -> "1",
-                "stayEndDate.month" -> "2",
-                "stayEndDate.year" -> "2021"
-              )))
-            status(result) shouldBe INTERNAL_SERVER_ERROR
-          }
-        }
-      }
-
-      "the user is unauthorised" when {
-
-        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequest)
-          status(result) shouldBe FORBIDDEN
-        }
-
-        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-        }
-      }
-    }
-
-    "onSubmitForHasHospitalStayEndedNonConditionalPage" should {
-      "the user is authorised" when {
-        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
           "- redirects to when hospital stay ended page when in Normal Mode and user answers yes" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
@@ -629,9 +468,7 @@ class HealthReasonControllerSpec extends SpecBase {
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
-            .thenReturn(false)
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(NormalMode)(
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
               "hasStayEnded" -> "yes"
             )))
@@ -649,12 +486,10 @@ class HealthReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
             )))))
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
-            .thenReturn(false)
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(CheckMode)(
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(CheckMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
               "hasStayEnded" -> "yes"
             )))
@@ -672,12 +507,10 @@ class HealthReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
             )))))
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
-            .thenReturn(false)
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(NormalMode)(
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
               "hasStayEnded" -> "no"
             )))
@@ -693,8 +526,6 @@ class HealthReasonControllerSpec extends SpecBase {
           "- redirects to making a late appeal page when in Normal Mode and user answers no (communications date > 30 days ago)" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
             2021, 2, 1))
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
-            .thenReturn(false)
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
@@ -702,7 +533,7 @@ class HealthReasonControllerSpec extends SpecBase {
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(NormalMode)(
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
               "hasStayEnded" -> "no"
             )))
@@ -721,11 +552,9 @@ class HealthReasonControllerSpec extends SpecBase {
               SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2021-01-01")
             )))))
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-conditional-radio-option-on-hospital-end-page"))(any()))
-            .thenReturn(false)
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(CheckMode)(
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(CheckMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
               "hasStayEnded" -> "no"
             )))
@@ -745,7 +574,7 @@ class HealthReasonControllerSpec extends SpecBase {
               )))))
             when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
               2020, 2, 1))
-            val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(NormalMode)(
+            val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(
               fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
                 "hasStayEnded" -> ""
               )))
@@ -758,12 +587,12 @@ class HealthReasonControllerSpec extends SpecBase {
       "the user is unauthorised" when {
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequest)
           status(result) shouldBe FORBIDDEN
         }
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onSubmitForHasHospitalStayEndedNonConditionalPage(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }
