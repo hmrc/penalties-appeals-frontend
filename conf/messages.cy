@@ -599,12 +599,12 @@ incompleteSessionData.link = Dychwelyd i’r dudalen gychwyn ar gyfer apeliadau
 
 # Appeal by letter kick out page
 # -----------------------------------------------------------
-appealByLetter.headingAndTitle = You can appeal this penalty by letter
-appealByLetter.p1 = To ask HMRC to review this penalty, send us:
-appealByLetter.li.1.1 = details of the steps taken to cancel the VAT registration
-appealByLetter.li.1.2 = dates of any contact with HMRC on this matter
-appealByLetter.li.1.3 = any other information you’d like to include to support an appeal
-appealByLetter.p2 = If HMRC accepts your appeal, we will remove:
-appealByLetter.li.2.1 = this penalty
-appealByLetter.li.2.2 = all other VAT late submission or late payment penalties for the same period
-appealByLetter.inset.1 = Write to:
+appealByLetter.headingAndTitle = Gallwch apelio yn erbyn y gosb hon drwy lythyr
+appealByLetter.p1 = I ofyn i CThEF adolygu’r gosb hon, anfonwch y canlynol atom:
+appealByLetter.li.1.1 = manylion o’r camau a gymerwyd i ganslo’r cofrestriad
+appealByLetter.li.1.2 = manylion o unrhyw gyswllt â CThEF ynghylch y mater hwn
+appealByLetter.li.1.3 = unrhyw wybodaeth arall hoffech ei chynnwys er mwyn ategu apêl
+appealByLetter.p2 = Os bydd CThEF yn derbyn eich apêl, byddwn yn dileu:
+appealByLetter.li.2.1 = y gosb hon
+appealByLetter.li.2.2 = pob cosb arall am gyflwyno Ffurflen TAW yn hwyr neu am dalu TAW yn hwyr ar gyfer yr un cyfnod
+appealByLetter.inset.1 = Ysgrifennwch at:
