@@ -23,7 +23,7 @@ sealed trait FeatureSwitch {
 
 object FeatureSwitch {
   val prefix: String = "feature.switch"
-  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowConditionalRadioOptionOnHospitalEndPage, ShowFullAppealAgainstTheObligation)
+  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowFullAppealAgainstTheObligation)
 }
 
 case object NonJSRouting extends FeatureSwitch {

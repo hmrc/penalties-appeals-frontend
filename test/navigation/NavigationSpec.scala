@@ -20,7 +20,9 @@ import base.SpecBase
 import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
+import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Call}
 import utils.SessionKeys
@@ -28,8 +30,11 @@ import utils.SessionKeys
 import java.time.LocalDate
 
 class NavigationSpec extends SpecBase {
+  val mockConfiguration: Configuration = mock(classOf[Configuration])
+  override val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)(mockConfiguration)
   class Setup {
     reset(mockDateTimeHelper)
+    reset(mockConfiguration)
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 2, 1))
     when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
       .thenReturn(true)

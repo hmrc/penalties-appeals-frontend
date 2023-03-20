@@ -22,6 +22,7 @@ import controllers.routes
 import helpers.DateTimeHelper
 import models._
 import models.pages._
+import play.api.Configuration
 import play.api.mvc.Call
 import utils.Logger.logger
 import utils.{ReasonableExcuses, SessionKeys}
@@ -30,7 +31,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
-                           appConfig: AppConfig) {
+                           appConfig: AppConfig)(implicit val config: Configuration) extends FeatureSwitching {
 
   lazy val reverseNormalRoutes: Map[Page, (UserRequest[_], Boolean) => Call] = Map(
     CancelVATRegistrationPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl)),
