@@ -276,8 +276,8 @@ healthReason.whenDidHospitalStayBegin.error.notInFuture = Mae’n rhaid i’r dy
 
 # When did the hospital stay end page
 # ----------------------------------------------------------
-healthReason.whenDidHospitalStayEnd.headingAndTitle = When did the hospital stay end?
-healthReason.whenDidHospitalStayEnd.error.required.all = Enter the end date of the hospital stay
+healthReason.whenDidHospitalStayEnd.headingAndTitle = Pryd ddaeth yr arhosiad yn yr ysbyty i ben?
+healthReason.whenDidHospitalStayEnd.error.required.all = Nodwch y dyddiad y daeth yr arhosiad yn yr ysbyty i ben
 healthReason.whenDidHospitalStayEnd.error.required.two = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0} a {1}
 healthReason.whenDidHospitalStayEnd.error.required = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0}
 healthReason.whenDidHospitalStayEnd.error.invalid = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yn ddyddiad go iawn
