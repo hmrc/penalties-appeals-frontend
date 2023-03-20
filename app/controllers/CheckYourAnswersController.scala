@@ -123,7 +123,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       },
       _ => {
         val confirmationAppealType = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get.toString
-        val confirmationStartDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get.toString
+        val confirmationStartDate = dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get)
         val confirmationEndDate = dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get)
         val confirmationObligation = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true).toString
         val confirmationMultipleAppeals = userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).getOrElse("no")
