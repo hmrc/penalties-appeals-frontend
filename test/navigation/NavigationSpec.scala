@@ -17,7 +17,7 @@
 package navigation
 
 import base.SpecBase
-import config.featureSwitches.ShowConditionalRadioOptionOnHospitalEndPage
+import config.featureSwitches.{ShowConditionalRadioOptionOnHospitalEndPage, ShowFullAppealAgainstTheObligation}
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers
@@ -37,6 +37,8 @@ class NavigationSpec extends SpecBase {
     reset(mockConfiguration)
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 2, 1))
     when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowConditionalRadioOptionOnHospitalEndPage.name))(ArgumentMatchers.any()))
+      .thenReturn(true)
+    when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
       .thenReturn(true)
   }
 
@@ -1016,13 +1018,20 @@ class NavigationSpec extends SpecBase {
   "routingForCancelVATRegistrationPage" when {
 
     "redirect to YouCanAppeal page" when {
-      "yes option selected" in new Setup {
+      "yes option selected and full journey is enabled" in new Setup {
         val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestLPPWithCorrectKeys)
         result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
       }
     }
 
     "redirect to AppealByLetter page" when {
+      "yes option selected and full journey is disabled" in new Setup {
+        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
+          .thenReturn(false)
+        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestLPPWithCorrectKeys)
+        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+      }
+
       "yes option selected (when penalty is estimate i.e. penalty number set to 'NA')" in new Setup {
         val userAnswersWithNAPenaltyNumber: JsObject = Json.obj(
           SessionKeys.penaltyNumber -> "NA",
