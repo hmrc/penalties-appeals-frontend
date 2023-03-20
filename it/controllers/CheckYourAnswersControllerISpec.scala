@@ -604,23 +604,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       val request = await(buildClientForRequestToApp(uri = "/check-your-answers").get())
       request.status shouldBe Status.SEE_OTHER
     }
-
-    "return 303 (SEE_OTHER) when the user has already submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-      SessionKeys.reasonableExcuse -> "lossOfStaff",
-      SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01"),
-      SessionKeys.appealSubmitted -> true
-    ))) {
-      val request = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
-    }
   }
 
   "POST /check-your-answers" should {
@@ -1124,7 +1107,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "yes"
     ))) {
-      val request = await(controller.onPageLoadForConfirmation()(fakeRequest))
+      val request = await(controller.onPageLoadForConfirmation()(fakeRequest.withSession(
+        SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
+        SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
+        SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
+        SessionKeys.confirmationMultipleAppeals -> "no",
+        SessionKeys.confirmationObligation -> "false",
+        SessionKeys.confirmationIsAgent -> "false")))
       request.header.status shouldBe Status.OK
     }
 

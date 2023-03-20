@@ -92,7 +92,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   val arn: Option[String] = Some("AGENT1")
 
-  def fakeRequestConverter(answers: JsObject = confirmationPageAnswers, fakeRequest: FakeRequest[AnyContent] = fakeRequest): UserRequest[AnyContent] = {
+  def fakeRequestConverter(answers: JsObject = correctUserAnswers, fakeRequest: FakeRequest[AnyContent] = fakeRequest): UserRequest[AnyContent] = {
     UserRequest(vrn, answers = userAnswers(answers))(fakeRequest)
   }
 

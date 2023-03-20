@@ -145,21 +145,14 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
 
   def onPageLoadForConfirmation(): Action[AnyContent] = authorise {
     implicit userRequest => {
-      println(Console.GREEN + "Start")
       val appealType = PenaltyTypeEnum.withName(userRequest.session.get(SessionKeys.confirmationAppealType).get)
-      println(s"Appeal Type: $appealType")
       val bothPenalties: String = userRequest.session.get(SessionKeys.confirmationMultipleAppeals).get
-      println(s"Both Penalties: $bothPenalties")
       val (readablePeriodStart, readablePeriodEnd) =
         (userRequest.session.get(SessionKeys.confirmationStartDate).get,
          userRequest.session.get(SessionKeys.confirmationEndDate).get)
-      println(s"Start Date: $readablePeriodStart, End Date: $readablePeriodEnd")
       val isObligationAppeal: Boolean = userRequest.session.get(SessionKeys.confirmationObligation).get.toBoolean
-      println(s"isObligation: $isObligationAppeal")
       val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
-      println(s"Showing Comms Message?: $showDigitalCommsMessage")
       val isAgent: Boolean = userRequest.session.get(SessionKeys.confirmationIsAgent).get.toBoolean
-      println(s"Is Agent: $isAgent" + Console.RESET)
       Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent))
         .removingFromSession(SessionKeys.allKeys: _*)
     }

@@ -25,6 +25,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import services.{AppealService, SessionService}
@@ -53,6 +54,17 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   ) ++ correctUserAnswers
 
   val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(crimeAnswers, fakeRequest)
+
+  val confirmationSessionKeys = Seq(SessionKeys.journeyId -> "1234", SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
+  SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
+  SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
+  SessionKeys.confirmationMultipleAppeals -> "no",
+  SessionKeys.confirmationObligation -> "false",
+  SessionKeys.confirmationIsAgent -> "false")
+
+  val fakeRequestWithConfirmationKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(confirmationSessionKeys: _*)
+
+  val fakeRequestForConfirmationPage: UserRequest[AnyContent] = fakeRequestConverter(crimeAnswers, fakeRequestWithConfirmationKeys)
 
   val lossOfStaffAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "lossOfStaff",
@@ -448,7 +460,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       "show the confirmation page and remove all custom session keys" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
-        val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequestForCrimeJourney)
+        val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequestForConfirmationPage)
         await(result).header.status shouldBe OK
         SessionKeys.allKeys.toSet.subsetOf(await(result).session.data.values.toSet) shouldBe false
       }
