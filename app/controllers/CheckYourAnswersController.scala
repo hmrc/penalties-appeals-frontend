@@ -131,12 +131,12 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         uploadJourneyRepository.removeUploadsForJourney(userRequest.session.get(SessionKeys.journeyId).get).map {
           _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation()).addingToSession(
             List(
-              ("confirmationAppealType", confirmationAppealType),
-              ("confirmationStartDate", confirmationStartDate),
-              ("confirmationEndDate", confirmationEndDate),
-              ("confirmationObligation", confirmationObligation),
-              ("confirmationMultipleAppeals", confirmationMultipleAppeals),
-              ("confirmationIsAgent", confirmationIsAgent)): _*
+              (SessionKeys.confirmationAppealType, confirmationAppealType),
+              (SessionKeys.confirmationStartDate, confirmationStartDate),
+              (SessionKeys.confirmationEndDate, confirmationEndDate),
+              (SessionKeys.confirmationObligation, confirmationObligation),
+              (SessionKeys.confirmationMultipleAppeals, confirmationMultipleAppeals),
+              (SessionKeys.confirmationIsAgent, confirmationIsAgent)): _*
           )
         }
       }
