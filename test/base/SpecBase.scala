@@ -110,6 +110,15 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
     SessionKeys.journeyId -> "1234"
   )
 
+  val confirmationPageAnswers = Json.obj(
+    SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
+    SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01"),
+    SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01"),
+    SessionKeys.confirmationMultipleAppeals -> "no",
+    SessionKeys.confirmationObligation -> "false",
+    SessionKeys.confirmationIsAgent -> "false"
+  ) ++ correctUserAnswers
+
   def userAnswers(answers: JsObject): UserAnswers = UserAnswers("1234", answers)
 
   val correctLPPUserAnswers: JsObject = Json.obj(

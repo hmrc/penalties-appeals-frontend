@@ -16,8 +16,11 @@
 
 package utils
 
+import java.time.LocalDate
+
 import com.codahale.metrics.SharedMetricRegistries
 import helpers.WiremockHelper
+import models.PenaltyTypeEnum
 import models.session.UserAnswers
 import org.mongodb.scala.Document
 import org.scalatest.matchers.should.Matchers

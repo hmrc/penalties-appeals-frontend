@@ -61,6 +61,13 @@ object SessionKeys {
   val secondPenaltyAmount = "secondPenaltyAmount"
   val firstPenaltyCommunicationDate = "firstPenaltyCommunicationDate"
   val secondPenaltyCommunicationDate = "secondPenaltyCommunicationDate"
+  val confirmationAppealType = "confirmationAppealType"
+  val confirmationStartDate = "confirmationStartDate"
+  val confirmationEndDate = "confirmationEndDate"
+  val confirmationObligation = "confirmationObligation"
+  val confirmationDigitalComms = "confirmationDigitalComms"
+  val confirmationMultipleAppeals = "confirmationMultipleAppeals"
+  val confirmationIsAgent = "confirmationIsAgent"
 
   val allKeys: Seq[String] = Seq(
     appealType,

@@ -18,26 +18,27 @@
 @import helpers.AppealConfirmationHelper.getPluralOrSingular
 @import viewtils.PenaltyTypeHelper.convertPenaltyTypeToContentString
 @import utils.SessionKeys
+@import models.PenaltyTypeEnum
 
 @this(layout: Layout,
         bullets: components.bullets,
         link: components.link)
 
-@(penaltyTypeMsgKey: String, periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false, showDigitalCommsMessage: Boolean)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
-
-@appealType = @{userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
-
-@bothPenalties = @{userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties)}
+@(periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false, showDigitalCommsMessage: Boolean, appealType: PenaltyTypeEnum.Value, bothPenalties: String, isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @penaltyType = @{
-    convertPenaltyTypeToContentString(appealType.get)
+    (appealType, bothPenalties) match {
+        case (_, "yes") => messages("penaltyType.latePayment.multiple")
+        case (PenaltyTypeEnum.Late_Submission, _) => messages("penaltyType.lateSubmission")
+        case (PenaltyTypeEnum.Late_Payment | PenaltyTypeEnum.Additional, _) => messages("penaltyType.latePayment")
+    }
 }
 
 @layout(pageTitle = {
-                        if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined) {
-                            getPluralOrSingular(bothPenalties)("appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
+                        if(isAgent) {
+                            getPluralOrSingular(Some(bothPenalties))("appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
                         } else {
-                            getPluralOrSingular(bothPenalties)("appealConfirmation.headingAndTitle.penalty", "appealConfirmation.headingAndTitle.penalties").toString()
+                            getPluralOrSingular(Some(bothPenalties))("appealConfirmation.headingAndTitle.penalty", "appealConfirmation.headingAndTitle.penalties").toString()
                         }
                     },
         isPageFullWidth = false,
@@ -46,10 +47,10 @@
     <div class="govuk-panel govuk-panel--confirmation">
         <h1 class="govuk-panel__title" id="page-heading">
             @{
-            if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined) {
-                getPluralOrSingular(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties))("appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
+            if(isAgent) {
+                getPluralOrSingular(Some(bothPenalties))("appealConfirmation.headingAndTitle.penalty", "agent.appealConfirmation.headingAndTitle.penalties").toString()
             } else {
-                getPluralOrSingular(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties))("appealConfirmation.headingAndTitle.penalty", "appealConfirmation.headingAndTitle.penalties").toString()
+                getPluralOrSingular(Some(bothPenalties))("appealConfirmation.headingAndTitle.penalty", "appealConfirmation.headingAndTitle.penalties").toString()
                 }
             }
         </h1>
@@ -73,14 +74,14 @@
 
     <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.p3")</p>
 
-    @if(!userRequest.isAgent && showDigitalCommsMessage){
+    @if(!isAgent && showDigitalCommsMessage){
         <p class="govuk-body" id="digital-comms-message">@messages("appealConfirmation.whatHappensNext.p4")</p>
     }
 
     <ul class="govuk-list">
         <li>
             <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">
-                @if(userRequest.isAgent) {
+                @if(isAgent) {
                     @messages("agent.common.returnToPenalties")
                 } else {
                     @messages("common.returnToPenalties")
@@ -89,7 +90,7 @@
         </li>
         <li>
             <a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="view-vat-account-link">
-                @if(userRequest.isAgent) {
+                @if(isAgent) {
                     @messages("agent.appealConfirmation.returnToVatVc")
                 } else {
                     @messages("appealConfirmation.returnToVatVc")

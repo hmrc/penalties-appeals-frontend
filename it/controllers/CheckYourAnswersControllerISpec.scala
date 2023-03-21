@@ -1107,7 +1107,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "yes"
     ))) {
-      val request = await(controller.onPageLoadForConfirmation()(fakeRequest))
+      val request = await(controller.onPageLoadForConfirmation()(fakeRequest.withSession(
+        SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
+        SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
+        SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
+        SessionKeys.confirmationMultipleAppeals -> "no",
+        SessionKeys.confirmationObligation -> "false",
+        SessionKeys.confirmationIsAgent -> "false")))
       request.header.status shouldBe Status.OK
     }
 
