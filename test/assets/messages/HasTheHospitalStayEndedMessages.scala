@@ -25,7 +25,7 @@ object HasTheHospitalStayEndedMessages {
 
   val noText = "No"
 
-  val hintText = "For example, 12 3 2018"
+  val hintText = "For example, 12&nbsp3&nbsp2018"
 
   val continue = "Continue"
 }

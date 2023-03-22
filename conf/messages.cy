@@ -160,7 +160,7 @@ agent.whenDidBecomeUnable.error.required.lpp = Mae’n rhaid i’r dyddiad y gwn
 agent.whenDidBecomeUnable.error.required.two.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW gynnwys {0} a {1}
 agent.whenDidBecomeUnable.error.invalid.lpp = Mae’n rhaid i’r dyddiad y gwnaeth y broblem rwystro’ch cleient am y tro cyntaf rhag talu’r bil TAW fod yn ddyddiad go iawn
 
-whenDidEventHappen.hint = Er enghraifft, 12 3 2018
+whenDidEventHappen.hint = Er enghraifft, 12&nbsp3&nbsp2018
 
 whenDidBecomeUnable.other.lpp = Pryd wnaeth y mater eich atal rhag talu’r bil TAW am y tro cyntaf?
 agent.whenDidBecomeUnable.other.lpp = Pryd rwystrodd y broblem eich cleient rhag talu’r bil TAW am y tro cyntaf?

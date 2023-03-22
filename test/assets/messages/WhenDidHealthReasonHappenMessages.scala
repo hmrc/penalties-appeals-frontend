@@ -40,7 +40,7 @@ object WhenDidHealthReasonHappenMessages {
 
   val titleAgentLPP = s"$headingAgentLPP - Agent - Appeal a VAT penalty - GOV.UK"
 
-  val hintText = "For example, 12 3 2018"
+  val hintText = "For example, 12&nbsp3&nbsp2018"
 
   val dayEntry = "Day"
 

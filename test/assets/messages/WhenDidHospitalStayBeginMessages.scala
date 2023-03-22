@@ -19,7 +19,7 @@ package messages
 object WhenDidHospitalStayBeginMessages {
     val title = "When did the hospital stay begin? - Appeal a VAT penalty - GOV.UK"
     val heading = "When did the hospital stay begin?"
-    val hintText = "For example, 12 3 2018"
+    val hintText = "For example, 12&nbsp3&nbsp2018"
     val dayEntry = "Day"
     val monthEntry = "Month"
     val yearEntry = "Year"

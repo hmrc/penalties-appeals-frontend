@@ -22,7 +22,7 @@ import java.time.LocalDate
 trait ImplicitDateFormatter {
 
   implicit def dateToString(date: LocalDate)(implicit messages: Messages): String =
-    s"${date.getDayOfMonth} ${messages(s"month.${date.getMonthValue}")} ${date.getYear}"
+    s"${date.getDayOfMonth}\u00A0${messages(s"month.${date.getMonthValue}")}\u00A0${date.getYear}"
 
 }
 
