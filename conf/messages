@@ -160,7 +160,7 @@ agent.whenDidBecomeUnable.error.required.lpp = The date when the issue first sto
 agent.whenDidBecomeUnable.error.required.two.lpp = The date when the issue first stopped your client paying the VAT bill must include a {0} and a {1}
 agent.whenDidBecomeUnable.error.invalid.lpp = The date when the issue first stopped your client paying the VAT bill must be a real date
 
-whenDidEventHappen.hint = For example, 12 3 2018
+whenDidEventHappen.hint = For example, 12&nbsp3&nbsp2018
 
 whenDidBecomeUnable.other.lpp = When did the issue first stop you paying the VAT bill?
 agent.whenDidBecomeUnable.other.lpp = When did the issue first stop your client paying the VAT bill?

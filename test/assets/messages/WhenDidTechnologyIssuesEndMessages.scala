@@ -21,7 +21,7 @@ object WhenDidTechnologyIssuesEndMessages {
 
   val heading = "When did the technology issues end?"
 
-  val hintText = "For example, 12 3 2018"
+  val hintText = "For example, 12&nbsp3&nbsp2018"
 
   val dayEntry = "Day"
 

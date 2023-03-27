@@ -291,7 +291,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the crime happen?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url,
           WhenDidCrimeHappenPage.toString
@@ -321,7 +321,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the crime happen?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(CheckMode).url,
           WhenDidCrimeHappenPage.toString
@@ -357,7 +357,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the fire or flood happen?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url,
           WhenDidFireOrFloodHappenPage.toString
@@ -379,7 +379,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the fire or flood happen?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.FireOrFloodReasonController.onPageLoad(CheckMode).url,
           WhenDidFireOrFloodHappenPage.toString
@@ -410,7 +410,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the person leave the business?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url,
           WhenDidPersonLeaveTheBusinessPage.toString
@@ -434,7 +434,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the person leave the business?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.LossOfStaffReasonController.onPageLoad(CheckMode).url,
           WhenDidPersonLeaveTheBusinessPage.toString
@@ -467,13 +467,13 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the technology issues begin?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url,
           WhenDidTechnologyIssuesBeginPage.toString
         ).url
         result(2).key shouldBe "When did the technology issues end?"
-        result(2).value shouldBe "2 January 2022"
+        result(2).value shouldBe "2\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url,
           WhenDidTechnologyIssuesEndPage.toString
@@ -499,13 +499,13 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the technology issues begin?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(CheckMode).url,
           WhenDidTechnologyIssuesBeginPage.toString
         ).url
         result(2).key shouldBe "When did the technology issues end?"
-        result(2).value shouldBe "2 January 2022"
+        result(2).value shouldBe "2\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url,
           WhenDidTechnologyIssuesEndPage.toString
@@ -540,7 +540,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the issue first stop you paying the VAT bill?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
           WhenDidBecomeUnablePage.toString
@@ -593,7 +593,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               WasHospitalStayRequiredPage.toString
             ).url
             result(2).key shouldBe "When did the health issue first stop your client getting information to you?"
-            result(2).value shouldBe "1 January 2022"
+            result(2).value shouldBe "1\u00A0January\u00A02022"
             result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
               controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
               WhenDidHealthIssueHappenPage.toString
@@ -625,7 +625,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               WasHospitalStayRequiredPage.toString
             ).url
             result(2).key shouldBe "When did the health issue first stop your client getting information to you?"
-            result(2).value shouldBe "1 January 2022"
+            result(2).value shouldBe "1\u00A0January\u00A02022"
             result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
               controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
               WhenDidHealthIssueHappenPage.toString
@@ -656,7 +656,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
               "other")(request, implicitly)
             result(1).key shouldBe "When did the issue first stop your client submitting the VAT Return?"
-            result(1).value shouldBe "1 January 2022"
+            result(1).value shouldBe "1\u00A0January\u00A02022"
             controllers.routes.CheckYourAnswersController.changeAnswer(
               controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
               WhenDidBecomeUnablePage.toString
@@ -678,7 +678,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
               "other")(request, implicitly)
             result(1).key shouldBe "When did the issue first stop your client getting information to you?"
-            result(1).value shouldBe "1 January 2022"
+            result(1).value shouldBe "1\u00A0January\u00A02022"
             controllers.routes.CheckYourAnswersController.changeAnswer(
               controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
               WhenDidBecomeUnablePage.toString
@@ -700,7 +700,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
               "other")(request, implicitly)
             result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-            result(1).value shouldBe "1 January 2022"
+            result(1).value shouldBe "1\u00A0January\u00A02022"
             controllers.routes.CheckYourAnswersController.changeAnswer(
               controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
               WhenDidBecomeUnablePage.toString
@@ -729,7 +729,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop your client getting information to you?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -773,7 +773,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop your client getting information to you?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -819,7 +819,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop your client getting information to you?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -863,7 +863,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop your client getting information to you?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -920,7 +920,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(2).key shouldBe "When did the issue first stop your client paying the VAT bill?"
-        result(2).value shouldBe "1 January 2022"
+        result(2).value shouldBe "1\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
           WhenDidBecomeUnablePage.toString
@@ -991,7 +991,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the issue first stop your client paying the VAT bill?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
           WhenDidBecomeUnablePage.toString
@@ -1041,7 +1041,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the issue first stop your client getting information to you?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
           WhenDidBecomeUnablePage.toString
@@ -1088,7 +1088,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the issue first stop your client getting information to you?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
           WhenDidBecomeUnablePage.toString
@@ -1146,7 +1146,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           WasHospitalStayRequiredPage.toString
         ).url
         result(3).key shouldBe "When did the health issue first stop you paying the VAT bill?"
-        result(3).value shouldBe "1 January 2022"
+        result(3).value shouldBe "1\u00A0January\u00A02022"
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
           WhenDidHealthIssueHappenPage.toString
@@ -1197,7 +1197,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               WasHospitalStayRequiredPage.toString
             ).url
             result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
-            result(2).value shouldBe "1 January 2022"
+            result(2).value shouldBe "1\u00A0January\u00A02022"
             result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
               controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
               WhenDidHealthIssueHappenPage.toString
@@ -1228,7 +1228,7 @@ class SessionAnswersHelperSpec extends SpecBase {
               WasHospitalStayRequiredPage.toString
             ).url
             result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
-            result(2).value shouldBe "1 January 2022"
+            result(2).value shouldBe "1\u00A0January\u00A02022"
             result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
               controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
               WhenDidHealthIssueHappenPage.toString
@@ -1263,7 +1263,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -1305,7 +1305,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -1352,7 +1352,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -1394,7 +1394,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -1442,7 +1442,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -1487,7 +1487,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             ReasonableExcuseSelectionPage.toString
           ).url
           result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1 January 2022"
+          result(1).value shouldBe "1\u00A0January\u00A02022"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
             WhenDidBecomeUnablePage.toString
@@ -1544,7 +1544,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(2).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-        result(2).value shouldBe "1 January 2022"
+        result(2).value shouldBe "1\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
           WhenDidBecomeUnablePage.toString
@@ -1593,7 +1593,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             WasHospitalStayRequiredPage.toString
           ).url
           result(2).key shouldBe "When did the health issue first stop your client getting information to you?"
-          result(2).value shouldBe "1 January 2022"
+          result(2).value shouldBe "1\u00A0January\u00A02022"
           result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
             WhenDidHealthIssueHappenPage.toString
@@ -1623,7 +1623,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             WasHospitalStayRequiredPage.toString
           ).url
           result(2).key shouldBe "When did the health issue first stop your client submitting the VAT Return?"
-          result(2).value shouldBe "1 January 2022"
+          result(2).value shouldBe "1\u00A0January\u00A02022"
           result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
             WhenDidHealthIssueHappenPage.toString
@@ -1654,7 +1654,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             WasHospitalStayRequiredPage.toString
           ).url
           result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
-          result(2).value shouldBe "1 January 2022"
+          result(2).value shouldBe "1\u00A0January\u00A02022"
           result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
             WhenDidHealthIssueHappenPage.toString
@@ -1685,7 +1685,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           WasHospitalStayRequiredPage.toString
         ).url
         result(2).key shouldBe "When did the health issue first stop your client paying the VAT bill?"
-        result(2).value shouldBe "1 January 2022"
+        result(2).value shouldBe "1\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
           WhenDidHealthIssueHappenPage.toString
@@ -1717,7 +1717,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             WasHospitalStayRequiredPage.toString
           ).url
           result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
-          result(2).value shouldBe "1 January 2022"
+          result(2).value shouldBe "1\u00A0January\u00A02022"
           result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
             WhenDidHealthIssueHappenPage.toString
@@ -1748,7 +1748,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           WasHospitalStayRequiredPage.toString
         ).url
         result(2).key shouldBe "When did the health issue first stop you paying the VAT bill?"
-        result(2).value shouldBe "1 January 2022"
+        result(2).value shouldBe "1\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
           WhenDidHealthIssueHappenPage.toString
@@ -1780,7 +1780,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           WasHospitalStayRequiredPage.toString
         ).url
         result(2).key shouldBe "When did the hospital stay begin?"
-        result(2).value shouldBe "1 January 2022"
+        result(2).value shouldBe "1\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
           WhenDidHospitalStayBeginPage.toString
@@ -1792,7 +1792,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           DidHospitalStayEndPage.toString
         ).url
         result(4).key shouldBe "When did it end?"
-        result(4).value shouldBe "2 February 2022"
+        result(4).value shouldBe "2\u00A0February\u00A02022"
         result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(CheckMode).url,
           WhenDidHospitalStayEndPage.toString
@@ -1824,7 +1824,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           WasHospitalStayRequiredPage.toString
         ).url
         result(2).key shouldBe "When did the hospital stay begin?"
-        result(2).value shouldBe "1 January 2022"
+        result(2).value shouldBe "1\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
           WhenDidHospitalStayBeginPage.toString
@@ -1868,7 +1868,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ReasonableExcuseSelectionPage.toString
       ).url
       result(1).key shouldBe "When did the person die?"
-      result(1).value shouldBe "1 January 2022"
+      result(1).value shouldBe "1\u00A0January\u00A02022"
       result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
         controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
         WhenDidThePersonDiePage.toString
@@ -1892,7 +1892,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ReasonableExcuseSelectionPage.toString
       ).url
       result(1).key shouldBe "When did the person die?"
-      result(1).value shouldBe "1 January 2022"
+      result(1).value shouldBe "1\u00A0January\u00A02022"
       result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
         controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
         WhenDidThePersonDiePage.toString
@@ -2239,7 +2239,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
           WhenDidBecomeUnablePage.toString
@@ -2328,7 +2328,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the person die?"
-        result(1).value shouldBe "1 January 2022"
+        result(1).value shouldBe "1\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
           WhenDidThePersonDiePage.toString
