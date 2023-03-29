@@ -114,4 +114,14 @@ object SessionKeys {
     firstPenaltyCommunicationDate,
     secondPenaltyCommunicationDate
   )
+
+  val confirmationPageKeys: Seq[String] = Seq(
+    confirmationAppealType,
+    confirmationStartDate,
+    confirmationEndDate,
+    confirmationObligation,
+    confirmationDigitalComms,
+    confirmationMultipleAppeals,
+    confirmationIsAgent
+  )
 }
