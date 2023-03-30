@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import base.SpecBase
 import helpers.SessionAnswersHelper
 import models.{PenaltyTypeEnum, UserRequest}
@@ -28,7 +26,7 @@ import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
-import services.{AppealService, SessionService}
+import services.AppealService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
@@ -36,6 +34,7 @@ import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
 import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
 
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersControllerSpec extends SpecBase {
@@ -55,12 +54,15 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(crimeAnswers, fakeRequest)
 
-  val confirmationSessionKeys = Seq(SessionKeys.journeyId -> "1234", SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
-  SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
-  SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
-  SessionKeys.confirmationMultipleAppeals -> "no",
-  SessionKeys.confirmationObligation -> "false",
-  SessionKeys.confirmationIsAgent -> "false")
+  val confirmationSessionKeys = Seq(
+    SessionKeys.journeyId -> "1234",
+    SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
+    SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
+    SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
+    SessionKeys.confirmationMultipleAppeals -> "no",
+    SessionKeys.confirmationObligation -> "false",
+    SessionKeys.confirmationIsAgent -> "false"
+  )
 
   val fakeRequestWithConfirmationKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(confirmationSessionKeys: _*)
 
@@ -134,9 +136,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val fakeRequestForCrimeJourneyNoReasonableExcuse: UserRequest[AnyContent] = fakeRequestConverter(crimeNoReasonAnswers, fakeRequest)
 
   val crimeMissingAnswers: JsObject = Json.obj(
-      SessionKeys.reasonableExcuse -> "crime",
-      SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.dateOfCrime -> "2022-01-01"
+    SessionKeys.reasonableExcuse -> "crime",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.dateOfCrime -> "2022-01-01"
   ) ++ correctUserAnswers
 
   val fakeRequestForCrimeJourneyWithoutSomeAnswers: UserRequest[AnyContent] = fakeRequestConverter(crimeMissingAnswers, fakeRequest)
@@ -194,8 +196,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     confirmationPage,
     errorHandler,
     uploadJourneyRepository,
-    sessionAnswersHelper,
-    sessionService
+    sessionAnswersHelper
   )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction)
 
   "onPageLoad" should {

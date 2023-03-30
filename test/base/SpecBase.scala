@@ -72,8 +72,6 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   implicit lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
 
-  val sessionService: SessionService = injector.instanceOf[SessionService]
-
   val unauthorised: Unauthorised = injector.instanceOf[Unauthorised]
 
   val mockAuthConnector: AuthConnector = mock(classOf[AuthConnector])

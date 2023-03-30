@@ -16,26 +16,25 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import helpers.SessionAnswersHelper
-import javax.inject.Inject
 import models.pages.{CheckYourAnswersPage, PageMode}
 import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.UploadJourneyRepository
-import services.{AppealService, SessionService}
+import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
 import viewtils.ImplicitDateFormatter
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswersPage,
@@ -43,8 +42,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
                                            appealConfirmationPage: AppealConfirmationPage,
                                            errorHandler: ErrorHandler,
                                            uploadJourneyRepository: UploadJourneyRepository,
-                                           sessionAnswersHelper: SessionAnswersHelper,
-                                           sessionService: SessionService)
+                                           sessionAnswersHelper: SessionAnswersHelper)
                                           (implicit mcc: MessagesControllerComponents,
                                            ec: ExecutionContext,
                                            val config: Configuration,
@@ -123,8 +121,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       },
       _ => {
         val confirmationAppealType = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get.toString
-        val confirmationStartDate = dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get)
-        val confirmationEndDate = dateToString(userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get)
+        val confirmationStartDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get.toString
+        val confirmationEndDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get.toString
         val confirmationObligation = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true).toString
         val confirmationMultipleAppeals = userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).getOrElse("no")
         val confirmationIsAgent = userRequest.isAgent.toString
@@ -147,9 +145,9 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     implicit userRequest => {
       val appealType = PenaltyTypeEnum.withName(userRequest.session.get(SessionKeys.confirmationAppealType).get)
       val bothPenalties: String = userRequest.session.get(SessionKeys.confirmationMultipleAppeals).get
-      val (readablePeriodStart, readablePeriodEnd) =
-        (userRequest.session.get(SessionKeys.confirmationStartDate).get,
-         userRequest.session.get(SessionKeys.confirmationEndDate).get)
+      val startDate: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.confirmationStartDate).get)
+      val endDate: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.confirmationEndDate).get)
+      val (readablePeriodStart, readablePeriodEnd) = (dateToString(startDate), dateToString(endDate))
       val isObligationAppeal: Boolean = userRequest.session.get(SessionKeys.confirmationObligation).get.toBoolean
       val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
       val isAgent: Boolean = userRequest.session.get(SessionKeys.confirmationIsAgent).get.toBoolean
