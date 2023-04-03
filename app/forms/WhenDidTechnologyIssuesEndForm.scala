@@ -20,6 +20,7 @@ import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.i18n.Messages
+import viewtils.ImplicitDateFormatter
 
 import java.time.LocalDate
 
@@ -32,7 +33,8 @@ object WhenDidTechnologyIssuesEndForm extends Mappings {
         twoRequiredKey = "technicalIssues.end.error.required.two",
         requiredKey = "technicalIssues.end.error.required",
         futureKey = Some("technicalIssues.end.error.notInFuture"),
-        dateNotEqualOrAfterKeyAndCompareDate = Some(("technicalIssues.end.error.endDateLessThanStartDate", startDate))
+        //Using the messages API as it's easier to pass in the startDate message param
+        dateNotEqualOrAfterKeyAndCompareDate = Some(messages("technicalIssues.end.error.endDateLessThanStartDate", ImplicitDateFormatter.dateToString(startDate)), startDate)
       )
     )
   }
