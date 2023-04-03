@@ -220,7 +220,7 @@ technicalIssues.end.error.required.two = The date the technology issues ended mu
 technicalIssues.end.error.required = The date the technology issues ended must include a {0}
 technicalIssues.end.error.invalid = The date the technology issues ended must be a real date
 technicalIssues.end.error.notInFuture = The date the technology issues ended must be today or in the past
-technicalIssues.end.error.endDateLessThanStartDate = The date the technology issues ended must be the same or after they began
+technicalIssues.end.error.endDateLessThanStartDate = The date the technology issues ended must be {0} or later
 
 # Was hospital stay required page
 # ----------------------------------------------------------

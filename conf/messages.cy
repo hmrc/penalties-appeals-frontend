@@ -220,7 +220,7 @@ technicalIssues.end.error.required.two = Mae’n rhaid i’r dyddiad y ddaeth y 
 technicalIssues.end.error.required = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben gynnwys {0}
 technicalIssues.end.error.invalid = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben fod yn ddyddiad go iawn
 technicalIssues.end.error.notInFuture = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben fod heddiw neu yn y gorffennol
-technicalIssues.end.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben fod naill ai ar yr un dyddiad y gwnaethant ddechrau neu wedi’r dyddiad hwnnw
+technicalIssues.end.error.endDateLessThanStartDate = The date the technology issues ended must be {0} or later
 
 # Was hospital stay required page
 # ----------------------------------------------------------
