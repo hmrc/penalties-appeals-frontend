@@ -56,7 +56,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+      SessionKeys.lateAppealReason -> "I forgot"
     ))) {
       val request = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.OK
@@ -76,7 +77,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "lossOfStaff",
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
+      SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01"),
+      SessionKeys.lateAppealReason -> "I forgot"
     ))) {
       val request = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.OK
@@ -95,7 +97,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.reasonableExcuse -> "technicalIssues",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
-      SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
+      SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02"),
+      SessionKeys.lateAppealReason -> "I forgot"
     ))) {
       val request = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.OK
@@ -115,7 +118,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "fireOrFlood",
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
+      SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01"),
+      SessionKeys.lateAppealReason -> "I forgot"
     ))) {
       val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.OK
@@ -207,7 +211,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -229,7 +233,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -264,7 +268,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -380,7 +384,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -415,7 +419,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "bereavement",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
@@ -452,7 +456,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.otherRelevantInformation -> "Lorem ipsum",
       SessionKeys.isUploadEvidence -> "yes"
@@ -470,7 +474,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.otherRelevantInformation -> "Lorem ipsum",
       SessionKeys.isUploadEvidence -> "yes"
@@ -505,7 +509,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.otherRelevantInformation -> "Lorem ipsum",
       SessionKeys.isUploadEvidence -> "no"
@@ -538,7 +542,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "bereavement",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2021-01-01")
@@ -556,7 +560,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.firstPenaltyCommunicationDate -> LocalDate.now().plusDays(1),
+      SessionKeys.secondPenaltyCommunicationDate -> LocalDate.now().plusDays(1),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "bereavement",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2021-01-01"),
@@ -576,7 +582,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
     ))) {
       val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
@@ -589,7 +595,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
