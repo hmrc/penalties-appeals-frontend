@@ -20,6 +20,7 @@ import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.i18n.Messages
+import viewtils.ImplicitDateFormatter
 
 import java.time.LocalDate
 
@@ -34,7 +35,8 @@ object WhenDidHospitalStayEndForm extends Mappings {
         twoRequiredKey = "healthReason.whenDidHospitalStayEnd.error.required.two",
         requiredKey = "healthReason.whenDidHospitalStayEnd.error.required",
         futureKey = Some("healthReason.whenDidHospitalStayEnd.error.notInFuture"),
-        dateNotEqualOrAfterKeyAndCompareDate = Some(("healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate", startDate))
+        //Using the messages API as it's easier to pass in the startDate message param
+        dateNotEqualOrAfterKeyAndCompareDate = Some(messages("healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate", ImplicitDateFormatter.dateToString(startDate)), startDate)
       )
     )
   }
