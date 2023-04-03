@@ -282,7 +282,7 @@ healthReason.whenDidHospitalStayEnd.error.required.two = Mae’n rhaid i’r dyd
 healthReason.whenDidHospitalStayEnd.error.required = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0}
 healthReason.whenDidHospitalStayEnd.error.invalid = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yn ddyddiad go iawn
 healthReason.whenDidHospitalStayEnd.error.notInFuture = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod heddiw neu yn y gorffennol
-healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yr un dyddiad y dechreuodd neu ar ôl y dyddiad hwnnw
+healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate = The date the hospital stay ended must be {0} or later
 
 # Why was the return submitted late page
 # ----------------------------------------------------------

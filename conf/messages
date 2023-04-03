@@ -282,7 +282,7 @@ healthReason.whenDidHospitalStayEnd.error.required.two = The date the hospital s
 healthReason.whenDidHospitalStayEnd.error.required = The date the hospital stay ended must include a {0}
 healthReason.whenDidHospitalStayEnd.error.invalid = The date the hospital stay ended must be a real date
 healthReason.whenDidHospitalStayEnd.error.notInFuture = The date the hospital stay ended must be today or in the past
-healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate = The date the hospital stay ended must be the same or after it began
+healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate = The date the hospital stay ended must be {0} or later
 
 # Why was the return submitted late page
 # ----------------------------------------------------------
