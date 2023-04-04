@@ -17,5 +17,5 @@
 package utils
 
 object RegexHelper {
-  val textAreaRegex = "^[\u000A\u000D  ˿ -~¡-ÿĀ-ʯḀ-ỿ‐-―‘-‟₠-₿ÅK]{0,5000}$"
+  val textAreaRegex = "^[\u000A\u000D  ˿ -~¡-ÿĀ-ʯḀ-ỿ‐-―‘-‟₠-₿ÅK]{0,}$"
 }

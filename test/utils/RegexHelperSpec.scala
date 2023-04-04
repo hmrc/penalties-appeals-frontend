@@ -21,7 +21,7 @@ import base.SpecBase
 class RegexHelperSpec extends SpecBase {
   "RegexHelper" should {
     "return the text area regex" in {
-      RegexHelper.textAreaRegex shouldBe "^[\u000A\u000D  ˿ -~¡-ÿĀ-ʯḀ-ỿ‐-―‘-‟₠-₿ÅK]{0,5000}$"
+      RegexHelper.textAreaRegex shouldBe "^[\u000A\u000D  ˿ -~¡-ÿĀ-ʯḀ-ỿ‐-―‘-‟₠-₿ÅK]{0,}$"
     }
   }
 }
