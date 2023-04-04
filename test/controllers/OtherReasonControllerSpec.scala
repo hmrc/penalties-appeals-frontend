@@ -30,7 +30,7 @@ import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.mvc.Results.Ok
-import play.api.test.Helpers._
+import play.api.test.Helpers.{status, _}
 import services.upscan.UpscanService
 import testUtils.{AuthTestModels, UploadData}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
@@ -350,6 +350,15 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
           val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
             "why-return-submitted-late-text" -> "")))
           status(result) shouldBe BAD_REQUEST
+        }
+
+        "return 400 (BAD_REQUEST) when the user enters an invalid character" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val result: Future[Result] = controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
+            "why-return-submitted-late-text" -> "コし")))
+          status(result) shouldBe BAD_REQUEST
+          contentAsString(result) should include("The text must contain only letters, numbers and standard special characters")
         }
       }
 

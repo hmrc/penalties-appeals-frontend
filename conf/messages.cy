@@ -290,6 +290,7 @@ otherReason.whyReturnSubmittedLate.headingAndTitle = Pam y cyflwynwyd y Ffurflen
 otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Pam y talwyd y bil TAW yn hwyr?
 otherReason.whyReturnSubmittedLate.lpp.error.required = Eglurwch pam y talwyd y bil TAW yn hwyr
 otherReason.whyReturnSubmittedLate.error.required = Eglurwch pam y cyflwynwyd y Ffurflen TAW yn hwyr
+otherReason.whyReturnSubmittedLate.error.regex = Mae’n rhaid i’r testun gynnwys llythrennau, rhifau a chymeriadau arbennig safonol yn unig
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------

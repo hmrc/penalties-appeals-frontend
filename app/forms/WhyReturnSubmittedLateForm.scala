@@ -21,6 +21,7 @@ import forms.mappings.Mappings
 import models.{PenaltyTypeEnum, UserRequest}
 import play.api.data.Form
 import play.api.data.Forms.single
+import utils.RegexHelper.textAreaRegex
 import utils.SessionKeys
 
 object WhyReturnSubmittedLateForm extends Mappings {
@@ -34,6 +35,8 @@ object WhyReturnSubmittedLateForm extends Mappings {
             "otherReason.whyReturnSubmittedLate.lpp.error.required"
         ).verifying("explainReason.charsInTextArea.error",
             value => value.length <= appConfig.numberOfCharsInTextArea)
+          .verifying("otherReason.whyReturnSubmittedLate.error.regex",
+            value => value.matches(textAreaRegex))
       )
     )
 }

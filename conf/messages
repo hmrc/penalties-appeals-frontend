@@ -290,6 +290,7 @@ otherReason.whyReturnSubmittedLate.headingAndTitle = Why was the return submitte
 otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Why was the VAT bill paid late?
 otherReason.whyReturnSubmittedLate.lpp.error.required = Explain why the VAT bill was paid late
 otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
+otherReason.whyReturnSubmittedLate.error.regex = The text must contain only letters, numbers and standard special characters
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------

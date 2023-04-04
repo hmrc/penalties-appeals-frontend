@@ -39,5 +39,10 @@ class MakingALateAppealFormSpec extends SpecBase with FormBehaviours {
       val result = form.bind(Map("late-appeal-text" -> moreThanFiveThousandChars)).apply("late-appeal-text")
       result.errors.headOption shouldBe Some(FormError("late-appeal-text", "explainReason.charsInTextArea.error"))
     }
+
+    "Non standard character give regex error and not bind in" in {
+      val result = form.bind(Map("late-appeal-text" -> invalidChars)).apply("late-appeal-text")
+      result.errors.headOption shouldBe Some(FormError("late-appeal-text", "otherReason.whyReturnSubmittedLate.error.regex"))
+    }
   }
 }

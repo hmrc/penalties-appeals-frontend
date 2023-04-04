@@ -247,6 +247,8 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   val moreThanFiveThousandChars: String = 'a'.toString * 5010
 
+  val invalidChars: String = "コし"
+
   def uploadListRow(fileNumber: Int, fileName: String, fileReference: String): Html = {
     Html(
       s"""

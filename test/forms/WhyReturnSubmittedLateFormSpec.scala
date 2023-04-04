@@ -53,5 +53,10 @@ class WhyReturnSubmittedLateFormSpec extends SpecBase {
       val result = form.bind(Map("why-return-submitted-late-text" -> moreThanFiveThousandChars)).apply("why-return-submitted-late-text")
       result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "explainReason.charsInTextArea.error"))
     }
+
+    "Non standard character give regex error and not bind in" in {
+      val result = form.bind(Map("why-return-submitted-late-text" -> invalidChars)).apply("why-return-submitted-late-text")
+      result.errors.headOption shouldBe Some(FormError("why-return-submitted-late-text", "otherReason.whyReturnSubmittedLate.error.regex"))
+    }
   }
 }
