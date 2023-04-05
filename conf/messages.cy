@@ -220,7 +220,7 @@ technicalIssues.end.error.required.two = Mae’n rhaid i’r dyddiad y ddaeth y 
 technicalIssues.end.error.required = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben gynnwys {0}
 technicalIssues.end.error.invalid = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben fod yn ddyddiad go iawn
 technicalIssues.end.error.notInFuture = Mae’n rhaid i’r dyddiad y ddaeth y trafferthion technoleg i ben fod heddiw neu yn y gorffennol
-technicalIssues.end.error.endDateLessThanStartDate = The date the technology issues ended must be {0} or later
+technicalIssues.end.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth y trafferthion technoleg i ben fod ar {0} neu’n hwyrach
 
 # Was hospital stay required page
 # ----------------------------------------------------------
@@ -282,7 +282,7 @@ healthReason.whenDidHospitalStayEnd.error.required.two = Mae’n rhaid i’r dyd
 healthReason.whenDidHospitalStayEnd.error.required = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben gynnwys {0}
 healthReason.whenDidHospitalStayEnd.error.invalid = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod yn ddyddiad go iawn
 healthReason.whenDidHospitalStayEnd.error.notInFuture = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod heddiw neu yn y gorffennol
-healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate = The date the hospital stay ended must be {0} or later
+healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate = Mae’n rhaid i’r dyddiad y daeth yr arhosiad yn yr ysbyty i ben fod ar {0} neu’n hwyrach
 
 # Why was the return submitted late page
 # ----------------------------------------------------------
