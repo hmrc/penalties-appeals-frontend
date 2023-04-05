@@ -136,6 +136,15 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
           "other-relevant-information-text" -> "")))
         status(result) shouldBe BAD_REQUEST
       }
+
+      "return 400 (BAD_REQUEST) when the user enters an invalid character" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
+          "other-relevant-information-text" -> "コし")))
+        status(result) shouldBe BAD_REQUEST
+        contentAsString(result) should include("The text must contain only letters, numbers and standard special characters")
+      }
     }
 
     "the user is unauthorised" when {

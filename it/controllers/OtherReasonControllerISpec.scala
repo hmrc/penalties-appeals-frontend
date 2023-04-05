@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.mongodb.scala.Document
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContent, Cookie, Result}
+import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
@@ -362,6 +362,20 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
         val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest))
         request.header.status shouldBe BAD_REQUEST
       }
+
+      "invalid characters are entered" in new Setup(userAnswers(Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
+        val fakeRequestWithInvalidChars: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("why-return-submitted-late-text" -> "コし")
+
+        val result: Result = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithInvalidChars))
+        result.header.status shouldBe Status.BAD_REQUEST
+      }
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
@@ -610,13 +624,13 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
 
     "return OK and the correct view - showing the inset text for multiple duplicate uploads - when WarnForDuplicateFiles is enabled" in new Setup(
       userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+      ))) {
       enableFeatureSwitch(WarnForDuplicateFiles)
       val callbackModel: UploadJourney = UploadJourney(
         reference = "ref1",
@@ -1029,7 +1043,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
     }
   }
 
-  "POST /upload-evidence-question" should{
+  "POST /upload-evidence-question" should {
     "return 303 (SEE_OTHER), navigate to check your answer page when the user answers no" in new Setup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,

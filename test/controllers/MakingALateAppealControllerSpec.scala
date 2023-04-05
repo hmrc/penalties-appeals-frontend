@@ -120,6 +120,15 @@ class MakingALateAppealControllerSpec extends SpecBase {
         contentAsString(result) should include("There is a problem")
         contentAsString(result) should include("You must provide some information about why you did not appeal sooner")
       }
+
+      "return 400 (BAD_REQUEST) when the user enters an invalid character" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody(
+          "late-appeal-text" -> "コし")))
+        status(result) shouldBe BAD_REQUEST
+        contentAsString(result) should include("The text must contain only letters, numbers and standard special characters")
+      }
     }
 
     "the user is unauthorised" when {

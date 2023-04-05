@@ -35,5 +35,10 @@ class OtherRelevantInformationFormSpec extends SpecBase with FormBehaviours {
         val result = form.bind(Map("other-relevant-information-text" -> moreThanFiveThousandChars)).apply("other-relevant-information-text")
         result.errors.headOption shouldBe Some(FormError("other-relevant-information-text", "explainReason.charsInTextArea.error"))
       }
+
+    "Non standard character give regex error and not bind in" in {
+      val result = form.bind(Map("other-relevant-information-text" -> invalidChars)).apply("other-relevant-information-text")
+      result.errors.headOption shouldBe Some(FormError("other-relevant-information-text", "otherReason.whyReturnSubmittedLate.error.regex"))
+    }
   }
 }

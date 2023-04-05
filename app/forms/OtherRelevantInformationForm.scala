@@ -20,6 +20,7 @@ import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.single
+import utils.RegexHelper.textAreaRegex
 
 object OtherRelevantInformationForm extends Mappings {
   def otherRelevantInformationForm()(implicit appConfig: AppConfig): Form[String] = Form[String](
@@ -27,6 +28,8 @@ object OtherRelevantInformationForm extends Mappings {
       "other-relevant-information-text" -> text(errorKey = "otherRelevantInformation.error.required")
         .verifying("explainReason.charsInTextArea.error",
           value => value.length <= appConfig.numberOfCharsInTextArea)
+        .verifying("otherReason.whyReturnSubmittedLate.error.regex",
+          value => value.matches(textAreaRegex))
     )
   )
 }

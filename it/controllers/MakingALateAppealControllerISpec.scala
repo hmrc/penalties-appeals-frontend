@@ -19,7 +19,7 @@ package controllers
 import models.PenaltyTypeEnum
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.AnyContent
+import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
@@ -102,6 +102,21 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase {
 
       val request = await(controller.onSubmit()(fakeRequestWithEmptyBody))
       request.header.status shouldBe Status.BAD_REQUEST
+    }
+
+    "return 400 (BAD REQUEST) when the user POSTs invalid characters data" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.reasonableExcuse -> "crime"
+    ))) {
+      val fakeRequestWithInvalidChars: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("late-appeal-text" -> "コし")
+
+      val result: Result = await(controller.onSubmit()(fakeRequestWithInvalidChars))
+      result.header.status shouldBe Status.BAD_REQUEST
     }
 
     "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {

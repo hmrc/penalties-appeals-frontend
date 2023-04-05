@@ -20,6 +20,7 @@ import config.AppConfig
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.single
+import utils.RegexHelper.textAreaRegex
 
 
 object MakingALateAppealForm extends Mappings {
@@ -28,6 +29,8 @@ object MakingALateAppealForm extends Mappings {
       "late-appeal-text" -> text(errorKey = "makingALateAppeal.error.required")
         .verifying("explainReason.charsInTextArea.error",
           value => value.length <= appConfig.numberOfCharsInTextArea)
+        .verifying("otherReason.whyReturnSubmittedLate.error.regex",
+          value => value.matches(textAreaRegex))
     )
   )
 }
