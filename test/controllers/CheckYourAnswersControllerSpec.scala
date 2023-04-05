@@ -169,13 +169,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.whenDidThePersonDie -> "2021-01-01"
   ) ++ correctUserAnswers
 
-  val NoLateAppealAnswers: JsObject = Json.obj(
+  val noLateAppealAnswers: JsObject = Json.obj(
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.dateOfCrime -> "2022-01-01"
   ) ++ correctUserAnswers
 
-  val fakeRequestWithNoLateAppealReason : UserRequest[AnyContent] = fakeRequestConverter(NoLateAppealAnswers, fakeRequest)
+  val fakeRequestWithNoLateAppealReason : UserRequest[AnyContent] = fakeRequestConverter(noLateAppealAnswers, fakeRequest)
 
   val fakeRequestForLPPAgentAppeal: UserRequest[AnyContent] = fakeRequestConverter(agentLPPAnswers, fakeRequest)
 
