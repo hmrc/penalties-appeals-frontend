@@ -169,6 +169,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.whenDidThePersonDie -> "2021-01-01"
   ) ++ correctUserAnswers
 
+  val NoLateAppealAnswers: JsObject = Json.obj(
+    SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.dateOfCrime -> "2022-01-01"
+  ) ++ correctUserAnswers
+
+  val fakeRequestWithNoLateAppealReason : UserRequest[AnyContent] = fakeRequestConverter(NoLateAppealAnswers, fakeRequest)
 
   val fakeRequestForLPPAgentAppeal: UserRequest[AnyContent] = fakeRequestConverter(agentLPPAnswers, fakeRequest)
 
@@ -312,7 +319,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         "the user has not completed the late appeal question when required" in new Setup(AuthTestModels.successfulAuthResult, true) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourneyNoReasonableExcuse)
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequestWithNoLateAppealReason)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
