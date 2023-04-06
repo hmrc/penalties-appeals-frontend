@@ -187,7 +187,7 @@ export class MultiFileUpload {
 
         window.setTimeout(() => {
             element.remove();
-        }, 200000);
+        }, 1000);
     }
 
     /** F12 */
