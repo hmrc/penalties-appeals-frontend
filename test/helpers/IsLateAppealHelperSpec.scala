@@ -119,6 +119,22 @@ class IsLateAppealHelperSpec extends SpecBase {
         val result = helper.isAppealLate()(userRequest)
         result shouldBe false
       }
+
+      "user is submitting an obligation appeal" in {
+        val userRequest = UserRequest("123456789", answers = userAnswers(Json.obj(
+          SessionKeys.penaltyNumber -> "1234",
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+          SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
+          SessionKeys.isObligationAppeal -> true,
+          SessionKeys.otherRelevantInformation -> "Lorem ipsum",
+          SessionKeys.isUploadEvidence -> "yes"
+        )))(fakeRequest)
+        val result = helper.isAppealLate()(userRequest)
+        result shouldBe false
+      }
     }
   }
 
