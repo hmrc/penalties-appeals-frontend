@@ -31,7 +31,7 @@ import java.time.LocalDate
 
 class NavigationSpec extends SpecBase {
   val mockConfiguration: Configuration = mock(classOf[Configuration])
-  override val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)(mockConfiguration)
+  override val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig, isLateAppealHelper)(mockConfiguration)
   class Setup {
     reset(mockDateTimeHelper)
     reset(mockConfiguration)

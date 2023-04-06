@@ -16,10 +16,13 @@
 
 package controllers
 
+import java.time.LocalDate
 import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
-import helpers.SessionAnswersHelper
+import helpers.{SessionAnswersHelper, IsLateAppealHelper}
+
+import javax.inject.Inject
 import models.pages.{CheckYourAnswersPage, PageMode}
 import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import play.api.Configuration
@@ -33,8 +36,6 @@ import utils.SessionKeys
 import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
 import viewtils.ImplicitDateFormatter
 
-import java.time.LocalDate
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswersPage,
@@ -42,7 +43,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
                                            appealConfirmationPage: AppealConfirmationPage,
                                            errorHandler: ErrorHandler,
                                            uploadJourneyRepository: UploadJourneyRepository,
-                                           sessionAnswersHelper: SessionAnswersHelper)
+                                           sessionAnswersHelper: SessionAnswersHelper,
+                                           isLateAppealHelper: IsLateAppealHelper)
                                           (implicit mcc: MessagesControllerComponents,
                                            ec: ExecutionContext,
                                            val config: Configuration,
@@ -55,16 +57,20 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
 
   def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
-        if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
-          logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
-          for {
-            fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(userRequest)
-          } yield {
-            val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
-            Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
-          }
-        } else {
+      if(isLateAppealHelper.isAppealLate() && userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty){
+        logger.warn("[CheckYourAnswersController][onPageLoad] User tried skipping late appeal page, redirecting back to late appeal page")
+        Future(Redirect(controllers.routes.MakingALateAppealController.onPageLoad()))
+      } else {
+        userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
+          if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
+            for {
+              fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(userRequest)
+            } yield {
+              val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
+              Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
+            }
+          } else {
             logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
             Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
           }
@@ -85,6 +91,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
             }
           }
         )
+      }
     }
   }
 

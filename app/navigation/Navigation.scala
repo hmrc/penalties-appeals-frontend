@@ -19,7 +19,7 @@ package navigation
 import config.AppConfig
 import config.featureSwitches.{FeatureSwitching, ShowFullAppealAgainstTheObligation}
 import controllers.routes
-import helpers.DateTimeHelper
+import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models._
 import models.pages._
 import play.api.Configuration
@@ -31,7 +31,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
-                           appConfig: AppConfig)(implicit val config: Configuration) extends FeatureSwitching {
+                           appConfig: AppConfig,
+                           isLateAppealHelper: IsLateAppealHelper)(implicit val config: Configuration) extends FeatureSwitching {
 
   lazy val reverseNormalRoutes: Map[Page, (UserRequest[_], Boolean) => Call] = Map(
     CancelVATRegistrationPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl)),
@@ -240,7 +241,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_], mode: Mode): Call = {
-    if (isAppealLate()(userRequest)
+    if (isLateAppealHelper.isAppealLate()(userRequest)
       && (userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)
       && userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isEmpty) {
       logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - redirect to 'Making a Late Appeal' page")
@@ -251,21 +252,6 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
-    val dateNow: LocalDate = dateTimeHelper.dateNow
-    userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties) match {
-      case Some("yes") => {
-        val dateOfFirstComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate).get
-        val dateOfSecondComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.secondPenaltyCommunicationDate).get
-        dateOfFirstComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal)) ||
-          dateOfSecondComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
-      }
-      case _ => {
-        val dateOfComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
-        dateOfComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
-      }
-    }
-  }
 
   def routeForUploadList(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
     answer match {

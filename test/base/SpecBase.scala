@@ -18,7 +18,7 @@ package base
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredActionImpl, DataRetrievalActionImpl}
-import helpers.DateTimeHelper
+import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{PenaltyTypeEnum, UserRequest}
@@ -56,7 +56,9 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   val mockDateTimeHelper: DateTimeHelper = mock(classOf[DateTimeHelper])
 
-  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig)
+  val isLateAppealHelper: IsLateAppealHelper = new IsLateAppealHelper(mockDateTimeHelper, appConfig)
+
+  val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig, isLateAppealHelper)
 
   val mockSessionService: SessionService = mock(classOf[SessionService])
 

@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import helpers.SessionAnswersHelper
+import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 import models.{PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
@@ -44,6 +44,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val mockAppealService: AppealService = mock(classOf[AppealService])
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
   val uploadJourneyRepository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
+  val mockIsLateAppeal:IsLateAppealHelper = mock(classOf[IsLateAppealHelper])
 
   val crimeAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "crime",
@@ -168,6 +169,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     SessionKeys.whenDidThePersonDie -> "2021-01-01"
   ) ++ correctUserAnswers
 
+  val noLateAppealAnswers: JsObject = Json.obj(
+    SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.dateOfCrime -> "2022-01-01"
+  ) ++ correctUserAnswers
+
+  val fakeRequestWithNoLateAppealReason : UserRequest[AnyContent] = fakeRequestConverter(noLateAppealAnswers, fakeRequest)
 
   val fakeRequestForLPPAgentAppeal: UserRequest[AnyContent] = fakeRequestConverter(agentLPPAnswers, fakeRequest)
 
@@ -182,12 +190,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   val fakeRequestForAppealSubmitted: UserRequest[AnyContent] = fakeRequestConverter(confirmationPageKeys, fakeRequest)
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], isLateAppeal: Boolean = false) {
     reset(mockAuthConnector, mockAppealService, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
+
+    when(mockIsLateAppeal.isAppealLate()(any)).thenReturn(isLateAppeal)
   }
 
   object Controller extends CheckYourAnswersController(
@@ -196,7 +206,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     confirmationPage,
     errorHandler,
     uploadJourneyRepository,
-    sessionAnswersHelper
+    sessionAnswersHelper,
+    mockIsLateAppeal
   )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction)
 
   "onPageLoad" should {
@@ -303,6 +314,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           val result: Future[Result] = Controller.onPageLoad()(fakeRequestForCrimeJourneyWithoutSomeAnswers)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
+        }
+
+        "the user has not completed the late appeal question when required" in new Setup(AuthTestModels.successfulAuthResult, true) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          val result: Future[Result] = Controller.onPageLoad()(fakeRequestWithNoLateAppealReason)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
       }
     }
