@@ -603,3 +603,14 @@ appealByLetter.p2 = Os bydd CThEF yn derbyn eich apêl, byddwn yn dileu:
 appealByLetter.li.2.1 = y gosb hon
 appealByLetter.li.2.2 = pob cosb arall am gyflwyno Ffurflen TAW yn hwyr neu am dalu TAW yn hwyr ar gyfer yr un cyfnod
 appealByLetter.inset.1 = Ysgrifennwch at:
+
+# You cannot go back to your appeal details page
+# -----------------------------------------------------------
+youCannotGoBackToYourAppealDetails.headingAndTitle = Ni allwch fynd yn ôl i fanylion eich apêl
+youCannotGoBackToYourAppealDetails.p1 = Mae’ch apêl wedi cael ei chyflwyno.
+youCannotGoBackToYourAppealDetails.p2 = Gallwch wneud y canlynol:
+youCannotGoBackToYourAppealDetails.li.1 = mynd yn ôl i’ch cosbau TAW
+agent.youCannotGoBackToYourAppealDetails.li.1 = mynd yn ôl i gosbau TAW eich cleient
+youCannotGoBackToYourAppealDetails.li.2 = bwrw golwg dros eich cyfrif TAW
+agent.youCannotGoBackToYourAppealDetails.li.2 = bwrw golwg dros gyfrif TAW eich cleient
+youCannotGoBackToYourAppealDetails.link.feedback = A ydych yn chwilio am rywbeth arall? Rhowch wybod i ni

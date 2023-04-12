@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(layout: Layout)
+package messages
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+object YouCannotGoBackToAppealMessages {
+  val title = "You cannot go back to your appeal details - Appeal a VAT penalty - GOV.UK"
 
-@layout(
-    pageTitle = messages("unauthorised.headingAndTitle"),
-    backLinkEnabled = false
-) {
-    <h1 class="govuk-heading-l">@messages("unauthorised.headingAndTitle")</h1>
-    <p class="govuk-body"> @messages("unauthorised.signUp")</p>
-    <p class="govuk-body">@messages("unauthorised.alreadySignedUp")</p>
-    <p class="govuk-body"><a class="govuk-link" href="@routes.SignOutController.signOut">@messages("base.signOut")</a></p>
+  val h1 = "You cannot go back to your appeal details"
+
+  val p1 = "Your appeal has been submitted."
+
+  val p2 = "You can:"
+
+  val bullet1 = "return to your VAT penalties"
+
+  val bullet1Agent = "return to your client’s VAT penalties"
+
+  val bullet2 = "view your VAT account"
+
+  val bullet2Agent = "view your client’s VAT account"
+
+  val feedbackLink = "Are you looking for something else? Let us know"
 }
