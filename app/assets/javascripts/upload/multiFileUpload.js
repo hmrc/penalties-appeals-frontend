@@ -305,6 +305,10 @@ export class MultiFileUpload {
 
         const file = this.getFileFromItem(nextItem);
         this.setItemState(nextItem, status.Uploading);
+        this.addNotification(this.parseTemplate(this.messages.fileUploading, {
+                                         fileNumber: nextItem.querySelector('.govuk-label').textContent.toLowerCase()
+                                         }));
+
         this.provisionUpload(file, false);
     }
 
