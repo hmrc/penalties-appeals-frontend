@@ -206,3 +206,6 @@ GET        /incomplete-answers                                 controllers.Incom
 
 # Appeal by letter
 GET        /appeal-by-letter                                   controllers.YouCannotAppealController.onPageLoadAppealByLetter()
+
+# You cannot go back to appeal
+GET        /you-cannot-go-back-to-appeal                       controllers.YouCannotGoBackToAppealController.onPageLoad()

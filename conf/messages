@@ -603,3 +603,14 @@ appealByLetter.p2 = If HMRC accepts your appeal, we will remove:
 appealByLetter.li.2.1 = this penalty
 appealByLetter.li.2.2 = all other VAT late submission or late payment penalties for the same period
 appealByLetter.inset.1 = Write to:
+
+# You cannot go back to your appeal details page
+# -----------------------------------------------------------
+youCannotGoBackToYourAppealDetails.headingAndTitle = You cannot go back to your appeal details
+youCannotGoBackToYourAppealDetails.p1 = Your appeal has been submitted.
+youCannotGoBackToYourAppealDetails.p2 = You can:
+youCannotGoBackToYourAppealDetails.li.1 = return to your VAT penalties
+agent.youCannotGoBackToYourAppealDetails.li.1 = return to your client’s VAT penalties
+youCannotGoBackToYourAppealDetails.li.2 = view your VAT account
+agent.youCannotGoBackToYourAppealDetails.li.2 = view your client’s VAT account
+youCannotGoBackToYourAppealDetails.link.feedback = Are you looking for something else? Let us know
