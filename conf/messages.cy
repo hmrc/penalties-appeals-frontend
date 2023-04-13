@@ -613,4 +613,4 @@ youCannotGoBackToYourAppealDetails.li.1 = mynd yn ôl i’ch cosbau TAW
 agent.youCannotGoBackToYourAppealDetails.li.1 = mynd yn ôl i gosbau TAW eich cleient
 youCannotGoBackToYourAppealDetails.li.2 = bwrw golwg dros eich cyfrif TAW
 agent.youCannotGoBackToYourAppealDetails.li.2 = bwrw golwg dros gyfrif TAW eich cleient
-youCannotGoBackToYourAppealDetails.link.feedback = A ydych yn chwilio am rywbeth arall? Rhowch wybod i ni
+youCannotGoBackToYourAppealDetails.link.feedback = A ydych yn chwilio am rywbeth arall?
