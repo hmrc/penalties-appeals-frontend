@@ -75,7 +75,11 @@
             baseBulletPoints
         }
     )
-    @if(!isObligationAppeal){
+
+    @if(!isObligationAppeal) {
+        <p class="govuk-body">
+          @link(appConfig.reasonableExcusesGuidanceLinkUrl, "appealStart.reasonableExcuses.externalGuidanceLinkText", id = Some("external-guidance-link"), isExternal = true, classes = "govuk-link")
+        </p>
         <p class="govuk-body">@messages("appealStart.p5")</p>
         <p class="govuk-body">@messages("appealStart.p6")</p>
     }

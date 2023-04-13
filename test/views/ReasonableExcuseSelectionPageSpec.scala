@@ -97,15 +97,10 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         Selectors.labelForRadioButton(6) -> radioOption6,
         Selectors.breakerElement -> breakerText,
         Selectors.labelForRadioButton(8) -> radioOption7,
-        Selectors.button -> submitButton,
-        Selectors.externalGuidanceLink -> externalGuidanceLink
+        Selectors.button -> submitButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
-
-      "have a link to external guidance" in {
-        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
-      }
 
       "show the correct heading content when appealing a late payment penalty" in {
         val answers = Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment)
@@ -130,15 +125,10 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         Selectors.labelForRadioButton(6) -> radioOption6,
         Selectors.breakerElement -> breakerText,
         Selectors.labelForRadioButton(8) -> radioOption7,
-        Selectors.button -> submitButton,
-        Selectors.externalGuidanceLink -> externalGuidanceLink
+        Selectors.button -> submitButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
-
-      "have a link to external guidance" in {
-        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
-      }
     }
   }
 }

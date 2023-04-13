@@ -47,6 +47,8 @@ object AppealStartMessages {
 
   val li5 = "details of why you did not appeal sooner"
 
+  val externalGuidanceLink = "Read the guidance about reasonable excuses (opens in a new tab)"
+
   val p5 = "In some cases, we’ll ask if you want to upload evidence to support the appeal."
 
   val p6 = "We only need the information we ask for. You do not need to provide additional details unless we ask you for them."
