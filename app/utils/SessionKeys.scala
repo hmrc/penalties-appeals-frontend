@@ -68,6 +68,7 @@ object SessionKeys {
   val confirmationDigitalComms = "confirmationDigitalComms"
   val confirmationMultipleAppeals = "confirmationMultipleAppeals"
   val confirmationIsAgent = "confirmationIsAgent"
+  val penaltiesHasSeenConfirmationPage = "penaltiesHasSeenConfirmationPage"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -122,6 +123,7 @@ object SessionKeys {
     confirmationObligation,
     confirmationDigitalComms,
     confirmationMultipleAppeals,
-    confirmationIsAgent
+    confirmationIsAgent,
+    penaltiesHasSeenConfirmationPage
   )
 }

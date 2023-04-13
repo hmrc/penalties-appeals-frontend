@@ -136,6 +136,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     sessionService.updateAnswers(allUserAnswers).map {
       _ => Redirect(urlToRedirectTo)
         .removingFromSession(SessionKeys.allKeys: _*)
+        .removingFromSession(SessionKeys.penaltiesHasSeenConfirmationPage)
         .addingToSession((SessionKeys.journeyId, journeyId))
     }
   }

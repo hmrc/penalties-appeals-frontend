@@ -29,21 +29,27 @@ import scala.concurrent.{ExecutionContext, Future}
 class DataRetrievalActionImpl @Inject()(val sessionService: SessionService)
                                        (implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
   override protected def transform[A](request: AuthRequest[A]): Future[UserRequest[A]] = {
-    sessionService.getUserAnswers(request.session.get(SessionKeys.journeyId).get).map {
-      case Some(storedAnswers) => {
-        logger.debug(s"[DataRetrievalActionImpl][transform] - Found $storedAnswers for VRN: ${request.vrn}")
-        UserRequest(request.vrn, request.active, request.arn, storedAnswers)(request)
-      }
-      case None => {
-        logger.debug(s"[DataRetrievalActionImpl][transform] - Found no session answers for VRN: ${request.vrn}")
-        UserRequest(request.vrn, request.active, request.arn, UserAnswers(request.session.get(SessionKeys.journeyId).get))(request)
-      }
-    }.recover {
-      case e => {
-        logger.error(s"[DataRetrievalActionImpl][transform] - Failed to query mongo for session data")
-        throw e
+    if(request.session.get(SessionKeys.penaltiesHasSeenConfirmationPage).isDefined) {
+      logger.info("[DataRetrievalAction] - User has 'penaltiesHasSeenConfirmationPage' session key in session, setting no user answers")
+      Future(UserRequest(request.vrn, request.active, request.arn, UserAnswers(""))(request))
+    } else {
+      sessionService.getUserAnswers(request.session.get(SessionKeys.journeyId).get).map {
+        case Some(storedAnswers) => {
+          logger.debug(s"[DataRetrievalActionImpl][transform] - Found $storedAnswers for VRN: ${request.vrn}")
+          UserRequest(request.vrn, request.active, request.arn, storedAnswers)(request)
+        }
+        case None => {
+          logger.debug(s"[DataRetrievalActionImpl][transform] - Found no session answers for VRN: ${request.vrn}")
+          UserRequest(request.vrn, request.active, request.arn, UserAnswers(request.session.get(SessionKeys.journeyId).get))(request)
+        }
+      }.recover {
+        case e => {
+          logger.error(s"[DataRetrievalActionImpl][transform] - Failed to query mongo for session data")
+          throw e
+        }
       }
     }
+
   }
 }
 
