@@ -425,7 +425,7 @@ checkYourAnswers.declaration.p1 = Wrth gyflwyno’r apêl hon, rydych yn gwneud 
 checkYourAnswers.declaration.p2 = Gall datganiad ffug arwain at erlyniad.
 checkYourAnswers.reasonableExcuse = Rheswm dros fethu’r dyddiad cau ar gyfer TAW
 checkYourAnswers.change.text = Newid
-checkYourAnswers.change.ariaLabel = Newid ateb ‘{0}’
+checkYourAnswers.change.visuallyHidden = Newid ateb ‘{0}’
 checkYourAnswers.whyYouDidNotAppealSooner = Rheswm dros apelio ar ôl 30 diwrnod
 
 checkYourAnswers.other.fileEvidence = Tystiolaeth i gefnogi’r apêl hon
