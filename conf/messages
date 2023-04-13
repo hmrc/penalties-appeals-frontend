@@ -425,7 +425,7 @@ checkYourAnswers.declaration.p1 = By submitting this appeal, you are making a le
 checkYourAnswers.declaration.p2 = A false declaration can result in prosecution.
 checkYourAnswers.reasonableExcuse = Reason for missing the VAT deadline
 checkYourAnswers.change.text = Change
-checkYourAnswers.change.ariaLabel = Change answer for ’{0}’
+checkYourAnswers.change.visuallyHidden = Change answer for ’{0}’
 checkYourAnswers.whyYouDidNotAppealSooner = Reason for appealing after 30 days
 
 checkYourAnswers.other.fileEvidence = Evidence to support this appeal
