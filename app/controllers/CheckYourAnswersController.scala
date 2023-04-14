@@ -133,6 +133,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         val confirmationObligation = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true).toString
         val confirmationMultipleAppeals = userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).getOrElse("no")
         val confirmationIsAgent = userRequest.isAgent.toString
+        val penaltiesHasSeenConfirmationPage = "true"
         uploadJourneyRepository.removeUploadsForJourney(userRequest.session.get(SessionKeys.journeyId).get).map {
           _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation()).addingToSession(
             List(
@@ -141,6 +142,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
               (SessionKeys.confirmationEndDate, confirmationEndDate),
               (SessionKeys.confirmationObligation, confirmationObligation),
               (SessionKeys.confirmationMultipleAppeals, confirmationMultipleAppeals),
+              (SessionKeys.penaltiesHasSeenConfirmationPage, penaltiesHasSeenConfirmationPage),
               (SessionKeys.confirmationIsAgent, confirmationIsAgent)): _*
           )
         }

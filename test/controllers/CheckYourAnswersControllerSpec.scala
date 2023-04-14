@@ -56,13 +56,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val fakeRequestForCrimeJourney: UserRequest[AnyContent] = fakeRequestConverter(crimeAnswers, fakeRequest)
 
   val confirmationSessionKeys = Seq(
-    SessionKeys.journeyId -> "1234",
     SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
     SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
     SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
     SessionKeys.confirmationMultipleAppeals -> "no",
     SessionKeys.confirmationObligation -> "false",
-    SessionKeys.confirmationIsAgent -> "false"
+    SessionKeys.confirmationIsAgent -> "false",
+    SessionKeys.penaltiesHasSeenConfirmationPage -> "true"
   )
 
   val fakeRequestWithConfirmationKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(confirmationSessionKeys: _*)
@@ -477,12 +477,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   "onPageLoadForConfirmation" should {
     "the user is authorised" when {
-      "show the confirmation page and remove all custom session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+      "show the confirmation page and remove all non-confirmation screen session keys" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
         val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequestForConfirmationPage)
         await(result).header.status shouldBe OK
-        SessionKeys.allKeys.toSet.subsetOf(await(result).session.data.values.toSet) shouldBe false
+        await(result).session.data.keys.toSet.subsetOf(SessionKeys.allKeys.toSet) shouldBe false
+        await(result).session.data.keys.toSet.subsetOf(SessionKeys.confirmationPageKeys.toSet) shouldBe true
       }
     }
 

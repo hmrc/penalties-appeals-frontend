@@ -18,10 +18,12 @@ package controllers.predicates
 
 import base.SpecBase
 import models.UserRequest
+import models.session.UserAnswers
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.SessionKeys
 
@@ -66,6 +68,22 @@ class DataRequiredActionSpec extends SpecBase {
 
       val result = await(fakeController.onPageLoad())
       result.header.status shouldBe INTERNAL_SERVER_ERROR
+    }
+
+    "redirect to the appeal has already been submitted page" when {
+      "the user has seen the appeal confirmation page" in {
+        val requestWithConfirmationSessionKeys = UserRequest("123456789", answers = UserAnswers("")
+        )(FakeRequest("GET", "/").withSession(SessionKeys.penaltiesHasSeenConfirmationPage -> "true"))
+        val fakeController = new Harness(
+          requiredAction = new DataRequiredActionImpl(
+            errorHandler
+          ),
+          request = requestWithConfirmationSessionKeys)
+
+        val result = await(fakeController.onPageLoad())
+        result.header.status shouldBe SEE_OTHER
+        result.header.headers(LOCATION) shouldBe controllers.routes.YouCannotGoBackToAppealController.onPageLoad().url
+      }
     }
 
     "run the block when all of the correct data is present in the session" in {
