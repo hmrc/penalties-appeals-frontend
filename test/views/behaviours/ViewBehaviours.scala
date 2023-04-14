@@ -22,13 +22,17 @@ import org.scalatest.matchers.must.Matchers._
 
 trait ViewBehaviours extends SpecBase {
 
-  def pageWithExpectedMessages(checks: Seq[(String, String)])(implicit document: Document): Unit = checks.foreach {
+  def pageWithExpectedMessages(checks: Seq[(String, String)], useOwnText: Boolean = false)(implicit document: Document): Unit = checks.foreach {
     case (cssSelector, message) =>
 
       s"element with cssSelector '$cssSelector'" must {
         s"have message '$message'" in {
           val elem = document.select(cssSelector)
-          elem.first.text() mustBe message
+          if(useOwnText) {
+            elem.first.ownText() mustBe message
+          } else {
+            elem.first.text() mustBe message
+          }
         }
       }
   }

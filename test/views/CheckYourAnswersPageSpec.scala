@@ -38,8 +38,11 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
 
       val descriptionListDdValue: Int => String = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__value"
 
-      val descriptionListDdAction: Int => String = (nthChild: Int) =>
-        s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__actions"
+      val descriptionListDdActionGovukLink: Int => String = (nthChild: Int) =>
+        s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__actions > .govuk-link"
+
+      val descriptionListDdActionVisuallyHidden: Int => String = (nthChild: Int) =>
+        s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__actions > .govuk-link > .govuk-visually-hidden"
 
       val declarationText = s"#main-content > div > div > p"
     }
@@ -61,19 +64,22 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
       Selectors.appealDetailsH2 -> h2AppealDetails,
       Selectors.descriptionListDtKey(1) -> "Key",
       Selectors.descriptionListDdValue(1) -> "Value",
-      Selectors.descriptionListDdAction(1) -> "Change",
+      Selectors.descriptionListDdActionGovukLink(1) -> "Change",
+      Selectors.descriptionListDdActionVisuallyHidden(1) -> "answer for ’Key’",
       Selectors.descriptionListDtKey(2) -> "Key 2",
       Selectors.descriptionListDdValue(2) -> "Value 2",
-      Selectors.descriptionListDdAction(2) -> "Change",
+      Selectors.descriptionListDdActionGovukLink(2) -> "Change",
+      Selectors.descriptionListDdActionVisuallyHidden(2) -> "answer for ’Key 2’",
       Selectors.descriptionListDtKey(3) -> "Key 3",
       Selectors.descriptionListDdValue(3) -> "Value 3",
-      Selectors.descriptionListDdAction(3) -> "Change",
+      Selectors.descriptionListDdActionGovukLink(3) -> "Change",
+      Selectors.descriptionListDdActionVisuallyHidden(3) -> "answer for ’Key 3’",
       Selectors.declarationH2 -> h2Declaration,
       Selectors.declarationText -> pDeclaration,
       Selectors.button -> button
     )
 
-    behave like pageWithExpectedMessages(expectedContent)
+    behave like pageWithExpectedMessages(expectedContent, useOwnText = true)
 
     "the accept and send button should have the 'data-prevent-double-click' attribute" in {
       doc.select(Selectors.button).attr("data-prevent-double-click") shouldBe "true"
