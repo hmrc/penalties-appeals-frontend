@@ -50,6 +50,7 @@ appealStart.obligation.li.2.1 = manylion am unrhyw ohebiaeth â CThEF am ganslo�
 appealStart.li.2.2 = y dyddiadau y mae eich rheswm yn ymwneud â hwy
 appealStart.obligation.li.2.2 = unrhyw wybodaeth ychwanegol i gefnogi’ch apêl (dewisol)
 appealStart.li.2.3 = manylion am y rheswm nad oeddech wedi apelio’n gynt
+appealStart.reasonableExcuses.externalGuidanceLinkText = Darllenwch yr arweiniad am esgusodion rhesymol
 appealStart.p5 = Mewn rhai achosion, byddwn yn gofyn a ydych eisiau uwchlwytho tystiolaeth er mwyn ategu’r apêl
 appealStart.p6 = Dim ond yr wybodaeth yr ydym wedi gofyn amdani sydd angen arnom. Nid oes angen i chi roi manylion ychwanegol oni bai ein bod yn gofyn amdanynt.
 
@@ -77,7 +78,6 @@ reasonableExcuses.lossOfStaffReason = Colli staff hanfodol i’r broses TAW
 reasonableExcuses.technicalIssuesReason = Trafferthion technoleg
 reasonableExcuses.otherReason = Nid yw’r rheswm yn berthnasol i unrhyw un o’r categorïau eraill
 reasonableExcuses.breakerText = neu
-reasonableExcuses.externalGuidanceLinkText = Darllen mwy ynglŷn ag ‘esgus rhesymol’
 reasonableExcuses.error.required = Dewiswch reswm dros fethu’r dyddiad cau ar gyfer TAW
 
 # Honesty declaration

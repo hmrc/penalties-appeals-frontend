@@ -46,8 +46,4 @@ object ReasonableExcuseSelectionMessages {
 
   val submitButton = "Continue"
 
-  val externalGuidanceLink = "Read more about reasonable excuses (opens in a new tab)"
-
-  val noSelectionError = "Select the reason for missing the VAT deadline"
-
 }

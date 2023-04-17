@@ -26,13 +26,13 @@ import views.behaviours.ViewBehaviours
 import views.html.AppealStartPage
 
 class AppealStartPageSpec extends SpecBase with ViewBehaviours {
-  "AppealStartPage" should {
+  "AppealStartPage" when {
     val appealStartPage: AppealStartPage = injector.instanceOf[AppealStartPage]
     object Selectors extends BaseSelectors {
       override val h2 = "h2:nth-of-type(2)"
     }
 
-    s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
+    s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date" must {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
@@ -49,15 +49,20 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
         Selectors.pElementIndex(8) -> p4,
         Selectors.listIndexWithElementIndex(9, 1) -> li3,
         Selectors.listIndexWithElementIndex(9, 2) -> li4,
-        Selectors.pElementIndex(10) -> p5,
-        Selectors.pElementIndex(11) -> p6,
+        Selectors.externalGuidanceLink -> externalGuidanceLink,
+        Selectors.pElementIndex(11) -> p5,
+        Selectors.pElementIndex(12) -> p6,
         Selectors.button -> button
       )
 
       behave like pageWithExpectedMessages(expectedContent)
+
+      "have a link to external guidance" in {
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
+      }
     }
 
-    s"it has been more than ${appConfig.daysRequiredForLateAppeal} days since the due date" when {
+    s"it has been more than ${appConfig.daysRequiredForLateAppeal} days since the due date" must {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
@@ -75,12 +80,17 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
         Selectors.listIndexWithElementIndex(9, 1) -> li3,
         Selectors.listIndexWithElementIndex(9, 2) -> li4,
         Selectors.listIndexWithElementIndex(9, 3) -> li5,
-        Selectors.pElementIndex(10) -> p5,
-        Selectors.pElementIndex(11) -> p6,
+        Selectors.externalGuidanceLink -> externalGuidanceLink,
+        Selectors.pElementIndex(11) -> p5,
+        Selectors.pElementIndex(12) -> p6,
         Selectors.button -> button
       )
 
       behave like pageWithExpectedMessages(expectedContent)
+
+      "have a link to external guidance" in {
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
+      }
     }
 
     "the appeal is for a LPP" when {
@@ -102,13 +112,19 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
         Selectors.listIndexWithElementIndex(9, 1) -> li3Lpp,
         Selectors.listIndexWithElementIndex(9, 2) -> li4,
         Selectors.listIndexWithElementIndex(9, 3) -> li5,
-        Selectors.pElementIndex(10) -> p5,
-        Selectors.pElementIndex(11) -> p6,
+        Selectors.externalGuidanceLink -> externalGuidanceLink,
+        Selectors.pElementIndex(11) -> p5,
+        Selectors.pElementIndex(12) -> p6,
         Selectors.button -> button
       )
 
       behave like pageWithExpectedMessages(expectedContent)
+
+      "have a link to external guidance" in {
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
+      }
     }
+
     "the appeal is against an obligation" when {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true, pageMode = PageMode(AppealStartPage, NormalMode))(
         userRequestWithCorrectKeys, implicitly, implicitly
@@ -132,18 +148,22 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       )
 
       behave like pageWithExpectedMessages(expectedContent)
+
+      "NOT have a link to external guidance" in {
+        doc.select(Selectors.externalGuidanceLink).isEmpty shouldBe true
+      }
     }
 
-    "the appeal is triggered by an agent and is not a LPP - redirect to the correct page" in {
+    "the appeal is triggered by an agent and is not a LPP - have a link to the correct page" in {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         agentUserLSP, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
-      doc.select("#main-content a").attr("href") shouldBe "/penalties-appeals/who-planned-to-submit-vat-return"
+      doc.select("#main-content a").get(1).attr("href") shouldBe "/penalties-appeals/who-planned-to-submit-vat-return"
     }
 
-    "the appeal is an obligation appeal - redirect to the correct page" in {
+    "the appeal is an obligation appeal - have a link to the correct page" in {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true, pageMode = PageMode(AppealStartPage, NormalMode))(
         userRequestLPPWithCorrectKeys, implicitly, implicitly)
 
@@ -152,16 +172,16 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       doc.select("#main-content a").attr("href") shouldBe "/penalties-appeals/honesty-declaration"
     }
 
-    "the appeal does not match the special cases - redirect to the correct page" in {
+    "the appeal does not match the special cases - have a link to the correct page" in {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
        userRequestLPPWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
-      doc.select("#main-content a").attr("href") shouldBe "/penalties-appeals/reason-for-missing-deadline"
+      doc.select("#main-content a").get(1).attr("href") shouldBe "/penalties-appeals/reason-for-missing-deadline"
     }
 
-    "have a link to GOV.UK for GOV.UK logo" in {
+    "the page is loaded, have a link to GOV.UK for GOV.UK logo" in {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         userRequestWithCorrectKeys, implicitly, implicitly
       )
@@ -170,7 +190,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       doc.select(".govuk-header__logo > a").attr("href") shouldBe "https://www.gov.uk/"
     }
 
-    "the footer should have the correct links" in {
+    "the page is loaded, the footer should have the correct links" in {
       def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         userRequestWithCorrectKeys, implicitly, implicitly
       )

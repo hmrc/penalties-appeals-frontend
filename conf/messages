@@ -50,6 +50,7 @@ appealStart.obligation.li.2.1 = details of any communication with HMRC about can
 appealStart.li.2.2 = the dates the reason related to
 appealStart.obligation.li.2.2 = any additional information to support your appeal (optional)
 appealStart.li.2.3 = details of why you did not appeal sooner
+appealStart.reasonableExcuses.externalGuidanceLinkText = Read the guidance about reasonable excuses
 appealStart.p5 = In some cases, we’ll ask if you want to upload evidence to support the appeal.
 appealStart.p6 = We only need the information we ask for. You do not need to provide additional details unless we ask you for them.
 
@@ -77,7 +78,6 @@ reasonableExcuses.lossOfStaffReason = Loss of staff essential to the VAT process
 reasonableExcuses.technicalIssuesReason = Technology issues
 reasonableExcuses.otherReason = The reason does not fit into any of the other categories
 reasonableExcuses.breakerText = or
-reasonableExcuses.externalGuidanceLinkText = Read more about reasonable excuses
 reasonableExcuses.error.required = Select the reason for missing the VAT deadline
 
 # Honesty declaration
