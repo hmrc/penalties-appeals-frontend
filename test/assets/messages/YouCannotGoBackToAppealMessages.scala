@@ -33,5 +33,5 @@ object YouCannotGoBackToAppealMessages {
 
   val bullet2Agent = "view your client’s VAT account"
 
-  val feedbackLink = "Are you looking for something else? Let us know"
+  val feedbackLink = "Are you looking for something else?"
 }
