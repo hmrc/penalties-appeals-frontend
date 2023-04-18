@@ -141,7 +141,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidThePersonDiePage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     AppealStartPage -> ((_, _, _) => routes.AppealStartController.onPageLoad()),
     OtherRelevantInformationPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode)),
-    CancelVATRegistrationPage -> ((answer, request, _) => routingForCancelVATRegistrationPage(answer, request)),
+    CancelVATRegistrationPage -> ((answer, _, _) => routingForCancelVATRegistrationPage(answer)),
     UploadFirstDocumentPage -> ((_, _, _) => routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode)),
     FileListPage -> ((answer, request, _) => routeForUploadList(answer, request, NormalMode)),
     UploadEvidenceQuestionPage -> ((answer, request, optJsEnabled) => routeForUploadEvidenceQuestion(answer, request, NormalMode, optJsEnabled)),
@@ -184,15 +184,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForCancelVATRegistrationPage(answer: Option[String], request: UserRequest[_]): Call = {
-    if (answer.get.toLowerCase == "yes" && request.answers.getAnswer[String](SessionKeys.penaltyNumber).contains("NA")) {
-      routes.YouCannotAppealController.onPageLoadAppealByLetter()
-    } else if (answer.get.toLowerCase == "yes") {
-      if (isEnabled(ShowFullAppealAgainstTheObligation)) {
+  def routingForCancelVATRegistrationPage(answer: Option[String]): Call = {
+    if (answer.get.toLowerCase == "yes") {
         routes.YouCanAppealPenaltyController.onPageLoad()
-      } else {
-        routes.YouCannotAppealController.onPageLoadAppealByLetter()
-      }
     } else {
       routes.YouCannotAppealController.onPageLoad
     }
