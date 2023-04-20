@@ -4,8 +4,8 @@
 
 #Initialise appeal and start page
 GET        /appeal-start                                controllers.AppealStartController.onPageLoad()
-GET        /initialise-appeal                           controllers.InitialiseAppealController.onPageLoad(penaltyId: String, isAdditional:Boolean)
-GET        /initialise-appeal-against-the-obligation    controllers.InitialiseAppealController.onPageLoadForObligation(penaltyId: String, isLPP: Boolean,isAdditional:Boolean)
+GET        /initialise-appeal                           controllers.InitialiseAppealController.onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional:Boolean)
+GET        /initialise-appeal-against-the-obligation    controllers.InitialiseAppealController.onPageLoadForObligation(penaltyId: String, isAdditional:Boolean)
 
 #Reasonable excuse list
 GET        /reason-for-missing-deadline     controllers.ReasonableExcuseController.onPageLoad()
