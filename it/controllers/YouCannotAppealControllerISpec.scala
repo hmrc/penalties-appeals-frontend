@@ -67,34 +67,4 @@ class YouCannotAppealControllerISpec extends IntegrationSpecCommonBase {
       request.status shouldBe SEE_OTHER
     }
   }
-
-  "GET /appeal-by-letter" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.of(2025, 1, 1),
-      SessionKeys.endDateOfPeriod -> LocalDate.of(2025, 3, 31),
-      SessionKeys.penaltyNumber -> "NA",
-      SessionKeys.dueDateOfPeriod -> LocalDate.now(),
-      SessionKeys.dateCommunicationSent -> LocalDate.now(),
-      SessionKeys.isObligationAppeal -> true
-    ))) {
-      val result: Result = await(controller.onPageLoadAppealByLetter()(fakeRequest))
-      result.header.status shouldBe OK
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-by-letter").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request: Result = await(controller.onPageLoadAppealByLetter()(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/appeal-by-letter").get())
-      request.status shouldBe SEE_OTHER
-    }
-  }
 }

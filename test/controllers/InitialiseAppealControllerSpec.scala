@@ -224,7 +224,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      val result: Result = await(controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest))
+      val result: Result = await(controller.onPageLoadForObligation("12345", isAdditional = false)(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
@@ -251,7 +251,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = false, isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForObligation("12345", isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data shouldBe userAnswersToReturn.data
@@ -280,7 +280,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForObligation("12345", isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data shouldBe userAnswersToReturn.data
@@ -308,28 +308,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoadForObligation("12345", isLPP = true, isAdditional = true)(fakeRequest)
-      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-      await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
-    }
-  }
-
-  "onPageLoadForObligationEstimatedLPP" should {
-    "redirect to the Cancel VAT page and add the keys to the session when valid tax period dates are given" in new Setup(AuthTestModels.successfulAuthResult) {
-      val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-        SessionKeys.startDateOfPeriod -> LocalDate.of(2025, 1, 1),
-        SessionKeys.endDateOfPeriod -> LocalDate.of(2025, 3, 31),
-        SessionKeys.penaltyNumber -> "NA",
-        SessionKeys.dueDateOfPeriod -> LocalDate.now(),
-        SessionKeys.dateCommunicationSent -> LocalDate.now(),
-        SessionKeys.isObligationAppeal -> true
-      ))
-      when(mockSessionService.updateAnswers(answerCaptor.capture()))
-        .thenReturn(Future.successful(true))
-      val result: Future[Result] = controller.onPageLoadForObligationEstimatedLPP("2025-01-01", "2025-03-31")(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForObligation("12345", isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data shouldBe userAnswersToReturn.data

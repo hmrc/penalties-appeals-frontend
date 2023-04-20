@@ -43,35 +43,6 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
         PageMode(YouCannotAppealPage, NormalMode))(userRequest, messages, appConfig)
     }
 
-    "when agent is on the page with LPP Appeal" must {
-      implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLPP))
-
-      val expectedContent = Seq(
-        Selectors.title -> (titleHeaderLPPAgent + agentTitleAppend),
-        Selectors.h1 -> titleHeaderLPPAgent,
-        Selectors.p1 -> p1,
-        Selectors.p2 -> agentLPPp2,
-        Selectors.p3 -> agentLPPp3,
-        Selectors.p4 -> agentP4,
-        Selectors.link -> returnToClientVATDetails
-      )
-      behave like pageWithExpectedMessages(expectedContent)(agentDoc)
-    }
-
-    "when agent is on the page with Additional Appeal" must {
-      implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLPPAdditional))
-
-      val expectedContent = Seq(
-        Selectors.title -> (titleHeaderLPPAgent + agentTitleAppend),
-        Selectors.h1 -> titleHeaderLPPAgent,
-        Selectors.p1 -> p1,
-        Selectors.p2 -> agentLPPp2,
-        Selectors.p3 -> agentLPPp3,
-        Selectors.link -> returnToClientVATDetails
-      )
-      behave like pageWithExpectedMessages(expectedContent)(agentDoc)
-    }
-
     "when agent is on the page with LSP Appeal" must {
       implicit val agentDoc: Document = asDocument(applyView(userRequest = agentUserLSP))
 
@@ -98,34 +69,6 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
         Selectors.p3 -> traderLSPp3,
         Selectors.p4 -> traderP4,
         Selectors.link -> returnToVATAccount
-      )
-      behave like pageWithExpectedMessages(expectedContent)(agentDoc)
-    }
-    "when VAT trader is on the page with LPP Appeal" must {
-      implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserLPP))
-
-      val expectedContent = Seq(
-        Selectors.title -> (titleHeaderLPP + titleAppend),
-        Selectors.h1 -> titleHeaderLPP,
-        Selectors.p1 -> p1,
-        Selectors.p2 -> traderLPPp2,
-        Selectors.p3 -> traderLPPp3,
-        Selectors.p4 -> traderP4,
-        Selectors.link -> checkWhatYouOwe
-      )
-      behave like pageWithExpectedMessages(expectedContent)(agentDoc)
-    }
-    "when VAT trader is on the page with Additional Appeal" must {
-      implicit val agentDoc: Document = asDocument(applyView(userRequest = vatTraderUserAdditional))
-
-      val expectedContent = Seq(
-        Selectors.title -> (titleHeaderLPP + titleAppend),
-        Selectors.h1 -> titleHeaderLPP,
-        Selectors.p1 -> p1,
-        Selectors.p2 -> traderLPPp2,
-        Selectors.p3 -> traderLPPp3,
-        Selectors.p4 -> traderP4,
-        Selectors.link -> checkWhatYouOwe
       )
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
     }
