@@ -203,5 +203,8 @@ GET        /appeal-single-penalty/change                       controllers.Penal
 # Incomplete session data
 GET        /incomplete-answers                                 controllers.IncompleteSessionDataController.onPageLoad()
 
+# Appeal by letter
+GET        /appeal-by-letter                                   controllers.YouCannotAppealController.onPageLoadAppealByLetter()
+
 # You cannot go back to appeal
 GET        /you-cannot-go-back-to-appeal                       controllers.YouCannotGoBackToAppealController.onPageLoad()

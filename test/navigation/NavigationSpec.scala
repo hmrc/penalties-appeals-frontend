@@ -987,14 +987,38 @@ class NavigationSpec extends SpecBase {
 
     "redirect to YouCanAppeal page" when {
       "yes option selected and full journey is enabled" in new Setup {
-        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"))
+        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestWithCorrectKeys)
         result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
+      }
+    }
+
+    "redirect to AppealByLetter page" when {
+      "yes option selected and full journey is disabled" in new Setup {
+        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
+          .thenReturn(false)
+        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestWithCorrectKeys)
+        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+      }
+
+      "yes option selected (when penalty is estimate i.e. penalty number set to 'NA')" in new Setup {
+        val userAnswersWithNAPenaltyNumber: JsObject = Json.obj(
+          SessionKeys.penaltyNumber -> "NA",
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+          SessionKeys.journeyId -> "1234"
+        )
+        val userRequestWithEstimatedPenaltyData: UserRequest[AnyContent] = fakeRequestConverter(userAnswersWithNAPenaltyNumber)
+        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestWithEstimatedPenaltyData)
+        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
     }
 
     "redirect to YouCannotAppeal page" when {
       "no option selected" in new Setup {
-        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("no"))
+        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("no"), userRequestWithCorrectKeys)
         result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoad.url
       }
     }

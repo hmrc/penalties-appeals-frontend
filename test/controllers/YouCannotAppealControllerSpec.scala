@@ -25,13 +25,14 @@ import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.obligation.YouCannotAppealPage
+import views.html.obligation.{AppealByLetterKickOutPage, YouCannotAppealPage}
 import viewtils.YouCannotAppealHelper
 
 import scala.concurrent.Future
 
 class YouCannotAppealControllerSpec extends SpecBase {
   val youCannotAppealPage: YouCannotAppealPage = injector.instanceOf[YouCannotAppealPage]
+  val appealByLetterPage: AppealByLetterKickOutPage = injector.instanceOf[AppealByLetterKickOutPage]
   val youCannotAppealHelper: YouCannotAppealHelper = injector.instanceOf[YouCannotAppealHelper]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
@@ -42,7 +43,7 @@ class YouCannotAppealControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
     val controller: YouCannotAppealController = new YouCannotAppealController(
-      youCannotAppealPage, youCannotAppealHelper)(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction)
+      youCannotAppealPage, appealByLetterPage, youCannotAppealHelper)(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction)
   }
 
   "YouCannotAppealController" should{
