@@ -16,17 +16,16 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import models.PenaltyTypeEnum
 import org.mongodb.scala.Document
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, _}
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
-import java.time.LocalDate
-import scala.concurrent.Future
 
 class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
   val controller: InitialiseAppealController = injector.instanceOf[InitialiseAppealController]
@@ -133,7 +132,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234"
       )
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoadForObligation("1234", isAdditional = false)(fakeRequest)
+      val result = controller.onPageLoadForObligation("1234")(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
@@ -150,7 +149,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
 
     "render an ISE when the appeal data can not be retrieved" in new Setup {
       failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoadForObligation("1234", isAdditional = false)(FakeRequest().withSession(
+      val result = controller.onPageLoadForObligation("1234")(FakeRequest().withSession(
         authToken -> "1234"
       ))
       await(result).header.status shouldBe INTERNAL_SERVER_ERROR

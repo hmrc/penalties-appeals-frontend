@@ -224,7 +224,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      val result: Result = await(controller.onPageLoadForObligation("12345", isAdditional = false)(fakeRequest))
+      val result: Result = await(controller.onPageLoadForObligation("12345")(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
@@ -251,7 +251,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoadForObligation("12345", isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForObligation("12345")(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data shouldBe userAnswersToReturn.data
@@ -280,7 +280,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoadForObligation("12345", isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForObligation("12345")(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data shouldBe userAnswersToReturn.data
@@ -308,7 +308,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoadForObligation("12345", isAdditional = true)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForObligation("12345")(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data shouldBe userAnswersToReturn.data
