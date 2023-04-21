@@ -56,9 +56,9 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
   }
 
-  def onPageLoadForObligation(penaltyId: String, isAdditional: Boolean): Action[AnyContent] = authorise.async {
+  def onPageLoadForObligation(penaltyId: String): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP = false, isAdditional).flatMap {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP = false, isAdditional = false).flatMap {
         _.fold(
           Future(errorHandler.showInternalServerError)
         )(
