@@ -25,12 +25,6 @@ class YouCannotAppealHelperSpec extends SpecBase {
 
   "getHeaderAndTitle" when {
     "the user is an agent" when {
-      "the appeal type is LPP" should {
-        "return the correct value" in {
-          val result = youCannotAppealHelper.getHeaderAndTitle(agentUserLPP)
-          result shouldBe "agent.youCannotAppeal.headingAndTitle.lpp"
-        }
-      }
       "the appeal type is LSP" should {
         "return the correct value" in {
           val result = youCannotAppealHelper.getHeaderAndTitle(agentUserLSP)
@@ -40,12 +34,6 @@ class YouCannotAppealHelperSpec extends SpecBase {
     }
 
     "the user is a vat trader" when {
-      "the appeal type is LPP" should {
-        "return the correct value" in {
-          val result = youCannotAppealHelper.getHeaderAndTitle(vatTraderUserLPP)
-          result shouldBe "youCannotAppeal.headingAndTitle.lpp"
-        }
-      }
       "the appeal type is LSP" should {
         "return the correct value" in {
           val result = youCannotAppealHelper.getHeaderAndTitle(vatTraderUserLSP)
@@ -57,18 +45,6 @@ class YouCannotAppealHelperSpec extends SpecBase {
 
   "getContent" when {
     "the user is an agent" when {
-      "the appeal type is LPP" should {
-        "return the correct content" in {
-          val result = youCannotAppealHelper.getContent(implicitly, agentUserLPP)
-          val parsedHtmlResult = Jsoup.parse(result.body)
-          parsedHtmlResult.select("p.govuk-body").get(0).text() shouldBe p1
-          parsedHtmlResult.select("p.govuk-body").get(1).text() shouldBe agentLPPp2
-          parsedHtmlResult.select("p.govuk-body").get(2).text() shouldBe agentLPPp3
-          parsedHtmlResult.select("p.govuk-body").get(3).text() shouldBe agentP4
-          parsedHtmlResult.select("p > .govuk-link").text() shouldBe returnToClientVATDetails
-          parsedHtmlResult.select("p > .govuk-link").attr("href") shouldBe "http://localhost:9152/vat-through-software/vat-overview"
-        }
-      }
       "the appeal type is LSP" when {
         "returns the correct content" in {
           val result = youCannotAppealHelper.getContent(implicitly, agentUserLSP)
@@ -83,18 +59,6 @@ class YouCannotAppealHelperSpec extends SpecBase {
       }
     }
     "the user is a trader" when {
-      "the appeal type is LPP" when {
-        "returns the correct content" in {
-          val result = youCannotAppealHelper.getContent(implicitly, vatTraderUserLPP)
-          val parsedHtmlResult = Jsoup.parse(result.body)
-          parsedHtmlResult.select("p.govuk-body").get(0).text() shouldBe p1
-          parsedHtmlResult.select("p.govuk-body").get(1).text() shouldBe traderLPPp2
-          parsedHtmlResult.select("p.govuk-body").get(2).text() shouldBe traderLPPp3
-          parsedHtmlResult.select("p.govuk-body").get(3).text() shouldBe traderP4
-          parsedHtmlResult.select("p > .govuk-link").text() shouldBe checkWhatYouOwe
-          parsedHtmlResult.select("p > .govuk-link").attr("href") shouldBe "http://localhost:9152/vat-through-software/what-you-owe"
-        }
-      }
       "the appeal type is LSP" when {
         "returns the correct content" in {
           val result = youCannotAppealHelper.getContent(implicitly, vatTraderUserLSP)

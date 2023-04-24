@@ -30,16 +30,10 @@ class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
                                               extends ViewUtils {
 
   def getHeaderAndTitle(implicit user: UserRequest[_]): String = {
-    val isLPP = user.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment) ||
-      user.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Additional)
-    (isLPP, user.isAgent) match {
-      case (true, true) =>
-        "agent.youCannotAppeal.headingAndTitle.lpp"
-      case (true, false) =>
-        "youCannotAppeal.headingAndTitle.lpp"
-      case (false, true) =>
+    user.isAgent match {
+      case true =>
         "agent.youCannotAppeal.headingAndTitle.lsp"
-      case (_, _) =>
+      case false =>
         "youCannotAppeal.headingAndTitle.lsp"
     }
   }
@@ -54,22 +48,7 @@ class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
     )
   }
 
-  private def lppHtml(agent: Boolean)(implicit messages: Messages, user: UserRequest[_]): Html = {
-    html(
-      p(content = html(stringAsHtml(messages("youCannotAppeal.p1")))),
-      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p2.lpp")))),
-      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p3.lpp")))),
-      p(content = html(stringAsHtml(getMessage("youCannotAppeal.p4")))),
-      p(link(link = if(!agent) appConfig.whatYouOweUrl else appConfig.vatOverviewUrl,
-             messages(if(!agent) s"youCannotAppeal.checkWhatYouOwe" else "agent.youCannotAppeal.returnToVATAccount"))
-      )
-    )
-  }
-
   def getContent(implicit messages: Messages, user: UserRequest[_]): Html = {
-    val isLPP = user.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Payment) ||
-      user.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Additional)
-    val isAgent = user.isAgent
-    if(isLPP) lppHtml(isAgent) else lspHtml
+    lspHtml
   }
 }

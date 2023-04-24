@@ -18,6 +18,7 @@ package controllers
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import javax.inject.Inject
 import models.NormalMode
 import models.pages.{AppealByLetterKickOutPage, PageMode, YouCannotAppealPage}
 import play.api.i18n.I18nSupport
@@ -25,11 +26,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.obligation.{AppealByLetterKickOutPage, YouCannotAppealPage}
 import viewtils.YouCannotAppealHelper
-import javax.inject.Inject
 
 class YouCannotAppealController @Inject()(youCannotAppealPage: YouCannotAppealPage,
-                                          pageHelper: YouCannotAppealHelper,
-                                          appealByLetterPage: AppealByLetterKickOutPage)
+                                          appealByLetterPage: AppealByLetterKickOutPage,
+                                          pageHelper: YouCannotAppealHelper)
                                          (implicit mcc: MessagesControllerComponents,
                                           appConfig: AppConfig, authorise: AuthPredicate,
                                           dataRequired: DataRequiredAction,

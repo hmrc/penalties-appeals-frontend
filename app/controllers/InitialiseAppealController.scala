@@ -56,9 +56,9 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
   }
 
-  def onPageLoadForObligation(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
+  def onPageLoadForObligation(penaltyId: String): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional).flatMap {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP = false, isAdditional = false).flatMap {
         _.fold(
           Future(errorHandler.showInternalServerError)
         )(
@@ -69,25 +69,6 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
         )
       }
     }
-  }
-
-  def onPageLoadForObligationEstimatedLPP(taxPeriodStartDate: String, taxPeriodEndDate: String): Action[AnyContent] = authorise.async {
-    implicit user =>
-      try {
-        val penaltyNumberNotApplicable: String = "NA"
-        val appealData: AppealData = AppealData(
-          PenaltyTypeEnum.Late_Payment,
-          LocalDate.parse(taxPeriodStartDate),
-          LocalDate.parse(taxPeriodEndDate),
-          LocalDate.now(),
-          LocalDate.now())
-        removeExistingKeysFromSessionAndRedirect(
-          routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration(), penaltyNumberNotApplicable, appealData, isAppealAgainstObligation = true)
-      } catch {
-        case e: DateTimeParseException => logger.error(s"InitialiseAppealController][onPageLoadForObligationEstimatedLPP] - Invalid Date paased to controller, redirecting to  ISE")
-          Future(Redirect(routes.ProblemWithServiceController.onPageLoad().url))
-      }
-
   }
 
   private def removeExistingKeysFromSessionAndRedirect[A](urlToRedirectTo: Call,

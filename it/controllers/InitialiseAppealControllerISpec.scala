@@ -16,17 +16,16 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import models.PenaltyTypeEnum
 import org.mongodb.scala.Document
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, _}
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
-import java.time.LocalDate
-import scala.concurrent.Future
 
 class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
   val controller: InitialiseAppealController = injector.instanceOf[InitialiseAppealController]
@@ -133,7 +132,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
         authToken -> "1234"
       )
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoadForObligation("1234", isLPP = false, isAdditional = false)(fakeRequest)
+      val result = controller.onPageLoadForObligation("1234")(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
@@ -148,58 +147,12 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
 
     }
 
-    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned for LPP additional" in new Setup {
-      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
-        authToken -> "1234"
-      )
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
-      val result = controller.onPageLoadForObligation("1234", isLPP = true, isAdditional = true)(fakeRequest)
-      await(result).header.status shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
-      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
-    }
-
     "render an ISE when the appeal data can not be retrieved" in new Setup {
       failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoadForObligation("1234", isLPP = false, isAdditional = false)(FakeRequest().withSession(
+      val result = controller.onPageLoadForObligation("1234")(FakeRequest().withSession(
         authToken -> "1234"
       ))
       await(result).header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-  }
-
-  "GET /initialise-appeal-against-the-obligation-estimated-lpp" should {
-    "redirect to Cancel VAt Page" in new Setup {
-      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
-        authToken -> "1234"
-      )
-      val result: Future[Result] = controller.onPageLoadForObligationEstimatedLPP("2025-01-01", "2025-03-31")(fakeRequest)
-      await(result).header.status shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
-      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
-    }
-
-    "render an ISE when the date format is incorrect" in new Setup {
-      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
-        authToken -> "1234"
-      )
-      val result: Future[Result] = controller.onPageLoadForObligationEstimatedLPP("2025-13-01", "2025-13-31")(fakeRequest)
-      redirectLocation(result).get shouldBe routes.ProblemWithServiceController.onPageLoad().url
-      await(result).header.status shouldBe SEE_OTHER
     }
   }
 }
