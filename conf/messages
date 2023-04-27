@@ -1,6 +1,8 @@
 service.name = Appeal a VAT penalty
 service.homePageUrl = /penalties-appeals
 
+site.warning = Warning:
+
 # Common
 # ----------------------------------------------------------
 common.pageTitle = {0} - {1} - GOV.UK
