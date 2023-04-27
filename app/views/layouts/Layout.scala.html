@@ -58,7 +58,7 @@
 <!--[if gt IE 8]><!--><link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="all" rel="stylesheet" type="text/css" /><!--<![endif]-->
 <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
 <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-        if(showSignOut) {
+        @if(showSignOut) {
             @hmrcTimeoutDialog(TimeoutDialog(
                 language = Some(messages.lang.code),
                 timeout = Some(appConfig.timeoutPeriod),
@@ -68,7 +68,8 @@
                 keepAliveUrl = Some("#"),
                 signOutButtonText = Some(messages("base.signOut"))
             ))
-        } else None
+        } else { None
+}
 
     @hmrcTrackingConsentSnippet()
 
