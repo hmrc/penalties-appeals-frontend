@@ -487,7 +487,7 @@ describe('Multi File Upload component', () => {
                 });
 
                 it('Then the file label should change to a heading', (done) => {
-                    expect(item.querySelector('h3.govuk-label').innerText).toEqual('File 1');
+                    expect(item.querySelector('h2.govuk-label').innerText).toEqual('File 1');
                     done();
                 });
 
@@ -607,7 +607,7 @@ describe('Multi File Upload component', () => {
                 });
 
                 it('Then the label should be changed to a heading', () => {
-                    expect(container.querySelector('h3.govuk-label').innerText).toEqual('File 1');
+                    expect(container.querySelector('h2.govuk-label').innerText).toEqual('File 1');
                 });
 
                 it('Then the remove button is present', (done) => {
