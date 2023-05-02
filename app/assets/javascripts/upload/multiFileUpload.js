@@ -908,7 +908,7 @@ export class MultiFileUpload {
     changeFileInputToHeading(item) {
         const fileContainer = item.querySelector(`.${this.classes.inputContainer}`);
         const fileLabel = item.querySelector(`.${this.classes.label}`);
-        const fileHeading = document.createElement('h3');
+        const fileHeading = document.createElement('h2');
         fileHeading.classList.add(`${this.classes.label}`, 'govuk-!-margin-top-0', 'govuk-!-margin-bottom-0');
         fileHeading.innerHTML = fileLabel.innerHTML;
         fileContainer.insertBefore(fileHeading, fileLabel);
