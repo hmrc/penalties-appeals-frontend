@@ -1,6 +1,8 @@
 service.name = Apelio yn erbyn cosb TAW
 service.homePageUrl = /penalties-appeals
 
+site.warning = Rhybudd:
+
 # Common
 # ----------------------------------------------------------
 common.pageTitle = {0} - {1} - GOV.UK
