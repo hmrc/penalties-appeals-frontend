@@ -288,21 +288,51 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
 
     "preUpscanCheckFailed" should {
       "redirect to the non-JS file upload page" in {
-        val result = controller.preUpscanCheckFailed(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result = controller.preUpscanCheckFailed(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge&errorMessage=Your+proposed+upload+exceeds+the+maximum+allowed+size&key=file1ref"))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+            logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
+            logs.exists(_.getMessage.equals("[UpscanController][preUpscanCheckFailed] - Error redirect initiated for file reference: Some(file1ref). Error code: EntityTooLarge with error message: Some(Your proposed upload exceeds the maximum allowed size)")) shouldBe true
+          }
+        }
       }
 
       "redirect to the non-JS file upload page - check mode" in {
-        val result = controller.preUpscanCheckFailed(false, CheckMode)(FakeRequest("GET", "/upscan/file-verification/change/failed?errorCode=EntityTooLarge"))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result = controller.preUpscanCheckFailed(false, CheckMode)(FakeRequest("GET", "/upscan/file-verification/change/failed?errorCode=EntityTooSmall&errorMessage=Your+proposed+upload+is+smaller+than+the+minimum+allowed+object+size&key=file1ref"))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
+            logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
+            logs.exists(_.getMessage.equals("[UpscanController][preUpscanCheckFailed] - Error redirect initiated for file reference: Some(file1ref). Error code: EntityTooSmall with error message: Some(Your proposed upload is smaller than the minimum allowed object size)")) shouldBe true
+          }
+        }
       }
 
       "redirect to the upload list page if requesting another document" in {
-        val result = controller.preUpscanCheckFailed(true, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge"))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result = controller.preUpscanCheckFailed(true, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=InvalidArgument&errorMessage=The+specified+argument+was+not+valid&key=file1ref"))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
+            logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
+            logs.exists(_.getMessage.equals("[UpscanController][preUpscanCheckFailed] - Error redirect initiated for file reference: Some(file1ref). Error code: InvalidArgument with error message: Some(The specified argument was not valid)")) shouldBe true
+          }
+        }
+      }
+
+      "log a PagerDuty when the error code is not client-related" in {
+        withCaptureOfLoggingFrom(logger) {
+          logs => {
+            val result = controller.preUpscanCheckFailed(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=CodeWhatCode&errorMessage=Message+what+message&key=file1ref"))
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+            logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe true
+            logs.exists(_.getMessage.equals("[UpscanController][preUpscanCheckFailed] - Error redirect initiated for file reference: Some(file1ref). Error code: CodeWhatCode with error message: Some(Message what message)")) shouldBe true
+          }
+        }
       }
     }
 
