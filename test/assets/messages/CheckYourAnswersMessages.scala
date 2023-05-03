@@ -30,9 +30,7 @@ object CheckYourAnswersMessages {
   val warningDeclarationHiddenText: String = "Warning:"
 
   val warningDeclaration: String = "By submitting this appeal, you are making a legal declaration that the information is" +
-    " correct and complete to the best of your knowledge."
-
-  val warningDeclarationPt2: String = "A false declaration can result in prosecution."
+    " correct and complete to the best of your knowledge. A false declaration can result in prosecution."
 
   val button = "Accept and send"
 }

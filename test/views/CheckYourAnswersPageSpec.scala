@@ -44,7 +44,7 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
       val descriptionListDdActionVisuallyHidden: Int => String = (nthChild: Int) =>
         s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__actions > .govuk-link > .govuk-visually-hidden"
 
-      def declarationText(index: Int) = s"#main-content .govuk-warning-text p:nth-child($index)"
+      val declarationText = "#main-content .govuk-warning-text__text"
 
       val declarationWarningHiddenText = "#main-content .govuk-warning-text__assistive"
     }
@@ -78,8 +78,7 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
       Selectors.descriptionListDdActionVisuallyHidden(3) -> "answer for ’Key 3’",
       Selectors.declarationH2 -> h2Declaration,
       Selectors.declarationWarningHiddenText -> warningDeclarationHiddenText,
-      Selectors.declarationText(2) -> warningDeclaration,
-      Selectors.declarationText(3) -> warningDeclarationPt2,
+      Selectors.declarationText -> warningDeclaration,
       Selectors.button -> button
     )
 
