@@ -60,7 +60,6 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
       wholeNumberKey = invalidErrorKey,
       nonNumericKey = invalidErrorKey
     ).bind(s"$key.$subKey", data.view.mapValues(_.trim).toMap)
-      .right
       .flatMap(int =>
         if (extraValidation(int)) Right(int) else Left(Seq(FormError(s"$key.$subKey", invalidErrorKey))))
   }

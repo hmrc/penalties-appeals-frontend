@@ -16,6 +16,8 @@
 
 package forms.mappings
 
+import java.time.LocalDate
+
 import base.SpecBase
 import play.api.data.{Form, FormError}
 
@@ -55,6 +57,23 @@ class MappingsSpec extends SpecBase with Mappings{
     "unbind a valid value" in {
       val result = testForm.fill("foobar")
       result.apply("value").value.get shouldBe "foobar"
+    }
+  }
+
+  "localDate" must {
+    val testForm: Form[LocalDate] = Form(
+      "date" -> localDate(
+        invalidKey = "invalid",
+        allRequiredKey = "allRequired",
+        twoRequiredKey = "twoRequired",
+        requiredKey = "required")
+    )
+    "format string with spaces into a valid localDate" in {
+      val result = testForm.bind(Map(
+        "date.day" -> "1 ",
+        "date.month" -> " 2",
+        "date.year" -> "2 0 2 0"))
+      result.value.get shouldBe LocalDate.of(2020,2,1)
     }
   }
 }
