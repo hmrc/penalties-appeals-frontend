@@ -132,16 +132,20 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
 
   def uploadFailure(journeyId: String): Action[AnyContent] = Action.async {
     implicit request => {
-      PagerDutyHelper.log("uploadFailure", UPLOAD_FAILURE_UPSCAN)
-      logger.error(s"[UpscanController][uploadFailure] - Error redirect initiated for journey: $journeyId")
+      logger.warn(s"[UpscanController][uploadFailure] - Error redirect initiated for journey: $journeyId")
       S3UploadErrorForm.form.bindFromRequest().fold(
         error => {
+          PagerDutyHelper.log("uploadFailure", UPLOAD_FAILURE_UPSCAN)
           logger.error(s"[UpscanController][uploadFailure] - Failed to parse S3 upload error with errors: ${error.errors}")
           Future(BadRequest(""))
         },
         s3UploadError => {
           val fileReference = s3UploadError.key
+          logger.warn(s"[UpscanController][uploadFailure] - Error triggered for file reference: $fileReference in journey: $journeyId. " +
+            s"File upload failed with error code: ${s3UploadError.errorCode} and error message: ${s3UploadError.errorMessage}")
           val messageKeyToSet = UpscanMessageHelper.getUploadFailureMessage(s3UploadError.errorCode, isJsEnabled = true)
+          val userCausedError = Seq("EntityTooSmall", "EntityTooLarge", "400", "InvalidArgument")
+          if(!userCausedError.contains(s3UploadError.errorCode)) PagerDutyHelper.log("uploadFailure", UPLOAD_FAILURE_UPSCAN)
           val callbackModel: UploadJourney = UploadJourney(
             reference = fileReference,
             fileStatus = UploadStatusEnum.FAILED,
