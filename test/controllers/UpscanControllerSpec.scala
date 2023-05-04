@@ -215,45 +215,65 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
             .thenReturn(Future.successful(Some("file1")))
           when(repository.getFileIndexForJourney(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(-1))
-          val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
-            "key" -> "file1",
-            "errorCode" -> "EntityTooSmall",
-            "errorMessage" -> "Some message about file"
-          ))
-          status(result) shouldBe NO_CONTENT
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
+                "key" -> "file1",
+                "errorCode" -> "EntityTooSmall",
+                "errorMessage" -> "Some message about file"
+              ))
+              status(result) shouldBe NO_CONTENT
+              logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
+            }
+          }
         }
 
         "the failure is because the file is too large" in {
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("file1")))
-          val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
-            "key" -> "file1",
-            "errorCode" -> "EntityTooLarge",
-            "errorMessage" -> "Some message about file"
-          ))
-          status(result) shouldBe NO_CONTENT
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
+                "key" -> "file1",
+                "errorCode" -> "EntityTooLarge",
+                "errorMessage" -> "Some message about file"
+              ))
+              status(result) shouldBe NO_CONTENT
+              logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
+            }
+          }
         }
 
         "the failure is because the file is not specified" in {
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("file1")))
-          val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
-            "key" -> "file1",
-            "errorCode" -> "InvalidArgument",
-            "errorMessage" -> "Some message about file"
-          ))
-          status(result) shouldBe NO_CONTENT
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
+                "key" -> "file1",
+                "errorCode" -> "InvalidArgument",
+                "errorMessage" -> "Some message about file"
+              ))
+              status(result) shouldBe NO_CONTENT
+              logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
+            }
+          }
         }
 
         "the failure is because there is some unknown client error" in {
           when(repository.updateStateOfFileUpload(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("file1")))
-          val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
-            "key" -> "file1",
-            "errorCode" -> "ExpiredToken",
-            "errorMessage" -> "Some message about file"
-          ))
-          status(result) shouldBe NO_CONTENT
+          withCaptureOfLoggingFrom(logger) {
+            logs => {
+              val result = controller.uploadFailure("J1234")(fakeRequest.withFormUrlEncodedBody(
+                "key" -> "file1",
+                "errorCode" -> "ExpiredToken",
+                "errorMessage" -> "Some message about file"
+              ))
+              status(result) shouldBe NO_CONTENT
+              logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe true
+            }
+          }
         }
       }
 
