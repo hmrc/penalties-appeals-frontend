@@ -23,6 +23,7 @@
         link: components.link,
         button: components.button,
         formHelper: FormWithCSRF,
+        warningText: components.warningText,
         pageHeader: components.pageHeader)
 
 @(contentToDisplayInSummaryList: Seq[CheckYourAnswersRow], pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -52,11 +53,7 @@
     </dl>
 
     <h2 class="govuk-heading-m" id="declaration">@messages("checkYourAnswers.declaration.h2")</h2>
-    <p class="govuk-body govuk-!-padding-bottom-2">
-        @messages("checkYourAnswers.declaration.p1")
-        <br>
-        @messages("checkYourAnswers.declaration.p2")
-    </p>
+    @warningText(Html(messages("checkYourAnswers.declaration.text")), componentClasses = "govuk-!-margin-bottom-4")
 
     @formHelper(action = controllers.routes.CheckYourAnswersController.onSubmit()) {
         @button("common.acceptAndSend")

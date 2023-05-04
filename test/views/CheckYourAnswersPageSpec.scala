@@ -44,7 +44,9 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
       val descriptionListDdActionVisuallyHidden: Int => String = (nthChild: Int) =>
         s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__actions > .govuk-link > .govuk-visually-hidden"
 
-      val declarationText = s"#main-content > div > div > p"
+      val declarationText = "#main-content .govuk-warning-text__text"
+
+      val declarationWarningHiddenText = "#main-content .govuk-warning-text__assistive"
     }
 
     def applyView(): HtmlFormat.Appendable = checkYourAnswers.apply(
@@ -75,7 +77,8 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
       Selectors.descriptionListDdActionGovukLink(3) -> "Change",
       Selectors.descriptionListDdActionVisuallyHidden(3) -> "answer for ’Key 3’",
       Selectors.declarationH2 -> h2Declaration,
-      Selectors.declarationText -> pDeclaration,
+      Selectors.declarationWarningHiddenText -> warningDeclarationHiddenText,
+      Selectors.declarationText -> warningDeclaration,
       Selectors.button -> button
     )
 

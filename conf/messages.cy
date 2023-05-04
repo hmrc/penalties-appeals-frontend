@@ -1,6 +1,8 @@
 service.name = Apelio yn erbyn cosb TAW
 service.homePageUrl = /penalties-appeals
 
+site.warning = Rhybudd:
+
 # Common
 # ----------------------------------------------------------
 common.pageTitle = {0} - {1} - GOV.UK
@@ -421,8 +423,7 @@ date.year = Blwyddyn
 checkYourAnswers.headingAndTitle = Gwirio’ch atebion
 checkYourAnswers.appealDetails.h2 = Manylion yr apêl
 checkYourAnswers.declaration.h2 = Datganiad
-checkYourAnswers.declaration.p1 = Wrth gyflwyno’r apêl hon, rydych yn gwneud datganiad cyfreithlon bod yr wybodaeth yn gywir ac yn gyflawn hyd eithaf eich gwybodaeth a’ch cred.
-checkYourAnswers.declaration.p2 = Gall datganiad ffug arwain at erlyniad.
+checkYourAnswers.declaration.text = Wrth gyflwyno’r apêl hon, rydych yn gwneud datganiad cyfreithlon bod yr wybodaeth yn gywir ac yn gyflawn hyd eithaf eich gwybodaeth a’ch cred. Gall datganiad ffug arwain at erlyniad.
 checkYourAnswers.reasonableExcuse = Rheswm dros fethu’r dyddiad cau ar gyfer TAW
 checkYourAnswers.change.text = Newid
 checkYourAnswers.change.visuallyHidden = ateb ‘{0}’
