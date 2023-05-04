@@ -197,7 +197,7 @@ fireOrFloodReason.error.notInFuture = The date of the fire or flood must be toda
 # When did the person leave the business page
 # ----------------------------------------------------------
 lossOfStaffReason.headingAndTitle = When did the person leave the business?
-lossOfStaffReason.hintText = This means someone essential to the tax process leaving at short notice, whether they planned to return or not.<br><br>
+lossOfStaffReason.hintText = This means someone essential to the tax process leaving at short notice, whether they planned to return or not.
 lossOfStaffReason.error.required.all = Tell us the last date the person carried out work for the business
 lossOfStaffReason.error.required.two = The date the person left must include a {0} and a {1}
 lossOfStaffReason.error.required = The date the person left must include a {0}
