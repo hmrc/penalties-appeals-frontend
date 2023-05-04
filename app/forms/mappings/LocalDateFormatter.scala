@@ -112,7 +112,6 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
           }
         }
     }.toMap
-    println(Console.GREEN + fields + Console.RESET)
     lazy val missingFields = fields
       .withFilter(_._2.isEmpty)
       .map(_._1)
