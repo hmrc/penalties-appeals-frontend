@@ -198,7 +198,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
       val errorCode = request.getQueryString("errorCode")
       val errorMessage = request.getQueryString("errorMessage")
       val fileReference = request.getQueryString("key")
-      logger.warn(s"[UpscanController][preUpscanCheckFailed] - Error redirect initiated for file reference: $fileReference. Error code: ${errorCode.getOrElse("No error code")} with error message: $errorMessage")
+      logger.info(s"[UpscanController][preUpscanCheckFailed] - Error redirect initiated for file reference: $fileReference. Error code: ${errorCode.getOrElse("No error code")} with error message: $errorMessage")
       val userCausedErrorList = Seq("EntityTooSmall", "EntityTooLarge", "400", "InvalidArgument")
       if(!userCausedErrorList.contains(errorCode.getOrElse(""))) {
         PagerDutyHelper.log("preUpscanCheckFailed", UPLOAD_FAILURE_UPSCAN)
