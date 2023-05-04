@@ -15,6 +15,8 @@
  *@
 
 @import config.AppConfig
+@import views.html.helper.CSPNonce
+
 
 @this(layout: Layout,
        bullets: components.bullets,
@@ -47,14 +49,4 @@
     }
 }
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('JavaScript is enabled');
-      const form = document.getElementById('upload-evidence-question-form');
-      const input = document.createElement('input');
-      input.setAttribute('type', 'hidden');
-      input.setAttribute('name', 'isJsEnabled');
-      input.setAttribute('value', 'true');
-      form.appendChild(input);
-    });
-</script>
+<script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("javascripts/uploadEvidencePageInput.js")'></script>
