@@ -195,12 +195,20 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
 
   def preUpscanCheckFailed(isAddingAnotherDocument: Boolean, mode: Mode): Action[AnyContent] = Action {
     implicit request => {
+      val errorCode = request.getQueryString("errorCode")
+      val errorMessage = request.getQueryString("errorMessage")
+      val fileReference = request.getQueryString("key")
+      logger.info(s"[UpscanController][preUpscanCheckFailed] - Error redirect initiated for file reference: $fileReference. Error code: ${errorCode.getOrElse("No error code")} with error message: $errorMessage")
+      val userCausedErrorList = Seq("EntityTooSmall", "EntityTooLarge", "400", "InvalidArgument")
+      if(!userCausedErrorList.contains(errorCode.getOrElse(""))) {
+        PagerDutyHelper.log("preUpscanCheckFailed", UPLOAD_FAILURE_UPSCAN)
+      }
       if (isAddingAnotherDocument) {
         Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
-          .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
+          .addingToSession(SessionKeys.errorCodeFromUpscan -> errorCode.get)
       } else {
         Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
-          .addingToSession(SessionKeys.errorCodeFromUpscan -> request.getQueryString("errorCode").get)
+          .addingToSession(SessionKeys.errorCodeFromUpscan -> errorCode.get)
       }
     }
   }
