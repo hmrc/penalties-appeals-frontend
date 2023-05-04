@@ -109,12 +109,12 @@ class MappingsSpec extends SpecBase with Mappings{
       result.errors should contain(FormError("date.day", "allRequired", List("day", "month", "year")))
     }
 
-    "treat values with only a space as if the string was empty" in {
+    "treat values with only spaces as if the string was empty" in {
       val result = testForm.bind(Map(
         "date.day" -> "1",
-        "date.month" -> "2",
-        "date.year" -> " "))
-      result.errors should contain(FormError("date.year", "required", List("year")))
+        "date.month" -> " ",
+        "date.year" -> "    "))
+      result.errors should contain(FormError("date.month", "twoRequired", List("month", "year")))
     }
 
     "not bind a string that is not a real date" in {
