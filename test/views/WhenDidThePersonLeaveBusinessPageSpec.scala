@@ -37,7 +37,11 @@ class WhenDidThePersonLeaveBusinessPageSpec extends SpecBase with ViewBehaviours
     val postAction: Call = controllers.routes.LossOfStaffReasonController.onPageLoad(NormalMode)
     implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
-    object Selectors extends BaseSelectors
+    object Selectors extends BaseSelectors {
+      val p = "#main-content p"
+
+      val visuallyHiddenHeading = ".govuk-fieldset__legend.govuk-visually-hidden"
+    }
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = whenDidThePersonLeaveBusinessPage.apply(form, postAction, pageMode = PageMode(WhenDidPersonLeaveTheBusinessPage, NormalMode))
 
@@ -46,7 +50,9 @@ class WhenDidThePersonLeaveBusinessPageSpec extends SpecBase with ViewBehaviours
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> heading,
+      Selectors.p -> descriptiveText,
       Selectors.hintText -> hintText,
+      Selectors.visuallyHiddenHeading -> heading,
       Selectors.dateEntry(1) -> dayEntry,
       Selectors.dateEntry(2) -> monthEntry,
       Selectors.dateEntry(3) -> yearEntry,
