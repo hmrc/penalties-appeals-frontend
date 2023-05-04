@@ -102,7 +102,14 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
     val fields = fieldKeys.map {
       field =>
-        field -> data.get(s"$key.$field").filter(_.nonEmpty)
+        field -> {
+          val processingData = data.get(s"$key.$field").filter(_.nonEmpty)
+          if (processingData.isDefined && processingData.get.contentEquals(" ")) {
+            None
+          } else {
+            processingData
+          }
+        }
     }.toMap
     lazy val missingFields = fields
       .withFilter(_._2.isEmpty)
