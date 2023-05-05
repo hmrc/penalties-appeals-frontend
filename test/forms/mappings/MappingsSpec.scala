@@ -74,7 +74,7 @@ class MappingsSpec extends SpecBase with Mappings{
         "date.day" -> "3",
         "date.month" -> "4",
         "date.year" -> "2021"))
-      result.value.get shouldBe LocalDate.of(2021 ,4 ,3)
+      result.value.get shouldBe LocalDate.of( 2021, 4, 3)
     }
 
     "format string with spaces into a valid localDate" in {
@@ -82,7 +82,7 @@ class MappingsSpec extends SpecBase with Mappings{
         "date.day" -> "1 ",
         "date.month" -> " 2",
         "date.year" -> "2 0 2 0"))
-      result.value.get shouldBe LocalDate.of(2020 ,2 ,1)
+      result.value.get shouldBe LocalDate.of( 2020, 2, 1)
     }
 
     "not bind a date that is missing one of it's values and return the correct invalid value" in {
