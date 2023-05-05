@@ -16,6 +16,8 @@
 
 package forms.mappings
 
+import java.time.LocalDate
+
 import base.SpecBase
 import play.api.data.{Form, FormError}
 
@@ -55,6 +57,72 @@ class MappingsSpec extends SpecBase with Mappings{
     "unbind a valid value" in {
       val result = testForm.fill("foobar")
       result.apply("value").value.get shouldBe "foobar"
+    }
+  }
+
+  "localDate" must {
+    val testForm: Form[LocalDate] = Form(
+      "date" -> localDate(
+        invalidKey = "invalid",
+        allRequiredKey = "allRequired",
+        twoRequiredKey = "twoRequired",
+        requiredKey = "required")
+    )
+
+    "bind a valid date" in {
+      val result = testForm.bind(Map(
+        "date.day" -> "3",
+        "date.month" -> "4",
+        "date.year" -> "2021"))
+      result.value.get shouldBe LocalDate.of( 2021, 4, 3)
+    }
+
+    "format string with spaces into a valid localDate" in {
+      val result = testForm.bind(Map(
+        "date.day" -> "1 ",
+        "date.month" -> " 2",
+        "date.year" -> "2 0 2 0"))
+      result.value.get shouldBe LocalDate.of( 2020, 2, 1)
+    }
+
+    "not bind a date that is missing one of it's values and return the correct invalid value" in {
+      val result = testForm.bind(Map(
+        "date.day" -> "",
+        "date.month" -> "2",
+        "date.year" -> "2020"))
+      result.errors should contain(FormError("date.day", "required", List("day")))
+    }
+
+    "not bind a date that is missing two of it's values and return the correct invalid values" in {
+      val result = testForm.bind(Map(
+        "date.day" -> "2",
+        "date.month" -> "",
+        "date.year" -> ""))
+      result.errors should contain(FormError("date.month", "twoRequired", List("month", "year")))
+    }
+
+    "not bind a date that is missing all of it's values and return the correct invalid values" in {
+      val result = testForm.bind(Map(
+        "date.day" -> "",
+        "date.month" -> "",
+        "date.year" -> ""))
+      result.errors should contain(FormError("date.day", "allRequired", List("day", "month", "year")))
+    }
+
+    "treat values with only spaces as if the string was empty" in {
+      val result = testForm.bind(Map(
+        "date.day" -> "1",
+        "date.month" -> " ",
+        "date.year" -> "    "))
+      result.errors should contain(FormError("date.month", "twoRequired", List("month", "year")))
+    }
+
+    "not bind a string that is not a real date" in {
+      val result = testForm.bind(Map(
+        "date.day" -> "x",
+        "date.month" -> "y",
+        "date.year" -> "z"))
+      result.errors should contain(FormError("date.day", "invalid", List("day", "month", "year")))
     }
   }
 }
