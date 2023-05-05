@@ -197,7 +197,7 @@ fireOrFloodReason.error.notInFuture = Mae’n rhaid i ddyddiad y tân neu lifogy
 # When did the person leave the business page
 # ----------------------------------------------------------
 lossOfStaffReason.headingAndTitle = Pryd gadawodd y person y busnes?
-lossOfStaffReason.hintText = Mae hyn yn golygu bod rhywun sy’n hanfodol i’r broses dreth wedi gadael ar fyr rybudd, p’un a oedd wedi bwriadu dychwelyd ai peidio.<br><br>
+lossOfStaffReason.hintText = Mae hyn yn golygu bod rhywun sy’n hanfodol i’r broses dreth wedi gadael ar fyr rybudd, p’un a oedd wedi bwriadu dychwelyd ai peidio.
 lossOfStaffReason.error.required.all = Rhowch wybod i ni beth oedd y dyddiad diwethaf yr oedd y person wedi gweithio i’r busnes
 lossOfStaffReason.error.required.two = Mae’n rhaid i’r dyddiad y gwnaeth y person adael gynnwys {0} a {1}
 lossOfStaffReason.error.required = Mae’n rhaid i ddyddiad y gwnaeth y person adael gynnwys {0}
