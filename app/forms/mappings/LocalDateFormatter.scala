@@ -65,6 +65,7 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
   }
 
   private def formatDate(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
+    val localisedFieldKeys = fieldKeys.map(key => messages(s"date.$key").toLowerCase)
     val dayField = bindIntSubfield(key, "day", invalidKey, invalidKey, data, day => day >= 1 && day <= 31)
     val monthField = bindIntSubfield(key, "month", invalidKey, invalidKey, data, month => month >= 1 && month <= 12)
     val yearField = bindIntSubfield(key, "year", invalidKey, invalidKey, data, year => year >= 1 && year.toString.length == 4)
@@ -77,7 +78,7 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
         errors =>
           if (errors.size > 1) {
             val focusTarget = errors.find(_.key == s"$key.day").orElse(errors.find(_.key == s"$key.month")).orElse(errors.find(_.key == s"$key.year")).map(_.key).getOrElse(s"$key.day")
-            Left(List(FormError(focusTarget, invalidKey, fieldKeys ++ args)))
+            Left(List(FormError(focusTarget, invalidKey, localisedFieldKeys ++ args)))
           } else {
             Left(errors)
           }
@@ -85,11 +86,11 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
       date => {
         if (futureKey.isDefined) {
           if (dateNotEqualOrAfterKeyAndCompareDate.isDefined && dateNotEqualOrAfterKeyAndCompareDate.get._2.isAfter(date)) {
-            Left(Seq(FormError(s"$key.day", dateNotEqualOrAfterKeyAndCompareDate.get._1, fieldKeys)))
+            Left(Seq(FormError(s"$key.day", dateNotEqualOrAfterKeyAndCompareDate.get._1, localisedFieldKeys)))
           } else if (date.isEqual(getFeatureDate) || date.isBefore(getFeatureDate)) {
             Right(date)
           } else {
-            Left(Seq(FormError(s"$key.day", futureKey.get, fieldKeys)))
+            Left(Seq(FormError(s"$key.day", futureKey.get, localisedFieldKeys)))
           }
         } else {
           Right(date)
