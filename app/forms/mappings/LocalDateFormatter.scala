@@ -101,10 +101,7 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
   //scalastyle:off
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
     val fields = fieldKeys.map {
-      field =>
-        field -> {
-          data.get(s"$key.$field").map(_.replaceAll(" ", "")).filter(_.nonEmpty)
-        }
+      field => field -> data.get(s"$key.$field").map(_.replaceAll(" ", "")).filter(_.nonEmpty)
     }.toMap
     lazy val missingFields = fields
       .withFilter(_._2.isEmpty)
