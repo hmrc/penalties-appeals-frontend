@@ -36,6 +36,7 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= WarnForDuplicateFiles.name
     sys.props -= ShowFullAppealAgainstTheObligation.name
+    sys.props -= UseNewAuditStructure.name
     sys.props -= featureSwitching.TIME_MACHINE_NOW
   }
 
@@ -45,11 +46,12 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= WarnForDuplicateFiles.name
     sys.props -= ShowFullAppealAgainstTheObligation.name
+    sys.props -= UseNewAuditStructure.name
   }
 
   "listOfAllFeatureSwitches" should {
     "be all the featureswitches in the app" in {
-      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowFullAppealAgainstTheObligation)
+      FeatureSwitch.listOfAllFeatureSwitches shouldBe List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowFullAppealAgainstTheObligation, UseNewAuditStructure)
     }
   }
 
