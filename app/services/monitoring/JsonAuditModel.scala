@@ -18,7 +18,7 @@ package services.monitoring
 
 import play.api.libs.json.JsValue
 
-trait JsonAuditModel{
+trait JsonAuditModel {
   val auditType: String
   val transactionName: String
   val detail: JsValue

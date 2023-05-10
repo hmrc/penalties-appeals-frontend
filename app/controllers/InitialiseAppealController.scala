@@ -20,33 +20,40 @@ import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
-import models.{AppealData, AuthRequest, PenaltyTypeEnum}
+import models.{AppealData, AuthRequest, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.I18nSupport
 import play.api.mvc._
+import _root_.config.featureSwitches.{FeatureSwitching, UseNewAuditStructure}
+import models.PenaltyTypeEnum._
+import models.monitoring.AuditPenaltyTypeEnum._
+import models.monitoring.PenaltyAppealStartedAuditModel
+import play.api.Configuration
+import services.monitoring.AuditService
 import services.{AppealService, SessionService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.{CurrencyFormatter, SessionKeys}
 
 import java.time.LocalDate
-import java.time.format.DateTimeParseException
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class InitialiseAppealController @Inject()(appealService: AppealService,
                                            sessionService: SessionService,
-                                           errorHandler: ErrorHandler)(
-                                                                       implicit val mcc: MessagesControllerComponents,
-                                                                       authorise: AuthPredicate,
-                                                                       ec: ExecutionContext)
-  extends FrontendController(mcc) with I18nSupport {
+                                           auditService: AuditService,
+                                           errorHandler: ErrorHandler)
+                                          (implicit val mcc: MessagesControllerComponents,
+                                            authorise: AuthPredicate,
+                                            val config: Configuration,
+                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
       for {
         appealData <- appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional)
-        multiPenaltyData <- if(isLPP) appealService.validateMultiplePenaltyDataForEnrolmentKey(penaltyId) else Future.successful(None)
+        multiPenaltyData <- if (isLPP) appealService.validateMultiplePenaltyDataForEnrolmentKey(penaltyId) else Future.successful(None)
         result <- if (appealData.isDefined) {
           removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData.get, multiPenaltyData, isAppealAgainstObligation = false)
         } else Future(errorHandler.showInternalServerError)
@@ -110,15 +117,29 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }.getOrElse(baseUserAnswers)
 
     val allUserAnswers = {
-      if(isAppealAgainstObligation) {
+      if (isAppealAgainstObligation) {
         userAnswersWithPossibleMultiplePenaltiesData.setAnswer[Boolean](SessionKeys.isObligationAppeal, isAppealAgainstObligation)
       } else userAnswersWithPossibleMultiplePenaltiesData
     }
+    auditStartOfAppealJourney(penaltyNumber, appealModel)
     sessionService.updateAnswers(allUserAnswers).map {
       _ => Redirect(urlToRedirectTo)
         .removingFromSession(SessionKeys.allKeys: _*)
         .removingFromSession(SessionKeys.penaltiesHasSeenConfirmationPage)
         .addingToSession((SessionKeys.journeyId, journeyId))
+    }
+  }
+
+  def auditStartOfAppealJourney(penaltyNumber: String, appealModel: AppealData)
+                               (implicit ec: ExecutionContext, hc: HeaderCarrier, request: AuthRequest[_]): Unit = {
+    if(isEnabled(UseNewAuditStructure)) {
+      val appealType = appealModel.`type` match {
+        case Late_Submission => LSP
+        case Late_Payment => FirstLPP
+        case Additional => SecondLPP
+      }
+      val auditModel = PenaltyAppealStartedAuditModel(penaltyNumber, appealType)
+      auditService.audit(auditModel)
     }
   }
 }
