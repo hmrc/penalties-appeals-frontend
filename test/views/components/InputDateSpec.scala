@@ -63,6 +63,11 @@ class InputDateSpec extends SpecBase with Mappings with ViewBehaviours {
         runTest(values)(isDayError = true, isMonthError = true, isYearError = true)
       }
 
+      "the year is invalid and 30 has been inputted as the day for February" in {
+        val values: Map[String, String] = Map("date.day" -> "30", "date.month" -> "2", "date.year" -> "223")
+        runTest(values)(isDayError = true, isMonthError = true, isYearError = true)
+      }
+
       "the date is before another date" in {
         val values: Map[String, String] = Map("date.day" -> "31", "date.month" -> "12", "date.year" -> "2022")
         runTest(values)(isDayError = true, isMonthError = true, isYearError = true)

@@ -64,21 +64,25 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
         if (extraValidation(int)) Right(int) else Left(Seq(FormError(s"$key.$subKey", invalidErrorKey))))
   }
 
+  private def isMonthAndDayInvalid(day: Option[Int], month: Option[Int]) = {
+    day.exists(_ > 29) && month.contains(2)
+  }
+
   private def formatDate(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
     val localisedFieldKeys = fieldKeys.map(key => messages(s"date.$key").toLowerCase)
     val dayField = bindIntSubfield(key, "day", invalidKey, invalidKey, data, day => day >= 1 && day <= 31)
     val monthField = bindIntSubfield(key, "month", invalidKey, invalidKey, data, month => month >= 1 && month <= 12)
     val yearField = bindIntSubfield(key, "year", invalidKey, invalidKey, data, year => year >= 1 && year.toString.length == 4)
+    val monthAndDayCorrect = if(isMonthAndDayInvalid(dayField.toOption, monthField.toOption)) Left(Seq(FormError(s"$key.day", invalidKey))) else Left(Seq())
     val parseResult = (dayField, monthField, yearField) match {
       case (Right(day), Right(month), Right(year)) => toDate(key, day, month, year)
-      case (day, month, year) => Left(day.left.toSeq.flatten ++ month.left.toSeq.flatten ++ year.left.toSeq.flatten)
+      case (day, month, year) => Left(day.left.toSeq.flatten ++ month.left.toSeq.flatten ++ year.left.toSeq.flatten ++ monthAndDayCorrect.left.toSeq.flatten)
     }
     parseResult.fold(
       {
         errors =>
           if (errors.size > 1) {
-            val focusTarget = errors.find(_.key == s"$key.day").orElse(errors.find(_.key == s"$key.month")).orElse(errors.find(_.key == s"$key.year")).map(_.key).getOrElse(s"$key.day")
-            Left(List(FormError(focusTarget, invalidKey, localisedFieldKeys ++ args)))
+            Left(List(FormError(s"$key.day", invalidKey, localisedFieldKeys ++ args)))
           } else {
             Left(errors)
           }
