@@ -65,7 +65,11 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
   }
 
   private def isMonthAndDayInvalid(day: Option[Int], month: Option[Int]) = {
-    day.exists(_ > 29) && month.contains(2)
+    month match {
+      case Some(2) => day.exists(_ > 29)
+      case Some(4 | 6 | 9 | 11) => day.exists(_ > 30)
+      case _ => false
+    }
   }
 
   private def formatDate(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
