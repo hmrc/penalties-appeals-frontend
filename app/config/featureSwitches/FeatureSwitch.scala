@@ -23,7 +23,7 @@ sealed trait FeatureSwitch {
 
 object FeatureSwitch {
   val prefix: String = "feature.switch"
-  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowFullAppealAgainstTheObligation)
+  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowFullAppealAgainstTheObligation, UseNewAuditStructure)
 }
 
 case object NonJSRouting extends FeatureSwitch {
@@ -44,4 +44,9 @@ case object WarnForDuplicateFiles extends FeatureSwitch {
 case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-full-appeal-against-the-obligation-journey"
   override val displayText: String = "To show the full appeal against the obligation journey"
+}
+
+case object UseNewAuditStructure extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.use-new-audit-structure"
+  override val displayText: String = "Use the audit structure that has not been approved for use in Production"
 }
