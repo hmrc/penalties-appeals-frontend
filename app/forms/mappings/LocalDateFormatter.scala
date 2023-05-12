@@ -57,7 +57,6 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
                               extraValidation: Int => Boolean): Either[Seq[FormError], Int] = {
     intFormatter(
       requiredKey = blankErrorKey,
-      wholeNumberKey = invalidErrorKey,
       nonNumericKey = invalidErrorKey
     ).bind(s"$key.$subKey", data.view.mapValues(_.trim).toMap)
       .flatMap(int =>

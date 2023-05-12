@@ -85,6 +85,14 @@ class MappingsSpec extends SpecBase with Mappings{
       result.value.get shouldBe LocalDate.of( 2020, 2, 1)
     }
 
+    "format string with punctuation into a valid localDate" in {
+      val result = testForm.bind(Map(
+        "date.day" -> " , 1 . 1",
+        "date.month" -> " (1) 2",
+        "date.year" -> "2  0 -2- 0"))
+      result.value.get shouldBe LocalDate.of(2020, 12, 11)
+    }
+
     "not bind a date that is missing one of it's values and return the correct invalid value" in {
       val result = testForm.bind(Map(
         "date.day" -> "",
