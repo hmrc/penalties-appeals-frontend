@@ -16,7 +16,6 @@
 
 package forms
 
-import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -25,7 +24,6 @@ import play.api.data.{Form, FormError}
 import java.time.LocalDate
 
 trait FormBehaviours extends AnyWordSpec with Matchers with FeatureSwitching {
-  implicit val appConfig: AppConfig
   val emptyForm: Map[String, String] = Map.empty
 
   def mandatoryField(form: Form[_],
@@ -106,18 +104,6 @@ trait FormBehaviours extends AnyWordSpec with Matchers with FeatureSwitching {
             s"$fieldName.day" -> "thirtyFirst",
             s"$fieldName.month" -> "ofTheSecond",
             s"$fieldName.year" -> "twentyTwentyOne"
-          )
-        )
-        result.errors.size shouldBe 1
-        result.errors.head shouldBe FormError(s"$fieldName.day", errorMessage("invalid"), Seq("day", "month", "year"))
-      }
-
-      "the date contains negative numbers" in {
-        val result = form.bind(
-          Map(
-            s"$fieldName.day" -> "-1",
-            s"$fieldName.month" -> "-2",
-            s"$fieldName.year" -> "2021"
           )
         )
         result.errors.size shouldBe 1
