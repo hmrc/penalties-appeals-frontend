@@ -137,7 +137,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
   )
 
   class Setup {
-    reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService, mockUploadJourneyRepository)
+    reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService, mockUploadJourneyRepository, mockUUIDGenerator)
+    when(mockUUIDGenerator.generateUUID).thenReturn("uuid-1", "uuid-2")
     val service: AppealService =
       new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, mockUUIDGenerator, mockUploadJourneyRepository)
 
@@ -147,7 +148,6 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   "validatePenaltyIdForEnrolmentKey" should {
     "return None when the connector returns None" in new Setup {
-
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
 
@@ -157,7 +157,6 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     }
 
     "return None when the connectors returns Json that cannot be parsed to a model" in new Setup {
-
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
@@ -440,9 +439,10 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         logs => {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
+          verify(mockUUIDGenerator, times(2)).generateUUID
           logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
-            s"LPP1 appeal was not submitted successfully, Reason given Some issue with submission. " +
-            s"LPP2 appeal was submitted successfully, Case Id is PR-1234.") shouldBe true
+            s"LPP1 appeal was not submitted successfully, Reason given Some issue with submission. Correlation ID for LPP1: uuid-1. " +
+            s"LPP2 appeal was submitted successfully, Case Id is PR-1234. Correlation ID for LPP2: uuid-2. ") shouldBe true
         }
       }
     }
@@ -459,8 +459,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
           logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
-            s"LPP1 appeal was submitted successfully, Case Id is PR-1234. " +
-            s"LPP2 appeal was not submitted successfully, Reason given Some issue with submission.") shouldBe true
+            s"LPP1 appeal was submitted successfully, Case Id is PR-1234. Correlation ID for LPP1: uuid-1. " +
+            s"LPP2 appeal was not submitted successfully, Reason given Some issue with submission. Correlation ID for LPP2: uuid-2. ") shouldBe true
         }
       }
     }
@@ -477,8 +477,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
           val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
-            s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). " +
-            s"LPP2 appeal was not submitted successfully, Reason given Some issue with submission."
+            s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). Correlation ID for LPP1: uuid-1. " +
+            s"LPP2 appeal was not submitted successfully, Reason given Some issue with submission. Correlation ID for LPP2: uuid-2. "
           logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }
@@ -496,8 +496,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
           val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
-            s"LPP1 appeal was not submitted successfully, Reason given Some issue with submission. " +
-            s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator)."
+            s"LPP1 appeal was not submitted successfully, Reason given Some issue with submission. Correlation ID for LPP1: uuid-1. " +
+            s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). Correlation ID for LPP2: uuid-2. "
           logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }
@@ -515,8 +515,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
           logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
-            s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). " +
-            s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1235) but received 500 response from file notification orchestrator).") shouldBe true
+            s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). Correlation ID for LPP1: uuid-1. " +
+            s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1235) but received 500 response from file notification orchestrator). Correlation ID for LPP2: uuid-2. ") shouldBe true
         }
       }
     }
