@@ -24,7 +24,8 @@ import services.monitoring.JsonAuditModel
 import utils.JsonUtils
 import utils.Logger.logger
 
-case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: AuditPenaltyTypeEnum.Value, correlationId: String, optUploads: Option[Seq[UploadJourney]])
+case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: AuditPenaltyTypeEnum.Value,
+                            correlationId: String, optUploads: Option[Seq[UploadJourney]], caseId: Option[String])
                            (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
   implicit val agentDetailsFormatter: OFormat[AgentDetails] = AgentDetails.format
 
@@ -38,7 +39,8 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Aud
     "agentDetails" -> Json.toJson(appealSubmission.agentDetails),
     "penaltyType" -> penaltyType,
     "appealInformation" -> appealPayload,
-    "correlationId"-> correlationId
+    "correlationId"-> correlationId,
+    "caseId" -> caseId
   )
 
   logger.debug(s"[AppealAuditModel] [appeal Payload] $appealPayload")

@@ -106,12 +106,19 @@ object PenaltiesStub {
   }
 
   def successfulAppealSubmission(isLPP: Boolean, penaltyNumber: String): StubMapping = {
+    val responseBody =
+      """
+        |{
+        | "caseId": "PR-1234",
+        | "status": 200
+        |}
+        |""".stripMargin
     stubFor(
       post(urlPathMatching(submitAppealUri)).withQueryParams(submitAppealQueryParams(isLPP, penaltyNumber).asJava)
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
-            .withBody("PR-1234")
+            .withBody(responseBody)
         )
     )
   }

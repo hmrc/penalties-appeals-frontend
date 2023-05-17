@@ -211,7 +211,8 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         )
       )
       val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = true))
-      result.status shouldBe OK
+      result.isRight shouldBe true
+      result.toOption.get.status shouldBe OK
     }
 
     "return the response of the call for LPP" in {
@@ -237,7 +238,8 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         )
       )
       val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
-      result.status shouldBe OK
+      result.isRight shouldBe true
+      result.toOption.get.status shouldBe OK
     }
 
     "return ISE if an exception occurs" in {
@@ -263,8 +265,9 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         )
       )
       val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
-      result.status shouldBe INTERNAL_SERVER_ERROR
-      result.body shouldBe "An issue occurred whilst appealing a penalty with error: Connection reset by peer"
+      result.isLeft shouldBe true
+      result.left.toOption.get.status shouldBe INTERNAL_SERVER_ERROR
+      result.left.toOption.get.body shouldBe "An issue occurred whilst appealing a penalty with error: Connection reset by peer"
     }
   }
 }

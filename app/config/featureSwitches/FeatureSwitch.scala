@@ -23,7 +23,14 @@ sealed trait FeatureSwitch {
 
 object FeatureSwitch {
   val prefix: String = "feature.switch"
-  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(NonJSRouting, ShowDigitalCommsMessage, WarnForDuplicateFiles, ShowFullAppealAgainstTheObligation, UseNewAuditStructure)
+  val listOfAllFeatureSwitches: List[FeatureSwitch] = List(
+    NonJSRouting,
+    ShowDigitalCommsMessage,
+    WarnForDuplicateFiles,
+    ShowFullAppealAgainstTheObligation,
+    EnablePRM2509,
+    EnablePRM2510
+  )
 }
 
 case object NonJSRouting extends FeatureSwitch {
@@ -46,7 +53,12 @@ case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {
   override val displayText: String = "To show the full appeal against the obligation journey"
 }
 
-case object UseNewAuditStructure extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.use-new-audit-structure"
-  override val displayText: String = "Use the audit structure that has not been approved for use in Production"
+case object EnablePRM2509 extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.enable-prm-2509"
+  override val displayText: String = "Enable the audit event implemented in PRM-2509"
+}
+
+case object EnablePRM2510 extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.enable-prm-2510"
+  override val displayText: String = "Enable the audit event changes implemented in PRM-2510"
 }

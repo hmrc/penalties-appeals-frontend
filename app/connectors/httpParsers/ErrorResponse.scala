@@ -38,7 +38,7 @@ case object BadRequest extends ErrorResponse {
   override val body: String = "incorrect Json body sent"
 }
 
-case class UnexpectedFailure(
+case class  UnexpectedFailure(
                               override val status: Int,
                               override val body: String
                             ) extends ErrorResponse
