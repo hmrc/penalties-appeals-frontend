@@ -232,21 +232,21 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     (firstResponse, secondResponse) match {
       //Both succeed
       case (Right(firstResponseModel), Right(secondResponseModel)) =>
-        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)
+        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, firstCorrelationId, secondCorrelationId, vrn, dateFrom, dateTo)
         sendAppealAudit(modelFromRequest, uploads, firstCorrelationId, isLPP, isMultipleAppeal = true, appealType, firstResponseModel.caseId.get)
         sendAppealAudit(modelFromRequest, uploads, secondCorrelationId, isLPP, isMultipleAppeal = true, appealType, secondResponseModel.caseId.get)
         sendAuditIfDuplicatesExist(uploads)
         Right((): Unit)
       //One (LPP1) succeeded
       case (Right(firstResponseModel), Left(secondResponseModel)) =>
-        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, vrn, dateFrom, dateTo)
+        logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, firstCorrelationId, secondCorrelationId, vrn, dateFrom, dateTo)
         sendAppealAudit(modelFromRequest, uploads, firstCorrelationId, isLPP, isMultipleAppeal = true, appealType, firstResponseModel.caseId.get)
         sendAuditIfDuplicatesExist(uploads)
         logger.debug(s"[AppealService][multipleAppeal] - First penalty was $firstResponseModel, second penalty was $secondResponseModel")
         Right((): Unit)
       //One (LPP2) succeeded
       case (Left(firstResponseModel), Right(secondResponseModel)) =>
-        logPartialFailureOfMultipleAppeal(Left(firstResponseModel), Right(secondResponseModel), vrn, dateFrom, dateTo)
+        logPartialFailureOfMultipleAppeal(Left(firstResponseModel), Right(secondResponseModel), firstCorrelationId, secondCorrelationId, vrn, dateFrom, dateTo)
         sendAppealAudit(modelFromRequest, uploads, secondCorrelationId, isLPP, isMultipleAppeal = true, appealType, secondResponseModel.caseId.get)
         sendAuditIfDuplicatesExist(uploads)
         logger.debug(s"[AppealService][multipleAppeal] - Second penalty was $secondResponseModel, first penalty was $firstResponseModel")
