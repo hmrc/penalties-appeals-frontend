@@ -198,27 +198,27 @@ class AppealAuditModelSpec extends SpecBase {
 
     implicit val userRequest: UserRequest[AnyContent] = fakeRequestWithCorrectKeysAndHonestyDeclarationSet
     val correlationId = "someUUID"
-    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), Some("REV-1234"))
-    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), Some("REV-1234"))
+    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), Some("REV-1234"), "PENALTY1234")
+    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), Some("REV-1234"), "PENALTY1234")
 
-    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
-    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
+    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
 
-    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, Some("REV-1234"))
-    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, Some("REV-1234"))
+    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, Some("REV-1234"), "PENALTY1234")
 
-    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, Some("REV-1234"))
-    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, Some("REV-1234"))
+    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
 
     "have the correct auditType" in {
       lppBereavementModel.auditType shouldBe "PenaltyAppealSubmitted"
@@ -229,9 +229,9 @@ class AppealAuditModelSpec extends SpecBase {
     }
 
     "not audit the case id when None and audit when defined" in {
-      val modelWithoutCaseId = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, None)
+      val modelWithoutCaseId = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, None, "PENALTY1234")
       (modelWithoutCaseId.detail \ "caseId").validateOpt[String].get shouldBe None
-      val modelWithCaseId = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"))
+      val modelWithCaseId = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
       (modelWithCaseId.detail \ "caseId").validateOpt[String].get shouldBe Some("REV-1234")
 
     }
@@ -248,7 +248,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -265,7 +266,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -281,7 +283,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -297,7 +300,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -314,7 +318,8 @@ class AppealAuditModelSpec extends SpecBase {
           "endDateOfEvent" -> "2021-04-25T00:00:01",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -331,7 +336,8 @@ class AppealAuditModelSpec extends SpecBase {
           "endDateOfEvent" -> "2021-04-25T00:00:01",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -347,7 +353,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
 
       lppHealthOngoingModel.detail shouldBe Json.obj(
@@ -361,7 +368,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -379,7 +387,8 @@ class AppealAuditModelSpec extends SpecBase {
           "noOfUploadedFiles" -> "0",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
     "output the correct details for a lpp other submission with evidence with correlationID" in {
@@ -414,7 +423,8 @@ class AppealAuditModelSpec extends SpecBase {
           "lateAppeal" -> false
         ),
         "correlationId" -> "someUUID",
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -430,7 +440,8 @@ class AppealAuditModelSpec extends SpecBase {
           "statement" -> "this is another reason",
           "noOfUploadedFiles" -> "0"
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -464,7 +475,8 @@ class AppealAuditModelSpec extends SpecBase {
           )
         ),
         "correlationId" -> "someUUID",
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -480,7 +492,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -497,7 +510,8 @@ class AppealAuditModelSpec extends SpecBase {
           "lateAppeal" -> true,
           "lateAppealReason" -> "this is a very good reason"
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -513,7 +527,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -529,7 +544,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -545,7 +561,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
 
@@ -561,7 +578,8 @@ class AppealAuditModelSpec extends SpecBase {
           "startDateOfEvent" -> "2021-04-23T00:00:00",
           "lateAppeal" -> false
         ),
-        "caseId" -> "REV-1234"
+        "caseId" -> "REV-1234",
+        "penaltyNumber" -> "PENALTY1234"
       )
     }
   }
