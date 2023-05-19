@@ -17,7 +17,9 @@
 package connectors
 
 import config.AppConfig
+import connectors.httpParsers.AppealSubmissionHTTPParser.{AppealSubmissionReads, AppealSubmissionResponse}
 import connectors.httpParsers.MultiplePenaltiesHttpParser.{MultiplePenaltiesResponse, MultiplePenaltiesResponseReads}
+import connectors.httpParsers.UnexpectedFailure
 import models.appeals.AppealSubmission
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
@@ -94,13 +96,16 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     }
   }
 
-  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String, isMultiAppeal: Boolean)
-                  (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def submitAppeal(appealSubmission: AppealSubmission, enrolmentKey: String, isLPP: Boolean,
+                   penaltyNumber: String, correlationId: String, isMultiAppeal: Boolean)
+                  (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[AppealSubmissionResponse] = {
     logger.debug(s"[PenaltiesConnector][submitAppeal] - Submitting appeal model send to backend: ${Json.toJson(appealSubmission)}")
-    httpClient.POST[AppealSubmission, HttpResponse](appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyNumber, correlationId, isMultiAppeal), appealSubmission).recover {
+    httpClient.POST[AppealSubmission, AppealSubmissionResponse](
+      appConfig.submitAppealUrl(enrolmentKey, isLPP, penaltyNumber, correlationId, isMultiAppeal), appealSubmission
+    ).recover {
       case e => {
         logger.error(s"[PenaltiesConnector][submitAppeal] - An issue occurred whilst submitting appeal to penalties backend, error message: ${e.getMessage}")
-        HttpResponse.apply(INTERNAL_SERVER_ERROR, s"An issue occurred whilst appealing a penalty with error: ${e.getMessage}")
+        Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, s"An issue occurred whilst appealing a penalty with error: ${e.getMessage}"))
       }
     }
   }

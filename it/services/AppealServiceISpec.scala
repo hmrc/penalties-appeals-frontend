@@ -391,7 +391,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
           result shouldBe Right((): Unit)
           logs.exists(_.getMessage.contains(s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. ")) shouldBe true
           logs.exists(_.getMessage.contains(s"LPP1 appeal was not submitted successfully, Reason given Some issue with document storage. Correlation ID for LPP1:")) shouldBe true
-          logs.exists(_.getMessage.contains(s"LPP2 appeal was submitted successfully, Case Id is PR-1234. Correlation ID for LPP2:")) shouldBe true
+          logs.exists(_.getMessage.contains(s"LPP2 appeal was submitted successfully, case ID is Some(PR-1234). Correlation ID for LPP2:")) shouldBe true
         }
       }
     }
@@ -420,7 +420,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
           result shouldBe Right((): Unit)
           logs.exists(_.getMessage.contains("MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. ")) shouldBe true
           logs.exists(_.getMessage.contains("LPP1 appeal was not submitted successfully, Reason given An issue occurred whilst appealing a penalty with error: Connection reset by peer. Correlation ID for LPP1:")) shouldBe true
-          logs.exists(_.getMessage.contains("LPP2 appeal was submitted successfully, Case Id is PR-1234. Correlation ID for LPP2:")) shouldBe true
+          logs.exists(_.getMessage.contains("LPP2 appeal was submitted successfully, case ID is Some(PR-1234). Correlation ID for LPP2:")) shouldBe true
         }
       }
     }

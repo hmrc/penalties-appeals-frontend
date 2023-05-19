@@ -23,7 +23,7 @@ import models.session.UserAnswers
 import models.{AppealData, AuthRequest, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import _root_.config.featureSwitches.{FeatureSwitching, UseNewAuditStructure}
+import _root_.config.featureSwitches.{FeatureSwitching, EnablePRM2509}
 import models.PenaltyTypeEnum._
 import models.monitoring.AuditPenaltyTypeEnum._
 import models.monitoring.PenaltyAppealStartedAuditModel
@@ -132,7 +132,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
   def auditStartOfAppealJourney(penaltyNumber: String, appealModel: AppealData)
                                (implicit ec: ExecutionContext, hc: HeaderCarrier, request: AuthRequest[_]): Unit = {
-    if(isEnabled(UseNewAuditStructure)) {
+    if(isEnabled(EnablePRM2509)) {
       val appealType = appealModel.`type` match {
         case Late_Submission => LSP
         case Late_Payment => FirstLPP

@@ -20,9 +20,9 @@ import base.SpecBase
 import config.AppConfig
 import connectors.PenaltiesConnector
 import connectors.httpParsers.{InvalidJson, UnexpectedFailure}
-import models.appeals.MultiplePenaltiesData
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models._
+import models.appeals.{AppealSubmissionResponseModel, MultiplePenaltiesData}
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
@@ -30,7 +30,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
 import utils.Logger.logger
 import utils.{SessionKeys, UUIDGenerator}
@@ -38,6 +38,7 @@ import utils.{SessionKeys, UUIDGenerator}
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
 
+//scalastyle:off
 class AppealServiceSpec extends SpecBase with LogCapturing {
   val mockPenaltiesConnector: PenaltiesConnector = mock(classOf[PenaltiesConnector])
   val mockAppConfig: AppConfig = mock(classOf[AppConfig])
@@ -138,12 +139,12 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   class Setup {
     reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService, mockUploadJourneyRepository, mockUUIDGenerator)
-    when(mockUUIDGenerator.generateUUID).thenReturn("uuid-1", "uuid-2")
     val service: AppealService =
       new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, mockUUIDGenerator, mockUploadJourneyRepository)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
+    when(mockUUIDGenerator.generateUUID).thenReturn("uuid-1", "uuid-2")
   }
 
   "validatePenaltyIdForEnrolmentKey" should {
@@ -316,7 +317,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
   "submitAppeal" should {
     "parse the session keys into a model and return true when the connector call is successful and audit the response" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
@@ -328,12 +329,12 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     "parse the session keys into a model and return true when the connector call is successful and audit the response" +
       " - for appealing multiple penalties" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
       result shouldBe Right((): Unit)
-      verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
+      verify(mockAuditService, times(2)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
         ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
     }
 
@@ -358,7 +359,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
       val failedUpload: UploadJourney = uploadAsDuplicate.copy(reference = "ref3", fileStatus = UploadStatusEnum.FAILED)
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate, uploadAsDuplicate2, failedUpload))))
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
@@ -387,7 +388,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         lastUpdated = LocalDateTime.now()
       )
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate))))
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourneyDeclinedUploads, implicitly, implicitly))
@@ -417,7 +418,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         lastUpdated = LocalDateTime.now()
       )
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate))))
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
@@ -430,9 +431,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
     "succeed if one of 2 appeal submissions fail and log a PD (LPP1 fails)" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "Some issue with submission")))
+        .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, "Some issue with submission"))))
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "PR-1234")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       withCaptureOfLoggingFrom(logger) {
@@ -442,16 +443,16 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           verify(mockUUIDGenerator, times(2)).generateUUID
           logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
             s"LPP1 appeal was not submitted successfully, Reason given Some issue with submission. Correlation ID for LPP1: uuid-1. " +
-            s"LPP2 appeal was submitted successfully, Case Id is PR-1234. Correlation ID for LPP2: uuid-2. ") shouldBe true
+            s"LPP2 appeal was submitted successfully, case ID is Some(REV-1234). Correlation ID for LPP2: uuid-2. ") shouldBe true
         }
       }
     }
 
     "succeed if one of 2 appeal submissions fail and log a PD (LPP2 fails)" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "PR-1234")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "Some issue with submission")))
+        .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, "Some issue with submission"))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       withCaptureOfLoggingFrom(logger) {
@@ -459,7 +460,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
           logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
-            s"LPP1 appeal was submitted successfully, Case Id is PR-1234. Correlation ID for LPP1: uuid-1. " +
+            s"LPP1 appeal was submitted successfully, case ID is Some(REV-1234). Correlation ID for LPP1: uuid-1. " +
             s"LPP2 appeal was not submitted successfully, Reason given Some issue with submission. Correlation ID for LPP2: uuid-2. ") shouldBe true
         }
       }
@@ -467,9 +468,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
     "succeed if an error occurs during file notification storage and the other submission fails and log a PD (LPP1 docs fail, LPP2 fails submission)" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator")))))
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "Some issue with submission")))
+        .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, "Some issue with submission"))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       withCaptureOfLoggingFrom(logger) {
@@ -477,8 +478,27 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
           val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
-            s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). Correlation ID for LPP1: uuid-1. " +
+            s"LPP1 appeal was submitted successfully (case ID is Some(REV-1234)) but there was an issue storing the notification for uploaded files, response body (Some(Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator)). Correlation ID for LPP1: uuid-1. " +
             s"LPP2 appeal was not submitted successfully, Reason given Some issue with submission. Correlation ID for LPP2: uuid-2. "
+          logs.exists(_.getMessage == logMessage) shouldBe true
+        }
+      }
+    }
+
+    "succeed if an error occurs during file notification storage and the other submission succeeds and log a PD (LPP2 docs fail, LPP1 successful submission)" in new Setup {
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1235"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1235) but received 500 response from file notification orchestrator")))))
+      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
+        .thenReturn(Future.successful(None))
+      withCaptureOfLoggingFrom(logger) {
+        logs => {
+          val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
+          result shouldBe Right((): Unit)
+          val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
+            s"LPP1 appeal was submitted successfully, case ID is Some(REV-1234). Correlation ID for LPP1: uuid-1. " +
+            s"LPP2 appeal was submitted successfully (case ID is Some(REV-1235)) but there was an issue storing the notification for uploaded files, response body (Some(Appeal submitted (case ID: REV-1235) but received 500 response from file notification orchestrator)). Correlation ID for LPP2: uuid-2. "
           logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }
@@ -486,9 +506,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
     "succeed if an error occurs during file notification storage and the other submission fails and log a PD (LPP2 docs fail, LPP1 fails submission)" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "Some issue with submission")))
+        .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, "Some issue with submission"))))
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator")))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       withCaptureOfLoggingFrom(logger) {
@@ -497,7 +517,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           result shouldBe Right((): Unit)
           val logMessage = s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
             s"LPP1 appeal was not submitted successfully, Reason given Some issue with submission. Correlation ID for LPP1: uuid-1. " +
-            s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). Correlation ID for LPP2: uuid-2. "
+            s"LPP2 appeal was submitted successfully (case ID is Some(REV-1234)) but there was an issue storing the notification for uploaded files, response body (Some(Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator)). Correlation ID for LPP2: uuid-2. "
           logs.exists(_.getMessage == logMessage) shouldBe true
         }
       }
@@ -505,9 +525,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
     "succeed if an error occurs during file notification storage for both submissions and log a PD" in new Setup {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator")))))
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(MULTI_STATUS, "Appeal submitted (case ID: PR-1235) but received 500 response from file notification orchestrator")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1235"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1235) but received 500 response from file notification orchestrator")))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
       withCaptureOfLoggingFrom(logger) {
@@ -515,8 +535,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
           result shouldBe Right((): Unit)
           logs.exists(_.getMessage == s"MULTI_APPEAL_FAILURE Multiple appeal covering 2024-01-01-2024-01-31 for user with VRN 123456789 failed. " +
-            s"LPP1 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1234) but received 500 response from file notification orchestrator). Correlation ID for LPP1: uuid-1. " +
-            s"LPP2 appeal was submitted successfully but there was an issue storing the notification for uploaded files, response body (Appeal submitted (case ID: PR-1235) but received 500 response from file notification orchestrator). Correlation ID for LPP2: uuid-2. ") shouldBe true
+            s"LPP1 appeal was submitted successfully (case ID is Some(REV-1234)) but there was an issue storing the notification for uploaded files, response body (Some(Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator)). Correlation ID for LPP1: uuid-1. " +
+            s"LPP2 appeal was submitted successfully (case ID is Some(REV-1235)) but there was an issue storing the notification for uploaded files, response body (Some(Appeal submitted (case ID: REV-1235) but received 500 response from file notification orchestrator)). Correlation ID for LPP2: uuid-2. ") shouldBe true
         }
       }
     }
@@ -524,7 +544,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     "return Left" when {
       "the connector returns a non-200 response" in new Setup {
         when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
+          .thenReturn(Future.successful(Left(UnexpectedFailure(BAD_GATEWAY, ""))))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
         val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
@@ -533,9 +553,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
       "the connector returns a non-200 response for multiple submissions" in new Setup {
         when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
+          .thenReturn(Future.successful(Left(UnexpectedFailure(BAD_GATEWAY, ""))))
         when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, "")))
+          .thenReturn(Future.successful(Left(UnexpectedFailure(BAD_GATEWAY, ""))))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
         val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
@@ -553,7 +573,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
       "the repository throws and exception" in new Setup {
         when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(OK, "")))
+          .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.failed(new Exception("I failed.")))
         val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))

@@ -18,9 +18,10 @@ package connectors
 
 import base.SpecBase
 import config.AppConfig
+import connectors.httpParsers.AppealSubmissionHTTPParser.AppealSubmissionResponse
 import connectors.httpParsers.MultiplePenaltiesHttpParser.MultiplePenaltiesResponse
 import connectors.httpParsers.{NoContent, UnexpectedFailure}
-import models.appeals.{AppealSubmission, CrimeAppealInformation, MultiplePenaltiesData}
+import models.appeals.{AppealSubmission, AppealSubmissionResponseModel, CrimeAppealInformation, MultiplePenaltiesData}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -336,9 +337,9 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
 
   "submitAppeal" should {
     "return the HTTP response back to the caller" in new Setup {
-      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(),
+      when(mockHttpClient.POST[AppealSubmission, AppealSubmissionResponse](any(), any(), any())(any(),
         any(), ArgumentMatchers.eq(hc.copy(authorization = None, otherHeaders = hc.otherHeaders)), any()))
-        .thenReturn(Future.successful(HttpResponse(Status.OK, "")))
+        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
@@ -349,12 +350,13 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
-      val result: HttpResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
-      result.status shouldBe OK
+      val result: AppealSubmissionResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
+      result.isRight shouldBe true
+      result.toOption.get.status shouldBe OK
     }
 
     "return an ISE when something unexpected goes wrong" in new Setup {
-      when(mockHttpClient.POST[AppealSubmission, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
+      when(mockHttpClient.POST[AppealSubmission, AppealSubmissionResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Exception("something went wrong.")))
       when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any()))
         .thenReturn("http://url/url")
@@ -366,10 +368,11 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
-      val result: HttpResponse = await(connector.submitAppeal(appealSubmissionModel,
+      val result: AppealSubmissionResponse = await(connector.submitAppeal(appealSubmissionModel,
         "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
-      result.status shouldBe INTERNAL_SERVER_ERROR
-      result.body shouldBe "An issue occurred whilst appealing a penalty with error: something went wrong."
+      result.isLeft shouldBe true
+      result.left.toOption.get.body shouldBe "An issue occurred whilst appealing a penalty with error: something went wrong."
+      result.left.toOption.get.status shouldBe INTERNAL_SERVER_ERROR
     }
   }
 }

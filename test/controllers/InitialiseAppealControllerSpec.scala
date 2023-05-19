@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.UseNewAuditStructure
+import config.featureSwitches.EnablePRM2509
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
@@ -333,7 +333,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "not send an audit" when {
       "the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
         val authRequest = new AuthRequest[AnyContent]("123456789")
-        when(mockConfig.get[Boolean](ArgumentMatchers.eq(UseNewAuditStructure.name))(any())).thenReturn(false)
+        when(mockConfig.get[Boolean](ArgumentMatchers.eq(EnablePRM2509.name))(any())).thenReturn(false)
         controller.auditStartOfAppealJourney("123456789000", appealData(PenaltyTypeEnum.Late_Submission))(implicitly, HeaderCarrier(), authRequest)
         verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
       }
@@ -356,7 +356,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
             "penaltyNumber" -> "123456789000",
             "penaltyType" -> penaltyTypeForAudit
           )
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq(UseNewAuditStructure.name))(any())).thenReturn(true)
+          when(mockConfig.get[Boolean](ArgumentMatchers.eq(EnablePRM2509.name))(any())).thenReturn(true)
           controller.auditStartOfAppealJourney("123456789000", appealData(penaltyType))(implicitly, HeaderCarrier(), authRequest)
           verify(mockAuditService, times(1)).audit(auditCapture.capture())(ArgumentMatchers.any[HeaderCarrier],
             ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
@@ -383,7 +383,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
             "penaltyNumber" -> "123456789000",
             "penaltyType" -> penaltyTypeForAudit
           )
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq(UseNewAuditStructure.name))(any())).thenReturn(true)
+          when(mockConfig.get[Boolean](ArgumentMatchers.eq(EnablePRM2509.name))(any())).thenReturn(true)
           controller.auditStartOfAppealJourney("123456789000", appealData(penaltyType))(implicitly, HeaderCarrier(), authRequest)
           verify(mockAuditService, times(1)).audit(auditCapture.capture())(any(), any(), any())
           auditCapture.getValue.transactionName shouldBe "penalties-appeal-started"
