@@ -121,8 +121,8 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
       await(service.removeFileFromJourney("J1234", "F1234"))
       eventually {
         await(repository.getUploadsForJourney(Some("J1234"))).get.size shouldBe 1
+        await(repository.getUploadsForJourney(Some("J1234"))).get.head.reference shouldBe "F1235"
       }
-      await(repository.getUploadsForJourney(Some("J1234"))).get.head.reference shouldBe "F1235"
     }
   }
 

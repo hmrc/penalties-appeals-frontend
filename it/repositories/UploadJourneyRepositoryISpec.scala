@@ -201,8 +201,8 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       await(repository.removeFileForJourney("1234", "ref1"))
       eventually {
         await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+        await(repository.getUploadsForJourney(Some("1234"))).get.head shouldBe callbackModel2
       }
-      await(repository.getUploadsForJourney(Some("1234"))).get.head shouldBe callbackModel2
     }
 
     "remove the whole document if the user removes their last upload" in new Setup {

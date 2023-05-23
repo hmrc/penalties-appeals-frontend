@@ -236,11 +236,10 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase with FeatureSwitch
           ))
         ), isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
-      val result: Future[Result] = controller.removeFile("1234", "ref1")(FakeRequest())
-      eventually {
-        status(result) shouldBe NO_CONTENT
+      val result = await(controller.removeFile("1234", "ref1")(FakeRequest()))
+        result.header.status shouldBe NO_CONTENT
         await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
-      }
+
     }
 
     "return 204 (No Content) when the user has specified a journey ID is NOT in the database" in new Setup {
