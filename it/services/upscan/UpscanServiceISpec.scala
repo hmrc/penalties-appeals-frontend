@@ -29,8 +29,10 @@ import repositories.UploadJourneyRepository
 import stubs.UpscanStub.{failedInitiateCall, successfulInitiateCall}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
-
 import java.time.LocalDateTime
+
+import org.scalatest.concurrent.Eventually.eventually
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -117,7 +119,9 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1234", UploadStatusEnum.READY), isInitiateCall = true))
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("F1235", UploadStatusEnum.READY), isInitiateCall = true))
       await(service.removeFileFromJourney("J1234", "F1234"))
-      await(repository.getUploadsForJourney(Some("J1234"))).get.size shouldBe 1
+      eventually {
+        await(repository.getUploadsForJourney(Some("J1234"))).get.size shouldBe 1
+      }
       await(repository.getUploadsForJourney(Some("J1234"))).get.head.reference shouldBe "F1235"
     }
   }
