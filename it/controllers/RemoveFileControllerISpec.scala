@@ -28,8 +28,9 @@ import repositories.UploadJourneyRepository
 import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
 import java.time.{LocalDate, LocalDateTime}
+
+import org.scalatest.concurrent.Eventually.eventually
 
 class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
   val controller = injector.instanceOf[RemoveFileController]
@@ -109,7 +110,9 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
       val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = false, mode = CheckMode)(fakeRequest
         .withFormUrlEncodedBody("value" -> "yes")))
-      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      eventually {
+        await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      }
       result.header.status shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
     }
