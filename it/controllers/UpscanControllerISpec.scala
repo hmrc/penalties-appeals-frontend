@@ -237,8 +237,10 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase with FeatureSwitch
         ), isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
       val result = await(controller.removeFile("1234", "ref1")(FakeRequest()))
+      eventually {
         result.header.status shouldBe NO_CONTENT
         await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      }
 
     }
 
