@@ -837,8 +837,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
     ))) {
       await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       val request = controller.removeFileUpload(NormalMode)(fakeRequest.withFormUrlEncodedBody("fileReference" -> "file1"))
-      status(request) shouldBe SEE_OTHER
       eventually {
+        status(request) shouldBe SEE_OTHER
         redirectLocation(request).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
       }
     }
