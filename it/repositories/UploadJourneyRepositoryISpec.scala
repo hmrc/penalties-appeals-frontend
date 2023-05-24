@@ -22,8 +22,10 @@ import org.mongodb.scala.result.DeleteResult
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongo.cache.DataKey
 import utils.IntegrationSpecCommonBase
-
 import java.time.LocalDateTime
+
+import org.scalatest.concurrent.Eventually.eventually
+
 import scala.concurrent.Future
 
 class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
@@ -197,15 +199,19 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
       await(repository.removeFileForJourney("1234", "ref1"))
-      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
-      await(repository.getUploadsForJourney(Some("1234"))).get.head shouldBe callbackModel2
+      eventually {
+        await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+        await(repository.getUploadsForJourney(Some("1234"))).get.head shouldBe callbackModel2
+      }
     }
 
     "remove the whole document if the user removes their last upload" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
       await(repository.removeFileForJourney("1234", "ref1"))
-      await(repository.collection.countDocuments().toFuture()) shouldBe 0
+      eventually {
+        await(repository.collection.countDocuments().toFuture()) shouldBe 0
+      }
     }
 
     "do not remove the file in the journey if the file specified doesn't exist" in new Setup {

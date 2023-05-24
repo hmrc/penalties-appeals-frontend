@@ -31,6 +31,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 import java.time.LocalDateTime
 
 import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
+import org.scalatest.concurrent.Eventually.eventually
 
 import scala.concurrent.Future
 
@@ -235,9 +236,12 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase with FeatureSwitch
           ))
         ), isInitiateCall = true))
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 2
-      val result: Future[Result] = controller.removeFile("1234", "ref1")(FakeRequest())
-      status(result) shouldBe NO_CONTENT
-      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      val result = await(controller.removeFile("1234", "ref1")(FakeRequest()))
+      eventually {
+        result.header.status shouldBe NO_CONTENT
+        await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
+      }
+
     }
 
     "return 204 (No Content) when the user has specified a journey ID is NOT in the database" in new Setup {

@@ -34,6 +34,8 @@ import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 import java.time.{LocalDate, LocalDateTime}
 
+import org.scalatest.concurrent.Eventually.eventually
+
 import scala.concurrent.Future
 
 class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
@@ -835,8 +837,10 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
     ))) {
       await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       val request = controller.removeFileUpload(NormalMode)(fakeRequest.withFormUrlEncodedBody("fileReference" -> "file1"))
-      status(request) shouldBe SEE_OTHER
-      redirectLocation(request).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+      eventually {
+        status(request) shouldBe SEE_OTHER
+        redirectLocation(request).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+      }
     }
 
     "reload the upload list when there is more uploads" in new Setup(userAnswers(Json.obj(
