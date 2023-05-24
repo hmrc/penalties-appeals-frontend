@@ -122,9 +122,11 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
       await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 1
       val result = await(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = CheckMode)(fakeRequest
         .withFormUrlEncodedBody("value" -> "yes")))
-      result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, true).url
-      await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 0
+      eventually {
+        result.header.status shouldBe SEE_OTHER
+        result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, true).url
+        await(repository.getNumberOfDocumentsForJourneyId("1234")) shouldBe 0
+      }
     }
 
     "return 303 (SEE_OTHER) redirecting back to upload list page when the user answers no (js disabled)" in new Setup(userAnswers) {
