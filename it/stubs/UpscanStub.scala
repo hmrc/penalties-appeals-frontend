@@ -46,7 +46,7 @@ object UpscanStub {
     )
   }
 
-  def failedInitiateCall(responseBody: String): StubMapping = {
+  def failedInitiateCall: StubMapping = {
     stubFor(
       post(urlEqualTo(initiateUpscanUrl))
         .willReturn(

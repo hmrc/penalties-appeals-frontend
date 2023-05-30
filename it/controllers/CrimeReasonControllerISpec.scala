@@ -17,19 +17,18 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
+import controllers.testHelpers.AuthorisationTest
 import models.{NormalMode, PenaltyTypeEnum}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching with AuthorisationTest {
   val controller: CrimeReasonController = injector.instanceOf[CrimeReasonController]
   "GET /when-did-the-crime-happen" should {
     "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -44,29 +43,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-crime-happen").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-crime-happen").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForWhenCrimeHappened(NormalMode), "GET", "/when-did-the-crime-happen")
   }
 
   "POST /when-did-the-crime-happen" should {
@@ -175,30 +152,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-crime-happen").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-crime-happen").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForWhenCrimeHappened(NormalMode), "POST", "/when-did-the-crime-happen")
   }
 
   "GET /has-this-crime-been-reported" should {
@@ -214,29 +168,7 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/has-this-crime-been-reported").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForHasCrimeBeenReported(NormalMode), "GET", "/has-this-crime-been-reported")
   }
 
   "POST /has-this-crime-been-reported" should {
@@ -298,29 +230,6 @@ class CrimeReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/has-this-crime-been-reported").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-crime-happen").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForHasCrimeBeenReported(NormalMode), "POST", "/has-this-crime-been-reported")
   }
 }

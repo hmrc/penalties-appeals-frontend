@@ -17,19 +17,18 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
+import controllers.testHelpers.AuthorisationTest
 import models.{NormalMode, PenaltyTypeEnum}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching with AuthorisationTest {
   val controller: FireOrFloodReasonController = injector.instanceOf[FireOrFloodReasonController]
 
   "GET /when-did-the-fire-or-flood-happen" should {
@@ -45,29 +44,7 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase with Fe
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-fire-or-flood-happen").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoad(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoad(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-fire-or-flood-happen").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoad(NormalMode), "GET", "/when-did-the-fire-or-flood-happen")
   }
 
   "POST /when-did-the-fire-or-flood-happen" should {
@@ -197,29 +174,6 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase with Fe
 
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-fire-or-flood-happen").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmit(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmit(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-fire-or-flood-happen").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoad(NormalMode), "POST", "/when-did-the-fire-or-flood-happen")
   }
 }

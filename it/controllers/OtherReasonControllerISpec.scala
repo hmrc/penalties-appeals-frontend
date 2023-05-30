@@ -17,28 +17,26 @@
 package controllers
 
 import config.featureSwitches.{FeatureSwitching, NonJSRouting, WarnForDuplicateFiles}
+import controllers.testHelpers.AuthorisationTest
 import models.session.UserAnswers
 import models.upload._
 import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.Jsoup
 import org.mongodb.scala.Document
+import org.scalatest.concurrent.Eventually.eventually
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
-import stubs.AuthStub
 import stubs.UpscanStub.successfulInitiateCall
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
+
 import java.time.{LocalDate, LocalDateTime}
-
-import org.scalatest.concurrent.Eventually.eventually
-
 import scala.concurrent.Future
 
-class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class OtherReasonControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
   val controller: OtherReasonController = injector.instanceOf[OtherReasonController]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
@@ -60,29 +58,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       request.header.status shouldBe OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-inability-to-manage-account-happened").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForWhenDidBecomeUnable(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForWhenDidBecomeUnable(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-inability-to-manage-account-happened").get())
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForWhenDidBecomeUnable(NormalMode), "GET", "/when-inability-to-manage-account-happened")
   }
 
   "POST /when-inability-to-manage-account-happened" should {
@@ -191,30 +167,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-inability-to-manage-account-happened").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-inability-to-manage-account-happened").post(""))
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForWhenDidBecomeUnable(NormalMode), "POST", "/when-inability-to-manage-account-happened")
   }
 
   "GET /upload-evidence-for-the-appeal" should {
@@ -272,31 +225,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       enableFeatureSwitch(NonJSRouting)
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-for-the-appeal").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForUploadEvidence(NormalMode, true)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForUploadEvidence(NormalMode, true)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-evidence-for-the-appeal?isJsEnabled=true").get())
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForUploadEvidence(NormalMode, true), "GET", "/upload-evidence-for-the-appeal?isJsEnabled=true")
   }
-
 
   "GET /why-was-the-vat-late" should {
     "return 200 (OK) when the user is authorised" in new Setup(userAnswers(Json.obj(
@@ -311,29 +241,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       request.header.status shouldBe OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/why-was-the-vat-late").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForWhyReturnSubmittedLate(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/why-was-the-vat-late").get())
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForWhyReturnSubmittedLate(NormalMode), "GET", "/why-was-the-vat-late")
   }
 
   "POST /why-was-the-vat-late" should {
@@ -380,30 +288,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/why-was-the-vat-late").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForWhyReturnSubmittedLate(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/why-was-the-vat-late").post(""))
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForWhyReturnSubmittedLate(NormalMode), "POST", "/why-was-the-vat-late")
   }
 
   "GET /upload-first-document" should {
@@ -510,29 +395,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-first-document").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-first-document").get())
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForFirstFileUpload(NormalMode), "GET", "/upload-first-document")
   }
 
   "GET /uploaded-documents" should {
@@ -701,11 +564,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       redirectLocation(request).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
     }
 
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/uploaded-documents").get())
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForUploadComplete(NormalMode), "GET", "/uploaded-documents")
   }
 
   "GET /upload-another-document" should {
@@ -788,29 +647,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       request.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-another-document").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForAnotherFileUpload(NormalMode), "GET", "/upload-another-document")
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-another-document").get())
-      request.status shouldBe SEE_OTHER
-    }
   }
 
   "POST /remove-file-upload" should {
@@ -984,30 +822,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/uploaded-documents").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForUploadComplete(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForUploadComplete(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/uploaded-documents").post(""))
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForUploadComplete(NormalMode), "POST", "/uploaded-documents")
   }
 
   "GET /upload-evidence-question" should {
@@ -1022,29 +837,8 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       val request = await(controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/upload-evidence-question").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-evidence-question").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForUploadEvidenceQuestion(NormalMode), "GET", "/upload-evidence-question")
   }
 
   "POST /upload-evidence-question" should {
@@ -1120,29 +914,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with FeatureS
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/upload-evidence-question").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/upload-evidence-question").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForUploadEvidenceQuestion(NormalMode), "POST", "/upload-evidence-question")
   }
 }

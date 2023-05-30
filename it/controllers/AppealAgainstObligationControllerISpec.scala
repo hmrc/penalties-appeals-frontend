@@ -16,19 +16,19 @@
 
 package controllers
 
+import controllers.testHelpers.AuthorisationTest
 import models.{NormalMode, PenaltyTypeEnum}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase {
+class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: AppealAgainstObligationController = injector.instanceOf[AppealAgainstObligationController]
 
   "GET /other-relevant-information" should {
@@ -48,32 +48,7 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/other-relevant-information").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234")
-      val request = await(controller.onPageLoad(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"))
-    )) {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/other-relevant-information")
-        .withSession(
-          authToken -> "1234",
-          SessionKeys.journeyId -> "1234")
-      val request = await(controller.onPageLoad(NormalMode)(fakeRequestWithIncompleteKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/other-relevant-information").get())
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoad(NormalMode), "GET", "/other-relevant-information")
   }
 
   "POST /other-relevant-information" should {
@@ -127,33 +102,6 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase {
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/other-relevant-information").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234")
-      val request = await(controller.onSubmit(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val fakeRequestWithIncompleteKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/other-relevant-information")
-        .withSession(
-          authToken -> "1234",
-          SessionKeys.journeyId -> "1234")
-      val request = await(controller.onSubmit(NormalMode)(fakeRequestWithIncompleteKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new UserAnswersSetup(userAnswers(Json.obj())){
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/other-relevant-information").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmit(NormalMode), "POST", "/other-relevant-information")
   }
-
 }

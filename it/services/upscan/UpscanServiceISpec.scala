@@ -55,7 +55,7 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
 
   "initiateSynchronousCallToUpscan" should {
     "return Left when the call to Upscan fails" in new Setup {
-      failedInitiateCall("asdf")
+      failedInitiateCall
       val result = service.initiateSynchronousCallToUpscan("J1234", false, NormalMode)
       await(result).isLeft shouldBe true
     }

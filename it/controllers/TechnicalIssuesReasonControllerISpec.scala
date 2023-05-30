@@ -17,19 +17,18 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
+import controllers.testHelpers.AuthorisationTest
 import models.{CheckMode, NormalMode, PenaltyTypeEnum}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
   val controller: TechnicalIssuesReasonController = injector.instanceOf[TechnicalIssuesReasonController]
 
   "GET /when-did-the-technology-issues-begin" should {
@@ -45,29 +44,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-begin").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-technology-issues-begin").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode), "GET", "/when-did-the-technology-issues-begin")
   }
 
   "GET /when-did-the-technology-issues-end" should {
@@ -84,29 +61,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-technology-issues-end").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode), "GET", "/when-did-the-technology-issues-end")
   }
 
   "POST /when-did-the-technology-issues-begin" should {
@@ -234,30 +189,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
 
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-technology-issues-begin").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode), "POST", "/when-did-the-technology-issues-begin")
   }
 
   "POST /when-did-the-technology-issues-end" should {
@@ -412,29 +344,6 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
 
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-technology-issues-end").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode), "POST", "/when-did-the-technology-issues-end")
   }
 }

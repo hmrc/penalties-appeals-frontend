@@ -16,7 +16,7 @@
 
 package controllers.testOnly
 
-import config.featureSwitches.NonJSRouting
+import config.featureSwitches.FeatureSwitch
 import play.api.test.Helpers._
 import utils.IntegrationSpecCommonBase
 
@@ -24,24 +24,32 @@ import scala.language.postfixOps
 
 class FeatureSwitchControllerISpec extends IntegrationSpecCommonBase {
   class Setup {
-    sys.props -= NonJSRouting.name
-    sys.props get NonJSRouting.name shouldBe None
+    FeatureSwitch.listOfAllFeatureSwitches.foreach(
+      featureSwitch => {
+        sys.props -= featureSwitch.name
+        sys.props get featureSwitch.name shouldBe None
+      }
+    )
   }
 
   s"GET /penalties-appeals/test-only/feature-switch" should {
-    s"return OK and set the NonJSRouting feature switch to be enabled" in new Setup {
-      val result = await(buildClientForRequestToApp(uri = s"/test-only/feature-switch?name=${NonJSRouting.name}&enable=true").get())
-      result.status shouldBe OK
-      result.body shouldBe s"$NonJSRouting set to true"
-      (sys.props get NonJSRouting.name get) shouldBe "true"
-    }
+    FeatureSwitch.listOfAllFeatureSwitches.foreach(
+      featureSwitch => {
+        s"return OK and set the ${featureSwitch.name} feature switch to be enabled" in new Setup {
+          val result = await(buildClientForRequestToApp(uri = s"/test-only/feature-switch?name=${featureSwitch.name}&enable=true").get())
+          result.status shouldBe OK
+          result.body shouldBe s"$featureSwitch set to true"
+          (sys.props get featureSwitch.name get) shouldBe "true"
+        }
 
-    s"return OK and set the NonJSRouting feature switch to be disabled" in new Setup {
-      val result = await(buildClientForRequestToApp(uri = s"/test-only/feature-switch?name=${NonJSRouting.name}&enable=false").get())
-      result.status shouldBe OK
-      result.body shouldBe s"$NonJSRouting set to false"
-      (sys.props get NonJSRouting.name get) shouldBe "false"
-    }
+        s"return OK and set the ${featureSwitch.name} feature switch to be disabled" in new Setup {
+          val result = await(buildClientForRequestToApp(uri = s"/test-only/feature-switch?name=${featureSwitch.name}&enable=false").get())
+          result.status shouldBe OK
+          result.body shouldBe s"$featureSwitch set to false"
+          (sys.props get featureSwitch.name get) shouldBe "false"
+        }
+      }
+    )
 
     s"return NOT_FOUND when the feature switch does not exist" in new Setup {
       val result = await(buildClientForRequestToApp(uri = "/test-only/feature-switch?name=fake&enable=true").get())

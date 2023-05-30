@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.testHelpers.AuthorisationTest
 import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.Jsoup
 import play.api.http.Status
@@ -24,12 +25,11 @@ import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
+class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: HonestyDeclarationController = injector.instanceOf[HonestyDeclarationController]
 
   "GET /honesty-declaration" should {
@@ -96,33 +96,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith("I believe there was no VAT Return due for the period")
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
-      val request = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/honesty-declaration").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
-
+    runControllerAuthorisationTests(controller.onPageLoad(), "GET", "/honesty-declaration")
 
     "when an agent is authorised and has the correct keys" must {
       "return 200 (OK) and the correct message - show agent context messages" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -143,7 +117,6 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text should startWith("because my client was affected by a crime")
       }
-
 
       "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the agent is appealing an obligation" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.penaltyNumber -> "1234",
@@ -181,32 +154,8 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase {
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get shouldBe true
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/honesty-declaration").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmit()(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
+    runControllerAuthorisationTests(controller.onSubmit(), "POST", "/honesty-declaration")
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
-      val request = await(controller.onSubmit()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/honesty-declaration").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
   }
 
 }

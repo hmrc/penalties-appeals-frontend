@@ -16,20 +16,20 @@
 
 package controllers
 
+import controllers.testHelpers.AuthorisationTest
 import models.PenaltyTypeEnum
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
+class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: ReasonableExcuseController = injector.instanceOf[ReasonableExcuseController]
 
   "GET /reason-for-missing-deadline" should {
@@ -46,15 +46,6 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/reason-for-missing-deadline").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
     "return 500 (ISE) when the list can not be retrieved from the backend" in new UserAnswersSetup(userAnswers(Json.obj())) {
       failedFetchReasonableExcuseListResponse()
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/reason-for-missing-deadline").withSession(
@@ -65,21 +56,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/reason-for-missing-deadline").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoad(), "GET", "/reason-for-missing-deadline")
   }
 
   "POST /reason-for-missing-deadline" should {
@@ -114,15 +91,6 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.BAD_REQUEST
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/reason-for-missing-deadline").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmit()(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
     "return 500 (ISE) when the list can not be retrieved from the backend" in new UserAnswersSetup(userAnswers(Json.obj())) {
       failedFetchReasonableExcuseListResponse()
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/reason-for-missing-deadline").withSession(
@@ -133,20 +101,6 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmit()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/reason-for-missing-deadline").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmit(), "POST", "/reason-for-missing-deadline")
   }
 }

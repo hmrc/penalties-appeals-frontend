@@ -17,6 +17,7 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
+import controllers.testHelpers.AuthorisationTest
 import models.{CheckMode, NormalMode, PenaltyTypeEnum}
 import org.jsoup.Jsoup
 import play.api.http.Status
@@ -24,13 +25,11 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
   val controller: PenaltySelectionController = injector.instanceOf[PenaltySelectionController]
 
   "GET /multiple-penalties-for-this-period" should {
@@ -49,25 +48,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val request = await(controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/multiple-penalties-for-this-period").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForPenaltySelection(NormalMode), "GET", "/multiple-penalties-for-this-period")
   }
 
   "POST /multiple-penalties-for-this-period" should {
@@ -128,29 +109,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/multiple-penalties-for-this-period").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234")
-      val request = await(controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> "2020-01-01",
-      SessionKeys.endDateOfPeriod -> "2020-01-01"
-    ))) {
-      val request = await(controller.onSubmitForPenaltySelection(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/multiple-penalties-for-this-period").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForPenaltySelection(NormalMode), "POST", "/multiple-penalties-for-this-period")
   }
 
   "GET /appeal-single-penalty" should {
@@ -173,29 +132,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-single-penalty")
-        .withSession(
-          authToken -> "1234",
-          SessionKeys.journeyId -> "1234")
-      val request = await(controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/appeal-single-penalty").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForSinglePenaltySelection(NormalMode), "GET", "/appeal-single-penalty")
   }
 
   "GET /appeal-cover-for-both-penalties" should {
@@ -235,28 +172,6 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Fea
       Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/appeal-cover-for-both-penalties").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/appeal-cover-for-both-penalties").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForAppealCoverBothPenalties(NormalMode), "GET", "/appeal-cover-for-both-penalties")
   }
 }

@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import models.PenaltyTypeEnum
 import org.mongodb.scala.Document
 import play.api.mvc.AnyContentAsEmpty
@@ -26,6 +24,8 @@ import play.api.test.Helpers.{await, _}
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
+
+import java.time.LocalDate
 
 class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
   val controller: InitialiseAppealController = injector.instanceOf[InitialiseAppealController]

@@ -16,10 +16,12 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
 import models.upload._
 import models.{CheckMode, NormalMode}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
+import org.scalatest.concurrent.Eventually.eventually
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
@@ -28,11 +30,8 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.UpscanStub._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
+
 import java.time.LocalDateTime
-
-import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
-import org.scalatest.concurrent.Eventually.eventually
-
 import scala.concurrent.Future
 
 class UpscanControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
@@ -201,7 +200,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase with FeatureSwitch
     }
 
     "return 500 (Internal Server Error) when there is no upload state in the database" in new Setup {
-      failedInitiateCall("asdf")
+      failedInitiateCall
       val result: WSResponse = await(buildClientForRequestToApp(uri = "/upscan/call-to-upscan/12345").post(""))
       result.status shouldBe INTERNAL_SERVER_ERROR
     }

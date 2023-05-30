@@ -17,18 +17,17 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
+import controllers.testHelpers.AuthorisationTest
 import models.{NormalMode, PenaltyTypeEnum}
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class LossOfStaffReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class LossOfStaffReasonControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
   val controller: LossOfStaffReasonController = injector.instanceOf[LossOfStaffReasonController]
 
   "GET /when-did-the-person-leave" should {
@@ -44,30 +43,8 @@ class LossOfStaffReasonControllerISpec extends IntegrationSpecCommonBase with Fe
       request.header.status shouldBe OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-person-leave").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoad(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
+    runControllerAuthorisationTests(controller.onPageLoad(NormalMode), "GET", "/when-did-the-person-leave")
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(
-      userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-      ))) {
-      val request = await(controller.onPageLoad(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new UserAnswersSetup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-person-leave").get())
-      request.status shouldBe SEE_OTHER
-    }
   }
 
   "POST /when-did-the-person-leave" should {
@@ -197,28 +174,6 @@ class LossOfStaffReasonControllerISpec extends IntegrationSpecCommonBase with Fe
 
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-person-leave").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmit(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmit(NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new UserAnswersSetup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-person-leave").post(""))
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmit(NormalMode), "POST", "/when-did-the-person-leave")
   }
 }

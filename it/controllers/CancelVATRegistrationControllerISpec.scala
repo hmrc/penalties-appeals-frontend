@@ -16,18 +16,18 @@
 
 package controllers
 
+import controllers.testHelpers.AuthorisationTest
 import models.PenaltyTypeEnum
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
+class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: CancelVATRegistrationController = injector.instanceOf[CancelVATRegistrationController]
   "GET /cancel-vat-registration" should {
     "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -42,25 +42,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForCancelVATRegistration()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/cancel-vat-registration").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onPageLoadForCancelVATRegistration(), "GET", "/cancel-vat-registration")
   }
 
   "POST /cancel-vat-registration" should {
@@ -106,25 +88,6 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase {
       }
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/cancel-vat-registration").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerAuthorisationTests(controller.onSubmitForCancelVATRegistration(), "POST", "/cancel-vat-registration")
   }
 }
