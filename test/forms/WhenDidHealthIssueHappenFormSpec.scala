@@ -18,47 +18,40 @@ package forms
 
 import base.SpecBase
 import play.api.data.Form
-
 import java.time.LocalDate
 
+import models.UserRequest
+
 class WhenDidHealthIssueHappenFormSpec extends SpecBase with FormBehaviours {
-  
-  val formVATTraderLSP: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, vatTraderLSPUserRequest)
 
-  val formVATTraderLPP: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, vatTraderLPPUserRequest)
-
-  val formAgentSubmitClientLate: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, agentUserAgentSubmitButClientWasLateSessionKeys)
-
-  val formAgentAgentSubmitLate: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, agentUserAgentMissedSessionKeys)
-
-  val formAgentClientSubmit: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, agentUserAgentClientPlannedToSubmitSessionKeys)
-
-  val formAgentLPP: Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, agentUserLPP)
+  def form(user: UserRequest[_]): Form[LocalDate] = WhenDidHealthIssueHappenForm.whenHealthIssueHappenedForm()(messages, appConfig, user)
 
   "WhenDidHealthIssueHappenForm" should {
 
     "when a VAT trader appealing against an LSP" must {
-      behave like dateForm(formVATTraderLSP, "date", errorType => s"health.whenHealthIssueHappened.error.$errorType.lsp")
+      behave like dateForm(form(vatTraderLSPUserRequest), "date", errorType => s"health.whenHealthIssueHappened.error.$errorType.lsp")
     }
 
     "when a VAT trader appealing against an LPP" must {
-      behave like dateForm(formVATTraderLPP, "date", errorType => s"health.whenHealthIssueHappened.error.$errorType.lpp")
+      behave like dateForm(form(vatTraderLPPUserRequest), "date", errorType => s"health.whenHealthIssueHappened.error.$errorType.lpp")
     }
 
     "when an agent user is appealing a LSP where the agent planned to submit but the client missed the deadline" must {
-      behave like dateForm(formAgentSubmitClientLate, "date", errorType => s"agent.health.whenHealthIssueHappened.error.$errorType.clientMissedDeadline")
+      behave like dateForm(form(agentUserAgentSubmitButClientWasLateSessionKeys),
+        "date", errorType => s"agent.health.whenHealthIssueHappened.error.$errorType.clientMissedDeadline")
     }
 
     "when an agent user is appealing a LSP where the agent planned to submit but missed the deadline" must {
-      behave like dateForm(formAgentAgentSubmitLate, "date", errorType => s"health.whenHealthIssueHappened.error.$errorType.lsp")
+      behave like dateForm(form(agentUserAgentMissedSessionKeys), "date", errorType => s"health.whenHealthIssueHappened.error.$errorType.lsp")
     }
 
     "when an agent user is appealing a LSP where the client planned to submit and missed the deadline" must {
-      behave like dateForm(formAgentClientSubmit, "date", errorType => s"agent.health.whenHealthIssueHappened.error.$errorType.clientIntendedToSubmit")
+      behave like dateForm(form(agentUserAgentClientPlannedToSubmitSessionKeys),
+        "date", errorType => s"agent.health.whenHealthIssueHappened.error.$errorType.clientIntendedToSubmit")
     }
 
     "when an agent user is appealing a LPP" must {
-      behave like dateForm(formAgentLPP, "date", errorType => s"agent.health.whenHealthIssueHappened.error.$errorType.lpp")
+      behave like dateForm(form(agentUserLPP), "date", errorType => s"agent.health.whenHealthIssueHappened.error.$errorType.lpp")
     }
   }
 }

@@ -52,7 +52,7 @@ class FeatureSwitchingSpec extends SpecBase {
   }
 
   "listOfAllFeatureSwitches" should {
-    "be all the featureswitches in the app" in {
+    "be all the feature switches in the app" in {
       FeatureSwitch.listOfAllFeatureSwitches shouldBe List(
         NonJSRouting,
         ShowDigitalCommsMessage,

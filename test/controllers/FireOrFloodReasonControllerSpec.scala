@@ -193,7 +193,6 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
         }
       }
-
     }
   }
 }

@@ -18,10 +18,10 @@ package forms.upscan
 
 import base.SpecBase
 import forms.FormBehaviours
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class UploadDocumentFormSpec extends FormBehaviours with SpecBase {
-  val form = UploadDocumentForm.form
+  val form: Form[String] = UploadDocumentForm.form
   "UploadDocumentForm" should {
     behave like mandatoryField(form, "file",
       FormError("file", "upscan.fileNotSpecified"))

@@ -223,7 +223,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
           ))
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "bereavement")))
+        val result: Future[Result] = controller.onSubmit()(
+          fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "bereavement")))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }

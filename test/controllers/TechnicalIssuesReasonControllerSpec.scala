@@ -66,8 +66,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(
+          Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
         val result: Future[Result] = controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
         val documentParsed: Document = Jsoup.parse(contentAsString(result))
@@ -102,8 +102,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
     "the user is authorised" must {
 
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(
+          userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
         val result: Future[Result] = controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
@@ -246,8 +246,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
     "the user is authorised" must {
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- routing to CYA page when in Normal Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(
+          userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
         val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         when(mockSessionService.updateAnswers(answerCaptor.capture()))
           .thenReturn(Future.successful(true))
@@ -267,8 +267,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
         "- routing to CYA page when in Check Mode" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(
+          userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
         val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         when(mockSessionService.updateAnswers(answerCaptor.capture()))
           .thenReturn(Future.successful(true))
@@ -289,8 +289,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
       "return 400 (BAD_REQUEST)" when {
 
         "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(
+            userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
           val result: Future[Result] = controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest
             .withFormUrlEncodedBody(
               "date.day" -> "what",
@@ -301,8 +301,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
         }
 
         "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(
+            userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
           val result: Future[Result] = controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest
             .withFormUrlEncodedBody(
               "date.day" -> "31",
@@ -313,8 +313,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
         }
 
         "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(
+            userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
           val result: Future[Result] = controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest
             .withFormUrlEncodedBody(
               "date.day" -> "124356",
@@ -326,7 +326,8 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
 
         "passed a date that is earlier than the start date" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
+            .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
+              SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-01-01"))))))
           val result: Future[Result] = controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest
             .withFormUrlEncodedBody(
               "date.day" -> "31",

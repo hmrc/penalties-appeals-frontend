@@ -35,7 +35,8 @@ class WhenDidHospitalStayEndFormSpec extends FormBehaviours with SpecBase {
         )
       )
       result.errors.size shouldBe 1
-      result.errors.head shouldBe FormError("date.day", "The date the hospital stay ended must be 1\u00A0January\u00A02021 or later", Seq("day", "month", "year"))
+      result.errors.head shouldBe FormError("date.day",
+        "The date the hospital stay ended must be 1\u00A0January\u00A02021 or later", Seq("day", "month", "year"))
     }
   }
 }

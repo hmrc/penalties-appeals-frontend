@@ -27,40 +27,30 @@ import java.time.LocalDate
 class FormProviderHelperSpec extends SpecBase {
 
   "getSessionKeyAndAttemptToFillAnswerAsString" should {
+    val mockForm: Form[String] = Form(single("value" -> nonEmptyText))
+    def result(jsObject: JsObject): Form[String] =
+      FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(mockForm, SessionKeys.reasonableExcuse, userAnswers(correctUserAnswers ++ jsObject))
     "fill the form with the data stored in the session - if it exists" in {
-      val mockForm: Form[String] = Form(single("value" -> nonEmptyText))
       val expectedResult = mockForm.fill("this-is-a-value")
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(mockForm, SessionKeys.reasonableExcuse, userAnswers(correctUserAnswers ++ Json.obj(
-        SessionKeys.reasonableExcuse -> "this-is-a-value"
-      )))
-      result shouldBe expectedResult
+      result(Json.obj(SessionKeys.reasonableExcuse -> "this-is-a-value")) shouldBe expectedResult
     }
 
     "keep the existing (empty) form when the key in the session" in {
-      val mockForm: Form[String] = Form(single("value" -> nonEmptyText))
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(mockForm, SessionKeys.reasonableExcuse, userAnswers(correctUserAnswers ++ Json.obj(
-        "this-is-a-key" -> "this-is-a-value"
-      )))
-      result shouldBe mockForm
+      result(Json.obj("this-is-a-key" -> "this-is-a-value")) shouldBe mockForm
     }
   }
 
   "getSessionKeyAndAttemptToFillAnswerAsDate" should {
+    val mockForm: Form[LocalDate] = Form(single("value" -> localDate))
+    def result(jsObject: JsObject): Form[LocalDate] =
+      FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.dateOfCrime, userAnswers(correctUserAnswers ++ jsObject))
     "fill the form with the data stored in the session - if it exists" in {
-      val mockForm: Form[LocalDate] = Form(single("value" -> localDate))
       val expectedResult = mockForm.fill(LocalDate.parse("2021-01-01"))
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.dateOfCrime, userAnswers(correctUserAnswers ++ Json.obj(
-        SessionKeys.dateOfCrime -> LocalDate.parse("2021-01-01")
-      )))
-      result shouldBe expectedResult
+      result(Json.obj(SessionKeys.dateOfCrime -> LocalDate.parse("2021-01-01"))) shouldBe expectedResult
     }
 
     "keep the existing (empty) form when the key in the session" in {
-      val mockForm: Form[LocalDate] = Form(single("value" -> localDate))
-      val result = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(mockForm, SessionKeys.reasonableExcuse, userAnswers(correctUserAnswers ++ Json.obj(
-        "this-is-a-key" -> "this-is-a-value"
-      )))
-      result shouldBe mockForm
+      result(Json.obj("this-is-a-key" -> "this-is-a-value")) shouldBe mockForm
     }
   }
 }

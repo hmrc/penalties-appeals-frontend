@@ -310,7 +310,7 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
       "redirect to the non-JS file upload page" in {
         withCaptureOfLoggingFrom(logger) {
           logs => {
-            val result = controller.preUpscanCheckFailed(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge&errorMessage=Your+proposed+upload+exceeds+the+maximum+allowed+size&key=file1ref"))
+            val result = controller.preUpscanCheckFailed(isAddingAnotherDocument = false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=EntityTooLarge&errorMessage=Your+proposed+upload+exceeds+the+maximum+allowed+size&key=file1ref"))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
             logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
@@ -322,7 +322,7 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
       "redirect to the non-JS file upload page - check mode" in {
         withCaptureOfLoggingFrom(logger) {
           logs => {
-            val result = controller.preUpscanCheckFailed(false, CheckMode)(FakeRequest("GET", "/upscan/file-verification/change/failed?errorCode=EntityTooSmall&errorMessage=Your+proposed+upload+is+smaller+than+the+minimum+allowed+object+size&key=file1ref"))
+            val result = controller.preUpscanCheckFailed(isAddingAnotherDocument = false, CheckMode)(FakeRequest("GET", "/upscan/file-verification/change/failed?errorCode=EntityTooSmall&errorMessage=Your+proposed+upload+is+smaller+than+the+minimum+allowed+object+size&key=file1ref"))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(CheckMode).url
             logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
@@ -334,7 +334,7 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
       "redirect to the upload list page if requesting another document" in {
         withCaptureOfLoggingFrom(logger) {
           logs => {
-            val result = controller.preUpscanCheckFailed(true, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=InvalidArgument&errorMessage=The+specified+argument+was+not+valid&key=file1ref"))
+            val result = controller.preUpscanCheckFailed(isAddingAnotherDocument = true, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=InvalidArgument&errorMessage=The+specified+argument+was+not+valid&key=file1ref"))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
             logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe false
@@ -346,7 +346,7 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
       "log a PagerDuty when the error code is not client-related" in {
         withCaptureOfLoggingFrom(logger) {
           logs => {
-            val result = controller.preUpscanCheckFailed(false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=CodeWhatCode&errorMessage=Message+what+message&key=file1ref"))
+            val result = controller.preUpscanCheckFailed(isAddingAnotherDocument = false, NormalMode)(FakeRequest("GET", "/upscan/file-verification/failed?errorCode=CodeWhatCode&errorMessage=Message+what+message&key=file1ref"))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
             logs.exists(_.getMessage.contains(PagerDutyKeys.UPLOAD_FAILURE_UPSCAN.toString)) shouldBe true
@@ -360,7 +360,8 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
       "show an ISE if the form fails to bind" in {
         withCaptureOfLoggingFrom(logger) {
           logs => {
-            val result = await(controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1")))
+            val result = await(controller.fileVerification(isAddingAnotherDocument = false, NormalMode,
+              isJsEnabled = false)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1")))
             logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_VERIFICATION_FAILURE_UPSCAN.toString)) shouldBe true
             result.header.status shouldBe INTERNAL_SERVER_ERROR
           }
@@ -368,9 +369,11 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
       }
 
       "run the block passed to the service if the form binds and run the result" in {
-        when(service.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(Ok("")))
-        val result = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
+        when(service.waitForStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future(Ok("")))
+        val result = controller.fileVerification(isAddingAnotherDocument = false, NormalMode,
+          isJsEnabled = false)(FakeRequest("GET", "/upscan/file-verification/success?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
         status(result) shouldBe OK
       }
     }

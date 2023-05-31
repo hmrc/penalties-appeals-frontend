@@ -152,14 +152,14 @@ class MakingALateAppealControllerSpec extends SpecBase {
   "getHeadingAndTitle" should {
     "show the single penalty text" when {
       "the user has selected no to appealing both penalties" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.getHeadingAndTitle()(fakeRequestConverter(
+        val result: String = controller.getHeadingAndTitle()(fakeRequestConverter(
           correctUserAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "no"), fakeRequest
         ), implicitly)
         result shouldBe "This penalty was issued more than 30 days ago"
       }
 
       "the user hasn't been given the option to appeal both penalties" in new Setup(AuthTestModels.successfulAuthResult) {
-        val result = controller.getHeadingAndTitle()(userRequestWithCorrectKeys, implicitly)
+        val result: String = controller.getHeadingAndTitle()(userRequestWithCorrectKeys, implicitly)
         result shouldBe "This penalty was issued more than 30 days ago"
       }
     }
@@ -167,7 +167,7 @@ class MakingALateAppealControllerSpec extends SpecBase {
     "show the first penalty text" when {
       "the user is appealing both penalties but the first penalty is late" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 5, 3))
-        val result = controller.getHeadingAndTitle()(fakeRequestConverter(correctUserAnswers ++ Json.obj(
+        val result: String = controller.getHeadingAndTitle()(fakeRequestConverter(correctUserAnswers ++ Json.obj(
           SessionKeys.doYouWantToAppealBothPenalties -> "yes",
           SessionKeys.secondPenaltyCommunicationDate -> LocalDate.parse("2022-05-01"),
           SessionKeys.firstPenaltyCommunicationDate -> LocalDate.parse("2022-04-01")
@@ -179,7 +179,7 @@ class MakingALateAppealControllerSpec extends SpecBase {
     "show the multiple penalties text" when {
       "the user is appealing both penalties and both are late" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2022, 7, 3))
-        val result = controller.getHeadingAndTitle()(fakeRequestConverter(correctUserAnswers ++ Json.obj(
+        val result: String = controller.getHeadingAndTitle()(fakeRequestConverter(correctUserAnswers ++ Json.obj(
           SessionKeys.doYouWantToAppealBothPenalties -> "yes",
           SessionKeys.secondPenaltyCommunicationDate -> LocalDate.parse("2022-05-01"),
           SessionKeys.firstPenaltyCommunicationDate -> LocalDate.parse("2022-04-01")

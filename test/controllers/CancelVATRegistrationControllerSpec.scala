@@ -40,7 +40,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
-    val sessionAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
+    val sessionAnswers: UserAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
     reset(mockAuthConnector, mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -74,11 +74,12 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
-        "return OK and correct view (pre-populated option when present in session)" in new Setup(AuthTestModels.successfulAuthResult, Json.obj(SessionKeys.cancelVATRegistration -> "yes")) {
-          val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
-          val documentParsed: Document = Jsoup.parse(contentAsString(result))
-          documentParsed.select("#value").hasAttr("checked") shouldBe true
+        "return OK and correct view (pre-populated option when present in session)" in new Setup(
+          AuthTestModels.successfulAuthResult, Json.obj(SessionKeys.cancelVATRegistration -> "yes")) {
+            val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(userRequestWithCorrectKeys)
+            status(result) shouldBe OK
+            val documentParsed: Document = Jsoup.parse(contentAsString(result))
+            documentParsed.select("#value").hasAttr("checked") shouldBe true
         }
       }
       "the user is unauthorised" must {

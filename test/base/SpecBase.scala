@@ -47,7 +47,7 @@ import views.html.errors.Unauthorised
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll {
+trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll with UserAnswersBase {
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
   implicit val config: Configuration = appConfig.config
@@ -100,58 +100,22 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
     UserRequest(vrn = vrn, arn = arn, answers = userAnswers(answers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
   }
 
-  val correctUserAnswers: JsObject = Json.obj(
-    SessionKeys.penaltyNumber -> "123",
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-    SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-    SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-    SessionKeys.journeyId -> "1234"
-  )
-
-  val confirmationPageAnswers = Json.obj(
-    SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
-    SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01"),
-    SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01"),
-    SessionKeys.confirmationMultipleAppeals -> "no",
-    SessionKeys.confirmationObligation -> "false",
-    SessionKeys.confirmationIsAgent -> "false"
-  ) ++ correctUserAnswers
-
   def userAnswers(answers: JsObject): UserAnswers = UserAnswers("1234", answers)
 
-  val correctLPPUserAnswers: JsObject = Json.obj(
-    SessionKeys.penaltyNumber -> "123",
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-    SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-    SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-    SessionKeys.journeyId -> "1234"
-  )
+  val userRequestWithCorrectKeys: UserRequest[AnyContent] =
+    UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
 
-  val correctAdditionalLPPUserAnswers: JsObject = Json.obj(
-    SessionKeys.penaltyNumber -> "123",
-    SessionKeys.appealType -> PenaltyTypeEnum.Additional,
-    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-    SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-    SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-    SessionKeys.journeyId -> "1234"
-  )
+  val userRequestLPPWithCorrectKeys: UserRequest[AnyContent] =
+    UserRequest(vrn, answers = userAnswers(correctLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
 
-  val userRequestWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
-
-  val userRequestLPPWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
-
-  val userRequestAdditionalWithCorrectKeys: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctAdditionalLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
+  val userRequestAdditionalWithCorrectKeys: UserRequest[AnyContent] =
+    UserRequest(vrn, answers = userAnswers(correctAdditionalLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
 
   val fakeRequestWithCorrectKeysAndReasonableExcuseSet: String => UserRequest[AnyContent] = (reasonableExcuse: String) =>
     UserRequest(vrn, answers = UserAnswers("1234", correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> reasonableExcuse)))(fakeRequest)
 
   val fakeRequestWithCorrectKeysAndHonestyDeclarationSet: UserRequest[AnyContent] = fakeRequestConverter(Json.obj(
-      SessionKeys.penaltyNumber -> "123",
+      SessionKeys.penaltyNumber -> "123456789",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> "2020-01-01",
       SessionKeys.endDateOfPeriod -> "2020-01-01",
@@ -170,12 +134,6 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
   )
 
   def asDocument(html: Html): Document = Jsoup.parse(html.toString())
-
-  val agentAnswers: JsObject = Json.obj(
-    SessionKeys.agentSessionVrn -> "VRN1234",
-    SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-    SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-  )
 
   val agentRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
 
@@ -209,10 +167,11 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
       SessionKeys.doYouWantToAppealBothPenalties -> "yes"
     )))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
-  val agentUserAgentSubmitButClientWasLateSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234", Json.obj(
-    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-    SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-    SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+  val agentUserAgentSubmitButClientWasLateSessionKeys: UserRequest[AnyContent] =
+    UserRequest("123456789", arn = Some("AGENT1"), answers = UserAnswers("1234", Json.obj(
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+      SessionKeys.whatCausedYouToMissTheDeadline -> "client"
   ) ++ agentAnswers))(fakeRequest.withSession(SessionKeys.agentSessionVrn -> "123456789"))
 
   val agentUserAgentClientPlannedToSubmitSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"),

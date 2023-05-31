@@ -17,7 +17,7 @@
 package helpers
 
 import base.SpecBase
-import models.{PenaltyTypeEnum, UserRequest}
+import models.UserRequest
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import utils.SessionKeys
@@ -34,79 +34,47 @@ class HonestyDeclarationHelperSpec extends SpecBase {
 
     "return the correct agent message" when {
 
+      def sessionKeys(whoPlanned: String, cause: Option[String], excuse: String): UserRequest[AnyContent] =
+        UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
+          SessionKeys.whoPlannedToSubmitVATReturn -> whoPlanned,
+          SessionKeys.reasonableExcuse -> excuse
+        ) ++ {
+          if (cause.isDefined) Json.obj(SessionKeys.whatCausedYouToMissTheDeadline -> cause.get) else Json.obj()
+        }))
+
       "for other reason" should {
         "the agent planned to submit - client missed deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "client",
-            SessionKeys.reasonableExcuse -> "other",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
-          )))
-          reasonTest("other", "of an issue affecting my client", agentUserSessionKeys)
+          reasonTest("other", "of an issue affecting my client", sessionKeys("agent", Some("client"), "other"))
         }
       }
 
       "non crime/bereavement reason" should {
 
         "the agent planned to submit - agent missed the deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "agent",
-            SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
-          )))
-          reasonTest("technicalIssues", "of technology issues", agentUserSessionKeys)
+          reasonTest("technicalIssues", "of technology issues", sessionKeys("agent", Some("agent"), "technicalIssues"))
         }
 
         "the agent planned to submit - client missed the deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "client",
-            SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
-          )))
-          reasonTest("technicalIssues", "my client was affected by technology issues", agentUserSessionKeys)
+          reasonTest("technicalIssues", "my client was affected by technology issues", sessionKeys("agent", Some("client"), "technicalIssues"))
         }
 
         "the client planned to submit" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "client",
-            SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
-          )))
-          reasonTest("technicalIssues", "of technology issues", agentUserSessionKeys)
+          reasonTest("technicalIssues", "of technology issues", sessionKeys("client", None, "technicalIssues"))
         }
       }
 
       "crime/bereavement reason" should {
 
         "the agent planned to submit - agent missed the deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "agent",
-            SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
-          )))
-          reasonTest("crime", "I was affected by a crime", agentUserSessionKeys)
+          reasonTest("crime", "I was affected by a crime", sessionKeys("agent", Some("agent"), "crime"))
         }
 
         "the agent planned to submit - client missed the deadline" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-            SessionKeys.whatCausedYouToMissTheDeadline -> "client",
-            SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
-          )))
-          reasonTest("crime", "my client was affected by a crime", agentUserSessionKeys)
+          reasonTest("crime", "my client was affected by a crime", sessionKeys("agent", Some("client"), "crime"))
         }
 
         "the client planned to submit" should {
-          val agentUserSessionKeys: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers ++ Json.obj(
-            SessionKeys.whoPlannedToSubmitVATReturn -> "client",
-            SessionKeys.reasonableExcuse -> "crime",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission
-          )))
-          reasonTest("crime", "my client was affected by a crime", agentUserSessionKeys)
+          reasonTest("crime", "my client was affected by a crime", sessionKeys("client", None, "crime"))
         }
       }
     }

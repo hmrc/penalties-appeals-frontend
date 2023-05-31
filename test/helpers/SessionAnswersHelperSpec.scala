@@ -16,13 +16,14 @@
 
 package helpers
 
+import java.time.{LocalDate, LocalDateTime}
+
 import base.SpecBase
 import config.AppConfig
 import models.pages._
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
 import play.api.Configuration
 import play.api.libs.json.Json
@@ -32,7 +33,6 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
 
-import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -47,13 +47,7 @@ class SessionAnswersHelperSpec extends SpecBase {
   "isAllAnswerPresentForReasonableExcuse" should {
     "for crime" must {
       "return true - when all keys present" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "crime",
-          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
-        ))
-        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", crimeAnswers))(FakeRequest())
         val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("crime")(userRequest)
         result shouldBe true
       }
@@ -72,12 +66,7 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "for loss of staff" must {
       "return true - when all keys present" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "lossOfStaff",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
-        ))
-        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
+        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", lossOfStaffAnswers))(FakeRequest())
         val result = sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse("lossOfStaff")(userRequest)
         result shouldBe true
       }
@@ -748,7 +737,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "Not provided"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
         }
 
         "for no upload - and late appeal" in {
@@ -838,7 +827,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
         }
 
         "for upload - and late appeal" in {
@@ -882,7 +871,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
           result(5).key shouldBe "Reason for appealing after 30 days"
           result(5).value shouldBe "This is the reason why my appeal was late."
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -939,7 +928,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(5).key shouldBe "Evidence to support this appeal"
         result(5).value shouldBe "file.docx"
-        result(5).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+        result(5).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
 
         result(6).key shouldBe "Reason for appealing after 30 days"
         result(6).value shouldBe "This is the reason why my appeal was late."
@@ -1010,7 +999,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(4).key shouldBe "Evidence to support this appeal"
         result(4).value shouldBe "file.docx"
-        result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+        result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
         result(5).key shouldBe "Reason for appealing after 30 days"
         result(5).value shouldBe "This is the reason why my appeal was late."
         result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1282,7 +1271,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "Not provided"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
         }
 
         "for no upload - and late appeal" in {
@@ -1324,7 +1313,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "Not provided"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
           result(5).key shouldBe "Reason for appealing after 30 days"
           result(5).value shouldBe "This is the reason why my appeal was late."
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1371,7 +1360,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
         }
 
         "for upload - and late appeal" in {
@@ -1413,7 +1402,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
           result(5).key shouldBe "Reason for appealing after 30 days"
           result(5).value shouldBe "This is the reason why my appeal was late."
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1847,7 +1836,8 @@ class SessionAnswersHelperSpec extends SpecBase {
         ))
 
       val result = intercept[MatchError](sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly))
-      result.getMessage.contains("[SessionAnswersHelper][getHealthReasonAnswers] - Attempted to load CYA page but no valid health reason data found in session") shouldBe true
+      result.getMessage.contains(
+        "[SessionAnswersHelper][getHealthReasonAnswers] - Attempted to load CYA page but no valid health reason data found in session") shouldBe true
     }
   }
 
@@ -2049,7 +2039,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ).url
           result(2).key shouldBe "Evidence to support this appeal"
           result(2).value shouldBe "file.txt"
-          result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+          result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
         }
 
         "show the obligation variation of the page - 'hide' the files uploaded if user selected no to uploading files" in {
@@ -2118,7 +2108,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(2).key shouldBe "Evidence to support this appeal"
         result(2).value shouldBe "Not provided"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
       }
 
       "return rows of answers - without uploaded files row" in {
@@ -2167,7 +2157,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(2).key shouldBe "Evidence to support this appeal"
         result(2).value shouldBe "some-file-name.txt"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
       }
 
       "the user has selected no to uploaded files - 'hide' the row" in {
@@ -2258,7 +2248,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(4).key shouldBe "Evidence to support this appeal"
         result(4).value shouldBe "file1.txt"
-        result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+        result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
       }
     }
 
@@ -2284,7 +2274,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result(2).key shouldBe "Evidence to support this appeal"
         result(2).value shouldBe "file1.txt"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, false).url
+        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
       }
     }
 

@@ -41,11 +41,12 @@ class WasHospitalStayRequiredFormSpec extends FormBehaviours with SpecBase {
   }
 
   "when an agent is in session" must {
-    val agentUserRequest: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers(correctUserAnswers))(FakeRequest("GET", "/")
-      .withSession(
-        SessionKeys.agentSessionVrn -> "VRN1234",
-        SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-        SessionKeys.whatCausedYouToMissTheDeadline -> "client")
+    val agentUserRequest: UserRequest[AnyContent] = UserRequest("123456789", arn = Some("AGENT1"),
+      answers = userAnswers(correctUserAnswers))(FakeRequest("GET", "/")
+        .withSession(
+          SessionKeys.agentSessionVrn -> "VRN1234",
+          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+          SessionKeys.whatCausedYouToMissTheDeadline -> "client")
     )
 
     val agentForm = WasHospitalStayRequiredForm.wasHospitalStayRequiredForm()(agentUserRequest)
