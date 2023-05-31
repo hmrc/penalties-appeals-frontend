@@ -17,6 +17,7 @@
 package controllers.testHelpers
 
 import models.PenaltyTypeEnum
+import models.session.UserAnswers
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
@@ -30,8 +31,8 @@ import java.time.LocalDate
 
 trait AuthorisationTest {
   _: IntegrationSpecCommonBase =>
-  def runControllerAuthorisationTests(result: => Action[AnyContent], method: String, url: String): Unit = {
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
+  def runControllerPredicateTests(result: => Action[AnyContent], method: String, url: String): Unit = {
+    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(UserAnswers("1234", Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest(method, url).withSession(
         authToken -> "1234",
         SessionKeys.journeyId -> "1234"
@@ -40,11 +41,11 @@ trait AuthorisationTest {
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
+    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(UserAnswers("1234", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
     ))) {
       val request = await(result.apply(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR

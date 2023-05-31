@@ -19,16 +19,16 @@ package repositories
 import models.upload._
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
+import org.scalatest.concurrent.Eventually.eventually
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongo.cache.DataKey
 import utils.IntegrationSpecCommonBase
+
 import java.time.LocalDateTime
-
-import org.scalatest.concurrent.Eventually.eventually
-
 import scala.concurrent.Future
 
 class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
+
   lazy val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
   def deleteAll(): Future[DeleteResult] =
@@ -41,27 +41,11 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     await(deleteAll())
   }
 
-  val callbackModel: UploadJourney = UploadJourney(
-    reference = "ref1",
-    fileStatus = UploadStatusEnum.READY,
-    downloadUrl = Some("download.file/url"),
-    uploadDetails = Some(UploadDetails(
-      fileName = "file1.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-      checksum = "check1234",
-      size = 2
-    )),
-    uploadFields = Some(Map(
-      "key" -> "abcxyz",
-      "algo" -> "md5"
-    ))
-  )
+  val callbackModel: UploadJourney = fileUploadModel
 
-  val callbackModelFailed: UploadJourney = UploadJourney(
-    reference = "ref1",
+  val callbackModelFailed: UploadJourney = callbackModel.copy(
     fileStatus = UploadStatusEnum.FAILED,
-    downloadUrl = Some("download.file/url"),
+    downloadUrl = None,
     uploadDetails = None,
     failureDetails = Some(
       FailureDetails(
@@ -71,23 +55,17 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     )
   )
 
-  val callbackModel2: UploadJourney = UploadJourney(
+  val callbackModel2: UploadJourney = callbackModel.copy(
     reference = "ref2",
-    fileStatus = UploadStatusEnum.READY,
     downloadUrl = Some("download.file2/url"),
     uploadDetails = Some(UploadDetails(
       fileName = "file2.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+      uploadTimestamp = LocalDateTime.of(2023, 1, 1, 1, 1),
       checksum = "check1234",
       size = 3
-    )),
-    uploadFields = Some(Map(
-      "key" -> "abcxyz",
-      "algo" -> "md5"
     ))
   )
-
 
   "updateStateOfFileUpload" should {
     "update the state based on the callback from Upscan" in new Setup {
@@ -111,7 +89,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
   "getFieldsForFileReference" should {
     s"return $None when the uploadDetails does not exist" in new Setup {
       val result = await(repository.getFieldsForFileReference("1234", "ref1"))
-      result.isDefined shouldBe false
+      result.isEmpty shouldBe true
     }
 
     s"return $Some when the uploadDetails exists" in new Setup {
@@ -125,7 +103,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
   "getStatusOfFileUpload" should {
     s"return $None when the document is not in Mongo" in new Setup {
       val result: Option[UploadStatus] = await(repository.getStatusOfFileUpload("1234", ""))
-      result.isDefined shouldBe false
+      result.isEmpty shouldBe true
     }
 
     s"return $Some when the document is in Mongo" in new Setup {
@@ -148,13 +126,13 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     s"return $None when the document is not in Mongo" in new Setup {
       await(deleteAll())
       val result: Option[Seq[UploadJourney]] = await(repository.getUploadsForJourney(Some("1234")))
-      result.isDefined shouldBe false
+      result.isEmpty shouldBe true
     }
 
-    s"return $None when no Id is given" in new Setup {
+    s"return $None when no journey ID is given" in new Setup {
       await(deleteAll())
       val result: Option[Seq[UploadJourney]] = await(repository.getUploadsForJourney(None))
-      result.isDefined shouldBe false
+      result.isEmpty shouldBe true
     }
 
     s"return $Some when the document is in Mongo" in new Setup {

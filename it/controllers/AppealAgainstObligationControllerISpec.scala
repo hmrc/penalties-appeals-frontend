@@ -32,14 +32,7 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase w
   val controller: AppealAgainstObligationController = injector.instanceOf[AppealAgainstObligationController]
 
   "GET /other-relevant-information" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent-> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/other-relevant-information")
         .withSession(
           authToken -> "1234",
@@ -48,18 +41,11 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase w
       request.header.status shouldBe OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoad(NormalMode), "GET", "/other-relevant-information")
+    runControllerPredicateTests(controller.onPageLoad(NormalMode), "GET", "/other-relevant-information")
   }
 
   "POST /other-relevant-information" should {
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectKeysAndCorrectBody: FakeRequest[AnyContent] = FakeRequest("POST", "/other-relevant-information")
         .withSession(
           authToken -> "1234",
@@ -72,14 +58,7 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase w
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithCorrectKeysAndNoBody: FakeRequest[AnyContent] = FakeRequest("POST", "/other-relevant-information")
           .withSession(authToken -> "1234",
             SessionKeys.journeyId -> "1234")
@@ -87,14 +66,7 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase w
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "invalid characters are entered" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "invalid characters are entered" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithInvalidChars: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("other-relevant-information-text" -> "コし")
 
         val result: Result = await(controller.onSubmit(NormalMode)(fakeRequestWithInvalidChars))
@@ -102,6 +74,6 @@ class AppealAgainstObligationControllerISpec extends IntegrationSpecCommonBase w
       }
     }
 
-    runControllerAuthorisationTests(controller.onSubmit(NormalMode), "POST", "/other-relevant-information")
+    runControllerPredicateTests(controller.onSubmit(NormalMode), "POST", "/other-relevant-information")
   }
 }

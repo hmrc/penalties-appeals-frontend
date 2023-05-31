@@ -16,12 +16,10 @@
 
 package services.upscan
 
-import akka.actor.ActorSystem
-import config.{AppConfig, ErrorHandler}
-import connectors.UpscanConnector
 import models.NormalMode
-import models.upload.{FailureDetails, UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload.{FailureDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.Document
+import org.scalatest.concurrent.Eventually.eventually
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -29,25 +27,15 @@ import repositories.UploadJourneyRepository
 import stubs.UpscanStub.{failedInitiateCall, successfulInitiateCall}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
+
 import java.time.LocalDateTime
-
-import org.scalatest.concurrent.Eventually.eventually
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class UpscanServiceISpec extends IntegrationSpecCommonBase {
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
-  val connector: UpscanConnector = injector.instanceOf[UpscanConnector]
-  val actorSystem: ActorSystem = injector.instanceOf[ActorSystem]
-  val appConfig: AppConfig = injector.instanceOf[AppConfig]
-  val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
+  val service: UpscanService = injector.instanceOf[UpscanService]
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  val service = new UpscanService(
-    repository,
-    connector,
-    actorSystem
-  )(appConfig, errorHandler)
 
   class Setup {
     await(repository.collection.deleteMany(Document()).toFuture())
@@ -70,7 +58,7 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
           |   "href": "12345",
           |   "fields": {
           |     "key": "abcxyz",
-          |      "algo": "md5"
+          |     "algo": "md5"
           |   }
           | }
           |}
@@ -91,7 +79,7 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
   }
 
   "waitForStatus" should {
-    val blockToDoNothing = (_: Option[FailureDetails], _: Option[String]) => Future(Ok(""))
+    val blockToDoNothing = (_: Option[FailureDetails], _: Option[String]) => Future(Ok("ran the block"))
 
     "return an ISE" when {
       "there is no upload details in Mongo" in new Setup {
@@ -111,6 +99,7 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
       await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)(FakeRequest(), implicitly)
       status(result) shouldBe OK
+      contentAsString(result) shouldBe "ran the block"
     }
   }
 
@@ -142,23 +131,6 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
   }
 
   "getFileNameForJourney" should {
-    val fileUploadModel: UploadJourney = UploadJourney(
-      reference = "ref1",
-      fileStatus = UploadStatusEnum.READY,
-      downloadUrl = Some("download.file/url"),
-      uploadDetails = Some(UploadDetails(
-        fileName = "file1.txt",
-        fileMimeType = "text/plain",
-        uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-        checksum = "check1234",
-        size = 2
-      )),
-      uploadFields = Some(Map(
-        "key" -> "abcxyz",
-        "algo" -> "md5"
-      ))
-    )
-
     "return the file name if the file reference exists" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", fileUploadModel, isInitiateCall = true))
       val result = service.getFileNameForJourney(journeyId = "J1234", fileReference = "ref1")

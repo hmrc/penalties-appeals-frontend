@@ -16,12 +16,11 @@
 
 package utils
 
-import java.time.LocalDate
-
 import com.codahale.metrics.SharedMetricRegistries
 import helpers.WiremockHelper
 import models.PenaltyTypeEnum
 import models.session.UserAnswers
+import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.Document
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -39,6 +38,8 @@ import repositories.UserAnswersRepository
 import stubs.{AuditStub, AuthStub}
 import uk.gov.hmrc.http.SessionKeys.authToken
 
+import java.time.{LocalDate, LocalDateTime}
+
 trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with
   BeforeAndAfterAll with BeforeAndAfterEach with TestSuite with WiremockHelper {
 
@@ -49,7 +50,31 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
     SessionKeys.journeyId -> "1234"
   )
 
-  def userAnswers(answers: JsObject): UserAnswers = UserAnswers("1234", answers)
+  val fileUploadModel: UploadJourney = UploadJourney(
+    reference = "ref1",
+    fileStatus = UploadStatusEnum.READY,
+    downloadUrl = Some("download.file/url"),
+    uploadDetails = Some(UploadDetails(
+      fileName = "file1.txt",
+      fileMimeType = "text/plain",
+      uploadTimestamp = LocalDateTime.of(2023, 1, 1, 1, 1),
+      checksum = "check1234",
+      size = 2
+    )),
+    uploadFields = Some(Map(
+      "key" -> "abcxyz",
+      "algo" -> "md5"
+    ))
+  )
+
+  def userAnswers(answers: JsObject = Json.obj()): UserAnswers = UserAnswers("1234", Json.obj(
+    SessionKeys.penaltyNumber -> "1234",
+    SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+    SessionKeys.startDateOfPeriod -> LocalDate.parse("2023-01-01"),
+    SessionKeys.endDateOfPeriod -> LocalDate.parse("2023-01-31"),
+    SessionKeys.dueDateOfPeriod -> LocalDate.parse("2023-03-07"),
+    SessionKeys.dateCommunicationSent -> LocalDate.parse("2023-03-12")
+  ) ++ answers)
 
   override def afterEach(): Unit = {
     resetAll()

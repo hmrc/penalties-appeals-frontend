@@ -56,7 +56,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    runControllerAuthorisationTests(controller.onPageLoad(), "GET", "/reason-for-missing-deadline")
+    runControllerPredicateTests(controller.onPageLoad(), "GET", "/reason-for-missing-deadline")
   }
 
   "POST /reason-for-missing-deadline" should {
@@ -101,6 +101,6 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    runControllerAuthorisationTests(controller.onSubmit(), "POST", "/reason-for-missing-deadline")
+    runControllerPredicateTests(controller.onSubmit(), "POST", "/reason-for-missing-deadline")
   }
 }

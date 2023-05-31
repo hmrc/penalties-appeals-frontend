@@ -44,7 +44,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase with Au
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoad(), "GET", "/making-a-late-appeal")
+    runControllerPredicateTests(controller.onPageLoad(), "GET", "/making-a-late-appeal")
   }
 
   "POST /making-a-late-appeal" should {
@@ -95,7 +95,7 @@ class MakingALateAppealControllerISpec extends IntegrationSpecCommonBase with Au
       result.header.status shouldBe Status.BAD_REQUEST
     }
 
-    runControllerAuthorisationTests(controller.onSubmit(), "POST", "/making-a-late-appeal")
+    runControllerPredicateTests(controller.onSubmit(), "POST", "/making-a-late-appeal")
 
   }
 }

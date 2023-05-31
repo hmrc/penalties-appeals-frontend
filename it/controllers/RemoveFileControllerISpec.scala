@@ -18,7 +18,6 @@ package controllers
 
 import controllers.testHelpers.AuthorisationTest
 import models.session.UserAnswers
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, NormalMode, PenaltyTypeEnum}
 import org.mongodb.scala.Document
 import org.scalatest.concurrent.Eventually.eventually
@@ -27,7 +26,7 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 class RemoveFileControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller = injector.instanceOf[RemoveFileController]
@@ -46,23 +45,6 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase with Authorisa
     SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
   ))
 
-  val fileUploadModel: UploadJourney = UploadJourney(
-    reference = "ref1",
-    fileStatus = UploadStatusEnum.READY,
-    downloadUrl = Some("download.file/url"),
-    uploadDetails = Some(UploadDetails(
-      fileName = "file1.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-      checksum = "check1234",
-      size = 2
-    )),
-    uploadFields = Some(Map(
-      "key" -> "abcxyz",
-      "algo" -> "md5"
-    ))
-  )
-
   "GET /remove-file/:fileReference" should {
     "return 200 (OK) the page if the file reference exists" in new Setup(userAnswers) {
       await(repository.updateStateOfFileUpload(journeyId = "1234", callbackModel = fileUploadModel, isInitiateCall = true))
@@ -75,7 +57,7 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase with Authorisa
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
-    runControllerAuthorisationTests(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode), "GET", "/remove-file/ref1?isJsEnabled=true")
+    runControllerPredicateTests(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode), "GET", "/remove-file/ref1?isJsEnabled=true")
 
   }
 
@@ -125,6 +107,6 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase with Authorisa
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, true).url
     }
 
-    runControllerAuthorisationTests(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = NormalMode), "POST", "/remove-file/ref1?isJsEnabled=true")
+    runControllerPredicateTests(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = NormalMode), "POST", "/remove-file/ref1?isJsEnabled=true")
   }
 }

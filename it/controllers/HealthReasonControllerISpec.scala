@@ -18,7 +18,7 @@ package controllers
 
 import config.featureSwitches.FeatureSwitching
 import controllers.testHelpers.AuthorisationTest
-import models.{NormalMode, PenaltyTypeEnum}
+import models.NormalMode
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
@@ -31,30 +31,16 @@ import java.time.LocalDate
 class HealthReasonControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
   val controller: HealthReasonController = injector.instanceOf[HealthReasonController]
   "GET /was-a-hospital-stay-required" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForWasHospitalStayRequired(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForWasHospitalStayRequired(NormalMode), "GET", "/was-a-hospital-stay-required")
+    runControllerPredicateTests(controller.onPageLoadForWasHospitalStayRequired(NormalMode), "GET", "/was-a-hospital-stay-required")
   }
 
   "POST /was-a-hospital-stay-required" should {
-    "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers no" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers no" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "no")
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -62,14 +48,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.wasHospitalStayRequired).get shouldBe "no"
     }
 
-    "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers yes" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 303 (SEE_OTHER), navigate to when did health issue happen and add the session key to the session - when the user answers yes" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -78,60 +57,36 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the value is invalid" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the value is invalid" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
         val request = await(controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
-    runControllerAuthorisationTests(controller.onSubmitForWasHospitalStayRequired(NormalMode), "POST", "/was-a-hospital-stay-required")
+    runControllerPredicateTests(controller.onSubmitForWasHospitalStayRequired(NormalMode), "POST", "/was-a-hospital-stay-required")
   }
 
   "GET /when-did-health-issue-happen" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForWhenHealthReasonHappened(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForWhenHealthReasonHappened(NormalMode), "GET", "/when-did-health-issue-happen")
+    runControllerPredicateTests(controller.onPageLoadForWhenHealthReasonHappened(NormalMode), "GET", "/when-did-health-issue-happen")
   }
 
   "POST /when-did-health-issue-happen" should {
-    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
-    ))) {
+    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(20)
+      )
+    )) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -143,14 +98,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened).get shouldBe LocalDate.parse("2021-02-08")
     }
 
-    "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -163,14 +111,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the date submitted is in the future" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is in the future" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
@@ -180,14 +121,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers()) {
         setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "02",
@@ -199,26 +133,12 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
         setFeatureDate(None)
       }
 
-      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
         val request = await(controller.onSubmitForWhenHealthReasonHappened(NormalMode)(fakeRequest))
         request.header.status shouldBe BAD_REQUEST
       }
 
-      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers()) {
 
         val noDayJsonBody: Seq[(String, String)] = Seq(
           "date.day" -> "",
@@ -250,36 +170,26 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
       }
     }
 
-    runControllerAuthorisationTests(controller.onSubmitForWhenHealthReasonHappened(NormalMode), "POST", "/when-did-health-issue-happen")
+    runControllerPredicateTests(controller.onSubmitForWhenHealthReasonHappened(NormalMode), "POST", "/when-did-health-issue-happen")
   }
 
   "GET /has-the-hospital-stay-ended" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForHasHospitalStayEnded(NormalMode), "GET", "/has-the-hospital-stay-ended")
+    runControllerPredicateTests(controller.onPageLoadForHasHospitalStayEnded(NormalMode), "GET", "/has-the-hospital-stay-ended")
   }
 
   "POST /has-the-hospital-stay-ended" should {
 
     "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and " +
-      "add the session keys to the session when the body is correct and user clicks no" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1)
-    ))) {
+      "add the session keys to the session when the body is correct and user clicks no" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(20)
+      )
+    )) {
       val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "hasStayEnded" -> "no"
       )
@@ -290,14 +200,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
     }
 
     "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and " +
-      "add the session key to the session when the body is correct and user clicks no" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+      "add the session key to the session when the body is correct and user clicks no" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "hasStayEnded" -> "no"
       )
@@ -308,14 +211,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
     }
 
     "return 303 (SEE_OTHER) to when did hospital stay end page and " +
-      "add the session keys to the session when the body is correct and user clicks yes" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1)
-    ))) {
+      "add the session keys to the session when the body is correct and user clicks yes" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "hasStayEnded" -> "yes"
       )
@@ -326,14 +222,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the date submitted is in the future" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is in the future" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "stayEndDate.day" -> "08",
           "stayEndDate.month" -> "02",
@@ -343,14 +232,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers()) {
         setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "stayEndDate.day" -> "02",
@@ -362,14 +244,7 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
         setFeatureDate(None)
       }
 
-      "the date submitted is before the start date" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is before the start date" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "stayEndDate.day" -> "01",
           "stayEndDate.month" -> "01",
@@ -379,26 +254,12 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
         val request = await(controller.onSubmitForHasHospitalStayEnded(NormalMode)(fakeRequest))
         request.header.status shouldBe BAD_REQUEST
       }
 
-      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers()) {
         val noDayJsonBody: Seq[(String, String)] = Seq(
           "date.day" -> "",
           "date.month" -> "02",
@@ -428,35 +289,20 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
       }
     }
 
-    runControllerAuthorisationTests(controller.onSubmitForHasHospitalStayEnded(NormalMode), "POST", "/has-the-hospital-stay-ended")
+    runControllerPredicateTests(controller.onSubmitForHasHospitalStayEnded(NormalMode), "POST", "/has-the-hospital-stay-ended")
   }
 
   "GET /when-did-hospital-stay-begin" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode), "GET", "/when-did-hospital-stay-begin")
+    runControllerPredicateTests(controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode), "GET", "/when-did-hospital-stay-begin")
   }
 
   "POST /when-did-hospital-stay-begin" should {
-    "return 303 (SEE_OTHER) to did hospital stay end page and add the session keys to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1)
-    ))) {
+    "return 303 (SEE_OTHER) to did hospital stay end page and add the session keys to the session when the body is correct" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -468,48 +314,34 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted).get shouldBe LocalDate.parse("2021-02-08")
     }
 
-    runControllerAuthorisationTests(controller.onSubmitForWhenDidHospitalStayBegin(NormalMode), "POST", "/when-did-hospital-stay-begin")
+    runControllerPredicateTests(controller.onSubmitForWhenDidHospitalStayBegin(NormalMode), "POST", "/when-did-hospital-stay-begin")
   }
 
   "GET /when-did-hospital-stay-end" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
+      )
+    )) {
       val request = await(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not have the start date" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 500 (ISE) when the user is authorised but the session does not have the start date" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode), "GET", "/when-did-hospital-stay-end")
+    runControllerPredicateTests(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode), "GET", "/when-did-hospital-stay-end")
   }
 
   "POST /when-did-hospital-stay-end" should {
-    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session keys to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(1),
-      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
-    ))) {
+    "return 303 (SEE_OTHER) to CYA page (when appeal is not late) and add the session keys to the session when the body is correct" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(20),
+        SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
+      )
+    )) {
       val fakeRequestCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -521,15 +353,11 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.parse("2021-02-08")
     }
 
-    "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
-    ))) {
+    "return 303 (SEE_OTHER) to making a late appeal page when appeal IS late and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2020-01-01")
+      )
+    )) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -541,19 +369,12 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).get shouldBe LocalDate.parse("2021-02-08")
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not have a start date" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 500 (ISE) when the user is authorised but the session does not have a start date" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    runControllerAuthorisationTests(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode), "POST", "/when-did-hospital-stay-end")
+    runControllerPredicateTests(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode), "POST", "/when-did-hospital-stay-end")
   }
 
 }

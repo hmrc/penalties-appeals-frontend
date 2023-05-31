@@ -33,39 +33,34 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Aut
   val controller: PenaltySelectionController = injector.instanceOf[PenaltySelectionController]
 
   "GET /multiple-penalties-for-this-period" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-      SessionKeys.firstPenaltyAmount -> "100.01",
-      SessionKeys.secondPenaltyAmount -> "100.02",
-      SessionKeys.firstPenaltyCommunicationDate -> LocalDate.now().minusDays(30)
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.firstPenaltyAmount -> "100.01",
+        SessionKeys.secondPenaltyAmount -> "100.02",
+        SessionKeys.firstPenaltyCommunicationDate -> LocalDate.now().minusDays(30)
+      )
+    )) {
       val request = await(controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForPenaltySelection(NormalMode), "GET", "/multiple-penalties-for-this-period")
+    runControllerPredicateTests(controller.onPageLoadForPenaltySelection(NormalMode), "GET", "/multiple-penalties-for-this-period")
   }
 
   "POST /multiple-penalties-for-this-period" should {
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - routing to single penalty page when the answer is no" in
-      new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.firstPenaltyAmount -> "100.01",
-        SessionKeys.firstPenaltyChargeReference -> "123456789",
-        SessionKeys.secondPenaltyAmount -> "100.02",
-        SessionKeys.secondPenaltyChargeReference -> "123456790",
-        SessionKeys.firstPenaltyCommunicationDate -> LocalDate.now().minusDays(30),
-        SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(20)
-      ))) {
+      new UserAnswersSetup(userAnswers(
+        answers = Json.obj(
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+          SessionKeys.firstPenaltyAmount -> "100.01",
+          SessionKeys.firstPenaltyChargeReference -> "123456789",
+          SessionKeys.secondPenaltyAmount -> "100.02",
+          SessionKeys.secondPenaltyChargeReference -> "123456790",
+          SessionKeys.firstPenaltyCommunicationDate -> LocalDate.now().minusDays(30),
+          SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(20)
+        )
+      )) {
         val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "no")
         val request = await(controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithCorrectBody))
         request.header.status shouldBe Status.SEE_OTHER
@@ -74,17 +69,15 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Aut
       }
 
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - routing to single penalty page when the answer is yes" in
-      new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.firstPenaltyAmount -> "100.01",
-        SessionKeys.secondPenaltyAmount -> "100.02",
-        SessionKeys.firstPenaltyCommunicationDate -> LocalDate.now().minusDays(30),
-        SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(20)
-      ))) {
+      new UserAnswersSetup(userAnswers(
+        answers = Json.obj(
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+          SessionKeys.firstPenaltyAmount -> "100.01",
+          SessionKeys.secondPenaltyAmount -> "100.02",
+          SessionKeys.firstPenaltyCommunicationDate -> LocalDate.now().minusDays(30),
+          SessionKeys.dateCommunicationSent -> LocalDate.now().minusDays(20)
+        )
+      )) {
         val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
         val request = await(controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithCorrectBody))
         request.header.status shouldBe Status.SEE_OTHER
@@ -93,36 +86,31 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Aut
       }
 
     "return 400 (BAD_REQUEST)" when {
-      "the value is empty" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.firstPenaltyAmount -> "100.01",
-        SessionKeys.secondPenaltyAmount -> "100.02",
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the value is empty" in new UserAnswersSetup(userAnswers(
+        answers = Json.obj(
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+          SessionKeys.firstPenaltyAmount -> "100.01",
+          SessionKeys.secondPenaltyAmount -> "100.02",
+          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+        )
+      )) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "")
         val request = await(controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
-    runControllerAuthorisationTests(controller.onSubmitForPenaltySelection(NormalMode), "POST", "/multiple-penalties-for-this-period")
+    runControllerPredicateTests(controller.onSubmitForPenaltySelection(NormalMode), "POST", "/multiple-penalties-for-this-period")
   }
 
   "GET /appeal-single-penalty" should {
-    "return 200 (OK) when the user is authorised - showing the correct link" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-      SessionKeys.firstPenaltyAmount -> "100.01",
-      SessionKeys.secondPenaltyAmount -> "100.02"
-    ))) {
+    "return 200 (OK) when the user is authorised - showing the correct link" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.firstPenaltyAmount -> "100.01",
+        SessionKeys.secondPenaltyAmount -> "100.02"
+      )
+    )) {
       val normalModeRequest = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequest)
       await(normalModeRequest).header.status shouldBe Status.OK
       Jsoup.parse(contentAsString(normalModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -132,18 +120,11 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Aut
       Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForSinglePenaltySelection(NormalMode), "GET", "/appeal-single-penalty")
+    runControllerPredicateTests(controller.onPageLoadForSinglePenaltySelection(NormalMode), "GET", "/appeal-single-penalty")
   }
 
   "GET /appeal-cover-for-both-penalties" should {
-    "return 200 (OK) when the user is authorised - appeal < 30 days late" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised - appeal < 30 days late" in new UserAnswersSetup(userAnswers()) {
       setFeatureDate(Some(LocalDate.parse("2020-02-28")))
       val normalModeRequest = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest)
       await(normalModeRequest).header.status shouldBe Status.OK
@@ -154,14 +135,7 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Aut
       Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
     }
 
-    "return 200 (OK) when the user is authorised - appeal > 30 days late" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised - appeal > 30 days late" in new UserAnswersSetup(userAnswers()) {
       setFeatureDate(None)
       val normalModeRequest = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(fakeRequest)
       await(normalModeRequest).header.status shouldBe Status.OK
@@ -172,6 +146,6 @@ class PenaltySelectionControllerISpec extends IntegrationSpecCommonBase with Aut
       Jsoup.parse(contentAsString(checkModeRequest)).select("#main-content a.govuk-button").attr("href") shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForAppealCoverBothPenalties(NormalMode), "GET", "/appeal-cover-for-both-penalties")
+    runControllerPredicateTests(controller.onPageLoadForAppealCoverBothPenalties(NormalMode), "GET", "/appeal-cover-for-both-penalties")
   }
 }

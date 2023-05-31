@@ -31,30 +31,16 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase with Authorisation
   val controller: AgentsController = injector.instanceOf[AgentsController]
 
   "GET /what-caused-you-to-miss-the-deadline" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode), "GET", "/what-caused-you-to-miss-the-deadline")
+    runControllerPredicateTests(controller.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode), "GET", "/what-caused-you-to-miss-the-deadline")
   }
 
   "POST /what-caused-you-to-miss-the-deadline" should {
-    "return 303 (SEE_OTHER) to 'reasonable excuse selection' page and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
-    ))) {
+    "return 303 (SEE_OTHER) to 'reasonable excuse selection' page and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "client")
       val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -63,60 +49,32 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase with Authorisation
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the value is invalid" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the value is invalid" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
         val request = await(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
-    runControllerAuthorisationTests(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode), "POST", "/what-caused-you-to-miss-the-deadline")
+    runControllerPredicateTests(controller.onSubmitForWhatCausedYouToMissTheDeadline(NormalMode), "POST", "/what-caused-you-to-miss-the-deadline")
   }
 
   "GET /who-planned-to-submit-vat-return" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode), "GET", "/who-planned-to-submit-vat-return")
+    runControllerPredicateTests(controller.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode), "GET", "/who-planned-to-submit-vat-return")
 
   }
 
   "POST /who-planned-to-submit-vat-return" should {
-    "return 303 (SEE_OTHER) to who planned to submit vat return page and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
-    ))) {
+    "return 303 (SEE_OTHER) to who planned to submit vat return page and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "client")
       val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -125,32 +83,18 @@ class AgentsControllerISpec extends IntegrationSpecCommonBase with Authorisation
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the value is invalid" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
-      ))) {
+      "the value is invalid" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
         val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(1)
-      ))) {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
         val request = await(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
 
-    runControllerAuthorisationTests(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode), "POST", "/who-planned-to-submit-vat-return")
+    runControllerPredicateTests(controller.onSubmitForWhoPlannedToSubmitVATReturn(NormalMode), "POST", "/who-planned-to-submit-vat-return")
   }
 }

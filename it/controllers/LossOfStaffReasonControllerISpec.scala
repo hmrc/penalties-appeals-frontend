@@ -43,7 +43,7 @@ class LossOfStaffReasonControllerISpec extends IntegrationSpecCommonBase with Au
       request.header.status shouldBe OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoad(NormalMode), "GET", "/when-did-the-person-leave")
+    runControllerPredicateTests(controller.onPageLoad(NormalMode), "GET", "/when-did-the-person-leave")
 
   }
 
@@ -174,6 +174,6 @@ class LossOfStaffReasonControllerISpec extends IntegrationSpecCommonBase with Au
 
     }
 
-    runControllerAuthorisationTests(controller.onSubmit(NormalMode), "POST", "/when-did-the-person-leave")
+    runControllerPredicateTests(controller.onSubmit(NormalMode), "POST", "/when-did-the-person-leave")
   }
 }

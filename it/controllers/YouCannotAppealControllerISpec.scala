@@ -29,19 +29,12 @@ class YouCannotAppealControllerISpec extends IntegrationSpecCommonBase with Auth
   val controller: YouCannotAppealController = injector.instanceOf[YouCannotAppealController]
 
   "GET /you-cannot-appeal" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoad(), "GET", "/you-cannot-appeal")
+    runControllerPredicateTests(controller.onPageLoad(), "GET", "/you-cannot-appeal")
 
   }
 }

@@ -28,18 +28,11 @@ import java.time.LocalDate
   class AppealStartControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: AppealStartController = injector.instanceOf[AppealStartController]
   "GET /appeal-start" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    runControllerAuthorisationTests(controller.onPageLoad(), "GET", "/appeal-start")
+    runControllerPredicateTests(controller.onPageLoad(), "GET", "/appeal-start")
   }
 }
