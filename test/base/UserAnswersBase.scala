@@ -67,6 +67,12 @@ trait UserAnswersBase {
     SessionKeys.dateOfCrime -> "2022-01-01"
   ) ++ hasConfirmedDeclaration
 
+  val fireOrFloodAnswers: JsObject = Json.obj(
+    SessionKeys.reasonableExcuse -> "fireOrFlood",
+    SessionKeys.hasConfirmedDeclaration -> true,
+    SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
+  ) ++ hasConfirmedDeclaration
+
   val confirmationSessionKeys = Seq(
     SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
     SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
