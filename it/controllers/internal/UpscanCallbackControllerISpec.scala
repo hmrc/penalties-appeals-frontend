@@ -34,18 +34,18 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     """
       |{
       |    "reference": "ref1",
-      |    "downloadUrl": "download.file",
+      |    "downloadUrl": "http://example.com/file1.txt",
       |    "fileStatus": "READY",
       |    "uploadDetails": {
       |        "fileName": "file1.txt",
       |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+      |        "uploadTimestamp": "2023-04-24T09:30:00Z",
       |        "checksum": "check12345678",
       |        "size": 987
       |    },
       |    "uploadFields": {
       |      "key": "abcxyz",
-      |      "algo": "md5"
+      |      "x-amz-algorithm": "AWS4-HMAC-SHA256"
       |    }
       |}
       |""".stripMargin
@@ -55,18 +55,18 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
     """
       |{
       |    "reference": "ref2",
-      |    "downloadUrl": "download.file",
+      |    "downloadUrl": "http://example.com/file1.txt",
       |    "fileStatus": "READY",
       |    "uploadDetails": {
       |        "fileName": "file1.txt",
       |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+      |        "uploadTimestamp": "2023-04-24T09:30:00Z",
       |        "checksum": "check12345678",
       |        "size": 987
       |    },
       |    "uploadFields": {
       |      "key": "abcxyz",
-      |      "algo": "md5"
+      |      "x-amz-algorithm": "AWS4-HMAC-SHA256"
       |    }
       |}
       |""".stripMargin
@@ -79,7 +79,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |    "fileStatus": "FAILED",
       |    "failureDetails": {
       |       "failureReason": "QUARANTINE",
-      |       "message": "e.g. This file has a virus"
+      |       "message": "This file has a virus"
       |    }
       |}
       |""".stripMargin
@@ -88,35 +88,35 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
   val jsonAsModel: UploadJourney = UploadJourney(
     reference = "ref1",
     fileStatus = UploadStatusEnum.READY,
-    downloadUrl = Some("download.file"),
+    downloadUrl = Some("http://example.com/file1.txt"),
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+      uploadTimestamp = LocalDateTime.of(2023, 4, 24, 9, 30),
       checksum = "check12345678",
       size = 987
     )),
     uploadFields = Some(Map(
       "key" -> "abcxyz",
-      "algo" -> "md5"
+      "x-amz-algorithm" -> "AWS4-HMAC-SHA256"
     ))
   )
 
   val duplicateJsonAsModel: UploadJourney = UploadJourney(
     reference = "ref2",
     fileStatus = UploadStatusEnum.DUPLICATE,
-    downloadUrl = Some("download.file"),
+    downloadUrl = Some("http://example.com/file1.txt"),
     uploadDetails = Some(UploadDetails(
       fileName = "file1.txt",
       fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
+      uploadTimestamp = LocalDateTime.of(2023, 4, 24, 9, 30),
       checksum = "check12345678",
       size = 987
     )
     ),
     uploadFields = Some(Map(
       "key" -> "abcxyz",
-      "algo" -> "md5"
+      "x-amz-algorithm" -> "AWS4-HMAC-SHA256"
     ))
   )
 
@@ -135,10 +135,10 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
 
   val uploadFieldsForUpdateCall: Map[String, String] = Map(
     "key" -> "abcxyz",
-    "algo" -> "md5"
+    "x-amz-algorithm" -> "AWS4-HMAC-SHA256"
   )
 
-  "POST /upscan-callback/:journeyId?isJsEnabled" should {
+  "POST /upscan-callback/:journeyId" should {
     "return BAD REQUEST" when {
       "the body received is valid JSON but not a valid model" in {
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(

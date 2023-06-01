@@ -64,10 +64,10 @@ object PenaltiesStub {
           .withBody(
             Json.obj(
                 "type" -> typeOfPenalty,
-                "startDate" -> LocalDate.of(2020, 1, 1).toString,
-                "endDate" -> LocalDate.of(2020, 1, 1).toString,
-                "dueDate" -> LocalDate.of(2020, 2, 7).toString,
-                "dateCommunicationSent" -> LocalDate.of(2020, 2, 8).toString
+              "startDate" -> LocalDate.of(2020, 1, 1).toString,
+              "endDate" -> LocalDate.of(2020, 1, 31).toString,
+              "dueDate" -> LocalDate.of(2020, 3, 7).toString,
+              "dateCommunicationSent" -> LocalDate.of(2020, 3, 8).toString
               ).toString()
           )
       )
@@ -134,9 +134,9 @@ object PenaltiesStub {
                 "firstPenaltyChargeReference" -> "123456789",
                 "firstPenaltyAmount" -> "101.01",
                 "secondPenaltyChargeReference" -> "123456790",
-                "secondPenaltyAmount" -> "101.02",
-                "firstPenaltyCommunicationDate" -> "2022-01-01",
-                "secondPenaltyCommunicationDate" -> "2022-01-02"
+                "secondPenaltyAmount" -> "1.02",
+                "firstPenaltyCommunicationDate" -> "2023-04-06",
+                "secondPenaltyCommunicationDate" -> "2023-04-07"
               ).toString()
             )
         )

@@ -41,6 +41,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
       val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = false)
       actualResult shouldBe expectedResult
     }
+    
     "return the correct url for LPP Additional" in {
       val expectedResult =
         "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=true"
@@ -63,12 +64,11 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
       val sampleJsonToPassBack: JsValue = Json.obj(
         "type" -> PenaltyTypeEnum.Late_Submission,
         "startDate" -> LocalDate.of(2020, 1, 1).toString,
-        "endDate" -> LocalDate.of(2020, 1, 1).toString,
-        "dueDate" -> LocalDate.of(2020, 2, 7).toString,
-        "dateCommunicationSent" -> LocalDate.of(2020, 2, 8).toString
+        "endDate" -> LocalDate.of(2020, 1, 31).toString,
+        "dueDate" -> LocalDate.of(2020, 3, 7).toString,
+        "dateCommunicationSent" -> LocalDate.of(2020, 3, 8).toString
       )
-      val result = await(penaltiesConnector.getAppealsDataForPenalty(
-        "1234", "123456789", isLPP = false, isAdditional = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
+      val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false, isAdditional = false))
       result.isDefined shouldBe true
       result.get shouldBe sampleJsonToPassBack
     }
@@ -76,22 +76,19 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
     s"return $None" when {
       "the call returns 404" in {
         failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", status = Status.NOT_FOUND)
-        val result = await(penaltiesConnector.getAppealsDataForPenalty(
-          "1234", "123456789", isLPP = false, isAdditional = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false, isAdditional = false))
         result.isDefined shouldBe false
       }
 
       "the call returns some unknown response" in {
         failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", status = Status.IM_A_TEAPOT)
-        val result = await(penaltiesConnector.getAppealsDataForPenalty(
-          "1234", "123456789", isLPP = false, isAdditional = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false, isAdditional = false))
         result.isDefined shouldBe false
       }
 
       "the call fails completely with no response" in {
         failedCall("1234", "HMRC-MTD-VAT~VRN~123456789")
-        val result = await(penaltiesConnector.getAppealsDataForPenalty(
-          "1234", "123456789", isLPP = false, isAdditional = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false, isAdditional = false))
         result.isDefined shouldBe false
       }
     }
@@ -104,9 +101,9 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         firstPenaltyChargeReference = "123456789",
         firstPenaltyAmount = 101.01,
         secondPenaltyChargeReference = "123456790",
-        secondPenaltyAmount = 101.02,
-        firstPenaltyCommunicationDate = LocalDate.parse("2022-01-01"),
-        secondPenaltyCommunicationDate = LocalDate.parse("2022-01-02")
+        secondPenaltyAmount = 1.02,
+        firstPenaltyCommunicationDate = LocalDate.parse("2023-04-06"),
+        secondPenaltyCommunicationDate = LocalDate.parse("2023-04-07")
       )
       val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
       result.isRight shouldBe true
@@ -153,7 +150,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           )
         )
       )
-      val result = await(penaltiesConnector.getListOfReasonableExcuses()(HeaderCarrier(), ExecutionContext.Implicits.global))
+      val result = await(penaltiesConnector.getListOfReasonableExcuses())
       result.isDefined shouldBe true
       result.get shouldBe sampleJsonToPassBack
     }
@@ -161,27 +158,26 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
     s"return $None" when {
       "the call returns 404" in {
         failedFetchReasonableExcuseListResponse(status = Status.NOT_FOUND)
-        val result = await(penaltiesConnector.getListOfReasonableExcuses()(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getListOfReasonableExcuses())
         result.isDefined shouldBe false
       }
 
       "the call returns 500" in {
         failedFetchReasonableExcuseListResponse(status = Status.INTERNAL_SERVER_ERROR)
-        val result = await(penaltiesConnector.getListOfReasonableExcuses()(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getListOfReasonableExcuses())
         result.isDefined shouldBe false
       }
 
 
       "the call returns some unknown response" in {
         failedFetchReasonableExcuseListResponse(status = Status.IM_A_TEAPOT)
-        val result = await(penaltiesConnector.getListOfReasonableExcuses()(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getListOfReasonableExcuses())
         result.isDefined shouldBe false
       }
 
       "the call fails completely with no response" in {
         failedCallForFetchingReasonableExcuse
-        val result = await(penaltiesConnector.getAppealsDataForPenalty(
-          "1234", "123456789", isLPP = false, isAdditional = false)(HeaderCarrier(), ExecutionContext.Implicits.global))
+        val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false, isAdditional = false))
         result.isDefined shouldBe false
       }
     }
@@ -194,14 +190,14 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         sourceSystem = "MDTP",
         taxRegime = "VAT",
         customerReferenceNo = "VRN123456789",
-        dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+        dateOfAppeal = LocalDateTime.of(2023, 3, 1, 0, 0, 0),
         isLPP = false,
         appealSubmittedBy = "client",
         agentDetails = None,
         appealInformation = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
+          startDateOfEvent = LocalDate.parse("2023-01-01").atStartOfDay(),
           reportedIssueToPolice = "yes",
           statement = None,
           lateAppeal = false,
@@ -221,14 +217,14 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         sourceSystem = "MDTP",
         taxRegime = "VAT",
         customerReferenceNo = "VRN123456789",
-        dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+        dateOfAppeal = LocalDateTime.of(2023, 3, 1, 0, 0, 0),
         isLPP = true,
         appealSubmittedBy = "client",
         agentDetails = None,
         appealInformation = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
+          startDateOfEvent = LocalDate.parse("2023-01-01").atStartOfDay(),
           reportedIssueToPolice = "yes",
           statement = None,
           lateAppeal = false,
@@ -248,14 +244,14 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         sourceSystem = "MDTP",
         taxRegime = "VAT",
         customerReferenceNo = "VRN123456789",
-        dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
+        dateOfAppeal = LocalDateTime.of(2023, 3, 1, 0, 0, 0),
         isLPP = true,
         appealSubmittedBy = "client",
         agentDetails = None,
         appealInformation = CrimeAppealInformation(
           reasonableExcuse = "crime",
           honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
+          startDateOfEvent = LocalDate.parse("2023-01-01").atStartOfDay(),
           reportedIssueToPolice = "yes",
           statement = None,
           lateAppeal = false,

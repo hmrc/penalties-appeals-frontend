@@ -21,7 +21,8 @@ import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{PenaltyTypeEnum, UserRequest}
 import org.scalatest.concurrent.Eventually.eventually
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
@@ -45,128 +46,90 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
   "submitAppeal" should {
 
-    "return Right when the connector call succeeds for loss of staff" in  {
-      successfulAppealSubmission(isLPP = false, "1234")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "lossOfStaff",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
-      )))(fakeRequest)
-      val result = await(appealService.submitAppeal("lossOfStaff")(userRequest, implicitly, implicitly))
-      eventually {
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+    def appealSubmissionTestForReasonableExcuse(reasonableExcuse: String, userRequest: UserRequest[_], extraDetailsForTestName: Option[String] = None): Unit = {
+      s"return Right when the connector call succeeds for $reasonableExcuse ${extraDetailsForTestName.getOrElse("")}" in {
+        successfulAppealSubmission(isLPP = false, "1234")
+        val result = await(appealService.submitAppeal(reasonableExcuse)(userRequest, implicitly, implicitly))
+        eventually {
+          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+        }
+        result shouldBe Right((): Unit)
       }
-      result shouldBe Right((): Unit)
     }
 
-    "return Right when the connector call succeeds for crime" in {
-      successfulAppealSubmission(isLPP = false, "1234")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "crime",
-        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
-      )))(fakeRequest)
-      val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-      eventually {
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-      }
-      result shouldBe Right((): Unit)
-    }
+    val baseUserAnswers = Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    )
 
-    "return Right when the connector call succeeds for technical issues" in {
-      successfulAppealSubmission(isLPP = false, "1234")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "technicalIssues",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
-        SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
-      )))(fakeRequest)
-      val result = await(appealService.submitAppeal("technicalIssues")(userRequest, implicitly, implicitly))
-      eventually {
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-      }
-      result shouldBe Right((): Unit)
-    }
+    def userRequest(answers: JsObject): UserRequest[AnyContent] = UserRequest("123456789", answers = UserAnswers("1234", answers))(fakeRequest)
 
-    "return Right when the connector call succeeds for fire or flood" in {
-      successfulAppealSubmission(isLPP = false, "1234")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "fireOrFlood",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
-      )))(fakeRequest)
-      val result = await(appealService.submitAppeal("fireOrFlood")(userRequest, implicitly, implicitly))
-      eventually {
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-      }
-      result shouldBe Right((): Unit)
-    }
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "lossOfStaff", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "lossOfStaff",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
+    )))
 
-    "return Right when the connector call succeeds for bereavement" in {
-      successfulAppealSubmission(isLPP = false, "1234")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "bereavement",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
-      )))(fakeRequest)
-      val result = await(appealService.submitAppeal("bereavement")(userRequest, implicitly, implicitly))
-      eventually {
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-      }
-      result shouldBe Right((): Unit)
-    }
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "crime", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+    )))
 
-    "return Right when the connector call succeeds for other - no file upload" in {
-      successfulAppealSubmission(isLPP = false, "1234")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "other",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.whyReturnSubmittedLate -> "this is information",
-        SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
-      )))(fakeRequest)
-      val result = await(appealService.submitAppeal("other")(userRequest, implicitly, implicitly))
-      eventually {
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-      }
-      result shouldBe Right((): Unit)
-    }
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "technicalIssues", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "technicalIssues",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
+      SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
+    )))
+
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "fireOrFlood", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "fireOrFlood",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
+    )))
+
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "bereavement", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
+    )))
+
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "other", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "other",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.whyReturnSubmittedLate -> "this is information",
+      SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
+    )), extraDetailsForTestName = Some("- no file upload"))
+
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "health", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "health",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.wasHospitalStayRequired -> "no",
+      SessionKeys.whenHealthIssueHappened -> LocalDate.parse("2022-01-01")
+    )), extraDetailsForTestName = Some("- no hospital stay"))
+
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "health", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "health",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.wasHospitalStayRequired -> "yes",
+      SessionKeys.hasHealthEventEnded -> "no",
+      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
+    )), extraDetailsForTestName = Some("- ongoing hospital stay"))
+
+    appealSubmissionTestForReasonableExcuse(reasonableExcuse = "health", userRequest(baseUserAnswers ++ Json.obj(
+      SessionKeys.reasonableExcuse -> "health",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.wasHospitalStayRequired -> "yes",
+      SessionKeys.hasHealthEventEnded -> "yes",
+      SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
+      SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-02")
+    )), extraDetailsForTestName = Some("- hospital stay ended"))
 
     "return Right when the connector call succeeds for other - file upload with duplicates" in {
       val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
@@ -253,98 +216,157 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
       result shouldBe Right((): Unit)
     }
 
-    "return Right for hospital stay" when {
-      "there is no hospital stay" in  {
-        successfulAppealSubmission(isLPP = false, "1234")
-        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-          SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-          SessionKeys.reasonableExcuse -> "health",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.wasHospitalStayRequired -> "no",
-          SessionKeys.whenHealthIssueHappened -> LocalDate.parse("2022-01-01")
-        )))(fakeRequest)
-        val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        eventually {
-          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-        }
-        result shouldBe Right((): Unit)
+    "return Right when the connector call succeeds for LPP" in {
+      successfulAppealSubmission(isLPP = true, "1234")
+      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+      )))(fakeRequest)
+      val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+      eventually {
+        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
       }
+      result shouldBe Right((): Unit)
+    }
+  }
 
-      "there is a ongoing hospital stay" in {
-        successfulAppealSubmission(isLPP = false, "1234")
-        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-          SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-          SessionKeys.reasonableExcuse -> "health",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.wasHospitalStayRequired -> "yes",
-          SessionKeys.hasHealthEventEnded -> "no",
-          SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
-        )))(fakeRequest)
-        val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        eventually {
-          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-        }
-        result shouldBe Right((): Unit)
-      }
+  "return Right when appealing two penalties at the same time (and they both succeed)" in {
+    successfulAppealSubmission(isLPP = true, "1234")
+    successfulAppealSubmission(isLPP = true, "5678")
+    val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+      SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+      SessionKeys.firstPenaltyChargeReference -> "1234",
+      SessionKeys.secondPenaltyChargeReference -> "5678"
+    )))(fakeRequest)
+    val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+    eventually {
+      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
+    }
+    result shouldBe Right((): Unit)
+  }
 
-      "there has been a hospital stay that has ended" in {
-        successfulAppealSubmission(isLPP = false, "1234")
-        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-          SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-          SessionKeys.reasonableExcuse -> "health",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.wasHospitalStayRequired -> "yes",
-          SessionKeys.hasHealthEventEnded -> "yes",
-          SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
-          SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-02")
-        )))(fakeRequest)
-        val result = await(appealService.submitAppeal("health")(userRequest, implicitly, implicitly))
-        eventually {
-          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-        }
-        result shouldBe Right((): Unit)
-      }
-
-      "return Right when the connector call succeeds for LPP" in {
-        successfulAppealSubmission(isLPP = true, "1234")
-        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-          SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-          SessionKeys.reasonableExcuse -> "crime",
-          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
-        )))(fakeRequest)
+  "return Right when one the of multiple appeal submissions fails (logging a PD)" in {
+    failedAppealSubmission(isLPP = true, "1234")
+    successfulAppealSubmission(isLPP = true, "5678")
+    val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+      SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+      SessionKeys.firstPenaltyChargeReference -> "1234",
+      SessionKeys.secondPenaltyChargeReference -> "5678"
+    )))(fakeRequest)
+    withCaptureOfLoggingFrom(logger) {
+      logs => {
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        eventually {
-          findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-        }
         result shouldBe Right((): Unit)
+        logs.exists(_.getMessage.contains(s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. ")) shouldBe true
+        logs.exists(_.getMessage.contains(s"LPP1 appeal was not submitted successfully, Reason given Some issue with document storage. Correlation ID for LPP1:")) shouldBe true
+        logs.exists(_.getMessage.contains(s"LPP2 appeal was submitted successfully, case ID is Some(PR-1234). Correlation ID for LPP2:")) shouldBe true
       }
     }
+  }
 
-    "return Right when appealing two penalties at the same time" in {
-      successfulAppealSubmission(isLPP = true, "1234")
-      successfulAppealSubmission(isLPP = true, "5678")
+  "return Right when one of the multiple appeal submissions fails because of a fault (logging a PD)" in {
+    failedAppealSubmissionWithFault(isLPP = true, "1234")
+    successfulAppealSubmission(isLPP = true, "5678")
+    val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+      SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+      SessionKeys.firstPenaltyChargeReference -> "1234",
+      SessionKeys.secondPenaltyChargeReference -> "5678"
+    )))(fakeRequest)
+    withCaptureOfLoggingFrom(logger) {
+      logs => {
+        val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+        result shouldBe Right((): Unit)
+        logs.exists(_.getMessage.contains("MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. ")) shouldBe true
+        logs.exists(_.getMessage.contains("LPP1 appeal was not submitted successfully, Reason given An issue occurred whilst appealing a penalty with error: Connection reset by peer. Correlation ID for LPP1:")) shouldBe true
+        logs.exists(_.getMessage.contains("LPP2 appeal was submitted successfully, case ID is Some(PR-1234). Correlation ID for LPP2:")) shouldBe true
+      }
+    }
+  }
+
+  "return Left" when {
+    "the connector returns a fault" in {
+      failedAppealSubmissionWithFault(isLPP = false, "1234")
+      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+      )))(fakeRequest)
+      val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+      result shouldBe Left(INTERNAL_SERVER_ERROR)
+    }
+
+    "the connector returns an unknown status code" in {
+      failedAppealSubmission(isLPP = false, "1234")
+      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+        SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+        SessionKeys.reasonableExcuse -> "crime",
+        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+        SessionKeys.hasConfirmedDeclaration -> true,
+        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+      )))(fakeRequest)
+      val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+      result shouldBe Left(INTERNAL_SERVER_ERROR)
+    }
+
+    "not all keys are present in the session" in {
+      val userRequest = UserRequest("123456789", answers = UserAnswers("", Json.obj()))(FakeRequest("POST", "/check-your-answers"))
+      val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
+      result shouldBe Left(INTERNAL_SERVER_ERROR)
+    }
+
+    "when both of multiple appeal submissions fails" in {
+      failedAppealSubmissionWithFault(isLPP = true, "1234")
+      failedAppealSubmissionWithFault(isLPP = true, "5678")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
@@ -361,134 +383,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
         SessionKeys.secondPenaltyChargeReference -> "5678"
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-      eventually {
-        findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-      }
-      result shouldBe Right((): Unit)
-    }
-
-    "return Right when both of multiple appeal submissions fails (logging a PD)" in {
-      failedAppealSubmission(isLPP = true, "1234")
-      successfulAppealSubmission(isLPP = true, "5678")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "crime",
-        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
-        SessionKeys.doYouWantToAppealBothPenalties -> "yes",
-        SessionKeys.firstPenaltyChargeReference -> "1234",
-        SessionKeys.secondPenaltyChargeReference -> "5678"
-      )))(fakeRequest)
-      withCaptureOfLoggingFrom(logger) {
-        logs => {
-          val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-          result shouldBe Right((): Unit)
-          logs.exists(_.getMessage.contains(s"MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. ")) shouldBe true
-          logs.exists(_.getMessage.contains(s"LPP1 appeal was not submitted successfully, Reason given Some issue with document storage. Correlation ID for LPP1:")) shouldBe true
-          logs.exists(_.getMessage.contains(s"LPP2 appeal was submitted successfully, case ID is Some(PR-1234). Correlation ID for LPP2:")) shouldBe true
-        }
-      }
-    }
-
-    "return Right when both of multiple appeal submissions fails because of a fault (logging a PD)" in {
-      failedAppealSubmissionWithFault(isLPP = true, "1234")
-      successfulAppealSubmission(isLPP = true, "5678")
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "crime",
-        SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
-        SessionKeys.doYouWantToAppealBothPenalties -> "yes",
-        SessionKeys.firstPenaltyChargeReference -> "1234",
-        SessionKeys.secondPenaltyChargeReference -> "5678"
-      )))(fakeRequest)
-      withCaptureOfLoggingFrom(logger) {
-        logs => {
-          val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-          result shouldBe Right((): Unit)
-          logs.exists(_.getMessage.contains("MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. ")) shouldBe true
-          logs.exists(_.getMessage.contains("LPP1 appeal was not submitted successfully, Reason given An issue occurred whilst appealing a penalty with error: Connection reset by peer. Correlation ID for LPP1:")) shouldBe true
-          logs.exists(_.getMessage.contains("LPP2 appeal was submitted successfully, case ID is Some(PR-1234). Correlation ID for LPP2:")) shouldBe true
-        }
-      }
-    }
-
-    "return Left" when {
-      "the connector returns a fault" in {
-        failedAppealSubmissionWithFault(isLPP = false, "1234")
-        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-          SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-          SessionKeys.reasonableExcuse -> "crime",
-          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
-        )))(fakeRequest)
-        val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        result shouldBe Left(INTERNAL_SERVER_ERROR)
-      }
-
-      "the connector returns an unknown status code" in {
-        failedAppealSubmission(isLPP = false, "1234")
-        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-          SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-          SessionKeys.reasonableExcuse -> "crime",
-          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
-        )))(fakeRequest)
-        val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        result shouldBe Left(INTERNAL_SERVER_ERROR)
-      }
-
-      "not all keys are present in the session" in {
-        val userRequest = UserRequest("123456789", answers = UserAnswers("", Json.obj()))(FakeRequest("POST", "/check-your-answers"))
-        val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        result shouldBe Left(INTERNAL_SERVER_ERROR)
-      }
-
-      "when both of multiple appeal submissions fails" in {
-        failedAppealSubmissionWithFault(isLPP = true, "1234")
-        failedAppealSubmissionWithFault(isLPP = true, "5678")
-        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-          SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-          SessionKeys.reasonableExcuse -> "crime",
-          SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
-          SessionKeys.doYouWantToAppealBothPenalties -> "yes",
-          SessionKeys.firstPenaltyChargeReference -> "1234",
-          SessionKeys.secondPenaltyChargeReference -> "5678"
-        )))(fakeRequest)
-        val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
-        result shouldBe Left(INTERNAL_SERVER_ERROR)
-      }
+      result shouldBe Left(INTERNAL_SERVER_ERROR)
     }
   }
 }

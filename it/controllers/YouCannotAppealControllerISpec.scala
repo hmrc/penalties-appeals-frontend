@@ -16,55 +16,21 @@
 
 package controllers
 
-import models.PenaltyTypeEnum
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContent, Result}
-import play.api.test.FakeRequest
+import controllers.testHelpers.AuthorisationTest
 import play.api.test.Helpers._
-import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
-import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.LocalDate
+import utils.IntegrationSpecCommonBase
 
-class YouCannotAppealControllerISpec extends IntegrationSpecCommonBase {
+class YouCannotAppealControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
 
   val controller: YouCannotAppealController = injector.instanceOf[YouCannotAppealController]
 
   "GET /you-cannot-appeal" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/you-cannot-appeal").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
+    runControllerPredicateTests(controller.onPageLoad(), "GET", "/you-cannot-appeal")
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/you-cannot-appeal").get())
-      request.status shouldBe SEE_OTHER
-    }
   }
 }

@@ -38,53 +38,55 @@ class UpscanInitiateConnectorISpec extends IntegrationSpecCommonBase {
     minimumFileSize = Some(1),
     maximumFileSize = Some(1024)
   )
+
   val upscanResponseModel: UpscanInitiateResponseModel =
     UpscanInitiateResponseModel(
-      "123456789",
-      UploadFormTemplateRequest("bar", Map("doo" -> "dar"))
+      reference = "123456789",
+      uploadRequest = UploadFormTemplateRequest(
+        href = "bar",
+        fields = Map("foo" -> "bar")
+      )
     )
 
   "initiateToUpscan" should {
 
-    val responseBody = Json
-      .obj(
-        "reference" -> "123456789",
-        "uploadRequest" -> Json.obj(
-          "href" -> "bar",
-          "fields" -> Json.obj(
-            "doo" -> "dar"
-          )
+    val responseBody = Json.obj(
+      "reference" -> "123456789",
+      "uploadRequest" -> Json.obj(
+        "href" -> "bar",
+        "fields" -> Json.obj(
+          "foo" -> "bar"
         )
       )
-      .toString()
+    ).toString()
 
     "return a Right when a successful call is made" in {
       successfulInitiateCall(responseBody)
       val requestModel = UpscanInitiateRequest(
-        callbackUrl = "https://foo/wrongUrl",
-        successRedirect = None,
-        errorRedirect = None,
+        callbackUrl = "https://foo.com/callback",
+        successRedirect = Some("https://foo.com/success"),
+        errorRedirect = Some("https://foo.com/error"),
         minimumFileSize = Some(1),
         maximumFileSize = Some(1024)
       )
       val result = await(upscanConnector.initiateToUpscan(requestModel))
       result.isRight shouldBe true
-      result.right.get shouldBe upscanResponseModel
+      result.toOption.get shouldBe upscanResponseModel
     }
 
-    "return a Right invalid json error when invalid JSON is parsed " in {
+    "return a Left invalid json error when invalid JSON is parsed" in {
       successfulCallInvalidJson
       val result = await(upscanConnector.initiateToUpscan(requestModelNoUrl))
-      result.isRight shouldBe false
-      result.left.get.status shouldBe BAD_REQUEST
-      result.left.get.body shouldBe "Invalid JSON received"
+      result.isLeft shouldBe true
+      result.left.toOption.get.status shouldBe BAD_REQUEST
+      result.left.toOption.get.body shouldBe "Invalid JSON received"
     }
 
     "return a Left when an unsuccessful call is made" in {
-      failedInitiateCall(responseBody)
+      failedInitiateCall
       val result = await(upscanConnector.initiateToUpscan(requestModelNoUrl))
-      result.isRight shouldBe false
-      result.left.get.status shouldBe BAD_REQUEST
+      result.isLeft shouldBe true
+      result.left.toOption.get.status shouldBe BAD_REQUEST
     }
   }
 

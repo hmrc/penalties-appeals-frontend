@@ -16,23 +16,19 @@
 
 package controllers
 
+import controllers.testHelpers.AuthorisationTest
 import models.session.UserAnswers
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, NormalMode, PenaltyTypeEnum}
 import org.mongodb.scala.Document
+import org.scalatest.concurrent.Eventually.eventually
 import play.api.libs.json.Json
-import play.api.mvc.AnyContent
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
-import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-import java.time.{LocalDate, LocalDateTime}
 
-import org.scalatest.concurrent.Eventually.eventually
+import java.time.LocalDate
 
-class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
+class RemoveFileControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller = injector.instanceOf[RemoveFileController]
   val repository = injector.instanceOf[UploadJourneyRepository]
 
@@ -49,23 +45,6 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
     SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
   ))
 
-  val fileUploadModel: UploadJourney = UploadJourney(
-    reference = "ref1",
-    fileStatus = UploadStatusEnum.READY,
-    downloadUrl = Some("download.file/url"),
-    uploadDetails = Some(UploadDetails(
-      fileName = "file1.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-      checksum = "check1234",
-      size = 2
-    )),
-    uploadFields = Some(Map(
-      "key" -> "abcxyz",
-      "algo" -> "md5"
-    ))
-  )
-
   "GET /remove-file/:fileReference" should {
     "return 200 (OK) the page if the file reference exists" in new Setup(userAnswers) {
       await(repository.updateStateOfFileUpload(journeyId = "1234", callbackModel = fileUploadModel, isInitiateCall = true))
@@ -78,29 +57,8 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/remove-file/ref1").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
+    runControllerPredicateTests(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode), "GET", "/remove-file/ref1?isJsEnabled=true")
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/remove-file/ref1?isJsEnabled=false").get())
-      request.status shouldBe SEE_OTHER
-    }
   }
 
   "POST /remove-file/:fileReference" should {
@@ -149,28 +107,6 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase {
       result.header.headers(LOCATION) shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, true).url
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new Setup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/remove-file/ref1").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new Setup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoad(fileReference = "F1234", isJsEnabled = true, mode = NormalMode)(fakeRequest))
-      request.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in new Setup {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/remove-file/ref1?isJsEnabled=false").post(""))
-      request.status shouldBe SEE_OTHER
-    }
+    runControllerPredicateTests(controller.onSubmit(fileReference = "ref1", isJsEnabled = true, mode = NormalMode), "POST", "/remove-file/ref1?isJsEnabled=true")
   }
 }

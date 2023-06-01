@@ -17,107 +17,44 @@
 package controllers
 
 import config.featureSwitches.FeatureSwitching
-import models.{CheckMode, NormalMode, PenaltyTypeEnum}
+import controllers.testHelpers.AuthorisationTest
+import models.{CheckMode, NormalMode}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import stubs.AuthStub
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
   val controller: TechnicalIssuesReasonController = injector.instanceOf[TechnicalIssuesReasonController]
 
   "GET /when-did-the-technology-issues-begin" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-begin").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-technology-issues-begin").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerPredicateTests(controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode), "GET", "/when-did-the-technology-issues-begin")
   }
 
   "GET /when-did-the-technology-issues-end" should {
-    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-      SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-01-01")
-    ))) {
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-01-01")
+      )
+    )) {
       val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/when-did-the-technology-issues-end").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-technology-issues-end").get())
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerPredicateTests(controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode), "GET", "/when-did-the-technology-issues-end")
   }
 
   "POST /when-did-the-technology-issues-begin" should {
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - when in normal mode" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - when in normal mode" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -129,14 +66,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).get shouldBe LocalDate.parse("2021-02-08")
     }
 
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - when in check mode" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-    ))) {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - when in check mode" in new UserAnswersSetup(userAnswers()) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -149,14 +79,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the date submitted is in the future" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is in the future" in new UserAnswersSetup(userAnswers()) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
@@ -166,14 +89,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers()) {
         setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "02",
@@ -185,26 +101,12 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
         setFeatureDate(None)
       }
 
-      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
         val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
-      ))) {
+      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers()) {
         val noDayJsonBody: Seq[(String, String)] = Seq(
           "date.day" -> "",
           "date.month" -> "02",
@@ -234,42 +136,16 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
 
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-begin").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-technology-issues-begin").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerPredicateTests(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode), "POST", "/when-did-the-technology-issues-begin")
   }
 
   "POST /when-did-the-technology-issues-end" should {
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - to CYA when in CheckMode" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(20),
-      SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-02-01")
-    ))) {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - to CYA when in CheckMode" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.dateCommunicationSent -> LocalDate.now.minusDays(20),
+        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-01-01")
+      )
+    )) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -281,15 +157,11 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get shouldBe LocalDate.parse("2021-02-08")
     }
 
-    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - to late appeal when in NormalMode" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-      SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-02-01")
-    ))) {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct - to late appeal when in NormalMode" in new UserAnswersSetup(userAnswers(
+      answers = Json.obj(
+        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-01-01")
+      )
+    )) {
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
         "date.day" -> "08",
         "date.month" -> "02",
@@ -302,15 +174,11 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
     }
 
     "return 400 (BAD_REQUEST)" when {
-      "the date submitted is earlier than the start date" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-02-01")
-      ))) {
+      "the date submitted is earlier than the start date" in new UserAnswersSetup(userAnswers(
+        answers = Json.obj(
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-02-01")
+        )
+      )) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "01",
@@ -320,15 +188,11 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-02-01")
-      ))) {
+      "the date submitted is in the future - relative to the time machine" in new UserAnswersSetup(userAnswers(
+        answers = Json.obj(
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-01-01")
+        )
+      )) {
         setFeatureDate(Some(LocalDate.of(2022, 1, 1)))
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "02",
@@ -340,15 +204,11 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
         setFeatureDate(None)
       }
 
-      "the date submitted is in the future" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-02-01")
-      ))) {
+      "the date submitted is in the future" in new UserAnswersSetup(userAnswers(
+        answers = Json.obj(
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-01-01")
+        )
+      )) {
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
@@ -358,28 +218,20 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "no body is submitted" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-02-01")
-      ))) {
+      "no body is submitted" in new UserAnswersSetup(userAnswers(
+        answers = Json.obj(
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-01-01")
+        )
+      )) {
         val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequest))
         request.header.status shouldBe Status.BAD_REQUEST
       }
 
-      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2021-02-01")
-      ))) {
+      "the date submitted is missing a field" in new UserAnswersSetup(userAnswers(
+        answers = Json.obj(
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2020-01-01")
+        )
+      )) {
         val noDayJsonBody: Seq[(String, String)] = Seq(
           "date.day" -> "",
           "date.month" -> "02",
@@ -412,29 +264,6 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
 
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/when-did-the-technology-issues-end").withSession(
-        authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
-      )
-      val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01")
-    ))) {
-      val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/when-did-the-technology-issues-end").post(""))
-      request.status shouldBe Status.SEE_OTHER
-    }
+    runControllerPredicateTests(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode), "POST", "/when-did-the-technology-issues-end")
   }
 }
