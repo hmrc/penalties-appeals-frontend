@@ -17,15 +17,11 @@
 package controllers
 
 import controllers.testHelpers.AuthorisationTest
-import models.PenaltyTypeEnum
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
-import java.time.LocalDate
 
 class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: CancelVATRegistrationController = injector.instanceOf[CancelVATRegistrationController]

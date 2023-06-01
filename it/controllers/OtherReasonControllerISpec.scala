@@ -18,9 +18,9 @@ package controllers
 
 import config.featureSwitches.{FeatureSwitching, NonJSRouting, WarnForDuplicateFiles}
 import controllers.testHelpers.AuthorisationTest
+import models.NormalMode
 import models.session.UserAnswers
 import models.upload._
-import models.{NormalMode, PenaltyTypeEnum}
 import org.jsoup.Jsoup
 import org.mongodb.scala.Document
 import org.scalatest.concurrent.Eventually.eventually
@@ -409,7 +409,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with Authoris
     }
 
     "redirect to the first document upload page when there is no uploads left" in new Setup(userAnswers()) {
-      await(repository.updateStateOfFileUpload("1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1235", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
       val result = await(controller.removeFileUpload(NormalMode)(fakeRequest.withFormUrlEncodedBody("fileReference" -> "file1")))
       eventually {
         result.header.status shouldBe SEE_OTHER

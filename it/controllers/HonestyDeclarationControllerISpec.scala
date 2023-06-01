@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.testHelpers.AuthorisationTest
-import models.{NormalMode, PenaltyTypeEnum}
+import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -26,8 +26,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import stubs.AuthStub
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
-import java.time.LocalDate
 
 class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: HonestyDeclarationController = injector.instanceOf[HonestyDeclarationController]

@@ -17,13 +17,9 @@
 package controllers
 
 import controllers.testHelpers.AuthorisationTest
-import models.PenaltyTypeEnum
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import utils.{IntegrationSpecCommonBase, SessionKeys}
-
-import java.time.LocalDate
+import utils.IntegrationSpecCommonBase
 
   class AppealStartControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: AppealStartController = injector.instanceOf[AppealStartController]

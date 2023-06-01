@@ -17,15 +17,12 @@
 package controllers
 
 import controllers.testHelpers.AuthorisationTest
-import models.{NormalMode, PenaltyTypeEnum}
+import models.NormalMode
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
-import java.time.LocalDate
 
 class AgentsControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: AgentsController = injector.instanceOf[AgentsController]

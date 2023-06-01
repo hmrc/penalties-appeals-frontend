@@ -28,7 +28,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.{AuthStub, PenaltiesStub}
-import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.{LocalDate, LocalDateTime}
@@ -47,12 +46,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
   "GET /check-your-answers" should {
     "return 200 (OK) when the user is authorised and has the correct keys in session for crime" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -69,12 +62,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for loss of staff" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "lossOfStaff",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01"),
@@ -88,12 +75,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for technical issues" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "technicalIssues",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
@@ -110,12 +91,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "fireOrFlood",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01"),
@@ -126,12 +101,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for crime - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -146,12 +115,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "fireOrFlood",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.lateAppealReason -> "Lorem ipsum",
@@ -165,12 +128,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for loss of staff - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "lossOfStaff",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -185,12 +142,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for technical issues - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "technicalIssues",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.lateAppealReason -> "Lorem ipsum",
@@ -206,11 +157,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for other" when {
       "no file upload - no late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
         SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
@@ -228,11 +174,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "file upload - no late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
         SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
@@ -240,19 +181,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
         SessionKeys.isUploadEvidence -> "yes"
       ))) {
-        val callBackModel: UploadJourney = UploadJourney(
-          reference = "ref1",
-          fileStatus = UploadStatusEnum.READY,
-          downloadUrl = Some("download.file/url"),
-          uploadDetails = Some(UploadDetails(
-            fileName = "file1.txt",
-            fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-            checksum = "check1234",
-            size = 2
-          ))
-        )
-        await(repository.updateStateOfFileUpload("1234", callBackModel, isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
         val request: Future[Result] = controller.onPageLoad()(fakeRequest)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
@@ -263,11 +192,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "multiple file upload - no late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
         SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
@@ -275,22 +199,10 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
         SessionKeys.isUploadEvidence -> "yes"
       ))) {
-        val callBackModel: UploadJourney = UploadJourney(
-          reference = "ref1",
-          fileStatus = UploadStatusEnum.READY,
-          downloadUrl = Some("download.file/url"),
-          uploadDetails = Some(UploadDetails(
-            fileName = "file1.txt",
-            fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-            checksum = "check1234",
-            size = 2
-          ))
-        )
-        val callBackModel2: UploadJourney = UploadJourney(
+
+        val fileUploadModel2: UploadJourney = fileUploadModel.copy(
           reference = "ref2",
-          fileStatus = UploadStatusEnum.READY,
-          downloadUrl = Some("download.file/url"),
+          downloadUrl = Some("download.file/url2"),
           uploadDetails = Some(UploadDetails(
             fileName = "file2.txt",
             fileMimeType = "text/plain",
@@ -299,8 +211,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
             size = 2
           ))
         )
-        await(repository.updateStateOfFileUpload("1234", callBackModel, isInitiateCall = true))
-        await(repository.updateStateOfFileUpload("1234", callBackModel2, isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("1234", fileUploadModel2, isInitiateCall = true))
         //Used to get around a race condition
         eventually {
           await(repository.getUploadsForJourney(Some("1234")).map(_.get.find(_.reference == "ref1").get)).fileStatus shouldBe UploadStatusEnum.READY
@@ -316,11 +228,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "no file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
         SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
@@ -341,12 +248,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -354,19 +255,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.lateAppealReason -> "This is why the appeal is late.",
         SessionKeys.isUploadEvidence -> "yes"
       ))) {
-        val callBackModel: UploadJourney = UploadJourney(
-          reference = "ref1",
-          fileStatus = UploadStatusEnum.READY,
-          downloadUrl = Some("download.file/url"),
-          uploadDetails = Some(UploadDetails(
-            fileName = "file1.txt",
-            fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-            checksum = "check1234",
-            size = 2
-          ))
-        )
-        await(repository.updateStateOfFileUpload("1234", callBackModel, isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
         val request: Future[Result] = controller.onPageLoad()(fakeRequest)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
@@ -379,11 +268,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "user selected to not upload a file but already has uploaded files - do not show the 'Evidence to support this appeal' row" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
         SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
@@ -391,19 +275,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
         SessionKeys.isUploadEvidence -> "no"
       ))) {
-        val callBackModel: UploadJourney = UploadJourney(
-          reference = "ref1",
-          fileStatus = UploadStatusEnum.READY,
-          downloadUrl = Some("download.file/url"),
-          uploadDetails = Some(UploadDetails(
-            fileName = "file1.txt",
-            fileMimeType = "text/plain",
-            uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-            checksum = "check1234",
-            size = 2
-          ))
-        )
-        await(repository.updateStateOfFileUpload("1234", callBackModel, isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
         val request: Future[Result] = controller.onPageLoad()(fakeRequest)
         await(request).header.status shouldBe Status.OK
         val parsedBody: nodes.Document = Jsoup.parse(contentAsString(request))
@@ -414,11 +286,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for bereavement" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "bereavement",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -432,12 +299,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for bereavement - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "bereavement",
       SessionKeys.lateAppealReason -> "Lorem ipsum",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -451,11 +312,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.otherRelevantInformation -> "Lorem ipsum",
@@ -469,29 +325,12 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal - with file upload" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.otherRelevantInformation -> "Lorem ipsum",
       SessionKeys.isUploadEvidence -> "yes"
     ))) {
-      val callBackModel: UploadJourney = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file/url"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-          checksum = "check1234",
-          size = 2
-        ))
-      )
-      await(repository.updateStateOfFileUpload("1234", callBackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
       val request = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
@@ -504,29 +343,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal - selected no to file upload" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.otherRelevantInformation -> "Lorem ipsum",
       SessionKeys.isUploadEvidence -> "no"
     ))) {
-      val callBackModel: UploadJourney = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file/url"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-          checksum = "check1234",
-          size = 2
-        ))
-      )
-      await(repository.updateStateOfFileUpload("1234", callBackModel, isInitiateCall = true))
+
+      await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
       val request = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.OK
       val parsedBody = Jsoup.parse(contentAsString(request))
@@ -537,11 +360,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - agent" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "bereavement",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -555,11 +373,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - multiple penalties appeal available" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.firstPenaltyCommunicationDate -> LocalDate.now().plusDays(1),
       SessionKeys.secondPenaltyCommunicationDate -> LocalDate.now().plusDays(1),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
@@ -577,11 +390,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
 
     "return 303 (SEE_OTHER) when the user hasn't selected a reasonable excuse option" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
     ))) {
       val request = await(controller.onPageLoad()(fakeRequest))
@@ -590,11 +398,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "return 303 (SEE_OTHER) when the user has selected a reasonable excuse option but hasn't completed the journey" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -614,12 +417,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
   "POST /check-your-answers" should {
     "redirect the user to the confirmation page on success for crime" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
@@ -632,12 +429,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for fire or flood" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "fireOrFlood",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
@@ -649,12 +440,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for loss of staff" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "lossOfStaff",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
@@ -666,12 +451,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for technical issues" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "technicalIssues",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
@@ -685,12 +464,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for health" when {
       "there is no hospital stay" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "health",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.wasHospitalStayRequired -> "no",
@@ -703,12 +476,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "there is a ongoing hospital stay" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "health",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.wasHospitalStayRequired -> "yes",
@@ -722,12 +489,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "there has been a hospital stay that has ended" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "health",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.wasHospitalStayRequired -> "yes",
@@ -745,12 +506,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for other" when {
       "the user hasn't uploaded a file" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -764,12 +519,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "the user has uploaded a file" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -783,12 +532,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "no file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -797,34 +540,12 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
-        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/check-your-answers").withSession(
-          authToken -> "1234",
-          SessionKeys.penaltyNumber -> "1234",
-          SessionKeys.appealType -> "Late_Submission",
-          SessionKeys.startDateOfPeriod -> "2020-01-01",
-          SessionKeys.endDateOfPeriod -> "2020-01-01",
-          SessionKeys.dueDateOfPeriod -> "2020-02-07",
-          SessionKeys.dateCommunicationSent -> "2020-02-08",
-          SessionKeys.reasonableExcuse -> "other",
-          SessionKeys.hasConfirmedDeclaration -> "true",
-          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason",
-          SessionKeys.lateAppealReason -> "This is a reason for late appeal",
-          SessionKeys.journeyId -> "1234",
-          SessionKeys.isUploadEvidence -> "yes"
-        )
-        val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
+        val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
       }
 
       "file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -839,12 +560,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "for LPP" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -859,12 +575,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "for LPP - agent" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -881,13 +592,8 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
       }
 
-      "for LPP Additional - agent" in new UserAnswersSetup(userAnswers(Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
+      "for LPP2 - agent" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Additional,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
@@ -906,12 +612,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for bereavement" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "bereavement",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
@@ -923,12 +623,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page on success for obligation appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
@@ -941,24 +635,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the confirmation page (regardless of reason) and delete all uploads for that user" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
       SessionKeys.isUploadEvidence -> "yes"
     ))) {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
-      val uploadJourneyModel: UploadJourney = UploadJourney(
-        reference = "file1234", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("/upload"), uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt", fileMimeType = "text/plain", uploadTimestamp = LocalDateTime.now(), checksum = "check1", size = 1024
-        ))
-      )
-      await(repository.updateStateOfFileUpload("1234", uploadJourneyModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
       await(repository.collection.countDocuments().toFuture()) shouldBe 1
       val request = await(controller.onSubmit()(fakeRequest))
       await(repository.collection.countDocuments().toFuture()) shouldBe 0
@@ -967,12 +650,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect the user to the service unavailable page on unmatched fault" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
@@ -985,12 +662,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to service unavailable page when downstream returns SERVICE_UNAVAILABLE" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
@@ -1003,12 +674,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to duplicate appeal page when downstream returns CONFLICT" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
@@ -1021,12 +686,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when downstream returns UNPROCESSABLE_ENTITY" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
@@ -1039,12 +698,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when the appeal fails from a payload issue" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
@@ -1057,12 +710,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "show an ISE when the appeal fails" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
@@ -1075,12 +722,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when the appeal fails from an issue with the service" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
@@ -1101,12 +742,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
   "GET /appeal-confirmation" should {
     "redirect the user to the confirmation page on success" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.penaltyNumber -> "1234",
-      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,

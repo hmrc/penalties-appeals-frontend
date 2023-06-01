@@ -18,7 +18,7 @@ package controllers
 
 import config.featureSwitches.FeatureSwitching
 import controllers.testHelpers.AuthorisationTest
-import models.{CheckMode, NormalMode, PenaltyTypeEnum}
+import models.{CheckMode, NormalMode}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent

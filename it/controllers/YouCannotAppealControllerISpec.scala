@@ -17,12 +17,8 @@
 package controllers
 
 import controllers.testHelpers.AuthorisationTest
-import models.PenaltyTypeEnum
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import utils.{IntegrationSpecCommonBase, SessionKeys}
-
-import java.time.LocalDate
+import utils.IntegrationSpecCommonBase
 
 class YouCannotAppealControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
 
