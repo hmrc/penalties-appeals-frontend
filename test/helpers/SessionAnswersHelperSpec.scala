@@ -226,16 +226,42 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
   }
 
-  "getContentForReasonableExcuseCheckYourAnswersPage" should {
-    def fakeRequestWithKeys(answers: JsObject, lateReason: Boolean): UserRequest[AnyContent] =
+  def fakeRequestWithKeys(answers: JsObject, lateReason: Boolean, whoPlanned: Option[String] = None,
+                               whatCaused: Option[String] = None): UserRequest[AnyContent] = {
+    if (whoPlanned.isDefined) {
+      agentFakeRequestConverter(
+        answers
+          ++ Json.obj(SessionKeys.whoPlannedToSubmitVATReturn -> whoPlanned)
+          ++ {if (whatCaused.isDefined) Json.obj(SessionKeys.whatCausedYouToMissTheDeadline -> whatCaused.get) else Json.obj()}
+          ++ {if (lateReason) Json.obj(SessionKeys.lateAppealReason -> "Lorem ipsum") else Json.obj()}
+      )
+    } else {
       fakeRequestConverter(
         answers ++ {if (lateReason) Json.obj(SessionKeys.lateAppealReason -> "Lorem ipsum") else Json.obj()}
       )
+    }
+  }
 
-    def checkYourAnswers(reasonableExcuse: String, answers: JsObject, lateReason: Boolean = false, fileNames: Option[String] = None,
-                         isLPP: Boolean = false): Seq[CheckYourAnswersRow] =
-      sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse, fileNames, isLPP)(
-        fakeRequestWithKeys(answers, lateReason), implicitly)
+  def determineFunction(function: String, reasonableExcuse: String, answers: JsObject, whoPlanned: Option[String] = None,
+                        whatCaused: Option[String] = None, lateAppeal: Boolean = false,
+                        fileNames: Option[String] = None): Seq[CheckYourAnswersRow] = {
+    function match {
+      case "getContentForReasonableExcuseCheckYourAnswersPage" => {
+          sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            reasonableExcuse, fileNames)(fakeRequestWithKeys(answers, lateAppeal, whoPlanned, whatCaused), implicitly)
+        }
+      case "getHealthReasonAnswers" => {
+          sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithKeys(answers, lateAppeal, whoPlanned, whatCaused), implicitly)
+        }
+      }
+  }
+
+  "getContentForReasonableExcuseCheckYourAnswersPage" should {
+
+    def checkYourAnswers(reasonableExcuse: String, answers: JsObject, whoPlanned: Option[String] = None,
+                         whatCaused: Option[String] = None, lateAppeal: Boolean = false,
+                         fileNames: Option[String] = None): Seq[CheckYourAnswersRow] =
+      determineFunction("getContentForReasonableExcuseCheckYourAnswersPage", reasonableExcuse, answers, whoPlanned, whatCaused, lateAppeal, fileNames)
 
     "for crime" must {
       "return all the keys from the session ready to be passed to the view" in {
@@ -262,7 +288,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val result = checkYourAnswers("crime", crimeAnswers, lateReason = true)
+        val result = checkYourAnswers("crime", crimeAnswers, lateAppeal = true)
 
         result(3).key shouldBe "Reason for appealing after 30 days"
         result(3).value shouldBe "Lorem ipsum"
@@ -292,7 +318,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val result = checkYourAnswers("fireOrFlood", fireOrFloodAnswers, lateReason = true)
+        val result = checkYourAnswers("fireOrFlood", fireOrFloodAnswers, lateAppeal = true)
 
         result(2).key shouldBe "Reason for appealing after 30 days"
         result(2).value shouldBe "Lorem ipsum"
@@ -322,7 +348,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val result =checkYourAnswers("lossOfStaff", lossOfStaffAnswers, lateReason = true)
+        val result =checkYourAnswers("lossOfStaff", lossOfStaffAnswers, lateAppeal = true)
 
         result(2).key shouldBe "Reason for appealing after 30 days"
         result(2).value shouldBe "Lorem ipsum"
@@ -358,7 +384,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val result = checkYourAnswers("technicalIssues", techIssuesAnswers, lateReason = true)
+        val result = checkYourAnswers("technicalIssues", techIssuesAnswers, lateAppeal = true)
 
         result(3).key shouldBe "Reason for appealing after 30 days"
         result(3).value shouldBe "Lorem ipsum"
@@ -372,7 +398,7 @@ class SessionAnswersHelperSpec extends SpecBase {
     "for LPP on other journey" must {
       "display the correct wording for trader" in {
         val result = checkYourAnswers("other", otherAnswers ++
-          Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment, SessionKeys.isUploadEvidence -> "no"), lateReason = true)
+          Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment, SessionKeys.isUploadEvidence -> "no"), lateAppeal = true)
 
         result.head.key shouldBe "Reason for missing the VAT deadline"
         result.head.value shouldBe "The reason does not fit into any of the other categories"
@@ -408,25 +434,11 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "when an agent is on the page" should {
-      def fakeAgentRequestWithKeys(answers: JsObject, whoPlanned: String,
-                                   whatCaused: Option[String], lateReason: Boolean): UserRequest[AnyContent] =
-        agentFakeRequestConverter(
-          answers
-          ++ Json.obj(SessionKeys.whoPlannedToSubmitVATReturn -> whoPlanned)
-          ++ {if(whatCaused.isDefined) Json.obj(SessionKeys.whatCausedYouToMissTheDeadline -> whatCaused.get) else Json.obj()}
-          ++ {if (lateReason) Json.obj(SessionKeys.lateAppealReason -> "Lorem ipsum") else Json.obj()}
-        )
-
-      def checkYourAnswers(reasonableExcuse: String, whoPlanned: String, whatCaused:Option[String],
-                           answers: JsObject, lateReason: Boolean = false, fileNames: Option[String] = None,
-                           isLPP: Boolean = false): Seq[CheckYourAnswersRow] =
-        sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse, fileNames, isLPP)(
-          fakeAgentRequestWithKeys(answers, whoPlanned , whatCaused, lateReason), implicitly)
 
       "for health" must {
         "for no hospital stay" should {
-          "return all the keys from the session ready to be passed to the view" in {
-            val result = checkYourAnswers("health", "agent", Some("client"), noHospitalStayAnswers)
+          "when the agent intended to submit the VAT return but the client could not" in {
+            val result = checkYourAnswers("health",  noHospitalStayAnswers, Some("agent"), Some("client"))
 
             result.head.key shouldBe "Reason for missing the VAT deadline"
             result.head.value shouldBe "Health"
@@ -448,8 +460,29 @@ class SessionAnswersHelperSpec extends SpecBase {
             ).url
           }
 
+          "when the client intended to submit the VAT return" in {
+            val result = checkYourAnswers("health", noHospitalStayAnswers, Some("client"), None)
+
+            result(2).key shouldBe "When did the health issue first stop your client submitting the VAT Return?"
+            result(2).value shouldBe "2\u00A0January\u00A02022"
+            result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+              controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+              WhenDidHealthIssueHappenPage.toString
+            ).url
+          }
+          "when the agent intended to submit but missed the deadline" in {
+            val result = checkYourAnswers("health", noHospitalStayAnswers, Some("agent"), Some("agent"))
+
+            result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
+            result(2).value shouldBe "2\u00A0January\u00A02022"
+            result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+              controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+              WhenDidHealthIssueHappenPage.toString
+            ).url
+          }
+
           "return all keys and the 'Reason for appealing after 30 days' text" in {
-            val result = checkYourAnswers("health", "agent", Some("client"), noHospitalStayAnswers, lateReason = true)
+            val result = checkYourAnswers("health",  noHospitalStayAnswers, Some("agent"), Some("client"), lateAppeal = true)
 
             result(3).key shouldBe "Reason for appealing after 30 days"
             result(3).value shouldBe "Lorem ipsum"
@@ -458,13 +491,25 @@ class SessionAnswersHelperSpec extends SpecBase {
               MakingALateAppealPage.toString
             ).url
           }
+
+          "when it is an LPP show the correct message" in {
+            val result = checkYourAnswers("health",
+              noHospitalStayAnswers ++ Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment), Some("agent"), Some("client"))
+
+            result(2).key shouldBe "When did the health issue first stop your client paying the VAT bill?"
+            result(2).value shouldBe "2\u00A0January\u00A02022"
+            result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
+              controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
+              WhenDidHealthIssueHappenPage.toString
+            ).url
+          }
         }
       }
 
       "for other" must {
         "display the correct wording for agent" when {
           "the client planned to submit" in {
-            val result = checkYourAnswers("other", "client", None, otherAnswers)
+            val result = checkYourAnswers("other", otherAnswers, Some("client"), None)
             result(1).key shouldBe "When did the issue first stop your client submitting the VAT Return?"
             result(1).value shouldBe "2\u00A0January\u00A02022"
             controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -474,7 +519,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           }
 
           "the agent planned to submit and client missed deadline" in {
-            val result = checkYourAnswers("other", "agent", Some("client"), otherAnswers)
+            val result = checkYourAnswers("other", otherAnswers, Some("agent"), Some("client"))
             result(1).key shouldBe "When did the issue first stop your client getting information to you?"
             result(1).value shouldBe "2\u00A0January\u00A02022"
             controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -484,7 +529,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           }
 
           "the agent planned to submit and missed deadline" in {
-            val result = checkYourAnswers("other", "agent", Some("agent"), otherAnswers)
+            val result = checkYourAnswers("other",  otherAnswers, Some("agent"), Some("agent"))
             result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
             result(1).value shouldBe "2\u00A0January\u00A02022"
             controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -495,7 +540,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for no upload" in {
-          val result = checkYourAnswers("other", "agent", Some("client"), otherAnswers)
+          val result = checkYourAnswers("other", otherAnswers, Some("agent"), Some("client"))
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "The reason does not fit into any of the other categories"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -526,7 +571,8 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for no upload - and late appeal" in {
-          val result = checkYourAnswers("other", "agent", Some("client"), otherAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"), lateReason = true)
+          val result = checkYourAnswers("other",
+            otherAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"), Some("agent"), Some("client"), lateAppeal = true)
           result(4).key shouldBe "Reason for appealing after 30 days"
           result(4).value shouldBe "Lorem ipsum"
           result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -536,14 +582,14 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for upload" in {
-          val result = checkYourAnswers("other", "agent", Some("client"), otherAnswers, fileNames = Some("file.docx"))
+          val result = checkYourAnswers("other", otherAnswers,Some("agent"), Some("client"), fileNames = Some("file.docx"))
           result(4).key shouldBe "Evidence to support this appeal"
           result(4).value shouldBe "file.docx"
           result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
         }
 
         "for upload - and late appeal" in {
-          val result = checkYourAnswers("other", "agent", Some("client"), otherAnswers, fileNames = Some("file.docx"), lateReason = true)
+          val result = checkYourAnswers("other", otherAnswers,Some("agent"), Some("client"), fileNames = Some("file.docx"), lateAppeal = true)
           result(5).key shouldBe "Reason for appealing after 30 days"
           result(5).value shouldBe "Lorem ipsum"
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -554,11 +600,11 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "for LPP - appeal both penalties available - agent selects no" in {
-        val result = checkYourAnswers("other", "agent", Some("client"), otherAnswers ++
+        val result = checkYourAnswers("other", otherAnswers ++
           Json.obj(
             SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
             SessionKeys.doYouWantToAppealBothPenalties -> "no"),
-          fileNames = Some("file.docx"))
+          Some("agent"), Some("client"), fileNames = Some("file.docx"))
         result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
         result.head.value shouldBe "No"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -586,11 +632,11 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "for LPP - appeal both penalties available - agent selects yes" in {
-        val result = checkYourAnswers("other", "agent", Some("client"), otherAnswers ++
+        val result = checkYourAnswers("other", otherAnswers ++
           Json.obj(
             SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
             SessionKeys.doYouWantToAppealBothPenalties -> "yes"),
-          fileNames = Some("file.docx"))
+          Some("agent"), Some("client"), fileNames = Some("file.docx"))
         result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
         result.head.value shouldBe "Yes"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -600,10 +646,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "display no upload details row if the user has uploaded files but has changed their mind and selects 'no' - 'hide' the files uploaded" in {
-        val result = checkYourAnswers("other", "agent", Some("client"), otherAnswers ++
+        val result = checkYourAnswers("other", otherAnswers ++
           Json.obj(
             SessionKeys.isUploadEvidence -> "no"),
-          fileNames = Some("file.docx"), lateReason = true)
+          Some("agent"), Some("client"), fileNames = Some("file.docx"), lateAppeal = true)
         result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
         result(3).value shouldBe "No"
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -646,7 +692,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           }
 
           "return all keys and the 'Reason for appealing after 30 days' text" in {
-            val result = checkYourAnswers("health", noHospitalStayAnswers, lateReason = true)
+            val result = checkYourAnswers("health", noHospitalStayAnswers, lateAppeal = true)
             result(3).key shouldBe "Reason for appealing after 30 days"
             result(3).value shouldBe "Lorem ipsum"
             result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -690,7 +736,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for no upload - and late appeal" in {
-          val result = checkYourAnswers("other", otherAnswers, lateReason = true)
+          val result = checkYourAnswers("other", otherAnswers, lateAppeal = true)
           result(5).key shouldBe "Reason for appealing after 30 days"
           result(5).value shouldBe "Lorem ipsum"
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -700,16 +746,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for upload" in {
-          val fakeRequestWithNoLateAppealButUploadPresent = fakeRequestConverter(Json.obj(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-              SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> true,
-              SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
-              SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.isUploadEvidence -> "yes"
-            ))
-
-          val result = checkYourAnswers("other", otherAnswers, lateReason = true, fileNames = Some("file.docx"))
+          val result = checkYourAnswers("other", otherAnswers, fileNames = Some("file.docx"))
           result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
           result(3).value shouldBe "Yes"
           result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -722,47 +759,9 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "for upload - and late appeal" in {
-          val fakeRequestWithNoLateAppealButUploadPresent = fakeRequestConverter(Json.obj(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-              SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> true,
-              SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
-              SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
-              SessionKeys.isUploadEvidence -> "yes"
-            ))
-
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-            "other", Some("file.docx"))(fakeRequestWithNoLateAppealButUploadPresent, implicitly)
-          result.head.key shouldBe "Reason for missing the VAT deadline"
-          result.head.value shouldBe "The reason does not fit into any of the other categories"
-          result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.ReasonableExcuseController.onPageLoad().url,
-            ReasonableExcuseSelectionPage.toString
-          ).url
-          result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1\u00A0January\u00A02022"
-          result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-            WhenDidBecomeUnablePage.toString
-          ).url
-          result(2).key shouldBe "Why was the return submitted late?"
-          result(2).value shouldBe "This is why my VAT return was late."
-          result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-            WhyWasReturnSubmittedLatePage.toString
-          ).url
-          result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
-          result(3).value shouldBe "Yes"
-          result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-            UploadEvidenceQuestionPage.toString
-          ).url
-          result(4).key shouldBe "Evidence to support this appeal"
-          result(4).value shouldBe "file.docx"
-          result(4).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
+          val result = checkYourAnswers("other", otherAnswers, lateAppeal = true, fileNames = Some("file.docx"))
           result(5).key shouldBe "Reason for appealing after 30 days"
-          result(5).value shouldBe "This is the reason why my appeal was late."
+          result(5).value shouldBe "Lorem ipsum"
           result(5).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.MakingALateAppealController.onPageLoad().url,
             MakingALateAppealPage.toString
@@ -770,36 +769,8 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "when the user clicked no to upload don't show the upload evidence row" in {
-          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(Json.obj(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-              SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> true,
-              SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
-              SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
-              SessionKeys.isUploadEvidence -> "no"
-            ))
-
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-            "other")(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
-          result.head.key shouldBe "Reason for missing the VAT deadline"
-          result.head.value shouldBe "The reason does not fit into any of the other categories"
-          result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.ReasonableExcuseController.onPageLoad().url,
-            ReasonableExcuseSelectionPage.toString
-          ).url
-          result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1\u00A0January\u00A02022"
-          result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-            WhenDidBecomeUnablePage.toString
-          ).url
-          result(2).key shouldBe "Why was the return submitted late?"
-          result(2).value shouldBe "This is why my VAT return was late."
-          result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-            WhyWasReturnSubmittedLatePage.toString
-          ).url
+          val result = checkYourAnswers("other", otherAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"),
+            lateAppeal = true, fileNames = Some("file.docx"))
           result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
           result(3).value shouldBe "No"
           result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -807,7 +778,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             UploadEvidenceQuestionPage.toString
           ).url
           result(4).key shouldBe "Reason for appealing after 30 days"
-          result(4).value shouldBe "This is the reason why my appeal was late."
+          result(4).value shouldBe "Lorem ipsum"
           result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.MakingALateAppealController.onPageLoad().url,
             MakingALateAppealPage.toString
@@ -815,36 +786,8 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "when the user has changed their answer and does not want to upload files - but existing files have been uploaded - 'hide' the row" in {
-          val fakeRequestWithOtherLateAppealAndNoUploadKeysPresent = fakeRequestConverter(Json.obj(
-              SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-              SessionKeys.reasonableExcuse -> "other",
-              SessionKeys.hasConfirmedDeclaration -> true,
-              SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
-              SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-              SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
-              SessionKeys.isUploadEvidence -> "no"
-            ))
-
-          val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-            "other", Some("file.docx"))(fakeRequestWithOtherLateAppealAndNoUploadKeysPresent, implicitly)
-          result.head.key shouldBe "Reason for missing the VAT deadline"
-          result.head.value shouldBe "The reason does not fit into any of the other categories"
-          result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.ReasonableExcuseController.onPageLoad().url,
-            ReasonableExcuseSelectionPage.toString
-          ).url
-          result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-          result(1).value shouldBe "1\u00A0January\u00A02022"
-          result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-            WhenDidBecomeUnablePage.toString
-          ).url
-          result(2).key shouldBe "Why was the return submitted late?"
-          result(2).value shouldBe "This is why my VAT return was late."
-          result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-            WhyWasReturnSubmittedLatePage.toString
-          ).url
+          val result = checkYourAnswers("other", otherAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"),
+            lateAppeal = true, fileNames = Some("file.docx"))
           result(3).key shouldBe "Do you want to upload evidence to support your appeal?"
           result(3).value shouldBe "No"
           result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -852,7 +795,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             UploadEvidenceQuestionPage.toString
           ).url
           result(4).key shouldBe "Reason for appealing after 30 days"
-          result(4).value shouldBe "This is the reason why my appeal was late."
+          result(4).value shouldBe "Lorem ipsum"
           result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.MakingALateAppealController.onPageLoad().url,
             MakingALateAppealPage.toString
@@ -861,52 +804,15 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "not show the late appeal reason when the user initially selected to appeal both penalties but now does not want to (LPP2 selected, LPP1 is late)" in {
-        when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 1, 1))
-        when(mockAppConfig.daysRequiredForLateAppeal).thenReturn(30)
-        val fakeRequestWithOtherLateAppealPresentButNotAppealingBoth = fakeRequestConverter(Json.obj(
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-          SessionKeys.reasonableExcuse -> "other",
-          SessionKeys.doYouWantToAppealBothPenalties -> "no",
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-01-01"),
-          SessionKeys.firstPenaltyCommunicationDate -> LocalDate.parse("2019-11-01"),
-          SessionKeys.secondPenaltyCommunicationDate -> LocalDate.parse("2020-01-01"),
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.whyReturnSubmittedLate -> "This is why my VAT return was late.",
-          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.lateAppealReason -> "This is the reason why my appeal was late.",
-          SessionKeys.isUploadEvidence -> "no"
-        ))
-        val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-          "other", None)(fakeRequestWithOtherLateAppealPresentButNotAppealingBoth, implicitly)
+        val result = checkYourAnswers("other", otherAnswers ++ Json.obj(
+            SessionKeys.doYouWantToAppealBothPenalties -> "no",
+            SessionKeys.isUploadEvidence -> "no"),
+          lateAppeal = true)
         result.head.key shouldBe "Do you intend to appeal both penalties for the same reason?"
         result.head.value shouldBe "No"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode).url,
           PenaltySelectionPage.toString
-        ).url
-        result(1).key shouldBe "Reason for missing the VAT deadline"
-        result(1).value shouldBe "The reason does not fit into any of the other categories"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
-        result(2).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-        result(2).value shouldBe "1\u00A0January\u00A02022"
-        result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
-          WhenDidBecomeUnablePage.toString
-        ).url
-        result(3).key shouldBe "Why was the return submitted late?"
-        result(3).value shouldBe "This is why my VAT return was late."
-        result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(CheckMode).url,
-          WhyWasReturnSubmittedLatePage.toString
-        ).url
-        result(4).key shouldBe "Do you want to upload evidence to support your appeal?"
-        result(4).value shouldBe "No"
-        result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-          UploadEvidenceQuestionPage.toString
         ).url
         result.size shouldBe 5
       }
@@ -914,19 +820,15 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "getHealthReasonAnswers" must {
+    def checkYourAnswers(answers: JsObject, whoPlanned: Option[String] = None,
+                         whatCaused: Option[String] = None, lateAppeal: Boolean = false) =
+      determineFunction("getHealthReasonAnswers", "health", answers, whoPlanned, whatCaused, lateAppeal)
+
     "when an agent is on the page" should {
       "when there is no hospital stay" should {
         "return rows of answers" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> true,
-              SessionKeys.wasHospitalStayRequired -> "no",
-              SessionKeys.whenHealthIssueHappened -> "2022-01-01",
-              SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.whatCausedYouToMissTheDeadline -> "client"
-            ))
+          val result = checkYourAnswers(noHospitalStayAnswers, Some("agent"), Some("client"))
 
-          val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "Health"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -940,7 +842,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             WasHospitalStayRequiredPage.toString
           ).url
           result(2).key shouldBe "When did the health issue first stop your client getting information to you?"
-          result(2).value shouldBe "1\u00A0January\u00A02022"
+          result(2).value shouldBe "2\u00A0January\u00A02022"
           result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
             WhenDidHealthIssueHappenPage.toString
@@ -948,29 +850,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "when the client intended to submit the VAT return" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> true,
-              SessionKeys.wasHospitalStayRequired -> "no",
-              SessionKeys.whenHealthIssueHappened -> "2022-01-01",
-              SessionKeys.whoPlannedToSubmitVATReturn -> "client"
-            ))
+          val result = checkYourAnswers(noHospitalStayAnswers, Some("client"))
 
-          val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
-          result.head.key shouldBe "Reason for missing the VAT deadline"
-          result.head.value shouldBe "Health"
-          result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.ReasonableExcuseController.onPageLoad().url,
-            ReasonableExcuseSelectionPage.toString
-          ).url
-          result(1).key shouldBe "Did this health issue include a hospital stay?"
-          result(1).value shouldBe "No"
-          result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-            WasHospitalStayRequiredPage.toString
-          ).url
           result(2).key shouldBe "When did the health issue first stop your client submitting the VAT Return?"
-          result(2).value shouldBe "1\u00A0January\u00A02022"
+          result(2).value shouldBe "2\u00A0January\u00A02022"
           result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
             WhenDidHealthIssueHappenPage.toString
@@ -978,30 +861,10 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "when the agent intended to submit but missed the deadline" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> true,
-              SessionKeys.wasHospitalStayRequired -> "no",
-              SessionKeys.whenHealthIssueHappened -> "2022-01-01",
-              SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-              SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
-            ))
+          val result = checkYourAnswers(noHospitalStayAnswers, Some("agent"), Some("agent"))
 
-          val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
-          result.head.key shouldBe "Reason for missing the VAT deadline"
-          result.head.value shouldBe "Health"
-          result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.ReasonableExcuseController.onPageLoad().url,
-            ReasonableExcuseSelectionPage.toString
-          ).url
-          result(1).key shouldBe "Did this health issue include a hospital stay?"
-          result(1).value shouldBe "No"
-          result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-            WasHospitalStayRequiredPage.toString
-          ).url
           result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
-          result(2).value shouldBe "1\u00A0January\u00A02022"
+          result(2).value shouldBe "2\u00A0January\u00A02022"
           result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
             WhenDidHealthIssueHappenPage.toString
@@ -1010,29 +873,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "when it is an LPP show the correct message" in {
-        val fakeRequestWithAllNonHospitalStayKeysPresent = agentFakeRequestConverter(Json.obj(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-            SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> true,
-            SessionKeys.wasHospitalStayRequired -> "no",
-            SessionKeys.whenHealthIssueHappened -> "2022-01-01"
-          ))
+        val result = checkYourAnswers(noHospitalStayAnswers ++ Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment), Some("client"))
 
-        val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
-        result.head.key shouldBe "Reason for missing the VAT deadline"
-        result.head.value shouldBe "Health"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
-        result(1).key shouldBe "Did this health issue include a hospital stay?"
-        result(1).value shouldBe "No"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-          WasHospitalStayRequiredPage.toString
-        ).url
         result(2).key shouldBe "When did the health issue first stop your client paying the VAT bill?"
-        result(2).value shouldBe "1\u00A0January\u00A02022"
+        result(2).value shouldBe "2\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
           WhenDidHealthIssueHappenPage.toString
