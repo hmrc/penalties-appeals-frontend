@@ -242,18 +242,23 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
   }
 
-  def determineFunction(function: String, reasonableExcuse: String, answers: JsObject, whoPlanned: Option[String] = None,
-                        whatCaused: Option[String] = None, lateAppeal: Boolean = false,
-                        fileNames: Option[String] = None): Seq[CheckYourAnswersRow] = {
+  def determineFunction(function: String, reasonableExcuse: Option[String], answers: JsObject,
+                        whoPlanned: Option[String] = None, whatCaused: Option[String] = None,
+                        lateAppeal: Boolean = false, fileNames: Option[String] = None): Seq[CheckYourAnswersRow] = {
+    val fakeRequest = fakeRequestWithKeys(answers, lateAppeal, whoPlanned, whatCaused)
     function match {
-      case "getContentForReasonableExcuseCheckYourAnswersPage" => {
-          sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-            reasonableExcuse, fileNames)(fakeRequestWithKeys(answers, lateAppeal, whoPlanned, whatCaused), implicitly)
-        }
-      case "getHealthReasonAnswers" => {
-          sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithKeys(answers, lateAppeal, whoPlanned, whatCaused), implicitly)
-        }
-      }
+      case "generic" =>
+        sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
+            reasonableExcuse.get, fileNames)(fakeRequest, implicitly)
+      case "health" =>
+        sessionAnswersHelper.getHealthReasonAnswers()(fakeRequest, implicitly)
+      case "agent" =>
+        sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequest, implicitly)
+      case "all" =>
+        sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(fileNames)(fakeRequest, implicitly)
+      case "obligation" =>
+        sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(fileNames)(fakeRequest, implicitly)
+    }
   }
 
   "getContentForReasonableExcuseCheckYourAnswersPage" should {
@@ -261,7 +266,7 @@ class SessionAnswersHelperSpec extends SpecBase {
     def checkYourAnswers(reasonableExcuse: String, answers: JsObject, whoPlanned: Option[String] = None,
                          whatCaused: Option[String] = None, lateAppeal: Boolean = false,
                          fileNames: Option[String] = None): Seq[CheckYourAnswersRow] =
-      determineFunction("getContentForReasonableExcuseCheckYourAnswersPage", reasonableExcuse, answers, whoPlanned, whatCaused, lateAppeal, fileNames)
+      determineFunction("generic", Some(reasonableExcuse), answers, whoPlanned, whatCaused, lateAppeal, fileNames)
 
     "for crime" must {
       "return all the keys from the session ready to be passed to the view" in {
@@ -822,7 +827,7 @@ class SessionAnswersHelperSpec extends SpecBase {
   "getHealthReasonAnswers" must {
     def checkYourAnswers(answers: JsObject, whoPlanned: Option[String] = None,
                          whatCaused: Option[String] = None, lateAppeal: Boolean = false) =
-      determineFunction("getHealthReasonAnswers", "health", answers, whoPlanned, whatCaused, lateAppeal)
+      determineFunction("health", None, answers, whoPlanned, whatCaused, lateAppeal)
 
     "when an agent is on the page" should {
       "when there is no hospital stay" should {
@@ -887,14 +892,8 @@ class SessionAnswersHelperSpec extends SpecBase {
     "when a VAT trader is on the page" should {
       "when there is no hospital stay" should {
         "return rows of answers" in {
-          val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
-              SessionKeys.reasonableExcuse -> "health",
-              SessionKeys.hasConfirmedDeclaration -> true,
-              SessionKeys.wasHospitalStayRequired -> "no",
-              SessionKeys.whenHealthIssueHappened -> "2022-01-01"
-            ))
+          val result = checkYourAnswers(noHospitalStayAnswers)
 
-          val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
           result.head.key shouldBe "Reason for missing the VAT deadline"
           result.head.value shouldBe "Health"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -908,7 +907,7 @@ class SessionAnswersHelperSpec extends SpecBase {
             WasHospitalStayRequiredPage.toString
           ).url
           result(2).key shouldBe "When did the health issue first stop you submitting the VAT Return?"
-          result(2).value shouldBe "1\u00A0January\u00A02022"
+          result(2).value shouldBe "2\u00A0January\u00A02022"
           result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
             controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
             WhenDidHealthIssueHappenPage.toString
@@ -917,29 +916,10 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "when it is an LPP show the correct message" in {
-        val fakeRequestWithAllNonHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-            SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> true,
-            SessionKeys.wasHospitalStayRequired -> "no",
-            SessionKeys.whenHealthIssueHappened -> "2022-01-01"
-          ))
+        val result = checkYourAnswers(noHospitalStayAnswers ++ Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment))
 
-        val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllNonHospitalStayKeysPresent, implicitly)
-        result.head.key shouldBe "Reason for missing the VAT deadline"
-        result.head.value shouldBe "Health"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
-        result(1).key shouldBe "Did this health issue include a hospital stay?"
-        result(1).value shouldBe "No"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-          WasHospitalStayRequiredPage.toString
-        ).url
         result(2).key shouldBe "When did the health issue first stop you paying the VAT bill?"
-        result(2).value shouldBe "1\u00A0January\u00A02022"
+        result(2).value shouldBe "2\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(CheckMode).url,
           WhenDidHealthIssueHappenPage.toString
@@ -949,21 +929,8 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when there is hospital stay ended" should {
       "return rows of question-answers" in {
-        val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
-          SessionKeys.reasonableExcuse -> "health",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.wasHospitalStayRequired -> "yes",
-          SessionKeys.whenHealthIssueStarted -> "2022-01-01",
-          SessionKeys.hasHealthEventEnded -> "yes",
-          SessionKeys.whenHealthIssueEnded -> "2022-02-02"
-        ))
-        val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
-        result.head.key shouldBe "Reason for missing the VAT deadline"
-        result.head.value shouldBe "Health"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
+        val result = checkYourAnswers(hospitalEndedAnswers)
+
         result(1).key shouldBe "Did this health issue include a hospital stay?"
         result(1).value shouldBe "Yes"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -971,7 +938,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           WasHospitalStayRequiredPage.toString
         ).url
         result(2).key shouldBe "When did the hospital stay begin?"
-        result(2).value shouldBe "1\u00A0January\u00A02022"
+        result(2).value shouldBe "2\u00A0January\u00A02022"
         result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
           WhenDidHospitalStayBeginPage.toString
@@ -983,7 +950,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           DidHospitalStayEndPage.toString
         ).url
         result(4).key shouldBe "When did it end?"
-        result(4).value shouldBe "2\u00A0February\u00A02022"
+        result(4).value shouldBe "3\u00A0January\u00A02022"
         result(4).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(CheckMode).url,
           WhenDidHospitalStayEndPage.toString
@@ -993,33 +960,8 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when there is hospital stay not ended" should {
       "return rows of question-answers" in {
-        val fakeRequestWithAllHospitalStayKeysPresent = fakeRequestConverter(Json.obj(
-            SessionKeys.reasonableExcuse -> "health",
-            SessionKeys.hasConfirmedDeclaration -> true,
-            SessionKeys.wasHospitalStayRequired -> "yes",
-            SessionKeys.whenHealthIssueStarted -> "2022-01-01",
-            SessionKeys.hasHealthEventEnded -> "no"
-          ))
+        val result = checkYourAnswers(hospitalOngoingAnswers)
 
-        val result = sessionAnswersHelper.getHealthReasonAnswers()(fakeRequestWithAllHospitalStayKeysPresent, implicitly)
-        result.head.key shouldBe "Reason for missing the VAT deadline"
-        result.head.value shouldBe "Health"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.ReasonableExcuseController.onPageLoad().url,
-          ReasonableExcuseSelectionPage.toString
-        ).url
-        result(1).key shouldBe "Did this health issue include a hospital stay?"
-        result(1).value shouldBe "Yes"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(CheckMode).url,
-          WasHospitalStayRequiredPage.toString
-        ).url
-        result(2).key shouldBe "When did the hospital stay begin?"
-        result(2).value shouldBe "1\u00A0January\u00A02022"
-        result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(CheckMode).url,
-          WhenDidHospitalStayBeginPage.toString
-        ).url
         result(3).key shouldBe "Has the hospital stay ended?"
         result(3).value shouldBe "No"
         result(3).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1044,15 +986,12 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "for bereavement (someone died)" must {
+    def checkYourAnswers(answers: JsObject): Seq[CheckYourAnswersRow] =
+      determineFunction("generic", Some("bereavement"), answers)
+
     "return all the keys from the session ready to be passed to the view" in {
-      val userAnswers = UserAnswers("1234", Json.obj(
-        SessionKeys.reasonableExcuse -> "bereavement",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
-      ))
-      val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
-      val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-        "bereavement")(userRequest, implicitly)
+      val result = checkYourAnswers(bereavementAnswers)
+
       result.head.key shouldBe "Reason for missing the VAT deadline"
       result.head.value shouldBe "Bereavement (someone died)"
       result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1060,7 +999,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         ReasonableExcuseSelectionPage.toString
       ).url
       result(1).key shouldBe "When did the person die?"
-      result(1).value shouldBe "1\u00A0January\u00A02022"
+      result(1).value shouldBe "1\u00A0January\u00A02021"
       result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
         controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
         WhenDidThePersonDiePage.toString
@@ -1068,27 +1007,10 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "return all keys and the 'Reason for appealing after 30 days' text" in {
-      val userAnswers = UserAnswers("1234", Json.obj(
-        SessionKeys.reasonableExcuse -> "bereavement",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01"),
-        SessionKeys.lateAppealReason -> "Lorem ipsum"
-      ))
-      val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
-      val result = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-        "bereavement")(userRequest, implicitly)
-      result.head.key shouldBe "Reason for missing the VAT deadline"
-      result.head.value shouldBe "Bereavement (someone died)"
-      result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-        controllers.routes.ReasonableExcuseController.onPageLoad().url,
-        ReasonableExcuseSelectionPage.toString
-      ).url
-      result(1).key shouldBe "When did the person die?"
-      result(1).value shouldBe "1\u00A0January\u00A02022"
-      result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-        controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
-        WhenDidThePersonDiePage.toString
-      ).url
+      val result = checkYourAnswers(bereavementAnswers ++
+        Json.obj(SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01"),
+        SessionKeys.lateAppealReason -> "Lorem ipsum"))
+
       result(2).key shouldBe "Reason for appealing after 30 days"
       result(2).value shouldBe "Lorem ipsum"
       result(2).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1099,13 +1021,13 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "getContentForAgentsCheckYourAnswersPage" should {
+    def checkYourAnswers(answers: JsObject, whoPlanned: String, whatCaused: Option[String] = None) =
+      determineFunction("agent", Some("other"), answers, Some(whoPlanned), whatCaused)
+
     "when the client planned to submit VAT return (so no cause Of LateSubmission chosen)" should {
       "return rows of answers" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.whoPlannedToSubmitVATReturn -> "client"
-        ))
-        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
-        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(userRequest, implicitly)
+        val result = checkYourAnswers(otherAnswers, "client")
+
         result.head.key shouldBe "Before the deadline, who planned to submit the return?"
         result.head.value shouldBe "My client did"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1117,12 +1039,8 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when the agent planned to submit VAT return with cause Of LateSubmission being agent" should {
       "return rows of answers" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-          SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
-        ))
-        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
-        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(userRequest, implicitly)
+        val result = checkYourAnswers(otherAnswers, "agent", Some("agent"))
+
         result.head.key shouldBe "Before the deadline, who planned to submit the return?"
         result.head.value shouldBe "I did"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1141,18 +1059,8 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when the agent planned to submit VAT return with cause Of LateSubmission being client" should {
       "return rows of answers" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-          SessionKeys.whatCausedYouToMissTheDeadline -> "client"
-        ))
-        val userRequest = UserRequest("123456789", answers = userAnswers)(FakeRequest())
-        val result = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(userRequest, implicitly)
-        result.head.key shouldBe "Before the deadline, who planned to submit the return?"
-        result.head.value shouldBe "I did"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode).url,
-          WhoPlannedToSubmitVATReturnAgentPage.toString
-        ).url
+        val result = checkYourAnswers(otherAnswers, "agent", Some("client"))
+
         result(1).key shouldBe "What caused you to miss the deadline?"
         result(1).value shouldBe "My client did not get information to me on time"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1164,55 +1072,36 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "getAllTheContentForCheckYourAnswersPage" should {
+    def checkYourAnswers(answers: JsObject, excuse: String, whoPlanned: Option[String], whatCaused: Option[String] = None,
+                         fileNames: Option[String] = None, function: String): Seq[CheckYourAnswersRow] = {
+      determineFunction(function, Some(excuse), answers, whoPlanned, whatCaused, fileNames =  fileNames)
+    }
+
     "when agent session is present" should {
       "return getAllTheContentForCheckYourAnswersPage as list of getContentForAgentsCheckYourAnswersPage and  " +
         "getContentForReasonableExcuseCheckYourAnswersPage" in {
-        val fakeRequest = agentFakeRequestConverter(Json.obj(
-            SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.hasConfirmedDeclaration -> true,
-            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
-            SessionKeys.agentSessionVrn -> "123456789",
-            SessionKeys.whoPlannedToSubmitVATReturn -> "client"
-          ))
-
-        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
-        val resultAgent = sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequest, implicitly)
-        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
+        val resultReasonableExcuses = checkYourAnswers(techIssuesAnswers, "technicalIssues", Some("client"), None, function = "generic")
+        val resultAgent = checkYourAnswers(techIssuesAnswers, "technicalIssues", Some("client"), None,function = "agent")
+        val resultAllContent = checkYourAnswers(techIssuesAnswers, "technicalIssues", Some("client"), None,function = "all")
 
         resultAgent ++ resultReasonableExcuses shouldBe resultAllContent
       }
 
       "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage when it is a LPP appeal" in {
-        val fakeRequest = agentFakeRequestConverter(Json.obj(
-            SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
-            SessionKeys.hasConfirmedDeclaration -> true,
-            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
-            SessionKeys.agentSessionVrn -> "123456789"
-          ))
+        val answer = techIssuesAnswers ++ Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment)
 
-        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-          "technicalIssues")(fakeRequest, implicitly)
-        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
+        val resultReasonableExcuses = checkYourAnswers(answer, "technicalIssues", Some("client"), None, function = "generic")
+        val resultAllContent = checkYourAnswers(answer, "technicalIssues", Some("client"), None, function = "all")
 
         resultReasonableExcuses shouldBe resultAllContent
       }
 
       "return getAllTheContentForCheckYourAnswersPage as list of ONLY getContentForReasonableExcuseCheckYourAnswersPage" +
         " when it is a LPP appeal (Additional)" in {
-        val fakeRequest = agentFakeRequestConverter(Json.obj(
-            SessionKeys.reasonableExcuse -> "technicalIssues",
-            SessionKeys.appealType -> PenaltyTypeEnum.Additional,
-            SessionKeys.hasConfirmedDeclaration -> true,
-            SessionKeys.whenDidTechnologyIssuesBegin -> "2022-01-01",
-            SessionKeys.whenDidTechnologyIssuesEnd -> "2022-01-02",
-            SessionKeys.agentSessionVrn -> "123456789"
-          ))
+        val answer = techIssuesAnswers ++ Json.obj(SessionKeys.appealType -> PenaltyTypeEnum.Additional)
 
-        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage("technicalIssues")(fakeRequest, implicitly)
-        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(fakeRequest, implicitly)
+        val resultReasonableExcuses = checkYourAnswers(answer, "technicalIssues", Some("client"), None, function = "generic")
+        val resultAllContent = checkYourAnswers(answer, "technicalIssues", Some("client"), None, function = "all")
 
         resultReasonableExcuses shouldBe resultAllContent
       }
@@ -1220,13 +1109,8 @@ class SessionAnswersHelperSpec extends SpecBase {
     "agent session is not present" when {
       "the appeal is against the obligation" must {
         "show the obligation variation of the page" in {
-          val userAnswers = UserAnswers("1234", Json.obj(
-            SessionKeys.isObligationAppeal -> true,
-            SessionKeys.otherRelevantInformation -> "This is some relevant information",
-            SessionKeys.isUploadEvidence -> "yes"
-          ))
-          val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
-          val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(userRequest, implicitly)
+          val result = checkYourAnswers(obligationAnswers, "other", None, None, function = "all", fileNames = Some("file.txt"))
+
           result.head.key shouldBe "Tell us why you want to appeal the penalty"
           result.head.value shouldBe "This is some relevant information"
           result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1245,19 +1129,9 @@ class SessionAnswersHelperSpec extends SpecBase {
         }
 
         "show the obligation variation of the page - 'hide' the files uploaded if user selected no to uploading files" in {
-          val userAnswers = UserAnswers("1234", Json.obj(
-            SessionKeys.isObligationAppeal -> true,
-            SessionKeys.otherRelevantInformation -> "This is some relevant information",
-            SessionKeys.isUploadEvidence -> "no"
-          ))
-          val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
-          val result = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(Some("file.txt"))(userRequest, implicitly)
-          result.head.key shouldBe "Tell us why you want to appeal the penalty"
-          result.head.value shouldBe "This is some relevant information"
-          result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-            OtherRelevantInformationPage.toString
-          ).url
+          val result = checkYourAnswers(obligationAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"),
+            "other", None, None, function = "all", fileNames = Some("file.txt"))
+
           result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
           result(1).value shouldBe "No"
           result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1269,17 +1143,8 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return getAllTheContentForCheckYourAnswersPage as list of getContentForReasonableExcuseCheckYourAnswersPage only" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "technicalIssues",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
-          SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
-        ))
-        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
-        val resultReasonableExcuses = sessionAnswersHelper.getContentForReasonableExcuseCheckYourAnswersPage(
-          "technicalIssues")(userRequest, implicitly)
-        val resultAllContent = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(
-          userRequest, implicitly)
+        val resultReasonableExcuses = checkYourAnswers(techIssuesAnswers, "technicalIssues", None, None, function = "generic")
+        val resultAllContent = checkYourAnswers(techIssuesAnswers, "technicalIssues", None, None, function = "all")
 
         resultReasonableExcuses shouldBe resultAllContent
 
@@ -1288,16 +1153,14 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "getContentForObligationAppealCheckYourAnswersPage" should {
+    def checkYourAnswers(answers: JsObject, fileName: Option[String]): Seq[CheckYourAnswersRow] =
+      determineFunction("obligation", reasonableExcuse = None, answers, fileNames = fileName)
     "when no evidence file uploaded" should {
       "return rows of answers" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.otherRelevantInformation -> "Some Information",
-          SessionKeys.isUploadEvidence -> "yes"
-        ))
-        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
-        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(userRequest, implicitly)
+        val result = checkYourAnswers(obligationAnswers, None)
+
         result.head.key shouldBe "Tell us why you want to appeal the penalty"
-        result.head.value shouldBe "Some Information"
+        result.head.value shouldBe "This is some relevant information"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
           OtherRelevantInformationPage.toString
@@ -1314,18 +1177,8 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return rows of answers - without uploaded files row" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.otherRelevantInformation -> "Some Information",
-          SessionKeys.isUploadEvidence -> "no"
-        ))
-        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
-        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage()(userRequest, implicitly)
-        result.head.key shouldBe "Tell us why you want to appeal the penalty"
-        result.head.value shouldBe "Some Information"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-          OtherRelevantInformationPage.toString
-        ).url
+        val result = checkYourAnswers(obligationAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"), None)
+
         result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
         result(1).value shouldBe "No"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1338,44 +1191,16 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when evidence file is uploaded" should {
       "return rows of answers" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.otherRelevantInformation -> "Some Information",
-          SessionKeys.isUploadEvidence -> "yes"
-        ))
-        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
-        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(
-          Some("some-file-name.txt"))(userRequest, implicitly)
-        result.head.key shouldBe "Tell us why you want to appeal the penalty"
-        result.head.value shouldBe "Some Information"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-          OtherRelevantInformationPage.toString
-        ).url
-        result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
-        result(1).value shouldBe "Yes"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-          UploadEvidenceQuestionPage.toString
-        ).url
+        val result = checkYourAnswers(obligationAnswers, Some("some-file-name.txt"))
+
         result(2).key shouldBe "Evidence to support this appeal"
         result(2).value shouldBe "some-file-name.txt"
         result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
       }
 
       "the user has selected no to uploaded files - 'hide' the row" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.otherRelevantInformation -> "Some Information",
-          SessionKeys.isUploadEvidence -> "no"
-        ))
-        val userRequest = UserRequest(vrn, answers = userAnswers)(FakeRequest())
-        val result = sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(
-          Some("some-file-name.txt"))(userRequest, implicitly)
-        result.head.key shouldBe "Tell us why you want to appeal the penalty"
-        result.head.value shouldBe "Some Information"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-          OtherRelevantInformationPage.toString
-        ).url
+        val result = checkYourAnswers(obligationAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"), Some("some-file-name.txt"))
+
         result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
         result(1).value shouldBe "No"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1413,17 +1238,15 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "getContentWithExistingUploadFileNames" should {
+    def fileNameHelper(answers: JsObject, reasonableExcuse: String): Future[Seq[CheckYourAnswersRow]] = {
+      val fakeRequest = fakeRequestWithKeys(answers, lateReason = false, None, None)
+      sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)(fakeRequest, implicitly)
+    }
+
     "when reason is 'other' (that requires a file upload call)" should {
       "return the rows for CYA page" in {
-        val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(correctUserAnswers ++ Json.obj(
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-          SessionKeys.reasonableExcuse -> "other",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-          SessionKeys.whenDidBecomeUnable -> "2022-01-01",
-          SessionKeys.isUploadEvidence -> "yes"
-        ), fakeRequest)
-        val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForOtherJourney, messages))
+        val result = await(fileNameHelper(otherAnswers, "other"))
+
         result.head.key shouldBe "Reason for missing the VAT deadline"
         result.head.value shouldBe "The reason does not fit into any of the other categories"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1431,7 +1254,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
-        result(1).value shouldBe "1\u00A0January\u00A02022"
+        result(1).value shouldBe "2\u00A0January\u00A02022"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(CheckMode).url,
           WhenDidBecomeUnablePage.toString
@@ -1456,12 +1279,8 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when there's an Obligation Appeal Journey (that requires a file upload call) " should {
       "return the rows for CYA page " in {
-        val fakeRequestForAppealingTheObligation: UserRequest[AnyContent] = fakeRequestConverter(correctUserAnswers ++ Json.obj(
-          SessionKeys.isObligationAppeal -> true,
-          SessionKeys.otherRelevantInformation -> "This is some relevant information",
-          SessionKeys.isUploadEvidence -> "yes"
-        ), fakeRequest)
-        val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
+        val result = await(fileNameHelper(obligationAnswers, "other"))
+
         result.head.key shouldBe "Tell us why you want to appeal the penalty"
         result.head.value shouldBe "This is some relevant information"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1481,13 +1300,8 @@ class SessionAnswersHelperSpec extends SpecBase {
     }
 
     "when the user has files uploaded - but changed their mind - 'hide' the files uploaded" in {
-      val fakeRequestForAppealingTheObligation: UserRequest[AnyContent] = fakeRequestConverter(correctUserAnswers ++ Json.obj(
-        SessionKeys.journeyId -> "4321",
-        SessionKeys.isObligationAppeal -> true,
-        SessionKeys.otherRelevantInformation -> "This is some relevant information",
-        SessionKeys.isUploadEvidence -> "no"
-      ))
-      val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("other")(fakeRequestForAppealingTheObligation, messages))
+      val result = await(fileNameHelper(obligationAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"), "other"))
+
       result.head.key shouldBe "Tell us why you want to appeal the penalty"
       result.head.value shouldBe "This is some relevant information"
       result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1505,14 +1319,9 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     "when reason is 'bereavement' (that doesn't require a file upload call)" should {
       "return the rows for CYA page " in {
-        val fakeRequestWithBereavementKeysPresent = fakeRequestConverter(Json.obj(
-            SessionKeys.reasonableExcuse -> "bereavement",
-            SessionKeys.hasConfirmedDeclaration -> true,
-            SessionKeys.whenDidThePersonDie -> "2022-01-01",
-            SessionKeys.lateAppealReason -> "Lorem ipsum",
-            SessionKeys.isUploadEvidence -> "yes"
-          ))
-        val result = await(sessionAnswersHelper.getContentWithExistingUploadFileNames("bereavement")(fakeRequestWithBereavementKeysPresent, messages))
+        val result = await(fileNameHelper(bereavementAnswers ++
+          Json.obj(SessionKeys.isUploadEvidence -> "yes", SessionKeys.lateAppealReason -> "Lorem ipsum"), "other"))
+
         result.head.key shouldBe "Reason for missing the VAT deadline"
         result.head.value shouldBe "Bereavement (someone died)"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1520,7 +1329,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           ReasonableExcuseSelectionPage.toString
         ).url
         result(1).key shouldBe "When did the person die?"
-        result(1).value shouldBe "1\u00A0January\u00A02022"
+        result(1).value shouldBe "1\u00A0January\u00A02021"
         result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(CheckMode).url,
           WhenDidThePersonDiePage.toString
@@ -1531,6 +1340,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           controllers.routes.MakingALateAppealController.onPageLoad().url,
           MakingALateAppealPage.toString
         ).url
+        result.size shouldBe 3
       }
     }
   }
