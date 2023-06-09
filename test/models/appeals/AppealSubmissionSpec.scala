@@ -544,6 +544,20 @@ class AppealSubmissionSpec extends SpecBase {
           isClientResponsibleForLateSubmission = None
         )
       }
+
+      "set isClientResponsibleForSubmission and isClientResponsibleForLateSubmission value to true when an agent appeals an LPP" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "bereavement",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01"),
+        ) ++ correctLPPUserAnswers)
+        val fakeRequestForBereavementJourney = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers)(fakeRequestConverter(correctLPPUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("bereavement",
+          isLateAppeal = false, agentReferenceNo = Some("AGENT1"), None)(fakeRequestForBereavementJourney)
+        result.appealInformation.isClientResponsibleForLateSubmission shouldBe Some(true)
+        result.appealInformation.isClientResponsibleForSubmission shouldBe Some(true)
+      }
     }
 
     "for crime" must {
@@ -596,6 +610,21 @@ class AppealSubmissionSpec extends SpecBase {
           isClientResponsibleForLateSubmission = None
         )
       }
+
+      "set isClientResponsibleForSubmission and isClientResponsibleForLateSubmission value to true when an agent appeals an LPP" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "crime",
+          SessionKeys.hasCrimeBeenReportedToPolice -> "no",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+        ) ++ correctLPPUserAnswers)
+        val fakeRequestForBereavementJourney = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers)(fakeRequestConverter(correctLPPUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime",
+          isLateAppeal = false, agentReferenceNo = Some("AGENT1"), None)(fakeRequestForBereavementJourney)
+        result.appealInformation.isClientResponsibleForLateSubmission shouldBe Some(true)
+        result.appealInformation.isClientResponsibleForSubmission shouldBe Some(true)
+      }
     }
 
     "for fire or flood" must {
@@ -619,6 +648,20 @@ class AppealSubmissionSpec extends SpecBase {
           isClientResponsibleForSubmission = None,
           isClientResponsibleForLateSubmission = None
         )
+      }
+
+      "set isClientResponsibleForSubmission and isClientResponsibleForLateSubmission value to true when an agent appeals an LPP" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "fireOrFlood",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
+        ) ++ correctLPPUserAnswers)
+        val fakeRequestForBereavementJourney = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers)(fakeRequestConverter(correctLPPUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("fireOrFlood",
+          isLateAppeal = false, agentReferenceNo = Some("AGENT1"), None)(fakeRequestForBereavementJourney)
+        result.appealInformation.isClientResponsibleForLateSubmission shouldBe Some(true)
+        result.appealInformation.isClientResponsibleForSubmission shouldBe Some(true)
       }
     }
 
@@ -670,12 +713,26 @@ class AppealSubmissionSpec extends SpecBase {
           isClientResponsibleForLateSubmission = None
         )
       }
+
+      "set isClientResponsibleForSubmission and isClientResponsibleForLateSubmission value to true when an agent appeals an LPP" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01"),
+        ) ++ correctLPPUserAnswers)
+        val fakeRequestForBereavementJourney = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers)(fakeRequestConverter(correctLPPUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("lossOfStaff",
+          isLateAppeal = false, agentReferenceNo = Some("AGENT1"), None)(fakeRequestForBereavementJourney)
+        result.appealInformation.isClientResponsibleForLateSubmission shouldBe Some(true)
+        result.appealInformation.isClientResponsibleForSubmission shouldBe Some(true)
+      }
     }
 
     "for technical issues" must   {
       "have the startDateOfEvent and endDate of event" in {
         val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.reasonableExcuse -> "technicalIssues",
           SessionKeys.hasConfirmedDeclaration -> true,
           SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
           SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
@@ -699,7 +756,7 @@ class AppealSubmissionSpec extends SpecBase {
 
       "specify its for an agent when ARN is in session" in {
         val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.reasonableExcuse -> "technicalIssues",
           SessionKeys.hasConfirmedDeclaration -> true,
           SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
           SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02"),
@@ -722,6 +779,21 @@ class AppealSubmissionSpec extends SpecBase {
           isClientResponsibleForSubmission = Some(true),
           isClientResponsibleForLateSubmission = None
         )
+      }
+
+      "set isClientResponsibleForSubmission and isClientResponsibleForLateSubmission value to true when an agent appeals an LPP" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "technicalIssues",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
+          SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
+        ) ++ correctLPPUserAnswers)
+        val fakeRequestForBereavementJourney = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers)(fakeRequestConverter(correctLPPUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("technicalIssues",
+          isLateAppeal = false, agentReferenceNo = Some("AGENT1"), None)(fakeRequestForBereavementJourney)
+        result.appealInformation.isClientResponsibleForLateSubmission shouldBe Some(true)
+        result.appealInformation.isClientResponsibleForSubmission shouldBe Some(true)
       }
     }
 
@@ -810,6 +882,21 @@ class AppealSubmissionSpec extends SpecBase {
           isClientResponsibleForSubmission = None,
           isClientResponsibleForLateSubmission = None
         )
+      }
+
+      "set isClientResponsibleForSubmission and isClientResponsibleForLateSubmission value to true when an agent appeals an LPP" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "health",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.wasHospitalStayRequired -> "no",
+          SessionKeys.whenHealthIssueHappened -> LocalDate.parse("2022-01-01")
+        ) ++ correctLPPUserAnswers)
+        val fakeRequestForBereavementJourney = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers)(fakeRequestConverter(correctLPPUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("health",
+          isLateAppeal = false, agentReferenceNo = Some("AGENT1"), None)(fakeRequestForBereavementJourney)
+        result.appealInformation.isClientResponsibleForLateSubmission shouldBe Some(true)
+        result.appealInformation.isClientResponsibleForSubmission shouldBe Some(true)
       }
     }
 
@@ -921,6 +1008,22 @@ class AppealSubmissionSpec extends SpecBase {
           isClientResponsibleForLateSubmission = None,
           uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
+      }
+
+      "set isClientResponsibleForSubmission and isClientResponsibleForLateSubmission value to true when an agent appeals an LPP" in {
+        val userAnswers = UserAnswers("1234", Json.obj(
+          SessionKeys.reasonableExcuse -> "other",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+          SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
+          SessionKeys.isUploadEvidence -> "no"
+        ) ++ correctLPPUserAnswers)
+        val fakeRequestForBereavementJourney = UserRequest("123456789", arn = Some("AGENT1"), answers = userAnswers)(fakeRequestConverter(correctLPPUserAnswers))
+
+        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("other",
+          isLateAppeal = false, agentReferenceNo = Some("AGENT1"), None)(fakeRequestForBereavementJourney)
+        result.appealInformation.isClientResponsibleForLateSubmission shouldBe Some(true)
+        result.appealInformation.isClientResponsibleForSubmission shouldBe Some(true)
       }
     }
 
