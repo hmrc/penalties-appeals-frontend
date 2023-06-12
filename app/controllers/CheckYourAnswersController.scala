@@ -19,8 +19,8 @@ package controllers
 import java.time.LocalDate
 import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
-import helpers.{SessionAnswersHelper, IsLateAppealHelper}
+import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
+import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 
 import javax.inject.Inject
 import models.pages.{CheckYourAnswersPage, PageMode}
@@ -51,11 +51,12 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
                                            appConfig: AppConfig,
                                            authorise: AuthPredicate,
                                            dataRetrieval: DataRetrievalAction,
-                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter with FeatureSwitching {
+                                           dataRequired: DataRequiredAction,
+                                           checkObligationAvailability: CheckObligationAvailabilityAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter with FeatureSwitching {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(CheckYourAnswersPage, mode)
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
     implicit userRequest => {
       if(isLateAppealHelper.isAppealLate() && userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty){
         logger.warn("[CheckYourAnswersController][onPageLoad] User tried skipping late appeal page, redirecting back to late appeal page")
@@ -95,7 +96,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
     implicit userRequest => {
       userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
         if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {

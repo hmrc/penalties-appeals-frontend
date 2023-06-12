@@ -19,7 +19,7 @@ package controllers
 import java.time.LocalDate
 import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import helpers.HonestyDeclarationHelper
 
 import javax.inject.Inject
@@ -48,9 +48,10 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
                                              authorise: AuthPredicate,
                                              dataRequired: DataRequiredAction,
                                              dataRetrieval: DataRetrievalAction,
+                                             checkObligationAvailability: CheckObligationAvailabilityAction,
                                              executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
     implicit request => {
       tryToGetExcuseDatesAndObligationFromSession(
         {
@@ -69,7 +70,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
     implicit request => {
       tryToGetExcuseDatesAndObligationFromSession({
         (reasonableExcuse, _, _, _, isObligation) => {

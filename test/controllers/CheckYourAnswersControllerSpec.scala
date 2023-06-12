@@ -17,8 +17,10 @@
 package controllers
 
 import base.SpecBase
+import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 import models.UserRequest
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
 import play.api.http.Status._
@@ -51,13 +53,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val fakeRequestWithConfirmationKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(confirmationSessionKeys: _*)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], isLateAppeal: Boolean = false) {
-    reset(mockAuthConnector, mockAppealService, mockSessionService)
+    reset(mockAuthConnector, mockAppealService, mockSessionService, mockAppConfig)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
 
     when(mockIsLateAppeal.isAppealLate()(any)).thenReturn(isLateAppeal)
+    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(true)
   }
 
   object Controller extends CheckYourAnswersController(
@@ -68,7 +71,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     uploadJourneyRepository,
     sessionAnswersHelper,
     mockIsLateAppeal
-  )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction)
+  )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction, checkObligationAvailabilityAction)
 
   "onPageLoad" should {
     "the user is authorised" must {
@@ -182,6 +185,16 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           val result: Future[Result] = Controller.onPageLoad()(fakeRequest(noLateAppealAnswers))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
+        }
+
+        s"the feature switch ($ShowFullAppealAgainstTheObligation) is disabled and its an obligation appeal" in new Setup(AuthTestModels.successfulAuthResult) {
+          val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
+          when(mockSessionService.getUserAnswers(any())).thenReturn(
+            Future.successful(Some(userAnswers(answers))))
+          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
+          val result: Future[Result] = Controller.onPageLoad()(userRequestWithCorrectKeys.copy(answers = userAnswers(answers)))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
         }
       }
     }
@@ -318,6 +331,17 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.DuplicateAppealController.onPageLoad().url
         }
+      }
+
+      s"redirect to the appeal by letter page when" +
+        s" the feature switch ($ShowFullAppealAgainstTheObligation) is disabled and its an obligation appeal" in new Setup(AuthTestModels.successfulAuthResult) {
+        val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
+        when(mockSessionService.getUserAnswers(any())).thenReturn(
+          Future.successful(Some(userAnswers(answers))))
+        when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
+        val result: Future[Result] = Controller.onSubmit()(userRequestWithCorrectKeys.copy(answers = userAnswers(answers)))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
     }
 

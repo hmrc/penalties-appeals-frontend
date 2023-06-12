@@ -40,8 +40,7 @@ class CancelVATRegistrationController @Inject()(
                                                  cancelVATRegistrationPage: CancelVATRegistrationPage,
                                                  navigation: Navigation,
                                                  sessionService: SessionService
-                                               )(implicit
-                                                 authorise: AuthPredicate,
+                                               )(implicit authorise: AuthPredicate,
                                                  dataRequired: DataRequiredAction,
                                                  dataRetrieval: DataRetrievalAction,
                                                  appConfig: AppConfig,
@@ -70,8 +69,7 @@ class CancelVATRegistrationController @Inject()(
       .bindFromRequest()
       .fold(
         form => {
-          val postAction =
-            controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
+          val postAction = controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
           Future(BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction, pageMode(NormalMode))))
         },

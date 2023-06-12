@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import forms.YouCanAppealPenaltyForm.youCanAppealPenaltyForm
 import helpers.FormProviderHelper
 import models.pages.{PageMode, YouCanAppealThisPenaltyPage}
@@ -45,11 +45,12 @@ class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
                                                authorise: AuthPredicate,
                                                dataRequired: DataRequiredAction,
                                                dataRetrieval: DataRetrievalAction,
+                                               checkObligationAvailability: CheckObligationAvailabilityAction,
                                                executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(YouCanAppealThisPenaltyPage, mode)
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability) {
     implicit request =>
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         youCanAppealPenaltyForm,
@@ -61,7 +62,7 @@ class YouCanAppealPenaltyController @Inject()(page: YouCanAppealPenaltyPage,
       Ok(page(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit request =>
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async { implicit request =>
     youCanAppealPenaltyForm.bindFromRequest().fold(
       formWithErrors => {
         logger.debug(s"[YouCanAppealPenaltyController][onSubmit] - Form errors: ${formWithErrors.errors}")

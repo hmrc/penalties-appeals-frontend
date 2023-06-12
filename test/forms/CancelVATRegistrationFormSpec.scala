@@ -23,7 +23,6 @@ import play.api.Configuration
 import play.api.data.{Form, FormError}
 
 class CancelVATRegistrationFormSpec extends FormBehaviours with SpecBase {
-  implicit val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   override implicit val config: Configuration = mock(classOf[Configuration])
   val form: Form[String] = CancelVATRegistrationForm.cancelVATRegistrationForm
   behave like mandatoryField(form, "value", FormError("value", "cancelVATRegistration.error.required"))

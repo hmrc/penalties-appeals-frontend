@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-  import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import forms.OtherRelevantInformationForm
 import helpers.FormProviderHelper
 import models.Mode
@@ -42,11 +42,12 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
                                                   appConfig: AppConfig,
                                                   mcc: MessagesControllerComponents,
                                                   dataRetrieval: DataRetrievalAction,
+                                                  checkObligationAvailability: CheckObligationAvailabilityAction,
                                                   executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(OtherRelevantInformationPage, mode)
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen  dataRetrieval andThen dataRequired) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability) {
     implicit request => {
       val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
         OtherRelevantInformationForm.otherRelevantInformationForm(),
@@ -58,7 +59,7 @@ class AppealAgainstObligationController @Inject()(otherRelevantInformationPage: 
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
     implicit request => {
       OtherRelevantInformationForm.otherRelevantInformationForm().bindFromRequest().fold(
         formWithErrors => {

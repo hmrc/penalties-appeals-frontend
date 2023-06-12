@@ -27,7 +27,6 @@ import play.api.test.FakeRequest
 import utils.SessionKeys
 
 class WasHospitalStayRequiredFormSpec extends FormBehaviours with SpecBase {
-  implicit val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   override implicit val config: Configuration = mock(classOf[Configuration])
   "when a VAT trader is in session" must {
     val vatTraderUserRequest = UserRequest("123456789", answers = userAnswers(correctUserAnswers))(FakeRequest("GET", "/"))

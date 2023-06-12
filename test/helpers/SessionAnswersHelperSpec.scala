@@ -39,7 +39,6 @@ import scala.concurrent.Future
 
 class SessionAnswersHelperSpec extends SpecBase {
   val mockRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
-  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val mockConfig: Configuration = mock(classOf[Configuration])
   val sessionAnswersHelper = new SessionAnswersHelper(mockRepository, mockAppConfig, mockDateTimeHelper)
 

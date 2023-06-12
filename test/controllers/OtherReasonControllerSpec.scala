@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import connectors.httpParsers.UnexpectedFailure
 import models.session.UserAnswers
 import models.upload._
@@ -27,7 +28,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.Configuration
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Result}
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{status, _}
@@ -43,8 +44,8 @@ import views.html.errors.ServiceUnavailablePage
 import views.html.reasonableExcuseJourneys.other._
 import views.html.reasonableExcuseJourneys.other.noJs._
 import viewtils.EvidenceFileUploadsHelper
-import java.time.LocalDate
 
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonControllerSpec extends SpecBase with LogCapturing {
@@ -65,7 +66,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
-    reset(mockAuthConnector, mockUpscanService, mockUploadJourneyRepository, mockSessionService)
+    reset(mockAuthConnector, mockUpscanService, mockUploadJourneyRepository, mockSessionService, mockAppConfig)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
@@ -88,7 +89,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
       mockUploadJourneyRepository,
       serviceUnavailablePage,
       mockSessionService
-    )(authPredicate, dataRequiredAction, dataRetrievalAction, appConfig, mockConfig, errorHandler, mcc, ec)
+    )(authPredicate, dataRequiredAction, dataRetrievalAction, checkObligationAvailabilityAction, appConfig, mockConfig, errorHandler, mcc, ec)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
@@ -744,6 +745,16 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
+
+      s"redirect to appeal by letter page when the feature switch ($ShowFullAppealAgainstTheObligation) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+        val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
+        when(mockSessionService.getUserAnswers(any())).thenReturn(
+          Future.successful(Some(userAnswers(answers))))
+        when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
+        val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(userRequestWithCorrectKeys.copy(answers = userAnswers(answers)))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+      }
     }
 
     "the user is unauthorised" when {
@@ -807,8 +818,18 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
           .withFormUrlEncodedBody("value" -> "no"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
-
     }
+
+    s"redirect to appeal by letter page when the feature switch ($ShowFullAppealAgainstTheObligation) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+      val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
+      when(mockSessionService.getUserAnswers(any())).thenReturn(
+        Future.successful(Some(userAnswers(answers))))
+      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
+      val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(answers))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+    }
+
 
     "the user is unauthorised" when {
 

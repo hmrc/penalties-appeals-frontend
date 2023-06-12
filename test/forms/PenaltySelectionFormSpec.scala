@@ -23,7 +23,6 @@ import play.api.Configuration
 import play.api.data.FormError
 
 class PenaltySelectionFormSpec extends FormBehaviours with SpecBase {
-  implicit val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   override implicit val config: Configuration = mock(classOf[Configuration])
 
   "PenaltySelectionForm" should {

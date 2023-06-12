@@ -29,8 +29,6 @@ import java.time.LocalDate
 
 class PenaltyTypeHelperSpec extends SpecBase {
 
-  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
-
   class Setup {
     reset(mockAppConfig)
   }

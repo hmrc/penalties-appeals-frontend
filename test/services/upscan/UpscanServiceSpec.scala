@@ -42,7 +42,6 @@ import scala.concurrent.Future
 class UpscanServiceSpec extends SpecBase with LogCapturing {
   val mockRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val mockConnector: UpscanConnector = mock(classOf[UpscanConnector])
-  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val actorSystemForScheduling: ActorSystem = injector.instanceOf[ActorSystem]
   implicit val hc: HeaderCarrier = HeaderCarrier()
   class Setup(useMockAppConfig: Boolean = false) {

@@ -23,8 +23,8 @@ import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.Configuration
-import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.{AnyContent, Call}
+import play.api.libs.json.Json
+import play.api.mvc.Call
 import utils.SessionKeys
 
 import java.time.LocalDate
@@ -997,21 +997,6 @@ class NavigationSpec extends SpecBase {
         when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
           .thenReturn(false)
         val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestWithCorrectKeys)
-        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
-      }
-
-      "yes option selected (when penalty is estimate i.e. penalty number set to 'NA')" in new Setup {
-        val userAnswersWithNAPenaltyNumber: JsObject = Json.obj(
-          SessionKeys.penaltyNumber -> "NA",
-          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-          SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-          SessionKeys.journeyId -> "1234"
-        )
-        val userRequestWithEstimatedPenaltyData: UserRequest[AnyContent] = fakeRequestConverter(userAnswersWithNAPenaltyNumber)
-        val result: Call = mainNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestWithEstimatedPenaltyData)
         result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
     }

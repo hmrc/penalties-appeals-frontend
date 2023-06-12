@@ -17,7 +17,7 @@
 package base
 
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredActionImpl, DataRetrievalActionImpl}
+import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityActionImpl, DataRequiredActionImpl, DataRetrievalActionImpl}
 import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
@@ -80,9 +80,13 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   val mockAuditService: AuditService = mock(classOf[AuditService])
 
+  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
+
   val mockUploadJourneyRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
 
   lazy val dataRequiredAction: DataRequiredActionImpl = injector.instanceOf[DataRequiredActionImpl]
+
+  lazy val checkObligationAvailabilityAction: CheckObligationAvailabilityActionImpl = new CheckObligationAvailabilityActionImpl(mockAppConfig)
 
   lazy val dataRetrievalAction: DataRetrievalActionImpl = new DataRetrievalActionImpl(mockSessionService)
 
