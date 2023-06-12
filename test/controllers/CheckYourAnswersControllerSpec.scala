@@ -17,10 +17,13 @@
 package controllers
 
 import base.SpecBase
+import config.featureSwitches.{FeatureSwitch, FeatureSwitching, ShowFullAppealAgainstTheObligation}
 import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 import models.UserRequest
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
+import play.api.Configuration
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Result}
@@ -45,19 +48,22 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
   val uploadJourneyRepository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val mockIsLateAppeal:IsLateAppealHelper = mock(classOf[IsLateAppealHelper])
+  val mockConfiguration: Configuration = mock(classOf[Configuration])
 
   def fakeRequest(answers: JsObject, fakeRequest: FakeRequest[AnyContent] = fakeRequest): UserRequest[AnyContent] = fakeRequestConverter(answers, fakeRequest)
 
   val fakeRequestWithConfirmationKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(confirmationSessionKeys: _*)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], isLateAppeal: Boolean = false) {
-    reset(mockAuthConnector, mockAppealService, mockSessionService)
+    reset(mockAuthConnector, mockAppealService, mockSessionService, mockConfiguration)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
 
     when(mockIsLateAppeal.isAppealLate()(any)).thenReturn(isLateAppeal)
+    when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
+      .thenReturn(true)
   }
 
   object Controller extends CheckYourAnswersController(
@@ -68,7 +74,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     uploadJourneyRepository,
     sessionAnswersHelper,
     mockIsLateAppeal
-  )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction)
+  )(stubMessagesControllerComponents(), implicitly, mockConfiguration, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction)
 
   "onPageLoad" should {
     "the user is authorised" must {
@@ -317,6 +323,23 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.DuplicateAppealController.onPageLoad().url
+        }
+      }
+
+      "redirect the user to Appeal By Letter page" when {
+        "the user is appealing an obligation but ShowFullAppealAgainstTheObligation is turned off" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
+            .thenReturn(Future.successful(Right((): Unit)))
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
+          when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
+            .thenReturn(Future.successful((): Unit))
+          when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
+            .thenReturn(false)
+          println(Console.GREEN + s"${mockConfiguration.get[Boolean](ShowFullAppealAgainstTheObligation.name)}" + Console.RESET)
+          val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
         }
       }
     }

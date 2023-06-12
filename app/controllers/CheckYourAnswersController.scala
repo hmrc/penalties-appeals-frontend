@@ -17,11 +17,11 @@
 package controllers
 
 import java.time.LocalDate
-import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
+
+import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage, ShowFullAppealAgainstTheObligation}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
-import helpers.{SessionAnswersHelper, IsLateAppealHelper}
-
+import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 import javax.inject.Inject
 import models.pages.{CheckYourAnswersPage, PageMode}
 import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
@@ -97,24 +97,31 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
-        if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {
-          handleAppealSubmission("obligation")
-        } else {
-          logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
-          Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
-        }
-      })(
-        reasonableExcuse => {
-          if (sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] All keys are present for reasonable excuse: $reasonableExcuse")
-            handleAppealSubmission(reasonableExcuse)
+      println(Console.GREEN + s"Obligation Appeal: ${userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).getOrElse(false)} and Full Journey is allowed: ${isEnabled(ShowFullAppealAgainstTheObligation)}" + Console.RESET)
+      if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).getOrElse(false) && !isEnabled(ShowFullAppealAgainstTheObligation)){
+        logger.error("[CheckYourAnswersController][onSubmit]" +
+          " User tried to submit appeal against obligation while journey was disabled. Redirecting to Appeal By Letter page.")
+        Future(Redirect(controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter()))
+      } else {
+        userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
+          if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {
+            handleAppealSubmission("obligation")
           } else {
-            logger.error(s"[CheckYourAnswersController][onSubmit] User did not have all answers for reasonable excuse: $reasonableExcuse")
+            logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
             Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
           }
-        }
-      )
+        })(
+          reasonableExcuse => {
+            if (sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
+              logger.debug(s"[CheckYourAnswersController][onPageLoad] All keys are present for reasonable excuse: $reasonableExcuse")
+              handleAppealSubmission(reasonableExcuse)
+            } else {
+              logger.error(s"[CheckYourAnswersController][onSubmit] User did not have all answers for reasonable excuse: $reasonableExcuse")
+              Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
+            }
+          }
+        )
+      }
     }
   }
 

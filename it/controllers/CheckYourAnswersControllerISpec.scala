@@ -29,12 +29,14 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.{AuthStub, PenaltiesStub}
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
 import java.time.{LocalDate, LocalDateTime}
+
+import config.featureSwitches.{FeatureSwitching, ShowFullAppealAgainstTheObligation}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
+class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
   val controller: CheckYourAnswersController = injector.instanceOf[CheckYourAnswersController]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val correlationId: String = "correlationId"
@@ -737,6 +739,20 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       AuthStub.unauthorised()
       val request = await(buildClientForRequestToApp(uri = "/check-your-answers").post("{}"))
       request.status shouldBe Status.SEE_OTHER
+    }
+
+    "redirect to the AppealByLetter page when it is an obligation appeal but the ShowFullAppealAgainstTheObligation FS is set to false" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.otherRelevantInformation -> "some text",
+      SessionKeys.isUploadEvidence -> "yes"
+    ))) {
+      disableFeatureSwitch(ShowFullAppealAgainstTheObligation)
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      val request = await(controller.onSubmit()(fakeRequest))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+      enableFeatureSwitch(ShowFullAppealAgainstTheObligation)
     }
   }
 
