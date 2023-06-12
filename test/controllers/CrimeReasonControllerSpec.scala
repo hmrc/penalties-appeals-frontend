@@ -115,10 +115,11 @@ class CrimeReasonControllerSpec extends SpecBase {
             .thenReturn(Future.successful(true))
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
-            "date.day" -> "1",
-            "date.month" -> "2",
-            "date.year" -> "2021")))
+          val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(
+            fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
+              "date.day" -> "1",
+              "date.month" -> "2",
+              "date.year" -> "2021")))
           status(result) shouldBe SEE_OTHER
           answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.dateOfCrime -> LocalDate.of(2021, 2, 1))
         }
@@ -144,30 +145,33 @@ class CrimeReasonControllerSpec extends SpecBase {
           "passed string values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
             when(mockSessionService.getUserAnswers(any()))
               .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
-              "date.day" -> "what",
-              "date.month" -> "is",
-              "date.year" -> "this")))
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(
+              fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
+                "date.day" -> "what",
+                "date.month" -> "is",
+                "date.year" -> "this")))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed an invalid values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
             when(mockSessionService.getUserAnswers(any()))
               .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
-              "date.day" -> "31",
-              "date.month" -> "2",
-              "date.year" -> "2021")))
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(
+              fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
+                "date.day" -> "31",
+                "date.month" -> "2",
+                "date.year" -> "2021")))
             status(result) shouldBe BAD_REQUEST
           }
 
           "passed illogical dates as values for keys" in new Setup(AuthTestModels.successfulAuthResult) {
             when(mockSessionService.getUserAnswers(any()))
               .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
-              "date.day" -> "124356",
-              "date.month" -> "432567",
-              "date.year" -> "3124567")))
+            val result: Future[Result] = controller.onSubmitForWhenCrimeHappened(NormalMode)(
+              fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody(
+                "date.day" -> "124356",
+                "date.month" -> "432567",
+                "date.year" -> "3124567")))
             status(result) shouldBe BAD_REQUEST
           }
         }

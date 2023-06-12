@@ -69,8 +69,8 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated date when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-01-01"))))))
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++
+          Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-01-01"))))))
         val result: Future[Result] = controller.onPageLoad(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
         val documentParsed: Document = Jsoup.parse(contentAsString(result))

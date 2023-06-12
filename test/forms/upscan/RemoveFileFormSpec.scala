@@ -18,9 +18,10 @@ package forms.upscan
 
 import base.SpecBase
 import forms.FormBehaviours
+import play.api.data.Form
 
 class RemoveFileFormSpec extends FormBehaviours with SpecBase {
-  val form = RemoveFileForm.form
+  val form: Form[String] = RemoveFileForm.form
   "RemoveFileForm" should {
     s"not bind when key is not present at all" in {
       val result = form.bind(emptyForm).apply("fileReference")

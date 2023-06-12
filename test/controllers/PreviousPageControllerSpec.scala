@@ -23,7 +23,7 @@ import navigation.Navigation
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
@@ -32,7 +32,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import scala.concurrent.Future
 
 class PreviousPageControllerSpec extends SpecBase {
-  val mockNavigator = mock(classOf[Navigation])
+  val mockNavigator: Navigation = mock(classOf[Navigation])
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
     reset(mockAuthConnector, mockSessionService)
@@ -50,7 +50,7 @@ class PreviousPageControllerSpec extends SpecBase {
         .thenReturn(Call("", "/url"))
       when(mockSessionService.getUserAnswers(any()))
         .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-      val result = controller.previousPage(ReasonableExcuseSelectionPage.toString, NormalMode, false)(userRequestWithCorrectKeys)
+      val result: Future[Result] = controller.previousPage(ReasonableExcuseSelectionPage.toString, NormalMode, isJsEnabled = false)(userRequestWithCorrectKeys)
       status(result) shouldBe SEE_OTHER
     }
   }

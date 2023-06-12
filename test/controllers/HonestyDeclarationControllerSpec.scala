@@ -56,7 +56,8 @@ class HonestyDeclarationControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return 200" when {
       "the user is authorised and has the correct keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "crime")))))
+        when(mockSessionService.getUserAnswers(any())).thenReturn(
+          Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "crime")))))
         val result: Future[Result] = controller.onPageLoad()(fakeRequestWithCorrectKeysAndReasonableExcuseSet("crime"))
         status(result) shouldBe OK
       }
@@ -92,9 +93,10 @@ class HonestyDeclarationControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "return 303" when {
-      def onSubmitTest(reasonableExcuse: String) = {
+      def onSubmitTest(reasonableExcuse: String): Unit = {
         s"the reasonable excuse selected is '$reasonableExcuse' and the JSON body is valid" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> reasonableExcuse)))))
+          when(mockSessionService.getUserAnswers(any())).thenReturn(
+            Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> reasonableExcuse)))))
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))

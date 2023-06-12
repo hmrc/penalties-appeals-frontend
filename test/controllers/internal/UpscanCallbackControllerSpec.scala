@@ -25,9 +25,12 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.mongo.cache.DataKey
-
 import java.time.LocalDateTime
+
+import play.api.mvc.Result
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class UpscanCallbackControllerSpec extends SpecBase {
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
@@ -159,7 +162,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
   "UpscanController" should {
     "return an ISE" when {
       s"the body can not be parsed to an $UploadJourney model" in new Setup {
-        val result = controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(validJsonButInvalidModel))
+        val result: Future[Result] = controller.callbackFromUpscan("12345", isJsEnabled = true)(fakeRequest.withBody(validJsonButInvalidModel))
         status(result) shouldBe BAD_REQUEST
       }
     }
@@ -169,7 +172,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
       "the body is valid and state has been updated" in new Setup {
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING,
           uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
-        val result = await(controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(validCallbackFromUpscan)))
+        val result: Result = await(controller.callbackFromUpscan("12345", isJsEnabled = true)(fakeRequest.withBody(validCallbackFromUpscan)))
         result.header.status shouldBe NO_CONTENT
         eventually {
           val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
@@ -179,7 +182,7 @@ class UpscanCallbackControllerSpec extends SpecBase {
 
       "the file is rejected and state has been updated" in new Setup {
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
-        val result = await(controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(callbackFromUpscanWithFailure)))
+        val result: Result = await(controller.callbackFromUpscan("12345", isJsEnabled = true)(fakeRequest.withBody(callbackFromUpscanWithFailure)))
         result.header.status shouldBe NO_CONTENT
         eventually {
           val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
@@ -188,21 +191,23 @@ class UpscanCallbackControllerSpec extends SpecBase {
       }
 
       "the file is accepted but the file is a duplicate - mark as duplicate and keep the upload details (valid case)" in new Setup {
-        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING, uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
-        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING, uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING,
+          uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
+        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING,
+          uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
         await(repository.updateStateOfFileUpload("12345", uploadJourneyModel))
         //Used to get around a race condition
         eventually {
           await(repository.getUploadsForJourney(Some("12345")).map(_.get.find(_.reference == "ref1").get)).fileStatus shouldBe UploadStatusEnum.READY
         }
-        val result = await(controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(validCallbackFromUpscanDuplicate)))
+        val result: Result = await(controller.callbackFromUpscan("12345", isJsEnabled = true)(fakeRequest.withBody(validCallbackFromUpscanDuplicate)))
         result.header.status shouldBe NO_CONTENT
         val modelInRepo: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref2"))).get
         modelInRepo.copy(lastUpdated = mockDateTime) shouldBe uploadJourneyModelDuplicate.copy(lastUpdated = mockDateTime)
       }
 
       "a callback has been received but the user has requested for the file to be removed" in new Setup {
-        val result = controller.callbackFromUpscan("12345", true)(fakeRequest.withBody(validCallbackFromUpscan))
+        val result: Future[Result] = controller.callbackFromUpscan("12345", isJsEnabled = true)(fakeRequest.withBody(validCallbackFromUpscan))
         status(result) shouldBe NO_CONTENT
         val modelInRepo: Option[UploadJourney] = await(repository.get[UploadJourney]("12345")(DataKey("ref1")))
         modelInRepo.isEmpty shouldBe true

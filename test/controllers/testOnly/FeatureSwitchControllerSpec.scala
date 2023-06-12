@@ -24,8 +24,11 @@ import play.api.Configuration
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-
 import java.time.LocalDate
+
+import play.api.mvc.Result
+
+import scala.concurrent.Future
 import scala.language.postfixOps
 
 class FeatureSwitchControllerSpec extends SpecBase with FeatureSwitching {
@@ -40,18 +43,18 @@ class FeatureSwitchControllerSpec extends SpecBase with FeatureSwitching {
 
   "enableOrDisableFeature" should {
     "return NOT FOUND when the feature switch is not defined" in {
-      val result = controller.enableOrDisableFeature("fake", true)(FakeRequest())
+      val result = controller.enableOrDisableFeature("fake", enable = true)(FakeRequest())
       status(result) shouldBe NOT_FOUND
     }
 
     "return OK and enable the feature switch when specified" in {
-      val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", true)(FakeRequest())
+      val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", enable = true)(FakeRequest())
       status(result) shouldBe OK
       isEnabled(NonJSRouting) shouldBe true
     }
 
     "return OK and disable the feature switch when specified" in {
-      val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", false)(FakeRequest())
+      val result = controller.enableOrDisableFeature("feature.switch.non-js-routing", enable = false)(FakeRequest())
       status(result) shouldBe OK
       isEnabled(NonJSRouting) shouldBe false
     }
@@ -59,7 +62,7 @@ class FeatureSwitchControllerSpec extends SpecBase with FeatureSwitching {
   "setTimeMachineDate" should {
 
     s"return NOT_FOUND (${Status.NOT_FOUND}) when the date provided is invalid" in new Setup {
-      val result = controller.setTimeMachineDate(Some("this-is-invalid"))(FakeRequest())
+      val result: Future[Result] = controller.setTimeMachineDate(Some("this-is-invalid"))(FakeRequest())
       status(result) shouldBe BAD_REQUEST
       contentAsString(result) shouldBe "The date provided is in an invalid format"
     }
@@ -67,14 +70,14 @@ class FeatureSwitchControllerSpec extends SpecBase with FeatureSwitching {
     s"return OK (${Status.OK}) and reset the date back to today's date if no date provided" in new Setup {
       when(mockConfig.getOptional[String](any())(any()))
         .thenReturn(None)
-      val result = controller.setTimeMachineDate(None)(FakeRequest())
+      val result: Future[Result] = controller.setTimeMachineDate(None)(FakeRequest())
       status(result) shouldBe OK
       contentAsString(result) shouldBe s"Time machine set to: ${LocalDate.now().toString}"
       controller.getFeatureDate shouldBe LocalDate.now()
     }
 
     s"return OK (${Status.OK}) and set the correct date provided" in new Setup {
-      val result = controller.setTimeMachineDate(Some("2022-01-01"))(FakeRequest())
+      val result: Future[Result] = controller.setTimeMachineDate(Some("2022-01-01"))(FakeRequest())
       status(result) shouldBe OK
       contentAsString(result) shouldBe s"Time machine set to: ${LocalDate.of(2022, 1, 1).toString}"
       (sys.props get "TIME_MACHINE_NOW" get) shouldBe LocalDate.of(2022, 1, 1).toString

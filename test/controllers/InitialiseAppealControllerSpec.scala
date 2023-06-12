@@ -16,28 +16,29 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import base.SpecBase
 import config.featureSwitches.EnablePRM2509
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
 import models.{AppealData, AuthRequest, PenaltyTypeEnum}
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.Helpers._
 import services.AppealService
-import services.monitoring.{AuditService, JsonAuditModel}
+import services.monitoring.JsonAuditModel
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionKeys
 
-import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -81,7 +82,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to start appeal" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
         SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
@@ -109,7 +110,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to start appeal for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
         SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
@@ -137,7 +138,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to start appeal for Additional Penalty (LPP)" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Additional,
         SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
@@ -162,9 +163,10 @@ class InitialiseAppealControllerSpec extends SpecBase {
       answerCaptor.getValue.data shouldBe userAnswersToReturn.data
     }
 
-    "call the penalties backend for multiple penalties and handle a success response and do not call multiple penalty endpoint when appeal is LSP" in new Setup(AuthTestModels.successfulAuthResult) {
+    "call the penalties backend for multiple penalties and handle a success response and" +
+      " do not call multiple penalty endpoint when appeal is LSP" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
         SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
@@ -193,7 +195,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend for multiple penalties and handle a success response and add multi penalties details keys " +
       "to session" in new Setup(AuthTestModels.successfulAuthResult, Some(sampleExamplePenalties)) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Additional,
         SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
@@ -238,7 +240,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to Cancel VAT Registration page" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
         SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
@@ -267,7 +269,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to Cancel VAT Registration page for LPP" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
         SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
@@ -295,7 +297,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to Cancel VAT Registration page for LPP additional" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val userAnswersToReturn = userAnswers(Json.obj(
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Additional,
         SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),

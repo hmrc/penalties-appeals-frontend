@@ -38,11 +38,11 @@ import views.html.{AppealCoverBothPenaltiesPage, AppealSinglePenaltyPage, Penalt
 import scala.concurrent.{ExecutionContext, Future}
 
 class PenaltySelectionControllerSpec extends SpecBase {
-  val mockNavigator = mock(classOf[Navigation])
-  val penaltySelectionPage = injector.instanceOf[PenaltySelectionPage]
-  val appealSinglePenaltyPage = injector.instanceOf[AppealSinglePenaltyPage]
-  val page = injector.instanceOf[PenaltySelectionPage]
-  val appealCoverBothPenaltiesPage = injector.instanceOf[AppealCoverBothPenaltiesPage]
+  val mockNavigator: Navigation = mock(classOf[Navigation])
+  val penaltySelectionPage: PenaltySelectionPage = injector.instanceOf[PenaltySelectionPage]
+  val appealSinglePenaltyPage: AppealSinglePenaltyPage = injector.instanceOf[AppealSinglePenaltyPage]
+  val page: PenaltySelectionPage = injector.instanceOf[PenaltySelectionPage]
+  val appealCoverBothPenaltiesPage: AppealCoverBothPenaltiesPage = injector.instanceOf[AppealCoverBothPenaltiesPage]
   val multiPenaltyAnswers: JsObject = Json.toJsObject(Map(
     SessionKeys.firstPenaltyAmount -> "4.20",
     SessionKeys.secondPenaltyAmount -> "3000"
@@ -74,8 +74,9 @@ class PenaltySelectionControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated radio option when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes")))))
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(
+          Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers ++
+            Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes")))))
         val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
         val documentParsed: Document = Jsoup.parse(contentAsString(result))
@@ -131,8 +132,9 @@ class PenaltySelectionControllerSpec extends SpecBase {
           .thenReturn(Future.successful(true))
         when(mockNavigator.nextPage(any(), any(), any(), any())(any()))
           .thenReturn(controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode))
-        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestConverter(correctLPPUserAnswers ++ multiPenaltyAnswers, fakeRequest
-          .withFormUrlEncodedBody("value" -> "yes")))
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(
+          fakeRequestConverter(correctLPPUserAnswers ++ multiPenaltyAnswers, fakeRequest
+            .withFormUrlEncodedBody("value" -> "yes")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode).url
         answerCaptor.getValue.data shouldBe correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes")
@@ -141,8 +143,9 @@ class PenaltySelectionControllerSpec extends SpecBase {
       "return a 400 (BAD REQUEST) and show page with error when no option has been selected" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers ++ multiPenaltyAnswers))))
-        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(fakeRequestConverter(correctLPPUserAnswers ++ multiPenaltyAnswers, fakeRequest
-          .withFormUrlEncodedBody("value" -> "")))
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(
+          fakeRequestConverter(correctLPPUserAnswers ++ multiPenaltyAnswers, fakeRequest
+            .withFormUrlEncodedBody("value" -> "")))
         status(result) shouldBe BAD_REQUEST
       }
     }

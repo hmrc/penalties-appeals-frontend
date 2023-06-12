@@ -35,8 +35,9 @@ class DataRequiredActionSpec extends SpecBase {
 
   val testAction: Request[_] => Future[Result] = _ => Future.successful(Ok(""))
 
-  class Harness(requiredAction: DataRequiredAction, request: UserRequest[_] = UserRequest("123456789", active = true, None, userAnswers(correctUserAnswers))(fakeRequest)) {
-    def onPageLoad(): Future[Result] = requiredAction.invokeBlock(request, testAction)
+  class Harness(requiredAction: DataRequiredAction, request: UserRequest[_] = UserRequest("123456789",
+    active = true, None, userAnswers(correctUserAnswers))(fakeRequest)) {
+      def onPageLoad(): Future[Result] = requiredAction.invokeBlock(request, testAction)
   }
 
   "refine" should {

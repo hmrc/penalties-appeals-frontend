@@ -265,7 +265,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
       result.isLeft shouldBe true
-      result.left.get shouldBe NoContent
+      result.left.getOrElse("foo") shouldBe NoContent
     }
 
     s"return Left when $NOT_FOUND is returned from the call" in new Setup {
@@ -276,7 +276,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
       result.isLeft shouldBe true
-      result.left.get shouldBe UnexpectedFailure(NOT_FOUND, s"Unexpected response, status $NOT_FOUND returned")
+      result.left.getOrElse("foo") shouldBe UnexpectedFailure(NOT_FOUND, s"Unexpected response, status $NOT_FOUND returned")
     }
 
     s"return Left when $INTERNAL_SERVER_ERROR is returned from the call" in new Setup {
@@ -287,7 +287,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
       result.isLeft shouldBe true
-      result.left.get shouldBe UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned")
+      result.left.getOrElse("foo") shouldBe UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned")
     }
   }
 

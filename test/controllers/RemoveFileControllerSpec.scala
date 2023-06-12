@@ -56,7 +56,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
         when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.successful(Some("file123.txt")))
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        val result = controller.onPageLoad(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
 
@@ -64,7 +64,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.successful(None))
-        val result = controller.onPageLoad(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
@@ -72,19 +72,19 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.failed(new Exception("something went wrong :(")))
-        val result = controller.onPageLoad(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
     "the user is unauthorised" should {
       "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-        val result: Future[Result] = controller.onPageLoad(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe FORBIDDEN
       }
 
       "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-        val result: Future[Result] = controller.onPageLoad(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe SEE_OTHER
       }
     }
@@ -97,20 +97,20 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
         "the user clicks no" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+          val result: Future[Result] = controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "no")))
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, true).url
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, isJsEnabled = true).url
         }
 
         "the user clicks yes - removing the file" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockUpscanService.removeFileFromJourney(any(), any())).thenReturn(Future.successful((): Unit))
-          val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+          val result: Future[Result] = controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, true).url
+          redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, isJsEnabled = true).url
         }
       }
 
@@ -119,7 +119,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockUpscanService.getAmountOfFilesUploadedForJourney(any())(any())).thenReturn(Future.successful(1))
-          val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = false, mode = NormalMode)(
+          val result: Future[Result] = controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = false, mode = NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "no")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
@@ -130,7 +130,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockUpscanService.removeFileFromJourney(any(), any())).thenReturn(Future.successful((): Unit))
           when(mockUpscanService.getAmountOfFilesUploadedForJourney(any())(any())).thenReturn(Future.successful(1))
-          val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = false, mode = NormalMode)(
+          val result: Future[Result] = controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = false, mode = NormalMode)(
             fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
@@ -141,7 +141,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.successful(Some("file123.txt")))
-        val result = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+        val result: Future[Result] = controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(
           fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "")))
         status(result) shouldBe BAD_REQUEST
       }
@@ -153,7 +153,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           when(mockUpscanService.removeFileFromJourney(any(), any())).thenReturn(Future.failed(new Exception("broken :(")))
           withCaptureOfLoggingFrom(logger) {
             logs => {
-              val result = await(controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+              val result = await(controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(
                 fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes"))))
                logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_REMOVAL_FAILURE_UPSCAN.toString)) shouldBe true
               result.header.status shouldBe INTERNAL_SERVER_ERROR
@@ -167,7 +167,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.failed(new Exception("this is an exception :)")))
           withCaptureOfLoggingFrom(logger) {
             logs => {
-              val result = await(controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(
+              val result = await(controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(
                 fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "what"))))
               logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_NAME_RETRIEVAL_FAILURE_UPSCAN.toString)) shouldBe true
               result.header.status shouldBe INTERNAL_SERVER_ERROR
@@ -179,7 +179,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
       "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
-        val result: Future[Result] = controller.onPageLoad(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
@@ -187,12 +187,12 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
 
     "the user is unauthorised" should {
       "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-        val result: Future[Result] = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe FORBIDDEN
       }
 
       "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-        val result: Future[Result] = controller.onSubmit(fileReference = "fileref123", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
+        val result: Future[Result] = controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe SEE_OTHER
       }
     }

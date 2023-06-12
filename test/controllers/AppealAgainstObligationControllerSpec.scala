@@ -69,8 +69,8 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
       }
 
       "return OK and correct view (pre-populated text when present in session)" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "this is some relevant information")))))
+        when(mockSessionService.getUserAnswers(any())).thenReturn(
+          Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "this is some relevant information")))))
         val result: Future[Result] = controller.onPageLoad(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
         val documentParsed: Document = Jsoup.parse(contentAsString(result))
