@@ -71,7 +71,8 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
         )(
           appealData => {
             removeExistingKeysFromSessionAndRedirect(
-              routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration(), penaltyId, appealData, isAppealAgainstObligation = true)
+              routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration(), penaltyId, appealData, isAppealAgainstObligation = true
+            )
           }
         )
       }

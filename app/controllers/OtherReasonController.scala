@@ -18,7 +18,7 @@ package controllers
 
 import config.featureSwitches.{FeatureSwitching, NonJSRouting}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import forms.WhenDidBecomeUnableForm
 import forms.WhyReturnSubmittedLateForm.whyReturnSubmittedLateForm
 import forms.upscan.{RemoveFileForm, UploadDocumentForm, UploadEvidenceQuestionForm, UploadListForm}
@@ -46,10 +46,9 @@ import views.html.errors.ServiceUnavailablePage
 import views.html.reasonableExcuseJourneys.other.{UploadEvidencePage, _}
 import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage, UploadListPage, UploadTakingLongerThanExpectedPage}
 import viewtils.{EvidenceFileUploadsHelper, RadioOptionHelper}
+
 import java.time.LocalDate
-
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnablePage,
@@ -69,6 +68,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
                                      (implicit authorise: AuthPredicate,
                                       dataRequired: DataRequiredAction,
                                       dataRetrieval: DataRetrievalAction,
+                                      checkObligationAvailability: CheckObligationAvailabilityAction,
                                       appConfig: AppConfig,
                                       val config: Configuration,
                                       errorHandler: ErrorHandler,
@@ -349,7 +349,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  def onPageLoadForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+  def onPageLoadForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability) {
     implicit userRequest => {
       val formProvider = userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence) match {
         case Some(answer) => UploadEvidenceQuestionForm.uploadEvidenceQuestionForm.fill(UploadEvidenceFormModel(answer, None))
@@ -361,7 +361,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
     }
   }
 
-  def onSubmitForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onSubmitForUploadEvidenceQuestion(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
     implicit userRequest => {
       UploadEvidenceQuestionForm.uploadEvidenceQuestionForm.bindFromRequest().fold(
         formWithErrors => {

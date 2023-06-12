@@ -17,14 +17,15 @@
 package controllers
 
 import base.SpecBase
+import config.featureSwitches.{FeatureSwitching, ShowFullAppealAgainstTheObligation}
 import models.session.UserAnswers
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.ArgumentCaptor
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testUtils.AuthTestModels
@@ -42,17 +43,18 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
-    reset(mockAuthConnector, mockSessionService)
+    reset(mockAuthConnector, mockSessionService, mockAppConfig)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
+    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(true)
 
     val controller: AppealAgainstObligationController = new AppealAgainstObligationController(
       otherRelevantInformationPage,
       mainNavigator,
       mockSessionService
-    )(authPredicate, dataRequiredAction, appConfig, mcc, dataRetrievalAction, ec)
+    )(authPredicate, dataRequiredAction, appConfig, mcc, dataRetrievalAction, checkObligationAvailabilityAction, ec)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
@@ -82,6 +84,16 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      s"redirect to appeal by letter page when the feature switch ($ShowFullAppealAgainstTheObligation) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+        val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
+        when(mockSessionService.getUserAnswers(any())).thenReturn(
+          Future.successful(Some(userAnswers(answers))))
+        when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(userRequestWithCorrectKeys.copy(answers = userAnswers(answers)))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
     }
 
@@ -144,6 +156,17 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
           "other-relevant-information-text" -> "コし")))
         status(result) shouldBe BAD_REQUEST
         contentAsString(result) should include("The text must contain only letters, numbers and standard special characters")
+      }
+
+      s"redirect to appeal by letter page when the feature switch ($ShowFullAppealAgainstTheObligation) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+        val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
+        when(mockSessionService.getUserAnswers(any())).thenReturn(
+          Future.successful(Some(userAnswers(answers))))
+        when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
+        val result: Future[Result] = controller.onSubmit(CheckMode)(fakeRequestConverter(answers, fakeRequest = fakeRequest.withFormUrlEncodedBody(
+          "other-relevant-information-text" -> "This is some information")))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
     }
 

@@ -23,6 +23,7 @@ import play.api.{Configuration, Environment}
 class ServiceBindings extends Module {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
     bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly(),
-    bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]).eagerly()
+    bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]).eagerly(),
+    bind[CheckObligationAvailabilityAction].to(classOf[CheckObligationAvailabilityActionImpl]).eagerly()
   )
 }

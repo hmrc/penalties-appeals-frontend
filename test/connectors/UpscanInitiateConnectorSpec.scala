@@ -33,7 +33,6 @@ class UpscanInitiateConnectorSpec extends SpecBase {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
-  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
 
   val upscanInitiateDataModel: UpscanInitiateRequest = UpscanInitiateRequest("")
   val sampleUpscanResponse: UpscanInitiateResponseModel =

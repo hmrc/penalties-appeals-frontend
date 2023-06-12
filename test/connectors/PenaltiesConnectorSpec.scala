@@ -40,7 +40,6 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
-  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
 
   val appealDataAsJson: JsValue = Json.parse(
     """

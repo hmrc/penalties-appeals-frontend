@@ -41,7 +41,6 @@ import scala.concurrent.{ExecutionContext, Future}
 //scalastyle:off
 class AppealServiceSpec extends SpecBase with LogCapturing {
   val mockPenaltiesConnector: PenaltiesConnector = mock(classOf[PenaltiesConnector])
-  val mockAppConfig: AppConfig = mock(classOf[AppConfig])
   val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global

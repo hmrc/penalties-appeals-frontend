@@ -185,9 +185,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   def routingForCancelVATRegistrationPage(answer: Option[String], request: UserRequest[_]): Call = {
-    if (answer.get.toLowerCase == "yes" && request.answers.getAnswer[String](SessionKeys.penaltyNumber).contains("NA")) {
-      routes.YouCannotAppealController.onPageLoadAppealByLetter()
-    } else if (answer.get.toLowerCase == "yes") {
+    if (answer.get.toLowerCase == "yes") {
       if (isEnabled(ShowFullAppealAgainstTheObligation)) {
         routes.YouCanAppealPenaltyController.onPageLoad()
       } else {

@@ -18,7 +18,7 @@ package controllers
 
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import models.pages.{AppealStartPage, PageMode}
 import models.{NormalMode, PenaltyTypeEnum, UserRequest}
 import play.api.Configuration
@@ -38,8 +38,9 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
                                                                         val config: Configuration,
                                                                         authorise: AuthPredicate,
                                                                         dataRequired: DataRequiredAction,
-                                                                        dataRetrieval: DataRetrievalAction) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+                                                                        dataRetrieval: DataRetrievalAction,
+                                                                        checkObligationAvailability: CheckObligationAvailabilityAction) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
     implicit userRequest => {
       logger.debug(s"[AppealStartController][onPageLoad] - Session keys received: \n" +
         s"Appeal Type = ${userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}, \n" +
