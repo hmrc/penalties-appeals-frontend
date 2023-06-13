@@ -16,8 +16,9 @@
 
 package connectors.httpParsers
 
+import connectors.httpParsers.AppealSubmissionHTTPParser.AppealSubmissionReads.startOfLogging
 import models.appeals.MultiplePenaltiesData
-import play.api.http.Status.{OK, NO_CONTENT}
+import play.api.http.Status.{CONFLICT, NO_CONTENT, OK}
 import play.api.libs.json.JsSuccess
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.Logger.logger
@@ -45,6 +46,9 @@ object MultiplePenaltiesHttpParser {
         case NO_CONTENT =>
           logger.debug(s"$startOfLogging $NO_CONTENT returned from penalties backend")
           Left(NoContent)
+        case CONFLICT =>
+          logger.warn(s"$startOfLogging Conflict status has been returned with body: ${response.body}")
+          Left(UnexpectedFailure(CONFLICT, response.body))
         case status =>
           PagerDutyHelper.logStatusCode("MultiplePenaltiesResponseReads", status)(RECEIVED_4XX_FROM_PENALTIES, RECEIVED_5XX_FROM_PENALTIES)
           logger.warn(s"$startOfLogging Unexpected response, status $status returned")

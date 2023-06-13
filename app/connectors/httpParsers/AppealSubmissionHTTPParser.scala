@@ -17,7 +17,7 @@
 package connectors.httpParsers
 
 import models.appeals.AppealSubmissionResponseModel
-import play.api.http.Status.{MULTI_STATUS, OK}
+import play.api.http.Status.{CONFLICT, MULTI_STATUS, OK}
 import play.api.libs.json.JsSuccess
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.Logger.logger
@@ -40,6 +40,9 @@ object AppealSubmissionHTTPParser {
               PagerDutyHelper.log("AppealSubmissionReads", INVALID_JSON_RECEIVED_FROM_PENALTIES)
               Left(InvalidJson)
           }
+        case CONFLICT =>
+          logger.warn(s"$startOfLogging Conflict status has been returned with body: ${response.body}")
+          Left(UnexpectedFailure(CONFLICT, response.body))
         case status =>
           PagerDutyHelper.logStatusCode("AppealSubmissionReads", status)(RECEIVED_4XX_FROM_PENALTIES, RECEIVED_5XX_FROM_PENALTIES)
           logger.warn(s"$startOfLogging Unexpected response, status $status returned with body: ${response.body}")
