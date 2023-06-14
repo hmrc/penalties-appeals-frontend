@@ -19,7 +19,7 @@ package connectors.httpParsers
 import base.SpecBase
 import models.appeals.AppealSubmissionResponseModel
 import play.api.http.Status
-import play.api.http.Status.{CONFLICT, OK}
+import play.api.http.Status.{CONFLICT, OK, REQUEST_TIMEOUT}
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
@@ -53,6 +53,19 @@ class AppealSubmissionParserSpec extends SpecBase with LogCapturing {
       |}
       |""".stripMargin)
 
+  val requestTimeoutJsonResponse: JsValue = Json.parse(
+    """
+      |{
+      | "failures" : [
+      |   {
+      |     "code": "REQUEST_TIMEOUT",
+      |     "reason": "Timing out..."
+      |    }
+      | ]
+      |}
+      |""".stripMargin
+  )
+
   val invalidJson: JsValue = Json.obj("foo" -> "bar")
 
   class Setup(status: Int, optJson: Option[JsValue] = None, responseHeaders: Map[String, Seq[String]] = Map.empty) {
@@ -83,7 +96,7 @@ class AppealSubmissionParserSpec extends SpecBase with LogCapturing {
       }
     }
 
-    s"return $UnexpectedFailure if a non OK or MULTI_STATUS status code returned" in new Setup(Status.CONFLICT, optJson = Some(conflictJsonResponse)) {
+    s"return $UnexpectedFailure if status is ${Status.CONFLICT}" in new Setup(Status.CONFLICT, optJson = Some(conflictJsonResponse)) {
       val responseAsString: String =
         """
           |{
@@ -95,12 +108,30 @@ class AppealSubmissionParserSpec extends SpecBase with LogCapturing {
           |  ]
           |}
           |""".stripMargin
+        readResponse.isLeft shouldBe true
+        readResponse.left.toOption.get.status shouldBe CONFLICT
+        readResponse.left.toOption.get.body.replaceAll("\\s", "") shouldBe responseAsString.replaceAll("\\s", "")
+    }
+
+    s"return $UnexpectedFailure if a non OK status code is returned" in new Setup(Status.REQUEST_TIMEOUT, optJson = Some(requestTimeoutJsonResponse)) {
+      val responseAsString: String =
+        """
+          |{
+          | "failures": [
+          |     {
+          |       "code": "REQUEST_TIMEOUT",
+          |       "reason": "Timing out..."
+          |     }
+          |   ]
+          |}
+          |""".stripMargin
       withCaptureOfLoggingFrom(logger) {
         logs => {
           readResponse.isLeft shouldBe true
-          readResponse.left.toOption.get.status shouldBe CONFLICT
-          readResponse.left.toOption.get.body.replaceAll("\\s", "") shouldBe responseAsString.replaceAll("\\s", "")
+          readResponse.left.toOption.get.status shouldBe REQUEST_TIMEOUT
+          readResponse.left.toOption.get.body.replaceAll("\\s",  "") shouldBe responseAsString.replaceAll("\\s", "")
           logs.exists(_.getMessage.contains(PagerDutyKeys.RECEIVED_4XX_FROM_PENALTIES.toString)) shouldBe true
+
         }
       }
     }

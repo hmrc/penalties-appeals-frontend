@@ -81,6 +81,10 @@ class MultiplePenaltiesHttpParserSpec extends SpecBase with LogCapturing {
       readResponse shouldBe Left(NoContent)
     }
 
+    s"return $UnexpectedFailure if the status is ${Status.CONFLICT}" in new Setup(Status.CONFLICT, Some(Json.obj())) {
+      readResponse shouldBe Left(UnexpectedFailure(409, "{ }"))
+    }
+
     s"return $UnexpectedFailure if random non Success status code returned" in new Setup(Status.INTERNAL_SERVER_ERROR, optJson = Some(Json.obj())) {
       withCaptureOfLoggingFrom(logger) {
         logs => {
