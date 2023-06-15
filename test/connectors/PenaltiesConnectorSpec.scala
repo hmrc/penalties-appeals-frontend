@@ -17,11 +17,11 @@
 package connectors
 
 import base.SpecBase
-import config.AppConfig
 import connectors.httpParsers.AppealSubmissionHTTPParser.AppealSubmissionResponse
 import connectors.httpParsers.MultiplePenaltiesHttpParser.MultiplePenaltiesResponse
 import connectors.httpParsers.{NoContent, UnexpectedFailure}
-import models.appeals.{AppealSubmission, AppealSubmissionResponseModel, CrimeAppealInformation, MultiplePenaltiesData}
+import models.appeals._
+import models.appeals.submission._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._

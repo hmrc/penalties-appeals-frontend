@@ -17,9 +17,7 @@
 package helpers
 
 import base.SpecBase
-import config.AppConfig
 import config.featureSwitches.FeatureSwitching
-import org.mockito.Mockito.mock
 
 class DateTimeHelperSpec extends SpecBase with FeatureSwitching {
   val dateTimeHelper: DateTimeHelper = injector.instanceOf[DateTimeHelper]

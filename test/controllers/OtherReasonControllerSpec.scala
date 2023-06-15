@@ -29,8 +29,8 @@ import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.{AnyContent, Result}
 import play.api.mvc.Results.Ok
+import play.api.mvc.{AnyContent, Result}
 import play.api.test.Helpers.{status, _}
 import services.upscan.UpscanService
 import testUtils.{AuthTestModels, UploadData}
@@ -261,7 +261,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callbackModel))))
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(NormalMode, isJsEnabled = true)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
@@ -281,7 +281,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callbackModel))))
           val result: Future[Result] = controller.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = true)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(CheckMode).url
@@ -462,7 +462,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
       "return OK and correct view" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callBackModel))))
+        when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(callbackModel))))
         val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
       }
@@ -471,8 +471,8 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(
-          callBackModel.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE),
-          callBackModel.copy(reference = "ref3", fileStatus = UploadStatusEnum.DUPLICATE)
+          callbackModel.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE),
+          callbackModel.copy(reference = "ref3", fileStatus = UploadStatusEnum.DUPLICATE)
         ))))
         val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe OK
@@ -700,7 +700,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockUploadJourneyRepository.getUploadsForJourney(Some("1234")))
-            .thenReturn(Future.successful(Option(Seq(callBackModel, callBackModel, callBackModel, callBackModel, callBackModel))))
+            .thenReturn(Future.successful(Option(Seq(callbackModel, callbackModel, callbackModel, callbackModel, callbackModel))))
           val result: Future[Result] = controller.onSubmitForUploadComplete(NormalMode)(fakeRequestConverter(correctUserAnswers, fakeRequest = fakeRequest
             .withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER

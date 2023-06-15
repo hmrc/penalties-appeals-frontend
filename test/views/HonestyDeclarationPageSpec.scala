@@ -160,7 +160,6 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
             }
 
-
             "the option selected is 'other'" must {
               implicit val agentDoc: Document = asDocument(applyAgentView("other", messages("honestyDeclaration.other"),
                 "1 January 2022", "1 January 2021", "31 January 2021", userRequest = agentUserAgentMissedSessionKeys))
@@ -246,7 +245,6 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
               behave like pageWithExpectedMessages(expectedContent)(agentDoc)
             }
-
 
             "the option selected is 'other'" must {
               implicit val agentDoc: Document = asDocument(applyAgentView("other", messages("agent.honestyDeclaration.other"),
@@ -337,7 +335,6 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
 
             behave like pageWithExpectedMessages(expectedContent)(agentDoc)
           }
-
 
           "the option selected is 'other'" must {
             implicit val agentDoc: Document = asDocument(applyAgentView("other", messages("honestyDeclaration.other"),

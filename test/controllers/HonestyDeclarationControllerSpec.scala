@@ -19,9 +19,9 @@ package controllers
 import base.SpecBase
 import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import models.session.UserAnswers
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers._

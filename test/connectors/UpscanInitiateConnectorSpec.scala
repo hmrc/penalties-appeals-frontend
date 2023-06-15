@@ -17,7 +17,6 @@
 package connectors
 
 import base.SpecBase
-import config.AppConfig
 import connectors.httpParsers.BadRequest
 import connectors.httpParsers.UpscanInitiateHttpParser.UpscanInitiateResponse
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateRequest, UpscanInitiateResponseModel}

@@ -17,8 +17,8 @@
 package helpers
 
 import base.SpecBase
-import models.{PenaltyTypeEnum, UserRequest}
 import models.session.UserAnswers
+import models.{PenaltyTypeEnum, UserRequest}
 import play.api.libs.json.Json
 import utils.SessionKeys
 

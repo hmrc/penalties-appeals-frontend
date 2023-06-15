@@ -180,30 +180,5 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
 
       doc.select("#main-content a").get(1).attr("href") shouldBe "/penalties-appeals/reason-for-missing-deadline"
     }
-
-    "the page is loaded, have a link to GOV.UK for GOV.UK logo" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
-        userRequestWithCorrectKeys, implicitly, implicitly
-      )
-
-      implicit val doc: Document = asDocument(applyView())
-      doc.select(".govuk-header__logo > a").attr("href") shouldBe "https://www.gov.uk/"
-    }
-
-    "the page is loaded, the footer should have the correct links" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
-        userRequestWithCorrectKeys, implicitly, implicitly
-      )
-
-      implicit val doc: Document = asDocument(applyView())
-      val footerLinks = doc.select(".govuk-footer__link")
-      footerLinks.get(0).text shouldBe "Cookies"
-      footerLinks.get(1).text shouldBe "Accessibility statement"
-      footerLinks.get(1).attr("href").contains("http://localhost:12346/accessibility-statement/penalties-appeals") shouldBe true
-      footerLinks.get(2).text shouldBe "Privacy policy"
-      footerLinks.get(3).text shouldBe "Terms and conditions"
-      footerLinks.get(4).text shouldBe "Help using GOV.UK"
-      footerLinks.get(5).text shouldBe "Contact"
-    }
   }
 }

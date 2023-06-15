@@ -19,11 +19,10 @@ package views
 import base.{BaseSelectors, SpecBase}
 import forms.HasHospitalStayEndedForm
 import messages.HasTheHospitalStayEndedMessages._
+import models.NormalMode
 import models.pages.{DidHospitalStayEndPage, PageMode}
-import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.health.HasTheHospitalStayEndedPage
@@ -32,13 +31,8 @@ import viewtils.RadioOptionHelper
 class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
   "HasTheHospitalStayEndedPage" should {
 
-    implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
     val hasTheHospitalStayEndedPage: HasTheHospitalStayEndedPage = injector.instanceOf[HasTheHospitalStayEndedPage]
     object Selectors extends BaseSelectors {
-      val collapsableYesText = "#conditional-hasStayEnded div > fieldset > legend"
-
-      val collapsableYesHintText = "#stayEndDate-hint"
-
       override val dateEntry: Int => String = (index: Int) => s"#stayEndDate > div:nth-child($index) > div > label"
 
       override val labelForRadioButton: Int => String = (index: Int) => if(index == 1) "label[for=hasStayEnded]" else s"label[for=hasStayEnded-$index]"

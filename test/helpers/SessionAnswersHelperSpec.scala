@@ -16,10 +16,7 @@
 
 package helpers
 
-import java.time.{LocalDate, LocalDateTime}
-
 import base.SpecBase
-import config.AppConfig
 import models.appeals.CheckYourAnswersRow
 import models.pages._
 import models.session.UserAnswers
@@ -34,6 +31,7 @@ import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

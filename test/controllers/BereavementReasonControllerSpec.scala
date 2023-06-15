@@ -24,18 +24,17 @@ import org.jsoup.nodes.Document
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.Result
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.bereavement.WhenDidThePersonDiePage
+
 import java.time.LocalDate
-
-import play.api.http.Status.{BAD_REQUEST, FORBIDDEN, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class BereavementReasonControllerSpec extends SpecBase {

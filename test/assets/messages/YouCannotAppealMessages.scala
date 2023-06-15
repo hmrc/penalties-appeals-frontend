@@ -17,10 +17,6 @@
 package messages
 
 object YouCannotAppealMessages {
-  val titleHeaderLPP = "You cannot use this service until you pay your VAT"
-
-  val titleHeaderLPPAgent = "You cannot use this service until your client pays the VAT"
-
   val titleHeaderLSP = "You cannot use this service until you submit your VAT Return"
 
   val titleHeaderLSPAgent = "You cannot use this service until the VAT Return is submitted"
@@ -35,17 +31,9 @@ object YouCannotAppealMessages {
 
   val traderLSPp2 = "If you want to use this service to appeal, you need to submit your VAT Return first."
 
-  val traderLPPp2 = "If you want to use this service to appeal, you need to pay your VAT first."
-
   val agentLSPp3 = "It can take up to 24 hours before the VAT Return shows on the VAT account. If it‘s already been submitted, keep checking back to see when it appears in the submission history."
 
   val traderLSPp3 = "It can take up to 24 hours before the VAT Return shows on your VAT account. If you‘ve already submitted it, keep checking back to see when it appears in your submission history."
-
-  val agentLPPp3 = "It can take up to 5 days for the payment to clear and show on their payment history. If they‘ve already paid, keep checking back to see when the payment clears."
-
-  val traderLPPp3 = "It can take up to 5 days for the payment to clear and show on your payment history. If you‘ve already paid, keep checking back to see when the payment clears."
-
-  val agentLPPp2 = "If you want to use this service to appeal, your client needs to pay their VAT first."
 
   val traderP4 = "If you need to cancel the VAT registration, you can do it through your VAT account."
 
@@ -54,6 +42,4 @@ object YouCannotAppealMessages {
   val returnToClientVATDetails = "Return to your client‘s VAT details"
 
   val returnToVATAccount = "Return to your VAT account"
-
-  val checkWhatYouOwe = "Check and pay what you owe"
 }

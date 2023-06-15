@@ -51,7 +51,7 @@ class DuplicateFilesAuditModelSpec  extends SpecBase {
 
     "the transaction name should be correct" in {
       val model: DuplicateFilesAuditModel = DuplicateFilesAuditModel(duplicateFilesPayload)(userRequestWithCorrectKeys)
-      model.auditType shouldBe "PenaltyDuplicateFilesSubmitted"
+      model.transactionName shouldBe "penalties-duplicate-files-submitted"
     }
 
     "the detail section should be correct (for client)" in {

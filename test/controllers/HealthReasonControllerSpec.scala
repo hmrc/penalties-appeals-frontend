@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import base.SpecBase
 import models.session.UserAnswers
 import models.{CheckMode, NormalMode}
@@ -35,6 +33,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
 import views.html.reasonableExcuseJourneys.health._
 
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 class HealthReasonControllerSpec extends SpecBase {

@@ -37,6 +37,4 @@ object PenaltyTypeEnum extends Enumeration {
       }
     }
   }
-
-  def withNameOpt(s: String): Option[PenaltyTypeEnum.Value] = values.find(_.toString == s)
 }

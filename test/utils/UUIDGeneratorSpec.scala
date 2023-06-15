@@ -23,9 +23,9 @@ class UUIDGeneratorSpec extends AnyWordSpec with Matchers {
 
   val uuidGenerator = new UUIDGenerator
 
-  "IdGenerator" should {
-      "generate ids that are uuids" in {
-        uuidGenerator.generateUUID should fullyMatch regex """([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})""".r
-      }
+  "UUIDGenerator" should {
+    "generate ids that are uuids" in {
+      uuidGenerator.generateUUID should fullyMatch regex """([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})""".r
     }
   }
+}

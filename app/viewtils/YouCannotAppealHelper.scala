@@ -30,12 +30,7 @@ class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
                                               extends ViewUtils {
 
   def getHeaderAndTitle(implicit user: UserRequest[_]): String = {
-    user.isAgent match {
-      case true =>
-        "agent.youCannotAppeal.headingAndTitle.lsp"
-      case false =>
-        "youCannotAppeal.headingAndTitle.lsp"
-    }
+    if (user.isAgent) "agent.youCannotAppeal.headingAndTitle.lsp" else "youCannotAppeal.headingAndTitle.lsp"
   }
 
   private def lspHtml(implicit messages: Messages, user: UserRequest[_]): Html = {

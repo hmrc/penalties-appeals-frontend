@@ -62,9 +62,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
     "given a json auditable data type" should {
       "extract the data and pass it into the AuditConnector" in {
         val expectedData = testAuditService.toExtendedDataEvent(testJsonAuditModel, "testUrl")
-
         testAuditService.audit(testJsonAuditModel)
-
         verify(mockAuditConnector)
           .sendExtendedEvent(ArgumentMatchers.refEq(expectedData, "eventId", "generatedAt"))(
             ArgumentMatchers.any[HeaderCarrier],
