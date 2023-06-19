@@ -16,51 +16,29 @@
 
 package models.upload
 
+import models.WritableReadableEnumTests
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.Format
 
-class FailureReasonEnumSpec extends AnyWordSpec with Matchers{
+class FailureReasonEnumSpec extends AnyWordSpec with Matchers with WritableReadableEnumTests {
+
+  implicit val formatter: Format[FailureReasonEnum.Value] = FailureReasonEnum.format
 
   "FailureReasonEnum" should {
 
-    "be writable to Json" when {
-
-      "the upload was Quarantined" in {
-        val result = Json.toJson(FailureReasonEnum.QUARANTINE)
-        result shouldBe JsString("QUARANTINE")
-      }
-
-      "the upload was Rejected" in {
-        val result = Json.toJson(FailureReasonEnum.REJECTED)
-        result shouldBe JsString("REJECTED")
-      }
-
-      "there was some other problem with the file" in {
-        val result = Json.toJson(FailureReasonEnum.UNKNOWN)
-        result shouldBe JsString("UNKNOWN")
-      }
+    "be writable to JSON" when {
+      writableTest[FailureReasonEnum.Value](FailureReasonEnum.QUARANTINE, "QUARANTINE", "the upload was quarantined")
+      writableTest[FailureReasonEnum.Value](FailureReasonEnum.REJECTED, "REJECTED", "the upload was rejected")
+      writableTest[FailureReasonEnum.Value](FailureReasonEnum.UNKNOWN, "UNKNOWN", "there was some other problem with the file")
     }
 
-    "be readable from json" when {
-
-      "the upload was Quarantined" in {
-        val result = Json.fromJson(JsString("QUARANTINE"))(FailureReasonEnum.format)
-        result.isSuccess shouldBe true
-        result.get shouldBe FailureReasonEnum.QUARANTINE
-      }
-
-      "the upload was Rejected" in {
-        val result = Json.fromJson(JsString("REJECTED"))(FailureReasonEnum.format)
-        result.isSuccess shouldBe true
-        result.get shouldBe FailureReasonEnum.REJECTED
-      }
-
-      "there was some other problem with the file" in {
-        val result = Json.fromJson(JsString("UNKNOWN"))(FailureReasonEnum.format)
-        result.isSuccess shouldBe true
-        result.get shouldBe FailureReasonEnum.UNKNOWN
-      }
+    "be readable from JSON" when {
+      readableTest[FailureReasonEnum.Value](FailureReasonEnum.QUARANTINE, "QUARANTINE", "the upload was quarantined")
+      readableTest[FailureReasonEnum.Value](FailureReasonEnum.REJECTED, "REJECTED", "the upload was rejected")
+      readableTest[FailureReasonEnum.Value](FailureReasonEnum.UNKNOWN, "UNKNOWN", "there was some other problem with the file")
     }
+
+    readableTestError[FailureReasonEnum.Value]("invalid", "an invalid value is passed")
   }
 }

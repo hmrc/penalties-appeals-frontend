@@ -36,20 +36,22 @@ class PenaltySelectionPageSpec extends SpecBase with ViewBehaviours {
 
   implicit val document = asDocument(page(form, yesNoOptions, "50.12", "526.10", PageMode(PenaltySelectionPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly))
 
-  val expectedContent = Seq(
-    Selectors.title -> title,
-    Selectors.h1 -> heading,
-    Selectors.pElementIndex(3) -> p1,
-    Selectors.listIndexWithElementIndex(4, 1) -> firstPenalty("50.12"),
-    Selectors.listIndexWithElementIndex(4, 2) -> secondPenalty("526.10"),
-    Selectors.pElementIndex(5) -> p2,
-    Selectors.legend -> formHeading,
-    Selectors.labelForRadioButton(1) -> yesOption,
-    Selectors.labelForRadioButton(2) -> noOption,
-    Selectors.button -> continueBtn
-  )
+  "when trader is on the page" must {
+    val expectedContent = Seq(
+      Selectors.title -> title,
+      Selectors.h1 -> heading,
+      Selectors.pElementIndex(3) -> p1,
+      Selectors.listIndexWithElementIndex(4, 1) -> firstPenalty("50.12"),
+      Selectors.listIndexWithElementIndex(4, 2) -> secondPenalty("526.10"),
+      Selectors.pElementIndex(5) -> p2,
+      Selectors.legend -> formHeading,
+      Selectors.labelForRadioButton(1) -> yesOption,
+      Selectors.labelForRadioButton(2) -> noOption,
+      Selectors.button -> continueBtn
+    )
 
-  behave like pageWithExpectedMessages(expectedContent)
+    behave like pageWithExpectedMessages(expectedContent)
+  }
 
   "when agent is on the page" must {
     implicit val document = asDocument(page(form, yesNoOptions, "50.12", "526.10", PageMode(PenaltySelectionPage, NormalMode))(agentFakeRequestConverter(), implicitly, implicitly))

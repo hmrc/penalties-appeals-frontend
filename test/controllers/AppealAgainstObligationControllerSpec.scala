@@ -17,14 +17,14 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.{FeatureSwitching, ShowFullAppealAgainstTheObligation}
+import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import models.session.UserAnswers
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers._

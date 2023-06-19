@@ -17,11 +17,10 @@
 package controllers.predicates
 
 import base.SpecBase
-import config.AppConfig
 import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import models.UserRequest
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{mock, reset, when}
+import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}

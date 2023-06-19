@@ -225,14 +225,14 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
       appealAgainstObligationDoc.select(Selectors.obligationExtraParagraph).text() shouldBe obligationParagraph
     }
 
-    s"the digital comms should be visible when the ${ShowDigitalCommsMessage.name} is enabled and the user is a trader" in {
+    s"the digital comms should be visible when the ${ShowDigitalCommsMessage.name} feature switch is enabled and the user is a trader" in {
       val doc: Document = asDocument(
         applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023","31 July 2023")
       )
       doc.select(Selectors.digitalCommsMessage).text() shouldBe whatHappensNextP4
     }
 
-    s"the digital comms should be invisible when the ${ShowDigitalCommsMessage.name} is disabled and the user is a trader" in {
+    s"the digital comms should be invisible when the ${ShowDigitalCommsMessage.name} feature switch is disabled and the user is a trader" in {
       val doc: Document = asDocument(
         applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", showDigitalCommsMessage = false)
       )

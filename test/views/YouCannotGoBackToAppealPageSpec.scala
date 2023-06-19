@@ -18,8 +18,7 @@ package views
 
 import base.{BaseSelectors, SpecBase}
 import messages.YouCannotGoBackToAppealMessages._
-import models.pages.PageMode
-import models.{AuthRequest, NormalMode, UserRequest}
+import models.AuthRequest
 import org.jsoup.nodes.Document
 import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat

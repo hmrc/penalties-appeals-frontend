@@ -58,6 +58,7 @@ class YouCannotAppealHelperSpec extends SpecBase {
         }
       }
     }
+
     "the user is a trader" when {
       "the appeal type is LSP" when {
         "returns the correct content" in {

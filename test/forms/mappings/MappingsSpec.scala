@@ -16,10 +16,10 @@
 
 package forms.mappings
 
-import java.time.LocalDate
-
 import base.SpecBase
 import play.api.data.{Form, FormError}
+
+import java.time.LocalDate
 
 class MappingsSpec extends SpecBase with Mappings{
 

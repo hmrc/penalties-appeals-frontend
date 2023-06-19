@@ -54,7 +54,7 @@ object UpscanMessageHelper {
     }
   }
 
-  def getJsOrNonJsFailureMessage(errorSuffix: String, isJsEnabled: Boolean ): String = {
+  def getJsOrNonJsFailureMessage(errorSuffix: String, isJsEnabled: Boolean): String = {
     if (isJsEnabled) s"$jsPrefix.$errorSuffix" else s"$noJsPrefix.$errorSuffix"
   }
 }

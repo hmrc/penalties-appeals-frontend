@@ -20,7 +20,7 @@ import base.SpecBase
 import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.{JsValue, Json}
 
-class JsonAuditModelSpec extends SpecBase with Matchers{
+class JsonAuditModelSpec extends SpecBase with Matchers {
   val JsonAuditModelObject: JsonAuditModel = new JsonAuditModel {
     override val auditType: String = "PenaltyAppealSubmitted"
     override val detail: JsValue = Json.obj("detail" ->
@@ -30,26 +30,22 @@ class JsonAuditModelSpec extends SpecBase with Matchers{
     override val transactionName: String = "penalties-appeal-submitted"
   }
 
-    "Given an Audit Model, the data passed in the model JsonAuditModel" should {
-      "have the values" in {
-        val jsonAuditModelObject = new JsonAuditModel {
-          override val auditType: String = "PenaltyAppealSubmitted"
-          override val detail: JsValue = Json.obj("submittedBy" -> "client",
-              "taxIdentifier" -> "123456789",
-              "identifierType" -> "VRN")
-          override val transactionName: String = "penalties-appeal-submitted"
-        }
-
-        jsonAuditModelObject.auditType shouldBe "PenaltyAppealSubmitted"
-        jsonAuditModelObject.detail shouldBe Json.parse("""
-                        {
-                        "submittedBy" : "client",
-                        "taxIdentifier" : "123456789",
-                         "identifierType" : "VRN"
-                        }
-                        """)
-        jsonAuditModelObject.transactionName shouldBe "penalties-appeal-submitted"
-
+  "JsonAuditModel" should {
+    "have the correct values when parsed to JSON" in {
+      val jsonAuditModelObject = new JsonAuditModel {
+        override val auditType: String = "PenaltyAppealSubmitted"
+        override val detail: JsValue = Json.obj("submittedBy" -> "client",
+          "taxIdentifier" -> "123456789",
+          "identifierType" -> "VRN")
+        override val transactionName: String = "penalties-appeal-submitted"
       }
+      jsonAuditModelObject.auditType shouldBe "PenaltyAppealSubmitted"
+      jsonAuditModelObject.detail shouldBe Json.obj(
+        "submittedBy" -> "client",
+        "taxIdentifier" -> "123456789",
+        "identifierType" -> "VRN"
+      )
+      jsonAuditModelObject.transactionName shouldBe "penalties-appeal-submitted"
+    }
   }
 }

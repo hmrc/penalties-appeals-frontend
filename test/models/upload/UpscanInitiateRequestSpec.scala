@@ -33,11 +33,11 @@ class UpscanInitiateRequestSpec extends SpecBase {
       |""".stripMargin)
 
   val model: UpscanInitiateRequest = UpscanInitiateRequest(
-    "/foo/bar",
-    Some("/foo/bar/success"),
-    Some("/foo/bar/error"),
-    Some(1),
-    Some(10000)
+    callbackUrl = "/foo/bar",
+    successRedirect = Some("/foo/bar/success"),
+    errorRedirect = Some("/foo/bar/error"),
+    minimumFileSize = Some(1),
+    maximumFileSize = Some(10000)
   )
 
   "UpscanInitiateRequest" should {

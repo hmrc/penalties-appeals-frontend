@@ -17,10 +17,9 @@
 package viewtils
 
 import base.SpecBase
-import config.AppConfig
 import models.{PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{mock, reset, when}
+import org.mockito.Mockito.{reset, when}
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import utils.SessionKeys

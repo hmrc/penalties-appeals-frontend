@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
 import connectors.UpscanConnector
 import connectors.httpParsers.InvalidJson
 import models.upload._
@@ -36,10 +37,8 @@ import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys
 import utils.SessionKeys
 import viewtils.EvidenceFileUploadsHelper
+
 import java.time.LocalDateTime
-
-import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

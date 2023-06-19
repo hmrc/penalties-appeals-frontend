@@ -17,10 +17,10 @@
 package forms
 
 import base.SpecBase
-import play.api.data.Form
-import java.time.LocalDate
-
 import models.UserRequest
+import play.api.data.Form
+
+import java.time.LocalDate
 
 class WhenBecomeUnableFormSpec extends SpecBase with FormBehaviours {
 

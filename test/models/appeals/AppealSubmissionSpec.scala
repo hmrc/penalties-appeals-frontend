@@ -18,8 +18,9 @@ package models.appeals
 
 import base.SpecBase
 import models.UserRequest
+import models.appeals.submission._
 import models.session.UserAnswers
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
+import models.upload.UploadJourney
 import play.api.libs.json.{JsValue, Json}
 import utils.SessionKeys
 
@@ -136,37 +137,37 @@ class AppealSubmissionSpec extends SpecBase {
       |   "startDateOfEvent": "2021-04-23T00:00:00",
       |   "statement": "This is a statement.",
       |   "supportingEvidence": {
-      |     "noOfUploadedFiles": 1
+      |     "noOfUploadedFiles": 2
       |   },
       |   "lateAppeal": false,
       |   "isClientResponsibleForSubmission": false,
       |   "isClientResponsibleForLateSubmission": true,
       |   "uploadedFiles":[
       |     {
-      |       "reference":"xyz",
-      |       "fileStatus":"READY",
-      |       "downloadUrl":"xyz.com",
-      |       "uploadDetails": {
-      |         "fileName":"filename.txt",
-      |         "fileMimeType":"txt",
-      |         "uploadTimestamp":"2020-01-01T01:01:00",
-      |         "checksum":"abcde",
-      |         "size":1
+      |     "reference": "ref1",
+      |     "fileStatus": "READY",
+      |     "downloadUrl": "download.file/url",
+      |     "uploadDetails": {
+      |         "fileName": "file1.txt",
+      |         "fileMimeType": "text/plain",
+      |         "uploadTimestamp": "2018-01-01T01:01:00",
+      |         "checksum": "check1234",
+      |         "size": 2
       |       },
-      |       "lastUpdated":"2021-02-02T02:02:00"
+      |       "lastUpdated": "2021-02-02T02:02:00"
       |     },
       |     {
-      |       "reference":"abc",
-      |       "fileStatus":"READY",
-      |       "downloadUrl":"abc.com",
+      |       "reference": "ref2",
+      |       "fileStatus": "READY",
+      |       "downloadUrl": "download.file/url",
       |       "uploadDetails": {
-      |         "fileName":"filename2.pdf",
-      |         "fileMimeType":"pdf",
-      |         "uploadTimestamp":"2020-03-03T03:03:00",
-      |         "checksum":"zyxwv",
-      |         "size":1
+      |         "fileName": "file1.txt",
+      |         "fileMimeType": "text/plain",
+      |         "uploadTimestamp": "2018-01-01T01:01:00",
+      |         "checksum": "check1234",
+      |         "size": 2
       |       },
-      |       "lastUpdated":"2021-04-04T04:04:00"
+      |       "lastUpdated": "2021-04-04T04:04:00"
       |     }
       |    ]
       |}
@@ -194,34 +195,34 @@ class AppealSubmissionSpec extends SpecBase {
       |   "honestyDeclaration": true,
       |   "statement": "This is a statement.",
       |   "supportingEvidence":{
-      |     "noOfUploadedFiles": 1
+      |     "noOfUploadedFiles": 2
       |   },
       |   "uploadedFiles":[
       |     {
-      |       "reference":"xyz",
-      |       "fileStatus":"READY",
-      |       "downloadUrl":"xyz.com",
-      |       "uploadDetails": {
-      |         "fileName":"filename.txt",
-      |         "fileMimeType":"txt",
-      |         "uploadTimestamp":"2020-01-01T01:01:00",
-      |         "checksum":"abcde",
-      |         "size":1
+      |     "reference": "ref1",
+      |     "fileStatus": "READY",
+      |     "downloadUrl": "download.file/url",
+      |     "uploadDetails": {
+      |         "fileName": "file1.txt",
+      |         "fileMimeType": "text/plain",
+      |         "uploadTimestamp": "2018-01-01T01:01:00",
+      |         "checksum": "check1234",
+      |         "size": 2
       |       },
-      |       "lastUpdated":"2021-02-02T02:02:00"
+      |       "lastUpdated": "2021-02-02T02:02:00"
       |     },
       |     {
-      |       "reference":"abc",
-      |       "fileStatus":"READY",
-      |       "downloadUrl":"abc.com",
+      |       "reference": "ref2",
+      |       "fileStatus": "READY",
+      |       "downloadUrl": "download.file/url",
       |       "uploadDetails": {
-      |         "fileName":"filename2.pdf",
-      |         "fileMimeType":"pdf",
-      |         "uploadTimestamp":"2020-03-03T03:03:00",
-      |         "checksum":"zyxwv",
-      |         "size":1
+      |         "fileName": "file1.txt",
+      |         "fileMimeType": "text/plain",
+      |         "uploadTimestamp": "2018-01-01T01:01:00",
+      |         "checksum": "check1234",
+      |         "size": 2
       |       },
-      |       "lastUpdated":"2021-04-04T04:04:00"
+      |       "lastUpdated": "2021-04-04T04:04:00"
       |     }
       |    ]
       |}
@@ -238,23 +239,8 @@ class AppealSubmissionSpec extends SpecBase {
       |""".stripMargin
   )
 
-  val uploadJourneyModel: UploadJourney = UploadJourney(reference = "xyz", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("xyz.com"),
-    uploadDetails =
-      Some(UploadDetails(
-        fileName = "filename.txt",
-        fileMimeType = "txt",
-        uploadTimestamp = LocalDateTime.of(2020,1,1,1,1),
-        checksum = "abcde", size = 1)),
-    failureDetails = None, lastUpdated = LocalDateTime.of(2021,2,2,2,2))
-
-  val uploadJourneyModel2: UploadJourney = UploadJourney(reference = "abc", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("abc.com"),
-    uploadDetails =
-      Some(UploadDetails(
-        fileName = "filename2.pdf",
-        fileMimeType = "pdf",
-        uploadTimestamp = LocalDateTime.of(2020,3,3,3,3),
-        checksum = "zyxwv", size = 1)),
-    failureDetails = None, lastUpdated = LocalDateTime.of(2021,4,4,4,4))
+  val uploadJourneyModel: UploadJourney = callbackModel.copy(reference = "ref1", lastUpdated = LocalDateTime.of(2021, 2, 2, 2, 2))
+  val uploadJourneyModel2: UploadJourney = callbackModel.copy(reference = "ref2", lastUpdated = LocalDateTime.of(2021, 4, 4, 4, 4))
 
   "parseAppealInformationToJson" should {
     "for crime" must {
@@ -393,7 +379,7 @@ class AppealSubmissionSpec extends SpecBase {
           startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
           statement = Some("This is a statement."),
           supportingEvidence = Some(Evidence(
-            noOfUploadedFiles = 1
+            noOfUploadedFiles = 2
           )),
           lateAppeal = false,
           lateAppealReason = None,
@@ -430,7 +416,7 @@ class AppealSubmissionSpec extends SpecBase {
           honestyDeclaration = true,
           statement = Some("This is a statement."),
           supportingEvidence = Some(Evidence(
-            noOfUploadedFiles = 1)),
+            noOfUploadedFiles = 2)),
           uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
@@ -466,7 +452,7 @@ class AppealSubmissionSpec extends SpecBase {
       val result = AppealSubmission.constructModelBasedOnReasonableExcuse("crime", isLateAppeal = false,
         agentReferenceNo = Some("AGENT1"), None)(fakeAgentRequestForCrimeJourney)
       result.appealSubmittedBy shouldBe "agent"
-      result.agentDetails shouldBe Some(AgentDetails("AGENT1", false))
+      result.agentDetails shouldBe Some(AgentDetails("AGENT1", isExcuseRelatedToAgent = false))
       result.appealInformation shouldBe CrimeAppealInformation(reasonableExcuse = "crime", honestyDeclaration = true,
         startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(), reportedIssueToPolice = "yes", statement = None, lateAppeal = false,
         lateAppealReason = None, isClientResponsibleForSubmission = Some(false), isClientResponsibleForLateSubmission = Some(true)
@@ -1098,7 +1084,6 @@ class AppealSubmissionSpec extends SpecBase {
     }
   }
 
-
   "writes" should {
     "for bereavement" must {
       "write the model to JSON" in {
@@ -1479,7 +1464,7 @@ class AppealSubmissionSpec extends SpecBase {
             startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
-              noOfUploadedFiles = 1
+              noOfUploadedFiles = 2
             )),
             lateAppeal = false,
             lateAppealReason = None,
@@ -1502,35 +1487,35 @@ class AppealSubmissionSpec extends SpecBase {
             "startDateOfEvent" -> "2021-04-23T00:00:00",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
-              "noOfUploadedFiles" -> 1
+              "noOfUploadedFiles" -> 2
             ),
             "lateAppeal" -> false,
             "isClientResponsibleForSubmission" -> true,
             "isClientResponsibleForLateSubmission" -> true,
             "uploadedFiles" -> Seq(
               Json.obj(
-                "reference" -> "xyz",
+                "reference" -> "ref1",
                 "fileStatus" -> "READY",
-                "downloadUrl" -> "xyz.com",
+                "downloadUrl" -> "download.file/url",
                 "uploadDetails" -> Json.obj(
-                  "fileName" -> "filename.txt",
-                  "fileMimeType" ->"txt",
-                  "uploadTimestamp" -> "2020-01-01T01:01:00",
-                  "checksum" -> "abcde",
-                  "size" -> 1
+                  "fileName" -> "file1.txt",
+                  "fileMimeType" -> "text/plain",
+                  "uploadTimestamp" -> "2018-01-01T01:01:00",
+                  "checksum" -> "check1234",
+                  "size" -> 2
                 ),
                 "lastUpdated" -> "2021-02-02T02:02:00"
               ),
               Json.obj(
-                "reference" -> "abc",
+                "reference" -> "ref2",
                 "fileStatus" -> "READY",
-                "downloadUrl" -> "abc.com",
+                "downloadUrl" -> "download.file/url",
                 "uploadDetails" -> Json.obj(
-                  "fileName" -> "filename2.pdf",
-                  "fileMimeType" -> "pdf",
-                  "uploadTimestamp" -> "2020-03-03T03:03:00",
-                  "checksum" -> "zyxwv",
-                  "size" -> 1
+                  "fileName" -> "file1.txt",
+                  "fileMimeType" -> "text/plain",
+                  "uploadTimestamp" -> "2018-01-01T01:01:00",
+                  "checksum" -> "check1234",
+                  "size" -> 2
                 ),
                 "lastUpdated" -> "2021-04-04T04:04:00"
               )
@@ -1602,7 +1587,7 @@ class AppealSubmissionSpec extends SpecBase {
             startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
-              noOfUploadedFiles = 1
+              noOfUploadedFiles = 2
             )),
             lateAppeal = true,
             lateAppealReason = Some("Late reason"),
@@ -1625,7 +1610,7 @@ class AppealSubmissionSpec extends SpecBase {
             "startDateOfEvent" -> "2021-04-23T00:00:00",
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
-              "noOfUploadedFiles" -> 1
+              "noOfUploadedFiles" -> 2
             ),
             "lateAppeal" -> true,
             "lateAppealReason" -> "Late reason",
@@ -1633,28 +1618,28 @@ class AppealSubmissionSpec extends SpecBase {
             "isClientResponsibleForLateSubmission" -> true,
             "uploadedFiles" -> Seq(
               Json.obj(
-                "reference" -> "xyz",
+                "reference" -> "ref1",
                 "fileStatus" -> "READY",
-                "downloadUrl" -> "xyz.com",
+                "downloadUrl" -> "download.file/url",
                 "uploadDetails" -> Json.obj(
-                  "fileName" -> "filename.txt",
-                  "fileMimeType" ->"txt",
-                  "uploadTimestamp" -> "2020-01-01T01:01:00",
-                  "checksum" -> "abcde",
-                  "size" -> 1
+                  "fileName" -> "file1.txt",
+                  "fileMimeType" -> "text/plain",
+                  "uploadTimestamp" -> "2018-01-01T01:01:00",
+                  "checksum" -> "check1234",
+                  "size" -> 2
                 ),
                 "lastUpdated" -> "2021-02-02T02:02:00"
               ),
               Json.obj(
-                "reference" -> "abc",
+                "reference" -> "ref2",
                 "fileStatus" -> "READY",
-                "downloadUrl" -> "abc.com",
+                "downloadUrl" -> "download.file/url",
                 "uploadDetails" -> Json.obj(
-                  "fileName" -> "filename2.pdf",
-                  "fileMimeType" -> "pdf",
-                  "uploadTimestamp" -> "2020-03-03T03:03:00",
-                  "checksum" -> "zyxwv",
-                  "size" -> 1
+                  "fileName" -> "file1.txt",
+                  "fileMimeType" -> "text/plain",
+                  "uploadTimestamp" -> "2018-01-01T01:01:00",
+                  "checksum" -> "check1234",
+                  "size" -> 2
                 ),
                 "lastUpdated" -> "2021-04-04T04:04:00"
               )
@@ -1682,7 +1667,7 @@ class AppealSubmissionSpec extends SpecBase {
             honestyDeclaration = true,
             statement = Some("This was the reason"),
             supportingEvidence = Some(Evidence(
-              noOfUploadedFiles = 1
+              noOfUploadedFiles = 2
             )),
             uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
           )
@@ -1700,32 +1685,32 @@ class AppealSubmissionSpec extends SpecBase {
             "honestyDeclaration" -> true,
             "statement" -> "This was the reason",
             "supportingEvidence" -> Json.obj(
-              "noOfUploadedFiles" -> 1
+              "noOfUploadedFiles" -> 2
             ),
             "uploadedFiles" -> Seq(
               Json.obj(
-                "reference" -> "xyz",
+                "reference" -> "ref1",
                 "fileStatus" -> "READY",
-                "downloadUrl" -> "xyz.com",
+                "downloadUrl" -> "download.file/url",
                 "uploadDetails" -> Json.obj(
-                  "fileName" -> "filename.txt",
-                  "fileMimeType" ->"txt",
-                  "uploadTimestamp" -> "2020-01-01T01:01:00",
-                  "checksum" -> "abcde",
-                  "size" -> 1
+                  "fileName" -> "file1.txt",
+                  "fileMimeType" -> "text/plain",
+                  "uploadTimestamp" -> "2018-01-01T01:01:00",
+                  "checksum" -> "check1234",
+                  "size" -> 2
                 ),
                 "lastUpdated" -> "2021-02-02T02:02:00"
               ),
               Json.obj(
-                "reference" -> "abc",
+                "reference" -> "ref2",
                 "fileStatus" -> "READY",
-                "downloadUrl" -> "abc.com",
+                "downloadUrl" -> "download.file/url",
                 "uploadDetails" -> Json.obj(
-                  "fileName" -> "filename2.pdf",
-                  "fileMimeType" -> "pdf",
-                  "uploadTimestamp" -> "2020-03-03T03:03:00",
-                  "checksum" -> "zyxwv",
-                  "size" -> 1
+                  "fileName" -> "file1.txt",
+                  "fileMimeType" -> "text/plain",
+                  "uploadTimestamp" -> "2018-01-01T01:01:00",
+                  "checksum" -> "check1234",
+                  "size" -> 2
                 ),
                 "lastUpdated" -> "2021-04-04T04:04:00"
               )
@@ -1771,470 +1756,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
         result shouldBe jsonRepresentModel
-      }
-    }
-  }
-
-  "BereavementAppealInformation" should {
-    "bereavementAppealWrites" must {
-      "write the appeal model to JSON" in {
-        val model = BereavementAppealInformation(
-          reasonableExcuse = "bereavement",
-          honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          statement = None,
-          lateAppeal = true,
-          lateAppealReason = Some("Reason"),
-          isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
-        )
-        val result = Json.toJson(model)(BereavementAppealInformation.bereavementAppealWrites)
-        result shouldBe Json.obj(
-          "reasonableExcuse" -> "bereavement",
-          "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason",
-          "isClientResponsibleForSubmission" -> false,
-          "isClientResponsibleForLateSubmission" -> true
-        )
-      }
-    }
-  }
-
-  "CrimeAppealInformation" should {
-    "crimeAppealWrites" must {
-      "write the appeal model to JSON" in {
-        val model = CrimeAppealInformation(
-          reasonableExcuse = "crime",
-          honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          reportedIssueToPolice = "yes",
-          statement = None,
-          lateAppeal = true,
-          lateAppealReason = Some("Reason"),
-          isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
-        )
-        val result = Json.toJson(model)(CrimeAppealInformation.crimeAppealWrites)
-        result shouldBe Json.obj(
-          "reasonableExcuse" -> "crime",
-          "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "reportedIssueToPolice" -> "yes",
-          "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason",
-          "isClientResponsibleForSubmission" -> false,
-          "isClientResponsibleForLateSubmission" -> true
-        )
-      }
-    }
-  }
-
-  "FireOrFloodAppealInformation" should {
-    "fireOrFloodAppealWrites" must {
-      "write the appeal model to Json" in {
-        val model = FireOrFloodAppealInformation(
-          reasonableExcuse = "fireandflood",
-          honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          statement = None,
-          lateAppeal = true,
-          lateAppealReason = Some("Reason"),
-          isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
-        )
-        val result = Json.toJson(model)(FireOrFloodAppealInformation.fireOrFloodAppealWrites)
-        result shouldBe Json.obj(
-          "reasonableExcuse" -> "fireandflood",
-          "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason",
-          "isClientResponsibleForSubmission" -> false,
-          "isClientResponsibleForLateSubmission" -> true
-        )
-      }
-    }
-  }
-
-  "LossOfStaffAppealInformation" should {
-    "lossOfStaffAppealWrites" must {
-      "write the appeal model to JSON" in {
-        val model = LossOfStaffAppealInformation(
-          reasonableExcuse = "lossOfEssentialStaff",
-          honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          statement = None,
-          lateAppeal = true,
-          lateAppealReason = Some("Reason"),
-          isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
-        )
-        val result = Json.toJson(model)(LossOfStaffAppealInformation.lossOfStaffAppealWrites)
-        result shouldBe Json.obj(
-          "reasonableExcuse" -> "lossOfEssentialStaff",
-          "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason",
-          "isClientResponsibleForSubmission" -> false,
-          "isClientResponsibleForLateSubmission" -> true
-        )
-      }
-    }
-  }
-
-  "TechnicalIssuesAppealInformation" should {
-    "technicalIssuesAppealWrites" must {
-      "write the appeal model to JSON" in {
-        val model = TechnicalIssuesAppealInformation(
-          reasonableExcuse = "technicalIssue",
-          honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2021-04-23").atStartOfDay(),
-          endDateOfEvent = LocalDate.parse("2021-04-24").atTime(LocalTime.of(0, 0, 1)).truncatedTo(ChronoUnit.SECONDS),
-          statement = None,
-          lateAppeal = true,
-          lateAppealReason = Some("Reason"),
-          isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true)
-        )
-        val result = Json.toJson(model)(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
-        result shouldBe Json.obj(
-          "reasonableExcuse" -> "technicalIssue",
-          "honestyDeclaration" -> true,
-          "startDateOfEvent" -> "2021-04-23T00:00:00",
-          "endDateOfEvent" -> "2021-04-24T00:00:01",
-          "lateAppeal" -> true,
-          "lateAppealReason" -> "Reason",
-          "isClientResponsibleForSubmission" -> false,
-          "isClientResponsibleForLateSubmission" -> true
-        )
-      }
-    }
-  }
-
-  "HealthAppealInformation" should {
-    "healthAppealWrites" must {
-      "write the appeal to JSON" when {
-        "there has been a hospital stay - and is no longer ongoing (both start and end date) - write the appeal model to JSON" in {
-          val model = HealthAppealInformation(
-            reasonableExcuse = "health",
-            honestyDeclaration = true,
-            startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()),
-            endDateOfEvent = Some(LocalDate.parse("2021-04-24").atTime(LocalTime.of(0, 0, 1)).truncatedTo(ChronoUnit.SECONDS)),
-            eventOngoing = false,
-            hospitalStayInvolved = true,
-            statement = None,
-            lateAppeal = true,
-            lateAppealReason = Some("Reason"),
-            isClientResponsibleForSubmission = Some(false),
-            isClientResponsibleForLateSubmission = Some(true)
-          )
-          val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
-          result shouldBe Json.obj(
-            "reasonableExcuse" -> "health",
-            "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T00:00:00",
-            "endDateOfEvent" -> "2021-04-24T00:00:01",
-            "eventOngoing" -> false,
-            "hospitalStayInvolved" -> true,
-            "lateAppeal" -> true,
-            "lateAppealReason" -> "Reason",
-            "isClientResponsibleForSubmission" -> false,
-            "isClientResponsibleForLateSubmission" -> true
-          )
-        }
-
-        "there has been a hospital stay AND it is ongoing (no end date) - write the appeal model to JSON" in {
-          val model = HealthAppealInformation(
-            reasonableExcuse = "health",
-            honestyDeclaration = true,
-            startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()),
-            endDateOfEvent = None,
-            eventOngoing = true,
-            hospitalStayInvolved = true,
-            statement = None,
-            lateAppeal = true,
-            lateAppealReason = Some("Reason"),
-            isClientResponsibleForSubmission = Some(false),
-            isClientResponsibleForLateSubmission = Some(true)
-          )
-          val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
-          result shouldBe Json.obj(
-            "reasonableExcuse" -> "health",
-            "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T00:00:00",
-            "eventOngoing" -> true,
-            "hospitalStayInvolved" -> true,
-            "lateAppeal" -> true,
-            "lateAppealReason" -> "Reason",
-            "isClientResponsibleForSubmission" -> false,
-            "isClientResponsibleForLateSubmission" -> true
-          )
-        }
-
-        "there has been NO hospital stay (dateOfEvent present, eventOngoing = false, hospitalStayInvolved = false) " +
-          "write the appeal model to JSON" in {
-          val model = HealthAppealInformation(
-            reasonableExcuse = "health",
-            honestyDeclaration = true,
-            startDateOfEvent = Some(LocalDate.parse("2021-04-23").atStartOfDay()),
-            endDateOfEvent = None,
-            eventOngoing = false,
-            hospitalStayInvolved = false,
-            statement = None,
-            lateAppeal = true,
-            lateAppealReason = Some("Reason"),
-            isClientResponsibleForSubmission = Some(false),
-            isClientResponsibleForLateSubmission = Some(true)
-          )
-          val result = Json.toJson(model)(HealthAppealInformation.healthAppealWrites)
-          result shouldBe Json.obj(
-            "reasonableExcuse" -> "health",
-            "honestyDeclaration" -> true,
-            "startDateOfEvent" -> "2021-04-23T00:00:00",
-            "eventOngoing" -> false,
-            "hospitalStayInvolved" -> false,
-            "lateAppeal" -> true,
-            "lateAppealReason" -> "Reason",
-            "isClientResponsibleForSubmission" -> false,
-            "isClientResponsibleForLateSubmission" -> true
-          )
-        }
-      }
-    }
-  }
-
-  "OtherAppealInformation" should {
-    "otherAppealInformationWrites" should {
-      "write to JSON - no late appeal" in {
-        val modelToConvertToJson = OtherAppealInformation(
-          reasonableExcuse = "other",
-          honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
-          statement = Some("I was late. Sorry."),
-          supportingEvidence = Some(Evidence(noOfUploadedFiles = 1)),
-          lateAppeal = false,
-          lateAppealReason = None,
-          isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true),
-          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
-        )
-        val expectedResult = Json.parse(
-          """
-            |{
-            | "reasonableExcuse": "other",
-            | "honestyDeclaration": true,
-            | "startDateOfEvent": "2022-01-01T00:00:00",
-            | "statement": "I was late. Sorry.",
-            | "supportingEvidence": {
-            |   "noOfUploadedFiles": 1
-            | },
-            | "lateAppeal": false,
-            | "isClientResponsibleForSubmission": false,
-            | "isClientResponsibleForLateSubmission": true,
-            | "uploadedFiles": [
-            |   {
-            |     "reference": "xyz",
-            |     "fileStatus": "READY",
-            |     "downloadUrl": "xyz.com",
-            |     "uploadDetails": {
-            |         "fileName": "filename.txt",
-            |         "fileMimeType": "txt",
-            |         "uploadTimestamp": "2020-01-01T01:01:00",
-            |         "checksum": "abcde",
-            |         "size": 1
-            |       },
-            |       "lastUpdated": "2021-02-02T02:02:00"
-            |     },
-            |     {
-            |       "reference": "abc",
-            |       "fileStatus": "READY",
-            |       "downloadUrl": "abc.com",
-            |       "uploadDetails": {
-            |         "fileName": "filename2.pdf",
-            |         "fileMimeType": "pdf",
-            |         "uploadTimestamp": "2020-03-03T03:03:00",
-            |         "checksum": "zyxwv",
-            |         "size": 1
-            |       },
-            |       "lastUpdated": "2021-04-04T04:04:00"
-            |     }
-            |   ]
-            |}
-            |""".stripMargin)
-        val result = Json.toJson(modelToConvertToJson)
-        result shouldBe expectedResult
-      }
-
-      "write to JSON - late appeal" in {
-        val modelToConvertToJson = OtherAppealInformation(
-          reasonableExcuse = "other",
-          honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
-          statement = Some("I was late. Sorry."),
-          supportingEvidence = Some(Evidence(noOfUploadedFiles = 1)),
-          lateAppeal = true,
-          lateAppealReason = Some("This is a reason"),
-          isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true),
-          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
-        )
-        val expectedResult = Json.parse(
-          """
-            |{
-            | "reasonableExcuse": "other",
-            | "honestyDeclaration": true,
-            | "startDateOfEvent": "2022-01-01T00:00:00",
-            | "statement": "I was late. Sorry.",
-            | "supportingEvidence": {
-            |   "noOfUploadedFiles": 1
-            | },
-            | "lateAppeal": true,
-            | "lateAppealReason": "This is a reason",
-            | "isClientResponsibleForSubmission": false,
-            | "isClientResponsibleForLateSubmission": true,
-            | "uploadedFiles": [
-            |   {
-            |     "reference": "xyz",
-            |     "fileStatus": "READY",
-            |     "downloadUrl": "xyz.com",
-            |     "uploadDetails": {
-            |         "fileName": "filename.txt",
-            |         "fileMimeType": "txt",
-            |         "uploadTimestamp": "2020-01-01T01:01:00",
-            |         "checksum": "abcde",
-            |         "size": 1
-            |       },
-            |       "lastUpdated": "2021-02-02T02:02:00"
-            |     },
-            |     {
-            |       "reference": "abc",
-            |       "fileStatus": "READY",
-            |       "downloadUrl": "abc.com",
-            |       "uploadDetails": {
-            |         "fileName": "filename2.pdf",
-            |         "fileMimeType": "pdf",
-            |         "uploadTimestamp": "2020-03-03T03:03:00",
-            |         "checksum": "zyxwv",
-            |         "size": 1
-            |       },
-            |       "lastUpdated": "2021-04-04T04:04:00"
-            |     }
-            |   ]
-            |}
-            |""".stripMargin)
-        val result = Json.toJson(modelToConvertToJson)
-        result shouldBe expectedResult
-      }
-
-      "write to JSON - no evidence" in {
-        val modelToConvertToJson = OtherAppealInformation(
-          reasonableExcuse = "other",
-          honestyDeclaration = true,
-          startDateOfEvent = LocalDate.parse("2022-01-01").atStartOfDay(),
-          statement = Some("I was late. Sorry."),
-          supportingEvidence = None,
-          lateAppeal = false,
-          lateAppealReason = None,
-          isClientResponsibleForSubmission = Some(false),
-          isClientResponsibleForLateSubmission = Some(true),
-          uploadedFiles = None
-        )
-        val expectedResult = Json.parse(
-          """
-            |{
-            | "reasonableExcuse": "other",
-            | "honestyDeclaration": true,
-            | "startDateOfEvent": "2022-01-01T00:00:00",
-            | "statement": "I was late. Sorry.",
-            | "lateAppeal": false,
-            | "isClientResponsibleForSubmission": false,
-            | "isClientResponsibleForLateSubmission": true
-            |}
-            |""".stripMargin)
-        val result = Json.toJson(modelToConvertToJson)
-        result shouldBe expectedResult
-      }
-    }
-  }
-
-  "ObligationAppealInformation" should {
-    "obligationAppealInformationWrites" should {
-      "write to JSON" in {
-        val modelToConvertToJson = ObligationAppealInformation(
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
-          statement = Some("I was late. Sorry."),
-          supportingEvidence = Some(
-            Evidence(
-              noOfUploadedFiles = 1
-            )
-          ),
-          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
-        )
-        val expectedResult = Json.parse(
-          """
-            |{
-            | "reasonableExcuse": "obligation",
-            | "honestyDeclaration": true,
-            | "statement": "I was late. Sorry.",
-            | "supportingEvidence": {
-            |   "noOfUploadedFiles": 1
-            | },
-            | "uploadedFiles": [
-            |   {
-            |     "reference": "xyz",
-            |     "fileStatus": "READY",
-            |     "downloadUrl": "xyz.com",
-            |     "uploadDetails": {
-            |         "fileName": "filename.txt",
-            |         "fileMimeType": "txt",
-            |         "uploadTimestamp": "2020-01-01T01:01:00",
-            |         "checksum": "abcde",
-            |         "size": 1
-            |       },
-            |       "lastUpdated": "2021-02-02T02:02:00"
-            |     },
-            |     {
-            |       "reference": "abc",
-            |       "fileStatus": "READY",
-            |       "downloadUrl": "abc.com",
-            |       "uploadDetails": {
-            |         "fileName": "filename2.pdf",
-            |         "fileMimeType": "pdf",
-            |         "uploadTimestamp": "2020-03-03T03:03:00",
-            |         "checksum": "zyxwv",
-            |         "size": 1
-            |       },
-            |       "lastUpdated": "2021-04-04T04:04:00"
-            |     }
-            |   ]
-            |}
-            |""".stripMargin)
-        val result = Json.toJson(modelToConvertToJson)
-        result shouldBe expectedResult
-      }
-
-      "write to JSON - no evidence" in {
-        val modelToConvertToJson = ObligationAppealInformation(
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
-          statement = Some("I was late. Sorry."),
-          supportingEvidence = None,
-          uploadedFiles = None
-        )
-        val expectedResult = Json.parse(
-          """
-            |{
-            | "reasonableExcuse": "obligation",
-            | "honestyDeclaration": true,
-            | "statement": "I was late. Sorry."
-            |}
-            |""".stripMargin)
-        val result = Json.toJson(modelToConvertToJson)
-        result shouldBe expectedResult
       }
     }
   }

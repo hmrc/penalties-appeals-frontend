@@ -64,17 +64,5 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
 
       behave like pageWithExpectedMessages(expectedContent)
     }
-
-    "display the LPP variation when the appeal is for a LPP - Additional" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, userRequestAdditionalWithCorrectKeys))
-
-      val expectedContent = Seq(
-        Selectors.title -> titleLpp,
-        Selectors.label -> headingLpp,
-        Selectors.button -> continueButton
-      )
-
-      behave like pageWithExpectedMessages(expectedContent)
-    }
   }
 }

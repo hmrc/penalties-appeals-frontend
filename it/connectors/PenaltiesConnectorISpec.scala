@@ -17,7 +17,8 @@
 package connectors
 
 import models.PenaltyTypeEnum
-import models.appeals.{AppealSubmission, CrimeAppealInformation, MultiplePenaltiesData}
+import models.appeals.submission.CrimeAppealInformation
+import models.appeals.{AppealSubmission, MultiplePenaltiesData}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._

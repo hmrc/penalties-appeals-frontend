@@ -19,7 +19,6 @@ package utils
 object EnrolmentKeys {
   val mtdVATEnrolmentKey: String = "HMRC-MTD-VAT"
   val vrnId: String = "VRN"
-  val agentAffinityGroup: String = "Agent"
   val activated = "Activated"
   val agentDelegatedAuthRuleKey = "mtd-vat-auth"
   val agentEnrolmentKey = "HMRC-AS-AGENT"

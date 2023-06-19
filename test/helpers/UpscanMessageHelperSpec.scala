@@ -21,86 +21,50 @@ import models.upload.FailureReasonEnum
 
 class UpscanMessageHelperSpec extends SpecBase {
 
+  def testGetLocalisedFailureMessageForFailure(failureReason: FailureReasonEnum.Value, expectedResult: String, isJsEnabled: Boolean): Unit = {
+    s"return the correct message when status is $failureReason" in {
+      val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason, isJsEnabled)
+      result shouldBe expectedResult
+    }
+  }
+
+  def testGetUploadFailureMessage(errorCode: String, expectedResult: String, isJsEnabled: Boolean): Unit = {
+    s"return the correct message when error code is $errorCode" in {
+      val result = UpscanMessageHelper.getUploadFailureMessage(errorCode, isJsEnabled)
+      result shouldBe expectedResult
+    }
+  }
+
+
+
   "getLocalisedFailureMessageForFailure" when {
     "routing through the js journey " should {
-      "return virus message when status is QUARANTINE" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, true)
-        result shouldBe "upscan.fileHasVirus"
-      }
-
-      "return MIME type message when status is REJECTED" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, true)
-        result shouldBe "upscan.invalidMimeType"
-      }
-
-      "return try again message when status is UNKNOWN" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, true)
-        result shouldBe "upscan.unableToUpload"
-      }
+      testGetLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, "upscan.fileHasVirus", isJsEnabled = true)
+      testGetLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, "upscan.invalidMimeType", isJsEnabled = true)
+      testGetLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, "upscan.unableToUpload", isJsEnabled = true)
     }
 
     "routing through the non-js journey" should {
-      "return virus message when status is QUARANTINE" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, false)
-        result shouldBe "upscan.noJs.fileHasVirus"
-      }
-
-      "return MIME type message when status is REJECTED" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, false)
-        result shouldBe "upscan.noJs.invalidMimeType"
-      }
-
-      "return try again message when status is UNKNOWN" in {
-        val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, false)
-        result shouldBe "upscan.noJs.unableToUpload"
-      }
+      testGetLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, "upscan.noJs.fileHasVirus", isJsEnabled = false)
+      testGetLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, "upscan.noJs.invalidMimeType", isJsEnabled = false)
+      testGetLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, "upscan.noJs.unableToUpload", isJsEnabled = false)
     }
   }
 
   "getUploadFailureMessage" should {
 
     "routing through the js journey " should {
-      "return empty file message when errorCode is EntityTooSmall" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", true)
-        result shouldBe "upscan.fileEmpty"
-      }
-
-      "return file too large message when errorCode is EntityTooLarge" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooLarge", true)
-        result shouldBe "upscan.fileTooLarge"
-      }
-
-      "return select a file message when errorCode is InvalidArgument" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", true)
-        result shouldBe "upscan.fileNotSpecified"
-      }
-
-      "return try again message when errorCode is not matched" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", true)
-        result shouldBe "upscan.unableToUpload"
-      }
+      testGetUploadFailureMessage("EntityTooSmall", "upscan.fileEmpty", isJsEnabled = true)
+      testGetUploadFailureMessage("EntityTooLarge", "upscan.fileTooLarge", isJsEnabled = true)
+      testGetUploadFailureMessage("InvalidArgument", "upscan.fileNotSpecified", isJsEnabled = true)
+      testGetUploadFailureMessage("InternalError", "upscan.unableToUpload", isJsEnabled = true)
     }
 
     "routing through the non-js journey" should {
-      "return empty file message when errorCode is EntityTooSmall" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooSmall", false)
-        result shouldBe "upscan.noJs.fileEmpty"
-      }
-
-      "return file too large message when errorCode is EntityTooLarge" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("EntityTooLarge", false)
-        result shouldBe "upscan.noJs.fileTooLarge"
-      }
-
-      "return select a file message when errorCode is InvalidArgument" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InvalidArgument", false)
-        result shouldBe "upscan.fileNotSpecified"
-      }
-
-      "return try again message when errorCode is not matched" in {
-        val result = UpscanMessageHelper.getUploadFailureMessage("InternalError", false)
-        result shouldBe "upscan.noJs.unableToUpload"
-      }
+      testGetUploadFailureMessage("EntityTooSmall", "upscan.noJs.fileEmpty", isJsEnabled = false)
+      testGetUploadFailureMessage("EntityTooLarge", "upscan.noJs.fileTooLarge", isJsEnabled = false)
+      testGetUploadFailureMessage("InvalidArgument", "upscan.fileNotSpecified", isJsEnabled = false)
+      testGetUploadFailureMessage("InternalError", "upscan.noJs.unableToUpload", isJsEnabled = false)
     }
   }
 
@@ -113,29 +77,30 @@ class UpscanMessageHelperSpec extends SpecBase {
 
   "getPluralOrSingular" should {
     "show the singular wording" when {
-      "there is only one total passed in" in {
+      "there 1 is passed to the function" in {
         val result = UpscanMessageHelper.getPluralOrSingular(1)("this.is.a.message.singular", "this.is.a.message.plural")(implicitly)
         result.body shouldBe "this.is.a.message.singular"
       }
     }
+
     "show the plural wording" when {
-      "there is more than one total passed in" in {
+      "more than 1 is passed to the function" in {
         val result = UpscanMessageHelper.getPluralOrSingular(2)("this.is.a.message.singular", "this.is.a.message.plural")(implicitly)
         result.body shouldBe "this.is.a.message.plural"
       }
     }
   }
 
-  "getJsOrNonJsFailureMessage" when {
-    "a request has 'jsenabled' and nonJsRoute is disabled" should {
-      "return a message with the 'jsPrefix'" in {
+  "getJsOrNonJsFailureMessage" should {
+    "return the JS message" when {
+      "the jsEnabled parameter is true" in {
         val result: String = UpscanMessageHelper.getJsOrNonJsFailureMessage("foo", true)
         result shouldBe "upscan.foo"
       }
     }
 
-    "a request has 'jsenabled' and nonJsRoute is enabled" should {
-      "return a message with the 'noJsPrefix'" in {
+    "return the non-JS message" when {
+      "the jsEnabled parameter is false" in {
         val result = UpscanMessageHelper.getJsOrNonJsFailureMessage("bar", false)
         result shouldBe "upscan.noJs.bar"
       }

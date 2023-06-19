@@ -18,17 +18,18 @@ package models.session
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 class UserAnswersSpec extends AnyWordSpec with Matchers {
+  val answersAsJson: JsObject = Json.obj(
+    "key1" -> "value1",
+    "key2" -> "value2"
+  )
   "be writable to JSON" in {
-    val model = UserAnswers("journey123", Json.obj(
-      "key1" -> "value1",
-      "key2" -> "value2"
-    ))
+    val model = UserAnswers("journey123", answersAsJson)
     val expectedResult = Json.obj(
       "journeyId" -> "journey123",
-      "data" -> Json.obj("key1" -> "value1", "key2" -> "value2")
+      "data" -> answersAsJson
     )
     val result = Json.toJson(model)(UserAnswers.format)
     result shouldBe expectedResult
@@ -37,12 +38,9 @@ class UserAnswersSpec extends AnyWordSpec with Matchers {
   "be readable from JSON" in {
     val json = Json.obj(
       "journeyId" -> "journey123",
-      "data" -> Json.obj("key1" -> "value1", "key2" -> "value2")
+      "data" -> answersAsJson
     )
-    val expectedModel = UserAnswers("journey123", Json.obj(
-      "key1" -> "value1",
-      "key2" -> "value2"
-    ))
+    val expectedModel = UserAnswers("journey123", answersAsJson)
     val result = Json.fromJson(json)(UserAnswers.format)
     result.isSuccess shouldBe true
     result.get shouldBe expectedModel
@@ -50,19 +48,13 @@ class UserAnswersSpec extends AnyWordSpec with Matchers {
 
   "setAnswer" should {
     "store the answer in the data field" in {
-      val answers = UserAnswers("journey123", Json.obj(
-        "key1" -> "value1",
-        "key2" -> "value2"
-      ))
+      val answers = UserAnswers("journey123", answersAsJson)
       val newAnswers = answers.setAnswer("key3", "value3")
       newAnswers.getAnswer[String]("key3").get shouldBe "value3"
     }
 
     "overwrite the answer if already present in the data field" in {
-      val answers = UserAnswers("journey123", Json.obj(
-        "key1" -> "value1",
-        "key2" -> "value2"
-      ))
+      val answers = UserAnswers("journey123", answersAsJson)
       val newAnswers = answers.setAnswer("key2", "value3")
       newAnswers.getAnswer[String]("key2").get shouldBe "value3"
     }
@@ -71,10 +63,7 @@ class UserAnswersSpec extends AnyWordSpec with Matchers {
   "getAnswer" should {
     "return Some" when {
       "the answer is in the data field" in {
-        val answers = UserAnswers("journey123", Json.obj(
-          "key1" -> "value1",
-          "key2" -> "value2"
-        ))
+        val answers = UserAnswers("journey123", answersAsJson)
         val result = answers.getAnswer[String]("key2")
         result.isDefined shouldBe true
         result.get shouldBe "value2"
@@ -83,10 +72,7 @@ class UserAnswersSpec extends AnyWordSpec with Matchers {
 
     "return None" when {
       "the answer is not in the data field" in {
-        val answers = UserAnswers("journey123", Json.obj(
-          "key1" -> "value1",
-          "key2" -> "value2"
-        ))
+        val answers = UserAnswers("journey123", answersAsJson)
         val result = answers.getAnswer[String]("key3")
         result.isEmpty shouldBe true
       }

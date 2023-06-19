@@ -18,69 +18,23 @@ package models
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.Format
 
-class PenaltyTypeEnumSpec extends AnyWordSpec with Matchers {
-  "be writable to JSON for 'LATE_SUBMISSION'" in {
-    val result = Json.toJson(PenaltyTypeEnum.Late_Submission)
-    result shouldBe JsString("LATE_SUBMISSION")
+class PenaltyTypeEnumSpec extends AnyWordSpec with Matchers with WritableReadableEnumTests {
+
+  implicit val formatter: Format[PenaltyTypeEnum.Value] = PenaltyTypeEnum.format
+
+  "be writable to JSON" when {
+    writableTest[PenaltyTypeEnum.Value](PenaltyTypeEnum.Late_Submission, "LATE_SUBMISSION", "be writable to JSON for 'LATE_SUBMISSION'")
+    writableTest[PenaltyTypeEnum.Value](PenaltyTypeEnum.Late_Payment, "LATE_PAYMENT", "be writable to JSON for 'LATE_PAYMENT'")
+    writableTest[PenaltyTypeEnum.Value](PenaltyTypeEnum.Additional, "ADDITIONAL", "be writable to JSON for 'ADDITIONAL'")
   }
 
-  "be writable to JSON for 'LATE_PAYMENT'" in {
-    val result = Json.toJson(PenaltyTypeEnum.Late_Payment)
-    result shouldBe JsString("LATE_PAYMENT")
+  "be readable from JSON" when {
+    readableTest[PenaltyTypeEnum.Value](PenaltyTypeEnum.Late_Submission, "LATE_SUBMISSION", "be readable from JSON for 'LATE_SUBMISSION'")
+    readableTest[PenaltyTypeEnum.Value](PenaltyTypeEnum.Late_Payment, "LATE_PAYMENT", "be readable from JSON for 'LATE_PAYMENT'")
+    readableTest[PenaltyTypeEnum.Value](PenaltyTypeEnum.Additional, "ADDITIONAL", "be readable from JSON for 'ADDITIONAL'")
   }
 
-  "be writable to JSON for 'ADDITIONAL'" in {
-    val result = Json.toJson(PenaltyTypeEnum.Additional)
-    result shouldBe JsString("ADDITIONAL")
-  }
-
-  "be readable from JSON for 'LATE_SUBMISSION'" in {
-    val result = Json.fromJson(JsString("LATE_SUBMISSION"))(PenaltyTypeEnum.format)
-    result.isSuccess shouldBe true
-    result.get shouldBe PenaltyTypeEnum.Late_Submission
-  }
-
-  "be readable from JSON for 'LATE_PAYMENT'" in {
-    val result = Json.fromJson(JsString("LATE_PAYMENT"))(PenaltyTypeEnum.format)
-    result.isSuccess shouldBe true
-    result.get shouldBe PenaltyTypeEnum.Late_Payment
-  }
-
-  "be readable from JSON for 'ADDITIONAL'" in {
-    val result = Json.fromJson(JsString("ADDITIONAL"))(PenaltyTypeEnum.format)
-    result.isSuccess shouldBe true
-    result.get shouldBe PenaltyTypeEnum.Additional
-  }
-
-  "return a JSError when there is no matches for the specified value" in {
-    val result = Json.fromJson(JsString("invalid"))(PenaltyTypeEnum.format)
-    result.isError shouldBe true
-  }
-
-  "withNameOpt" should {
-    s"return $Some ${PenaltyTypeEnum.Late_Submission} when the string matches the enum value" in {
-      val result = PenaltyTypeEnum.withNameOpt("Late_Submission")
-      result.isDefined shouldBe true
-      result.get shouldBe PenaltyTypeEnum.Late_Submission
-    }
-
-    s"return $Some ${PenaltyTypeEnum.Late_Payment} when the string matches the enum value" in {
-      val result = PenaltyTypeEnum.withNameOpt("Late_Payment")
-      result.isDefined shouldBe true
-      result.get shouldBe PenaltyTypeEnum.Late_Payment
-    }
-
-    s"return $Some ${PenaltyTypeEnum.Additional} when the string matches the enum value" in {
-      val result = PenaltyTypeEnum.withNameOpt("Additional")
-      result.isDefined shouldBe true
-      result.get shouldBe PenaltyTypeEnum.Additional
-    }
-
-    s"return $None when the string does not match any enum value" in {
-      val result = PenaltyTypeEnum.withNameOpt("invalid")
-      result.isDefined shouldBe false
-    }
-  }
+  readableTestError[PenaltyTypeEnum.Value]("invalid", "return a JSError when there is no matches for the specified value")
 }

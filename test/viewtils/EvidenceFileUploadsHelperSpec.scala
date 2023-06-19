@@ -17,6 +17,7 @@
 package viewtils
 
 import base.SpecBase
+import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
 import models.NormalMode
 import models.upload._
 import org.jsoup.Jsoup
@@ -26,10 +27,8 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
 import views.html.components.upload.uploadList
+
 import java.time.LocalDateTime
-
-import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -43,53 +42,29 @@ class EvidenceFileUploadsHelperSpec extends SpecBase with FeatureSwitching {
     if(enableDuplicateWarn) enableFeatureSwitch(WarnForDuplicateFiles)
   }
   val helper: EvidenceFileUploadsHelper = injector.instanceOf[EvidenceFileUploadsHelper]
-  val firstUpload: UploadJourney = UploadJourney(
-    reference = "ref1",
-    fileStatus = UploadStatusEnum.READY,
-    downloadUrl = Some("download.file/url1"),
-    uploadDetails = Some(UploadDetails(
-      fileName = "file1.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-      checksum = "check1234",
-      size = 2
-    ))
+  val uploadDetails: UploadDetails = UploadDetails(
+    fileName = "file1.txt",
+    fileMimeType = "text/plain",
+    uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
+    checksum = "check1234",
+    size = 2
   )
-  val secondUpload: UploadJourney = UploadJourney(
-    reference = "ref2",
+  val firstUpload: UploadJourney = callbackModel
+
+  val secondUpload: UploadJourney = callbackModel.copy(reference = "ref2",
     fileStatus = UploadStatusEnum.READY,
     downloadUrl = Some("download.file/url2"),
-    uploadDetails = Some(UploadDetails(
-      fileName = "file2.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-      checksum = "check1234",
-      size = 2
-    ))
+    uploadDetails = Some(uploadDetails.copy(fileName = "file2.txt"))
   )
-  val thirdUpload: UploadJourney = UploadJourney(
-    reference = "ref3",
+  val thirdUpload: UploadJourney = callbackModel.copy(reference = "ref3",
     fileStatus = UploadStatusEnum.READY,
     downloadUrl = Some("download.file/url3"),
-    uploadDetails = Some(UploadDetails(
-      fileName = "file3.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-      checksum = "check1234",
-      size = 2
-    ))
+    uploadDetails = Some(uploadDetails.copy(fileName = "file3.txt"))
   )
-  val fourthUpload: UploadJourney = UploadJourney(
-    reference = "ref3",
+  val fourthUpload: UploadJourney = callbackModel.copy(reference = "ref3",
     fileStatus = UploadStatusEnum.READY,
     downloadUrl = Some("download.file/url4"),
-    uploadDetails = Some(UploadDetails(
-      fileName = "file3.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2018, 1, 1, 1, 1),
-      checksum = "check1235",
-      size = 2
-    ))
+    uploadDetails = Some(uploadDetails.copy(fileName = "file4.txt", checksum = "check1235"))
   )
 
   val uploadAsFailure: UploadJourney = UploadJourney(

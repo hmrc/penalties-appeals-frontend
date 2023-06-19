@@ -16,50 +16,29 @@
 
 package models.upload
 
+import models.WritableReadableEnumTests
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.Format
 
-class UploadStatusEnumSpec extends AnyWordSpec with Matchers {
+class UploadStatusEnumSpec extends AnyWordSpec with Matchers with WritableReadableEnumTests {
+
+  implicit val formatter: Format[UploadStatusEnum.Value] = UploadStatusEnum.format
 
   "UploadStatusEnum" should {
 
-    "be writable to Json" when {
-
-      "we are waiting for a call back from UpScan" in {
-        val result = Json.toJson(UploadStatusEnum.WAITING)
-        result shouldBe JsString("WAITING")
-      }
-
-      "the upload suceeded" in {
-        val result = Json.toJson(UploadStatusEnum.READY)
-        result shouldBe JsString("READY")
-      }
-
-      "the upload failed" in {
-        val result = Json.toJson(UploadStatusEnum.FAILED)
-        result shouldBe JsString("FAILED")
-      }
+    "be writable to JSON" when {
+      writableTest[UploadStatusEnum.Value](UploadStatusEnum.WAITING, "WAITING", "waiting for callback from Upscan")
+      writableTest[UploadStatusEnum.Value](UploadStatusEnum.READY, "READY", "the upload succeeded")
+      writableTest[UploadStatusEnum.Value](UploadStatusEnum.FAILED, "FAILED", "the upload failed")
     }
 
-    "be readable from json" when {
-      "we are waiting for a call back from UpScan" in {
-        val result = Json.fromJson(JsString("WAITING"))(UploadStatusEnum.format)
-        result.isSuccess shouldBe true
-        result.get shouldBe UploadStatusEnum.WAITING
-      }
-
-      "the upload suceeded" in {
-        val result = Json.fromJson(JsString("READY"))(UploadStatusEnum.format)
-        result.isSuccess shouldBe true
-        result.get shouldBe UploadStatusEnum.READY
-      }
-
-      "the upload failed" in {
-        val result = Json.fromJson(JsString("FAILED"))(UploadStatusEnum.format)
-        result.isSuccess shouldBe true
-        result.get shouldBe UploadStatusEnum.FAILED
-      }
+    "be readable from JSON" when {
+      readableTest[UploadStatusEnum.Value](UploadStatusEnum.WAITING, "WAITING", "waiting for callback from Upscan")
+      readableTest[UploadStatusEnum.Value](UploadStatusEnum.READY, "READY", "the upload succeeded")
+      readableTest[UploadStatusEnum.Value](UploadStatusEnum.FAILED, "FAILED", "the upload failed")
     }
+
+    readableTestError[UploadStatusEnum.Value]("invalid", "an invalid value is passed")
   }
 }

@@ -158,30 +158,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)
     }
 
-    "display the LPP variation when the appeal is for a LPP - Additional" must {
-      implicit val lppAdditionalDoc: Document = asDocument(applyView(userRequestAdditionalWithCorrectKeys))
-
-      val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> h1,
-        Selectors.pElementIndex(1) -> p1,
-        Selectors.pElementIndex(2) -> p2Lpp,
-        Selectors.pElementIndex(3) -> p4,
-        Selectors.pElementIndex(4) -> p5,
-        Selectors.detailsHeading -> detailsHeading,
-        Selectors.detailsContentP1 -> detailsP1,
-        Selectors.detailsContentLi(1) -> detailsLi1,
-        Selectors.detailsContentLi(2) -> detailsLi2,
-        Selectors.detailsContentLi(3) -> detailsLi3,
-        Selectors.detailsContentLi(4) -> detailsLi4,
-        Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.addAnotherButton -> addAnotherButton,
-        Selectors.continueButton -> continueButton
-      )
-
-      behave like pageWithExpectedMessages(expectedContent)(lppAdditionalDoc)
-    }
-
     "display appeal against the obligation page when the appeal is for LPP" must {
       implicit val doc: Document = asDocument(applyView(fakeRequestConverter(correctLPPUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true))))
 

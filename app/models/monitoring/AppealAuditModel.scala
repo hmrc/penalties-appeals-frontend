@@ -18,6 +18,7 @@ package models.monitoring
 
 import models.UserRequest
 import models.appeals._
+import models.appeals.submission._
 import models.upload.UploadJourney
 import play.api.libs.json._
 import services.monitoring.JsonAuditModel

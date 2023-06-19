@@ -17,13 +17,13 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
+import messages.AppealByLetterKickOutMessages._
 import models.pages.{AppealByLetterKickOutPage, PageMode}
 import models.{NormalMode, UserRequest}
-import views.behaviours.ViewBehaviours
-import views.html.obligation.AppealByLetterKickOutPage
-import messages.AppealByLetterKickOutMessages._
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
+import views.behaviours.ViewBehaviours
+import views.html.obligation.AppealByLetterKickOutPage
 
 class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
   "AppealByLetterKickOutPage" should {

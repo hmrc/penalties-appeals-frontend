@@ -16,11 +16,11 @@
 
 package base
 
-import java.time.LocalDate
-
 import models.PenaltyTypeEnum
 import play.api.libs.json.{JsObject, Json}
 import utils.SessionKeys
+
+import java.time.LocalDate
 
 trait UserAnswersBase {
 

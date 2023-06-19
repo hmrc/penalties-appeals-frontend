@@ -148,25 +148,6 @@ class ReasonableExcuseSpec extends SpecBase {
       val result = Json.fromJson[ReasonableExcuse](jsonRepresentingInvalidReasonableExcuse)(ReasonableExcuse.singularReads)
       result.isSuccess shouldBe false
     }
-
-    s"parse and omit any values not needed in the model" in {
-      val jsonRepresentingInvalidReasonableExcuse: JsValue = Json.parse(
-        """
-          |{
-          |   "type": "this_is_a_great_type",
-          |   "descriptionKey": "message_in_a_bottle",
-          |   "isEnabled": true
-          |}
-          |""".stripMargin
-      )
-      val result = Json.fromJson[ReasonableExcuse](jsonRepresentingInvalidReasonableExcuse)(ReasonableExcuse.singularReads)
-      result.isSuccess shouldBe true
-      result.get shouldBe ReasonableExcuse(
-        `type` = "this_is_a_great_type",
-        descriptionKey = "message_in_a_bottle",
-        isOtherOption = false
-      )
-    }
   }
 
   "seqReads" should {

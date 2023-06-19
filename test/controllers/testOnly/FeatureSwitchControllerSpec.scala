@@ -22,12 +22,11 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
 import play.api.Configuration
 import play.api.http.Status
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+
 import java.time.LocalDate
-
-import play.api.mvc.Result
-
 import scala.concurrent.Future
 import scala.language.postfixOps
 

@@ -34,7 +34,7 @@ import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.Injector
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.{AnyContent, Cookie, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import repositories.UploadJourneyRepository
@@ -67,8 +67,6 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
   implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(SessionKeys.journeyId -> "1234")
 
   implicit val messages: Messages = messagesApi.preferred(fakeRequest)
-
-  val cyMessages: Messages = messagesApi.preferred(fakeRequest.withTransientLang("cy"))
 
   implicit val mcc: MessagesControllerComponents = injector.instanceOf[MessagesControllerComponents]
 
@@ -243,7 +241,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
     )
   }
 
-  val callBackModel: UploadJourney = UploadJourney(
+  val callbackModel: UploadJourney = UploadJourney(
     reference = "ref1",
     fileStatus = UploadStatusEnum.READY,
     downloadUrl = Some("download.file/url"),

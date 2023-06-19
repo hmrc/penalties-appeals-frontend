@@ -16,7 +16,7 @@
 
 package models.monitoring
 
-import models.{AuthRequest, UserRequest}
+import models.AuthRequest
 import play.api.libs.json.JsValue
 import services.monitoring.JsonAuditModel
 import utils.JsonUtils

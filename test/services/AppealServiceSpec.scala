@@ -17,7 +17,6 @@
 package services
 
 import base.SpecBase
-import config.AppConfig
 import connectors.PenaltiesConnector
 import connectors.httpParsers.{InvalidJson, UnexpectedFailure}
 import models._

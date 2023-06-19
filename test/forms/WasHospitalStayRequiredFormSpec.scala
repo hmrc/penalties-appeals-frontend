@@ -17,7 +17,6 @@
 package forms
 
 import base.SpecBase
-import config.AppConfig
 import models.UserRequest
 import org.mockito.Mockito.mock
 import play.api.Configuration

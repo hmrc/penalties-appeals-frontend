@@ -18,7 +18,6 @@ package services.upscan
 
 import akka.actor.ActorSystem
 import base.SpecBase
-import config.AppConfig
 import connectors.UpscanConnector
 import connectors.httpParsers.{ErrorResponse, UnexpectedFailure}
 import models.NormalMode
