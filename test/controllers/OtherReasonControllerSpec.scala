@@ -66,7 +66,11 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], previousUpload: Option[Seq[UploadJourney]] = None) {
 
-    reset(mockAuthConnector, mockUpscanService, mockUploadJourneyRepository, mockSessionService, mockAppConfig)
+    reset(mockAuthConnector)
+    reset(mockUpscanService)
+    reset(mockUploadJourneyRepository)
+    reset(mockSessionService)
+    reset(mockAppConfig)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())

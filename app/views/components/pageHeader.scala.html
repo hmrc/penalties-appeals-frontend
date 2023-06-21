@@ -19,7 +19,7 @@
 
 @this()
 
-@(pageHeader: Option[String] = None)(implicit messages: Messages, userRequest: UserRequest[_], appConfig: AppConfig)
+@(pageHeader: Option[String] = None)(implicit messages: Messages, userRequest: UserRequest[_])
 
 @appealBothPenalties = @{userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties)}
 

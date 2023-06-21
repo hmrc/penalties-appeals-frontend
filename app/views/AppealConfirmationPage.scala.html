@@ -20,7 +20,7 @@
 @import utils.SessionKeys
 @import models.PenaltyTypeEnum
 
-@this(layout: Layout,
+@this(layout: FrontendPageLayout,
         bullets: components.bullets,
         link: components.link)
 
@@ -31,6 +31,7 @@
         case (_, "yes") => messages("penaltyType.latePayment.multiple")
         case (PenaltyTypeEnum.Late_Submission, _) => messages("penaltyType.lateSubmission")
         case (PenaltyTypeEnum.Late_Payment | PenaltyTypeEnum.Additional, _) => messages("penaltyType.latePayment")
+        case _ => throw new MatchError(s"[AppealConfirmationPage][@PenaltyType] - unknown penaltyType ${(appealType, bothPenalties)}")
     }
 }
 

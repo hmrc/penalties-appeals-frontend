@@ -19,7 +19,7 @@
 @import views.html.components.upload.uploadItem
 @import views.html.partials.errorManager
 
-@this(layout: Layout,
+@this(layout: FrontendPageLayout,
         formHelper: FormWithCSRF,
         govukFileUpload: GovukFileUpload,
         button: components.button,
@@ -111,7 +111,7 @@
 
             <script type="text/x-template" id="multi-file-upload-item-tpl">@uploadItem(appConfig.acceptedFileTypes)</script>
             <script type="text/x-template" id="error-manager-summary-tpl">@errorManager.summary(messages)</script>
-            <script type="text/x-template" id="error-manager-summary-item-tpl">@errorManager.summaryItem(messages)</script>
+            <script type="text/x-template" id="error-manager-summary-item-tpl">@errorManager.summaryItem()</script>
             <script type="text/x-template" id="error-manager-message-tpl">@errorManager.message(messages)</script>
 
             <div class="govuk-button-group">

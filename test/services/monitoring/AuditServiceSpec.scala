@@ -54,7 +54,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach with Matchers {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockAuditConnector, mockConfiguration)
+    reset(mockAuditConnector)
+    reset(mockConfiguration)
     when(mockConfiguration.appName) thenReturn testAppName
   }
 

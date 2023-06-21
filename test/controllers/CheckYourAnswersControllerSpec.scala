@@ -53,7 +53,10 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val fakeRequestWithConfirmationKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(confirmationSessionKeys: _*)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], isLateAppeal: Boolean = false) {
-    reset(mockAuthConnector, mockAppealService, mockSessionService, mockAppConfig)
+    reset(mockAuthConnector)
+    reset(mockAppealService)
+    reset(mockSessionService)
+    reset(mockAppConfig)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())

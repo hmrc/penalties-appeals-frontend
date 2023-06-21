@@ -43,7 +43,10 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
-    reset(mockAuthConnector, mockSessionService, mockAppConfig)
+    reset(mockAuthConnector)
+    reset(mockSessionService)
+    reset(mockAppConfig)
+
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())

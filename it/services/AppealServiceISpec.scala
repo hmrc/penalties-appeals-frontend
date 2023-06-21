@@ -33,7 +33,7 @@ import utils.Logger.logger
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext
 
 

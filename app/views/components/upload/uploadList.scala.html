@@ -21,7 +21,7 @@
         link: link
 )
 
-@(fileReference: String, fileName: String, fileNumber: Int, mode: Mode)(implicit messages: Messages, request: UserRequest[_])
+@(fileReference: String, fileName: String, fileNumber: Int, mode: Mode)(implicit messages: Messages)
 <div class="govuk-summary-list__row" id="document-row-@fileNumber">
   <dt class="govuk-summary-list__key">
     @messages("otherReason.uploadList.rowTitle", fileNumber)

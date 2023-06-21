@@ -18,11 +18,11 @@ package viewtils
 
 import config.AppConfig
 import javax.inject.Inject
-import models.{PenaltyTypeEnum, UserRequest}
+import models.UserRequest
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import utils.MessageRenderer.getMessage
-import utils.{SessionKeys, ViewUtils}
+import utils.ViewUtils
 
 class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
                                       p: views.html.components.p,

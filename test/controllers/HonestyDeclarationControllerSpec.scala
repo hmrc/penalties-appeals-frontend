@@ -39,7 +39,10 @@ class HonestyDeclarationControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector, mockSessionService, mockAppConfig)
+    reset(mockAuthConnector)
+    reset(mockSessionService)
+    reset(mockAppConfig)
+
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(true)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](

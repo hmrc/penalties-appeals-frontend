@@ -16,7 +16,7 @@
 
 @this()
 
-@(content: Seq[Html], isWarning: Boolean = false, numberList: Boolean = false, classes: String = "govuk-list")(implicit messages: Messages)
+@(content: Seq[Html], isWarning: Boolean = false, numberList: Boolean = false, classes: String = "govuk-list")
 
 <ul class="@classes govuk-list--bullet @if(isWarning){govuk-warning-text__text govuk-!-margin-top-5} @if(numberList){govuk-list govuk-list--number}">
 @content.map { bullet =>

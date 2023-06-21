@@ -45,7 +45,11 @@ class InitialiseAppealControllerSpec extends SpecBase {
   val mockConfig: Configuration = mock(classOf[Configuration])
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], expectedContent: Option[MultiplePenaltiesData] = None) {
-    reset(mockAuthConnector, mockAppealsService, mockSessionService, mockConfig, mockAuditService)
+    reset(mockAuthConnector)
+    reset(mockAppealsService)
+    reset(mockSessionService)
+    reset(mockConfig)
+    reset(mockAuditService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
@@ -338,6 +342,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
             case Late_Submission => "LSP"
             case Late_Payment => "LPP1"
             case Additional => "LPP2"
+            case _ => s"$penaltyType"
           }
           val authRequest = new AuthRequest[AnyContent]("123456789")
           val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
@@ -363,6 +368,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
             case Late_Submission => "LSP"
             case Late_Payment => "LPP1"
             case Additional => "LPP2"
+            case _ => s"$penaltyType"
           }
           val authRequest = new AuthRequest[AnyContent]("123456789", arn = Some("BARN123456789"))
           val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])

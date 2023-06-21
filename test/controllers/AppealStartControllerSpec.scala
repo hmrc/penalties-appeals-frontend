@@ -39,7 +39,10 @@ class AppealStartControllerSpec extends SpecBase {
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
 
-    reset(mockAuthConnector, mockSessionService, mockAppConfig)
+    reset(mockAuthConnector)
+    reset(mockSessionService)
+    reset(mockAppConfig)
+
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(true)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(

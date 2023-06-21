@@ -20,7 +20,7 @@ import base.SpecBase
 import play.api.data.{Form, FormError}
 
 class OtherRelevantInformationFormSpec extends SpecBase with FormBehaviours {
-  val form: Form[String] = OtherRelevantInformationForm.otherRelevantInformationForm
+  val form: Form[String] = OtherRelevantInformationForm.otherRelevantInformationForm()
   "OtherRelevantInformationForm" should {
     "bind" when {
       behave like mandatoryField(form, "other-relevant-information-text",

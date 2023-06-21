@@ -87,6 +87,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case WhatCausedYouToMissTheDeadlinePage => routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(CheckMode)
       case AppealSinglePenaltyPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
       case AppealCoverBothPenaltiesPage => routes.PenaltySelectionController.onPageLoadForPenaltySelection(CheckMode)
+      case _ => throw new MatchError(s"[Navigation][reverseCheckingRoutes] - Unknown page $page")
     }
   }
 
@@ -235,6 +236,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case ReasonableExcuses.technicalIssues => controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(mode)
       case ReasonableExcuses.health => controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
       case ReasonableExcuses.other => controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode)
+      case _ => throw new MatchError(s"[Navigation][getNextURLBasedOnReasonableExcuse] - Unknown reasonable excuse controller ${controllers.routes.AppealAgainstObligationController.onPageLoad(mode)}")
     }
   }
 

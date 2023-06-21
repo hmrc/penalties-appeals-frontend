@@ -23,7 +23,6 @@ import models.pages.{PageMode, YouCanAppealThisPenaltyPage}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.WhyReturnSubmittedLatePage
@@ -31,7 +30,6 @@ import views.html.reasonableExcuseJourneys.other.WhyReturnSubmittedLatePage
 class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
   "WhyReturnSubmittedLatePage" should {
     val whyReturnSubmittedLate: WhyReturnSubmittedLatePage = injector.instanceOf[WhyReturnSubmittedLatePage]
-    implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
 
     object Selectors extends BaseSelectors {
       val label = "#main-content .govuk-label--l"

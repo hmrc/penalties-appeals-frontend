@@ -28,7 +28,7 @@ class UploadTakingLongerThanExpectedPageSpec extends SpecBase with ViewBehaviour
   "UploadTakingLongerThanExpectedPage" should {
     val uploadTakingLongerThanExpectedPage: UploadTakingLongerThanExpectedPage = injector.instanceOf[UploadTakingLongerThanExpectedPage]
     object Selectors extends BaseSelectors
-    def applyView(request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = {
+    def applyView(request: UserRequest[_]): HtmlFormat.Appendable = {
       uploadTakingLongerThanExpectedPage.apply(controllers.routes.OtherReasonController.onSubmitForUploadTakingLongerThanExpected(NormalMode))(request, implicitly, implicitly)
     }
 

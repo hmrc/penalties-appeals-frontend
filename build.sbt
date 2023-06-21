@@ -16,7 +16,7 @@ lazy val microservice = Project(appName, file("."))
       "config.AppConfig",
       "uk.gov.hmrc.govukfrontend.views.html.components._",
       "models.Mode",
-      "views.html.layouts.Layout",
+      "views.html.layouts.FrontendPageLayout",
       "controllers.routes._",
       "utils.MessageRenderer._",
       "models.pages._"

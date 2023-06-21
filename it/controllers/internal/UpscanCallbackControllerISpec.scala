@@ -156,7 +156,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
 
     "return NO CONTENT" when {
       "the body received is valid and the state is updated" in {
-        await(repository.collection.deleteMany(filter = Document()).toFuture)
+        await(repository.collection.deleteMany(filter = Document()).toFuture())
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING,
           uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(validJsonToParse))
@@ -172,7 +172,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "the body received is valid and the state is updated - failure callback" in {
-        await(repository.collection.deleteMany(filter = Document()).toFuture)
+        await(repository.collection.deleteMany(filter = Document()).toFuture())
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref1", UploadStatusEnum.WAITING), isInitiateCall = true))
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(validFailureJsonToParse))
         result.status shouldBe NO_CONTENT
@@ -186,7 +186,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       }
 
       "the body received is valid but the file has already been uploaded - duplicate" in {
-        await(repository.collection.deleteMany(filter = Document()).toFuture)
+        await(repository.collection.deleteMany(filter = Document()).toFuture())
         await(repository.updateStateOfFileUpload("12345", jsonAsModel, isInitiateCall = true))
         await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING,
           uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))

@@ -15,14 +15,14 @@
  *@
 
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.{Header => headerComponent}
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En}
 
 @this(hmrcHeader: HmrcHeader)
 
 @(showSignOut: Boolean = true)(implicit messages: Messages)
 
-@hmrcHeader(Header(
+@hmrcHeader(headerComponent(
     homepageUrl = "https://www.gov.uk/",
     serviceUrl = controllers.routes.AppealStartController.onPageLoad().url,
     serviceName = Some(messages("service.name")),

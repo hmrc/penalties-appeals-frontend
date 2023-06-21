@@ -42,7 +42,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase with FeatureSwitch
   def deleteAll(): Future[DeleteResult] =
     repository.collection
       .deleteMany(filter = Document())
-      .toFuture
+      .toFuture()
 
   class Setup {
     await(deleteAll())

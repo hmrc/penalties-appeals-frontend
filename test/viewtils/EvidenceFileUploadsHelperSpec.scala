@@ -90,7 +90,7 @@ class EvidenceFileUploadsHelperSpec extends SpecBase with FeatureSwitching {
   val expected = Seq(uploadListRow(0, "file1.txt", "ref1"), uploadListRow(1, "file2.txt", "ref2"), uploadListRow(2, "file3.txt", "ref3"))
   "displayContentForFileUploads" should {
     "return all the rows of files uploaded" in {
-      val actualResult: Seq[Html] = helper.displayContentForFileUploads(uploadedFiles, NormalMode)(implicitly, userRequestWithCorrectKeys)
+      val actualResult: Seq[Html] = helper.displayContentForFileUploads(uploadedFiles, NormalMode)
       val actualParsedResult = Jsoup.parse(actualResult.mkString.replaceAll(",", ""))
       val expectedResultParsed = Jsoup.parse(expected.mkString.replaceAll(",", ""))
       actualParsedResult.getElementById("document-row-1").html() shouldBe expectedResultParsed.getElementById("document-row-1").html()

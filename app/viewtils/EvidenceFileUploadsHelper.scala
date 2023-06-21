@@ -18,7 +18,7 @@ package viewtils
 
 import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
 import models.upload.{UploadJourney, UploadStatusEnum}
-import models.{Mode, UserRequest}
+import models.Mode
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{InsetText, Text}
@@ -35,7 +35,7 @@ class EvidenceFileUploadsHelper @Inject()(govukInsetText: GovukInsetText,
                                           uploadList: uploadList
                                          )(implicit ec: ExecutionContext, val config: Configuration) extends FeatureSwitching {
 
-  def displayContentForFileUploads(uploadedFiles: Seq[(UploadJourney, Int)], mode: Mode)(implicit messages: Messages, request: UserRequest[_]): Seq[Html] = {
+  def displayContentForFileUploads(uploadedFiles: Seq[(UploadJourney, Int)], mode: Mode)(implicit messages: Messages): Seq[Html] = {
     uploadedFiles.map(uploadWithIndex =>
       uploadList(uploadWithIndex._1.reference, uploadWithIndex._1.uploadDetails.get.fileName, uploadWithIndex._2 + 1, mode)
     )

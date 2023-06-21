@@ -40,7 +40,9 @@ class MakingALateAppealControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector, mockDateTimeHelper, mockSessionService)
+    reset(mockAuthConnector)
+    reset(mockDateTimeHelper)
+    reset(mockSessionService)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(

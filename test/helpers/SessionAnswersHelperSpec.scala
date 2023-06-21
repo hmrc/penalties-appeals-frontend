@@ -1069,7 +1069,7 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "getAllTheContentForCheckYourAnswersPage" should {
-    def checkYourAnswers(answers: JsObject, excuse: String, whoPlanned: Option[String], whatCaused: Option[String] = None,
+    def checkYourAnswers(answers: JsObject, excuse: String, whoPlanned: Option[String], whatCaused: Option[String],
                          fileNames: Option[String] = None, function: String): Seq[CheckYourAnswersRow] = {
       determineFunction(function, Some(excuse), answers, whoPlanned, whatCaused, fileNames =  fileNames)
     }

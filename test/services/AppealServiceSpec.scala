@@ -136,7 +136,12 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
   )
 
   class Setup {
-    reset(mockPenaltiesConnector, mockDateTimeHelper, mockAuditService, mockUploadJourneyRepository, mockUUIDGenerator)
+    reset(mockPenaltiesConnector)
+    reset(mockDateTimeHelper)
+    reset(mockAuditService)
+    reset(mockUploadJourneyRepository)
+    reset(mockUUIDGenerator)
+
     val service: AppealService =
       new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, mockUUIDGenerator, mockUploadJourneyRepository)
 
