@@ -38,7 +38,7 @@ class WhenDidBecomeUnablePageSpec extends SpecBase with ViewBehaviours {
     val vatTraderFormProvider = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, appConfig, vatTraderLSPUserRequest)
 
 
-    def applyAgentView(form: Form[_], userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = whenDidBecomeUnablePage.apply(form,
+    def applyAgentView(form: Form[_], userRequest: UserRequest[_]): HtmlFormat.Appendable = whenDidBecomeUnablePage.apply(form,
       controllers.routes.OtherReasonController.onSubmitForWhenDidBecomeUnable(NormalMode), pageMode = PageMode(WhenDidBecomeUnablePage, NormalMode))(messages, appConfig, userRequest)
 
     val agentFormProvider = WhenDidBecomeUnableForm.whenDidBecomeUnableForm()(messages, appConfig, agentUserAgentSubmitButClientWasLateSessionKeys)
