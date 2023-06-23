@@ -164,6 +164,13 @@ class MakingALateAppealControllerSpec extends SpecBase {
         val result: String = controller.getHeadingAndTitle()(userRequestWithCorrectKeys, implicitly)
         result shouldBe "This penalty was issued more than 30 days ago"
       }
+      "the user has selected maybe to appealing both penalties" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = intercept[MatchError](controller.getHeadingAndTitle()(fakeRequestConverter(
+          correctUserAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "maybe"), fakeRequest
+        ), implicitly))
+        result.getMessage.contains("[MakingALateAppealController][getHeadingAndTitle] - unknown answer Some(maybe)") shouldBe true
+      }
+
     }
 
     "show the first penalty text" when {
