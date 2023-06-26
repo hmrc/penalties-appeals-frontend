@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.EnablePRM2509
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
@@ -331,18 +330,10 @@ class InitialiseAppealControllerSpec extends SpecBase {
       dueDate = LocalDate.of(2020, 3, 7),
       dateCommunicationSent = LocalDate.of(2020, 3, 8)
     )
-    "not send an audit" when {
-      "the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-        val authRequest = new AuthRequest[AnyContent]("123456789")
-        when(mockConfig.get[Boolean](ArgumentMatchers.eq(EnablePRM2509.name))(any())).thenReturn(false)
-        controller.auditStartOfAppealJourney("123456789000", appealData(PenaltyTypeEnum.Late_Submission))(implicitly, HeaderCarrier(), authRequest)
-        verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
-      }
-    }
 
     "send an audit" when {
       def auditTest(penaltyType: PenaltyTypeEnum.Value): Unit = {
-        s"the feature switch is enabled and the appeal is for a $penaltyType" in new Setup(AuthTestModels.successfulAuthResult) {
+        s"the appeal is for a $penaltyType" in new Setup(AuthTestModels.successfulAuthResult) {
           val penaltyTypeForAudit: String = penaltyType match {
             case Late_Submission => "LSP"
             case Late_Payment => "LPP1"
@@ -357,7 +348,6 @@ class InitialiseAppealControllerSpec extends SpecBase {
             "penaltyNumber" -> "123456789000",
             "penaltyType" -> penaltyTypeForAudit
           )
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq(EnablePRM2509.name))(any())).thenReturn(true)
           controller.auditStartOfAppealJourney("123456789000", appealData(penaltyType))(implicitly, HeaderCarrier(), authRequest)
           verify(mockAuditService, times(1)).audit(auditCapture.capture())(ArgumentMatchers.any[HeaderCarrier],
             ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
@@ -368,7 +358,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       }
 
       def auditAgentTest(penaltyType: PenaltyTypeEnum.Value): Unit = {
-        s"the feature switch is enabled and the appeal is for a $penaltyType (Agent)" in new Setup(AuthTestModels.successfulAuthResult) {
+        s"the appeal is for a $penaltyType (Agent)" in new Setup(AuthTestModels.successfulAuthResult) {
           val penaltyTypeForAudit: String = penaltyType match {
             case Late_Submission => "LSP"
             case Late_Payment => "LPP1"
@@ -384,7 +374,6 @@ class InitialiseAppealControllerSpec extends SpecBase {
             "penaltyNumber" -> "123456789000",
             "penaltyType" -> penaltyTypeForAudit
           )
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq(EnablePRM2509.name))(any())).thenReturn(true)
           controller.auditStartOfAppealJourney("123456789000", appealData(penaltyType))(implicitly, HeaderCarrier(), authRequest)
           verify(mockAuditService, times(1)).audit(auditCapture.capture())(any(), any(), any())
           auditCapture.getValue.transactionName shouldBe "penalties-appeal-started"

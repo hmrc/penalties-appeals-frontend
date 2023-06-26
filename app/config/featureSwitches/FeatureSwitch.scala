@@ -27,9 +27,7 @@ object FeatureSwitch {
     NonJSRouting,
     ShowDigitalCommsMessage,
     WarnForDuplicateFiles,
-    ShowFullAppealAgainstTheObligation,
-    EnablePRM2509,
-    EnablePRM2510
+    ShowFullAppealAgainstTheObligation
   )
 }
 
@@ -51,14 +49,4 @@ case object WarnForDuplicateFiles extends FeatureSwitch {
 case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-full-appeal-against-the-obligation-journey"
   override val displayText: String = "To show the full appeal against the obligation journey"
-}
-
-case object EnablePRM2509 extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.enable-prm-2509"
-  override val displayText: String = "Enable the audit event implemented in PRM-2509"
-}
-
-case object EnablePRM2510 extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.enable-prm-2510"
-  override val displayText: String = "Enable the audit event changes implemented in PRM-2510"
 }
