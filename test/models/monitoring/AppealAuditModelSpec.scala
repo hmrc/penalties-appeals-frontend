@@ -28,6 +28,15 @@ import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 class AppealAuditModelSpec extends SpecBase {
 
+  object fakeAppealInformation extends AppealInformation {
+    override val reasonableExcuse: String = "fake"
+    override val honestyDeclaration: Boolean = true
+    override val statement: Option[String] = None
+    override val isClientResponsibleForSubmission: Option[Boolean] = None
+    override val isClientResponsibleForLateSubmission: Option[Boolean] = None
+  }
+
+
   val uploadJourneyModel: UploadJourney = UploadJourney(reference = "xyz", fileStatus = UploadStatusEnum.READY, downloadUrl = Some("xyz.com"),
     uploadDetails =
       Some(UploadDetails(
@@ -58,7 +67,6 @@ class AppealAuditModelSpec extends SpecBase {
       agentDetails = None,
       appealInformation
     )
-
     def appealAgentSubmission(appealInformation: AppealInformation): AppealSubmission = appealSubmission(appealInformation)
       .copy(appealSubmittedBy = "agent")
 
@@ -470,6 +478,12 @@ class AppealAuditModelSpec extends SpecBase {
           "lateAppeal" -> false
         )
       )
+    }
+    "output the error message when the appeal information does not match" in {
+      lazy val fakeModel = AppealAuditModel(appealAgentSubmission(fakeAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+      val result:MatchError = intercept[MatchError](fakeModel)
+      result.getMessage.contains("[AppealAuditModel][appealInformationJsonObj] - Unknown appeal information") shouldBe true
+
     }
   }
 }

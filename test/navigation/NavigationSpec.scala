@@ -980,9 +980,12 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(None, NormalMode)
         result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
       }
+      s"called with Unknown Page" in new Setup {
+        val result: MatchError =intercept[MatchError](mainNavigator.getNextURLBasedOnReasonableExcuse(Some("unknown"), NormalMode))
+        result.getMessage.contains("[Navigation][getNextURLBasedOnReasonableExcuse] - Unknown reasonable excuse Some(unknown)") shouldBe true
+      }
     }
   }
-
   "routingForCancelVATRegistrationPage" when {
 
     "redirect to YouCanAppeal page" when {
@@ -1086,6 +1089,12 @@ class NavigationSpec extends SpecBase {
       "the user selects yes" in {
         val result: Call = mainNavigator.routingForPenaltySelectionPage(Some("yes"), NormalMode)
         result shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode)
+      }
+    }
+    "return match error on unknownPage page" when {
+      "the user selects unknown" in {
+        val result: MatchError= intercept[MatchError](mainNavigator.reverseCheckingRoutes(HonestyDeclarationPage,fakeRequestConverter(correctUserAnswers)))
+        result.getMessage.contains("[Navigation][reverseCheckingRoutes] - Unknown page HonestyDeclarationPage") shouldBe true
       }
     }
   }

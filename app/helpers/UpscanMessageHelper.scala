@@ -30,7 +30,7 @@ object UpscanMessageHelper {
       case FailureReasonEnum.QUARANTINE => getJsOrNonJsFailureMessage("fileHasVirus", isJsEnabled)
       case FailureReasonEnum.REJECTED => getJsOrNonJsFailureMessage("invalidMimeType", isJsEnabled)
       case FailureReasonEnum.UNKNOWN => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
-      case _ => getJsOrNonJsFailureMessage("unableToUploadMessageFailure", isJsEnabled)
+      case _ => throw new MatchError(s"[UpscanMessageHelper][getLocalisedFailureMessageForFailure] - unknown failure reason $failureReason")
     }
   }
 
