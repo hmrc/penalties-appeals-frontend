@@ -37,7 +37,6 @@ class UpscanMessageHelperSpec extends SpecBase {
   }
 
 
-
   "getLocalisedFailureMessageForFailure" when {
     "routing through the js journey " should {
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, "upscan.fileHasVirus", isJsEnabled = true)
