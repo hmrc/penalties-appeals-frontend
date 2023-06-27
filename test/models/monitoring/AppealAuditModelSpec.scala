@@ -199,24 +199,24 @@ class AppealAuditModelSpec extends SpecBase {
 
     implicit val userRequest: UserRequest[AnyContent] = fakeRequestWithCorrectKeysAndHonestyDeclarationSet
     val correlationId = "someUUID"
-    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), Some("REV-1234"), "PENALTY1234")
-    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), Some("REV-1234"), "PENALTY1234")
-    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+    val lppBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppCrimeModel = AppealAuditModel(appealSubmission(crimeAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppFireOrFloodModel = AppealAuditModel(appealSubmission(fireOrFloodAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppHealthModel = AppealAuditModel(appealSubmission(healthAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppHealthOngoingModel = AppealAuditModel(appealSubmission(healthAppealInformationOngoingHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppHealthNoHospitalModel = AppealAuditModel(appealSubmission(healthAppealInformationNoHospitalStay), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppLossOfStaffModel = AppealAuditModel(appealSubmission(lossOfStaffAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), "REV-1234", "PENALTY1234")
+    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), "REV-1234", "PENALTY1234")
+    val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, "REV-1234", "PENALTY1234")
+    val lspAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, "REV-1234", "PENALTY1234")
+    val additionalBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, "REV-1234", "PENALTY1234")
+    val additionalAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAgentAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, "REV-1234", "PENALTY1234")
 
     val baseAuditLPP: JsObject = Json.obj(
       "submittedBy" -> "client",
@@ -236,11 +236,9 @@ class AppealAuditModelSpec extends SpecBase {
       lppBereavementModel.transactionName shouldBe "penalties-appeal-submitted"
     }
 
-    "not audit the case id when None and audit when defined" in {
-      val modelWithoutCaseId = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, None, "PENALTY1234")
-      (modelWithoutCaseId.detail \ "caseId").validateOpt[String].get shouldBe None
-      val modelWithCaseId = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
-      (modelWithCaseId.detail \ "caseId").validateOpt[String].get shouldBe Some("REV-1234")
+    "audit the case id" in {
+      val model = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
+      (model.detail \ "caseId").validate[String].get shouldBe "REV-1234"
     }
 
     "output the correct details for a lpp bereavement submission with correlationID" in {

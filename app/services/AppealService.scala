@@ -17,7 +17,7 @@
 package services
 
 import config.AppConfig
-import config.featureSwitches.{EnablePRM2510, FeatureSwitching}
+import config.featureSwitches.FeatureSwitching
 import connectors.PenaltiesConnector
 import connectors.httpParsers.AppealSubmissionHTTPParser.AppealSubmissionResponse
 import connectors.httpParsers.ErrorResponse
@@ -272,18 +272,17 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                                                                          headerCarrier: HeaderCarrier,
                                                                          userRequest: UserRequest[_]): Unit = {
     val startOfLog = s"[AppealService][${if (isMultipleAppeal) "multipleAppeal" else "singleAppeal"}]"
-    val optCaseId = if(isEnabled(EnablePRM2510)) Some(caseId) else None
     if (isLPP) {
       if (appealType.contains(PenaltyTypeEnum.Late_Payment)) {
         logger.info(s"$startOfLog - Auditing first LPP appeal payload")
-        auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads, optCaseId, penaltyNumber))
+        auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.FirstLPP, correlationId, uploads, caseId, penaltyNumber))
       } else {
         logger.info(s"$startOfLog - Auditing second LPP appeal payload")
-        auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads, optCaseId, penaltyNumber))
+        auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.SecondLPP, correlationId, uploads, caseId, penaltyNumber))
       }
     } else {
       logger.info(s"$startOfLog - Auditing LSP appeal payload")
-      auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads, optCaseId, penaltyNumber))
+      auditService.audit(AppealAuditModel(modelFromRequest, AuditPenaltyTypeEnum.LSP, correlationId, uploads, caseId, penaltyNumber))
     }
   }
 
