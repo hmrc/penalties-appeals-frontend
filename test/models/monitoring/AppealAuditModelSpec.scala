@@ -480,7 +480,7 @@ class AppealAuditModelSpec extends SpecBase {
       )
     }
     "output the error message when the appeal information does not match" in {
-      lazy val fakeModel = AppealAuditModel(appealAgentSubmission(fakeAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, Some("REV-1234"), "PENALTY1234")
+      lazy val fakeModel = AppealAuditModel(appealAgentSubmission(fakeAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, "REV-1234", "PENALTY1234")
       val result:MatchError = intercept[MatchError](fakeModel)
       result.getMessage.contains("[AppealAuditModel][appealInformationJsonObj] - Unknown appeal information") shouldBe true
 
