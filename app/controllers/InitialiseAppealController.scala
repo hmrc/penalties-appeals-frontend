@@ -20,7 +20,6 @@ package controllers
 import config.featureSwitches.FeatureSwitching
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
-import javax.inject.Inject
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
 import models.monitoring.AuditPenaltyTypeEnum._
@@ -135,7 +134,6 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
   def auditStartOfAppealJourney(penaltyNumber: String, appealModel: AppealData)
                                (implicit ec: ExecutionContext, hc: HeaderCarrier, request: AuthRequest[_]): Unit = {
-    if(isEnabled(EnablePRM2509)) {
       val appealType = appealModel.`type` match {
         case Late_Submission => LSP
         case Late_Payment => FirstLPP
@@ -144,6 +142,6 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
       }
       val auditModel = PenaltyAppealStartedAuditModel(penaltyNumber, appealType)
       auditService.audit(auditModel)
-    }
+
   }
 }
