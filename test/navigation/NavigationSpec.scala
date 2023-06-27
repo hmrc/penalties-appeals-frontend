@@ -980,8 +980,8 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.getNextURLBasedOnReasonableExcuse(None, NormalMode)
         result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
       }
-      s"called with Unknown Page" in new Setup {
-        val result: MatchError =intercept[MatchError](mainNavigator.getNextURLBasedOnReasonableExcuse(Some("unknown"), NormalMode))
+      "called with Unknown Page" in new Setup {
+        val result: MatchError = intercept[MatchError](mainNavigator.getNextURLBasedOnReasonableExcuse(Some("unknown"), NormalMode))
         result.getMessage.contains("[Navigation][getNextURLBasedOnReasonableExcuse] - Unknown reasonable excuse Some(unknown)") shouldBe true
       }
     }
@@ -1091,9 +1091,9 @@ class NavigationSpec extends SpecBase {
         result shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode)
       }
     }
-    "return match error on unknownPage page" when {
+    "throw match error when given an unknown page" when {
       "the user selects unknown" in {
-        val result: MatchError= intercept[MatchError](mainNavigator.reverseCheckingRoutes(HonestyDeclarationPage,fakeRequestConverter(correctUserAnswers)))
+        val result: MatchError = intercept[MatchError](mainNavigator.reverseCheckingRoutes(HonestyDeclarationPage,fakeRequestConverter(correctUserAnswers)))
         result.getMessage.contains("[Navigation][reverseCheckingRoutes] - Unknown page HonestyDeclarationPage") shouldBe true
       }
     }

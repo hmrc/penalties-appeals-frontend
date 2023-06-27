@@ -28,7 +28,7 @@ import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 class AppealAuditModelSpec extends SpecBase {
 
-  object fakeAppealInformation extends AppealInformation {
+  object FakeAppealInformation extends AppealInformation {
     override val reasonableExcuse: String = "fake"
     override val honestyDeclaration: Boolean = true
     override val statement: Option[String] = None
@@ -480,8 +480,8 @@ class AppealAuditModelSpec extends SpecBase {
       )
     }
     "output the error message when the appeal information does not match" in {
-      lazy val fakeModel = AppealAuditModel(appealAgentSubmission(fakeAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, "REV-1234", "PENALTY1234")
-      val result:MatchError = intercept[MatchError](fakeModel)
+      lazy val fakeModel = AppealAuditModel(appealAgentSubmission(FakeAppealInformation), AuditPenaltyTypeEnum.SecondLPP, correlationId, None, "REV-1234", "PENALTY1234")
+      val result: MatchError = intercept[MatchError](fakeModel)
       result.getMessage.contains("[AppealAuditModel][appealInformationJsonObj] - Unknown appeal information") shouldBe true
 
     }

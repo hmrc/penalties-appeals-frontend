@@ -57,11 +57,11 @@ class PenaltyTypeHelperSpec extends SpecBase {
         val result = PenaltyTypeHelper.convertPenaltyTypeToContentString(PenaltyTypeEnum.Late_Payment)(fakeRequestForAppealingMultiplePenalties, implicitly)
         result shouldBe messages("penaltyType.latePayment.multiple")
       }
-      s"the match error works" in new Setup {
-        object fakeEnum extends PenaltyTypeEnum.Value {
+      s"the match error is returned when an unknown enum is provided" in new Setup {
+        object FakeEnum extends PenaltyTypeEnum.Value {
           override def id: Int = 66
         }
-        val result:MatchError = intercept[MatchError](PenaltyTypeHelper.convertPenaltyTypeToContentString(fakeEnum)(userRequestLPPWithCorrectKeys, implicitly))
+        val result: MatchError = intercept[MatchError](PenaltyTypeHelper.convertPenaltyTypeToContentString(FakeEnum)(userRequestLPPWithCorrectKeys, implicitly))
         result.getMessage.contains("[PenaltyTypeHelper][convertPenaltyTypeToContentString] - unknown penalty type") shouldBe true
       }
     }
