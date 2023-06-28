@@ -50,7 +50,9 @@ class PenaltySelectionControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector, mockNavigator)
+    reset(mockAuthConnector)
+    reset(mockNavigator)
+
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())

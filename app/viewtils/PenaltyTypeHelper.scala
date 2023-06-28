@@ -30,6 +30,7 @@ object PenaltyTypeHelper {
       case (_, true) => messages("penaltyType.latePayment.multiple")
       case (PenaltyTypeEnum.Late_Submission, _) => messages("penaltyType.lateSubmission")
       case (PenaltyTypeEnum.Late_Payment | PenaltyTypeEnum.Additional, _) => messages("penaltyType.latePayment")
+      case _ => throw new MatchError(s"[PenaltyTypeHelper][convertPenaltyTypeToContentString] - unknown penalty type $penaltyType")
     }
   }
 

@@ -295,11 +295,13 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         case Right(model) if model.status == OK => s"LPP1 appeal was submitted successfully, case ID is ${model.caseId}. Correlation ID for LPP1: $firstCorrelationId. "
         case Right(model) if model.status == MULTI_STATUS => s"LPP1 appeal was submitted successfully (case ID is ${model.caseId}) but there was an issue storing the notification for uploaded files, response body (${model.error}). Correlation ID for LPP1: $firstCorrelationId. "
         case Left(model) => s"LPP1 appeal was not submitted successfully, Reason given ${model.body}. Correlation ID for LPP1: $firstCorrelationId. "
+        case _ => throw new MatchError(s"[AppealService][logPartialFailureOfMultipleAppeal] - unknown lpp1 response $lpp1Response")
       }
       val lpp2Message = lpp2Response match {
         case Right(model) if model.status == OK => s"LPP2 appeal was submitted successfully, case ID is ${model.caseId}. Correlation ID for LPP2: $secondCorrelationId. "
         case Right(model) if model.status == MULTI_STATUS => s"LPP2 appeal was submitted successfully (case ID is ${model.caseId}) but there was an issue storing the notification for uploaded files, response body (${model.error}). Correlation ID for LPP2: $secondCorrelationId. "
         case Left(model) => s"LPP2 appeal was not submitted successfully, Reason given ${model.body}. Correlation ID for LPP2: $secondCorrelationId. "
+        case _ => throw new MatchError(s"[AppealService][logPartialFailureOfMultipleAppeal] - unknown lpp2 response $lpp2Response")
       }
       logger.error(s"${PagerDutyKeys.MULTI_APPEAL_FAILURE} Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn failed. " + lpp1Message + lpp2Message)
     }

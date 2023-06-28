@@ -36,7 +36,7 @@ object WhenDidHospitalStayEndForm extends Mappings {
         requiredKey = "healthReason.whenDidHospitalStayEnd.error.required",
         futureKey = Some("healthReason.whenDidHospitalStayEnd.error.notInFuture"),
         //Using the messages API as it's easier to pass in the startDate message param
-        dateNotEqualOrAfterKeyAndCompareDate = Some(messages("healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate", ImplicitDateFormatter.dateToString(startDate)), startDate)
+        dateNotEqualOrAfterKeyAndCompareDate = Some((messages("healthReason.whenDidHospitalStayEnd.error.endDateLessThanStartDate", ImplicitDateFormatter.dateToString(startDate)), startDate))
       )
     )
   }

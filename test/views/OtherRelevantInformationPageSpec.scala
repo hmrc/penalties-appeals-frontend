@@ -38,7 +38,7 @@ class OtherRelevantInformationPageSpec extends SpecBase with ViewBehaviours {
     implicit val request: UserRequest[AnyContent] = userRequestWithCorrectKeys
     def applyView(form: Form[_]): HtmlFormat.Appendable = otherRelevantInformationPage.apply(form, postAction, pageMode = PageMode(OtherRelevantInformationPage, NormalMode))
 
-    val formProvider = OtherRelevantInformationForm.otherRelevantInformationForm
+    val formProvider = OtherRelevantInformationForm.otherRelevantInformationForm()
     implicit val doc: Document = asDocument(applyView(formProvider))
 
     val expectedContent = Seq(

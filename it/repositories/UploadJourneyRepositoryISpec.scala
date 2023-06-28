@@ -35,7 +35,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     repository
       .collection
       .deleteMany(filter = Document())
-      .toFuture
+      .toFuture()
 
   class Setup {
     await(deleteAll())

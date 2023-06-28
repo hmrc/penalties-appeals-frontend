@@ -40,7 +40,10 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector, mockUpscanService, mockSessionService)
+    reset(mockAuthConnector)
+    reset(mockUpscanService)
+    reset(mockSessionService)
+
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())

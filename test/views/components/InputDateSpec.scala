@@ -39,7 +39,7 @@ class InputDateSpec extends SpecBase with Mappings with ViewBehaviours {
   )
 
   def runTest(values: Map[String, String])(isDayError: Boolean, isMonthError: Boolean, isYearError: Boolean): Unit = {
-    val result = asDocument(inputDateComponent.apply(form().bind(values), "Sample date form")(implicitly, userRequestWithCorrectKeys, implicitly))
+    val result = asDocument(inputDateComponent.apply(form().bind(values), "Sample date form"))
     result.getElementById("date.day").hasClass("govuk-input--error") shouldBe isDayError
     result.getElementById("date.month").hasClass("govuk-input--error") shouldBe isMonthError
     result.getElementById("date.year").hasClass("govuk-input--error") shouldBe isYearError

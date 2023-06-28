@@ -41,7 +41,9 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
     val sessionAnswers: UserAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
-    reset(mockAuthConnector, mockSessionService)
+    reset(mockAuthConnector)
+    reset(mockSessionService)
+
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())

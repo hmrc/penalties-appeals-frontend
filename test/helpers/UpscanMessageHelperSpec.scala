@@ -25,6 +25,7 @@ class UpscanMessageHelperSpec extends SpecBase {
     s"return the correct message when status is $failureReason" in {
       val result = UpscanMessageHelper.getLocalisedFailureMessageForFailure(failureReason, isJsEnabled)
       result shouldBe expectedResult
+
     }
   }
 
@@ -36,19 +37,31 @@ class UpscanMessageHelperSpec extends SpecBase {
   }
 
 
-
   "getLocalisedFailureMessageForFailure" when {
     "routing through the js journey " should {
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, "upscan.fileHasVirus", isJsEnabled = true)
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, "upscan.invalidMimeType", isJsEnabled = true)
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, "upscan.unableToUpload", isJsEnabled = true)
+
+      "return the correct Match Error" in{
+        val result:MatchError = intercept[MatchError](UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.DUPLICATE, true))
+        result.getMessage.contains("[UpscanMessageHelper][getLocalisedFailureMessageForFailure] - unknown failure reason DUPLICATE") shouldBe true
+      }
     }
 
     "routing through the non-js journey" should {
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, "upscan.noJs.fileHasVirus", isJsEnabled = false)
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, "upscan.noJs.invalidMimeType", isJsEnabled = false)
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, "upscan.noJs.unableToUpload", isJsEnabled = false)
+
+      "return matching error for non-js journey" should{
+        "return the correct Match Error" in{
+          val result: MatchError = intercept[MatchError](UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.DUPLICATE, false))
+          result.getMessage.contains("[UpscanMessageHelper][getLocalisedFailureMessageForFailure] - unknown failure reason DUPLICATE") shouldBe true
+        }
+      }
     }
+
   }
 
   "getUploadFailureMessage" should {

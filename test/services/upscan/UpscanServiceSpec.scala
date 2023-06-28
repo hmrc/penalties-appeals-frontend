@@ -44,7 +44,9 @@ class UpscanServiceSpec extends SpecBase with LogCapturing {
   val actorSystemForScheduling: ActorSystem = injector.instanceOf[ActorSystem]
   implicit val hc: HeaderCarrier = HeaderCarrier()
   class Setup(useMockAppConfig: Boolean = false) {
-    reset(mockRepository, mockConnector, mockAppConfig)
+    reset(mockRepository)
+    reset(mockConnector)
+    reset(mockAppConfig)
     val service: UpscanService = new UpscanService(
       mockRepository,
       mockConnector,

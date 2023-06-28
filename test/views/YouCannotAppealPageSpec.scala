@@ -38,7 +38,7 @@ class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {
       val link = "p > .govuk-link"
     }
 
-    def applyView(implicit userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = {
+    def applyView(implicit userRequest: UserRequest[_]): HtmlFormat.Appendable = {
       youCannotAppealPage.apply(youCannotHelper.getContent, youCannotHelper.getHeaderAndTitle,
         PageMode(YouCannotAppealPage, NormalMode))(userRequest, messages, appConfig)
     }

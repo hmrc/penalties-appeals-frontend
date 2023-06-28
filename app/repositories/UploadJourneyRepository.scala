@@ -103,6 +103,7 @@ class UploadJourneyRepository @Inject()(
               val list = cacheItem.data.values
               Some(list.map(a => a.as[UploadJourney]).toSeq)
             case None => None
+            case _ => throw new MatchError(s"[UploadJourneyRepository][getUploadsForJourney] - unknown id ${findById(id)}")
           }
       case _ => Future.successful(None)
     }

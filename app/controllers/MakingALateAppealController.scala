@@ -66,6 +66,7 @@ class MakingALateAppealController @Inject()(makingALateAppealPage: MakingALateAp
         }
       }
       case Some("no") | None => messages("makingALateAppeal.headingAndTitle")
+      case _ => throw new MatchError(s"[MakingALateAppealController][getHeadingAndTitle] - unknown answer ${userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties)}")
     }
   }
 

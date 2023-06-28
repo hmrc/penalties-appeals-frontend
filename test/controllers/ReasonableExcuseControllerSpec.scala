@@ -42,7 +42,9 @@ class ReasonableExcuseControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAppealService, mockSessionService, mockAuthConnector)
+    reset(mockAppealService)
+    reset(mockSessionService)
+    reset(mockAuthConnector)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(

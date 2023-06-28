@@ -16,7 +16,6 @@
 
 package connectors.httpParsers
 
-import connectors.httpParsers.AppealSubmissionHTTPParser.AppealSubmissionReads.startOfLogging
 import models.appeals.MultiplePenaltiesData
 import play.api.http.Status.{CONFLICT, NO_CONTENT, OK}
 import play.api.libs.json.JsSuccess

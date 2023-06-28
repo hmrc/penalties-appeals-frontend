@@ -16,6 +16,7 @@
 
 package controllers
 
+
 import config.featureSwitches.FeatureSwitching
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
@@ -45,9 +46,9 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
                                            auditService: AuditService,
                                            errorHandler: ErrorHandler)
                                           (implicit val mcc: MessagesControllerComponents,
-                                           authorise: AuthPredicate,
-                                           val config: Configuration,
-                                           ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                            authorise: AuthPredicate,
+                                            val config: Configuration,
+                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
@@ -124,22 +125,23 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
     auditStartOfAppealJourney(penaltyNumber, appealModel)
     sessionService.updateAnswers(allUserAnswers).map {
-      _ =>
-        Redirect(urlToRedirectTo)
-          .removingFromSession(SessionKeys.allKeys: _*)
-          .removingFromSession(SessionKeys.penaltiesHasSeenConfirmationPage)
-          .addingToSession((SessionKeys.journeyId, journeyId))
+      _ => Redirect(urlToRedirectTo)
+        .removingFromSession(SessionKeys.allKeys: _*)
+        .removingFromSession(SessionKeys.penaltiesHasSeenConfirmationPage)
+        .addingToSession((SessionKeys.journeyId, journeyId))
     }
   }
 
   def auditStartOfAppealJourney(penaltyNumber: String, appealModel: AppealData)
                                (implicit ec: ExecutionContext, hc: HeaderCarrier, request: AuthRequest[_]): Unit = {
-    val appealType = appealModel.`type` match {
-      case Late_Submission => LSP
-      case Late_Payment => FirstLPP
-      case Additional => SecondLPP
-    }
-    val auditModel = PenaltyAppealStartedAuditModel(penaltyNumber, appealType)
-    auditService.audit(auditModel)
+      val appealType = appealModel.`type` match {
+        case Late_Submission => LSP
+        case Late_Payment => FirstLPP
+        case Additional => SecondLPP
+        case _ => throw new MatchError(s"[initialiseAppealController][auditStartOfAppealJourney] - unknown appeal type given ${appealModel.`type`}")
+      }
+      val auditModel = PenaltyAppealStartedAuditModel(penaltyNumber, appealType)
+      auditService.audit(auditModel)
+
   }
 }

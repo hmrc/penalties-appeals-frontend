@@ -41,7 +41,8 @@ class AgentsControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector, mockSessionService)
+    reset(mockAuthConnector)
+    reset(mockSessionService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())

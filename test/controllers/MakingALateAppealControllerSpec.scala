@@ -40,7 +40,9 @@ class MakingALateAppealControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
-    reset(mockAuthConnector, mockDateTimeHelper, mockSessionService)
+    reset(mockAuthConnector)
+    reset(mockDateTimeHelper)
+    reset(mockSessionService)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -162,6 +164,13 @@ class MakingALateAppealControllerSpec extends SpecBase {
         val result: String = controller.getHeadingAndTitle()(userRequestWithCorrectKeys, implicitly)
         result shouldBe "This penalty was issued more than 30 days ago"
       }
+      "the user has selected unknown to appealing both penalties" in new Setup(AuthTestModels.successfulAuthResult) {
+        val result = intercept[MatchError](controller.getHeadingAndTitle()(fakeRequestConverter(
+          correctUserAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "unknown"), fakeRequest
+        ), implicitly))
+        result.getMessage.contains("[MakingALateAppealController][getHeadingAndTitle] - unknown answer Some(unknown)") shouldBe true
+      }
+
     }
 
     "show the first penalty text" when {

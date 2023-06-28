@@ -21,7 +21,7 @@
 
 @this()
 
-@(form: Form[_], isAddingAnotherDocument: Boolean = false)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], isAddingAnotherDocument: Boolean = false)(implicit messages: Messages, appConfig: AppConfig)
 
 @if(form.hasErrors) {
     <div class="govuk-form-group govuk-form-group--error">

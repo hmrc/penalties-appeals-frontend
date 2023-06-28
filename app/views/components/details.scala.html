@@ -18,6 +18,6 @@
 
 @this(govukDetails: GovukDetails)
 
-@(summary: String, content: Html)(implicit userRequest: UserRequest[_], messages: Messages)
+@(summary: String, content: Html)(implicit messages: Messages)
 
 @govukDetails(Details(summary = HtmlContent(messages(summary)), content = HtmlContent(content)))

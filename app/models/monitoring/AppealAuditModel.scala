@@ -152,6 +152,7 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Aud
             } else None
           }
       )
+      case _ => throw new MatchError(s"[AppealAuditModel][appealInformationJsonObj] - Unknown appeal information ${appealSubmission.appealInformation}")
     }
   }
 }

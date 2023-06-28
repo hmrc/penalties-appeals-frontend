@@ -34,7 +34,7 @@ object WhenDidTechnologyIssuesEndForm extends Mappings {
         requiredKey = "technicalIssues.end.error.required",
         futureKey = Some("technicalIssues.end.error.notInFuture"),
         //Using the messages API as it's easier to pass in the startDate message param
-        dateNotEqualOrAfterKeyAndCompareDate = Some(messages("technicalIssues.end.error.endDateLessThanStartDate", ImplicitDateFormatter.dateToString(startDate)), startDate)
+        dateNotEqualOrAfterKeyAndCompareDate = Some((messages("technicalIssues.end.error.endDateLessThanStartDate", ImplicitDateFormatter.dateToString(startDate)), startDate))
       )
     )
   }

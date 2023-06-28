@@ -54,7 +54,7 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
         fields = Map.empty
       )
     )
-    def applyView(request: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = {
+    def applyView(request: UserRequest[_]): HtmlFormat.Appendable = {
       uploadFirstDocumentPage.apply(mockUpscanInitiateResponseModel, form,
         pageMode = PageMode(UploadFirstDocumentPage, NormalMode), "/next-page")(request, implicitly, implicitly)
     }

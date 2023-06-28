@@ -37,9 +37,9 @@ trait WritableReadableEnumTests {
     }
   }
 
-  def writableTest[A](enum: A, expectedResult: String, testName: String)(implicit formatter: Format[A]): Unit = {
+  def writableTest[A](`enum`: A, expectedResult: String, testName: String)(implicit formatter: Format[A]): Unit = {
     testName in {
-      val result = Json.toJson(enum)
+      val result = Json.toJson(`enum`)
       result shouldBe JsString(expectedResult)
     }
   }

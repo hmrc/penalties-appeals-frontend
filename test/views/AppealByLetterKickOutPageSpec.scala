@@ -28,7 +28,7 @@ import views.html.obligation.AppealByLetterKickOutPage
 class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
   "AppealByLetterKickOutPage" should {
     val appealByLetter = injector.instanceOf[AppealByLetterKickOutPage]
-    def applyView(implicit userRequest: UserRequest[_] = userRequestWithCorrectKeys): HtmlFormat.Appendable = {
+    def applyView(implicit userRequest: UserRequest[_]): HtmlFormat.Appendable = {
       appealByLetter.apply(PageMode(AppealByLetterKickOutPage, NormalMode))(userRequest, messages, appConfig)
     }
 
