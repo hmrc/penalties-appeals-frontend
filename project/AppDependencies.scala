@@ -23,7 +23,6 @@ object AppDependencies {
     "com.typesafe.play"       %% "play-test"                % PlayVersion.current  % "test, it",
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"            % "test, it",
     "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.33.2"           % "it",
-    "uk.gov.hmrc"             %% "service-integration-test" % "1.3.0-play-28"    % "test, it",
     "org.mockito"             % "mockito-core"              % "4.8.0"            % "test, it",
     "com.vladsch.flexmark"   % "flexmark-all"               % "0.62.2"           % "test, it"
   )
