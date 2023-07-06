@@ -356,7 +356,7 @@ otherReason.uploadList.multipleDuplicateInsetText = Mae rhai ffeiliau â’r un 
 
 # Upload Evidence common messages
 # ----------------------------------------------------------
-fileUpload.skipFileUpload.button.text = Skip file upload
+fileUpload.skipFileUpload.button.text = Ewch yn syth heibio’r cam uwchlwytho ffeil
 
 # Upload Evidence - Taking longer than expected page
 # ----------------------------------------------------------
@@ -378,9 +378,9 @@ upscan.fileUploaded = Uwchlwythwyd {0} {1}
 upscan.fileUploading = Wrthi’n uwchlwytho {0}
 upscan.fileRemoved = Tynnu {0} {1}
 upscan.fileNotSpecified = Dewiswch ffeil.
-upscan.numberOfUploadedFiles = You have successfully uploaded {0} files
-upscan.uploadedOneFile = You have successfully uploaded {0} file
-upscan.addedNewRow = You have added a new row for file upload
+upscan.numberOfUploadedFiles = Rydych wedi uwchlwytho {0} yn llwyddiannus
+upscan.uploadedOneFile = Rydych wedi uwchlwytho {0} ffeil yn llwyddiannus
+upscan.addedNewRow = Rydych wedi ychwanegu rhes newydd ar gyfer uwchlwytho ffeil
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------

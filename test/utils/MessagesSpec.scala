@@ -25,13 +25,13 @@ import scala.io.Source
 class MessagesSpec extends SpecBase {
   private val excludedKeys = Seq(
     "service.homePageUrl",
-    "serviceUnavailable.p5",
-    "serviceUnavailable.p6",
     "common.pageTitle",
+    "common.address.2",
+    "common.address.3",
     "honestyDeclaration.other",
     "otherReason.uploadEvidence.details.li.2",
     "otherReason.uploadEvidence.details.li.3",
-    "otherReason.uploadEvidence.details.li.5"
+    "otherReason.uploadEvidence.details.li.5",
   )
 
   private val MatchIncorrectTwoSingleQuotes = """\w+'{2}\w+""".r
@@ -48,7 +48,7 @@ class MessagesSpec extends SpecBase {
       }
     }
 
-    "the value for each English key must be different to the corresponding value of the Welsh key (Ignored until full welsh translation)" ignore {
+    "the value for each English key must be different to the corresponding value of the Welsh key (Ignored until full welsh translation)" in {
       val englishMessagesWithoutExcludedKeys= englishMessages.filterNot(kV => excludedKeys.contains(kV._1))
       val welshMessagesWithoutExcludedKeys = welshMessages.filterNot(kV => excludedKeys.contains(kV._1))
       withClue(describeValueMismatch(englishMessagesWithoutExcludedKeys, welshMessagesWithoutExcludedKeys)) {
