@@ -36,6 +36,7 @@ tmp
 bin
 .bsp
 *.scalafmt.conf
+project/metals.sbt
 
 node_modules/
 app/assets/build/

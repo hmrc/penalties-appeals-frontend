@@ -4,26 +4,22 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapVersion = "7.15.0"
+  val bootstrapVersion = "7.19.0"
 
   val mongoPlayVersion = "0.74.0"
 
   val compile = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-frontend-play-28"     % bootstrapVersion,
-    "uk.gov.hmrc"             %% "play-frontend-hmrc"             % "7.3.0-play-28",
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"             % mongoPlayVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.3"
+    "uk.gov.hmrc"                  %% "bootstrap-frontend-play-28"     % bootstrapVersion,
+    "uk.gov.hmrc"                  %% "play-frontend-hmrc"             % "7.14.0-play-28",
+    "uk.gov.hmrc.mongo"            %% "hmrc-mongo-play-28"             % mongoPlayVersion,
+    "com.fasterxml.jackson.module" %% "jackson-module-scala"           % "2.13.3"
   )
 
   val test = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapVersion   % "test, it",
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % mongoPlayVersion   % "test, it",
-    "org.scalatest"           %% "scalatest"                % "3.2.12"            % "test, it",
-    "org.jsoup"               %  "jsoup"                    % "1.15.3"           % "test, it",
-    "com.typesafe.play"       %% "play-test"                % PlayVersion.current  % "test, it",
-    "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"            % "test, it",
-    "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.33.2"           % "it",
-    "org.mockito"             % "mockito-core"              % "4.8.0"            % "test, it",
-    "com.vladsch.flexmark"   % "flexmark-all"               % "0.62.2"           % "test, it"
+    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapVersion    % "test, it",
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % mongoPlayVersion    % "test, it",
+    "org.jsoup"               %  "jsoup"                    % "1.16.1"            % "test, it",
+    "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.35.0"            % "it",
+    "org.mockito"             %% "mockito-scala-scalatest"  % "1.17.14"           % "it, test"
   )
 }
