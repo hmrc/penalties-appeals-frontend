@@ -30,15 +30,26 @@ class SignOutControllerSpec extends SpecBase with AuthMocks {
     mcc
   )
 
-  lazy val result: Future[Result] = {
+  def call(isAuthorised: Boolean): Future[Result] = {
     mockOrganisationAuthorised()
-    controller.signOut()(fakeRequest)
+    controller.signOut(isAuthorised)(fakeRequest)
   }
 
   "GET /sign-out" should {
-    "redirect to the sign out url" in {
-      status(result) shouldBe Status.SEE_OTHER
-      redirectLocation(result).get shouldBe appConfig.signOutUrl
+    "redirect to the sign out with feedback url" when {
+      "the user is authorised" in {
+        val result = call(isAuthorised = true)
+        status(result) shouldBe Status.SEE_OTHER
+        redirectLocation(result).get shouldBe appConfig.signOutUrl
+      }
+    }
+
+    "redirect to the sign out without feedback url" when {
+      "the user is unauthorised" in {
+        val result = call(isAuthorised = false)
+        status(result) shouldBe Status.SEE_OTHER
+        redirectLocation(result).get shouldBe appConfig.signOutUrlUnauthorised
+      }
     }
   }
 }
