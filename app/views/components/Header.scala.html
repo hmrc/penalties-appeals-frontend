@@ -20,7 +20,7 @@
 
 @this(hmrcHeader: HmrcHeader)
 
-@(showSignOut: Boolean = true)(implicit messages: Messages)
+@(showSignOut: Boolean = true, isAuthorised: Boolean)(implicit messages: Messages)
 
 @hmrcHeader(headerComponent(
     homepageUrl = "https://www.gov.uk/",
@@ -28,6 +28,6 @@
     serviceName = Some(messages("service.name")),
     containerClasses = "govuk-width-container",
     navigation = None,
-    signOutHref = if(showSignOut) Some(controllers.routes.SignOutController.signOut.url) else None,
+    signOutHref = if(showSignOut) Some(controllers.routes.SignOutController.signOut(isAuthorised).url) else None,
     language = if(messages.lang.code.equalsIgnoreCase("en")) En else Cy
 ))

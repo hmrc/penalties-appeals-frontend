@@ -20,10 +20,11 @@
 
 @layout(
     pageTitle = messages("unauthorised.headingAndTitle"),
-    backLinkEnabled = false
+    backLinkEnabled = false,
+    isAuthorised = false
 ) {
     <h1 class="govuk-heading-l">@messages("unauthorised.headingAndTitle")</h1>
     <p class="govuk-body"> @messages("unauthorised.signUp")</p>
     <p class="govuk-body">@messages("unauthorised.alreadySignedUp")</p>
-    <p class="govuk-body"><a class="govuk-link" href="@routes.SignOutController.signOut">@messages("base.signOut")</a></p>
+    <p class="govuk-body"><a class="govuk-link" href="@routes.SignOutController.signOut(false)">@messages("base.signOut")</a></p>
 }

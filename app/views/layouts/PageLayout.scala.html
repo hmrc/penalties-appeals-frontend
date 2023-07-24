@@ -40,7 +40,8 @@
     customJavaScript: Option[String] = None,
     showSignOut: Boolean = true,
     optPageMode: Option[PageMode] = None,
-    formErrors: Seq[FormError] = Seq.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+    formErrors: Seq[FormError] = Seq.empty,
+    isAuthorised: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
     @phaseBanner("beta")
@@ -63,7 +64,7 @@
                 language = Some(messages.lang.code),
                 timeout = Some(appConfig.timeoutPeriod),
                 countdown = Some(appConfig.timeoutCountdown),
-                signOutUrl = Some(routes.SignOutController.signOut.url),
+                signOutUrl = Some(routes.SignOutController.signOut(isAuthorised).url),
                 timeoutUrl = Some(routes.TimeoutController.onPageLoad().url),
                 keepAliveUrl = Some("#"),
                 signOutButtonText = Some(messages("base.signOut"))
@@ -86,7 +87,7 @@
 @govukLayout(
     pageTitle = Some(getPageTitle(pageTitle, messages("service.name"))),
     headBlock = Some(headBlock),
-    headerBlock = Some(header(showSignOut)),
+    headerBlock = Some(header(showSignOut, isAuthorised)),
     scriptsBlock = Some(scripts),
     beforeContentBlock = Some(beforeContentBlock),
     footerBlock = Some(hmrcStandardFooter()),
