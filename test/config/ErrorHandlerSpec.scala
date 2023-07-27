@@ -17,7 +17,7 @@
 package config
 
 import base.SpecBase
-import views.html.ErrorTemplate
+import views.html.errors.ErrorTemplate
 
 class ErrorHandlerSpec extends SpecBase {
   val errorTemplate: ErrorTemplate = injector.instanceOf[ErrorTemplate]

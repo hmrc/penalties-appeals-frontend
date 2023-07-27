@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views
+package views.errors
 
 import base.{BaseSelectors, SpecBase}
 import messages.YouCannotGoBackToAppealMessages._

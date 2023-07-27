@@ -29,4 +29,8 @@ object ProblemWithServiceMessages {
   val p3 = "If you prefer, you can appeal by letter. Write to:"
 
   val p4 = "Solicitor’s Office and Legal Services HMRC BX9 1ZT"
+
+  val viewYourPenalties = "View your VAT penalties"
+
+  val viewYourClientsPenalties = "View your client’s VAT penalties"
 }

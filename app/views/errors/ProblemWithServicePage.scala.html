@@ -33,4 +33,13 @@
         @messages("common.address.2")<br>
         @messages("common.address.3")
     </p>
+    <p class="govuk-body">
+        <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">
+      @if(userRequest.isAgent) {
+        @messages("agent.common.viewPenalties")
+      } else {
+        @messages("common.viewPenalties")
+      }
+      </a>
+    </p>
 }
