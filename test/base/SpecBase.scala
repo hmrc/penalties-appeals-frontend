@@ -86,7 +86,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   lazy val checkObligationAvailabilityAction: CheckObligationAvailabilityActionImpl = new CheckObligationAvailabilityActionImpl(mockAppConfig)
 
-  lazy val dataRetrievalAction: DataRetrievalActionImpl = new DataRetrievalActionImpl(mockSessionService)
+  lazy val dataRetrievalAction: DataRetrievalActionImpl = new DataRetrievalActionImpl(mockSessionService, errorHandler)
 
   val mockAuthService: AuthService = new AuthService(mockAuthConnector)
 

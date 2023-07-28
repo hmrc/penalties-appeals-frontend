@@ -25,7 +25,6 @@ case class AuthRequest[A](vrn: String,
                           arn: Option[String] = None
                          )(implicit request: Request[A]) extends WrappedRequest[A](request) {
   val isAgent: Boolean = arn.isDefined
-  val redirectSuffix: String = if (isAgent) "agent" else "non-agent"
 }
 
 object AuthRequest {

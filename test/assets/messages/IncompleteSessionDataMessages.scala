@@ -24,4 +24,8 @@ object IncompleteSessionDataMessages {
   val p1 = "There’s been a technical error. You need to start your appeal again. We have not saved your data."
 
   val link = "Return to the appeal start page"
+
+  val linkBackToPenaltiesTrader = "Return to your VAT penalties"
+
+  val linkBackToPenaltiesAgent = "Return to your client’s VAT penalties"
 }
