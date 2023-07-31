@@ -16,9 +16,11 @@
 
 package controllers.predicates
 
-import models.{AuthRequest, UserRequest}
+import config.ErrorHandler
 import models.session.UserAnswers
-import play.api.mvc.ActionTransformer
+import models.{AuthRequest, UserRequest}
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{ActionRefiner, Result}
 import services.SessionService
 import utils.Logger.logger
 import utils.SessionKeys
@@ -26,31 +28,39 @@ import utils.SessionKeys
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRetrievalActionImpl @Inject()(val sessionService: SessionService)
+class DataRetrievalActionImpl @Inject()(sessionService: SessionService,
+                                        errorHandler: ErrorHandler)
                                        (implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
-  override protected def transform[A](request: AuthRequest[A]): Future[UserRequest[A]] = {
-    if(request.session.get(SessionKeys.penaltiesHasSeenConfirmationPage).isDefined) {
-      logger.info("[DataRetrievalAction] - User has 'penaltiesHasSeenConfirmationPage' session key in session, setting no user answers")
-      Future(UserRequest(request.vrn, request.active, request.arn, UserAnswers(""))(request))
+  override protected def refine[A](request: AuthRequest[A]): Future[Either[Result, UserRequest[A]]] = {
+    if (request.session.get(SessionKeys.penaltiesHasSeenConfirmationPage).isDefined) {
+      logger.info("[DataRetrievalAction][refine] - User has 'penaltiesHasSeenConfirmationPage' session key in session, setting no user answers")
+      Future(Right(UserRequest(request.vrn, request.active, request.arn, UserAnswers(""))(request)))
     } else {
-      sessionService.getUserAnswers(request.session.get(SessionKeys.journeyId).get).map {
-        case Some(storedAnswers) => {
-          logger.debug(s"[DataRetrievalActionImpl][transform] - Found $storedAnswers for VRN: ${request.vrn}")
-          UserRequest(request.vrn, request.active, request.arn, storedAnswers)(request)
+      request.session.get(SessionKeys.journeyId).fold[Future[Either[Result, UserRequest[A]]]]({
+        logger.warn(s"[DataRetrievalAction][refine] - No journey ID was found in the session for VRN: ${request.vrn} - " +
+          s"redirecting to incomplete session data page")
+        Future(Left(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())))
+      })(
+        journeyId => {
+          sessionService.getUserAnswers(journeyId).map {
+            case Some(storedAnswers) => {
+              logger.debug(s"[DataRetrievalActionImpl][refine] - Found $storedAnswers for VRN: ${request.vrn}")
+              Right(UserRequest(request.vrn, request.active, request.arn, storedAnswers)(request))
+            }
+            case None => {
+              logger.debug(s"[DataRetrievalActionImpl][refine] - Found no session answers for VRN: ${request.vrn}")
+              Right(UserRequest(request.vrn, request.active, request.arn, UserAnswers(journeyId))(request))
+            }
+          }.recover {
+            case e => {
+              logger.error(s"[DataRetrievalActionImpl][refine] - Failed to query mongo for session data with message: ${e.getMessage}")
+              Left(errorHandler.showInternalServerError(request))
+            }
+          }
         }
-        case None => {
-          logger.debug(s"[DataRetrievalActionImpl][transform] - Found no session answers for VRN: ${request.vrn}")
-          UserRequest(request.vrn, request.active, request.arn, UserAnswers(request.session.get(SessionKeys.journeyId).get))(request)
-        }
-      }.recover {
-        case e => {
-          logger.error(s"[DataRetrievalActionImpl][transform] - Failed to query mongo for session data")
-          throw e
-        }
-      }
+      )
     }
-
   }
 }
 
-trait DataRetrievalAction extends ActionTransformer[AuthRequest, UserRequest]
+trait DataRetrievalAction extends ActionRefiner[AuthRequest, UserRequest]

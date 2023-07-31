@@ -25,13 +25,14 @@ import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.errors.IncompleteSessionDataPage
+import views.html.errors.{IncompleteSessionDataPage, NoSessionDataPage}
 
 import scala.concurrent.Future
 
 class IncompleteSessionDataControllerSpec extends SpecBase {
-  val page: IncompleteSessionDataPage = injector.instanceOf[IncompleteSessionDataPage]
-  val controller = new IncompleteSessionDataController(page)(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction)
+  val incompleteSessionDataPage: IncompleteSessionDataPage = injector.instanceOf[IncompleteSessionDataPage]
+  val noSessionDataPage: NoSessionDataPage = injector.instanceOf[NoSessionDataPage]
+  val controller = new IncompleteSessionDataController(incompleteSessionDataPage, noSessionDataPage)(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -69,6 +70,28 @@ class IncompleteSessionDataControllerSpec extends SpecBase {
 
       "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+      }
+    }
+  }
+
+  "onPageLoadWithNoJourneyData" when {
+    "the user is authorised" should {
+
+      "return 400 (BAD_REQUEST)" in new Setup(AuthTestModels.successfulAuthResult) {
+        status(controller.onPageLoadWithNoJourneyData()(userRequestWithCorrectKeys)) shouldBe BAD_REQUEST
+      }
+    }
+
+    "the user is unauthorised" should {
+
+      "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+        val result: Future[Result] = controller.onPageLoadWithNoJourneyData()(fakeRequest)
+        status(result) shouldBe FORBIDDEN
+      }
+
+      "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+        val result: Future[Result] = controller.onPageLoadWithNoJourneyData()(fakeRequest)
         status(result) shouldBe SEE_OTHER
       }
     }

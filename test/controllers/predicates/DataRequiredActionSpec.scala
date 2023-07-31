@@ -42,12 +42,12 @@ class DataRequiredActionSpec extends SpecBase {
 
   "refine" should {
     s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when all of the data is missing as part of the session" in {
-      val requestWithNoSessionKeys = UserRequest("123456789", answers = userAnswers(Json.obj()))
-      val fakeController = new Harness(
-        requiredAction = new DataRequiredActionImpl(
-          errorHandler
-        ),
-        request = requestWithNoSessionKeys)
+        val requestWithNoSessionKeys = UserRequest("123456789", answers = userAnswers(Json.obj()))
+        val fakeController = new Harness(
+          requiredAction = new DataRequiredActionImpl(
+            errorHandler
+          ),
+          request = requestWithNoSessionKeys)
 
       val result = await(fakeController.onPageLoad())
       result.header.status shouldBe INTERNAL_SERVER_ERROR

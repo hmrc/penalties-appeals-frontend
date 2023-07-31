@@ -24,11 +24,12 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
-import views.html.errors.IncompleteSessionDataPage
+import views.html.errors.{IncompleteSessionDataPage, NoSessionDataPage}
 
 import javax.inject.Inject
 
-class IncompleteSessionDataController @Inject()(incompleteSessionDataPage: IncompleteSessionDataPage)
+class IncompleteSessionDataController @Inject()(incompleteSessionDataPage: IncompleteSessionDataPage,
+                                                noSessionDataPage: NoSessionDataPage)
                                                (implicit mcc: MessagesControllerComponents,
                                                 appConfig: AppConfig,
                                                 authorise: AuthPredicate,
@@ -42,6 +43,12 @@ class IncompleteSessionDataController @Inject()(incompleteSessionDataPage: Incom
       val isLPP = request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(Late_Payment)
       val isAdditional = request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(Additional)
       BadRequest(incompleteSessionDataPage(penaltyId, isLPP, isAdditional))
+    }
+  }
+
+  def onPageLoadWithNoJourneyData(): Action[AnyContent] = authorise {
+    implicit request => {
+      BadRequest(noSessionDataPage())
     }
   }
 }
