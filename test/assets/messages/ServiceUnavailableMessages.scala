@@ -30,4 +30,8 @@ object ServiceUnavailableMessages {
 
   val p4 = "Solicitor’s Office and Legal Services HMRC BX9 1ZT"
 
+  val viewYourPenalties = "View your VAT penalties"
+
+  val viewYourClientsPenalties = "View your client’s VAT penalties"
+
 }

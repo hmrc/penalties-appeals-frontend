@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views
+package views.errors
 
 import base.{BaseSelectors, SpecBase}
 import messages.ProblemWithServiceMessages._
@@ -46,6 +46,20 @@ class ProblemWithServicePageSpec extends SpecBase with ViewBehaviours {
     )
 
     behave like pageWithExpectedMessages(expectedContent)
+
+    "have a link back to the penalties page" when {
+      "the user is an agent" in {
+        implicit val doc: Document = asDocument(page()(implicitly, implicitly, agentUserLPP))
+        doc.select("#penalties-link").attr("href") shouldBe appConfig.penaltiesFrontendUrl
+        doc.select("#penalties-link").text() shouldBe viewYourClientsPenalties
+      }
+
+      "the user is a trader" in {
+        implicit val doc: Document = asDocument(page()(implicitly, implicitly, userRequestWithCorrectKeys))
+        doc.select("#penalties-link").attr("href") shouldBe appConfig.penaltiesFrontendUrl
+        doc.select("#penalties-link").text() shouldBe viewYourPenalties
+      }
+    }
   }
 
 }

@@ -21,7 +21,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Request, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
-import views.html.ErrorTemplate
+import views.html.errors.ErrorTemplate
 import play.api.mvc.Results.InternalServerError
 
 @Singleton
