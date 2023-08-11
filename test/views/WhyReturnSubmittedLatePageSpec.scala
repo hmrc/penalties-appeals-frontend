@@ -46,6 +46,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.label -> heading,
+      Selectors.hintText -> hintTextMultiple,
       Selectors.button -> continueButton
     )
 
@@ -57,6 +58,7 @@ class WhyReturnSubmittedLatePageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> titleLpp,
         Selectors.label -> headingLpp,
+        Selectors.hintText -> hintTextMultiple,
         Selectors.button -> continueButton
       )
 

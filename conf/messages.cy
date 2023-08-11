@@ -295,6 +295,8 @@ otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Pam y talwyd y bil TAW 
 otherReason.whyReturnSubmittedLate.lpp.error.required = Eglurwch pam y talwyd y bil TAW yn hwyr
 otherReason.whyReturnSubmittedLate.error.required = Eglurwch pam y cyflwynwyd y Ffurflen TAW yn hwyr
 otherReason.whyReturnSubmittedLate.error.regex = Mae’n rhaid i’r testun gynnwys llythrennau, rhifau a chymeriadau arbennig safonol yn unig
+otherReason.whyReturnSubmittedLate.multiplePenalties = Dim ond y cosbau hyn y mae angen i ni wybod amdanynt. Apeliwch gosbau eraill ar wahân.
+otherReason.whyReturnSubmittedLate.singlePenalty = Dim ond y gosb hon y mae angen i ni wybod amdani. Apeliwch gosbau eraill ar wahân.
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
