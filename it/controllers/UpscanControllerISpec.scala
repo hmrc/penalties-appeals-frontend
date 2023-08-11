@@ -19,8 +19,6 @@ package controllers
 import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
 import models.upload._
 import models.{CheckMode, NormalMode}
-import org.mongodb.scala.bson.collection.immutable.Document
-import org.mongodb.scala.result.DeleteResult
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -39,13 +37,8 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase with FeatureSwitch
   val repository: UploadJourneyRepository =
     injector.instanceOf[UploadJourneyRepository]
 
-  def deleteAll(): Future[DeleteResult] =
-    repository.collection
-      .deleteMany(filter = Document())
-      .toFuture()
-
   class Setup {
-    await(deleteAll())
+    await(deleteAll(repository))
     disableFeatureSwitch(WarnForDuplicateFiles)
   }
 
@@ -147,7 +140,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase with FeatureSwitch
 
     "return NOT_FOUND (404)" when {
       "the user has specified a file and journey id that is not in the repository" in new Setup {
-        await(deleteAll())
+        await(deleteAll(repository))
         val result: Future[Result] = controller.getStatusOfFileUpload("1234", "ref1")(FakeRequest())
         status(result) shouldBe NOT_FOUND
       }

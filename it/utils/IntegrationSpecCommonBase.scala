@@ -22,6 +22,7 @@ import models.PenaltyTypeEnum
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.Document
+import org.mongodb.scala.result.DeleteResult
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, TestSuite}
@@ -37,8 +38,10 @@ import play.api.{Application, Configuration}
 import repositories.UserAnswersRepository
 import stubs.{AuditStub, AuthStub}
 import uk.gov.hmrc.http.SessionKeys.authToken
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import java.time.{LocalDate, LocalDateTime}
+import scala.concurrent.Future
 
 trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with
   BeforeAndAfterAll with BeforeAndAfterEach with TestSuite with WiremockHelper {
@@ -130,4 +133,10 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
     await(userAnswersRepository.collection.deleteMany(Document()).toFuture())
     await(userAnswersRepository.upsertUserAnswer(sessionDataToStore))
   }
+
+  def deleteAll[A<: PlayMongoRepository[_]](repository: A): Future[DeleteResult] =
+    repository
+      .collection
+      .deleteMany(filter = Document())
+      .toFuture()
 }

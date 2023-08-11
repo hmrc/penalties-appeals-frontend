@@ -18,27 +18,19 @@ package repositories
 
 import models.upload._
 import org.mongodb.scala.bson.collection.immutable.Document
-import org.mongodb.scala.result.DeleteResult
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongo.cache.DataKey
 import utils.IntegrationSpecCommonBase
 
 import java.time.LocalDateTime
-import scala.concurrent.Future
 
 class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   lazy val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
 
-  def deleteAll(): Future[DeleteResult] =
-    repository
-      .collection
-      .deleteMany(filter = Document())
-      .toFuture()
-
   class Setup {
-    await(deleteAll())
+    await(deleteAll(repository))
   }
 
   val callbackModel: UploadJourney = fileUploadModel
@@ -124,13 +116,13 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   "getUploadsForJourney" should {
     s"return $None when the document is not in Mongo" in new Setup {
-      await(deleteAll())
+      await(deleteAll(repository))
       val result: Option[Seq[UploadJourney]] = await(repository.getUploadsForJourney(Some("1234")))
       result.isEmpty shouldBe true
     }
 
     s"return $None when no journey ID is given" in new Setup {
-      await(deleteAll())
+      await(deleteAll(repository))
       val result: Option[Seq[UploadJourney]] = await(repository.getUploadsForJourney(None))
       result.isEmpty shouldBe true
     }

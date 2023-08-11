@@ -19,10 +19,9 @@ package repositories
 import models.session.UserAnswers
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import utils.IntegrationSpecCommonBase
 
-class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase with DefaultPlayMongoRepositorySupport[UserAnswers] {
+class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase {
 
   lazy val repository: UserAnswersRepository = injector.instanceOf[UserAnswersRepository]
 
@@ -43,9 +42,7 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase with DefaultP
   }
 
   class Setup {
-    await(repository.collection.drop().toFuture())
-    await(repository.ensureIndexes)
-    await(repository.collection.countDocuments().head()) shouldBe 0L
+    await(deleteAll(repository))
   }
 
   val userAnswers: UserAnswers = UserAnswers(journeyId = "journey123", data = Json.obj("key1" -> "value1", "key2" -> "value2"))

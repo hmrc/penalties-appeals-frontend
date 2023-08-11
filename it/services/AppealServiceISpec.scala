@@ -33,8 +33,8 @@ import utils.Logger.logger
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext
+import scala.jdk.CollectionConverters._
 
 
 class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
@@ -364,7 +364,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
       result shouldBe Left(INTERNAL_SERVER_ERROR)
     }
 
-    "when both of multiple appeal submissions fails" in {
+    "both of multiple appeal submissions fails" in {
       failedAppealSubmissionWithFault(isLPP = true, "1234")
       failedAppealSubmissionWithFault(isLPP = true, "5678")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(

@@ -4,13 +4,13 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapVersion = "7.19.0"
+  val bootstrapVersion = "7.21.0"
 
-  val mongoPlayVersion = "0.74.0"
+  val mongoPlayVersion = "1.3.0"
 
   val compile = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-frontend-play-28"     % bootstrapVersion,
-    "uk.gov.hmrc"                  %% "play-frontend-hmrc"             % "7.14.0-play-28",
+    "uk.gov.hmrc"                  %% "play-frontend-hmrc"             % "7.18.0-play-28",
     "uk.gov.hmrc.mongo"            %% "hmrc-mongo-play-28"             % mongoPlayVersion,
     "com.fasterxml.jackson.module" %% "jackson-module-scala"           % "2.13.3"
   )
@@ -19,7 +19,6 @@ object AppDependencies {
     "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapVersion    % "test, it",
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % mongoPlayVersion    % "test, it",
     "org.jsoup"               %  "jsoup"                    % "1.16.1"            % "test, it",
-    "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.35.0"            % "it",
     "org.mockito"             %% "mockito-scala-scalatest"  % "1.17.14"           % "it, test"
   )
 }
