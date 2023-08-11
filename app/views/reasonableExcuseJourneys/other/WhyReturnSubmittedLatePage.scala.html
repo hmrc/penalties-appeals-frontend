@@ -31,6 +31,10 @@
     userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
 }
 
+@appealBothPenalties = @{
+    userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties)
+}
+
 @pageTitleAndHeading = @{
   if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
     "otherReason.whyReturnSubmittedLate.lpp.headingAndTitle"
@@ -49,10 +53,9 @@
     @characterCount(
       form("why-return-submitted-late-text"),
       label = messages(pageTitleAndHeading),
-      hint = if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional))
-Some(HtmlContent(messages("otherReason.whyReturnSubmittedLate.lpp.p1")))
- else {Some(HtmlContent(messages("otherReason.whyReturnSubmittedLate.p1")))
-},
+      hint = if(appealBothPenalties.contains("yes"))
+ Some(HtmlContent(messages("otherReason.whyReturnSubmittedLate.multiplePenalties")))
+  else Some(HtmlContent(messages("otherReason.whyReturnSubmittedLate.singlePenalty"))),
       maxLength = Some(5000)
     )
 

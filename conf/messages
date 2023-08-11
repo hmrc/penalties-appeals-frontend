@@ -295,8 +295,8 @@ otherReason.whyReturnSubmittedLate.lpp.headingAndTitle = Why was the VAT bill pa
 otherReason.whyReturnSubmittedLate.lpp.error.required = Explain why the VAT bill was paid late
 otherReason.whyReturnSubmittedLate.error.required = Explain why the return was submitted late
 otherReason.whyReturnSubmittedLate.error.regex = The text must contain only letters, numbers and standard special characters
-otherReason.whyReturnSubmittedLate.p1 = We only need to know about these penalties. Appeal other penalties separately.
-otherReason.whyReturnSubmittedLate.lpp.p1 = We only need to know about this penalty. Appeal other penalties separately.
+otherReason.whyReturnSubmittedLate.multiplePenalties = We only need to know about these penalties. Appeal other penalties separately.
+otherReason.whyReturnSubmittedLate.singlePenalty = We only need to know about this penalty. Appeal other penalties separately.
 
 # Who Planned to Submit VAT Return
 # ----------------------------------------------------------
