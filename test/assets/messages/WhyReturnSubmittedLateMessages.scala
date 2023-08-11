@@ -25,5 +25,9 @@ object WhyReturnSubmittedLateMessages {
 
   val headingLpp = "Why was the VAT bill paid late?"
 
+  val hintText = "We only need to know about these penalties. Appeal other penalties separately."
+
+  val hintTextLpp = "We only need to know about this penalty. Appeal other penalties separately."
+
   val continueButton = "Continue"
 }

@@ -23,6 +23,7 @@
         button: components.button,
         characterCount: components.characterCount,
         pageHeader: components.pageHeader,
+        p: components.p,
         formHelper: FormWithCSRF)
 
 @(form: Form[_], postAction: Call, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
@@ -45,11 +46,14 @@
 
   @pageHeader()
 
-  @formHelper(action = postAction) {
+@formHelper(action = postAction) {
     @characterCount(
       form("why-return-submitted-late-text"),
       label = messages(pageTitleAndHeading),
-      hint = None,
+      hint = if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional))
+Some(HtmlContent(messages("otherReason.whyReturnSubmittedLate.lpp.p1")))
+ else {Some(HtmlContent(messages("otherReason.whyReturnSubmittedLate.p1")))
+},
       maxLength = Some(5000)
     )
 
