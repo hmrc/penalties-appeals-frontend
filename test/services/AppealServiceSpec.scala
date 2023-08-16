@@ -325,8 +325,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         .thenReturn(Future.successful(None))
       val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
       result shouldBe Right((): Unit)
-      verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
-        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+      verify(mockAuditService, times(1)).audit(any[JsonAuditModel](), any())(any[HeaderCarrier](),
+        any[ExecutionContext](), any())
     }
 
     "parse the session keys into a model and return true when the connector call is successful and audit the response" +
@@ -337,8 +337,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         .thenReturn(Future.successful(None))
       val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourneyMultiple, implicitly, implicitly))
       result shouldBe Right((): Unit)
-      verify(mockAuditService, times(2)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
-        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+      verify(mockAuditService, times(2)).audit(any[JsonAuditModel](), any())(any[HeaderCarrier](),
+        any[ExecutionContext](), any())
     }
 
     "parse the session keys into a model and audit the response - for duplicate file upload" in new Setup {
@@ -368,8 +368,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
       result shouldBe Right((): Unit)
 
-      verify(mockAuditService, times(2)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
-        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+      verify(mockAuditService, times(2)).audit(any[JsonAuditModel](), any())(any[HeaderCarrier](),
+        any[ExecutionContext](), any())
     }
 
     "parse the session keys into a model and audit the response - removing file uploads if the user selected no to uploading files" in new Setup {
@@ -397,8 +397,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourneyDeclinedUploads, implicitly, implicitly))
       result shouldBe Right((): Unit)
 
-      verify(mockAuditService, times(1)).audit(ArgumentMatchers.any[JsonAuditModel])(ArgumentMatchers.any[HeaderCarrier],
-        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+      verify(mockAuditService, times(1)).audit(any[JsonAuditModel](), any())(any[HeaderCarrier](),
+        any[ExecutionContext](), any())
     }
 
     "ignore FAILED or WAITING files for audit" in new Setup {
@@ -427,8 +427,8 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
       result shouldBe Right((): Unit)
 
-      verify(mockAuditService, times(1)).audit(auditCapture.capture())(ArgumentMatchers.any[HeaderCarrier],
-        ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
+      verify(mockAuditService, times(1)).audit(auditCapture.capture(), any())(any[HeaderCarrier](),
+        any[ExecutionContext](), any())
       (auditCapture.getValue.detail \ "appealInformation" \ "uploadedFiles").as[List[JsValue]] shouldBe Seq.empty
     }
 
@@ -600,12 +600,12 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         ))
       )
       service.sendAuditIfDuplicatesExist(Some(Seq(uploadAsReady)))(fakeRequestForOtherJourney, implicitly, implicitly)
-      verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
+      verify(mockAuditService, times(0)).audit(any(), any())(any(), any(), any())
     }
 
     "not send any audit if no uploads exist" in new Setup {
       service.sendAuditIfDuplicatesExist(None)(fakeRequestForOtherJourney, implicitly, implicitly)
-      verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
+      verify(mockAuditService, times(0)).audit(any(), any())(any(), any(), any())
     }
 
     "send an audit and filter out WAITING documents" in new Setup {
@@ -626,7 +626,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockAuditService.getAllDuplicateUploadsForAppealSubmission(any()))
         .thenReturn(Json.obj("mocked" -> "value"))
       service.sendAuditIfDuplicatesExist(Some(Seq(uploadAsReady, duplicateUpload, waitingUpload)))(fakeRequestForOtherJourney, implicitly, implicitly)
-      verify(mockAuditService, times(1)).audit(any())(any(), any(), any())
+      verify(mockAuditService, times(1)).audit(any(), any())(any(), any(), any())
     }
 
     "send an audit when duplicates exist" in new Setup {
@@ -646,7 +646,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockAuditService.getAllDuplicateUploadsForAppealSubmission(any()))
         .thenReturn(Json.obj("mocked" -> "value"))
       service.sendAuditIfDuplicatesExist(Some(Seq(uploadAsReady, duplicateUpload)))(fakeRequestForOtherJourney, implicitly, implicitly)
-      verify(mockAuditService, times(1)).audit(any())(any(), any(), any())
+      verify(mockAuditService, times(1)).audit(any(), any())(any(), any(), any())
     }
   }
 

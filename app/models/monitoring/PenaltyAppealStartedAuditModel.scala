@@ -16,13 +16,13 @@
 
 package models.monitoring
 
-import models.AuthRequest
+import models.UserRequest
 import play.api.libs.json.JsValue
 import services.monitoring.JsonAuditModel
 import utils.JsonUtils
 
 case class PenaltyAppealStartedAuditModel(penaltyNumber: String, penaltyType: AuditPenaltyTypeEnum.Value)
-                                    (implicit request: AuthRequest[_]) extends JsonAuditModel with JsonUtils {
+                                    (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
   override val auditType: String = "PenaltyAppealStarted"
   override val transactionName: String = "penalties-appeal-started"
   override val detail: JsValue = jsonObjNoNulls(

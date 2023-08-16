@@ -18,7 +18,6 @@ package config.featureSwitches
 
 sealed trait FeatureSwitch {
   val name: String
-  val displayText: String
 }
 
 object FeatureSwitch {
@@ -27,26 +26,27 @@ object FeatureSwitch {
     NonJSRouting,
     ShowDigitalCommsMessage,
     WarnForDuplicateFiles,
-    ShowFullAppealAgainstTheObligation
+    ShowFullAppealAgainstTheObligation,
+    UseNewPathForAudit
   )
 }
 
 case object NonJSRouting extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.non-js-routing"
-  override val displayText: String = "To enable routing to JS pages"
 }
 
 case object ShowDigitalCommsMessage extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-digital-comms-message"
-  override val displayText: String = "To enable routing to JS pages"
 }
 
 case object WarnForDuplicateFiles extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.warn-for-duplicate-files"
-  override val displayText: String = "To enable warnings for duplicate files"
 }
 
 case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-full-appeal-against-the-obligation-journey"
-  override val displayText: String = "To show the full appeal against the obligation journey"
+}
+
+case object UseNewPathForAudit extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.use-new-path-for-audit"
 }
