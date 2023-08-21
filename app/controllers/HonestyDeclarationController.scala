@@ -16,31 +16,36 @@
 
 package controllers
 
-import java.time.LocalDate
-import config.featureSwitches.FeatureSwitching
+import config.featureSwitches.{FeatureSwitching, UseNewPathForAudit}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import helpers.HonestyDeclarationHelper
-
-import javax.inject.Inject
-import models.{NormalMode, UserRequest}
+import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
+import models.monitoring.AuditPenaltyTypeEnum.{FirstLPP, LSP, SecondLPP}
+import models.monitoring.PenaltyAppealStartedAuditModel
 import models.pages.{HonestyDeclarationPage, PageMode}
+import models.{NormalMode, PenaltyTypeEnum, UserRequest}
 import navigation.Navigation
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.SessionService
+import services.monitoring.AuditService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.HonestyDeclarationPage
 import viewtils.ImplicitDateFormatter
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDeclarationPage,
                                              errorHandler: ErrorHandler,
                                              navigation: Navigation,
+                                             auditService: AuditService,
                                              sessionService: SessionService)
                                             (implicit mcc: MessagesControllerComponents,
                                              appConfig: AppConfig,
@@ -62,6 +67,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
                 ImplicitDateFormatter.dateToString(endDate))
             val reasonText: String = HonestyDeclarationHelper.getReasonText(reasonableExcuse)
             val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
+            auditStartOfAppealJourney()
             Future(Ok(honestDeclarationPage(reasonableExcuse, reasonText,
               friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation, PageMode(HonestyDeclarationPage, NormalMode))))
           }
@@ -102,5 +108,18 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
           s"End date defined? ${request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod)} \n")
         Future(errorHandler.showInternalServerError)
     }
+  }
+
+  def auditStartOfAppealJourney()(implicit hc: HeaderCarrier, request: UserRequest[_]): Unit = {
+    val penaltyNumber = request.answers.getAnswer[String](SessionKeys.penaltyNumber).get
+    val appealTypeForAudit = request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get match {
+      case Late_Submission => LSP
+      case Late_Payment => FirstLPP
+      case Additional => SecondLPP
+      case appealType => throw new MatchError(s"[HonestyDeclarationController][auditStartOfAppealJourney] - unknown appeal type given $appealType")
+    }
+    val auditModel = PenaltyAppealStartedAuditModel(penaltyNumber, appealTypeForAudit)
+    val path = if(isEnabled(UseNewPathForAudit)) request.path else "/penalties-appeals/initialise-appeal"
+    auditService.audit(auditModel, Some(path))
   }
 }

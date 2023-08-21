@@ -20,25 +20,23 @@ import base.SpecBase
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
-import models.{AppealData, AuthRequest, PenaltyTypeEnum}
+import models.{AppealData, PenaltyTypeEnum}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.Configuration
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContent, Result}
+import play.api.libs.json.Json
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.AppealService
-import services.monitoring.JsonAuditModel
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionKeys
 
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class InitialiseAppealControllerSpec extends SpecBase {
   val mockAppealsService: AppealService = mock(classOf[AppealService])
@@ -49,7 +47,6 @@ class InitialiseAppealControllerSpec extends SpecBase {
     reset(mockAppealsService)
     reset(mockSessionService)
     reset(mockConfig)
-    reset(mockAuditService)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
@@ -59,7 +56,6 @@ class InitialiseAppealControllerSpec extends SpecBase {
     val controller = new InitialiseAppealController(
       mockAppealsService,
       mockSessionService,
-      mockAuditService,
       errorHandler
     )(implicitly, implicitly, mockConfig, implicitly)
   }
@@ -323,78 +319,6 @@ class InitialiseAppealControllerSpec extends SpecBase {
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data shouldBe userAnswersToReturn.data
-    }
-  }
-
-  "auditStartOfAppealJourney" should {
-    def appealData(appealType: PenaltyTypeEnum.Value): AppealData = AppealData(
-      `type` = appealType,
-      startDate = LocalDate.of(2020, 1, 1),
-      endDate = LocalDate.of(2020, 1, 31),
-      dueDate = LocalDate.of(2020, 3, 7),
-      dateCommunicationSent = LocalDate.of(2020, 3, 8)
-    )
-
-    "send an audit" when {
-      def auditTest(penaltyType: PenaltyTypeEnum.Value): Unit = {
-        s"the appeal is for a $penaltyType" in new Setup(AuthTestModels.successfulAuthResult) {
-          val penaltyTypeForAudit: String = penaltyType match {
-            case Late_Submission => "LSP"
-            case Late_Payment => "LPP1"
-            case Additional => "LPP2"
-            case _ => s"$penaltyType"
-          }
-          val authRequest = new AuthRequest[AnyContent]("123456789")
-          val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
-          val auditDetails: JsValue = Json.obj(
-            "startedBy" -> "client",
-            "taxIdentifier" -> "123456789",
-            "identifierType" -> "VRN",
-            "penaltyNumber" -> "123456789000",
-            "penaltyType" -> penaltyTypeForAudit
-          )
-          controller.auditStartOfAppealJourney("123456789000", appealData(penaltyType))(implicitly, HeaderCarrier(), authRequest)
-          verify(mockAuditService, times(1)).audit(auditCapture.capture())(ArgumentMatchers.any[HeaderCarrier],
-            ArgumentMatchers.any[ExecutionContext], ArgumentMatchers.any())
-          auditCapture.getValue.transactionName shouldBe "penalties-appeal-started"
-          auditCapture.getValue.auditType shouldBe "PenaltyAppealStarted"
-          auditCapture.getValue.detail shouldBe auditDetails
-        }
-      }
-
-      def auditAgentTest(penaltyType: PenaltyTypeEnum.Value): Unit = {
-        s"the appeal is for a $penaltyType (Agent)" in new Setup(AuthTestModels.successfulAuthResult) {
-          val penaltyTypeForAudit: String = penaltyType match {
-            case Late_Submission => "LSP"
-            case Late_Payment => "LPP1"
-            case Additional => "LPP2"
-            case _ => s"$penaltyType"
-          }
-          val authRequest = new AuthRequest[AnyContent]("123456789", arn = Some("BARN123456789"))
-          val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
-          val auditDetails: JsValue = Json.obj(
-            "startedBy" -> "agent",
-            "taxIdentifier" -> "123456789",
-            "identifierType" -> "VRN",
-            "agentReferenceNumber" -> "BARN123456789",
-            "penaltyNumber" -> "123456789000",
-            "penaltyType" -> penaltyTypeForAudit
-          )
-          controller.auditStartOfAppealJourney("123456789000", appealData(penaltyType))(implicitly, HeaderCarrier(), authRequest)
-          verify(mockAuditService, times(1)).audit(auditCapture.capture())(any(), any(), any())
-          auditCapture.getValue.transactionName shouldBe "penalties-appeal-started"
-          auditCapture.getValue.auditType shouldBe "PenaltyAppealStarted"
-          auditCapture.getValue.detail shouldBe auditDetails
-        }
-      }
-
-      auditTest(PenaltyTypeEnum.Late_Submission)
-      auditTest(PenaltyTypeEnum.Late_Payment)
-      auditTest(PenaltyTypeEnum.Additional)
-
-      auditAgentTest(PenaltyTypeEnum.Late_Submission)
-      auditAgentTest(PenaltyTypeEnum.Late_Payment)
-      auditAgentTest(PenaltyTypeEnum.Additional)
     }
   }
 }

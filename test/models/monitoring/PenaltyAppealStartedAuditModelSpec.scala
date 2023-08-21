@@ -17,14 +17,14 @@
 package models.monitoring
 
 import base.SpecBase
-import models.AuthRequest
+import models.UserRequest
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 
 class PenaltyAppealStartedAuditModelSpec extends SpecBase {
-  val authRequest = new AuthRequest[AnyContent]("123456789")
-  val agentAuthRequest = new AuthRequest[AnyContent]("123456789", arn = Some("BARN123456789"))
-  val sampleAuditModel: PenaltyAppealStartedAuditModel = PenaltyAppealStartedAuditModel("123456789000", AuditPenaltyTypeEnum.FirstLPP)(authRequest)
+  val userRequest = new UserRequest[AnyContent]("123456789", answers = userAnswers(Json.obj()))
+  val agentUserRequest = new UserRequest[AnyContent]("123456789", arn = Some("BARN123456789"), answers = userAnswers(Json.obj()))
+  val sampleAuditModel: PenaltyAppealStartedAuditModel = PenaltyAppealStartedAuditModel("123456789000", AuditPenaltyTypeEnum.FirstLPP)(userRequest)
 
   "have the correct auditType" in {
     sampleAuditModel.auditType shouldBe "PenaltyAppealStarted"
@@ -36,7 +36,7 @@ class PenaltyAppealStartedAuditModelSpec extends SpecBase {
 
   def auditTest(penaltyType: AuditPenaltyTypeEnum.Value): Unit = {
     s"have the correct details for $penaltyType - Trader" in {
-      val auditModel = PenaltyAppealStartedAuditModel("123456789000", penaltyType)(authRequest)
+      val auditModel = PenaltyAppealStartedAuditModel("123456789000", penaltyType)(userRequest)
       auditModel.detail shouldBe Json.obj(
         "startedBy" -> "client",
         "taxIdentifier" -> "123456789",
@@ -49,7 +49,7 @@ class PenaltyAppealStartedAuditModelSpec extends SpecBase {
 
   def auditAgentTest(penaltyType: AuditPenaltyTypeEnum.Value): Unit = {
     s"have the correct details for $penaltyType - Agent" in {
-      val auditModel = PenaltyAppealStartedAuditModel("123456789000", penaltyType)(agentAuthRequest)
+      val auditModel = PenaltyAppealStartedAuditModel("123456789000", penaltyType)(agentUserRequest)
       auditModel.detail shouldBe Json.obj(
         "startedBy" -> "agent",
         "taxIdentifier" -> "123456789",
