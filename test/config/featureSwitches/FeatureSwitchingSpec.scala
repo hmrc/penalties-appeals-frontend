@@ -36,7 +36,6 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= WarnForDuplicateFiles.name
     sys.props -= ShowFullAppealAgainstTheObligation.name
-    sys.props -= UseNewPathForAudit.name
     sys.props -= featureSwitching.TIME_MACHINE_NOW
   }
 
@@ -46,7 +45,6 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= WarnForDuplicateFiles.name
     sys.props -= ShowFullAppealAgainstTheObligation.name
-    sys.props -= UseNewPathForAudit.name
   }
 
   "listOfAllFeatureSwitches" should {
@@ -55,8 +53,7 @@ class FeatureSwitchingSpec extends SpecBase {
         NonJSRouting,
         ShowDigitalCommsMessage,
         WarnForDuplicateFiles,
-        ShowFullAppealAgainstTheObligation,
-        UseNewPathForAudit
+        ShowFullAppealAgainstTheObligation
       )
     }
   }

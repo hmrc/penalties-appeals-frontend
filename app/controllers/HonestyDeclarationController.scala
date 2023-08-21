@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, UseNewPathForAudit}
+import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import helpers.HonestyDeclarationHelper
@@ -119,7 +119,6 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
       case appealType => throw new MatchError(s"[HonestyDeclarationController][auditStartOfAppealJourney] - unknown appeal type given $appealType")
     }
     val auditModel = PenaltyAppealStartedAuditModel(penaltyNumber, appealTypeForAudit)
-    val path = if(isEnabled(UseNewPathForAudit)) request.path else "/penalties-appeals/initialise-appeal"
-    auditService.audit(auditModel, Some(path))
+    auditService.audit(auditModel)
   }
 }

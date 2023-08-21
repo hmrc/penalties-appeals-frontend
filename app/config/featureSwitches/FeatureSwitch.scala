@@ -26,8 +26,7 @@ object FeatureSwitch {
     NonJSRouting,
     ShowDigitalCommsMessage,
     WarnForDuplicateFiles,
-    ShowFullAppealAgainstTheObligation,
-    UseNewPathForAudit
+    ShowFullAppealAgainstTheObligation
   )
 }
 
@@ -45,8 +44,4 @@ case object WarnForDuplicateFiles extends FeatureSwitch {
 
 case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-full-appeal-against-the-obligation-journey"
-}
-
-case object UseNewPathForAudit extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.use-new-path-for-audit"
 }

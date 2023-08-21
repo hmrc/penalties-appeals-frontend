@@ -50,7 +50,6 @@ class HonestyDeclarationControllerSpec extends SpecBase {
     reset(mockAppConfig)
     reset(mockAuditService)
     reset(mockConfig)
-    when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.use-new-path-for-audit"))(any())).thenReturn(true)
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(true)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
@@ -191,9 +190,8 @@ class HonestyDeclarationControllerSpec extends SpecBase {
             "penaltyNumber" -> "123",
             "penaltyType" -> penaltyTypeForAudit
           )
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.use-new-path-for-audit"))(any())).thenReturn(true)
           controller.auditStartOfAppealJourney()(HeaderCarrier(), userRequestWithCorrectKeys.copy(answers = userAnswers(correctUserAnswers.deepMerge(Json.obj(SessionKeys.appealType -> penaltyType)))))
-          verify(mockAuditService, times(1)).audit(auditCapture.capture(), any())(any[HeaderCarrier](),
+          verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
             any[ExecutionContext], any())
           auditCapture.getValue.transactionName shouldBe "penalties-appeal-started"
           auditCapture.getValue.auditType shouldBe "PenaltyAppealStarted"
@@ -219,7 +217,7 @@ class HonestyDeclarationControllerSpec extends SpecBase {
             "penaltyType" -> penaltyTypeForAudit
           )
           controller.auditStartOfAppealJourney()(HeaderCarrier(), userRequestWithCorrectKeys.copy(arn = Some("BARN123456789"), answers = userAnswers(correctUserAnswers.deepMerge(Json.obj(SessionKeys.appealType -> penaltyType)))))
-          verify(mockAuditService, times(1)).audit(auditCapture.capture(), any())(any(), any(), any())
+          verify(mockAuditService, times(1)).audit(auditCapture.capture())(any(), any(), any())
           auditCapture.getValue.transactionName shouldBe "penalties-appeal-started"
           auditCapture.getValue.auditType shouldBe "PenaltyAppealStarted"
           auditCapture.getValue.detail shouldBe auditDetails
