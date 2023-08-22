@@ -49,16 +49,17 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                            periodEnd: String,
                            isObligationAppeal: Boolean = false,
                            showDigitalCommsMessage: Boolean = true,
-                           isAgent: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage, penaltyTypeMsgKey, bothPenalties = "no", isAgent)(vatTraderLSPUserRequest, messages, appConfig)
+                           isAgent: Boolean = false,
+                           vrn:String): HtmlFormat.Appendable = appealConfirmationPage.apply(
+      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage, penaltyTypeMsgKey, bothPenalties = "no", isAgent, vrn)(vatTraderLSPUserRequest, messages, appConfig)
 
-    implicit val vatTraderLateSubmissionPenaltyDoc: Document = asDocument(applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023"))
+    implicit val vatTraderLateSubmissionPenaltyDoc: Document = asDocument(applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", vrn="123456789"))
 
     def applyLPP1VATTraderView(penaltyTypeMsgKey: PenaltyTypeEnum.Value,
                                periodStart: String,
                                periodEnd: String,
                                isObligationAppeal: Boolean = false, isAgent: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "no", isAgent)(vatTraderLPPUserRequest, messages, appConfig)
+      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "no", isAgent, vrn)(vatTraderLPPUserRequest, messages, appConfig)
 
     implicit val vatTraderLPP1Doc: Document = asDocument(applyLPP1VATTraderView(PenaltyTypeEnum.Late_Payment, "1 July 2023", "31 July 2023"))
 
@@ -66,7 +67,7 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                                             periodStart: String,
                                             periodEnd: String,
                                             isObligationAppeal: Boolean = false, isAgent: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "yes", isAgent)(vatTraderLPP2UserRequest, messages, appConfig)
+      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "yes", isAgent, vrn)(vatTraderLPP2UserRequest, messages, appConfig)
 
     implicit val vatTraderLPP2Doc: Document = asDocument(applyLPP2VATTraderViewBothPenalties(PenaltyTypeEnum.Late_Payment, "1 July 2023", "31 July 2023"))
 
@@ -74,14 +75,14 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                                            periodStart: String,
                                            periodEnd: String,
                                            isObligationAppeal: Boolean = false, isAgent: Boolean = true): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "yes", isAgent)(vatAgentLPP2UserRequest, messages, appConfig)
+      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "yes", isAgent, vrn)(vatAgentLPP2UserRequest, messages, appConfig)
 
     implicit val vatAgentLPP2Doc: Document = asDocument(applyLPP2VATAgentViewBothPenalties(PenaltyTypeEnum.Late_Payment, "1 July 2023", "31 July 2023"))
 
     def applyAgentView(penaltyTypeMsgKey: PenaltyTypeEnum.Value,
                        periodStart: String,
                        periodEnd: String, isAgent: Boolean = true): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, showDigitalCommsMessage = true, appealType = penaltyTypeMsgKey, bothPenalties = "no", isAgent = isAgent)(agentUserAgentSubmitButClientWasLateSessionKeys, messages, appConfig)
+      periodStart, periodEnd, showDigitalCommsMessage = true, appealType = penaltyTypeMsgKey, bothPenalties = "no", isAgent = isAgent, vrn= vrn)(agentUserAgentSubmitButClientWasLateSessionKeys, messages, appConfig)
 
     implicit val agentDoc: Document = asDocument(applyAgentView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023"))
 
@@ -221,20 +222,20 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
 
     "the extra paragraph should be visible when the appeal is against the obligation" in {
       implicit val appealAgainstObligationDoc: Document = asDocument(
-        applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", isObligationAppeal = true))
+        applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", isObligationAppeal = true, vrn="123456789"))
       appealAgainstObligationDoc.select(Selectors.obligationExtraParagraph).text() shouldBe obligationParagraph
     }
 
     s"the digital comms should be visible when the ${ShowDigitalCommsMessage.name} feature switch is enabled and the user is a trader" in {
       val doc: Document = asDocument(
-        applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023","31 July 2023")
+        applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023","31 July 2023", vrn="123456789")
       )
       doc.select(Selectors.digitalCommsMessage).text() shouldBe whatHappensNextP4
     }
 
     s"the digital comms should be invisible when the ${ShowDigitalCommsMessage.name} feature switch is disabled and the user is a trader" in {
       val doc: Document = asDocument(
-        applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", showDigitalCommsMessage = false)
+        applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", showDigitalCommsMessage = false, vrn="123456789")
       )
       doc.select(Selectors.digitalCommsMessage).isEmpty shouldBe true
     }

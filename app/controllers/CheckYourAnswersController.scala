@@ -161,7 +161,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       val isObligationAppeal: Boolean = userRequest.session.get(SessionKeys.confirmationObligation).get.toBoolean
       val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
       val isAgent: Boolean = userRequest.session.get(SessionKeys.confirmationIsAgent).get.toBoolean
-      Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent))
+      val vrn= userRequest.vrn
+      Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent, vrn))
         .removingFromSession(SessionKeys.allKeys: _*)
     }
   }
