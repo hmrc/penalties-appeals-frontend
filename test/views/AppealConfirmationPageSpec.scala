@@ -53,7 +53,7 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                            vrn:String): HtmlFormat.Appendable = appealConfirmationPage.apply(
       periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage, penaltyTypeMsgKey, bothPenalties = "no", isAgent, vrn)(vatTraderLSPUserRequest, messages, appConfig)
 
-    implicit val vatTraderLateSubmissionPenaltyDoc: Document = asDocument(applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", vrn="123456"))
+    implicit val vatTraderLateSubmissionPenaltyDoc: Document = asDocument(applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", vrn="123456789"))
 
     def applyLPP1VATTraderView(penaltyTypeMsgKey: PenaltyTypeEnum.Value,
                                periodStart: String,
