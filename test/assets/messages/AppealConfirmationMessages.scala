@@ -41,7 +41,7 @@ object AppealConfirmationMessages {
 
   val p1 = "You do not need a reference number."
 
-  val p2 = "We have logged this appeal under the VAT registration number (VRN) for the business - 123456789. Quote this VRN if you need to call HMRC about the appeal."
+  val p2 = "We have logged this appeal under the VAT registration number (VRN) for the business – 123456789. Quote this VRN if you need to call HMRC about the appeal."
 
   val h2WhatHappensNext = "What happens next"
 
