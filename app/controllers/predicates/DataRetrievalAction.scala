@@ -32,34 +32,29 @@ class DataRetrievalActionImpl @Inject()(sessionService: SessionService,
                                         errorHandler: ErrorHandler)
                                        (implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
   override protected def refine[A](request: AuthRequest[A]): Future[Either[Result, UserRequest[A]]] = {
-    if (request.session.get(SessionKeys.penaltiesHasSeenConfirmationPage).isDefined) {
-      logger.info("[DataRetrievalAction][refine] - User has 'penaltiesHasSeenConfirmationPage' session key in session, setting no user answers")
-      Future(Right(UserRequest(request.vrn, request.active, request.arn, UserAnswers(""))(request)))
-    } else {
-      request.session.get(SessionKeys.journeyId).fold[Future[Either[Result, UserRequest[A]]]]({
-        logger.warn(s"[DataRetrievalAction][refine] - No journey ID was found in the session for VRN: ${request.vrn} - " +
-          s"redirecting to incomplete session data page")
-        Future(Left(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())))
-      })(
-        journeyId => {
-          sessionService.getUserAnswers(journeyId).map {
-            case Some(storedAnswers) => {
-              logger.debug(s"[DataRetrievalActionImpl][refine] - Found $storedAnswers for VRN: ${request.vrn}")
-              Right(UserRequest(request.vrn, request.active, request.arn, storedAnswers)(request))
-            }
-            case None => {
-              logger.debug(s"[DataRetrievalActionImpl][refine] - Found no session answers for VRN: ${request.vrn}")
-              Right(UserRequest(request.vrn, request.active, request.arn, UserAnswers(journeyId))(request))
-            }
-          }.recover {
-            case e => {
-              logger.error(s"[DataRetrievalActionImpl][refine] - Failed to query mongo for session data with message: ${e.getMessage}")
-              Left(errorHandler.showInternalServerError(request))
-            }
+    request.session.get(SessionKeys.journeyId).fold[Future[Either[Result, UserRequest[A]]]]({
+      logger.warn(s"[DataRetrievalAction][refine] - No journey ID was found in the session for VRN: ${request.vrn} - " +
+        s"redirecting to incomplete session data page")
+      Future(Left(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())))
+    })(
+      journeyId => {
+        sessionService.getUserAnswers(journeyId).map {
+          case Some(storedAnswers) => {
+            logger.debug(s"[DataRetrievalActionImpl][refine] - Found $storedAnswers for VRN: ${request.vrn}")
+            Right(UserRequest(request.vrn, request.active, request.arn, storedAnswers)(request))
+          }
+          case None => {
+            logger.debug(s"[DataRetrievalActionImpl][refine] - Found no session answers for VRN: ${request.vrn}")
+            Right(UserRequest(request.vrn, request.active, request.arn, UserAnswers(journeyId))(request))
+          }
+        }.recover {
+          case e => {
+            logger.error(s"[DataRetrievalActionImpl][refine] - Failed to query mongo for session data with message: ${e.getMessage}")
+            Left(errorHandler.showInternalServerError(request))
           }
         }
-      )
-    }
+      }
+    )
   }
 }
 

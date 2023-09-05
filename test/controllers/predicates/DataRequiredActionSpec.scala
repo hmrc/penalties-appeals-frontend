@@ -74,12 +74,13 @@ class DataRequiredActionSpec extends SpecBase {
     "redirect to the appeal has already been submitted page" when {
       "the user has seen the appeal confirmation page" in {
         val requestWithConfirmationSessionKeys = UserRequest("123456789", answers = UserAnswers("")
-        )(FakeRequest("GET", "/").withSession(SessionKeys.penaltiesHasSeenConfirmationPage -> "true"))
+        )(FakeRequest("GET", "/").withSession(SessionKeys.journeyId -> "journey1", SessionKeys.penaltiesAppealHasBeenSubmitted -> "true"))
         val fakeController = new Harness(
           requiredAction = new DataRequiredActionImpl(
             errorHandler
           ),
-          request = requestWithConfirmationSessionKeys)
+          request = requestWithConfirmationSessionKeys
+        )
 
         val result = await(fakeController.onPageLoad())
         result.header.status shouldBe SEE_OTHER

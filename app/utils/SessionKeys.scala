@@ -61,14 +61,13 @@ object SessionKeys {
   val secondPenaltyAmount = "secondPenaltyAmount"
   val firstPenaltyCommunicationDate = "firstPenaltyCommunicationDate"
   val secondPenaltyCommunicationDate = "secondPenaltyCommunicationDate"
+  val penaltiesAppealHasBeenSubmitted = "penaltiesAppealHasBeenSubmitted"
   val confirmationAppealType = "confirmationAppealType"
   val confirmationStartDate = "confirmationStartDate"
   val confirmationEndDate = "confirmationEndDate"
   val confirmationObligation = "confirmationObligation"
-  val confirmationDigitalComms = "confirmationDigitalComms"
   val confirmationMultipleAppeals = "confirmationMultipleAppeals"
   val confirmationIsAgent = "confirmationIsAgent"
-  val penaltiesHasSeenConfirmationPage = "penaltiesHasSeenConfirmationPage"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -99,7 +98,6 @@ object SessionKeys {
     isObligationAppeal,
     cancelVATRegistration,
     otherRelevantInformation,
-    journeyId,
     errorCodeFromUpscan,
     failureMessageFromUpscan,
     fileReference,
@@ -121,9 +119,9 @@ object SessionKeys {
     confirmationStartDate,
     confirmationEndDate,
     confirmationObligation,
-    confirmationDigitalComms,
     confirmationMultipleAppeals,
     confirmationIsAgent,
-    penaltiesHasSeenConfirmationPage
+    penaltiesAppealHasBeenSubmitted,
+    journeyId
   )
 }
