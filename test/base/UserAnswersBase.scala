@@ -80,8 +80,7 @@ trait UserAnswersBase {
     SessionKeys.confirmationMultipleAppeals -> "no",
     SessionKeys.confirmationObligation -> "false",
     SessionKeys.confirmationIsAgent -> "false",
-    SessionKeys.penaltiesAppealHasBeenSubmitted -> "true",
-    SessionKeys.journeyId -> "4321"
+    SessionKeys.penaltiesHasSeenConfirmationPage -> "true"
   )
 
   val lossOfStaffAnswers: JsObject = Json.obj(
