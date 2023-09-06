@@ -40,11 +40,11 @@ class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val 
       request.answers.getAnswer[String](SessionKeys.dateCommunicationSent),
       request.session.get(SessionKeys.journeyId),
       request.session.get(SessionKeys.penaltiesHasSeenConfirmationPage)) match {
-      case (Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), _) =>
-        Future.successful(Right(request))
-      case (None, None, None, None, None, None, None, Some(_)) =>
+      case (_, _, _, _, _, _, Some(_), Some(_)) =>
         logger.info("[DataRequiredAction] - User has 'penaltiesHasSeenConfirmationPage' session key in session, routing to 'You cannot go back to appeal details page'")
         Future.successful(Left(Redirect(controllers.routes.YouCannotGoBackToAppealController.onPageLoad())))
+      case (Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), _) =>
+        Future.successful(Right(request))
       case _ =>
         logger.error("[DataRequiredAction][refine] - Some data was missing from the session - rendering ISE")
         logger.debug(s"[DataRequiredAction][refine] - Required data from session: ${

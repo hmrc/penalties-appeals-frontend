@@ -18,14 +18,12 @@ package controllers.predicates
 
 import base.SpecBase
 import models.AuthRequest
-import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.SessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,9 +39,9 @@ class DataRetrievalActionSpec extends SpecBase {
 
   "refine" should {
     "return OK" when {
-      "there is a 'penaltiesHasSeenConfirmationPage' session key" in {
-        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(UserAnswers("1234"))))
-        val requestWithNoSessionKeys = AuthRequest("123456789")(fakeRequest.withSession(SessionKeys.penaltiesHasSeenConfirmationPage -> "true"))
+      "there is session data" in {
+        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(None))
+        val requestWithNoSessionKeys = AuthRequest("123456789")(fakeRequest)
         val fakeController = new Harness(
           retrievalAction = new DataRetrievalActionImpl(
             mockSessionService,

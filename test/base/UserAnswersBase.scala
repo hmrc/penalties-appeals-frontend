@@ -34,15 +34,6 @@ trait UserAnswersBase {
     SessionKeys.journeyId -> "1234"
   )
 
-  val confirmationPageAnswers: JsObject = Json.obj(
-    SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
-    SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01"),
-    SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01"),
-    SessionKeys.confirmationMultipleAppeals -> "no",
-    SessionKeys.confirmationObligation -> "false",
-    SessionKeys.confirmationIsAgent -> "false"
-  ) ++ correctUserAnswers
-
   val correctLPPUserAnswers: JsObject = correctUserAnswers ++ Json.obj(
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment
   )
@@ -72,16 +63,6 @@ trait UserAnswersBase {
     SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
   ) ++ hasConfirmedDeclaration
-
-  val confirmationSessionKeys = Seq(
-    SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
-    SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
-    SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
-    SessionKeys.confirmationMultipleAppeals -> "no",
-    SessionKeys.confirmationObligation -> "false",
-    SessionKeys.confirmationIsAgent -> "false",
-    SessionKeys.penaltiesHasSeenConfirmationPage -> "true"
-  )
 
   val lossOfStaffAnswers: JsObject = Json.obj(
     SessionKeys.reasonableExcuse -> "lossOfStaff",
@@ -153,13 +134,4 @@ trait UserAnswersBase {
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.dateOfCrime -> "2022-01-01"
   ) ++ hasConfirmedDeclaration
-
-  val confirmationPageKeys: JsObject = Json.obj(
-    SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
-    SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01"),
-    SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01"),
-    SessionKeys.confirmationMultipleAppeals -> "no",
-    SessionKeys.confirmationObligation -> "false",
-    SessionKeys.confirmationIsAgent -> "false"
-  ) ++ crimeAnswers
 }

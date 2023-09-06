@@ -89,21 +89,4 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase {
       getResult.isEmpty shouldBe true
     }
   }
-
-  "deleteUserAnswers" should {
-    "return 1 when there is a pre-existing record under the journeyId" in new Setup {
-      await(repository.upsertUserAnswer(userAnswers))
-      val recordsInMongoAfterInsertion = await(repository.collection.find().toFuture())
-      recordsInMongoAfterInsertion.size shouldBe 1
-      val deleteResult = await(repository.deleteUserAnswers("journey123"))
-      deleteResult shouldBe 1
-      val recordsInMongoAfterDeletion = await(repository.collection.find().toFuture())
-      recordsInMongoAfterDeletion.size shouldBe 0
-    }
-
-    "return 0 when there is no pre-existing record under the journeyId" in new Setup {
-      val deleteResult = await(repository.deleteUserAnswers("journey123"))
-      deleteResult shouldBe 0
-    }
-  }
 }

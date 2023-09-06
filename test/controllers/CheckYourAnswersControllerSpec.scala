@@ -27,8 +27,7 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{await, defaultAwaitTimeout, redirectLocation, status}
-import repositories.UploadJourneyRepository
+import play.api.test.Helpers.{await, defaultAwaitTimeout, redirectLocation, session, status}
 import services.AppealService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
@@ -45,12 +44,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val confirmationPage: AppealConfirmationPage = injector.instanceOf[AppealConfirmationPage]
   val mockAppealService: AppealService = mock(classOf[AppealService])
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
-  val uploadJourneyRepository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val mockIsLateAppeal:IsLateAppealHelper = mock(classOf[IsLateAppealHelper])
 
   def fakeRequest(answers: JsObject, fakeRequest: FakeRequest[AnyContent] = fakeRequest): UserRequest[AnyContent] = fakeRequestConverter(answers, fakeRequest)
-
-  val fakeRequestWithConfirmationKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(confirmationSessionKeys: _*)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], isLateAppeal: Boolean = false) {
     reset(mockAuthConnector)
@@ -71,7 +67,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     mockAppealService,
     confirmationPage,
     errorHandler,
-    uploadJourneyRepository,
+    mockSessionService,
     sessionAnswersHelper,
     mockIsLateAppeal
   )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction, checkObligationAvailabilityAction)
@@ -223,11 +219,10 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Right((): Unit)))
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
-        when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
-          .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequest(crimeAnswers))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        session(result).get(SessionKeys.previouslySubmittedJourneyId).get shouldBe "1234"
       }
 
       "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -235,8 +230,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Right((): Unit)))
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-        when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
-          .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
@@ -364,13 +357,21 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   "onPageLoadForConfirmation" should {
     "the user is authorised" when {
-      "show the confirmation page and remove all non-confirmation screen session keys" in new Setup(AuthTestModels.successfulAuthResult) {
+      "show the confirmation page and remove all non-confirmation screen session keys (loading data from Mongo)" in new Setup(AuthTestModels.successfulAuthResult) {
+        val fakeRequestWithPreviouslySubmittedJourneyIdKey: FakeRequest[AnyContent] = FakeRequest("GET", "/").withSession(SessionKeys.previouslySubmittedJourneyId -> "1235")
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
-        val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequest(crimeAnswers, fakeRequestWithConfirmationKeys))
+        val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequest(crimeAnswers, fakeRequestWithPreviouslySubmittedJourneyIdKey))
         await(result).header.status shouldBe OK
         await(result).session.data.keys.toSet.subsetOf(SessionKeys.allKeys.toSet) shouldBe false
-        await(result).session.data.keys.toSet.subsetOf(SessionKeys.confirmationPageKeys.toSet) shouldBe true
+      }
+
+      "redirect the user to the no journey data error page when the user is missing the 'previouslySubmittedJourneyId' key" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
+        val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequest(crimeAnswers, fakeRequest))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData().url
       }
     }
 

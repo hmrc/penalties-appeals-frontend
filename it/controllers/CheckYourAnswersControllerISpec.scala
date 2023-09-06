@@ -17,6 +17,7 @@
 package controllers
 
 import models.PenaltyTypeEnum
+import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.jsoup.{Jsoup, nodes}
 import org.mongodb.scala.Document
@@ -28,6 +29,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
 import stubs.{AuthStub, PenaltiesStub}
+import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.{LocalDate, LocalDateTime}
@@ -416,6 +418,25 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /check-your-answers" should {
+    "redirect the user to the confirmation page keeping the data in Mongo (expires via TTL)" in new UserAnswersSetup(UserAnswers("testjourney", Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2023-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2023-01-31"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2023-03-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2023-03-12"),
+      SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+    ))) {
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      val request = await(controller.onSubmit()(fakeRequest.withSession(SessionKeys.journeyId -> "testjourney")))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      await(userAnswersRepository.getUserAnswer("testjourney")).isDefined shouldBe true
+    }
+
     "redirect the user to the confirmation page on success for crime" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -634,21 +655,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
     }
 
-    "redirect the user to the confirmation page (regardless of reason) and delete all uploads for that user" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
-      SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
-    ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
-      await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
-      await(repository.collection.countDocuments().toFuture()) shouldBe 1
-      val request = await(controller.onSubmit()(fakeRequest))
-      await(repository.collection.countDocuments().toFuture()) shouldBe 0
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
-    }
-
     "redirect the user to the service unavailable page on unmatched fault" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.isObligationAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -748,13 +754,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "yes"
     ))) {
-      val request = await(controller.onPageLoadForConfirmation()(fakeRequest.withSession(
-        SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
-        SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
-        SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
-        SessionKeys.confirmationMultipleAppeals -> "no",
-        SessionKeys.confirmationObligation -> "false",
-        SessionKeys.confirmationIsAgent -> "false")))
+      val fakeRequest = FakeRequest("GET", "/").withSession(
+        authToken -> "1234",
+        SessionKeys.journeyId -> "1235",
+        SessionKeys.previouslySubmittedJourneyId -> "1234",
+        SessionKeys.penaltiesHasSeenConfirmationPage -> "true"
+      )
+      val request = await(controller.onPageLoadForConfirmation()(fakeRequest))
       request.header.status shouldBe Status.OK
     }
 
