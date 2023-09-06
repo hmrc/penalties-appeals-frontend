@@ -74,4 +74,15 @@ class UserAnswersRepository @Inject()(mongo: MongoComponent,
         }
       }
   }
+
+  def deleteUserAnswers(journeyId: String): Future[Int] = {
+    collection.deleteOne(equal("journeyId", journeyId)).toFuture().map(_.getDeletedCount.toInt)
+      .recover {
+        case e => {
+          logger.error(s"[UserAnswersRepository][deleteUserAnswers] - Failed to delete data for journeyId: $journeyId with " +
+            s"error message: ${e.getMessage}")
+          0
+        }
+      }
+  }
 }

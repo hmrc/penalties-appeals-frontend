@@ -16,10 +16,13 @@
 
 package controllers
 
+import java.time.LocalDate
 import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import helpers.{IsLateAppealHelper, SessionAnswersHelper}
+
+import javax.inject.Inject
 import models.pages.{CheckYourAnswersPage, PageMode}
 import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
 import play.api.Configuration
@@ -33,8 +36,6 @@ import utils.SessionKeys
 import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
 import viewtils.ImplicitDateFormatter
 
-import java.time.LocalDate
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswersPage,
@@ -133,6 +134,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         val confirmationObligation = userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true).toString
         val confirmationMultipleAppeals = userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).getOrElse("no")
         val confirmationIsAgent = userRequest.isAgent.toString
+        val penaltiesHasSeenConfirmationPage = "true"
         uploadJourneyRepository.removeUploadsForJourney(userRequest.session.get(SessionKeys.journeyId).get).map {
           _ => Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation()).addingToSession(
             List(
@@ -141,8 +143,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
               (SessionKeys.confirmationEndDate, confirmationEndDate),
               (SessionKeys.confirmationObligation, confirmationObligation),
               (SessionKeys.confirmationMultipleAppeals, confirmationMultipleAppeals),
-              (SessionKeys.confirmationIsAgent, confirmationIsAgent),
-              (SessionKeys.penaltiesAppealHasBeenSubmitted, "true")): _*
+              (SessionKeys.penaltiesHasSeenConfirmationPage, penaltiesHasSeenConfirmationPage),
+              (SessionKeys.confirmationIsAgent, confirmationIsAgent)): _*
           )
         }
       }
@@ -155,11 +157,11 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       val bothPenalties: String = userRequest.session.get(SessionKeys.confirmationMultipleAppeals).get
       val startDate: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.confirmationStartDate).get)
       val endDate: LocalDate = LocalDate.parse(userRequest.session.get(SessionKeys.confirmationEndDate).get)
-      val (readablePeriodStart, readablePeriodEnd): (String, String) = (dateToString(startDate), dateToString(endDate))
+      val (readablePeriodStart, readablePeriodEnd) = (dateToString(startDate), dateToString(endDate))
       val isObligationAppeal: Boolean = userRequest.session.get(SessionKeys.confirmationObligation).get.toBoolean
       val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
       val isAgent: Boolean = userRequest.session.get(SessionKeys.confirmationIsAgent).get.toBoolean
-      val vrn: String = userRequest.vrn
+      val vrn= userRequest.vrn
       Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent, vrn))
         .removingFromSession(SessionKeys.allKeys: _*)
     }
