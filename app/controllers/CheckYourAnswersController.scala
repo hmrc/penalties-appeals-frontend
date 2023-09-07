@@ -16,32 +16,28 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
+import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
 import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 import models.pages.{CheckYourAnswersPage, PageMode}
-import models.{Mode, NormalMode, PenaltyTypeEnum, UserRequest}
+import models.{Mode, NormalMode, UserRequest}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repositories.UploadJourneyRepository
-import services.{AppealService, SessionService}
+import services.AppealService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
-import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
+import views.html.CheckYourAnswersPage
 import viewtils.ImplicitDateFormatter
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswersPage,
                                            appealService: AppealService,
-                                           appealConfirmationPage: AppealConfirmationPage,
                                            errorHandler: ErrorHandler,
-                                           sessionService: SessionService,
                                            sessionAnswersHelper: SessionAnswersHelper,
                                            isLateAppealHelper: IsLateAppealHelper)
                                           (implicit mcc: MessagesControllerComponents,
@@ -128,47 +124,12 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
       },
       _ => {
         val previouslySubmittedJourneyId = userRequest.answers.journeyId
-        Future(Redirect(controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation()).addingToSession(
+        Future(Redirect(controllers.routes.AppealConfirmationController.onPageLoad()).addingToSession(
           SessionKeys.previouslySubmittedJourneyId -> previouslySubmittedJourneyId,
           SessionKeys.penaltiesHasSeenConfirmationPage -> "true"
         ))
       }
     ))
-  }
-
-  def onPageLoadForConfirmation(): Action[AnyContent] = authorise.async {
-    implicit request => {
-      request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
-        logger.warn(s"[CheckYourAnswersController][onPageLoadForConfirmation] - No journey ID was found in the session for VRN: ${request.vrn} - " +
-          s"redirecting to incomplete session data page")
-        Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
-      })(
-        journeyId => {
-          sessionService.getUserAnswers(journeyId).map {
-            userAnswers => {
-              userAnswers.fold({
-                logger.warn(s"[CheckYourAnswersController][onPageLoadForConfirmation] - No submitted user answers were found in the session for VRN: ${request.vrn} - " +
-                  s"redirecting to incomplete session data page")
-                Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())
-              })(
-                userAnswers => {
-                  val appealType = userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get
-                  val bothPenalties: String = userAnswers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).getOrElse("no")
-                  val startDate: LocalDate = userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get
-                  val endDate: LocalDate = userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get
-                  val (readablePeriodStart, readablePeriodEnd) = (dateToString(startDate), dateToString(endDate))
-                  val isObligationAppeal: Boolean = userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)
-                  val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
-                  val isAgent: Boolean = request.isAgent
-                  val vrn = request.vrn
-                  Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent, vrn))
-                    .removingFromSession(SessionKeys.allKeys: _*)
-                }
-              )
-            }
-          }
-        })
-    }
   }
 
   def changeAnswer(continueUrl: String, pageName: String): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
