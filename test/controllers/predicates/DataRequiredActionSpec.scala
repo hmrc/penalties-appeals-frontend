@@ -18,7 +18,6 @@ package controllers.predicates
 
 import base.SpecBase
 import models.UserRequest
-import models.session.UserAnswers
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
@@ -73,8 +72,8 @@ class DataRequiredActionSpec extends SpecBase {
 
     "redirect to the appeal has already been submitted page" when {
       "the user has seen the appeal confirmation page" in {
-        val requestWithConfirmationSessionKeys = UserRequest("123456789", answers = UserAnswers("")
-        )(FakeRequest("GET", "/").withSession(SessionKeys.penaltiesHasSeenConfirmationPage -> "true"))
+        val requestWithConfirmationSessionKeys = UserRequest("123456789", answers = userAnswers(correctUserAnswers)
+        )(FakeRequest("GET", "/").withSession(SessionKeys.penaltiesHasSeenConfirmationPage -> "true", SessionKeys.journeyId -> "1234"))
         val fakeController = new Harness(
           requiredAction = new DataRequiredActionImpl(
             errorHandler

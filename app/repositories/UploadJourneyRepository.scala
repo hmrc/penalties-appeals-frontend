@@ -132,11 +132,6 @@ class UploadJourneyRepository @Inject()(
     }
   }
 
-  def removeUploadsForJourney(journeyId: String): Future[Unit] = {
-    logger.info(s"[UploadJourneyRepository][removeUploadsForJourney] - Removing uploads for journey ID: $journeyId")
-    deleteEntity(journeyId)
-  }
-
   def removeFileForJourney(journeyId: String, fileReference: String): Future[Unit] = {
     getNumberOfDocumentsForJourneyId(journeyId).map {
       amountOfDocuments => {

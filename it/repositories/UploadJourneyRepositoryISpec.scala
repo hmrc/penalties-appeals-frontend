@@ -148,21 +148,6 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     }
   }
 
-  "removeUploadsForJourney" should {
-    "remove the document for the given journey ID" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
-      await(repository.collection.countDocuments().toFuture()) shouldBe 1
-      await(repository.removeUploadsForJourney("1234"))
-      await(repository.collection.countDocuments().toFuture()) shouldBe 0
-    }
-
-    "not remove anything when the journey ID doesn't exist in the repo" in new Setup {
-      await(repository.collection.countDocuments().toFuture()) shouldBe 0
-      await(repository.removeUploadsForJourney("1234"))
-      await(repository.collection.countDocuments().toFuture()) shouldBe 0
-    }
-  }
-
   "removeFileForJourney" should {
     "remove the file in the journey if it exists" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))

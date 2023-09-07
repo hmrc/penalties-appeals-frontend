@@ -17,6 +17,7 @@
 package controllers
 
 import models.PenaltyTypeEnum
+import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.jsoup.{Jsoup, nodes}
 import org.mongodb.scala.Document
@@ -31,13 +32,13 @@ import stubs.{AuthStub, PenaltiesStub}
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   val controller: CheckYourAnswersController = injector.instanceOf[CheckYourAnswersController]
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val correlationId: String = "correlationId"
+  implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   override def beforeEach(): Unit = {
     await(repository.collection.deleteMany(Document()).toFuture())
@@ -416,6 +417,25 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "POST /check-your-answers" should {
+    "redirect the user to the confirmation page keeping the data in Mongo (expires via TTL)" in new UserAnswersSetup(UserAnswers("testjourney", Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2023-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2023-01-31"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2023-03-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2023-03-12"),
+      SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
+    ))) {
+      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      val request = await(controller.onSubmit()(fakeRequest.withSession(SessionKeys.journeyId -> "testjourney")))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
+      await(userAnswersRepository.getUserAnswer("testjourney")).isDefined shouldBe true
+    }
+
     "redirect the user to the confirmation page on success for crime" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasConfirmedDeclaration -> true,
@@ -425,7 +445,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
     }
 
     "redirect the user to the confirmation page on success for fire or flood" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -436,7 +456,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
     }
 
     "redirect the user to the confirmation page on success for loss of staff" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -447,7 +467,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
     }
 
     "redirect the user to the confirmation page on success for technical issues" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -459,7 +479,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
     }
 
     "redirect the user to the confirmation page on success for health" when {
@@ -472,7 +492,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "there is a ongoing hospital stay" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -485,7 +505,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "there has been a hospital stay that has ended" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -499,7 +519,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
     }
@@ -515,7 +535,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "the user has uploaded a file" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -528,7 +548,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "no file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -542,7 +562,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -556,7 +576,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "for LPP" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -571,7 +591,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "for LPP - agent" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -589,7 +609,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "for LPP2 - agent" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -607,7 +627,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         )
         val request = await(controller.onSubmit()(fakeRequestWithCorrectKeys))
         request.header.status shouldBe Status.SEE_OTHER
-        request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
     }
 
@@ -619,7 +639,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
     }
 
     "redirect the user to the confirmation page on success for obligation appeal" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -631,22 +651,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
-    }
-
-    "redirect the user to the confirmation page (regardless of reason) and delete all uploads for that user" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
-      SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
-    ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
-      await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
-      await(repository.collection.countDocuments().toFuture()) shouldBe 1
-      val request = await(controller.onSubmit()(fakeRequest))
-      await(repository.collection.countDocuments().toFuture()) shouldBe 0
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+      request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
     }
 
     "redirect the user to the service unavailable page on unmatched fault" in new UserAnswersSetup(userAnswers(Json.obj(
@@ -731,31 +736,6 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
-    }
-
-    "return 303 (SEE_OTHER) when the user is not authorised" in {
-      AuthStub.unauthorised()
-      val request = await(buildClientForRequestToApp(uri = "/check-your-answers").post("{}"))
-      request.status shouldBe Status.SEE_OTHER
-    }
-  }
-
-  "GET /appeal-confirmation" should {
-    "redirect the user to the confirmation page on success" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.reasonableExcuse -> "crime",
-      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-      SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
-      SessionKeys.isUploadEvidence -> "yes"
-    ))) {
-      val request = await(controller.onPageLoadForConfirmation()(fakeRequest.withSession(
-        SessionKeys.confirmationAppealType -> PenaltyTypeEnum.Late_Submission.toString,
-        SessionKeys.confirmationStartDate -> LocalDate.parse("2020-01-01").toString,
-        SessionKeys.confirmationEndDate -> LocalDate.parse("2020-01-01").toString,
-        SessionKeys.confirmationMultipleAppeals -> "no",
-        SessionKeys.confirmationObligation -> "false",
-        SessionKeys.confirmationIsAgent -> "false")))
-      request.header.status shouldBe Status.OK
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {

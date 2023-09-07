@@ -27,30 +27,25 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{await, defaultAwaitTimeout, redirectLocation, status}
-import repositories.UploadJourneyRepository
+import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, session, status}
 import services.AppealService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
-import views.html.{AppealConfirmationPage, CheckYourAnswersPage}
+import views.html.CheckYourAnswersPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersControllerSpec extends SpecBase {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   val page: CheckYourAnswersPage = injector.instanceOf[CheckYourAnswersPage]
-  val confirmationPage: AppealConfirmationPage = injector.instanceOf[AppealConfirmationPage]
   val mockAppealService: AppealService = mock(classOf[AppealService])
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
-  val uploadJourneyRepository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val mockIsLateAppeal:IsLateAppealHelper = mock(classOf[IsLateAppealHelper])
 
   def fakeRequest(answers: JsObject, fakeRequest: FakeRequest[AnyContent] = fakeRequest): UserRequest[AnyContent] = fakeRequestConverter(answers, fakeRequest)
-
-  val fakeRequestWithConfirmationKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(confirmationSessionKeys: _*)
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], isLateAppeal: Boolean = false) {
     reset(mockAuthConnector)
@@ -69,9 +64,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   object Controller extends CheckYourAnswersController(
     page,
     mockAppealService,
-    confirmationPage,
     errorHandler,
-    uploadJourneyRepository,
     sessionAnswersHelper,
     mockIsLateAppeal
   )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction, checkObligationAvailabilityAction)
@@ -223,11 +216,10 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Right((): Unit)))
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
-        when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
-          .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequest(crimeAnswers))
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        redirectLocation(result).get shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
+        session(result).get(SessionKeys.previouslySubmittedJourneyId).get shouldBe "1234"
       }
 
       "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -235,11 +227,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Right((): Unit)))
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-        when(mockUploadJourneyRepository.removeUploadsForJourney(any()))
-          .thenReturn(Future.successful((): Unit))
         val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoadForConfirmation().url
+        redirectLocation(result).get shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
       }
 
       "redirect the user to an ISE" when {
@@ -362,27 +352,24 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     }
   }
 
-  "onPageLoadForConfirmation" should {
-    "the user is authorised" when {
-      "show the confirmation page and remove all non-confirmation screen session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
-        val result: Future[Result] = Controller.onPageLoadForConfirmation()(fakeRequest(crimeAnswers, fakeRequestWithConfirmationKeys))
-        await(result).header.status shouldBe OK
-        await(result).session.data.keys.toSet.subsetOf(SessionKeys.allKeys.toSet) shouldBe false
-        await(result).session.data.keys.toSet.subsetOf(SessionKeys.confirmationPageKeys.toSet) shouldBe true
-      }
+  "changeAnswer" should {
+    "redirect to the URL provided and add the page name to the session" in new Setup(AuthTestModels.successfulAuthResult) {
+      when(mockSessionService.getUserAnswers(any()))
+        .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
+      val result: Future[Result] = Controller.changeAnswer(controllers.routes.ReasonableExcuseController.onPageLoad().url, "ReasonableExcuseSelectionPage")(fakeRequest)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
     }
 
-    "the user is unauthorised" when {
+    "when the user is unauthorised" when {
 
       "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-        val result: Future[Result] = Controller.onSubmit()(fakeRequest)
+        val result: Future[Result] = Controller.changeAnswer(controllers.routes.ReasonableExcuseController.onPageLoad().url, "ReasonableExcuseSelectionPage")(fakeRequest)
         status(result) shouldBe FORBIDDEN
       }
 
       "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-        val result: Future[Result] = Controller.onSubmit()(fakeRequest)
+        val result: Future[Result] = Controller.changeAnswer(controllers.routes.ReasonableExcuseController.onPageLoad().url, "ReasonableExcuseSelectionPage")(fakeRequest)
         status(result) shouldBe SEE_OTHER
       }
     }
