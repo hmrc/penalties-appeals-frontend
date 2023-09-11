@@ -360,7 +360,7 @@ export class MultiFileUpload {
         return formData;
     }
 
-    /** F77 */
+    /** F81 */
     setUploadingMessage(item, file) {
         item.querySelector(`.${this.classes.progressBar}`).textContent = this.parseTemplate(this.messages.fileUploading, {
             fileNumber: item.querySelector('.govuk-label').textContent.toLowerCase(),
@@ -897,14 +897,17 @@ export class MultiFileUpload {
         window.location.href = this.getErrorServiceUrl();
     }
 
+    /** F78 **/
     redirectToFileRemovalPage(fileRef) {
         window.location.href = this.parseTemplate(this.config.removePageUrl, {fileRef: fileRef});
     }
 
+    /** F79 **/
     findNumberOfFilesUploaded() {
         return this.itemList.querySelectorAll(`.${this.classes.uploaded}`).length;
     }
 
+    /** F80 **/
     changeFileInputToHeading(item) {
         const fileContainer = item.querySelector(`.${this.classes.inputContainer}`);
         const fileLabel = item.querySelector(`.${this.classes.label}`);
