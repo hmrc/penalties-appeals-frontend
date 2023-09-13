@@ -23,10 +23,11 @@ import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
-import viewtils.ImplicitDateFormatter
-
+import viewtils.{ImplicitDateFormatter, PenaltyTypeHelper}
 import java.time.LocalDate
+
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository,
@@ -472,5 +473,20 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     val dateTimeNow: LocalDate = dateTimeHelper.dateNow
     userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("no") &&
       userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).exists(_.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal)))
+  }
+
+  def viewAppealRows()(implicit userRequest: UserRequest[_], messages: Messages): Seq[CheckYourAnswersRow] = {
+     Seq(CheckYourAnswersRow(
+       messages("viewAppealDetails.vrn"),
+       userRequest.vrn,
+       ""
+     ),
+    CheckYourAnswersRow(
+      messages("viewAppealDetails.penaltyAppealed"),
+      (PenaltyTypeHelper.getKeysFromSession().get.head + ": " +
+        PenaltyTypeHelper.getKeysFromSession().get(1) + " to " +
+        PenaltyTypeHelper.getKeysFromSession().get.last),
+      ""
+    ))
   }
 }

@@ -63,6 +63,12 @@
     <p class="govuk-body govuk-!-padding-top-4">@messages("appealConfirmation.p1")</p>
     <p class="govuk-body">@messages("appealConfirmation.p2", vrn)</p>
 
+    <p class ="govuk-body">
+        <a class="govuk-link" href="@{controllers.routes.ViewAppealDetailsController.onPageLoad().url}" rel="noreferrer noopener" target="_blank">
+            @messages("appealConfirmation.appealDetailsLink")
+        </a>
+    </p>
+
     <h2 class="govuk-heading-m">@messages("appealConfirmation.whatHappensNext")</h2>
 
     <p class="govuk-body">@messages("appealConfirmation.whatHappensNext.p1")</p>
