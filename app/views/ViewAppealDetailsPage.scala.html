@@ -19,11 +19,11 @@
 
 @this(layout: Layout, pageHeader: components.pageHeader)
 
-@(contentToDisplayInSummaryList: Seq[CheckYourAnswersRow], pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
+@(contentToDisplayInSummaryList: Seq[CheckYourAnswersRow])(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @layout(pageTitle = messages("viewAppealDetails.headingAndTitle"),
         isPageFullWidth = true,
-        optPageMode = Some(pageMode)) {
+        backLinkEnabled = false) {
 
         <h1 class="govuk-heading-l govuk-!-margin-bottom-4" id="page-heading">@{messages("viewAppealDetails.headingAndTitle")}</h1>
 

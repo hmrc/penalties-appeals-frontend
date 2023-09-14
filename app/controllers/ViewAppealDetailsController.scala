@@ -34,13 +34,12 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                                            (implicit mcc: MessagesControllerComponents,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
-                                            dataRetrieval: DataRetrievalAction,
-                                            dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport {
+                                            dataRetrieval: DataRetrievalAction) extends FrontendController(mcc) with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval) {
     implicit request => {
       val answersFromSession = sessionAnswersHelper.viewAppealRows()
-      Ok(viewAppealDetailsPage(answersFromSession, PageMode(ViewAppealDetailsPage, NormalMode)))
+      Ok(viewAppealDetailsPage(answersFromSession))
     }
   }
 }
