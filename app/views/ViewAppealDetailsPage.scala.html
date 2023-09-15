@@ -16,6 +16,7 @@
 
 @import config.AppConfig
 @import models.appeals.QuestionAnswerRow
+@import views.html.helper.CSPNonce
 
 @this(layout: Layout, pageHeader: components.pageHeader)
 
@@ -25,23 +26,31 @@
         isPageFullWidth = true,
         backLinkEnabled = false) {
 
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4" id="page-heading">@{messages("viewAppealDetails.headingAndTitle")}</h1>
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-4" id="page-heading">@{messages("viewAppealDetails.headingAndTitle")}</h1>
 
-        <dl class="govuk-summary-list">
-         @contentToDisplayInSummaryList.map { row =>
-           <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key govuk-!-width-one-third">
-             @row.key
-            </dt>
-            <dd class="govuk-summary-list__value">
-             @row.value
-            </dd>
-          </div>
-         }
-        </dl>
+  <dl class="govuk-summary-list">
+   @contentToDisplayInSummaryList.map { row =>
+     <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-width-one-third">
+       @row.key
+      </dt>
+      <dd class="govuk-summary-list__value">
+       @row.value
+      </dd>
+    </div>
+   }
+  </dl>
 
-        <div class="govuk-inset-text">
-            <p>@{messages("viewAppealDetails.warn.1")}</p>
-            <p>@{messages("viewAppealDetails.warn.2")}</p>
-        </div>
+  <div class="govuk-inset-text">
+    <p>@{messages("viewAppealDetails.warn.1")}</p>
+    <p>@{messages("viewAppealDetails.warn.2")}</p>
+  </div>
+
+  <button class="govuk-link govuk-body-s govuk-print-button govuk-!-display-none-print govuk-!-margin-bottom-4" id="print-button">@messages("viewAppealDetails.printThisPage")</button>
+
+  <script @{CSPNonce.attr}>
+    document.getElementById('print-button').addEventListener("click", function(e) {
+       window.print()
+    });
+  </script>
 }
