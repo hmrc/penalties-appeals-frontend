@@ -27,6 +27,7 @@ import viewtils.{ImplicitDateFormatter, PenaltyTypeHelper}
 import java.time.LocalDate
 
 import javax.inject.Inject
+import models.session.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -483,8 +484,9 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
      ),
     CheckYourAnswersRow(
       messages("viewAppealDetails.penaltyAppealed"),
-      (PenaltyTypeHelper.getKeysFromSession().get.head + ": " +
-        PenaltyTypeHelper.getKeysFromSession().get(1) + " to " +
+      messages("penaltyInformation.headerText",
+        PenaltyTypeHelper.getKeysFromSession().get.head,
+        PenaltyTypeHelper.getKeysFromSession().get(1),
         PenaltyTypeHelper.getKeysFromSession().get.last),
       ""
     ))

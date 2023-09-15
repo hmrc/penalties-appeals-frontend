@@ -20,26 +20,52 @@ import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import helpers.SessionAnswersHelper
 import javax.inject.Inject
-import models.NormalMode
+import models.{NormalMode, UserRequest}
 import models.pages.{PageMode, ViewAppealDetailsPage}
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages.implicitMessagesProviderToMessages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
+import utils.SessionKeys
 import views.html.ViewAppealDetailsPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDetailsPage,
-                                            sessionAnswersHelper: SessionAnswersHelper)
+                                            sessionAnswersHelper: SessionAnswersHelper,
+                                            sessionService: SessionService)
                                            (implicit mcc: MessagesControllerComponents,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
-                                            dataRetrieval: DataRetrievalAction) extends FrontendController(mcc) with I18nSupport {
+                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval) {
+  def onPageLoad(): Action[AnyContent] = authorise.async {
     implicit request => {
-      val answersFromSession = sessionAnswersHelper.viewAppealRows()
-      Ok(viewAppealDetailsPage(answersFromSession))
+      request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
+        logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No journey ID was found in the session for VRN: ${request.vrn} - " +
+          s"redirecting to incomplete session data page")
+        Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
+      })(
+        journeyId => {
+          sessionService.getUserAnswers(journeyId).map {
+            optUserAnswers => {
+              optUserAnswers.fold({
+                logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No submitted user answers were found in the session for VRN: ${SessionKeys.previouslySubmittedJourneyId} - " +
+                  s"redirecting to incomplete session data page")
+                Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())
+              })(
+                userAnswers => {
+                  implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
+                  val answersFromSession = sessionAnswersHelper.viewAppealRows()(userRequest, request.messages)
+                  Ok(viewAppealDetailsPage(answersFromSession)(request.messages, appConfig, userRequest))
+                }
+              )
+            }
+          }
+        }
+      )
     }
   }
 }
