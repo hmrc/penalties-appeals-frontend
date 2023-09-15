@@ -486,9 +486,20 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
       messages("viewAppealDetails.penaltyAppealed"),
       messages("penaltyInformation.headerText",
         PenaltyTypeHelper.getKeysFromSession().get.head,
-        PenaltyTypeHelper.getKeysFromSession().get(1),
-        PenaltyTypeHelper.getKeysFromSession().get.last),
-      ""
-    ))
+          PenaltyTypeHelper.getKeysFromSession().get(1) ,
+          PenaltyTypeHelper.getKeysFromSession().get.last,
+        ""
+       ),
+       CheckYourAnswersRow(
+        messages("viewAppealDetails.appealDate"),
+        LocalDate.now(),
+        ""
+        ),
+       CheckYourAnswersRow(
+         messages("viewAppealDetails.reviewPeriod"),
+         LocalDate.now().plusDays(45),
+         ""
+       )
+     )
   }
 }

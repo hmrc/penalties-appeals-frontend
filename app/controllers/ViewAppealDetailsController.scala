@@ -45,7 +45,7 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
 
   def onPageLoad(): Action[AnyContent] = authorise.async {
     implicit request => {
-      if(!isEnabled(ShowViewAppealDetailsPage)) {
+      if (!isEnabled(ShowViewAppealDetailsPage)) {
         Future(NotFound(errorHandler.notFoundTemplate))
       } else {
         request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
@@ -63,8 +63,34 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                 })(
                   userAnswers => {
                     implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
-                    val answersFromSession = sessionAnswersHelper.getSubmittedAnswers()(userRequest, request.messages)
-                    Ok(viewAppealDetailsPage(answersFromSession)(request.messages, appConfig, userRequest))
+                    userAnswers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
+                      if (userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+                        for {
+                          fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(userRequest)
+                        } yield {
+                          val answersFromSession = sessionAnswersHelper.getSubmittedAnswers() ++ sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
+                          Ok(viewAppealDetailsPage(answersFromSession)(request.messages, appConfig, userRequest))
+                        }
+                      } else {
+                        logger.error("[ViewAppealsDetailsController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
+                        Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
+                      }
+                    })(
+                      reasonableExcuse => {
+                        if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+                          for {
+                            content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)
+                          } yield {
+                            Ok(viewAppealDetailsPage(sessionAnswersHelper.getSubmittedAnswers() ++ content)(request.messages, appConfig, userRequest))
+                          }
+                        } else {
+                          logger.error(s"[ViewAppealsDetailsController][onPageLoad] User hasn't got all keys in session for reasonable excuse: $reasonableExcuse")
+                          logger.debug(s"[ViewAppealsDetailsController][onPageLoad] User has keys: ${request.session.data} " +
+                            s"and tried to load page with reasonable excuse: $reasonableExcuse")
+                          Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
+                        }
+                      }
+                    )
                   }
                 )
               }
