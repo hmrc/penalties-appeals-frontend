@@ -102,7 +102,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
@@ -130,7 +130,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
@@ -158,7 +158,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
 
     "call the penalties backend for multiple penalties and handle a success response and" +
@@ -187,7 +187,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoad("12345", isLPP = false, isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
 
     "call the penalties backend for multiple penalties and handle a success response and add multi penalties details keys " +
@@ -222,7 +222,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
 
   }
@@ -261,7 +261,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoadForObligation("12345")(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
@@ -290,7 +290,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoadForObligation("12345")(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
     "call the penalties backend and handle a success response and add the keys to the session " +
       "- redirect to Cancel VAT Registration page for LPP additional" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -318,7 +318,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoadForObligation("12345")(fakeRequest)
       redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
-      answerCaptor.getValue.data shouldBe userAnswersToReturn.data
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
   }
 }

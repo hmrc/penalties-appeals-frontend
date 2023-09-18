@@ -178,7 +178,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("value" -> "bereavement")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HonestyDeclarationController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "bereavement")
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "bereavement")
         }
 
       "the validation is performed against possible values - value does not appear in reasonable excuse list" in

@@ -107,7 +107,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onSubmitForCancelVATRegistration()(fakeRequestConverter(fakeRequest = fakeRequest
             .withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER
-          answerCaptor.getValue shouldBe userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.cancelVATRegistration -> "yes"))
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.cancelVATRegistration -> "yes")
         }
       }
       "the user is unauthorised" when {

@@ -121,7 +121,7 @@ class BereavementReasonControllerSpec extends SpecBase {
           )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenDidThePersonDie -> LocalDate.of(2021, 2, 1))
         }
 

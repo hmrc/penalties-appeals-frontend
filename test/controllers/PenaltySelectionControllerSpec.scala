@@ -123,7 +123,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
           .withFormUrlEncodedBody("value" -> "no")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode).url
-        answerCaptor.getValue.data shouldBe correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "no")
+        answerCaptor.getValue.data.decryptedValue shouldBe correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "no")
       }
 
       "redirect the user to the multiple penalty page when yes is selected" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -139,7 +139,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("value" -> "yes")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(NormalMode).url
-        answerCaptor.getValue.data shouldBe correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes")
+        answerCaptor.getValue.data.decryptedValue shouldBe correctLPPUserAnswers ++ multiPenaltyAnswers ++ Json.obj(SessionKeys.doYouWantToAppealBothPenalties -> "yes")
       }
 
       "return a 400 (BAD REQUEST) and show page with error when no option has been selected" in new Setup(AuthTestModels.successfulAuthResult) {

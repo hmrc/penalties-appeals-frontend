@@ -123,7 +123,7 @@ class HealthReasonControllerSpec extends SpecBase {
           )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(NormalMode).url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.wasHospitalStayRequired -> "no")
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.wasHospitalStayRequired -> "no")
         }
 
         "the validation is performed against possible values " +
@@ -139,7 +139,7 @@ class HealthReasonControllerSpec extends SpecBase {
           )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayBegin(NormalMode).url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.wasHospitalStayRequired -> "yes")
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.wasHospitalStayRequired -> "yes")
         }
 
         "the validation is performed against possible values - value does not appear in options list" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -252,7 +252,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenHealthIssueHappened -> LocalDate.of(2021, 2, 1))
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenHealthIssueHappened -> LocalDate.of(2021, 2, 1))
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -272,7 +272,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenHealthIssueHappened -> LocalDate.of(2021, 2, 1))
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenHealthIssueHappened -> LocalDate.of(2021, 2, 1))
         }
       }
 
@@ -352,7 +352,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode).url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 2, 1))
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 2, 1))
         }
 
         "return 400 (BAD_REQUEST)" when {
@@ -477,7 +477,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(NormalMode).url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
             SessionKeys.hasHealthEventEnded -> "yes"
           )
@@ -498,7 +498,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(CheckMode).url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
             SessionKeys.hasHealthEventEnded -> "yes"
           )
@@ -519,7 +519,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
             SessionKeys.hasHealthEventEnded -> "no"
           )
@@ -543,7 +543,7 @@ class HealthReasonControllerSpec extends SpecBase {
               )))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-            answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+            answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
               SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
               SessionKeys.hasHealthEventEnded -> "no"
             )
@@ -564,7 +564,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
             SessionKeys.hasHealthEventEnded -> "no"
           )
@@ -666,7 +666,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
             SessionKeys.whenHealthIssueEnded -> LocalDate.of(2021, 2, 1)
           )
@@ -691,7 +691,7 @@ class HealthReasonControllerSpec extends SpecBase {
             )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.whenHealthIssueStarted -> LocalDate.of(2021, 1, 1),
             SessionKeys.whenHealthIssueEnded -> LocalDate.of(2021, 2, 1)
           )

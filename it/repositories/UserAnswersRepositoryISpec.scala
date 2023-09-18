@@ -19,6 +19,7 @@ package repositories
 import models.session.UserAnswers
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import utils.IntegrationSpecCommonBase
 
 class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase {
@@ -56,7 +57,8 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase {
 
       val recordsInMongoAfterInsertion = await(repository.collection.find().toFuture())
       recordsInMongoAfterInsertion.size shouldBe 1
-      recordsInMongoAfterInsertion.head shouldBe userAnswers
+      recordsInMongoAfterInsertion.head.journeyId shouldBe userAnswers.journeyId
+      recordsInMongoAfterInsertion.head.data.decryptedValue shouldBe userAnswers.data.decryptedValue
     }
 
     "update userAnswer payload when there IS duplicate key" in new Setup {
@@ -68,7 +70,8 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase {
       await(repository.upsertUserAnswer(duplicateUserAnswer))
       val recordsInMongoAfterUpdate = await(repository.collection.find().toFuture())
       recordsInMongoAfterUpdate.size shouldBe 1
-      recordsInMongoAfterUpdate.head shouldBe duplicateUserAnswer
+      recordsInMongoAfterUpdate.head.journeyId shouldBe duplicateUserAnswer.journeyId
+      recordsInMongoAfterUpdate.head.data.decryptedValue shouldBe duplicateUserAnswer.data.decryptedValue
     }
   }
 
@@ -77,11 +80,14 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase {
       await(repository.upsertUserAnswer(userAnswers))
       val recordsInMongoAfterInsertion = await(repository.collection.find().toFuture())
       recordsInMongoAfterInsertion.size shouldBe 1
-      recordsInMongoAfterInsertion.head shouldBe userAnswers
+      recordsInMongoAfterInsertion.head.journeyId shouldBe userAnswers.journeyId
+      recordsInMongoAfterInsertion.head.data.decryptedValue shouldBe userAnswers.data.decryptedValue
+
 
       val getResult = await(repository.getUserAnswer("journey123"))
       getResult.isDefined shouldBe true
-      getResult.get shouldBe userAnswers
+      getResult.get.journeyId shouldBe userAnswers.journeyId
+      getResult.get.data.decryptedValue shouldBe userAnswers.data.decryptedValue
     }
 
     s"return $None when there is NO pre-existing record under the journeyId" in new Setup {

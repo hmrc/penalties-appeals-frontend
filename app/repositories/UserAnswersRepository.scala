@@ -16,16 +16,19 @@
 
 package repositories
 
-import config.AppConfig
+import config.{AppConfig, Crypto}
 import helpers.DateTimeHelper
 import models.session.UserAnswers
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Indexes.ascending
-import org.mongodb.scala.model.{IndexModel, IndexOptions, UpdateOptions, Updates}
+import org.mongodb.scala.model.{IndexModel, IndexOptions, ReplaceOptions}
+import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
-import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import utils.Logger.logger
 
+import java.time.{Instant, ZoneOffset}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,11 +37,12 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UserAnswersRepository @Inject()(mongo: MongoComponent,
                                       appConfig: AppConfig,
+                                      crypto: Crypto,
                                       dateTimeHelper: DateTimeHelper)
                                      (implicit ec: ExecutionContext) extends PlayMongoRepository[UserAnswers](
   collectionName = "user-answers",
   mongoComponent = mongo,
-  domainFormat = UserAnswers.format,
+  domainFormat = UserAnswers.format(crypto.getCrypto),
   indexes = Seq(
     IndexModel(
       keys = ascending("journeyId"),
@@ -54,18 +58,17 @@ class UserAnswersRepository @Inject()(mongo: MongoComponent,
     )
   )) {
 
+  implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
+
   def getUserAnswer(id: String): Future[Option[UserAnswers]] =
     collection.find(equal("journeyId", id)).headOption()
 
   def upsertUserAnswer(userAnswers: UserAnswers): Future[Boolean] = {
-    collection.updateOne(
+    val userAnswersWithUpdatedTimestamp = userAnswers.copy(lastUpdated = dateTimeHelper.dateTimeNow.toInstant(ZoneOffset.UTC))
+    collection.replaceOne(
       filter = equal("journeyId", userAnswers.journeyId),
-      update = Updates.combine(
-        Updates.set("data", Codecs.toBson(userAnswers.data)),
-        Updates.setOnInsert("journeyId", userAnswers.journeyId),
-        Updates.set("lastUpdated", dateTimeHelper.dateTimeNow)
-      ),
-      options = UpdateOptions().upsert(true)
+      replacement = userAnswersWithUpdatedTimestamp,
+      options = ReplaceOptions().upsert(true)
     ).toFuture().map(_.wasAcknowledged())
       .recover {
         case e => {

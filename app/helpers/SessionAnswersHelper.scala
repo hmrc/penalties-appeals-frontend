@@ -50,7 +50,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
   )
 
   def isAllAnswerPresentForReasonableExcuse(reasonableExcuse: String)(implicit userRequest: UserRequest[_]): Boolean = {
-    val keysInSession = userRequest.answers.data.keys.toSet
+    val keysInSession = userRequest.answers.data.decryptedValue.keys.toSet
     reasonableExcuse match {
       case "health" =>
         (userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired), userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded)) match {
