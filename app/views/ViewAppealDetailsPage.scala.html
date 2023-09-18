@@ -15,11 +15,11 @@
  *@
 
 @import config.AppConfig
-@import models.appeals.QuestionAnswersRow
+@import models.appeals.QuestionAnswerRow
 
 @this(layout: Layout, pageHeader: components.pageHeader)
 
-@(contentToDisplayInSummaryList: Seq[QuestionAnswersRow])(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
+@(contentToDisplayInSummaryList: Seq[QuestionAnswerRow])(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @layout(pageTitle = messages("viewAppealDetails.headingAndTitle"),
         isPageFullWidth = true,

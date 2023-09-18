@@ -19,7 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import messages.CheckYourAnswersMessages._
 import models.NormalMode
-import models.appeals.QuestionAnswersRow
+import models.appeals.QuestionAnswerRow
 import models.pages.{CheckYourAnswersPage, PageMode}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
@@ -51,9 +51,9 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
 
     def applyView(): HtmlFormat.Appendable = checkYourAnswers.apply(
       Seq(
-        QuestionAnswersRow("Key", "Value", "href#"),
-        QuestionAnswersRow("Key 2", "Value 2", "href2#"),
-        QuestionAnswersRow("Key 3", "Value 3", "href2#")
+        QuestionAnswerRow("Key", "Value", "href#"),
+        QuestionAnswerRow("Key 2", "Value 2", "href2#"),
+        QuestionAnswerRow("Key 3", "Value 3", "href2#")
       ),
       pageMode = PageMode(CheckYourAnswersPage, NormalMode)
     )(userRequestWithCorrectKeys, implicitly, implicitly)

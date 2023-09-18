@@ -16,7 +16,7 @@
 
 package models.appeals
 
-case class QuestionAnswersRow(
+case class QuestionAnswerRow(
                                 key: String,
                                 value: String,
                                 url: String,

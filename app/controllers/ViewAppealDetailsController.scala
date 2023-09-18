@@ -17,13 +17,11 @@
 package controllers
 
 import config.AppConfig
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.AuthPredicate
 import helpers.SessionAnswersHelper
 import javax.inject.Inject
-import models.{NormalMode, UserRequest}
-import models.pages.{PageMode, ViewAppealDetailsPage}
-import play.api.i18n.{I18nSupport, Messages}
-import play.api.i18n.Messages.implicitMessagesProviderToMessages
+import models.UserRequest
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -58,7 +56,7 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
               })(
                 userAnswers => {
                   implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
-                  val answersFromSession = sessionAnswersHelper.viewAppealRows()(userRequest, request.messages)
+                  val answersFromSession = sessionAnswersHelper.getSubmittedAnswers()(userRequest, request.messages)
                   Ok(viewAppealDetailsPage(answersFromSession)(request.messages, appConfig, userRequest))
                 }
               )

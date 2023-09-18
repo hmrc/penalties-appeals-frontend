@@ -17,13 +17,11 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import helpers.SessionAnswersHelper
-import models.appeals
-import models.appeals.QuestionAnswersRow
+import messages.ViewAppealDetailsMessages._
+import models.appeals.QuestionAnswerRow
 import org.jsoup.nodes.Document
 import views.behaviours.ViewBehaviours
 import views.html.ViewAppealDetailsPage
-import messages.ViewAppealDetailsMessages._
 
 class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
 
@@ -37,9 +35,9 @@ class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
 
     def applyView() = viewAppealDetailsPage.apply(
       Seq(
-        QuestionAnswersRow("Key 1", "Value 1", ""),
-        QuestionAnswersRow("Key 2", "Value 2", ""),
-        QuestionAnswersRow("Key 3", "Value 3", "")
+        QuestionAnswerRow("Key 1", "Value 1", ""),
+        QuestionAnswerRow("Key 2", "Value 2", ""),
+        QuestionAnswerRow("Key 3", "Value 3", "")
       )
     )(implicitly, implicitly, userRequestWithCorrectKeys)
 

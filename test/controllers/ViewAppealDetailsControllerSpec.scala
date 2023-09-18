@@ -61,6 +61,7 @@ class ViewAppealDetailsControllerSpec extends SpecBase {
             when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(None))
             val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
             status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
           }
         }
 
