@@ -44,7 +44,7 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
   def onPageLoad(): Action[AnyContent] = authorise.async {
     implicit request => {
       request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
-        logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No journey ID was found in the session for VRN: ${request.vrn} - " +
+        logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No previously submitted journey ID was found in the session for VRN: ${request.vrn} - " +
           s"redirecting to incomplete session data page")
         Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
       })(

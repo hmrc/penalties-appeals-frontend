@@ -22,16 +22,19 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.mvc.Result
 import play.api.test.Helpers._
+import services.SessionService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import views.html.ViewAppealDetailsPage
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ViewAppealDetailsControllerSpec extends SpecBase {
   val viewAppealDetailsPage: ViewAppealDetailsPage = injector.instanceOf[ViewAppealDetailsPage]
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
+  val sessionService: SessionService = injector.instanceOf[SessionService]
+  val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -42,7 +45,7 @@ class ViewAppealDetailsControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-  val controller = new ViewAppealDetailsController(viewAppealDetailsPage, sessionAnswersHelper)(mcc, appConfig, authPredicate, dataRetrievalAction)
+  val controller = new ViewAppealDetailsController(viewAppealDetailsPage, sessionAnswersHelper, sessionService)(mcc, appConfig, authPredicate, ec)
 
   "ViewAppealDetailsController" should {
 
