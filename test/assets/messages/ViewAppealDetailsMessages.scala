@@ -17,7 +17,7 @@
 package messages
 
 object ViewAppealDetailsMessages {
-  val title = "Appeal Details - Appeal a VAT penalty - GOV.UK"
+  val title = "Appeal details - Appeal a VAT penalty - GOV.UK"
 
-  val h1 = "Appeal Details"
+  val h1 = "Appeal details"
 }

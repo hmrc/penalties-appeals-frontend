@@ -15,17 +15,17 @@
  *@
 
 @import config.AppConfig
-@import models.appeals.CheckYourAnswersRow
+@import models.appeals.QuestionAnswersRow
 
 @this(layout: Layout, pageHeader: components.pageHeader)
 
-@(contentToDisplayInSummaryList: Seq[CheckYourAnswersRow])(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
+@(contentToDisplayInSummaryList: Seq[QuestionAnswersRow])(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
 @layout(pageTitle = messages("viewAppealDetails.headingAndTitle"),
         isPageFullWidth = true,
         backLinkEnabled = false) {
 
-        <h1 class="govuk-heading-l govuk-!-margin-bottom-4" id="page-heading">@{messages("viewAppealDetails.headingAndTitle")}</h1>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4" id="page-heading">@{messages("viewAppealDetails.headingAndTitle")}</h1>
 
         <dl class="govuk-summary-list">
          @contentToDisplayInSummaryList.map { row =>

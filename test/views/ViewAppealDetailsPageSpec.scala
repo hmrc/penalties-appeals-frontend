@@ -19,7 +19,7 @@ package views
 import base.{BaseSelectors, SpecBase}
 import helpers.SessionAnswersHelper
 import models.appeals
-import models.appeals.CheckYourAnswersRow
+import models.appeals.QuestionAnswersRow
 import org.jsoup.nodes.Document
 import views.behaviours.ViewBehaviours
 import views.html.ViewAppealDetailsPage
@@ -29,7 +29,6 @@ class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
 
   "ViewAppealDetailsPage" should {
     val viewAppealDetailsPage = injector.instanceOf[ViewAppealDetailsPage]
-    val sessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
     object Selectors extends BaseSelectors {
       val descriptionListDtKey: Int => String = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > dt"
 
@@ -38,9 +37,9 @@ class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
 
     def applyView() = viewAppealDetailsPage.apply(
       Seq(
-        CheckYourAnswersRow("Key 1", "Value 1", ""),
-        CheckYourAnswersRow("Key 2", "Value 2", ""),
-        CheckYourAnswersRow("Key 3", "Value 3", "")
+        QuestionAnswersRow("Key 1", "Value 1", ""),
+        QuestionAnswersRow("Key 2", "Value 2", ""),
+        QuestionAnswersRow("Key 3", "Value 3", "")
       )
     )(implicitly, implicitly, userRequestWithCorrectKeys)
 
@@ -57,7 +56,7 @@ class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
       Selectors.descriptionListDdValue(3) -> "Value 3"
     )
 
-    behave like pageWithExpectedMessages(expectedContent, useOwnText = true)
+    behave like pageWithExpectedMessages(expectedContent)
   }
 
 }

@@ -56,6 +56,12 @@ class ViewAppealDetailsControllerSpec extends SpecBase {
             val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
             status(result) shouldBe OK
           }
+
+        "return 303 (SEE_OTHER) when they do not have user answers" in new Setup(AuthTestModels.successfulAuthResult) {
+            when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(None))
+            val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
+            status(result) shouldBe SEE_OTHER
+          }
         }
 
         "the user is unauthorised" must {

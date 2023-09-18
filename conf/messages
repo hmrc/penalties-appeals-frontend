@@ -623,7 +623,7 @@ youCannotGoBackToYourAppealDetails.link.feedback = Are you looking for something
 
 # View appeal details page
 # -----------------------------------------------------------
-viewAppealDetails.headingAndTitle = Appeal Details
+viewAppealDetails.headingAndTitle = Appeal details
 viewAppealDetails.vrn = VAT registration number (VRN)
 viewAppealDetails.penaltyAppealed = Penalty appealed
 viewAppealDetails.appealDate = Appeal date

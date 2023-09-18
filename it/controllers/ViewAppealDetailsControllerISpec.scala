@@ -20,17 +20,20 @@ import java.time.LocalDate
 
 import controllers.testHelpers.AuthorisationTest
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.AnyContent
+import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, contentAsString, defaultAwaitTimeout}
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
+import scala.concurrent.Future
+
 class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
 
-  val controller = injector.instanceOf[ViewAppealDetailsController]
+  val controller: ViewAppealDetailsController = injector.instanceOf[ViewAppealDetailsController]
 
   val fakeRequestWithPreviousId: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(
     authToken -> "1234",
@@ -46,23 +49,23 @@ class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with Au
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
       SessionKeys.lateAppealReason -> "I forgot"
     ))) {
-      val request = controller.onPageLoad()(fakeRequestWithPreviousId)
+      val request: Future[Result] = controller.onPageLoad()(fakeRequestWithPreviousId)
       await(request).header.status shouldBe Status.OK
-      val parsedBody = Jsoup.parse(contentAsString(request))
+      val parsedBody: Document = Jsoup.parse(contentAsString(request))
       parsedBody.select("#main-content dl > div:nth-child(1) > dt").text() shouldBe "VAT registration number (VRN)"
       parsedBody.select("#main-content dl > div:nth-child(1) > dd.govuk-summary-list__value").text() shouldBe "123456789"
       parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "Penalty appealed"
       parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "Late submission penalty: 1 January 2023 to 31 January 2023"
     }
 
-    "return 303 (SEE OTHER) when user does not have 'previouslySubmittedJourneyId' session key" in new UserAnswersSetup(userAnswers(Json.obj(
+    "return 303 (SEE_OTHER) when user does not have 'previouslySubmittedJourneyId' session key" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
       SessionKeys.lateAppealReason -> "I forgot"
     ))){
-      val request = controller.onPageLoad()(fakeRequest)
+      val request: Future[Result] = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.SEE_OTHER
       await(request).header.headers("Location") shouldBe controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData().url
     }
