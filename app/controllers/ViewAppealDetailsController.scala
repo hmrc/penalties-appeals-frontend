@@ -20,10 +20,11 @@ import config.{AppConfig, ErrorHandler}
 import config.featureSwitches.{FeatureSwitching, ShowViewAppealDetailsPage}
 import controllers.predicates.AuthPredicate
 import helpers.SessionAnswersHelper
+
 import javax.inject.Inject
 import models.UserRequest
 import play.api.Configuration
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -43,7 +44,7 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                                             authorise: AuthPredicate,
                                             ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
-  def onPageLoad(): Action[AnyContent] = authorise.async {
+  def onPageLoad() = authorise.async {
     implicit request => {
       if (!isEnabled(ShowViewAppealDetailsPage)) {
         Future(NotFound(errorHandler.notFoundTemplate))
@@ -59,14 +60,15 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                 optUserAnswers.fold({
                   logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No submitted user answers were found in the session for VRN: ${SessionKeys.previouslySubmittedJourneyId} - " +
                     s"redirecting to incomplete session data page")
-                  Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())
+                  Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
                 })(
                   userAnswers => {
                     implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
+                    implicit val messages: Messages = userRequest.messages
                     userAnswers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
-                      if (userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+                      if (userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(userRequest, messages).nonEmpty) {
                         for {
-                          fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(userRequest)
+                          fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()
                         } yield {
                           val answersFromSession = sessionAnswersHelper.getSubmittedAnswers() ++ sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
                           Ok(viewAppealDetailsPage(answersFromSession)(request.messages, appConfig, userRequest))
@@ -77,9 +79,9 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                       }
                     })(
                       reasonableExcuse => {
-                        if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
+                        if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()(userRequest, messages).nonEmpty) {
                           for {
-                            content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)
+                            content <- sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)(userRequest, messages)
                           } yield {
                             Ok(viewAppealDetailsPage(sessionAnswersHelper.getSubmittedAnswers() ++ content)(request.messages, appConfig, userRequest))
                           }

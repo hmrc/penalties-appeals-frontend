@@ -488,14 +488,15 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
         PenaltyTypeHelper.getKeysFromSession().get.head,
           PenaltyTypeHelper.getKeysFromSession().get(1) ,
           PenaltyTypeHelper.getKeysFromSession().get.last,
-        ""
+        ""),
+       ""
        ),
-       CheckYourAnswersRow(
+       QuestionAnswersRow(
         messages("viewAppealDetails.appealDate"),
         LocalDate.now(),
         ""
         ),
-       CheckYourAnswersRow(
+       QuestionAnswersRow(
          messages("viewAppealDetails.reviewPeriod"),
          LocalDate.now().plusDays(45),
          ""
