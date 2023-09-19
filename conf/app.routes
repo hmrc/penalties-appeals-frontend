@@ -211,3 +211,6 @@ GET        /appeal-by-letter                                   controllers.YouCa
 
 # You cannot go back to appeal
 GET        /you-cannot-go-back-to-appeal                       controllers.YouCannotGoBackToAppealController.onPageLoad()
+
+# Print appeal information
+GET        /appeal-details                                     controllers.ViewAppealDetailsController.onPageLoad()

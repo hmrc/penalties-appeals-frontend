@@ -53,7 +53,8 @@ class FeatureSwitchingSpec extends SpecBase {
         NonJSRouting,
         ShowDigitalCommsMessage,
         WarnForDuplicateFiles,
-        ShowFullAppealAgainstTheObligation
+        ShowFullAppealAgainstTheObligation,
+        ShowViewAppealDetailsPage
       )
     }
   }

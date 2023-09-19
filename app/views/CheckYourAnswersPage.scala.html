@@ -15,7 +15,7 @@
  *@
 
 @import config.AppConfig
-@import models.appeals.CheckYourAnswersRow
+@import models.appeals.QuestionAnswerRow
 @import views.html.helper.CSPNonce
 
 @this(layout: Layout,
@@ -26,7 +26,7 @@
         warningText: components.warningText,
         pageHeader: components.pageHeader)
 
-@(contentToDisplayInSummaryList: Seq[CheckYourAnswersRow], pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(contentToDisplayInSummaryList: Seq[QuestionAnswerRow], pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("checkYourAnswers.headingAndTitle"),
     isPageFullWidth = false,

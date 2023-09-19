@@ -461,6 +461,7 @@ appealConfirmation.returnToVatVc = View your VAT account
 agent.appealConfirmation.returnToVatVc = View your client’s VAT account
 appealConfirmation.feedbackLink.1 = What did you think of this service?
 appealConfirmation.feedbackLink.2 = (takes 30 seconds)
+appealConfirmation.appealDetailsLink = View or print your appeals details (opens in new tab)
 
 # Making a late appeal page
 # ----------------------------------------------------------
@@ -619,3 +620,14 @@ agent.youCannotGoBackToYourAppealDetails.li.1 = return to your client’s VAT pe
 youCannotGoBackToYourAppealDetails.li.2 = view your VAT account
 agent.youCannotGoBackToYourAppealDetails.li.2 = view your client’s VAT account
 youCannotGoBackToYourAppealDetails.link.feedback = Are you looking for something else?
+
+# View appeal details page
+# -----------------------------------------------------------
+viewAppealDetails.headingAndTitle = Appeal details
+viewAppealDetails.vrn = VAT registration number (VRN)
+viewAppealDetails.penaltyAppealed = Penalty appealed
+viewAppealDetails.appealDate = Appeal date
+viewAppealDetails.reviewPeriod = Statutory review period (45 days) ends on
+viewAppealDetails.reason = Reason for missing the VAT deadline
+viewAppealDetails.warn.1 = Print this page if you want to keep it.
+viewAppealDetails.warn.2 = You will not be able to return to these appeal details later.

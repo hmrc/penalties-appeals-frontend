@@ -17,7 +17,7 @@
 package helpers
 
 import base.SpecBase
-import models.appeals.CheckYourAnswersRow
+import models.appeals.QuestionAnswerRow
 import models.pages._
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
@@ -241,7 +241,7 @@ class SessionAnswersHelperSpec extends SpecBase {
 
   def determineFunction(function: String, reasonableExcuse: Option[String], answers: JsObject,
                         whoPlanned: Option[String] = None, whatCaused: Option[String] = None,
-                        lateAppeal: Boolean = false, fileNames: Option[String] = None): Seq[CheckYourAnswersRow] = {
+                        lateAppeal: Boolean = false, fileNames: Option[String] = None): Seq[QuestionAnswerRow] = {
     val fakeRequest = fakeRequestWithKeys(answers, lateAppeal, whoPlanned, whatCaused)
     function match {
       case "generic" =>
@@ -262,7 +262,7 @@ class SessionAnswersHelperSpec extends SpecBase {
 
     def checkYourAnswers(reasonableExcuse: String, answers: JsObject, whoPlanned: Option[String] = None,
                          whatCaused: Option[String] = None, lateAppeal: Boolean = false,
-                         fileNames: Option[String] = None): Seq[CheckYourAnswersRow] =
+                         fileNames: Option[String] = None): Seq[QuestionAnswerRow] =
       determineFunction("generic", Some(reasonableExcuse), answers, whoPlanned, whatCaused, lateAppeal, fileNames)
 
     "for crime" must {
@@ -983,7 +983,7 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "for bereavement (someone died)" must {
-    def checkYourAnswers(answers: JsObject): Seq[CheckYourAnswersRow] =
+    def checkYourAnswers(answers: JsObject): Seq[QuestionAnswerRow] =
       determineFunction("generic", Some("bereavement"), answers)
 
     "return all the keys from the session ready to be passed to the view" in {
@@ -1070,7 +1070,7 @@ class SessionAnswersHelperSpec extends SpecBase {
 
   "getAllTheContentForCheckYourAnswersPage" should {
     def checkYourAnswers(answers: JsObject, excuse: String, whoPlanned: Option[String], whatCaused: Option[String],
-                         fileNames: Option[String] = None, function: String): Seq[CheckYourAnswersRow] = {
+                         fileNames: Option[String] = None, function: String): Seq[QuestionAnswerRow] = {
       determineFunction(function, Some(excuse), answers, whoPlanned, whatCaused, fileNames =  fileNames)
     }
 
@@ -1150,7 +1150,7 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "getContentForObligationAppealCheckYourAnswersPage" should {
-    def checkYourAnswers(answers: JsObject, fileName: Option[String]): Seq[CheckYourAnswersRow] =
+    def checkYourAnswers(answers: JsObject, fileName: Option[String]): Seq[QuestionAnswerRow] =
       determineFunction("obligation", reasonableExcuse = None, answers, fileNames = fileName)
     "when no evidence file uploaded" should {
       "return rows of answers" in {
@@ -1235,7 +1235,7 @@ class SessionAnswersHelperSpec extends SpecBase {
   }
 
   "getContentWithExistingUploadFileNames" should {
-    def fileNameHelper(answers: JsObject, reasonableExcuse: String): Future[Seq[CheckYourAnswersRow]] = {
+    def fileNameHelper(answers: JsObject, reasonableExcuse: String): Future[Seq[QuestionAnswerRow]] = {
       val fakeRequest = fakeRequestWithKeys(answers, lateReason = false, None, None)
       sessionAnswersHelper.getContentWithExistingUploadFileNames(reasonableExcuse)(fakeRequest, implicitly)
     }

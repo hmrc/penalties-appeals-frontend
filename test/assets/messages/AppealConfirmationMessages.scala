@@ -65,4 +65,6 @@ object AppealConfirmationMessages {
   val goToVatVCAgentText = "View your client’s VAT account"
 
   val goToFeedback = "What did you think of this service? (takes 30 seconds)"
+
+  val viewAppealDetailsLink = "View or print your appeals details (opens in new tab)"
 }
