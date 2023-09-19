@@ -18,6 +18,7 @@ package controllers
 
 import java.time.LocalDate
 
+import config.featureSwitches.{FeatureSwitching, ShowViewAppealDetailsPage}
 import controllers.testHelpers.AuthorisationTest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -31,7 +32,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import scala.concurrent.Future
 
-class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
+class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
 
   val controller: ViewAppealDetailsController = injector.instanceOf[ViewAppealDetailsController]
 
@@ -49,6 +50,7 @@ class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with Au
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
       SessionKeys.lateAppealReason -> "I forgot"
     ))) {
+      enableFeatureSwitch(ShowViewAppealDetailsPage)
       val request: Future[Result] = controller.onPageLoad()(fakeRequestWithPreviousId)
       await(request).header.status shouldBe Status.OK
       val parsedBody: Document = Jsoup.parse(contentAsString(request))
@@ -65,9 +67,23 @@ class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with Au
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
       SessionKeys.lateAppealReason -> "I forgot"
     ))){
+      enableFeatureSwitch(ShowViewAppealDetailsPage)
       val request: Future[Result] = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.SEE_OTHER
       await(request).header.headers("Location") shouldBe controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData().url
+    }
+
+    s"return 404 (NOT_FOUND) when the feature switch {$ShowViewAppealDetailsPage} is disabled"  in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.previouslySubmittedJourneyId -> "1234",
+      SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
+      SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
+      SessionKeys.lateAppealReason -> "I forgot"
+    ))) {
+      disableFeatureSwitch(ShowViewAppealDetailsPage)
+      val request: Future[Result] = controller.onPageLoad()(fakeRequestWithPreviousId)
+      await(request).header.status shouldBe Status.NOT_FOUND
     }
   }
 }

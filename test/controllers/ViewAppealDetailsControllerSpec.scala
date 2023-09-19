@@ -27,13 +27,14 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import views.html.ViewAppealDetailsPage
+import config.featureSwitches.ShowViewAppealDetailsPage
+import org.mockito.ArgumentMatchers
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewAppealDetailsControllerSpec extends SpecBase {
   val viewAppealDetailsPage: ViewAppealDetailsPage = injector.instanceOf[ViewAppealDetailsPage]
   val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
-  val sessionService: SessionService = injector.instanceOf[SessionService]
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
@@ -45,7 +46,7 @@ class ViewAppealDetailsControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-  val controller = new ViewAppealDetailsController(viewAppealDetailsPage, sessionAnswersHelper, sessionService)(mcc, appConfig, authPredicate, ec)
+  val controller = new ViewAppealDetailsController(viewAppealDetailsPage, sessionAnswersHelper, mockSessionService, errorHandler)(mcc, config, appConfig, authPredicate, ec)
 
   "ViewAppealDetailsController" should {
 
@@ -62,6 +63,13 @@ class ViewAppealDetailsControllerSpec extends SpecBase {
             val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
+          }
+
+        s"return 404 (NOT_FOUND) when the feature switch {$ShowViewAppealDetailsPage} is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+            when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+            when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowViewAppealDetailsPage))).thenReturn(false)
+            val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
+            status(result) shouldBe NOT_FOUND
           }
         }
 

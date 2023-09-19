@@ -16,11 +16,13 @@
 
 package controllers
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
+import config.featureSwitches.{FeatureSwitching, ShowViewAppealDetailsPage}
 import controllers.predicates.AuthPredicate
 import helpers.SessionAnswersHelper
 import javax.inject.Inject
 import models.UserRequest
+import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -33,37 +35,43 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDetailsPage,
                                             sessionAnswersHelper: SessionAnswersHelper,
-                                            sessionService: SessionService)
+                                            sessionService: SessionService,
+                                            errorHandler: ErrorHandler)
                                            (implicit mcc: MessagesControllerComponents,
+                                            val  config: Configuration,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
-                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   def onPageLoad(): Action[AnyContent] = authorise.async {
     implicit request => {
-      request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
-        logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No previously submitted journey ID was found in the session for VRN: ${request.vrn} - " +
-          s"redirecting to incomplete session data page")
-        Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
-      })(
-        journeyId => {
-          sessionService.getUserAnswers(journeyId).map {
-            optUserAnswers => {
-              optUserAnswers.fold({
-                logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No submitted user answers were found in the session for VRN: ${SessionKeys.previouslySubmittedJourneyId} - " +
-                  s"redirecting to incomplete session data page")
-                Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())
-              })(
-                userAnswers => {
-                  implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
-                  val answersFromSession = sessionAnswersHelper.getSubmittedAnswers()(userRequest, request.messages)
-                  Ok(viewAppealDetailsPage(answersFromSession)(request.messages, appConfig, userRequest))
-                }
-              )
+      if(!isEnabled(ShowViewAppealDetailsPage)) {
+        Future(NotFound(errorHandler.notFoundTemplate))
+      } else {
+        request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
+          logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No previously submitted journey ID was found in the session for VRN: ${request.vrn} - " +
+            s"redirecting to incomplete session data page")
+          Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
+        })(
+          journeyId => {
+            sessionService.getUserAnswers(journeyId).map {
+              optUserAnswers => {
+                optUserAnswers.fold({
+                  logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No submitted user answers were found in the session for VRN: ${SessionKeys.previouslySubmittedJourneyId} - " +
+                    s"redirecting to incomplete session data page")
+                  Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())
+                })(
+                  userAnswers => {
+                    implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
+                    val answersFromSession = sessionAnswersHelper.getSubmittedAnswers()(userRequest, request.messages)
+                    Ok(viewAppealDetailsPage(answersFromSession)(request.messages, appConfig, userRequest))
+                  }
+                )
+              }
             }
           }
-        }
-      )
+        )
+      }
     }
   }
 }

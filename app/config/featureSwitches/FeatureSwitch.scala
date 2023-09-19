@@ -26,7 +26,8 @@ object FeatureSwitch {
     NonJSRouting,
     ShowDigitalCommsMessage,
     WarnForDuplicateFiles,
-    ShowFullAppealAgainstTheObligation
+    ShowFullAppealAgainstTheObligation,
+    ShowViewAppealDetailsPage
   )
 }
 
@@ -44,4 +45,8 @@ case object WarnForDuplicateFiles extends FeatureSwitch {
 
 case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-full-appeal-against-the-obligation-journey"
+}
+
+case object ShowViewAppealDetailsPage extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.show-view-appeal-details-page"
 }

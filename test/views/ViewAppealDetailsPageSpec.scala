@@ -51,7 +51,8 @@ class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
       Selectors.descriptionListDtKey(2) -> "Key 2",
       Selectors.descriptionListDdValue(2) -> "Value 2",
       Selectors.descriptionListDtKey(3) -> "Key 3",
-      Selectors.descriptionListDdValue(3) -> "Value 3"
+      Selectors.descriptionListDdValue(3) -> "Value 3",
+      Selectors.insetText -> insetTest
     )
 
     behave like pageWithExpectedMessages(expectedContent)

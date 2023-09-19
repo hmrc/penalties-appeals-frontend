@@ -20,4 +20,6 @@ object ViewAppealDetailsMessages {
   val title = "Appeal details - Appeal a VAT penalty - GOV.UK"
 
   val h1 = "Appeal details"
+
+  val insetTest = "Print this page if you want to keep it. You will not be able to return to these appeal details later."
 }

@@ -49,9 +49,10 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                            periodEnd: String,
                            isObligationAppeal: Boolean = false,
                            showDigitalCommsMessage: Boolean = true,
+                           showViewAppealDetails: Boolean = true,
                            isAgent: Boolean = false,
                            vrn:String): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage, penaltyTypeMsgKey, bothPenalties = "no", isAgent, vrn)(vatTraderLSPUserRequest, messages, appConfig)
+      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage, penaltyTypeMsgKey, bothPenalties = "no", isAgent, vrn, showViewAppealDetails)(vatTraderLSPUserRequest, messages, appConfig)
 
     implicit val vatTraderLateSubmissionPenaltyDoc: Document = asDocument(applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", vrn="123456789"))
 
@@ -59,7 +60,7 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                                periodStart: String,
                                periodEnd: String,
                                isObligationAppeal: Boolean = false, isAgent: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "no", isAgent, vrn)(vatTraderLPPUserRequest, messages, appConfig)
+      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "no", isAgent, vrn, showViewDetailsLink = true)(vatTraderLPPUserRequest, messages, appConfig)
 
     implicit val vatTraderLPP1Doc: Document = asDocument(applyLPP1VATTraderView(PenaltyTypeEnum.Late_Payment, "1 July 2023", "31 July 2023"))
 
@@ -67,7 +68,7 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                                             periodStart: String,
                                             periodEnd: String,
                                             isObligationAppeal: Boolean = false, isAgent: Boolean = false): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "yes", isAgent, vrn)(vatTraderLPP2UserRequest, messages, appConfig)
+      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "yes", isAgent, vrn, showViewDetailsLink = true)(vatTraderLPP2UserRequest, messages, appConfig)
 
     implicit val vatTraderLPP2Doc: Document = asDocument(applyLPP2VATTraderViewBothPenalties(PenaltyTypeEnum.Late_Payment, "1 July 2023", "31 July 2023"))
 
@@ -75,14 +76,14 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
                                            periodStart: String,
                                            periodEnd: String,
                                            isObligationAppeal: Boolean = false, isAgent: Boolean = true): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "yes", isAgent, vrn)(vatAgentLPP2UserRequest, messages, appConfig)
+      periodStart, periodEnd, isObligationAppeal, showDigitalCommsMessage = true, penaltyTypeMsgKey, bothPenalties = "yes", isAgent, vrn, showViewDetailsLink = true)(vatAgentLPP2UserRequest, messages, appConfig)
 
     implicit val vatAgentLPP2Doc: Document = asDocument(applyLPP2VATAgentViewBothPenalties(PenaltyTypeEnum.Late_Payment, "1 July 2023", "31 July 2023"))
 
     def applyAgentView(penaltyTypeMsgKey: PenaltyTypeEnum.Value,
                        periodStart: String,
                        periodEnd: String, isAgent: Boolean = true): HtmlFormat.Appendable = appealConfirmationPage.apply(
-      periodStart, periodEnd, showDigitalCommsMessage = true, appealType = penaltyTypeMsgKey, bothPenalties = "no", isAgent = isAgent, vrn= vrn)(agentUserAgentSubmitButClientWasLateSessionKeys, messages, appConfig)
+      periodStart, periodEnd, showDigitalCommsMessage = true, appealType = penaltyTypeMsgKey, bothPenalties = "no", isAgent = isAgent, vrn= vrn, showViewDetailsLink = true)(agentUserAgentSubmitButClientWasLateSessionKeys, messages, appConfig)
 
     implicit val agentDoc: Document = asDocument(applyAgentView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023"))
 
@@ -95,7 +96,6 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
         Selectors.penaltyType -> headingPanelBodyLSP,
         Selectors.paragraph(2) -> p1,
         Selectors.paragraph(3) -> p2,
-        Selectors.paragraph(4) -> viewAppealDetailsLink,
         Selectors.paragraph(6) -> whatHappensNextP1,
         Selectors.paragraph(7) -> whatHappensNextP2,
         Selectors.paragraph(8) -> whatHappensNextP3,
@@ -162,6 +162,12 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
 
       "the penalty information should not be visible" in {
         vatTraderLateSubmissionPenaltyDoc.select("#penalty-information").text().isEmpty shouldBe true
+      }
+
+      "does not sjpw link for viewing appeal details when the feature switch is disabled" in {
+        implicit val doc: Document = asDocument(applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", showViewAppealDetails = false, vrn = "123456789"))
+        doc.select(Selectors.paragraph(3)).text() shouldBe p2
+        doc.select(Selectors.paragraph(5)).text() shouldBe whatHappensNextP1
       }
     }
 
