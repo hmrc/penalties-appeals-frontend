@@ -22,9 +22,11 @@
 @this(hmrcLanguageSelect: HmrcLanguageSelect)
 
 @()(implicit messages: Messages)
-@hmrcLanguageSelect(LanguageSelect(
-    if (messages.lang.code == "cy") Cy else En,
-    (En, switchToLanguage("en").url),
-    (Cy, switchToLanguage("cy").url)
-))
+<div class="govuk-!-display-none-print">
+ @hmrcLanguageSelect(LanguageSelect(
+     if (messages.lang.code == "cy") Cy else En,
+     (En, switchToLanguage("en").url),
+     (Cy, switchToLanguage("cy").url)
+ ))
+</div>
 

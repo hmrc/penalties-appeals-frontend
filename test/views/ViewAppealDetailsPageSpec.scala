@@ -31,6 +31,8 @@ class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
       val descriptionListDtKey: Int => String = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > dt"
 
       val descriptionListDdValue: Int => String = (nthChild: Int) => s"#main-content .govuk-summary-list__row:nth-child($nthChild) > .govuk-summary-list__value"
+
+      val printButton: String = "#print-button"
     }
 
     def applyView() = viewAppealDetailsPage.apply(
@@ -52,7 +54,8 @@ class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
       Selectors.descriptionListDdValue(2) -> "Value 2",
       Selectors.descriptionListDtKey(3) -> "Key 3",
       Selectors.descriptionListDdValue(3) -> "Value 3",
-      Selectors.insetText -> insetTest
+      Selectors.insetText -> insetTest,
+      Selectors.printButton -> printButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)

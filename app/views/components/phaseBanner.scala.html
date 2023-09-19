@@ -19,12 +19,13 @@
 @(phase: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @feedbackBanner = {
-@messages("feedback.before")
+    @messages("feedback.before")
     <a class='govuk-link' href='@{appConfig.betaFeedbackUrl(request.uri)}'>@messages("feedback.link")</a>
-@messages("feedback.after")
+    @messages("feedback.after")
 }
 
 @govukPhaseBanner(PhaseBanner(
     tag = Some(Tag(content = Text(phase))),
+    classes = "govuk-!-display-none-print",
     content = HtmlContent(feedbackBanner)
 ))

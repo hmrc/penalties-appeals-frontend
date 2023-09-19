@@ -18,3 +18,22 @@ $hmrc-assets-path: "/penalties-appeals/assets/lib/hmrc-frontend/hmrc/";
 .penalty-information-caption {
   display: table-header-group;
 }
+
+.govuk-print-button {
+  background: url(../images/printer-icon.png) no-repeat 10px 50%;
+  background-size: 16px 18px;
+  padding: 10px 10px 10px 36px;
+  text-decoration: none;
+  border: 1px solid #b1b4b6;
+  cursor: pointer;
+  margin: 0;
+}
+
+body:not(.js-enabled) {
+       .govuk-print-button {
+          display: none;
+           visibility: hidden;
+           width: 0;
+           height: 0;
+       }
+ }

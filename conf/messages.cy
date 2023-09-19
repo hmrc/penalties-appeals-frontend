@@ -631,3 +631,4 @@ viewAppealDetails.reviewPeriod = Statutory review period (45 days) ends on
 viewAppealDetails.reason = Rheswm dros fethu’r dyddiad cau ar gyfer TAW
 viewAppealDetails.warn.1 = Argraffwch y dudalen hon os hoffech ei chadw.
 viewAppealDetails.warn.2 = Ni fyddwch yn gallu dychwelyd i’r manylion hyn o ran yr apêl yn nes ymlaen.
+viewAppealDetails.printThisPage = Argraffu’r dudalen hon
