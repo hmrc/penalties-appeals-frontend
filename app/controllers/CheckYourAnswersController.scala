@@ -61,7 +61,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
           if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
             logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
             for {
-              fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames()(userRequest)
+              fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames(userRequest.session.get(SessionKeys.journeyId).get)
             } yield {
               val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
               Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)

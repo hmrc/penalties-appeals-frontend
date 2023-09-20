@@ -70,7 +70,7 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
     ))
   )
 
-  def userAnswers(answers: JsObject = Json.obj()): UserAnswers = UserAnswers("1234", Json.obj(
+  def userAnswers(answers: JsObject = Json.obj(), journeyId: Option[String] = None): UserAnswers = UserAnswers(journeyId.getOrElse("1234"), Json.obj(
     SessionKeys.penaltyNumber -> "1234",
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
     SessionKeys.startDateOfPeriod -> LocalDate.parse("2023-01-01"),

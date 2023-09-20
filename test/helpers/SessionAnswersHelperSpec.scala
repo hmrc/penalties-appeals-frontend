@@ -22,6 +22,7 @@ import models.pages._
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{mock, when}
 import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
@@ -350,7 +351,7 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
 
       "return all keys and the 'Reason for appealing after 30 days' text" in {
-        val result =checkYourAnswers("lossOfStaff", lossOfStaffAnswers, lateAppeal = true)
+        val result = checkYourAnswers("lossOfStaff", lossOfStaffAnswers, lateAppeal = true)
 
         result(2).key shouldBe "Reason for appealing after 30 days"
         result(2).value shouldBe "Lorem ipsum"
@@ -531,7 +532,7 @@ class SessionAnswersHelperSpec extends SpecBase {
           }
 
           "the agent planned to submit and missed deadline" in {
-            val result = checkYourAnswers("other",  otherAnswers, Some("agent"), Some("agent"))
+            val result = checkYourAnswers("other", otherAnswers, Some("agent"), Some("agent"))
             result(1).key shouldBe "When did the issue first stop you submitting the VAT Return?"
             result(1).value shouldBe "2\u00A0January\u00A02022"
             controllers.routes.CheckYourAnswersController.changeAnswer(
@@ -1211,12 +1212,6 @@ class SessionAnswersHelperSpec extends SpecBase {
 
   "getPreviousUploadsFileNames" should {
     "return the file names" in {
-      val fakeRequestForOtherJourney: UserRequest[AnyContent] = fakeRequestConverter(correctUserAnswers ++ Json.obj(
-        SessionKeys.reasonableExcuse -> "other",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.whyReturnSubmittedLate -> "This is a reason.",
-        SessionKeys.whenDidBecomeUnable -> "2022-01-02"
-      ), fakeRequest)
       val callBackModel: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.READY,
@@ -1229,8 +1224,8 @@ class SessionAnswersHelperSpec extends SpecBase {
           size = 2
         ))
       )
-      when(mockRepository.getUploadsForJourney(Some("1234"))).thenReturn(Future.successful(Option(Seq(callBackModel))))
-      await(sessionAnswersHelper.getPreviousUploadsFileNames()(fakeRequestForOtherJourney)) shouldBe "file1.txt"
+      when(mockRepository.getUploadsForJourney(ArgumentMatchers.eq(Some("1234")))).thenReturn(Future.successful(Option(Seq(callBackModel))))
+      await(sessionAnswersHelper.getPreviousUploadsFileNames("1234")) shouldBe "file1.txt"
     }
   }
 
@@ -1339,6 +1334,31 @@ class SessionAnswersHelperSpec extends SpecBase {
         ).url
         result.size shouldBe 3
       }
+    }
+  }
+
+  "getSubmittedAnswers" should {
+    "return the basic rows for the appeal details page" in {
+      val dateToPass = LocalDate.of(2023, 8, 14)
+      val correctUserAnswers: JsObject = Json.obj(
+        SessionKeys.penaltyNumber -> "123",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2023-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2023-03-31"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2023-05-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2023-02-08"),
+        SessionKeys.journeyId -> "1234"
+      )
+      val result = sessionAnswersHelper.getSubmittedAnswers(dateToPass)(UserRequest("123456789", answers = userAnswers(correctUserAnswers)), implicitly)
+      result.size shouldBe 4
+      result.head.key shouldBe "VAT registration number (VRN)"
+      result.head.value shouldBe "123456789"
+      result(1).key shouldBe "Penalty appealed"
+      result(1).value shouldBe "Late submission penalty: 1\u00A0January\u00A02023 to 31\u00A0March\u00A02023"
+      result(2).key shouldBe "Appeal date"
+      result(2).value shouldBe "14\u00A0August\u00A02023"
+      result(3).key shouldBe "Statutory review period (45 days) ends on"
+      result(3).value shouldBe "27\u00A0September\u00A02023"
     }
   }
 }

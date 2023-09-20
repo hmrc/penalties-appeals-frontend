@@ -54,7 +54,7 @@ class ViewAppealDetailsPageSpec extends SpecBase with ViewBehaviours {
       Selectors.descriptionListDdValue(2) -> "Value 2",
       Selectors.descriptionListDtKey(3) -> "Key 3",
       Selectors.descriptionListDdValue(3) -> "Value 3",
-      Selectors.insetText -> insetTest,
+      Selectors.insetText -> printInsetText,
       Selectors.printButton -> printButton
     )
 

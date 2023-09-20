@@ -17,72 +17,106 @@
 package controllers
 
 import base.SpecBase
+import config.featureSwitches.ShowViewAppealDetailsPage
 import helpers.SessionAnswersHelper
+import models.UserRequest
+import models.appeals.QuestionAnswerRow
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
-import play.api.mvc.Result
+import org.mockito.Mockito.{mock, reset, times, verify, when}
+import play.api.Configuration
+import play.api.mvc.{AnyContent, Result}
 import play.api.test.Helpers._
 import services.SessionService
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import utils.SessionKeys
 import views.html.ViewAppealDetailsPage
-import config.featureSwitches.ShowViewAppealDetailsPage
-import org.mockito.ArgumentMatchers
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewAppealDetailsControllerSpec extends SpecBase {
   val viewAppealDetailsPage: ViewAppealDetailsPage = injector.instanceOf[ViewAppealDetailsPage]
-  val sessionAnswersHelper: SessionAnswersHelper = injector.instanceOf[SessionAnswersHelper]
-  val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+  val sessionService: SessionService = injector.instanceOf[SessionService]
+  implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+  val mockConfig: Configuration = mock(classOf[Configuration])
+  val mockSessionAnswersHelper: SessionAnswersHelper = mock(classOf[SessionAnswersHelper])
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
     reset(mockSessionService)
+    reset(mockConfig)
+    reset(mockAppConfig)
+    reset(mockSessionAnswersHelper)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
-
-  val controller = new ViewAppealDetailsController(viewAppealDetailsPage, sessionAnswersHelper, mockSessionService, errorHandler)(mcc, config, appConfig, authPredicate, ec)
+    when(mockConfig.getOptional[String](ArgumentMatchers.eq("feature.switch.time-machine-now"))(any())).thenReturn(Some("2023-08-14"))
+    when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-view-appeal-details-page"))(any())).thenReturn(true)
+    when(mockSessionAnswersHelper.getSubmittedAnswers(any())(any(), any())).thenReturn(Seq(QuestionAnswerRow("Key", "Value", "")))
+    when(mockSessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(any())(any(), any())).thenReturn(Seq(QuestionAnswerRow("Key2", "Value2", "")))
+    val controller = new ViewAppealDetailsController(viewAppealDetailsPage, mockSessionAnswersHelper, mockSessionService, errorHandler)(mcc, mockConfig, mockAppConfig, authPredicate, ec)
+    val userRequest: UserRequest[AnyContent] = fakeRequestConverter(fakeRequest = fakeRequest.withSession(SessionKeys.previouslySubmittedJourneyId -> "PreviousJourney1"))
+  }
 
   "ViewAppealDetailsController" should {
-
     "onPageLoad" when {
       "the user is authorised" must {
-        "return 200 (OK) and the correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-            status(result) shouldBe OK
-          }
-
-        "return 303 (SEE_OTHER) when they do not have user answers" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(None))
-            val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
-          }
-
-        s"return 404 (NOT_FOUND) when the feature switch {$ShowViewAppealDetailsPage} is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-            when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-            when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowViewAppealDetailsPage))).thenReturn(false)
-            val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-            status(result) shouldBe NOT_FOUND
-          }
+        "return 200 (OK) and the correct view (non-upload journey)" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
+          val result: Future[Result] = controller.onPageLoad()(userRequest)
+          status(result) shouldBe OK
         }
 
-        "the user is unauthorised" must {
-          "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-            val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-            status(result) shouldBe FORBIDDEN
-          }
+        "return 200 (OK) and the correct view (obligation journey)" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
+          when(mockSessionAnswersHelper.getPreviousUploadsFileNames(any())).thenReturn(Future.successful("file.txt, file2.txt"))
+          val result: Future[Result] = controller.onPageLoad()(userRequest)
+          status(result) shouldBe OK
+          verify(mockSessionAnswersHelper, times(1)).getPreviousUploadsFileNames(any())
+        }
 
-          "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-            val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-            status(result) shouldBe SEE_OTHER
-          }
+        "return 200 (OK) and the correct view (other journey)" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(otherAnswers))))
+          when(mockSessionAnswersHelper.getPreviousUploadsFileNames(any())).thenReturn(Future.successful("file.txt, file2.txt"))
+          val result: Future[Result] = controller.onPageLoad()(userRequest)
+          status(result) shouldBe OK
+          verify(mockSessionAnswersHelper, times(1)).getPreviousUploadsFileNames(any())
+        }
+
+        "return 303 (SEE_OTHER) when they do not have user answers" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(None))
+          val result: Future[Result] = controller.onPageLoad()(userRequest)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData().url
+        }
+
+        "return 303 (SEE_OTHER) when there is no 'previouslySubmittedJourneyId' in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData().url
+        }
+
+        s"return 404 (NOT_FOUND) when the feature switch (${ShowViewAppealDetailsPage.name}) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-view-appeal-details-page"))(any())).thenReturn(false)
+          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
+          status(result) shouldBe NOT_FOUND
+        }
+      }
+
+      "the user is unauthorised" must {
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
         }
       }
     }

@@ -24,11 +24,9 @@ import play.api.i18n.Messages
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
 import viewtils.{ImplicitDateFormatter, PenaltyTypeHelper}
+
 import java.time.LocalDate
-
 import javax.inject.Inject
-import models.session.UserAnswers
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository,
@@ -253,9 +251,9 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
       multiplePenaltiesContent ++ reasonableExcuseContent
     )(
       reason => {
-        if(userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).isEmpty ||
+        if (userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).isEmpty ||
           userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes") ||
-          isAppealingOnlySinglePenalty()) {
+          isAppealingOnlySinglePenaltyAndIsLateAppealing()) {
           multiplePenaltiesContent ++ reasonableExcuseContent :+ (
             QuestionAnswerRow(messages("checkYourAnswers.whyYouDidNotAppealSooner"),
               reason,
@@ -442,9 +440,9 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     }
   }
 
-  def getPreviousUploadsFileNames()(implicit request: UserRequest[_]): Future[String] = {
+  def getPreviousUploadsFileNames(journeyId: String): Future[String] = {
     for {
-      previousUploads <- uploadJourneyRepository.getUploadsForJourney(request.session.get(SessionKeys.journeyId))
+      previousUploads <- uploadJourneyRepository.getUploadsForJourney(Some(journeyId))
     } yield {
       val previousUploadsFileName = previousUploads.map(_.map(file => file.uploadDetails.map(details => details.fileName)))
       previousUploadsFileName.getOrElse(Seq.empty).collect {
@@ -459,7 +457,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     }
     else {
       for {
-        fileNames <- getPreviousUploadsFileNames()(userRequest)
+        fileNames <- getPreviousUploadsFileNames(userRequest.session.get(SessionKeys.journeyId).get)
       } yield {
         getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))(userRequest, messages)
       }
@@ -470,37 +468,38 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     controllers.routes.CheckYourAnswersController.changeAnswer(continueUrl, page.toString).url
   }
 
-  private def isAppealingOnlySinglePenalty()(implicit userRequest: UserRequest[_]) = {
+  private def isAppealingOnlySinglePenaltyAndIsLateAppealing()(implicit userRequest: UserRequest[_]) = {
     val dateTimeNow: LocalDate = dateTimeHelper.dateNow
     userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("no") &&
       userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).exists(_.isBefore(dateTimeNow.minusDays(appConfig.daysRequiredForLateAppeal)))
   }
 
-  def getSubmittedAnswers()(implicit userRequest: UserRequest[_], messages: Messages): Seq[QuestionAnswerRow] = {
-     Seq(QuestionAnswerRow(
-       messages("viewAppealDetails.vrn"),
-       userRequest.vrn,
-       ""
-     ),
-    QuestionAnswerRow(
-      messages("viewAppealDetails.penaltyAppealed"),
-      messages("penaltyInformation.headerText",
-        PenaltyTypeHelper.getKeysFromSession().get.head,
-          PenaltyTypeHelper.getKeysFromSession().get(1) ,
-          PenaltyTypeHelper.getKeysFromSession().get.last,
-        ""),
-       ""
-       ),
-       QuestionAnswersRow(
-        messages("viewAppealDetails.appealDate"),
-        LocalDate.now(),
+  def getSubmittedAnswers(dateNow: LocalDate)(implicit userRequest: UserRequest[_], messages: Messages): Seq[QuestionAnswerRow] = {
+    Seq(
+      QuestionAnswerRow(
+        messages("viewAppealDetails.vrn"),
+        userRequest.vrn,
         ""
-        ),
-       QuestionAnswersRow(
-         messages("viewAppealDetails.reviewPeriod"),
-         LocalDate.now().plusDays(45),
-         ""
-       )
-     )
+      ),
+      QuestionAnswerRow(
+        messages("viewAppealDetails.penaltyAppealed"),
+        messages("penaltyInformation.headerText",
+          PenaltyTypeHelper.getKeysFromSession().get.head,
+          PenaltyTypeHelper.getKeysFromSession().get(1),
+          PenaltyTypeHelper.getKeysFromSession().get.last,
+          ""),
+        ""
+      ),
+      QuestionAnswerRow(
+        messages("viewAppealDetails.appealDate"),
+        dateNow,
+        ""
+      ),
+      QuestionAnswerRow(
+        messages("viewAppealDetails.reviewPeriod"),
+        dateNow.plusDays(44),
+        ""
+      )
+    )
   }
 }
