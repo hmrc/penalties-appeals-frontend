@@ -22,9 +22,9 @@
 
 @(contentToDisplayInSummaryList: Seq[QuestionAnswerRow])(implicit messages: Messages, appConfig: AppConfig, userRequest: UserRequest[_])
 
-@layout(pageTitle = messages("viewAppealDetails.headingAndTitle"),
-        isPageFullWidth = true,
-        backLinkEnabled = false) {
+  @layout(pageTitle = messages("viewAppealDetails.headingAndTitle"),
+    isPageFullWidth = true,
+    backLinkEnabled = false) {
 
   <h1 class="govuk-heading-xl govuk-!-margin-bottom-4" id="page-heading">@{messages("viewAppealDetails.headingAndTitle")}</h1>
 
@@ -41,9 +41,12 @@
    }
   </dl>
 
-  <div class="govuk-inset-text">
-    <p>@{messages("viewAppealDetails.warn.1")}</p>
-    <p>@{messages("viewAppealDetails.warn.2")}</p>
+  <div class="govuk-inset-text govuk-!-display-none-print">
+    <p>
+      @messages("viewAppealDetails.warn.1")
+      <br>
+      @messages("viewAppealDetails.warn.2")
+    </p>
   </div>
 
   <button class="govuk-link govuk-body-s govuk-print-button govuk-!-display-none-print govuk-!-margin-bottom-4" id="print-button">@messages("viewAppealDetails.printThisPage")</button>

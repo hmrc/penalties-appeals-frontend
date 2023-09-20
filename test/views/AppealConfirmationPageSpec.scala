@@ -42,6 +42,8 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
       val obligationExtraParagraph = "#main-content p:nth-child(7)"
 
       val digitalCommsMessage = "#digital-comms-message"
+
+      val appealDetailsLink = "#details-link"
     }
 
     def applyVATTraderView(penaltyTypeMsgKey: PenaltyTypeEnum.Value,
@@ -164,10 +166,9 @@ class AppealConfirmationPageSpec extends SpecBase with ViewBehaviours {
         vatTraderLateSubmissionPenaltyDoc.select("#penalty-information").text().isEmpty shouldBe true
       }
 
-      "does not sjpw link for viewing appeal details when the feature switch is disabled" in {
+      "does not show link for viewing appeal details when the feature switch is disabled" in {
         implicit val doc: Document = asDocument(applyVATTraderView(PenaltyTypeEnum.Late_Submission, "1 July 2023", "31 July 2023", showViewAppealDetails = false, vrn = "123456789"))
-        doc.select(Selectors.paragraph(3)).text() shouldBe p2
-        doc.select(Selectors.paragraph(5)).text() shouldBe whatHappensNextP1
+        doc.select(Selectors.appealDetailsLink).isEmpty shouldBe true
       }
     }
 

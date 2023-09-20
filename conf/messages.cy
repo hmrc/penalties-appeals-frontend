@@ -461,7 +461,7 @@ appealConfirmation.returnToVatVc = Bwrw golwg dros eich cyfrif TAW
 agent.appealConfirmation.returnToVatVc = Bwrw golwg ar gyfrif TAW eich cleient
 appealConfirmation.feedbackLink.1 = Beth oedd eich barn am y gwasanaeth hwn?
 appealConfirmation.feedbackLink.2 = (mae’n cymryd 30 eiliad)
-appealConfirmation.appealDetailsLink = View or print your appeals details (opens in new tab)
+appealConfirmation.appealDetailsLink = Bwrw golwg dros fanylion eich apêl, neu eu hargraffu
 
 # Making a late appeal page
 # ----------------------------------------------------------
@@ -625,9 +625,10 @@ youCannotGoBackToYourAppealDetails.link.feedback = A ydych yn chwilio am rywbeth
 # -----------------------------------------------------------
 viewAppealDetails.headingAndTitle = Manylion yr apêl
 viewAppealDetails.vrn = Rhif Cofrestru TAW (VRN)
-viewAppealDetails.penaltyAppealed = Penalty appealed
-viewAppealDetails.appealDate = Appeal date
-viewAppealDetails.reviewPeriod = Statutory review period (45 days) ends on
+viewAppealDetails.penaltyAppealed = Y gosb sydd wedi’i hapelio
+viewAppealDetails.penaltyAppealed.multiple = Y cosbau sydd wedi’u hapelio
+viewAppealDetails.appealDate = Dyddiad yr apêl
+viewAppealDetails.reviewPeriod = Cyfnod adolygu statudol (45 diwrnod) yn dod i ben ar
 viewAppealDetails.reason = Rheswm dros fethu’r dyddiad cau ar gyfer TAW
 viewAppealDetails.warn.1 = Argraffwch y dudalen hon os hoffech ei chadw.
 viewAppealDetails.warn.2 = Ni fyddwch yn gallu dychwelyd i’r manylion hyn o ran yr apêl yn nes ymlaen.

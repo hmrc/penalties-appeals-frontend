@@ -16,21 +16,21 @@
 
 package controllers
 
-import config.{AppConfig, ErrorHandler}
 import config.featureSwitches.{FeatureSwitching, ShowViewAppealDetailsPage}
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.AuthPredicate
 import helpers.SessionAnswersHelper
-import javax.inject.Inject
 import models.UserRequest
 import play.api.Configuration
-import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.{I18nSupport, Messages}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.ViewAppealDetailsPage
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDetailsPage,
@@ -38,33 +38,44 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                                             sessionService: SessionService,
                                             errorHandler: ErrorHandler)
                                            (implicit mcc: MessagesControllerComponents,
-                                            val  config: Configuration,
+                                            val config: Configuration,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
                                             ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   def onPageLoad(): Action[AnyContent] = authorise.async {
     implicit request => {
-      if(!isEnabled(ShowViewAppealDetailsPage)) {
+      if (!isEnabled(ShowViewAppealDetailsPage)) {
         Future(NotFound(errorHandler.notFoundTemplate))
       } else {
+        implicit val messages: Messages = request.messages
         request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
           logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No previously submitted journey ID was found in the session for VRN: ${request.vrn} - " +
             s"redirecting to incomplete session data page")
           Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
         })(
           journeyId => {
-            sessionService.getUserAnswers(journeyId).map {
+            sessionService.getUserAnswers(journeyId).flatMap {
               optUserAnswers => {
-                optUserAnswers.fold({
-                  logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No submitted user answers were found in the session for VRN: ${SessionKeys.previouslySubmittedJourneyId} - " +
+                optUserAnswers.fold[Future[Result]]({
+                  logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No submitted user answers were found in the session for VRN: ${request.vrn} with previously submitted journey ID $journeyId - " +
                     s"redirecting to incomplete session data page")
-                  Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData())
+                  Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
                 })(
                   userAnswers => {
                     implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
-                    val answersFromSession = sessionAnswersHelper.getSubmittedAnswers()(userRequest, request.messages)
-                    Ok(viewAppealDetailsPage(answersFromSession)(request.messages, appConfig, userRequest))
+                    val reasonableExcuseSpecificAnswers = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
+                    val appealMetaInformation = sessionAnswersHelper.getSubmittedAnswers(getFeatureDate)
+                    if (userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined || userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).contains("other")) {
+                      for {
+                        fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames(journeyId)
+                      } yield {
+                        val answersFromSession = appealMetaInformation ++ sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
+                        Ok(viewAppealDetailsPage(answersFromSession))
+                      }
+                    } else {
+                      Future(Ok(viewAppealDetailsPage(appealMetaInformation ++ reasonableExcuseSpecificAnswers)))
+                    }
                   }
                 )
               }
