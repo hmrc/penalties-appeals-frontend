@@ -24,11 +24,9 @@ import play.api.i18n.Messages
 import repositories.UploadJourneyRepository
 import utils.SessionKeys
 import viewtils.{ImplicitDateFormatter, PenaltyTypeHelper}
+
 import java.time.LocalDate
-
 import javax.inject.Inject
-import models.session.UserAnswers
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepository,

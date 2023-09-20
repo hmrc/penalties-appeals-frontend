@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package config
+package crypto
 
 import play.api.Configuration
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, SymmetricCryptoFactory}
 
 import javax.inject.Inject
 
-class Crypto @Inject()(config: Configuration) {
-  def getCrypto: Encrypter with Decrypter =
-    SymmetricCryptoFactory.aesGcmCryptoFromConfig("mongodb.encryption", config.underlying)
+class CryptoProvider @Inject()(config: Configuration) {
+  def getCrypto: Encrypter with Decrypter = {
+    if(config.get[Boolean]("mongodb.encryption.enabled")) {
+      SymmetricCryptoFactory.aesGcmCryptoFromConfig("mongodb.encryption", config.underlying)
+    } else {
+      NoCrypto
+    }
+  }
 }

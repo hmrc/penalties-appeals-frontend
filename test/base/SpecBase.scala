@@ -16,8 +16,9 @@
 
 package base
 
-import config.{AppConfig, Crypto, ErrorHandler}
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityActionImpl, DataRequiredActionImpl, DataRetrievalActionImpl}
+import crypto.CryptoProvider
 import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models.session.UserAnswers
 import models.session.UserAnswers.SensitiveJsObject
@@ -56,7 +57,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   lazy val injector: Injector = app.injector
 
-  lazy val cryptoProvider: Crypto = injector.instanceOf[Crypto]
+  lazy val cryptoProvider: CryptoProvider = injector.instanceOf[CryptoProvider]
 
   implicit def jsonToSensitiveJson(json: JsObject): SensitiveJsObject = SensitiveJsObject(json)
 

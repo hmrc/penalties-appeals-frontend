@@ -16,7 +16,8 @@
 
 package repositories
 
-import config.{AppConfig, Crypto}
+import config.AppConfig
+import crypto.CryptoProvider
 import helpers.DateTimeHelper
 import models.session.UserAnswers
 import org.mongodb.scala.model.Filters._
@@ -37,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UserAnswersRepository @Inject()(mongo: MongoComponent,
                                       appConfig: AppConfig,
-                                      crypto: Crypto,
+                                      crypto: CryptoProvider,
                                       dateTimeHelper: DateTimeHelper)
                                      (implicit ec: ExecutionContext) extends PlayMongoRepository[UserAnswers](
   collectionName = "user-answers",
