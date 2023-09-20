@@ -475,6 +475,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
   }
 
   def getSubmittedAnswers(dateNow: LocalDate)(implicit userRequest: UserRequest[_], messages: Messages): Seq[QuestionAnswerRow] = {
+    val isAppealingMultiplePenalties: Boolean = userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")
     Seq(
       QuestionAnswerRow(
         messages("viewAppealDetails.vrn"),
@@ -482,7 +483,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
         ""
       ),
       QuestionAnswerRow(
-        messages("viewAppealDetails.penaltyAppealed"),
+        if(isAppealingMultiplePenalties) messages("viewAppealDetails.penaltyAppealed.multiple") else messages("viewAppealDetails.penaltyAppealed"),
         messages("penaltyInformation.headerText",
           PenaltyTypeHelper.getKeysFromSession().get.head,
           PenaltyTypeHelper.getKeysFromSession().get(1),

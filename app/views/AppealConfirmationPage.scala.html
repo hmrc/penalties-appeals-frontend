@@ -66,7 +66,7 @@
     @if(showViewDetailsLink) {
         <p class ="govuk-body">
             <a class="govuk-link" href="@{controllers.routes.ViewAppealDetailsController.onPageLoad().url}" rel="noreferrer noopener" target="_blank" id="details-link">
-                @messages("appealConfirmation.appealDetailsLink")
+                @messages("appealConfirmation.appealDetailsLink") @messages("site.opensInNewTab")
             </a>
         </p>
     }

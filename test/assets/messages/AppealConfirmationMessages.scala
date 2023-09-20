@@ -66,5 +66,5 @@ object AppealConfirmationMessages {
 
   val goToFeedback = "What did you think of this service? (takes 30 seconds)"
 
-  val viewAppealDetailsLink = "View or print your appeals details (opens in new tab)"
+  val viewAppealDetailsLink = "View or print your appeals details (opens in a new tab)"
 }

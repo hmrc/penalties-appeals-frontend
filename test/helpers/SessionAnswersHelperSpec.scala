@@ -1360,5 +1360,29 @@ class SessionAnswersHelperSpec extends SpecBase {
       result(3).key shouldBe "Statutory review period (45 days) ends on"
       result(3).value shouldBe "27\u00A0September\u00A02023"
     }
+
+    "return the basic rows for the appeal details page (changing the 'penalty appeal' wording if the user is appealing multiple penalties)" in {
+      val dateToPass = LocalDate.of(2023, 8, 14)
+      val correctUserAnswers: JsObject = Json.obj(
+        SessionKeys.penaltyNumber -> "123",
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+        SessionKeys.doYouWantToAppealBothPenalties -> "yes",
+        SessionKeys.startDateOfPeriod -> LocalDate.parse("2023-01-01"),
+        SessionKeys.endDateOfPeriod -> LocalDate.parse("2023-03-31"),
+        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2023-05-07"),
+        SessionKeys.dateCommunicationSent -> LocalDate.parse("2023-02-08"),
+        SessionKeys.journeyId -> "1234"
+      )
+      val result = sessionAnswersHelper.getSubmittedAnswers(dateToPass)(UserRequest("123456789", answers = userAnswers(correctUserAnswers)), implicitly)
+      result.size shouldBe 4
+      result.head.key shouldBe "VAT registration number (VRN)"
+      result.head.value shouldBe "123456789"
+      result(1).key shouldBe "Penalties appealed"
+      result(1).value shouldBe "Late payment penalties: 1\u00A0January\u00A02023 to 31\u00A0March\u00A02023"
+      result(2).key shouldBe "Appeal date"
+      result(2).value shouldBe "14\u00A0August\u00A02023"
+      result(3).key shouldBe "Statutory review period (45 days) ends on"
+      result(3).value shouldBe "27\u00A0September\u00A02023"
+    }
   }
 }
