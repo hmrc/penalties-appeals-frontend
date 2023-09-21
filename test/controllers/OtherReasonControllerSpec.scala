@@ -157,7 +157,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
               "date.year" -> "2021"
           )))
           status(result) shouldBe SEE_OTHER
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidBecomeUnable -> LocalDate.of(2021, 2, 1))
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidBecomeUnable -> LocalDate.of(2021, 2, 1))
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -175,7 +175,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
           )))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidBecomeUnable -> LocalDate.of(2021, 2, 1))
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidBecomeUnable -> LocalDate.of(2021, 2, 1))
 
         }
 
@@ -338,7 +338,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
               "why-return-submitted-late-text" -> "This is a reason")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whyReturnSubmittedLate -> "This is a reason")
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whyReturnSubmittedLate -> "This is a reason")
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -353,7 +353,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
               "why-return-submitted-late-text" -> "This is a reason")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whyReturnSubmittedLate -> "This is a reason")
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whyReturnSubmittedLate -> "This is a reason")
         }
 
         "return 400 (BAD_REQUEST) when the user does not enter a reason" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -790,7 +790,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
               .withFormUrlEncodedBody("value" -> "yes", "isJsEnabled" -> "true")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(NormalMode, isJsEnabled = true).url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "yes")
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "yes")
         }
 
       "the validation is performed against possible values - value does not appear in options list" in

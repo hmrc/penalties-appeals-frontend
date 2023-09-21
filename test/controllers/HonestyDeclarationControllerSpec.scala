@@ -125,10 +125,10 @@ class HonestyDeclarationControllerSpec extends SpecBase {
             .thenReturn(Future.successful(true))
           val result: Future[Result] = controller.onSubmit()(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
-          answerCaptor.getValue shouldBe userAnswers(correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.hasConfirmedDeclaration -> true,
             SessionKeys.reasonableExcuse -> reasonableExcuse
-          ))
+          )
         }
       }
 

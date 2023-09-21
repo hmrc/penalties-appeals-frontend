@@ -168,7 +168,7 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
           )))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(NormalMode).url
-        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.of(2021, 2, 1))
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.of(2021, 2, 1))
       }
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -186,7 +186,7 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
           )))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(CheckMode).url
-        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.of(2021, 2, 1))
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.of(2021, 2, 1))
       }
 
       "return 400 (BAD_REQUEST)" when {
@@ -260,7 +260,7 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
           )))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
           SessionKeys.whenDidTechnologyIssuesBegin ->LocalDate.of(2021, 1, 1),
           SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.of(2021, 2, 1)
         )
@@ -281,7 +281,7 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
           )))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
           SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.of(2021, 1, 1),
           SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.of(2021, 2, 1)
         )

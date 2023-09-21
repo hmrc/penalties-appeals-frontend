@@ -18,8 +18,10 @@ package base
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityActionImpl, DataRequiredActionImpl, DataRetrievalActionImpl}
+import crypto.CryptoProvider
 import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models.session.UserAnswers
+import models.session.UserAnswers.SensitiveJsObject
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{PenaltyTypeEnum, UserRequest}
 import navigation.Navigation
@@ -41,6 +43,7 @@ import repositories.UploadJourneyRepository
 import services.monitoring.AuditService
 import services.{AuthService, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import utils.SessionKeys
 import views.html.errors.Unauthorised
 
@@ -53,6 +56,10 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
   implicit val config: Configuration = appConfig.config
 
   lazy val injector: Injector = app.injector
+
+  lazy val cryptoProvider: CryptoProvider = injector.instanceOf[CryptoProvider]
+
+  implicit def jsonToSensitiveJson(json: JsObject): SensitiveJsObject = SensitiveJsObject(json)
 
   val mockDateTimeHelper: DateTimeHelper = mock(classOf[DateTimeHelper])
 
@@ -136,6 +143,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
   )
 
   def asDocument(html: Html): Document = Jsoup.parse(html.toString())
+
 
   val agentRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
 
@@ -253,4 +261,6 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
       size = 2
     ))
   )
+
+  implicit val crypto: Encrypter with Decrypter = cryptoProvider.getCrypto
 }

@@ -122,7 +122,7 @@ class CrimeReasonControllerSpec extends SpecBase {
               "date.month" -> "2",
               "date.year" -> "2021")))
           status(result) shouldBe SEE_OTHER
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.dateOfCrime -> LocalDate.of(2021, 2, 1))
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.dateOfCrime -> LocalDate.of(2021, 2, 1))
         }
 
         "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -138,7 +138,7 @@ class CrimeReasonControllerSpec extends SpecBase {
             "date.year" -> "2021")))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.dateOfCrime -> LocalDate.of(2021, 2, 1))
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.dateOfCrime -> LocalDate.of(2021, 2, 1))
         }
 
         "return 400 (BAD_REQUEST)" when {
@@ -248,7 +248,7 @@ class CrimeReasonControllerSpec extends SpecBase {
               .withFormUrlEncodedBody("value" -> "yes")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-            answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.hasCrimeBeenReportedToPolice -> "yes")
+            answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.hasCrimeBeenReportedToPolice -> "yes")
           }
 
         "the validation is performed against possible values - redirect on success and set the session key value " +
@@ -264,7 +264,7 @@ class CrimeReasonControllerSpec extends SpecBase {
               .withFormUrlEncodedBody("value" -> "yes")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
-            answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.hasCrimeBeenReportedToPolice -> "yes")
+            answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.hasCrimeBeenReportedToPolice -> "yes")
           }
 
         "the validation is performed against possible values - value does not appear in options list" in

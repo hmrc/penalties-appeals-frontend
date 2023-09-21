@@ -127,7 +127,7 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
           "other-relevant-information-text" -> "This is some information")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url
-        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "This is some information")
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "This is some information")
       }
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -141,7 +141,7 @@ class AppealAgainstObligationControllerSpec extends SpecBase {
           "other-relevant-information-text" -> "This is some information")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe routes.CheckYourAnswersController.onPageLoad().url
-        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "This is some information")
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.otherRelevantInformation -> "This is some information")
       }
 
       "return 400 (BAD_REQUEST) when the user does not enter a reason" in new Setup(AuthTestModels.successfulAuthResult) {

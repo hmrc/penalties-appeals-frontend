@@ -112,7 +112,7 @@ class AgentsControllerSpec extends SpecBase {
               .withFormUrlEncodedBody("value" -> "agent")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-            answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whatCausedYouToMissTheDeadline -> "agent")
+            answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whatCausedYouToMissTheDeadline -> "agent")
           }
 
         "the validation is performed against possible values - value does not appear in options list" in
@@ -216,7 +216,7 @@ class AgentsControllerSpec extends SpecBase {
               fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody("value" -> "agent")))
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode).url
-            answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whoPlannedToSubmitVATReturn -> "agent")
+            answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whoPlannedToSubmitVATReturn -> "agent")
           }
 
         "user submits the form as client" when {
@@ -231,7 +231,7 @@ class AgentsControllerSpec extends SpecBase {
                 fakeRequestConverter(fakeRequest = fakeRequest.withFormUrlEncodedBody("value" -> "client")))
               status(result) shouldBe SEE_OTHER
               redirectLocation(result).get shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
-              answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whoPlannedToSubmitVATReturn -> "client")
+              answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whoPlannedToSubmitVATReturn -> "client")
             }
         }
 

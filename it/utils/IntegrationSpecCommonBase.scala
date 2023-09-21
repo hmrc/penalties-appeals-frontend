@@ -20,6 +20,7 @@ import com.codahale.metrics.SharedMetricRegistries
 import helpers.WiremockHelper
 import models.PenaltyTypeEnum
 import models.session.UserAnswers
+import models.session.UserAnswers.SensitiveJsObject
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import org.mongodb.scala.Document
 import org.mongodb.scala.result.DeleteResult
@@ -47,6 +48,8 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
   BeforeAndAfterAll with BeforeAndAfterEach with TestSuite with WiremockHelper {
 
   lazy val injector: Injector = app.injector
+
+  implicit def jsonToSensitiveJson(json: JsObject): SensitiveJsObject = SensitiveJsObject(json)
 
   val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(
     authToken -> "1234",

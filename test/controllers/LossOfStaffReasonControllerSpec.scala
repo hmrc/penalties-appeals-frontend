@@ -115,7 +115,7 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
           "date.year" -> "2021")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        answerCaptor.getValue shouldBe userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-02-01")))
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-02-01"))
       }
 
       "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
@@ -129,7 +129,7 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
           "date.year" -> "2021")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        answerCaptor.getValue shouldBe userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-02-01")))
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2021-02-01"))
       }
 
       "return 400 (BAD_REQUEST)" when {

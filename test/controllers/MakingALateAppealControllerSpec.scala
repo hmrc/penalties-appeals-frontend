@@ -110,7 +110,7 @@ class MakingALateAppealControllerSpec extends SpecBase {
           SessionKeys.reasonableExcuse -> "crime"), fakeRequest.withFormUrlEncodedBody("late-appeal-text" -> "Royale with cheese")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-        answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.lateAppealReason -> "Royale with cheese")
+        answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.lateAppealReason -> "Royale with cheese")
       }
 
       "return a 400 (BAD REQUEST) and show page with error when an appeal reason has NOT been entered" in new Setup(AuthTestModels.successfulAuthResult) {

@@ -122,7 +122,7 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
             "date.year" -> "2021"
           )))
           status(result) shouldBe SEE_OTHER
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.dateOfFireOrFlood -> LocalDate.of(2021, 2, 1)
           )
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
@@ -141,7 +141,7 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
             "date.year" -> "2021"
           )))
           status(result) shouldBe SEE_OTHER
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(
             SessionKeys.dateOfFireOrFlood -> LocalDate.of(2021, 2, 1)
           )
           redirectLocation(result).get shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url

@@ -103,7 +103,7 @@ class YouCanAppealPenaltyControllerSpec extends SpecBase {
             .thenReturn(Future.successful(true))
           val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes")))
           status(result) shouldBe SEE_OTHER
-          answerCaptor.getValue.data shouldBe correctUserAnswers ++ Json.obj(SessionKeys.youCanAppealThisPenalty -> "yes")
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.youCanAppealThisPenalty -> "yes")
         }
       }
       "the user is unauthorised" when {

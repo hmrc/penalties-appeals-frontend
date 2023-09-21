@@ -16,34 +16,46 @@
 
 package models.session
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsObject, Json}
+import base.SpecBase
+import models.session.UserAnswers.SensitiveJsObject
+import play.api.libs.json.Json
+import uk.gov.hmrc.crypto.Crypted
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-class UserAnswersSpec extends AnyWordSpec with Matchers {
-  val answersAsJson: JsObject = Json.obj(
+import java.time.Instant
+
+class UserAnswersSpec extends SpecBase {
+  lazy val answersAsJson: SensitiveJsObject = SensitiveJsObject(Json.obj(
     "key1" -> "value1",
     "key2" -> "value2"
-  )
+  ))
+  lazy val now: Instant = Instant.now
+
   "be writable to JSON" in {
-    val model = UserAnswers("journey123", answersAsJson)
+    val model = UserAnswers("journey123", answersAsJson, now)
     val expectedResult = Json.obj(
       "journeyId" -> "journey123",
-      "data" -> answersAsJson
+      "data" -> answersAsJson,
+      "lastUpdated" -> now
     )
     val result = Json.toJson(model)(UserAnswers.format)
-    result shouldBe expectedResult
+    (result \ "journeyId").validate[String].get shouldBe (expectedResult \ "journeyId").validate[String].get
+    val actualResultData = (result \ "data").validate[String].get
+    val expectedResultData = (expectedResult \ "data").validate[String].get
+    crypto.decrypt(Crypted(actualResultData)).value shouldBe crypto.decrypt(Crypted(expectedResultData)).value
   }
 
   "be readable from JSON" in {
     val json = Json.obj(
       "journeyId" -> "journey123",
-      "data" -> answersAsJson
+      "data" -> answersAsJson,
+      "lastUpdated" -> Json.toJson(now)(MongoJavatimeFormats.instantWrites)
     )
-    val expectedModel = UserAnswers("journey123", answersAsJson)
+    val expectedModel = UserAnswers("journey123", answersAsJson, now)
     val result = Json.fromJson(json)(UserAnswers.format)
     result.isSuccess shouldBe true
-    result.get shouldBe expectedModel
+    result.get.journeyId shouldBe expectedModel.journeyId
+    result.get.data.decryptedValue shouldBe expectedModel.data.decryptedValue
   }
 
   "setAnswer" should {
