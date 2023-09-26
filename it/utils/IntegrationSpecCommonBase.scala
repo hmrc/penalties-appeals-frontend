@@ -16,6 +16,8 @@
 
 package utils
 
+import java.time.{LocalDate, LocalDateTime}
+
 import com.codahale.metrics.SharedMetricRegistries
 import helpers.WiremockHelper
 import models.PenaltyTypeEnum
@@ -41,7 +43,6 @@ import stubs.{AuditStub, AuthStub}
 import uk.gov.hmrc.http.SessionKeys.authToken
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
-import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with
@@ -115,7 +116,8 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
     "microservice.services.upscan-initiate.port" -> stubPort,
     "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
     "auditing.enabled" -> true,
-    "auditing.consumer.baseUri.port" -> stubPort
+    "auditing.consumer.baseUri.port" -> stubPort,
+    "mongodb.encryption.enabled" -> true
   )
 
   override lazy val app: Application = new GuiceApplicationBuilder()

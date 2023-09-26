@@ -17,12 +17,14 @@
 package repositories
 
 import config.AppConfig
-import models.upload.{UploadJourney, UploadStatus}
+import crypto.CryptoProvider
+import javax.inject.{Inject, Singleton}
+import models.upload.{SensitiveUploadJourney, UploadJourney, UploadStatus}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.mongo.cache.{CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 import utils.Logger.logger
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -30,7 +32,7 @@ class UploadJourneyRepository @Inject()(
                                          mongoComponent: MongoComponent,
                                          timestampSupport: TimestampSupport,
                                          appConfig: AppConfig
-                                       )(implicit ec: ExecutionContext)
+                                       )(implicit ec: ExecutionContext, cryptoProvider: CryptoProvider)
   extends MongoCacheRepository[String](
     mongoComponent = mongoComponent,
     collectionName = "file-upload-journeys",
@@ -40,11 +42,14 @@ class UploadJourneyRepository @Inject()(
     cacheIdType = CacheIdType.SimpleCacheId
   )(ec) {
 
+  implicit private val crypto: Encrypter with Decrypter = cryptoProvider.getCrypto
+
   def updateStateOfFileUpload(journeyId: String, callbackModel: UploadJourney, isInitiateCall: Boolean = false): Future[Option[String]] = {
-    get[UploadJourney](journeyId)(DataKey(callbackModel.reference)).flatMap(
+    val encryptedUploadJourney = SensitiveUploadJourney(callbackModel)
+    get[SensitiveUploadJourney](journeyId)(DataKey(callbackModel.reference)).flatMap(
       document => {
         if (document.isDefined || isInitiateCall) {
-          put(journeyId)(DataKey(callbackModel.reference), callbackModel).map(item => {
+          put(journeyId)(DataKey(callbackModel.reference), encryptedUploadJourney).map(item => {
             logger.info(s"[UploadJourneyRepository][updateStateOfFileUpload] - updating state of file (reference: ${callbackModel.reference}) upload in repository: " +
               s"is document defined: ${document.isDefined}, isInitiateCall: $isInitiateCall")
             item.id
@@ -58,10 +63,10 @@ class UploadJourneyRepository @Inject()(
   }
 
   def getFieldsForFileReference(journeyId: String, fileReference: String): Future[Option[Map[String, String]]] = {
-    get[UploadJourney](journeyId)(DataKey(fileReference)).map(
+    get[SensitiveUploadJourney](journeyId)(DataKey(fileReference)).map(
       upload => {
-        if (upload.exists(_.uploadFields.isDefined)) {
-          upload.flatMap(_.uploadFields.map(
+        if(upload.exists(_.decryptedValue.uploadFields.isDefined)) {
+          upload.flatMap(_.decryptedValue.uploadFields.map(
             fields => {
               logger.debug(s"[UploadJourneyRepository][getFieldsForFileReference] -" +
                 s" Received the following upload fields, fields: $fields using file reference: $fileReference")
@@ -77,10 +82,10 @@ class UploadJourneyRepository @Inject()(
   }
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Future[Option[UploadStatus]] = {
-    get[UploadJourney](journeyId)(DataKey(fileReference)).map(
+    get[SensitiveUploadJourney](journeyId)(DataKey(fileReference)).map(
       upload => {
-        if (upload.exists(_.failureDetails.isDefined)) {
-          upload.flatMap(_.failureDetails.map(
+        if (upload.exists(_.decryptedValue.failureDetails.isDefined)) {
+          upload.flatMap(_.decryptedValue.failureDetails.map(
             failureDetails => {
               logger.warn(s"[UploadJourneyRepository][getStatusOfFileUpload] -" +
                 s" Received failure response back from Upscan, status: ${failureDetails.failureReason} for journey: $journeyId")
@@ -88,7 +93,7 @@ class UploadJourneyRepository @Inject()(
             }))
         } else {
           logger.info(s"[UploadJourneyRepository][getStatusOfFileUpload] - Success response returned for journey: $journeyId and file reference: $fileReference")
-          upload.map(file => UploadStatus(file.fileStatus.toString))
+          upload.map(file => UploadStatus(file.decryptedValue.fileStatus.toString))
         }
       }
     )
@@ -101,7 +106,7 @@ class UploadJourneyRepository @Inject()(
           .map {
             case Some(cacheItem) if cacheItem.data.fields.nonEmpty =>
               val list = cacheItem.data.values
-              Some(list.map(a => a.as[UploadJourney]).toSeq)
+              Some(list.map(a => a.as[SensitiveUploadJourney]).toSeq.map(_.decryptedValue))
             case None => None
             case _ => throw new MatchError(s"[UploadJourneyRepository][getUploadsForJourney] - unknown id ${findById(id)}")
           }
@@ -114,7 +119,7 @@ class UploadJourneyRepository @Inject()(
       {
         item => {
           val list = item.data.values
-          list.map(a => a.as[UploadJourney]).toSeq
+          list.map(a => a.as[SensitiveUploadJourney]).toSeq.map(_.decryptedValue)
             .find(_.reference.equals(fileReference))
         }
       }
@@ -126,7 +131,7 @@ class UploadJourneyRepository @Inject()(
       _.map {
         item => {
           val list = item.data.values
-          list.map(a => a.as[UploadJourney]).toSeq.size
+          list.map(a => a.as[SensitiveUploadJourney]).toSeq.map(_.decryptedValue).size
         }
       }.getOrElse(0)
     }
@@ -160,7 +165,7 @@ class UploadJourneyRepository @Inject()(
       _.map {
         item => {
           val list = item.data.values
-          list.map(a => a.as[UploadJourney]).toSeq.indexWhere(_.reference.equals(fileReference))
+          list.map(a => a.as[SensitiveUploadJourney].decryptedValue).toSeq.indexWhere(_.reference.equals(fileReference))
         }
       }.getOrElse(-1)
     }

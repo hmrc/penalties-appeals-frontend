@@ -16,6 +16,8 @@
 
 package base
 
+import java.time.{LocalDate, LocalDateTime}
+
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityActionImpl, DataRequiredActionImpl, DataRetrievalActionImpl}
 import crypto.CryptoProvider
@@ -47,7 +49,6 @@ import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import utils.SessionKeys
 import views.html.errors.Unauthorised
 
-import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll with UserAnswersBase {

@@ -16,9 +16,13 @@
 
 package repositories
 
+import java.time.{Instant, ZoneOffset}
+import java.util.concurrent.TimeUnit
+
 import config.AppConfig
 import crypto.CryptoProvider
 import helpers.DateTimeHelper
+import javax.inject.{Inject, Singleton}
 import models.session.UserAnswers
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Indexes.ascending

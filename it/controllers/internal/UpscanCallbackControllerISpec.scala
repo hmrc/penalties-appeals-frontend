@@ -16,19 +16,25 @@
 
 package controllers.internal
 
+import java.time.LocalDateTime
+
+import crypto.CryptoProvider
 import models.upload._
 import org.mongodb.scala.bson.collection.immutable.Document
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.mongo.cache.DataKey
 import utils.IntegrationSpecCommonBase
-
-import java.time.LocalDateTime
 
 class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
 
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
+
+  lazy val cryptoProvider: CryptoProvider = injector.instanceOf[CryptoProvider]
+
+  implicit val crypto: Encrypter with Decrypter = cryptoProvider.getCrypto
 
   val validJsonToParse: JsValue = Json.parse(
     """
@@ -162,7 +168,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(validJsonToParse))
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
-        val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
+        val modelInRepository: UploadJourney = await(repository.get[SensitiveUploadJourney]("12345")(DataKey("ref1"))(SensitiveUploadJourney.format)).get.decryptedValue
         modelInRepository.downloadUrl shouldBe jsonAsModel.downloadUrl
         modelInRepository.reference shouldBe jsonAsModel.reference
         modelInRepository.failureDetails shouldBe jsonAsModel.failureDetails
@@ -177,7 +183,7 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(validFailureJsonToParse))
         result.status shouldBe NO_CONTENT
         await(repository.collection.countDocuments().toFuture()) shouldBe 1
-        val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
+        val modelInRepository: UploadJourney = await(repository.get[SensitiveUploadJourney]("12345")(DataKey("ref1"))).get.decryptedValue
         modelInRepository.downloadUrl shouldBe jsonAsModelForFailure.downloadUrl
         modelInRepository.reference shouldBe jsonAsModelForFailure.reference
         modelInRepository.failureDetails shouldBe jsonAsModelForFailure.failureDetails
@@ -193,8 +199,8 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(duplicateFileAsJson))
         result.status shouldBe NO_CONTENT
         await(repository.getUploadsForJourney(Some("12345"))).get.size shouldBe 2
-        val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref1"))).get
-        val duplicateModelInRepository: UploadJourney = await(repository.get[UploadJourney]("12345")(DataKey("ref2"))).get
+        val modelInRepository: UploadJourney = await(repository.get[SensitiveUploadJourney]("12345")(DataKey("ref1"))).get.decryptedValue
+        val duplicateModelInRepository: UploadJourney = await(repository.get[SensitiveUploadJourney]("12345")(DataKey("ref2"))).get.decryptedValue
         modelInRepository.downloadUrl shouldBe jsonAsModel.downloadUrl
         modelInRepository.reference shouldBe jsonAsModel.reference
         modelInRepository.failureDetails shouldBe jsonAsModel.failureDetails
@@ -207,6 +213,13 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         duplicateModelInRepository.fileStatus shouldBe duplicateJsonAsModel.fileStatus
         duplicateModelInRepository.uploadDetails shouldBe duplicateJsonAsModel.uploadDetails
         duplicateModelInRepository.uploadFields shouldBe jsonAsModel.uploadFields
+      }
+
+      "the callback is valid but the user has requested the file be deleted" in {
+        await(repository.collection.deleteMany(filter = Document()).toFuture())
+        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(validJsonToParse))
+        result.status shouldBe NO_CONTENT
+        await(repository.getUploadsForJourney(Some("12345"))) shouldBe None
       }
     }
   }
