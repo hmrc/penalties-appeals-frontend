@@ -19,7 +19,6 @@ package repositories
 import models.session.UserAnswers
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import utils.IntegrationSpecCommonBase
 
 class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase {

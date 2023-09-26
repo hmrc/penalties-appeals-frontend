@@ -22,12 +22,18 @@ import org.scalatest.concurrent.Eventually.eventually
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongo.cache.DataKey
 import utils.IntegrationSpecCommonBase
-
 import java.time.LocalDateTime
+
+import crypto.CryptoProvider
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
 class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
 
   lazy val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
+
+  lazy val cryptoProvider: CryptoProvider = injector.instanceOf[CryptoProvider]
+
+  implicit val crypto: Encrypter with Decrypter = cryptoProvider.getCrypto
 
   class Setup {
     await(deleteAll(repository))
@@ -62,7 +68,7 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
   "updateStateOfFileUpload" should {
     "update the state based on the callback from Upscan" in new Setup {
       await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
-      val modelInRepository: UploadJourney = await(repository.get[UploadJourney]("1234")(DataKey("ref1"))).get
+      val modelInRepository: UploadJourney = await(repository.get[SensitiveUploadJourney]("1234")(DataKey("ref1"))).get.decryptedValue
       modelInRepository shouldBe callbackModel
     }
 
