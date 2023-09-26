@@ -33,9 +33,6 @@ import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import utils.Logger.logger
 
-import java.time.{Instant, ZoneOffset}
-import java.util.concurrent.TimeUnit
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 
