@@ -24,11 +24,11 @@ import connectors.httpParsers.ErrorResponse
 import helpers.DateTimeHelper
 import models._
 import models.appeals.{AppealSubmission, AppealSubmissionResponseModel, MultiplePenaltiesData}
-import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum, DuplicateFilesAuditModel}
+import models.monitoring.{AppealAuditModel, AuditPenaltyTypeEnum}
 import models.upload.{UploadJourney, UploadStatusEnum}
 import play.api.Configuration
 import play.api.http.Status._
-import play.api.libs.json.{JsResult, JsValue, Json}
+import play.api.libs.json.{JsResult, Json}
 import repositories.UploadJourneyRepository
 import services.monitoring.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -126,10 +126,9 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                            reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
-      readyOrDuplicateFileUploads = fileUploads.map(_.filter(file =>
-        file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
+      fileUploadsInReadyState = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY))
       correlationId = idGenerator.generateUUID
-      uploads = if (userHasUploadedFiles) readyOrDuplicateFileUploads else None
+      uploads = if (userHasUploadedFiles) fileUploadsInReadyState else None
       modelFromRequest: AppealSubmission = AppealSubmission
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate(), agentReferenceNo, uploads)
       penaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.penaltyNumber).get
@@ -144,7 +143,6 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         },
         responseModel => {
           sendAppealAudit(modelFromRequest, uploads, correlationId, isLPP, isMultipleAppeal = false, appealType, responseModel.caseId.get, penaltyNumber)
-          sendAuditIfDuplicatesExist(uploads)
           logger.info("[AppealService][singleAppeal] - Received OK from the appeal submission call")
           Right((): Unit)
         }
@@ -164,9 +162,8 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                              reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
     for {
       fileUploads <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
-      readyOrDuplicateFileUploads = fileUploads.map(_.filter(file =>
-        file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
-      uploads = if (userHasUploadedFiles) readyOrDuplicateFileUploads else None
+      fileUploadsInReadyState = fileUploads.map(_.filter(file => file.fileStatus == UploadStatusEnum.READY))
+      uploads = if (userHasUploadedFiles) fileUploadsInReadyState else None
       firstCorrelationId = idGenerator.generateUUID
       secondCorrelationId = idGenerator.generateUUID
       modelFromRequest: AppealSubmission = AppealSubmission
@@ -203,20 +200,6 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
-  def sendAuditIfDuplicatesExist(optFileUploads: Option[Seq[UploadJourney]])
-                                (implicit userRequest: UserRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
-    if (optFileUploads.isDefined) {
-      val fileUploads = optFileUploads.get.filter(_.uploadDetails.isDefined)
-      val checksumMapToUpload = fileUploads.groupBy(_.uploadDetails.get.checksum)
-      val onlyDuplicateFileUploads = checksumMapToUpload.filter(_._2.size > 1).values.flatten.toSeq
-      if (onlyDuplicateFileUploads.nonEmpty) {
-        logger.debug("[AppealService][sendAuditIfDuplicatesExist] - Found duplicates in repository, sending duplicate appeal event")
-        val duplicateUploadsInAuditFormat: JsValue = auditService.getAllDuplicateUploadsForAppealSubmission(onlyDuplicateFileUploads)
-        auditService.audit(DuplicateFilesAuditModel(duplicateUploadsInAuditFormat))
-      }
-    }
-  }
-
   //scalastyle:off
   private def handleMultipleAppealResponse(firstResponse: AppealSubmissionResponse,
                                            secondResponse: AppealSubmissionResponse,
@@ -237,20 +220,17 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, firstCorrelationId, secondCorrelationId, vrn, dateFrom, dateTo)
         sendAppealAudit(modelFromRequest, uploads, firstCorrelationId, isLPP, isMultipleAppeal = true, appealType, firstResponseModel.caseId.get, firstPenaltyNumber)
         sendAppealAudit(modelFromRequest, uploads, secondCorrelationId, isLPP, isMultipleAppeal = true, appealType, secondResponseModel.caseId.get, secondPenaltyNumber)
-        sendAuditIfDuplicatesExist(uploads)
         Right((): Unit)
       //One (LPP1) succeeded
       case (Right(firstResponseModel), Left(secondResponseModel)) =>
         logPartialFailureOfMultipleAppeal(firstResponse, secondResponse, firstCorrelationId, secondCorrelationId, vrn, dateFrom, dateTo)
         sendAppealAudit(modelFromRequest, uploads, firstCorrelationId, isLPP, isMultipleAppeal = true, appealType, firstResponseModel.caseId.get, firstPenaltyNumber)
-        sendAuditIfDuplicatesExist(uploads)
         logger.debug(s"[AppealService][multipleAppeal] - First penalty was $firstResponseModel, second penalty was $secondResponseModel")
         Right((): Unit)
       //One (LPP2) succeeded
       case (Left(firstResponseModel), Right(secondResponseModel)) =>
         logPartialFailureOfMultipleAppeal(Left(firstResponseModel), Right(secondResponseModel), firstCorrelationId, secondCorrelationId, vrn, dateFrom, dateTo)
         sendAppealAudit(modelFromRequest, uploads, secondCorrelationId, isLPP, isMultipleAppeal = true, appealType, secondResponseModel.caseId.get, secondPenaltyNumber)
-        sendAuditIfDuplicatesExist(uploads)
         logger.debug(s"[AppealService][multipleAppeal] - Second penalty was $secondResponseModel, first penalty was $firstResponseModel")
         Right((): Unit)
       //Both failed

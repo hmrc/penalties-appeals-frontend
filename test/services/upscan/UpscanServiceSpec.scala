@@ -140,11 +140,10 @@ class UpscanServiceSpec extends SpecBase with LogCapturing {
         .thenReturn(Future.successful(Some(Seq(
           UploadJourney("file1", UploadStatusEnum.READY),
           UploadJourney("file2", UploadStatusEnum.READY),
-          UploadJourney("file3", UploadStatusEnum.DUPLICATE),
           UploadJourney("file4", UploadStatusEnum.FAILED)
         ))))
       val result: Future[Int] = service.getAmountOfFilesUploadedForJourney("J1234")
-      await(result) shouldBe 3
+      await(result) shouldBe 2
     }
   }
 

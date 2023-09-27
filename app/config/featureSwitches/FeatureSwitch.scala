@@ -25,7 +25,6 @@ object FeatureSwitch {
   val listOfAllFeatureSwitches: List[FeatureSwitch] = List(
     NonJSRouting,
     ShowDigitalCommsMessage,
-    WarnForDuplicateFiles,
     ShowFullAppealAgainstTheObligation,
     ShowViewAppealDetailsPage
   )
@@ -37,10 +36,6 @@ case object NonJSRouting extends FeatureSwitch {
 
 case object ShowDigitalCommsMessage extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-digital-comms-message"
-}
-
-case object WarnForDuplicateFiles extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.warn-for-duplicate-files"
 }
 
 case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {

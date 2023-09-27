@@ -43,8 +43,8 @@ import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.{PagerDutyHelper, SessionKeys}
 import views.html.errors.ServiceUnavailablePage
-import views.html.reasonableExcuseJourneys.other.{UploadEvidencePage, _}
 import views.html.reasonableExcuseJourneys.other.noJs.{UploadAnotherDocumentPage, UploadFirstDocumentPage, UploadListPage, UploadTakingLongerThanExpectedPage}
+import views.html.reasonableExcuseJourneys.other.{UploadEvidencePage, _}
 import viewtils.{EvidenceFileUploadsHelper, RadioOptionHelper}
 
 import java.time.LocalDate
@@ -155,9 +155,8 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           val removeFileUrl = controllers.routes.UpscanController.removeFile(userRequest.session.get(SessionKeys.journeyId).get, _)
           val removeFilePageUrl = controllers.routes.RemoveFileController.onPageLoad(_, true, mode)
           val postAction = navigation.nextPage(EvidencePage, mode)
-          val getDuplicatesUrl = controllers.routes.UpscanController.getDuplicateFiles(userRequest.session.get(SessionKeys.journeyId).get)
           val getErrorServiceUrl = controllers.routes.ProblemWithServiceController.onPageLoad()
-          val call = uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, removeFilePageUrl, previousUploads, getDuplicatesUrl, getErrorServiceUrl, pageMode(EvidencePage, mode))
+          val call = uploadEvidencePage(postAction, initiateNextUploadUrl, getStatusUrl, removeFileUrl, removeFilePageUrl, previousUploads, getErrorServiceUrl, pageMode(EvidencePage, mode))
           if (mode == CheckMode && userRequest.session.get(SessionKeys.originatingChangePage).isEmpty) Ok(call).addingToSession(SessionKeys.originatingChangePage -> EvidencePage.toString) else Ok(call)
         }
       }
@@ -239,15 +238,14 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
       } yield {
         if (previousUploadsState.isEmpty ||
-          previousUploadsState.exists(!_.exists(file => file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))) {
+          previousUploadsState.exists(!_.exists(file => file.fileStatus == UploadStatusEnum.READY))) {
           logger.debug("[OtherReasonController][onPageLoadForUploadComplete] - No file uploads left to render - routing to first file upload page")
           Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
         } else {
           val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(file =>
-            file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
-          val optDuplicateFiles: Option[Html] = evidenceFileUploadsHelper.getInsetTextForUploads(uploadedFileNames.zipWithIndex)
-          val uploadRows: Seq[Html] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex, mode)
-          Ok(uploadListPage(formProvider, radioOptionsToRender, postAction, uploadRows, optDuplicateFiles, pageMode(FileListPage, mode)))
+            file.fileStatus == UploadStatusEnum.READY))
+          val uploadRows: Seq[Html] = evidenceFileUploadsHelper.getFileUploadRows(uploadedFileNames.zipWithIndex, mode)
+          Ok(uploadListPage(formProvider, radioOptionsToRender, postAction, uploadRows, pageMode(FileListPage, mode)))
         }
       }
     }
@@ -263,11 +261,10 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
             previousUploadsState <- uploadJourneyRepository.getUploadsForJourney(userRequest.session.get(SessionKeys.journeyId))
           } yield {
             val uploadedFileNames: Seq[UploadJourney] = previousUploadsState.fold[Seq[UploadJourney]](Seq.empty)(_.filter(file =>
-              file.fileStatus == UploadStatusEnum.READY || file.fileStatus == UploadStatusEnum.DUPLICATE))
-            val optDuplicateFiles: Option[Html] = evidenceFileUploadsHelper.getInsetTextForUploads(uploadedFileNames.zipWithIndex)
-            val uploadRows: Seq[Html] = evidenceFileUploadsHelper.displayContentForFileUploads(uploadedFileNames.zipWithIndex, mode)
+              file.fileStatus == UploadStatusEnum.READY))
+            val uploadRows: Seq[Html] = evidenceFileUploadsHelper.getFileUploadRows(uploadedFileNames.zipWithIndex, mode)
             if (uploadRows.length < 5) {
-              BadRequest(uploadListPage(formHasErrors, radioOptionsToRender, postAction, uploadRows, optDuplicateFiles, pageMode(FileListPage, mode)))
+              BadRequest(uploadListPage(formHasErrors, radioOptionsToRender, postAction, uploadRows, pageMode(FileListPage, mode)))
             } else {
               Redirect(navigation.nextPage(FileListPage, mode))
             }

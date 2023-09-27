@@ -16,12 +16,12 @@
 
 package helpers
 
-import java.time.{LocalDate, LocalDateTime}
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
-
-import javax.inject.Inject
 import play.api.Configuration
+
+import java.time.{LocalDate, LocalDateTime}
+import javax.inject.Inject
 
 class DateTimeHelper @Inject()(implicit val appConfig: AppConfig) extends FeatureSwitching {
   implicit val config: Configuration = appConfig.config

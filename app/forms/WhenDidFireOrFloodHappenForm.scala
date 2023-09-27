@@ -17,11 +17,11 @@
 package forms
 
 import config.AppConfig
-
-import java.time.LocalDate
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.i18n.Messages
+
+import java.time.LocalDate
 
 object WhenDidFireOrFloodHappenForm extends Mappings {
   def whenFireOrFloodHappenedForm()(implicit messages: Messages, appConfig: AppConfig): Form[LocalDate] = {

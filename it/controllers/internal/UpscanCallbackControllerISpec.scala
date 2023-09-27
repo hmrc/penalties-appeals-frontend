@@ -57,27 +57,6 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       |""".stripMargin
   )
 
-  val duplicateFileAsJson: JsValue = Json.parse(
-    """
-      |{
-      |    "reference": "ref2",
-      |    "downloadUrl": "http://example.com/file1.txt",
-      |    "fileStatus": "READY",
-      |    "uploadDetails": {
-      |        "fileName": "file1.txt",
-      |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2023-04-24T09:30:00Z",
-      |        "checksum": "check12345678",
-      |        "size": 987
-      |    },
-      |    "uploadFields": {
-      |      "key": "abcxyz",
-      |      "x-amz-algorithm": "AWS4-HMAC-SHA256"
-      |    }
-      |}
-      |""".stripMargin
-  )
-
   val validFailureJsonToParse: JsValue = Json.parse(
     """
       |{
@@ -102,24 +81,6 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
       checksum = "check12345678",
       size = 987
     )),
-    uploadFields = Some(Map(
-      "key" -> "abcxyz",
-      "x-amz-algorithm" -> "AWS4-HMAC-SHA256"
-    ))
-  )
-
-  val duplicateJsonAsModel: UploadJourney = UploadJourney(
-    reference = "ref2",
-    fileStatus = UploadStatusEnum.DUPLICATE,
-    downloadUrl = Some("http://example.com/file1.txt"),
-    uploadDetails = Some(UploadDetails(
-      fileName = "file1.txt",
-      fileMimeType = "text/plain",
-      uploadTimestamp = LocalDateTime.of(2023, 4, 24, 9, 30),
-      checksum = "check12345678",
-      size = 987
-    )
-    ),
     uploadFields = Some(Map(
       "key" -> "abcxyz",
       "x-amz-algorithm" -> "AWS4-HMAC-SHA256"
@@ -189,37 +150,6 @@ class UpscanCallbackControllerISpec extends IntegrationSpecCommonBase {
         modelInRepository.failureDetails shouldBe jsonAsModelForFailure.failureDetails
         modelInRepository.fileStatus shouldBe jsonAsModelForFailure.fileStatus
         modelInRepository.uploadDetails shouldBe jsonAsModelForFailure.uploadDetails
-      }
-
-      "the body received is valid but the file has already been uploaded - duplicate" in {
-        await(repository.collection.deleteMany(filter = Document()).toFuture())
-        await(repository.updateStateOfFileUpload("12345", jsonAsModel, isInitiateCall = true))
-        await(repository.updateStateOfFileUpload("12345", UploadJourney("ref2", UploadStatusEnum.WAITING,
-          uploadFields = Some(uploadFieldsForUpdateCall)), isInitiateCall = true))
-        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(duplicateFileAsJson))
-        result.status shouldBe NO_CONTENT
-        await(repository.getUploadsForJourney(Some("12345"))).get.size shouldBe 2
-        val modelInRepository: UploadJourney = await(repository.get[SensitiveUploadJourney]("12345")(DataKey("ref1"))).get.decryptedValue
-        val duplicateModelInRepository: UploadJourney = await(repository.get[SensitiveUploadJourney]("12345")(DataKey("ref2"))).get.decryptedValue
-        modelInRepository.downloadUrl shouldBe jsonAsModel.downloadUrl
-        modelInRepository.reference shouldBe jsonAsModel.reference
-        modelInRepository.failureDetails shouldBe jsonAsModel.failureDetails
-        modelInRepository.fileStatus shouldBe jsonAsModel.fileStatus
-        modelInRepository.uploadDetails shouldBe jsonAsModel.uploadDetails
-        modelInRepository.uploadFields shouldBe jsonAsModel.uploadFields
-        duplicateModelInRepository.downloadUrl shouldBe duplicateJsonAsModel.downloadUrl
-        duplicateModelInRepository.reference shouldBe duplicateJsonAsModel.reference
-        duplicateModelInRepository.failureDetails shouldBe duplicateJsonAsModel.failureDetails
-        duplicateModelInRepository.fileStatus shouldBe duplicateJsonAsModel.fileStatus
-        duplicateModelInRepository.uploadDetails shouldBe duplicateJsonAsModel.uploadDetails
-        duplicateModelInRepository.uploadFields shouldBe jsonAsModel.uploadFields
-      }
-
-      "the callback is valid but the user has requested the file be deleted" in {
-        await(repository.collection.deleteMany(filter = Document()).toFuture())
-        val result = await(buildClientForRequestToApp("/internal", "/upscan-callback/12345?isJsEnabled=true").post(validJsonToParse))
-        result.status shouldBe NO_CONTENT
-        await(repository.getUploadsForJourney(Some("12345"))) shouldBe None
       }
     }
   }

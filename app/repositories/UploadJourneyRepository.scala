@@ -149,17 +149,6 @@ class UploadJourneyRepository @Inject()(
     }
   }
 
-  def getAllChecksumsForJourney(journeyId: Option[String]): Future[Seq[String]] = {
-    getUploadsForJourney(journeyId).map(
-      _.map(
-        _.map(
-          _.uploadDetails.map(
-            _.checksum
-          )
-        ).collect { case Some(x) => x }
-      ).getOrElse(Seq.empty))
-  }
-
   def getFileIndexForJourney(journeyId: String, fileReference: String): Future[Int] = {
     findById(journeyId).map {
       _.map {

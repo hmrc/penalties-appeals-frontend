@@ -22,7 +22,6 @@ object FailureReasonEnum extends Enumeration {
   val QUARANTINE: FailureReasonEnum.Value = Value
   val REJECTED: FailureReasonEnum.Value = Value
   val UNKNOWN: FailureReasonEnum.Value = Value
-  val DUPLICATE: FailureReasonEnum.Value = Value
 
   def getEnumFromString(s: String): Option[Value] = values.find(_.toString == s)
 

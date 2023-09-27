@@ -17,6 +17,7 @@
 package viewtils
 
 import play.api.i18n.Messages
+
 import java.time.LocalDate
 
 trait ImplicitDateFormatter {

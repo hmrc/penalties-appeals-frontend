@@ -42,14 +42,6 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
 
   val uploadMultipleRows: Seq[Html] = Seq(uploadListRow(1, "file1.txt", "ref1"), uploadListRow(2, "file2.txt", "ref2"))
 
-  val optInsetTextForMultipleDuplicates: Option[Html] = Some(
-    insetText("Some of the files have the same contents. Check your uploaded files and remove duplicates using the ‘Remove’ link.")
-  )
-
-  val optInsetText: (String, String) => Option[Html] = (item1, item2) => Some(
-    insetText(s"File $item1 has the same contents as File $item2. You can remove duplicate files using the ’Remove’ link.")
-  )
-
   val uploadMaxRow: Seq[Html] = Seq(
     uploadListRow(1, "file1.txt", "ref1"),
     uploadListRow(2, "file2.txt", "ref2"),
@@ -62,7 +54,7 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
     "return multiple files header and title" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
         form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode),
-        uploadMultipleRows, None, pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
+        uploadMultipleRows, pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
 
       implicit val doc: Document = asDocument(applyView(formProvider))
 
@@ -80,7 +72,7 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
     "return single file header and title added" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
         form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadSingleRow,
-        None, pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
+        pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
 
       implicit val doc: Document = asDocument(applyView(formProvider))
 
@@ -98,7 +90,7 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
     "return max of 5 files added" when {
       def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
         form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow,
-        None, pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
+        pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
 
       implicit val doc: Document = asDocument(applyView(formProvider))
 
@@ -107,60 +99,6 @@ class UploadListPageSpec extends SpecBase with ViewBehaviours {
         Selectors.h1 -> h1MaxFiles,
         Selectors.button -> continueButton
       )
-      behave like pageWithExpectedMessages(expectedContent)
-
-      "the user has no duplicates" should {
-        "show no insetText" in {
-          doc.getElementsByClass("govuk-inset-text") shouldBe empty
-        }
-      }
-    }
-
-    "show the single duplicate insetText when a user uploads a duplicate document" when {
-      def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow, optInsetText("1", "3"), pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
-
-      implicit val doc: Document = asDocument(applyView(formProvider))
-
-      val expectedContent = Seq(
-        Selectors.title -> titleMaxFiles,
-        Selectors.h1 -> h1MaxFiles,
-        Selectors.insetText -> insetTextMsg("1", "3"),
-        Selectors.button -> continueButton
-      )
-
-      behave like pageWithExpectedMessages(expectedContent)
-    }
-
-    "show the insetText when a user uploads multiple copies of the same document" when {
-      def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow, optInsetText("1", "2, 3 and 4"), pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
-
-      implicit val doc: Document = asDocument(applyView(formProvider))
-
-      val expectedContent = Seq(
-        Selectors.title -> titleMaxFiles,
-        Selectors.h1 -> h1MaxFiles,
-        Selectors.insetText -> insetTextMsg("1", "2, 3 and 4"),
-        Selectors.button -> continueButton
-      )
-
-      behave like pageWithExpectedMessages(expectedContent)
-    }
-
-    "show the multiple duplicate insetText when a user uploads multiple sets of duplicate documents" when {
-      def applyView(form: Form[_]): HtmlFormat.Appendable = uploadListPage.apply(
-        form, radioOptions, controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode), uploadMaxRow, optInsetTextForMultipleDuplicates, pageMode = PageMode(FileListPage, NormalMode))(userRequestWithCorrectKeys, messages, appConfig)
-
-      implicit val doc: Document = asDocument(applyView(formProvider))
-
-      val expectedContent = Seq(
-        Selectors.title -> titleMaxFiles,
-        Selectors.h1 -> h1MaxFiles,
-        Selectors.insetText -> multipleDuplicatesInsetTextMsg,
-        Selectors.button -> continueButton
-      )
-
       behave like pageWithExpectedMessages(expectedContent)
     }
   }

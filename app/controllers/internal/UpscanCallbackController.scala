@@ -17,7 +17,7 @@
 package controllers.internal
 
 import helpers.UpscanMessageHelper
-import models.upload.{UploadJourney, UploadStatusEnum}
+import models.upload.UploadJourney
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, MessagesControllerComponents}
 import repositories.UploadJourneyRepository
@@ -44,25 +44,14 @@ class UpscanCallbackController @Inject()(repository: UploadJourneyRepository,
               val failureDetails = callbackModel.failureDetails.get.copy(message = localisedFailureReason)
               repository.updateStateOfFileUpload(journeyId, callbackModel.copy(failureDetails = Some(failureDetails))).map(_ => NoContent)
             } else {
-              repository.getAllChecksumsForJourney(Some(journeyId)).flatMap(
-                seqOfChecksums => {
-                  repository.getFieldsForFileReference(journeyId, callbackModel.reference).flatMap(
-                    fields =>
-                      if (seqOfChecksums.contains(callbackModel.uploadDetails.get.checksum)) {
-                        logger.debug("[UpscanCallbackController][callbackFromUpscan] - Checksum is already in Mongo. Marking file as duplicate.")
-                        val duplicateCallbackModel = callbackModel.copy(
-                          fileStatus = UploadStatusEnum.DUPLICATE,
-                          uploadFields = fields
-                        )
-                        repository.updateStateOfFileUpload(journeyId, duplicateCallbackModel).map(_ => NoContent)
-                      } else {
-                        logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload was successful, marking success in repository")
-                        repository.updateStateOfFileUpload(journeyId, callbackModel.copy(uploadFields = fields)).map(_ => NoContent)
-                      }
-                  )
+              repository.getFieldsForFileReference(journeyId, callbackModel.reference).flatMap(
+                fields => {
+                  logger.debug("[UpscanCallbackController][callbackFromUpscan] - Callback received and upload was successful, marking success in repository")
+                  repository.updateStateOfFileUpload(journeyId, callbackModel.copy(uploadFields = fields)).map(_ => NoContent)
                 }
               )
             }
+
           }
         }
       }

@@ -29,10 +29,9 @@ import utils.Logger.logger
 import utils.SessionKeys
 import views.html.AppealConfirmationPage
 import viewtils.ImplicitDateFormatter
+
 import java.time.LocalDate
-
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealConfirmationController @Inject()(

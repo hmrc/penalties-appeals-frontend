@@ -78,7 +78,6 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
         controllers.routes.UpscanController.removeFile("1234", _),
         controllers.routes.RemoveFileController.onPageLoad(_, isJsEnabled = true, NormalMode),
         previousUploadsToString(previousUploads),
-        controllers.routes.UpscanController.getDuplicateFiles("1234"),
         controllers.routes.ProblemWithServiceController.onPageLoad(),
         pageMode = PageMode(EvidencePage, NormalMode))(request, implicitly, implicitly)
     }

@@ -37,10 +37,4 @@ object YouHaveUploadedFilesMessages {
   val noOption = "No"
 
   val continueButton = "Continue"
-
-  val insetTextMsg = (item1: String, item2: String) => s"File $item1 has the same contents as File $item2." +
-    s" You can remove duplicate files using the ’Remove’ link."
-
-  val multipleDuplicatesInsetTextMsg = "Some of the files have the same contents." +
-    " Check your uploaded files and remove duplicates using the ‘Remove’ link."
 }

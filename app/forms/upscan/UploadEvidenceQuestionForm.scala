@@ -17,9 +17,9 @@
 package forms.upscan
 
 import forms.mappings.Mappings
-import play.api.data.{Form, Forms}
-import play.api.data.Forms.{mapping, optional}
 import models.upload.UploadEvidenceFormModel
+import play.api.data.Forms.{mapping, optional}
+import play.api.data.{Form, Forms}
 
 object UploadEvidenceQuestionForm extends Mappings {
   final val options = Seq("yes", "no")

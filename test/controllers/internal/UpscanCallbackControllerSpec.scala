@@ -70,27 +70,6 @@ class UpscanCallbackControllerSpec extends SpecBase {
       |""".stripMargin
   )
 
-  val validCallbackFromUpscanDuplicate: JsValue = Json.parse(
-    """
-      |{
-      |    "reference": "ref2",
-      |    "downloadUrl": "download.url",
-      |    "fileStatus": "READY",
-      |    "uploadDetails": {
-      |        "fileName": "file1.txt",
-      |        "fileMimeType": "text/plain",
-      |        "uploadTimestamp": "2018-04-24T09:30:00Z",
-      |        "checksum": "check12345678",
-      |        "size": 987
-      |    },
-      |    "uploadFields": {
-      |         "key": "abcxyz",
-      |         "algo": "md5"
-      |    }
-      |}
-      |""".stripMargin
-  )
-
   val callbackFromUpscanWithFailure: JsValue = Json.parse(
     """
       |{
@@ -121,6 +100,19 @@ class UpscanCallbackControllerSpec extends SpecBase {
     ))
   )
 
+  val uploadJourneyModelWithFailure: UploadJourney = uploadJourneyModel.copy(
+    fileStatus = UploadStatusEnum.FAILED, downloadUrl = None, uploadDetails = None,
+    failureDetails = Some(FailureDetails(
+      failureReason = FailureReasonEnum.REJECTED,
+      message = "upscan.invalidMimeType"
+    ))
+  )
+
+  val uploadFieldsForUpdateCall: Map[String, String] = Map(
+    "key" -> "abcxyz",
+    "algo" -> "md5"
+  )
+
   class Setup {
     val journeyCaptor: ArgumentCaptor[UploadJourney] = ArgumentCaptor.forClass(classOf[UploadJourney])
     reset(mockRepository)
@@ -128,7 +120,6 @@ class UpscanCallbackControllerSpec extends SpecBase {
     reset(mockConfig)
     when(mockConfiguration.underlying).thenReturn(mockConfig)
     when(mockRepository.updateStateOfFileUpload(ArgumentMatchers.eq("12345"), journeyCaptor.capture(), any())).thenReturn(Future.successful(Some("id")))
-    when(mockRepository.getAllChecksumsForJourney(Some("12345"))).thenReturn(Future.successful(Seq("a", "b", "c")))
     when(mockRepository.getFieldsForFileReference(ArgumentMatchers.eq("12345"), any())).thenReturn(Future.successful(Some(Map("key" -> "yek"))))
   }
 
@@ -145,7 +136,6 @@ class UpscanCallbackControllerSpec extends SpecBase {
       "the body is valid and state has been updated" in new Setup {
         val result: Result = await(controller.callbackFromUpscan("12345", isJsEnabled = true)(fakeRequest.withBody(validCallbackFromUpscan)))
         result.header.status shouldBe NO_CONTENT
-        verify(mockRepository, times(1)).getAllChecksumsForJourney(ArgumentMatchers.eq(Some("12345")))
         verify(mockRepository, times(1)).getFieldsForFileReference(ArgumentMatchers.eq("12345"), any())
         verify(mockRepository, times(1)).updateStateOfFileUpload(ArgumentMatchers.eq("12345"), any(), any())
         journeyCaptor.getValue.fileStatus shouldBe UploadStatusEnum.READY
@@ -154,20 +144,9 @@ class UpscanCallbackControllerSpec extends SpecBase {
       "the file is rejected and state has been updated" in new Setup  {
         val result: Result = await(controller.callbackFromUpscan("12345", isJsEnabled = true)(fakeRequest.withBody(callbackFromUpscanWithFailure)))
         result.header.status shouldBe NO_CONTENT
-        verify(mockRepository, times(0)).getAllChecksumsForJourney(ArgumentMatchers.eq(Some("12345")))
         verify(mockRepository, times(0)).getFieldsForFileReference(ArgumentMatchers.eq("12345"), any())
         verify(mockRepository, times(1)).updateStateOfFileUpload(ArgumentMatchers.eq("12345"), any(), any())
         journeyCaptor.getValue.fileStatus shouldBe UploadStatusEnum.FAILED
-      }
-
-      "the file is accepted but the file is a duplicate - mark as duplicate and keep the upload details (valid case)" in new Setup {
-        when(mockRepository.getAllChecksumsForJourney(ArgumentMatchers.eq(Some("12345")))).thenReturn(Future.successful(Seq("check12345678")))
-        val result: Result = await(controller.callbackFromUpscan("12345", isJsEnabled = true)(fakeRequest.withBody(validCallbackFromUpscanDuplicate)))
-        result.header.status shouldBe NO_CONTENT
-        verify(mockRepository, times(1)).getAllChecksumsForJourney(ArgumentMatchers.eq(Some("12345")))
-        verify(mockRepository, times(1)).getFieldsForFileReference(ArgumentMatchers.eq("12345"), any())
-        verify(mockRepository, times(1)).updateStateOfFileUpload(ArgumentMatchers.eq("12345"), any(), any())
-        journeyCaptor.getValue.fileStatus shouldBe UploadStatusEnum.DUPLICATE
       }
     }
   }

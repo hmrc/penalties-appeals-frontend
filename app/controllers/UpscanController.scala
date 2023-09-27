@@ -16,7 +16,6 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, WarnForDuplicateFiles}
 import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import forms.upscan.{S3UploadErrorForm, S3UploadSuccessForm}
@@ -32,19 +31,16 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.{PagerDutyHelper, SessionKeys}
-import viewtils.EvidenceFileUploadsHelper
-import javax.inject.Inject
-import play.api.Configuration
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpscanController @Inject()(repository: UploadJourneyRepository,
                                  connector: UpscanConnector,
-                                 service: UpscanService,
-                                 evidenceFileUploadsHelper: EvidenceFileUploadsHelper)
+                                 service: UpscanService)
                                 (implicit appConfig: AppConfig,
                                  errorHandler: ErrorHandler,
-                                 mcc: MessagesControllerComponents, ec: ExecutionContext, val config: Configuration) extends FrontendController(mcc) with FeatureSwitching {
+                                 mcc: MessagesControllerComponents, ec: ExecutionContext) extends FrontendController(mcc) {
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
     implicit request => {
@@ -57,22 +53,13 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           Future(NotFound(s"File $fileReference in journey $journeyId did not exist."))
         })(
           fileStatus => {
-            if (fileStatus.status == "DUPLICATE") {
-              evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(
-                insetText => {
-                  val newFileStatus = fileStatus.copy(errorMessage = insetText)
-                  Ok(Json.toJson(newFileStatus))
-                }
-              )
-            } else {
-              repository.getFileIndexForJourney(journeyId, fileReference).map {
-                fileIndex => {
-                  val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_, fileIndex + 1))
-                  val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
-                  logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
-                    s"reference: $fileReference number: ${fileIndex + 1} - returning status: ${fileStatusWithLocalisedMessage.status} with message: ${fileStatusWithLocalisedMessage.errorMessage}")
-                  Ok(Json.toJson(fileStatusWithLocalisedMessage))
-                }
+            repository.getFileIndexForJourney(journeyId, fileReference).map {
+              fileIndex => {
+                val localisedMessageOpt = fileStatus.errorMessage.map(UpscanMessageHelper.applyMessage(_, fileIndex + 1))
+                val fileStatusWithLocalisedMessage = fileStatus.copy(errorMessage = localisedMessageOpt)
+                logger.debug(s"[UpscanController][getStatusOfFileUpload] - Found status for journey: $journeyId with file " +
+                  s"reference: $fileReference number: ${fileIndex + 1} - returning status: ${fileStatusWithLocalisedMessage.status} with message: ${fileStatusWithLocalisedMessage.errorMessage}")
+                Ok(Json.toJson(fileStatusWithLocalisedMessage))
               }
             }
           }
@@ -248,14 +235,6 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
           })
         }
       )
-    }
-  }
-
-  def getDuplicateFiles(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request => if(isEnabled(WarnForDuplicateFiles)){
-      evidenceFileUploadsHelper.getInsetTextForUploadsInRepository(journeyId).map(_.fold(Ok(Json.obj()))(message => Ok(Json.obj("message" -> message))))
-    } else {
-      Future(Ok(Json.obj()))
     }
   }
 }
