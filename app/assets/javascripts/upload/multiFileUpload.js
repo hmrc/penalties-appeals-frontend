@@ -562,11 +562,6 @@ export class MultiFileUpload {
                 this.handleFileStatusSuccessful(file);
                 this.uploadNext();
                 break;
-            case 'DUPLICATE':
-                this.showInsetText({'message': error});
-                this.handleFileStatusSuccessful(file);
-                this.uploadNext();
-                break;
             case 'FAILED':
             case 'REJECTED':
             case 'QUARANTINE':
@@ -700,7 +695,7 @@ export class MultiFileUpload {
             this.requestRemoveFile(fileData, true);
         });
         this.config.uploadedFiles = this.config.uploadedFiles.filter(file => file['fileStatus'] !== 'WAITING' && file['fileStatus'] !== 'FAILED');
-        this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY' || file['fileStatus'] === 'DUPLICATE').forEach(fileData => {
+        this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY').forEach(fileData => {
             this.createUploadedItem(fileData);
             rowCount++;
         });
