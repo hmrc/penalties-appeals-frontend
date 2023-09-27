@@ -853,9 +853,6 @@ export class MultiFileUpload {
     }
 
 
-    /** F74 */
-
-
     /** F75 */
     showInsetText(response) {
         const message = response['message'];
