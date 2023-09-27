@@ -22,6 +22,7 @@ import models.pages._
 import models.{CheckMode, PenaltyTypeEnum, UserRequest}
 import play.api.i18n.Messages
 import repositories.UploadJourneyRepository
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionKeys
 import viewtils.{ImplicitDateFormatter, PenaltyTypeHelper}
 
@@ -465,7 +466,8 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
   }
 
   def changeAnswerUrl(continueUrl: String, page: Page): String = {
-    controllers.routes.CheckYourAnswersController.changeAnswer(continueUrl, page.toString).url
+    val safeContinueUrl = RedirectUrl(continueUrl)
+    controllers.routes.CheckYourAnswersController.changeAnswer(safeContinueUrl, page.toString).url
   }
 
   private def isAppealingOnlySinglePenaltyAndIsLateAppealing()(implicit userRequest: UserRequest[_]) = {
