@@ -420,7 +420,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         val request: UserRequest[AnyContent] = UserRequest(vrn, answers =
-          userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile"))
+          userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.invalidMimeType"))
         when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))
@@ -471,17 +471,6 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         status(result) shouldBe OK
       }
 
-      "return OK and correct view - for duplicate uploads" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(
-          callbackModel.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE),
-          callbackModel.copy(reference = "ref3", fileStatus = UploadStatusEnum.DUPLICATE)
-        ))))
-        val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
-        status(result) shouldBe OK
-      }
-
       "redirect to first upload page" when {
         "there is no uploads" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
@@ -495,9 +484,9 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         "there is no successful uploads" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val duplicateCallbackModel: UploadJourney = UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(
+          val failedCallbackModel: UploadJourney = UploadJourney("file1", UploadStatusEnum.FAILED, failureDetails = Some(
             FailureDetails(FailureReasonEnum.REJECTED, "upscan.invalidMimeType")))
-          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(duplicateCallbackModel))))
+          when(mockUploadJourneyRepository.getUploadsForJourney(any())).thenReturn(Future.successful(Some(Seq(failedCallbackModel))))
           val result: Future[Result] = controller.onPageLoadForUploadComplete(NormalMode)(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
@@ -547,7 +536,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         val request: UserRequest[AnyContent] = UserRequest(vrn, answers = userAnswers(correctUserAnswers))(
-          fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile"))
+          fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.invalidMimeType"))
         when(mockUpscanService.initiateSynchronousCallToUpscan(ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right(UpscanInitiateResponseModel("file1ref", UploadFormTemplateRequest("/", Map.empty)))))

@@ -17,12 +17,13 @@
 package viewtils
 
 import config.AppConfig
-import javax.inject.Inject
 import models.UserRequest
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import utils.MessageRenderer.getMessage
 import utils.ViewUtils
+
+import javax.inject.Inject
 
 class YouCannotAppealHelper @Inject()(appConfig: AppConfig,
                                       p: views.html.components.p,

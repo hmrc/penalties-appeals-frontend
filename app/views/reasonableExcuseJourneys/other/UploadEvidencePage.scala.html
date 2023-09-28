@@ -36,7 +36,6 @@
         removeFileUrl: String => Call,
         removeFilePageUrl: String => Call,
         previousUploads: String,
-        getDuplicatesUrl: Call,
         getErrorServiceUrl: Call,
         pageMode: PageMode)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
@@ -79,7 +78,6 @@
         (Symbol("data-multi-file-upload-status-url-tpl"), getStatusUrl("{fileRef}").url),
         (Symbol("data-multi-file-upload-remove-url-tpl"), removeFileUrl("{fileRef}").url),
         (Symbol("data-multi-file-upload-remove-page-url-tpl"), removeFilePageUrl("{fileRef}").url),
-        (Symbol("data-multi-file-upload-duplicate-url-tpl"), getDuplicatesUrl.url),
         (Symbol("data-multi-file-upload-error-url-tpl"), getErrorServiceUrl.url),
         (Symbol("data-multi-file-upload-still-transferring"), messages("otherReason.uploadEvidence.stillTransferring")),
         (Symbol("data-multi-file-upload-error-generic"), messages("upscan.unableToUpload", "{fileNumber}")),

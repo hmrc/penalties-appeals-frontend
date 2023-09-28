@@ -38,14 +38,17 @@ class UpscanMessageHelperSpec extends SpecBase {
 
 
   "getLocalisedFailureMessageForFailure" when {
+    object FakeFailureReason extends FailureReasonEnum.Value {
+      override def id: Int = 99
+    }
     "routing through the js journey " should {
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.QUARANTINE, "upscan.fileHasVirus", isJsEnabled = true)
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, "upscan.invalidMimeType", isJsEnabled = true)
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, "upscan.unableToUpload", isJsEnabled = true)
 
-      "return the correct Match Error" in{
-        val result:MatchError = intercept[MatchError](UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.DUPLICATE, true))
-        result.getMessage.contains("[UpscanMessageHelper][getLocalisedFailureMessageForFailure] - unknown failure reason DUPLICATE") shouldBe true
+      "return a Match Error when the failure reason is unknown" in {
+        val result: MatchError = intercept[MatchError](UpscanMessageHelper.getLocalisedFailureMessageForFailure(FakeFailureReason, true))
+        result.getMessage.contains("[UpscanMessageHelper][getLocalisedFailureMessageForFailure] - unknown failure reason") shouldBe true
       }
     }
 
@@ -54,10 +57,10 @@ class UpscanMessageHelperSpec extends SpecBase {
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.REJECTED, "upscan.noJs.invalidMimeType", isJsEnabled = false)
       testGetLocalisedFailureMessageForFailure(FailureReasonEnum.UNKNOWN, "upscan.noJs.unableToUpload", isJsEnabled = false)
 
-      "return matching error for non-js journey" should{
-        "return the correct Match Error" in{
-          val result: MatchError = intercept[MatchError](UpscanMessageHelper.getLocalisedFailureMessageForFailure(FailureReasonEnum.DUPLICATE, false))
-          result.getMessage.contains("[UpscanMessageHelper][getLocalisedFailureMessageForFailure] - unknown failure reason DUPLICATE") shouldBe true
+      "return matching error for non-js journey" should {
+        "return a Match Error when the failure reason is unknown" in {
+          val result: MatchError = intercept[MatchError](UpscanMessageHelper.getLocalisedFailureMessageForFailure(FakeFailureReason, false))
+          result.getMessage.contains("[UpscanMessageHelper][getLocalisedFailureMessageForFailure] - unknown failure reason") shouldBe true
         }
       }
     }

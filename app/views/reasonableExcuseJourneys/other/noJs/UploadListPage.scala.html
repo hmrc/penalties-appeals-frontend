@@ -22,41 +22,41 @@
         button: components.button,
         p: components.p,
         radios: components.radios,
-        govukSummaryList : GovukSummaryList,
+        govukSummaryList: GovukSummaryList,
         pageHeader: components.pageHeader)
 
-@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, uploadRows: Seq[Html], optInsetText: Option[Html],
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, uploadRows: Seq[Html],
         pageMode: PageMode)(implicit request: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
-@pageHeadingAndTitle = @{getPluralOrSingular(uploadRows.length)("otherReason.uploadList.youHaveUploadedFile.headingAndTitle", "otherReason.uploadList.youHaveUploadedFiles.headingAndTitle").toString()}
+@pageHeadingAndTitle = @{
+  getPluralOrSingular(uploadRows.length)("otherReason.uploadList.youHaveUploadedFile.headingAndTitle", "otherReason.uploadList.youHaveUploadedFiles.headingAndTitle").toString()
+}
 
 @layout(pageTitle = messages(pageHeadingAndTitle),
-    isPageFullWidth = false,
-    formHasErrors = form.errors.nonEmpty,
-    formErrors = form.errors,
-    optPageMode = Some(pageMode)) {
-        @pageHeader(Some(messages(pageHeadingAndTitle)))
+  isPageFullWidth = false,
+  formHasErrors = form.errors.nonEmpty,
+  formErrors = form.errors,
+  optPageMode = Some(pageMode)) {
 
-        @if(optInsetText.isDefined){
-            @optInsetText.get
-        }
+  @pageHeader(Some(messages(pageHeadingAndTitle)))
 
-        <div class="app-summary-card__body">
-            <dl class="govuk-summary-list">
-                @uploadRows
-            </dl>
-        </div>
-    @formHelper(action = postAction) {
-        @if(uploadRows.length < 5) {
-            @radios(
-                form = form,
-                legendContent = messages("otherReason.uploadList.uploadAnotherFile"),
-                items = radioOptions ,
-                hint = None,
-                legendClasses = "govuk-fieldset__legend--m",
-                legendAsPageHeading = false
-            )
-        }
-        @button("common.continue")
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      @uploadRows
+    </dl>
+  </div>
+
+  @formHelper(action = postAction) {
+    @if(uploadRows.length < 5) {
+      @radios(
+        form = form,
+        legendContent = messages("otherReason.uploadList.uploadAnotherFile"),
+        items = radioOptions,
+        hint = None,
+        legendClasses = "govuk-fieldset__legend--m",
+        legendAsPageHeading = false
+      )
     }
-}
+    @button("common.continue")
+  }
+  }

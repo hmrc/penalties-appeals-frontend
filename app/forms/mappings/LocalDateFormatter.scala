@@ -19,13 +19,12 @@ package forms.mappings
 import config.AppConfig
 import config.featureSwitches.FeatureSwitching
 import play.api.Configuration
-
-import java.time.LocalDate
 import play.api.data.FormError
 import play.api.data.format.Formatter
 import play.api.data.validation.Constraints
 import play.api.i18n.Messages
 
+import java.time.LocalDate
 import scala.util.{Failure, Success, Try}
 
 

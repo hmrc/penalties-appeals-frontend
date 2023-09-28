@@ -19,11 +19,11 @@ package forms
 import config.AppConfig
 import forms.mappings.Mappings
 import helpers.WhenDidYouBecomeUnableHelper.getMessageKeyForPage
+import models.UserRequest
 import play.api.data.Form
 import play.api.i18n.Messages
 
 import java.time.LocalDate
-import models.UserRequest
 
 object WhenDidBecomeUnableForm extends Mappings {
   def whenDidBecomeUnableForm()(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_]): Form[LocalDate] = {

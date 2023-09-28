@@ -16,12 +16,11 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, NonJSRouting, WarnForDuplicateFiles}
+import config.featureSwitches.{FeatureSwitching, NonJSRouting}
 import controllers.testHelpers.AuthorisationTest
 import models.NormalMode
 import models.session.UserAnswers
 import models.upload._
-import org.jsoup.Jsoup
 import org.mongodb.scala.Document
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.http.Status
@@ -43,7 +42,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with Authoris
   class Setup(sessionDataToStore: UserAnswers = UserAnswers("1234", Json.obj())) extends UserAnswersSetup(sessionDataToStore) {
     await(repository.collection.deleteMany(Document()).toFuture())
     await(repository.collection.countDocuments().toFuture()) shouldBe 0
-    disableFeatureSwitch(WarnForDuplicateFiles)
   }
 
   val callbackModel: UploadJourney = fileUploadModel
@@ -266,7 +264,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with Authoris
           |}
           |""".stripMargin)
       val result = await(controller.onPageLoadForFirstFileUpload(NormalMode)(fakeRequest.withSession(
-        SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile")))
+        SessionKeys.failureMessageFromUpscan -> "upscan.invalidMimeType")))
       result.header.status shouldBe BAD_REQUEST
     }
 
@@ -283,50 +281,6 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with Authoris
       await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
       val result = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
       status(result) shouldBe OK
-    }
-
-    "return OK and the correct view - when their are duplicate uploads - when WarnForDuplicateFiles is disabled" in new Setup(userAnswers()) {
-      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
-      await(repository.updateStateOfFileUpload("1234", callbackModel.copy(
-        reference = "ref2",
-        fileStatus = UploadStatusEnum.DUPLICATE),
-        isInitiateCall = true))
-      val result = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
-      status(result) shouldBe OK
-      val parsedBody = Jsoup.parse(contentAsString(result))
-      parsedBody.select(".govuk-inset-text").isEmpty shouldBe true
-    }
-
-    "return OK and the correct view - showing the inset text for duplicate uploads - when WarnForDuplicateFiles is enabled" in new Setup(userAnswers()) {
-      enableFeatureSwitch(WarnForDuplicateFiles)
-
-      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
-      await(repository.updateStateOfFileUpload("1234", callbackModel.copy(
-        reference = "ref2",
-        fileStatus = UploadStatusEnum.DUPLICATE),
-        isInitiateCall = true))
-      val result = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
-      status(result) shouldBe OK
-      val parsedBody = Jsoup.parse(contentAsString(result))
-      parsedBody.select(".govuk-inset-text").text() should startWith("File 1 has the same contents as File 2.")
-    }
-
-    "return OK and the correct view - showing the inset text for multiple duplicate uploads - when WarnForDuplicateFiles is enabled" in new Setup(userAnswers()) {
-      enableFeatureSwitch(WarnForDuplicateFiles)
-      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
-      await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
-      await(repository.updateStateOfFileUpload("1234", callbackModel.copy(
-        reference = "ref3",
-        fileStatus = UploadStatusEnum.DUPLICATE), isInitiateCall = true)
-      )
-      await(repository.updateStateOfFileUpload("1234", callbackModel2.copy(
-        reference = "ref4",
-        fileStatus = UploadStatusEnum.DUPLICATE), isInitiateCall = true)
-      )
-      val result = controller.onPageLoadForUploadComplete(NormalMode)(fakeRequest)
-      status(result) shouldBe OK
-      val parsedBody = Jsoup.parse(contentAsString(result))
-      parsedBody.select(".govuk-inset-text").text() should startWith("Some of the files have the same contents.")
     }
 
     "return 303 (SEE_OTHER) when the user has no uploads" in new Setup(userAnswers()) {
@@ -388,7 +342,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with Authoris
           | }
           |}
           |""".stripMargin)
-      val result = await(controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.duplicateFile")))
+      val result = await(controller.onPageLoadForAnotherFileUpload(NormalMode)(fakeRequest.withSession(SessionKeys.failureMessageFromUpscan -> "upscan.invalidMimeType")))
       result.header.status shouldBe BAD_REQUEST
     }
 

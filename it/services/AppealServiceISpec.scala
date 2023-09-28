@@ -131,51 +131,6 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
       SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-02")
     )), extraDetailsForTestName = Some("- hospital stay ended"))
 
-    "return Right when the connector call succeeds for other - file upload with duplicates" in {
-      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
-      val uploadAsReady: UploadJourney = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("/url"),
-        uploadDetails = Some(
-          UploadDetails(
-            fileName = "file1.txt",
-            fileMimeType = "text/plain",
-            uploadTimestamp = sampleDate,
-            checksum = "123456789",
-            size = 100
-          )
-        ),
-        failureDetails = None,
-        lastUpdated = LocalDateTime.now()
-      )
-      val uploadAsDuplicate: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
-      val uploadAsWaiting: UploadJourney = uploadAsReady.copy(reference = "ref3", fileStatus = UploadStatusEnum.WAITING, downloadUrl = None, uploadDetails = None)
-      successfulAppealSubmission(isLPP = false, "1234")
-      await(repository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
-      await(repository.updateStateOfFileUpload("1234", uploadAsDuplicate, isInitiateCall = true))
-      await(repository.updateStateOfFileUpload("1234", uploadAsWaiting, isInitiateCall = true))
-      val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
-        SessionKeys.penaltyNumber -> "1234",
-        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
-        SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
-        SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
-        SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
-        SessionKeys.reasonableExcuse -> "other",
-        SessionKeys.hasConfirmedDeclaration -> true,
-        SessionKeys.whyReturnSubmittedLate -> "this is information",
-        SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
-        SessionKeys.isUploadEvidence -> "yes"
-      )))(fakeRequest)
-      val result = await(appealService.submitAppeal("other")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyDuplicateFilesSubmitted")) shouldBe true
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.find(_.getBodyAsString.contains("PenaltyAppealSubmitted")).head.getBodyAsString.contains("uploadedFiles") shouldBe true
-
-      result shouldBe Right((): Unit)
-    }
-
     "return Right when the connector call succeeds for other - user selects no to uploading files (some files already uploaded)" in {
       val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
       val uploadAsReady: UploadJourney = UploadJourney(
@@ -210,7 +165,6 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
         SessionKeys.isUploadEvidence -> "no"
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("other")(userRequest, implicitly, implicitly))
-      findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyDuplicateFilesSubmitted")) shouldBe false
       findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
       findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.find(_.getBodyAsString.contains("PenaltyAppealSubmitted")).head.getBodyAsString.contains("uploadedFiles") shouldBe false
       result shouldBe Right((): Unit)

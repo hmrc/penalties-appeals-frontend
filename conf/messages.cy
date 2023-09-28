@@ -352,11 +352,6 @@ otherReason.uploadList.youHaveUploadedFile.headingAndTitle = Rydych wedi uwchlwy
 otherReason.uploadList.uploadAnotherFile = A ydych eisiau uwchlwytho ffeil arall?
 otherReason.uploadList.uploadAnotherFile.required = Rhowch wybod i ni a ydych eisiau uwchlwytho ffeil arall
 otherReason.uploadList.rowTitle = Ffeil {0}
-otherReason.uploadList.duplicateInsetText = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeil {1}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
-otherReason.uploadList.duplicateInsetText.2 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1} a {2}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
-otherReason.uploadList.duplicateInsetText.3 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2} a {3}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
-otherReason.uploadList.duplicateInsetText.4 = Mae cynnwys Ffeil {0} yr un fath â chynnwys Ffeiliau {1}, {2}, {3} a {4}. Gallwch ddileu ffeiliau wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
-otherReason.uploadList.multipleDuplicateInsetText = Mae rhai ffeiliau â’r un cynnwys â’i gilydd. Gwiriwch y ffeiliau rydych wedi’u huwchlwytho a dileu ffeiliau sydd wedi’u dyblygu drwy ddefnyddio’r cysylltiad ‘Tynnu’.
 
 # Upload Evidence common messages
 # ----------------------------------------------------------

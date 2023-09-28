@@ -23,7 +23,7 @@ import models.UserRequest
 import models.appeals.QuestionAnswerRow
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{mock, reset, times, verify, when}
+import org.mockito.Mockito._
 import play.api.Configuration
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.Helpers._

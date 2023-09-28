@@ -192,26 +192,6 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
     }
   }
 
-  "getAllChecksumsForJourney" should {
-    "retrieve all checksums for all READY uploads" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModel, isInitiateCall = true))
-      await(repository.updateStateOfFileUpload("1234", callbackModel2, isInitiateCall = true))
-      val result = await(repository.getAllChecksumsForJourney(Some("1234")))
-      result.size shouldBe 2
-    }
-
-    "return an empty Seq if only failed uploads are present" in new Setup {
-      await(repository.updateStateOfFileUpload("1234", callbackModelFailed, isInitiateCall = true))
-      val result = await(repository.getAllChecksumsForJourney(Some("1234")))
-      result.isEmpty shouldBe true
-    }
-
-    "return an empty Seq if there is no uploads" in new Setup {
-      val result = await(repository.getAllChecksumsForJourney(Some("1234")))
-      result.isEmpty shouldBe true
-    }
-  }
-
   "getFileForJourney" should {
     "return a upload journey model when the file reference exists" in new Setup {
       await(repository.updateStateOfFileUpload("J1234", callbackModel, isInitiateCall = true))

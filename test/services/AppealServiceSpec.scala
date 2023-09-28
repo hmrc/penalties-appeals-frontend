@@ -341,40 +341,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         any[ExecutionContext](), any())
     }
 
-    "parse the session keys into a model and audit the response - for duplicate file upload" in new Setup {
-      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 1, 1)
-      val uploadAsDuplicate: UploadJourney = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("/url"),
-        uploadDetails = Some(
-          UploadDetails(
-            fileName = "file1.txt",
-            fileMimeType = "text/plain",
-            uploadTimestamp = sampleDate,
-            checksum = "123456789",
-            size = 100
-          )
-        ),
-        failureDetails = None,
-        lastUpdated = LocalDateTime.now()
-      )
-      val uploadAsDuplicate2: UploadJourney = uploadAsDuplicate.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
-      val failedUpload: UploadJourney = uploadAsDuplicate.copy(reference = "ref3", fileStatus = UploadStatusEnum.FAILED)
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
-      when(mockUploadJourneyRepository.getUploadsForJourney(any()))
-        .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate, uploadAsDuplicate2, failedUpload))))
-      val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
-      result shouldBe Right((): Unit)
-
-      verify(mockAuditService, times(2)).audit(any[JsonAuditModel]())(any[HeaderCarrier](),
-        any[ExecutionContext](), any())
-    }
-
     "parse the session keys into a model and audit the response - removing file uploads if the user selected no to uploading files" in new Setup {
       val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 1, 1)
-      val uploadAsDuplicate: UploadJourney = UploadJourney(
+      val uploadInReadyState: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.READY,
         downloadUrl = Some("/url"),
@@ -393,7 +362,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
-        .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate))))
+        .thenReturn(Future.successful(Some(Seq(uploadInReadyState))))
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourneyDeclinedUploads, implicitly, implicitly))
       result shouldBe Right((): Unit)
 
@@ -404,7 +373,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     "ignore FAILED or WAITING files for audit" in new Setup {
       val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 1, 1)
       val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
-      val uploadAsDuplicate: UploadJourney = UploadJourney(
+      val uploadInFailedState: UploadJourney = UploadJourney(
         reference = "ref1",
         fileStatus = UploadStatusEnum.FAILED,
         downloadUrl = None,
@@ -423,7 +392,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
-        .thenReturn(Future.successful(Some(Seq(uploadAsDuplicate))))
+        .thenReturn(Future.successful(Some(Seq(uploadInFailedState))))
       val result: Either[Int, Unit] = await(service.submitAppeal("other")(fakeRequestForOtherJourney, implicitly, implicitly))
       result shouldBe Right((): Unit)
 
@@ -582,71 +551,6 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         val result: Either[Int, Unit] = await(service.submitAppeal("crime")(fakeRequestForCrimeJourney, implicitly, implicitly))
         result shouldBe Left(INTERNAL_SERVER_ERROR)
       }
-    }
-  }
-
-  "sendAuditIfDuplicatesExist" should {
-    "not send any audit if no duplicate exists" in new Setup {
-      val uploadAsReady: UploadJourney = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
-          checksum = "check12345678",
-          size = 987
-        ))
-      )
-      service.sendAuditIfDuplicatesExist(Some(Seq(uploadAsReady)))(fakeRequestForOtherJourney, implicitly, implicitly)
-      verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
-    }
-
-    "not send any audit if no uploads exist" in new Setup {
-      service.sendAuditIfDuplicatesExist(None)(fakeRequestForOtherJourney, implicitly, implicitly)
-      verify(mockAuditService, times(0)).audit(any())(any(), any(), any())
-    }
-
-    "send an audit and filter out WAITING documents" in new Setup {
-      val uploadAsReady: UploadJourney = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
-          checksum = "check12345678",
-          size = 987
-        ))
-      )
-      val duplicateUpload: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
-      val waitingUpload: UploadJourney = uploadAsReady.copy(reference = "ref3", fileStatus = UploadStatusEnum.WAITING, downloadUrl = None, uploadDetails = None)
-      when(mockAuditService.getAllDuplicateUploadsForAppealSubmission(any()))
-        .thenReturn(Json.obj("mocked" -> "value"))
-      service.sendAuditIfDuplicatesExist(Some(Seq(uploadAsReady, duplicateUpload, waitingUpload)))(fakeRequestForOtherJourney, implicitly, implicitly)
-      verify(mockAuditService, times(1)).audit(any())(any(), any(), any())
-    }
-
-    "send an audit when duplicates exist" in new Setup {
-      val uploadAsReady: UploadJourney = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("download.file"),
-        uploadDetails = Some(UploadDetails(
-          fileName = "file1.txt",
-          fileMimeType = "text/plain",
-          uploadTimestamp = LocalDateTime.of(2018, 4, 24, 9, 30),
-          checksum = "check12345678",
-          size = 987
-        ))
-      )
-      val duplicateUpload: UploadJourney = uploadAsReady.copy(reference = "ref2", fileStatus = UploadStatusEnum.DUPLICATE)
-      when(mockAuditService.getAllDuplicateUploadsForAppealSubmission(any()))
-        .thenReturn(Json.obj("mocked" -> "value"))
-      service.sendAuditIfDuplicatesExist(Some(Seq(uploadAsReady, duplicateUpload)))(fakeRequestForOtherJourney, implicitly, implicitly)
-      verify(mockAuditService, times(1)).audit(any())(any(), any(), any())
     }
   }
 

@@ -171,8 +171,6 @@ GET           /upscan/file-verification/additional/change/failed        controll
 GET           /upscan/file-verification/additional/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = NormalMode, isJsEnabled: Boolean)
 GET           /upscan/file-verification/additional/change/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode, isJsEnabled: Boolean)
 
-GET           /upscan/duplicate-files/:journeyId                        controllers.UpscanController.getDuplicateFiles(journeyId: String)
-
 # You can appeal this penalty page
 GET           /you-can-appeal-this-penalty                     controllers.YouCanAppealPenaltyController.onPageLoad()
 POST          /you-can-appeal-this-penalty                     controllers.YouCanAppealPenaltyController.onSubmit()

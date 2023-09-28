@@ -17,10 +17,6 @@
 package services.monitoring
 
 import config.AppConfig
-import models.upload.UploadJourney
-import play.api.libs.json.{JsValue, Json}
-
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
@@ -28,6 +24,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import utils.Logger.logger.logger
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -45,23 +42,5 @@ class AuditService @Inject()(appConfig: AppConfig,auditConnector: AuditConnector
     )
     logger.debug(s"[AuditService][toExtendedDataEvent] Audit Event: $event")
     event
-  }
-
-  def getAllDuplicateUploadsForAppealSubmission(seqOfDuplicateUploads: Seq[UploadJourney]): JsValue = {
-    Json.toJson(
-      seqOfDuplicateUploads.map(
-        upload => {
-          val uploadDetails = upload.uploadDetails.get
-          Json.obj(
-            "upscanReference" -> upload.reference,
-            "uploadTimestamp" -> uploadDetails.uploadTimestamp,
-            "name" -> uploadDetails.fileName,
-            "mimeType" -> uploadDetails.fileMimeType,
-            "size" -> uploadDetails.size,
-            "checksum" -> uploadDetails.checksum
-          )
-        }
-      )
-    )
   }
 }

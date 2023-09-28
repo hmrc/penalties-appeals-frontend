@@ -16,10 +16,10 @@
 
 package crypto
 
+import uk.gov.hmrc.crypto.{Crypted, Decrypter, Encrypter, PlainBytes, PlainContent, PlainText}
+
 import java.nio.charset.StandardCharsets
 import java.util.Base64
-
-import uk.gov.hmrc.crypto.{Crypted, Decrypter, Encrypter, PlainBytes, PlainContent, PlainText}
 
 object NoCrypto extends Encrypter with Decrypter {
 
