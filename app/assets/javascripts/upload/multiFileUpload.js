@@ -33,7 +33,6 @@ export class MultiFileUpload {
             sendUrlTpl: decodeURIComponent(form.dataset.multiFileUploadSendUrlTpl),
             statusUrlTpl: decodeURIComponent(form.dataset.multiFileUploadStatusUrlTpl),
             removeUrlTpl: decodeURIComponent(form.dataset.multiFileUploadRemoveUrlTpl),
-            getDuplicateUrlTpl: decodeURIComponent(form.dataset.multiFileUploadDuplicateUrlTpl),
             getErrorServiceUrlTpl: decodeURIComponent(form.dataset.multiFileUploadErrorUrlTpl),
             removePageUrl: decodeURIComponent(form.dataset.multiFileUploadRemovePageUrlTpl)
         };
@@ -213,7 +212,6 @@ export class MultiFileUpload {
             body: formData
         })
             .then(this.requestRemoveFileCompleted.bind(this, file, isInit))
-            .then(this.setDuplicateInsetText.bind(this))
             .catch(() => {
                 if (!isInit) {
                     this.setItemState(item, status.Uploaded);
@@ -562,11 +560,6 @@ export class MultiFileUpload {
                 this.handleFileStatusSuccessful(file);
                 this.uploadNext();
                 break;
-            case 'DUPLICATE':
-                this.showInsetText({'message': error});
-                this.handleFileStatusSuccessful(file);
-                this.uploadNext();
-                break;
             case 'FAILED':
             case 'REJECTED':
             case 'QUARANTINE':
@@ -700,7 +693,7 @@ export class MultiFileUpload {
             this.requestRemoveFile(fileData, true);
         });
         this.config.uploadedFiles = this.config.uploadedFiles.filter(file => file['fileStatus'] !== 'WAITING' && file['fileStatus'] !== 'FAILED');
-        this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY' || file['fileStatus'] === 'DUPLICATE').forEach(fileData => {
+        this.config.uploadedFiles.filter(file => file['fileStatus'] === 'READY').forEach(fileData => {
             this.createUploadedItem(fileData);
             rowCount++;
         });
@@ -709,7 +702,6 @@ export class MultiFileUpload {
                 this.addItem(true, this.config.uploadedFiles.length === 0);
             }
         }
-        this.setDuplicateInsetText();
     }
 
     /** F53 */
@@ -860,19 +852,6 @@ export class MultiFileUpload {
         return item.classList.contains(this.classes.uploaded);
     }
 
-    /** F73 */
-    setDuplicateInsetText() {
-        fetch(this.getDuplicateUrl(), {
-            method: 'GET'
-        })
-            .then(response => response.json())
-            .then(this.showInsetText.bind(this));
-    }
-
-    /** F74 */
-    getDuplicateUrl() {
-        return this.config.getDuplicateUrlTpl;
-    }
 
     /** F75 */
     showInsetText(response) {

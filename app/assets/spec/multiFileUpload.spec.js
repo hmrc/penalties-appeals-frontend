@@ -143,7 +143,6 @@ describe('Multi File Upload component', () => {
             describe('When component is initialised', () => {
                 beforeEach((done) => {
                     instance = new MultiFileUpload(container);
-                    spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                     spyOn(instance, 'requestProvisionUpload').and.callFake((file) => {
                         const response = getProvisionResponse('123');
                         const promise = Promise.resolve(response);
@@ -183,7 +182,6 @@ describe('Multi File Upload component', () => {
                 describe('And component is initialised', () => {
                     beforeEach(() => {
                         instance = new MultiFileUpload(container);
-                        spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                         instance.init();
                     });
 
@@ -216,7 +214,6 @@ describe('Multi File Upload component', () => {
                 instance = new MultiFileUpload(container);
                 const iseResponse = new Response(JSON.stringify({}), {status: 500, statusText: 'Something went wrong'});
                 spyOn(window, 'fetch').and.resolveTo(iseResponse);
-                spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                 spyOn(instance, 'redirectToErrorServicePage');
                 instance.init();
                 done();
@@ -247,7 +244,6 @@ describe('Multi File Upload component', () => {
                 spyOn(instance, 'requestUploadStatus').and.callFake((fileRef) => {
                     instance.handleRequestUploadStatusCompleted(fileRef, getStatusResponseWaiting());
                 });
-                spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                 instance.init();
 
                 item = container.querySelector('.multi-file-upload__item');
@@ -300,7 +296,6 @@ describe('Multi File Upload component', () => {
 
                     return promise;
                 });
-                spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                 spyOn(instance, 'uploadFile').and.callFake((file) => {
                     instance.handleUploadFileCompleted(file.dataset.multiFileUploadFileRef);
                 });
@@ -395,7 +390,6 @@ describe('Multi File Upload component', () => {
 
                             return promise;
                         });
-                        spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                         spyOn(instance, 'uploadFile').and.callFake((file) => {
                             instance.handleUploadFileCompleted(file.dataset.multiFileUploadFileRef);
                         });
@@ -456,7 +450,6 @@ describe('Multi File Upload component', () => {
 
                     return promise;
                 });
-                spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                 spyOn(instance, 'uploadFile').and.callFake((file) => {
                     instance.handleUploadFileCompleted(file.dataset.multiFileUploadFileRef);
                 });
@@ -528,7 +521,6 @@ describe('Multi File Upload component', () => {
 
                     return promise;
                 });
-                spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                 spyOn(instance, 'uploadFile').and.callFake((file) => {
                     instance.handleUploadFileCompleted(file.dataset.multiFileUploadFileRef);
                 });
@@ -583,7 +575,6 @@ describe('Multi File Upload component', () => {
             describe('When component is initialised', () => {
                 beforeEach(() => {
                     instance = new MultiFileUpload(container);
-                    spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                     spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse('123')));
 
                     instance.init();
@@ -626,7 +617,6 @@ describe('Multi File Upload component', () => {
                     instance = new MultiFileUpload(container);
 
                     spyOn(instance, 'requestProvisionUpload').and.returnValue(Promise.resolve(getProvisionResponse('123')));
-                    spyOn(instance, 'setDuplicateInsetText').and.returnValue(Promise.resolve({}));
                     spyOn(instance, 'redirectToFileRemovalPage');
 
                     instance.init();
