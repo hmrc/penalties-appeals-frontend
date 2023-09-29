@@ -30,6 +30,7 @@ import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.UploadJourneyRepository
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionKeys
 
 import java.time.{LocalDate, LocalDateTime}
@@ -40,6 +41,7 @@ class SessionAnswersHelperSpec extends SpecBase {
   val mockRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
   val mockConfig: Configuration = mock(classOf[Configuration])
   val sessionAnswersHelper = new SessionAnswersHelper(mockRepository, mockAppConfig, mockDateTimeHelper)
+  implicit def stringToRedirectUrl(urlAsString: String): RedirectUrl = RedirectUrl(urlAsString)
 
   def answers(sessionKeys: JsObject): UserAnswers = UserAnswers("1234", sessionKeys)
 

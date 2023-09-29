@@ -32,6 +32,7 @@ import services.AppealService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.SessionKeys
 import views.html.CheckYourAnswersPage
@@ -353,6 +354,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "changeAnswer" should {
+    implicit def stringToRedirectUrl(urlAsString: String): RedirectUrl = RedirectUrl(urlAsString)
+
     "redirect to the URL provided and add the page name to the session" in new Setup(AuthTestModels.successfulAuthResult) {
       when(mockSessionService.getUserAnswers(any()))
         .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))

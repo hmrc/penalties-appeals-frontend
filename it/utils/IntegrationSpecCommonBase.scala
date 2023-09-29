@@ -117,7 +117,8 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
     "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
     "auditing.enabled" -> true,
     "auditing.consumer.baseUri.port" -> stubPort,
-    "mongodb.encryption.enabled" -> true
+    "mongodb.encryption.enabled" -> true,
+    "urls.useRelativeUrls" -> false
   )
 
   override lazy val app: Application = new GuiceApplicationBuilder()

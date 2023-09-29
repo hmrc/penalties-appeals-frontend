@@ -26,6 +26,8 @@ import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AppealService
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
+import uk.gov.hmrc.play.bootstrap.binders.{OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
@@ -132,9 +134,9 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     ))
   }
 
-  def changeAnswer(continueUrl: String, pageName: String): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+  def changeAnswer(continueUrl: RedirectUrl, pageName: String): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
-      Redirect(continueUrl).addingToSession(SessionKeys.originatingChangePage -> pageName)
+      Redirect(continueUrl.get(OnlyRelative).url).addingToSession(SessionKeys.originatingChangePage -> pageName)
     }
   }
 }

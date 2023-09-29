@@ -127,7 +127,7 @@ POST       /cancel-vat-registration              controllers.CancelVATRegistrati
 # Check Your Answers page
 GET        /check-your-answers              controllers.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers              controllers.CheckYourAnswersController.onSubmit()
-GET        /change-answer                   controllers.CheckYourAnswersController.changeAnswer(continueUrl: String, page: String)
+GET        /change-answer                   controllers.CheckYourAnswersController.changeAnswer(continueUrl: RedirectUrl, page: String)
 
 # Appeal Confirmation page
 GET        /appeal-confirmation              controllers.AppealConfirmationController.onPageLoad()
