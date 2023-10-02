@@ -21,7 +21,7 @@ import play.api.Configuration
 import play.api.i18n.Lang
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrlPolicy.Id
-import uk.gov.hmrc.play.bootstrap.binders.{OnlyRelative, RedirectUrl, RedirectUrlPolicy, UnsafePermitAll}
+import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl, RedirectUrlPolicy, UnsafePermitAll}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -35,9 +35,11 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
   val cy: String            = "cy"
   val defaultLanguage: Lang = Lang(en)
 
-  private lazy val useRelativeUrls = config.get[Boolean]("urls.useRelativeUrls")
+  private lazy val permitAllRedirectPolicy = config.get[Boolean]("urls.permitAllRedirectPolicy")
 
-  private lazy val redirectPolicy: RedirectUrlPolicy[Id] = if(useRelativeUrls) OnlyRelative else UnsafePermitAll
+  private lazy val relativeRedirectPolicy: RedirectUrlPolicy[Id] = if(!permitAllRedirectPolicy) OnlyRelative else UnsafePermitAll
+
+  private lazy val absoluteRedirectPolicy: RedirectUrlPolicy[Id] = if(!permitAllRedirectPolicy) AbsoluteWithHostnameFromAllowlist(platformHost) else UnsafePermitAll
 
   lazy val signInUrl: String = config.get[String]("signIn.url")
 
@@ -63,7 +65,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val signInContinueBaseUrl: String = config.get[String]("signIn.continueBaseUrl")
 
-  lazy val signInContinueUrl: String = RedirectUrl(signInContinueBaseUrl + controllers.routes.AppealStartController.onPageLoad()).get(redirectPolicy).encodedUrl
+  lazy val signInContinueUrl: String = RedirectUrl(signInContinueBaseUrl + controllers.routes.AppealStartController.onPageLoad()).get(relativeRedirectPolicy).encodedUrl
 
   lazy val signOutUrlUnauthorised: String = config.get[String]("signOut.url") + signInContinueUrl
 
@@ -83,7 +85,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val reasonableExcusesGuidanceLinkUrl: String = config.get[String]("urls.reasonableExcusesGuidanceLinkUrl")
 
-  def betaFeedbackBackUrl(url: String): String =  RedirectUrl(platformHost ++ url).get(redirectPolicy).encodedUrl
+  def betaFeedbackBackUrl(url: String): String = RedirectUrl(platformHost ++ url).get(absoluteRedirectPolicy).encodedUrl
 
   def betaFeedbackUrl(redirectUrl: String): String = s"${config.get[String]("urls.betaFeedbackUrl")}?service=$contactFrontendServiceId&backUrl=${betaFeedbackBackUrl(redirectUrl)}"
 
@@ -100,7 +102,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   val appName: String = servicesConfig.getString("appName")
 
-  private lazy val agentClientLookupRedirectUrl: String => String = uri => RedirectUrl(platformHost + uri).get(redirectPolicy).encodedUrl
+  private lazy val agentClientLookupRedirectUrl: String => String = uri => RedirectUrl(platformHost + uri).get(absoluteRedirectPolicy).encodedUrl
 
   lazy val agentClientLookupStartUrl: String => String = (uri: String) =>
     agentClientLookupHost +
