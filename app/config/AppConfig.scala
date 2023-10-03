@@ -21,7 +21,7 @@ import play.api.Configuration
 import play.api.i18n.Lang
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrlPolicy.Id
-import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl, RedirectUrlPolicy, UnsafePermitAll}
+import uk.gov.hmrc.play.bootstrap.binders._
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -37,9 +37,11 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   private lazy val permitAllRedirectPolicy = config.get[Boolean]("urls.permitAllRedirectPolicy")
 
+  private lazy val allowedHostname = config.get[String]("urls.allowedHostname")
+
   private lazy val relativeRedirectPolicy: RedirectUrlPolicy[Id] = if(!permitAllRedirectPolicy) OnlyRelative else UnsafePermitAll
 
-  private lazy val absoluteRedirectPolicy: RedirectUrlPolicy[Id] = if(!permitAllRedirectPolicy) AbsoluteWithHostnameFromAllowlist(platformHost) else UnsafePermitAll
+  private lazy val absoluteRedirectPolicy: RedirectUrlPolicy[Id] = if(!permitAllRedirectPolicy) AbsoluteWithHostnameFromAllowlist(allowedHostname) else UnsafePermitAll
 
   lazy val signInUrl: String = config.get[String]("signIn.url")
 
