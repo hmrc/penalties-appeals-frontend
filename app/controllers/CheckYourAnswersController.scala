@@ -125,6 +125,9 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         case _ => Future(errorHandler.showInternalServerError)
       },
       _ => {
+        // Remove any previous appeal data from Mongo + file uploads (if they exist) - fire and forget
+        // If it fails it will be picked up by the TTL index
+        appealService.removePreviouslySubmittedAppealData(userRequest.session.get(SessionKeys.previouslySubmittedJourneyId))
         val previouslySubmittedJourneyId = userRequest.answers.journeyId
         Future(Redirect(controllers.routes.AppealConfirmationController.onPageLoad()).addingToSession(
           SessionKeys.previouslySubmittedJourneyId -> previouslySubmittedJourneyId,

@@ -94,4 +94,14 @@ class UserAnswersRepositoryISpec extends IntegrationSpecCommonBase {
       getResult.isEmpty shouldBe true
     }
   }
+
+  "removeUserAnswers" should {
+    "remove all the user answers for the specified journey ID" in new Setup {
+      await(repository.upsertUserAnswer(userAnswers))
+      await(repository.upsertUserAnswer(userAnswers2))
+      await(repository.collection.find().toFuture()).size shouldBe 2
+      await(repository.removeUserAnswers("journey123"))
+      await(repository.getUserAnswer("journey456")).isDefined shouldBe true
+    }
+  }
 }

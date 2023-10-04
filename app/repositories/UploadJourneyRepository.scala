@@ -149,6 +149,11 @@ class UploadJourneyRepository @Inject()(
     }
   }
 
+  def removeAllFilesForJourney(journeyId: String): Future[Unit] = {
+    logger.info(s"[UploadJourneyRepository][removeAllFilesForJourney] - Removing all user answers for journey ID: $journeyId")
+    deleteEntity(journeyId)
+  }
+
   def getFileIndexForJourney(journeyId: String, fileReference: String): Future[Int] = {
     findById(journeyId).map {
       _.map {

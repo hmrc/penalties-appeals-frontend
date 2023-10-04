@@ -20,6 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.session.UserAnswers
 import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
 import models.{PenaltyTypeEnum, UserRequest}
+import org.mongodb.scala.bson.collection.immutable.Document
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContent
@@ -40,9 +41,28 @@ import scala.jdk.CollectionConverters._
 class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
+  val uploadJourneyRepository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val appealService: AppealService = injector.instanceOf[AppealService]
   val correlationId: String = "correlationId"
+  val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+
+  val uploadAsReady: UploadJourney = UploadJourney(
+    reference = "ref1",
+    fileStatus = UploadStatusEnum.READY,
+    downloadUrl = Some("/url"),
+    uploadDetails = Some(
+      UploadDetails(
+        fileName = "file1.txt",
+        fileMimeType = "text/plain",
+        uploadTimestamp = sampleDate,
+        checksum = "123456789",
+        size = 100
+      )
+    ),
+    failureDetails = None,
+    lastUpdated = LocalDateTime.now()
+  )
+
 
   "submitAppeal" should {
 
@@ -132,25 +152,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     )), extraDetailsForTestName = Some("- hospital stay ended"))
 
     "return Right when the connector call succeeds for other - user selects no to uploading files (some files already uploaded)" in {
-      val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
-      val uploadAsReady: UploadJourney = UploadJourney(
-        reference = "ref1",
-        fileStatus = UploadStatusEnum.READY,
-        downloadUrl = Some("/url"),
-        uploadDetails = Some(
-          UploadDetails(
-            fileName = "file1.txt",
-            fileMimeType = "text/plain",
-            uploadTimestamp = sampleDate,
-            checksum = "123456789",
-            size = 100
-          )
-        ),
-        failureDetails = None,
-        lastUpdated = LocalDateTime.now()
-      )
       successfulAppealSubmission(isLPP = false, "1234")
-      await(repository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
+      await(uploadJourneyRepository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
@@ -338,6 +341,20 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
       )))(fakeRequest)
       val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
       result shouldBe Left(INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  "removePreviouslySubmittedAppealData" should {
+    "remove all user answers and upload data when called with a valid journey ID" in {
+      await(uploadJourneyRepository.collection.deleteMany(Document()).toFuture())
+      await(userAnswersRepository.collection.deleteMany(Document()).toFuture())
+      await(uploadJourneyRepository.updateStateOfFileUpload("1240", uploadAsReady, isInitiateCall = true))
+      await(userAnswersRepository.upsertUserAnswer(UserAnswers("1240", Json.obj())))
+      await(uploadJourneyRepository.collection.countDocuments().toFuture()) shouldBe 1
+      await(userAnswersRepository.collection.countDocuments().toFuture()) shouldBe 1
+      await(appealService.removePreviouslySubmittedAppealData(Some("1240")))
+      await(uploadJourneyRepository.collection.countDocuments().toFuture()) shouldBe 0
+      await(userAnswersRepository.collection.countDocuments().toFuture()) shouldBe 0
     }
   }
 }

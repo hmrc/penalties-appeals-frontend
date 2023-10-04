@@ -29,7 +29,7 @@ import models.upload.{UploadJourney, UploadStatusEnum}
 import play.api.Configuration
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, Json}
-import repositories.UploadJourneyRepository
+import repositories.{UploadJourneyRepository, UserAnswersRepository}
 import services.monitoring.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.EnrolmentKeys.constructMTDVATEnrolmentKey
@@ -46,6 +46,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               dateTimeHelper: DateTimeHelper,
                               auditService: AuditService,
                               idGenerator: UUIDGenerator,
+                              userAnswersRepository: UserAnswersRepository,
                               uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
   def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
@@ -285,5 +286,18 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       }
       logger.error(s"${PagerDutyKeys.MULTI_APPEAL_FAILURE} Multiple appeal covering $dateFrom-$dateTo for user with VRN $vrn failed. " + lpp1Message + lpp2Message)
     }
+  }
+
+  def removePreviouslySubmittedAppealData(optPreviouslySubmittedJourneyId: Option[String])(implicit ec: ExecutionContext): Future[Unit] = {
+    optPreviouslySubmittedJourneyId.fold({
+      logger.debug(s"[AppealService][removePreviouslySubmittedAppealData] - No previouslySubmittedJourneyId provided, deleting nothing.")
+      Future((): Unit)
+    })(
+      previouslySubmittedJourneyId => {
+        logger.info(s"[AppealService][removePreviouslySubmittedAppealData] - Removing appeal data for journey ID: ${previouslySubmittedJourneyId}")
+        userAnswersRepository.removeUserAnswers(previouslySubmittedJourneyId)
+        uploadJourneyRepository.removeAllFilesForJourney(previouslySubmittedJourneyId)
+      }
+    )
   }
 }
