@@ -17,6 +17,7 @@
 package services
 
 import base.SpecBase
+import com.mongodb.client.result.DeleteResult
 import connectors.PenaltiesConnector
 import connectors.httpParsers.{InvalidJson, UnexpectedFailure}
 import models._
@@ -28,6 +29,7 @@ import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers._
+import repositories.UserAnswersRepository
 import services.monitoring.JsonAuditModel
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
@@ -43,6 +45,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
   val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+  val mockUserAnswersRepository: UserAnswersRepository = mock(classOf[UserAnswersRepository])
 
   val fakeRequestForCrimeJourney: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
     SessionKeys.reasonableExcuse -> "crime",
@@ -141,9 +144,10 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     reset(mockAuditService)
     reset(mockUploadJourneyRepository)
     reset(mockUUIDGenerator)
+    reset(mockUserAnswersRepository)
 
     val service: AppealService =
-      new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, mockUUIDGenerator, mockUploadJourneyRepository)
+      new AppealService(mockPenaltiesConnector, appConfig, mockDateTimeHelper, mockAuditService, mockUUIDGenerator, mockUserAnswersRepository, mockUploadJourneyRepository)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
@@ -610,6 +614,22 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         val result = service.isAppealLate()(fakeRequestForAppealingBothPenalties(LocalDate.of(2021, 12, 31), LocalDate.of(2021, 12, 31)))
         result shouldBe false
       }
+    }
+  }
+
+  "removePreviouslySubmittedAppealData" should {
+    "do nothing when no journey ID is provided" in new Setup {
+      await(service.removePreviouslySubmittedAppealData(None))
+      verify(mockUserAnswersRepository, never).removeUserAnswers(any())
+      verify(mockUploadJourneyRepository, never).removeAllFilesForJourney(any())
+    }
+
+    "request to remove any appeal data when the journey ID has been provided" in new Setup {
+      when(mockUserAnswersRepository.removeUserAnswers(ArgumentMatchers.eq("J1234"))).thenReturn(Future.successful(Some(DeleteResult.acknowledged(1))))
+      when(mockUploadJourneyRepository.removeAllFilesForJourney(ArgumentMatchers.eq("J1234"))).thenReturn(Future.successful(Some(DeleteResult.acknowledged(1))))
+      await(service.removePreviouslySubmittedAppealData(Some("J1234")))
+      verify(mockUserAnswersRepository, times(1)).removeUserAnswers(any())
+      verify(mockUploadJourneyRepository, times(1)).removeAllFilesForJourney(any())
     }
   }
 }

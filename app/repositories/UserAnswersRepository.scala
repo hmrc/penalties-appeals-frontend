@@ -18,15 +18,16 @@ package repositories
 
 import java.time.{Instant, ZoneOffset}
 import java.util.concurrent.TimeUnit
-
 import config.AppConfig
 import crypto.CryptoProvider
 import helpers.DateTimeHelper
+
 import javax.inject.{Inject, Singleton}
 import models.session.UserAnswers
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{IndexModel, IndexOptions, ReplaceOptions}
+import org.mongodb.scala.result.DeleteResult
 import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -62,8 +63,7 @@ class UserAnswersRepository @Inject()(mongo: MongoComponent,
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
-  def getUserAnswer(id: String): Future[Option[UserAnswers]] =
-    collection.find(equal("journeyId", id)).headOption()
+  def getUserAnswer(id: String): Future[Option[UserAnswers]] = collection.find(equal("journeyId", id)).headOption()
 
   def upsertUserAnswer(userAnswers: UserAnswers): Future[Boolean] = {
     val userAnswersWithUpdatedTimestamp = userAnswers.copy(lastUpdated = dateTimeHelper.dateTimeNow.toInstant(ZoneOffset.UTC))
@@ -78,5 +78,10 @@ class UserAnswersRepository @Inject()(mongo: MongoComponent,
           false
         }
       }
+  }
+
+  def removeUserAnswers(id: String): Future[Option[DeleteResult]] = {
+    logger.info(s"[UserAnswersRepository][removeUserAnswers] - Removing all user answers for journey ID: $id")
+    collection.deleteOne(equal("journeyId", id)).headOption()
   }
 }

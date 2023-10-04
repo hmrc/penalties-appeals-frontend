@@ -22,7 +22,7 @@ import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 import models.UserRequest
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{mock, reset, when}
+import org.mockito.Mockito.{mock, reset, times, verify, when}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{AnyContent, Result}
@@ -231,6 +231,17 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
+      }
+
+      "redirect the user to the confirmation page on success and request to remove any previously submitted journeys" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockAppealService.submitAppeal(any())(any(), any(), any()))
+          .thenReturn(Future.successful(Right((): Unit)))
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(crimeAnswers))))
+        val result: Future[Result] = Controller.onSubmit()(fakeRequest(crimeAnswers, FakeRequest("GET", "/").withSession(SessionKeys.journeyId -> "1234", SessionKeys.previouslySubmittedJourneyId -> "1235")))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
+        verify(mockAppealService, times(1)).removePreviouslySubmittedAppealData(ArgumentMatchers.eq(Some("1235")))(any())
       }
 
       "redirect the user to an ISE" when {

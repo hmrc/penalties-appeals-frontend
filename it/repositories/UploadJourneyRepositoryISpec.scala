@@ -218,4 +218,15 @@ class UploadJourneyRepositoryISpec extends IntegrationSpecCommonBase {
       result shouldBe -1
     }
   }
+
+  "removeAllFilesForJourney" should {
+    "remove all files for the specified journey ID" in new Setup {
+      await(repository.updateStateOfFileUpload("J1234", callbackModel, isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("J1235", callbackModel, isInitiateCall = true))
+      await(repository.collection.countDocuments().toFuture()) shouldBe 2
+      await(repository.removeAllFilesForJourney("J1234"))
+      await(repository.collection.countDocuments().toFuture()) shouldBe 1
+      await(repository.getUploadsForJourney(Some("J1235"))).isDefined shouldBe true
+    }
+  }
 }
