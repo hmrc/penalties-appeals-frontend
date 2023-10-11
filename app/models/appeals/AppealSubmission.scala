@@ -107,7 +107,7 @@ object AppealSubmission {
 
       case "fireOrFlood" =>
         baseAppealSubmission(FireOrFloodAppealInformation(
-            reasonableExcuse = "fireandflood", //API spec outlines this - how can it be a fire AND flood? TODO: may change later
+            reasonableExcuse = "fireandflood", //API spec outlines this - the frontend says 'fire or flood' (11/10/23)
             honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
             startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get.atStartOfDay(),
             statement = None,
