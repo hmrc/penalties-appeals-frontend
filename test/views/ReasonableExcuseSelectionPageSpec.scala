@@ -33,10 +33,14 @@ import views.html.ReasonableExcuseSelectionPage
 class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
   "ReasonableExcuseSelectionPage" when {
     val reasonableExcuseSelectionPage: ReasonableExcuseSelectionPage = injector.instanceOf[ReasonableExcuseSelectionPage]
-    object Selectors extends BaseSelectors
+    object Selectors extends BaseSelectors {
+      val formHint = "#value-hint"
 
-    def applyView(form: Form[_], seqOfRadioOptions: Seq[RadioItem], request: UserRequest[_]): HtmlFormat.Appendable =
-      reasonableExcuseSelectionPage.apply(form, seqOfRadioOptions, pageMode = PageMode(ReasonableExcuseSelectionPage, NormalMode))(request, implicitly, implicitly)
+      val otherOptionHint = "#value-8-item-hint"
+    }
+
+    def applyView(form: Form[_], seqOfRadioOptions: Seq[RadioItem], request: UserRequest[_], showAgentHintText: Boolean = false): HtmlFormat.Appendable =
+      reasonableExcuseSelectionPage.apply(form, seqOfRadioOptions, pageMode = PageMode(ReasonableExcuseSelectionPage, NormalMode), showAgentHintText)(request, implicitly, implicitly)
 
     val seqOfReasonableExcuses: Seq[ReasonableExcuse] = Seq(
       ReasonableExcuse(
@@ -79,7 +83,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
     val formProvider = ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`))
     val seqOfRadioItemsBasedOnReasonableExcuses: Seq[RadioItem] = ReasonableExcuse.optionsWithDivider(formProvider,
       "reasonableExcuses.breakerText",
-      seqOfReasonableExcuses)
+      seqOfReasonableExcuses, isAgentHintText = false)
 
 
     "an agent is on the page" must {
@@ -89,6 +93,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> agentTitle,
         Selectors.h1 -> agentH1,
+        Selectors.formHint -> formHintText,
         Selectors.labelForRadioButton(1) -> radioOption1,
         Selectors.labelForRadioButton(2) -> radioOption2,
         Selectors.labelForRadioButton(3) -> radioOption3,
@@ -97,6 +102,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         Selectors.labelForRadioButton(6) -> radioOption6,
         Selectors.breakerElement -> breakerText,
         Selectors.labelForRadioButton(8) -> radioOption7,
+        Selectors.otherOptionHint -> otherOptionHintText,
         Selectors.button -> submitButton
       )
 
@@ -109,6 +115,16 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         doc.select(Selectors.title).text shouldBe agentTitleLPP
         doc.select(Selectors.h1).text shouldBe h1
       }
+
+      "show the agent wording when the 'isAgentHintText' is true" in {
+        val seqOfRadioItemsBasedOnReasonableExcuses: Seq[RadioItem] = ReasonableExcuse.optionsWithDivider(formProvider,
+          "reasonableExcuses.breakerText",
+          seqOfReasonableExcuses, isAgentHintText = true)
+        implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers), showAgentHintText = true))
+
+        doc.select(Selectors.formHint).text shouldBe formHintTextAgent
+        doc.select(Selectors.otherOptionHint).text shouldBe otherOptionHintTextAgent
+      }
     }
 
     "a VAT trader is on the page" must {
@@ -117,6 +133,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
+        Selectors.formHint -> formHintText,
         Selectors.labelForRadioButton(1) -> radioOption1,
         Selectors.labelForRadioButton(2) -> radioOption2,
         Selectors.labelForRadioButton(3) -> radioOption3,
@@ -125,6 +142,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         Selectors.labelForRadioButton(6) -> radioOption6,
         Selectors.breakerElement -> breakerText,
         Selectors.labelForRadioButton(8) -> radioOption7,
+        Selectors.otherOptionHint -> otherOptionHintText,
         Selectors.button -> submitButton
       )
 

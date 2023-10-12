@@ -18,11 +18,13 @@ package controllers
 
 import controllers.testHelpers.AuthorisationTest
 import models.PenaltyTypeEnum
+import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import stubs.AuthStub
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
@@ -45,6 +47,102 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.OK
     }
+
+    //Testing at this level because the agent auth predicates are not setup at unit test level
+    "the call succeeds - user is agent and client planned to return - show ’your client’ hint text" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.whoPlannedToSubmitVATReturn -> "client"
+    ))) {
+      successfulFetchReasonableExcuseResponse
+      AuthStub.agentAuthorised()
+      val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
+      val result = controller.onPageLoad()(agentFakeRequest)
+      status(result) shouldBe Status.OK
+      val documentParsed = Jsoup.parse(contentAsString(result))
+      documentParsed.select("#value-hint").text() shouldBe "If more than one reason applies, choose the one that had the most direct impact on your client’s ability to meet the deadline."
+      documentParsed.select(".govuk-radios__hint").get(0).text() shouldBe "You should only choose this if the reason is not covered by any of the other options."
+    }
+
+    "the call succeeds -  user is agent and agent missed deadline and was delayed - show ’your’ hint text" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+      SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
+    ))) {
+      successfulFetchReasonableExcuseResponse
+      AuthStub.agentAuthorised()
+      val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
+      val result = controller.onPageLoad()(agentFakeRequest)
+      status(result) shouldBe Status.OK
+      val documentParsed = Jsoup.parse(contentAsString(result))
+      documentParsed.select("#value-hint").text() shouldBe "If more than one reason applies, choose the one that had the most direct impact on your ability to meet the deadline."
+      documentParsed.select(".govuk-radios__hint").get(0).text() shouldBe "You should only choose this if your reason is not covered by any of the other options."
+    }
+
+    "the call succeeds - user is agent and client missed the deadline - show ’your client’ hint text" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
+      SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
+      SessionKeys.whatCausedYouToMissTheDeadline -> "client"
+    ))) {
+      successfulFetchReasonableExcuseResponse
+      AuthStub.agentAuthorised()
+      val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
+      val result = controller.onPageLoad()(agentFakeRequest)
+      status(result) shouldBe Status.OK
+      val documentParsed = Jsoup.parse(contentAsString(result))
+      documentParsed.select("#value-hint").text() shouldBe "If more than one reason applies, choose the one that had the most direct impact on your client’s ability to meet the deadline."
+      documentParsed.select(".govuk-radios__hint").get(0).text() shouldBe "You should only choose this if the reason is not covered by any of the other options."
+    }
+
+    "the call succeeds - user is agent appealing a LPP - show 'your client' hint text" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      successfulFetchReasonableExcuseResponse
+      AuthStub.agentAuthorised()
+      val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
+      val result = controller.onPageLoad()(agentFakeRequest)
+      status(result) shouldBe Status.OK
+      val documentParsed = Jsoup.parse(contentAsString(result))
+      documentParsed.select("#value-hint").text() shouldBe "If more than one reason applies, choose the one that had the most direct impact on your client’s ability to meet the deadline."
+      documentParsed.select(".govuk-radios__hint").get(0).text() shouldBe "You should only choose this if the reason is not covered by any of the other options."
+    }
+
+    "the call succeeds - user is agent appealing a trader - show 'your' hint text" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      successfulFetchReasonableExcuseResponse
+      AuthStub.authorised()
+      val result = controller.onPageLoad()(fakeRequest)
+      status(result) shouldBe Status.OK
+      val documentParsed = Jsoup.parse(contentAsString(result))
+      documentParsed.select("#value-hint").text() shouldBe "If more than one reason applies, choose the one that had the most direct impact on your ability to meet the deadline."
+      documentParsed.select(".govuk-radios__hint").get(0).text() shouldBe "You should only choose this if your reason is not covered by any of the other options."
+    }
+
 
     "return 500 (ISE) when the list can not be retrieved from the backend" in new UserAnswersSetup(userAnswers(Json.obj())) {
       failedFetchReasonableExcuseListResponse()

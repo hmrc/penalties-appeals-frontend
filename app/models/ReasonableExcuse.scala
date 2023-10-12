@@ -19,7 +19,7 @@ package models
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.libs.json.{JsValue, Reads}
-import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.Aliases.{Hint, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 case class ReasonableExcuse(
@@ -47,21 +47,23 @@ object ReasonableExcuse {
     (json \ "excuses").validate[Seq[ReasonableExcuse]](Reads.seq[ReasonableExcuse](singularReads))
   }
 
-  def options(form: Form[_], reasonableExcuses: Seq[ReasonableExcuse])(implicit messages: Messages): Seq[RadioItem] =
+  def options(form: Form[_], reasonableExcuses: Seq[ReasonableExcuse], hintTextMessageKey: String)(implicit messages: Messages): Seq[RadioItem] =
     reasonableExcuses.map {
       value =>
         RadioItem(
           value = Some(value.`type`),
           content = Text(messages(value.descriptionKey)),
-          checked = form("value").value.contains(value.`type`)
+          checked = form("value").value.contains(value.`type`),
+          hint = if(value.isOtherOption) Some(Hint(content = Text(messages(hintTextMessageKey)))) else None
         )
     }
 
-  def optionsWithDivider(form: Form[_], messageKeyForDivider: String, reasonableExcuses: Seq[ReasonableExcuse])
+  def optionsWithDivider(form: Form[_], messageKeyForDivider: String, reasonableExcuses: Seq[ReasonableExcuse], isAgentHintText: Boolean)
                         (implicit messages: Messages): Seq[RadioItem] = {
     val otherOptionInSeq: ReasonableExcuse = reasonableExcuses.filter(_.isOtherOption).head
     val dividerPosition = reasonableExcuses.indexOf(otherOptionInSeq)
-    val optionsList = options(form, reasonableExcuses)
+    val hintTextMessageKey = if(isAgentHintText) "agent.reasonableExcuses.otherReason.hintText" else "reasonableExcuses.otherReason.hintText"
+    val optionsList = options(form, reasonableExcuses, hintTextMessageKey)
     val divider = RadioItem(
       divider = Some(messages(messageKeyForDivider))
     )

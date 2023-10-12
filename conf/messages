@@ -74,6 +74,8 @@ penaltyType.latePayment.multiple = Late payment penalties
 # ----------------------------------------------------------
 reasonableExcuses.headingAndTitle = What was the reason for missing the VAT deadline?
 agent.reasonableExcuses.headingAndTitle = What was the reason for the delay?
+reasonableExcuses.hintText = If more than one reason applies, choose the one that had the most direct impact on your ability to meet the deadline.
+agent.reasonableExcuses.hintText = If more than one reason applies, choose the one that had the most direct impact on your client’s ability to meet the deadline.
 reasonableExcuses.bereavementReason = Bereavement (someone died)
 reasonableExcuses.crimeReason = Crime
 reasonableExcuses.fireOrFloodReason = Fire or flood
@@ -81,6 +83,8 @@ reasonableExcuses.healthReason = Health
 reasonableExcuses.lossOfStaffReason = Loss of staff essential to the VAT process
 reasonableExcuses.technicalIssuesReason = Technology issues
 reasonableExcuses.otherReason = The reason does not fit into any of the other categories
+reasonableExcuses.otherReason.hintText = You should only choose this if your reason is not covered by any of the other options.
+agent.reasonableExcuses.otherReason.hintText = You should only choose this if the reason is not covered by any of the other options.
 reasonableExcuses.breakerText = or
 reasonableExcuses.error.required = Select the reason for missing the VAT deadline
 

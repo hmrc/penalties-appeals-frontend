@@ -28,6 +28,10 @@ object ReasonableExcuseSelectionMessages {
 
   val agentH1 = "What was the reason for the delay?"
 
+  val formHintText = "If more than one reason applies, choose the one that had the most direct impact on your ability to meet the deadline."
+
+  val formHintTextAgent = "If more than one reason applies, choose the one that had the most direct impact on your client’s ability to meet the deadline."
+
   val radioOption1 = "Bereavement (someone died)"
 
   val radioOption2 = "Crime"
@@ -43,6 +47,10 @@ object ReasonableExcuseSelectionMessages {
   val breakerText = "or"
 
   val radioOption7 = "The reason does not fit into any of the other categories"
+
+  val otherOptionHintText = "You should only choose this if your reason is not covered by any of the other options."
+
+  val otherOptionHintTextAgent = "You should only choose this if the reason is not covered by any of the other options."
 
   val submitButton = "Continue"
 
