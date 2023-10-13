@@ -24,6 +24,7 @@ import org.jsoup.nodes.Document
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.Configuration
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -38,6 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReasonableExcuseControllerSpec extends SpecBase {
   val mockAppealService: AppealService = mock(classOf[AppealService])
+  val mockConfig: Configuration = mock(classOf[Configuration])
   val reasonableExcusePage: ReasonableExcuseSelectionPage = injector.instanceOf[ReasonableExcuseSelectionPage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
@@ -45,6 +47,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
     reset(mockAppealService)
     reset(mockSessionService)
     reset(mockAuthConnector)
+    reset(mockConfig)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -56,7 +59,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
       mockAppealService,
       errorHandler,
       mockSessionService
-    )(mcc, appConfig, authPredicate, dataRetrievalAction, dataRequiredAction, ec)
+    )(mcc, mockConfig, appConfig, authPredicate, dataRetrievalAction, dataRequiredAction, ec)
   }
 
   "onPageLoad" should {

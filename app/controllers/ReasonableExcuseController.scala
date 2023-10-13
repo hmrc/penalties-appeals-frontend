@@ -16,12 +16,15 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, ShowReasonableExcuseHintText}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.ReasonableExcuseForm
 import helpers.FormProviderHelper
+import models.PenaltyTypeEnum.Late_Submission
 import models.pages.{PageMode, ReasonableExcuseSelectionPage}
-import models.{Mode, NormalMode, ReasonableExcuse}
+import models._
+import play.api.Configuration
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -41,11 +44,12 @@ class ReasonableExcuseController @Inject()(
                                             errorHandler: ErrorHandler,
                                             sessionService: SessionService)
                                           (implicit mcc: MessagesControllerComponents,
+                                           implicit val config: Configuration,
                                            appConfig: AppConfig,
                                            authorise: AuthPredicate,
                                            dataRetrieval: DataRetrievalAction,
                                            dataRequired: DataRequiredAction,
-                                           implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                           implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(ReasonableExcuseSelectionPage, mode)
 
@@ -59,8 +63,10 @@ class ReasonableExcuseController @Inject()(
             SessionKeys.reasonableExcuse,
             userRequest.answers
           )
+          val showAgentHintText = showAgentHintTextWording()
+          val showHintText = isEnabled(ShowReasonableExcuseHintText)
           Future(Ok(reasonableExcuseSelectionPage(formProvider,
-            ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses), pageMode(NormalMode))))
+            ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses, showAgentHintText, showHintText), pageMode(NormalMode), showAgentHintText, showHintText)))
         }
       ))
     }
@@ -71,12 +77,14 @@ class ReasonableExcuseController @Inject()(
       attemptToRetrieveReasonableExcuseList().flatMap(_.fold(
         identity,
         reasonableExcuses => {
+          val showAgentHintText = showAgentHintTextWording()
           val formProvider: Form[String] = ReasonableExcuseForm.reasonableExcuseForm(reasonableExcuses.map(_.`type`))
           formProvider.bindFromRequest().fold(
             formWithErrors => {
+              val showHintText = isEnabled(ShowReasonableExcuseHintText)
               logger.debug(s"[ReasonableExcuseController][onSubmit] form errors ${formWithErrors.errors.head.message}")
               Future(BadRequest(reasonableExcuseSelectionPage(formWithErrors,
-                ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses), pageMode(NormalMode))))
+                ReasonableExcuse.optionsWithDivider(formProvider, "reasonableExcuses.breakerText", reasonableExcuses, showAgentHintText, showHintText), pageMode(NormalMode), showAgentHintText, showHintText)))
             },
             selection => {
               logger.debug(s"[ReasonableExcuseController][onSubmit] User selected $selection option - adding '$selection' to session.")
@@ -98,5 +106,16 @@ class ReasonableExcuseController @Inject()(
         Left(Future(errorHandler.showInternalServerError))
       })(Right(_))
     }
+  }
+
+  private def showAgentHintTextWording()(implicit userRequest: UserRequest[_]): Boolean = {
+    val optAnswerForWhoPlannedToSubmitVATReturn = userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn)
+    val optAnswerForWhatCausedYouToMissTheDeadline = userRequest.answers.getAnswer[String](SessionKeys.whatCausedYouToMissTheDeadline)
+    val isLateSubmissionPenaltyAppeal = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(Late_Submission)
+    userRequest.isAgent && (
+        optAnswerForWhoPlannedToSubmitVATReturn.contains("client")
+          || optAnswerForWhatCausedYouToMissTheDeadline.contains("client")
+          || !isLateSubmissionPenaltyAppeal
+      )
   }
 }

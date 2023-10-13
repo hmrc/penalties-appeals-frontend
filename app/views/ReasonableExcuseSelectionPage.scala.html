@@ -26,7 +26,7 @@
         link: components.link
 )
 
-@(form: Form[_], radioOptions: Seq[RadioItem], pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem], pageMode: PageMode, isAgentHintText: Boolean, showHintText: Boolean)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = if(userRequest.isAgent && userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission)){
         messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")
@@ -39,11 +39,12 @@
     @formHelper(action = controllers.routes.ReasonableExcuseController.onSubmit()) {
 
         @radios(
-            form = form,
-            legendContent = if(userRequest.isAgent && userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission)){messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")},
-            items = radioOptions,
-            legendClasses = "govuk-fieldset__legend--l",
-            legendAsPageHeading = true
+          form = form,
+          legendContent = if(userRequest.isAgent && userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission)){messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")},
+          items = radioOptions,
+          legendClasses = "govuk-fieldset__legend--l",
+          legendAsPageHeading = true,
+          hint = if(!showHintText) None else if(isAgentHintText) Some(Html(messages("agent.reasonableExcuses.hintText"))) else Some(Html(messages("reasonableExcuses.hintText")))
         )
 
         @button("common.continue")

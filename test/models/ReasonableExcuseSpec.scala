@@ -19,7 +19,7 @@ package models
 import base.SpecBase
 import forms.ReasonableExcuseForm
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.Aliases.{Hint, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 class ReasonableExcuseSpec extends SpecBase {
@@ -95,7 +95,8 @@ class ReasonableExcuseSpec extends SpecBase {
     RadioItem(
       value = Some("other"),
       content = Text(messages("reasonableExcuses.otherReason")),
-      checked = false
+      checked = false,
+      hint = Some(Hint(content = Text(messages("reasonableExcuses.otherReason.hintText"))))
     )
   )
 
@@ -297,14 +298,14 @@ class ReasonableExcuseSpec extends SpecBase {
   "options" should {
     "return a Seq of RadioItems that will be passed to the view - no pre-selection" in {
       val result = ReasonableExcuse.options(ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`)),
-        seqOfReasonableExcuses)
+        seqOfReasonableExcuses, hintTextMessageKey = "reasonableExcuses.otherReason.hintText", showHintText = true)
 
       result shouldBe seqOfRadioOptions
     }
 
     "return a Seq of RadioItems that will be passed to the view - pre-selection: bereavement" in {
       val result = ReasonableExcuse.options(ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`)).fill("bereavement"),
-        seqOfReasonableExcuses)
+        seqOfReasonableExcuses, hintTextMessageKey = "reasonableExcuses.otherReason.hintText", showHintText = true)
       val expectedResult = seqOfRadioOptions.drop(1).+:(RadioItem(
         value = Some("bereavement"),
         content = Text(messages("reasonableExcuses.bereavementReason")),
@@ -320,12 +321,40 @@ class ReasonableExcuseSpec extends SpecBase {
       val result = ReasonableExcuse.optionsWithDivider(
         ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`)),
         "reasonableExcuses.breakerText",
-        seqOfReasonableExcuses)
+        seqOfReasonableExcuses, showAgentHintText = false, showHintText = true)
       val divider = RadioItem(
         divider = Some(messages("reasonableExcuses.breakerText"))
       )
 
       result shouldBe seqOfRadioOptions.dropRight(1) ++ Seq(divider) ++ Seq(seqOfRadioOptions.last)
+    }
+
+    "insert a divider before the 'Other' option - use agent wording when 'isAgentHintText is true" in {
+      val result = ReasonableExcuse.optionsWithDivider(
+        ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`)),
+        "reasonableExcuses.breakerText",
+        seqOfReasonableExcuses, showAgentHintText = true, showHintText = true)
+      val divider = RadioItem(
+        divider = Some(messages("reasonableExcuses.breakerText"))
+      )
+
+      result shouldBe seqOfRadioOptions.dropRight(1) ++ Seq(divider) ++ Seq(seqOfRadioOptions.last.copy(
+        hint = Some(Hint(content = Text(messages("agent.reasonableExcuses.otherReason.hintText"))))
+      ))
+    }
+
+    "insert a divider before the 'Other' option - now show hint text when feature switch disabled" in {
+      val result = ReasonableExcuse.optionsWithDivider(
+        ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`)),
+        "reasonableExcuses.breakerText",
+        seqOfReasonableExcuses, showAgentHintText = true, showHintText = false)
+      val divider = RadioItem(
+        divider = Some(messages("reasonableExcuses.breakerText"))
+      )
+
+      result shouldBe seqOfRadioOptions.dropRight(1) ++ Seq(divider) ++ Seq(seqOfRadioOptions.last.copy(
+        hint = None
+      ))
     }
   }
 }

@@ -33,10 +33,14 @@ import views.html.ReasonableExcuseSelectionPage
 class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
   "ReasonableExcuseSelectionPage" when {
     val reasonableExcuseSelectionPage: ReasonableExcuseSelectionPage = injector.instanceOf[ReasonableExcuseSelectionPage]
-    object Selectors extends BaseSelectors
+    object Selectors extends BaseSelectors {
+      val formHint = "#value-hint"
 
-    def applyView(form: Form[_], seqOfRadioOptions: Seq[RadioItem], request: UserRequest[_]): HtmlFormat.Appendable =
-      reasonableExcuseSelectionPage.apply(form, seqOfRadioOptions, pageMode = PageMode(ReasonableExcuseSelectionPage, NormalMode))(request, implicitly, implicitly)
+      val otherOptionHint = "#value-8-item-hint"
+    }
+
+    def applyView(form: Form[_], seqOfRadioOptions: Seq[RadioItem], request: UserRequest[_], showAgentHintText: Boolean = false, showHintText: Boolean = false): HtmlFormat.Appendable =
+      reasonableExcuseSelectionPage.apply(form, seqOfRadioOptions, pageMode = PageMode(ReasonableExcuseSelectionPage, NormalMode), showAgentHintText, showHintText)(request, implicitly, implicitly)
 
     val seqOfReasonableExcuses: Seq[ReasonableExcuse] = Seq(
       ReasonableExcuse(
@@ -79,16 +83,17 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
     val formProvider = ReasonableExcuseForm.reasonableExcuseForm(seqOfReasonableExcuses.map(_.`type`))
     val seqOfRadioItemsBasedOnReasonableExcuses: Seq[RadioItem] = ReasonableExcuse.optionsWithDivider(formProvider,
       "reasonableExcuses.breakerText",
-      seqOfReasonableExcuses)
+      seqOfReasonableExcuses, showAgentHintText = false, showHintText = true)
 
 
     "an agent is on the page" must {
       implicit val doc: Document = asDocument(applyView(
-        formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers)))
+        formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers), showHintText = true))
 
       val expectedContent = Seq(
         Selectors.title -> agentTitle,
         Selectors.h1 -> agentH1,
+        Selectors.formHint -> formHintText,
         Selectors.labelForRadioButton(1) -> radioOption1,
         Selectors.labelForRadioButton(2) -> radioOption2,
         Selectors.labelForRadioButton(3) -> radioOption3,
@@ -97,6 +102,7 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         Selectors.labelForRadioButton(6) -> radioOption6,
         Selectors.breakerElement -> breakerText,
         Selectors.labelForRadioButton(8) -> radioOption7,
+        Selectors.otherOptionHint -> otherOptionHintText,
         Selectors.button -> submitButton
       )
 
@@ -109,14 +115,35 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         doc.select(Selectors.title).text shouldBe agentTitleLPP
         doc.select(Selectors.h1).text shouldBe h1
       }
+
+      "show the agent wording when the 'showAgentHintText' is true" in {
+        val seqOfRadioItemsBasedOnReasonableExcuses: Seq[RadioItem] = ReasonableExcuse.optionsWithDivider(formProvider,
+          "reasonableExcuses.breakerText",
+          seqOfReasonableExcuses, showAgentHintText = true, showHintText = true)
+        implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers), showAgentHintText = true, showHintText = true))
+
+        doc.select(Selectors.formHint).text shouldBe formHintTextAgent
+        doc.select(Selectors.otherOptionHint).text shouldBe otherOptionHintTextAgent
+      }
+
+      "not show the hint text when the feature switch is disabled" in {
+        val seqOfRadioItemsBasedOnReasonableExcuses: Seq[RadioItem] = ReasonableExcuse.optionsWithDivider(formProvider,
+          "reasonableExcuses.breakerText",
+          seqOfReasonableExcuses, showAgentHintText = true, showHintText = false)
+        implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers), showAgentHintText = true))
+
+        doc.select(Selectors.formHint).isEmpty shouldBe true
+        doc.select(Selectors.otherOptionHint).isEmpty shouldBe true
+      }
     }
 
     "a VAT trader is on the page" must {
-      implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, userRequestWithCorrectKeys))
+      implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, userRequestWithCorrectKeys, showHintText = true))
 
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
+        Selectors.formHint -> formHintText,
         Selectors.labelForRadioButton(1) -> radioOption1,
         Selectors.labelForRadioButton(2) -> radioOption2,
         Selectors.labelForRadioButton(3) -> radioOption3,
@@ -125,10 +152,21 @@ class ReasonableExcuseSelectionPageSpec extends SpecBase with ViewBehaviours {
         Selectors.labelForRadioButton(6) -> radioOption6,
         Selectors.breakerElement -> breakerText,
         Selectors.labelForRadioButton(8) -> radioOption7,
+        Selectors.otherOptionHint -> otherOptionHintText,
         Selectors.button -> submitButton
       )
 
       behave like pageWithExpectedMessages(expectedContent)
+    }
+
+    "not show the hint text when the feature switch is disabled" in {
+      val seqOfRadioItemsBasedOnReasonableExcuses: Seq[RadioItem] = ReasonableExcuse.optionsWithDivider(formProvider,
+        "reasonableExcuses.breakerText",
+        seqOfReasonableExcuses, showAgentHintText = false, showHintText = false)
+      implicit val doc: Document = asDocument(applyView(formProvider, seqOfRadioItemsBasedOnReasonableExcuses, agentFakeRequestConverter(correctUserAnswers), showAgentHintText = true))
+
+      doc.select(Selectors.formHint).isEmpty shouldBe true
+      doc.select(Selectors.otherOptionHint).isEmpty shouldBe true
     }
   }
 }
