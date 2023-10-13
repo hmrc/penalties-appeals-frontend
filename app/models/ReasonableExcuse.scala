@@ -47,23 +47,25 @@ object ReasonableExcuse {
     (json \ "excuses").validate[Seq[ReasonableExcuse]](Reads.seq[ReasonableExcuse](singularReads))
   }
 
-  def options(form: Form[_], reasonableExcuses: Seq[ReasonableExcuse], hintTextMessageKey: String)(implicit messages: Messages): Seq[RadioItem] =
+  def options(form: Form[_], reasonableExcuses: Seq[ReasonableExcuse], hintTextMessageKey: String,
+              showHintText: Boolean)(implicit messages: Messages): Seq[RadioItem] =
     reasonableExcuses.map {
       value =>
         RadioItem(
           value = Some(value.`type`),
           content = Text(messages(value.descriptionKey)),
           checked = form("value").value.contains(value.`type`),
-          hint = if(value.isOtherOption) Some(Hint(content = Text(messages(hintTextMessageKey)))) else None
+          hint = if(!showHintText) None else if(value.isOtherOption) Some(Hint(content = Text(messages(hintTextMessageKey)))) else None
         )
     }
 
-  def optionsWithDivider(form: Form[_], messageKeyForDivider: String, reasonableExcuses: Seq[ReasonableExcuse], isAgentHintText: Boolean)
+  def optionsWithDivider(form: Form[_], messageKeyForDivider: String, reasonableExcuses: Seq[ReasonableExcuse], showAgentHintText: Boolean,
+                         showHintText: Boolean)
                         (implicit messages: Messages): Seq[RadioItem] = {
     val otherOptionInSeq: ReasonableExcuse = reasonableExcuses.filter(_.isOtherOption).head
     val dividerPosition = reasonableExcuses.indexOf(otherOptionInSeq)
-    val hintTextMessageKey = if(isAgentHintText) "agent.reasonableExcuses.otherReason.hintText" else "reasonableExcuses.otherReason.hintText"
-    val optionsList = options(form, reasonableExcuses, hintTextMessageKey)
+    val hintTextMessageKey = if(showAgentHintText) "agent.reasonableExcuses.otherReason.hintText" else "reasonableExcuses.otherReason.hintText"
+    val optionsList = options(form, reasonableExcuses, hintTextMessageKey, showHintText)
     val divider = RadioItem(
       divider = Some(messages(messageKeyForDivider))
     )

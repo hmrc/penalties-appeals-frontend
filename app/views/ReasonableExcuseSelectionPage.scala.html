@@ -26,7 +26,7 @@
         link: components.link
 )
 
-@(form: Form[_], radioOptions: Seq[RadioItem], pageMode: PageMode, isAgentHintText: Boolean)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], radioOptions: Seq[RadioItem], pageMode: PageMode, isAgentHintText: Boolean, showHintText: Boolean)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = if(userRequest.isAgent && userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission)){
         messages("agent.reasonableExcuses.headingAndTitle")}else{messages("reasonableExcuses.headingAndTitle")
@@ -44,7 +44,7 @@
           items = radioOptions,
           legendClasses = "govuk-fieldset__legend--l",
           legendAsPageHeading = true,
-          hint = if(isAgentHintText) Some(Html(messages("agent.reasonableExcuses.hintText"))) else Some(Html(messages("reasonableExcuses.hintText")))
+          hint = if(!showHintText) None else if(isAgentHintText) Some(Html(messages("agent.reasonableExcuses.hintText"))) else Some(Html(messages("reasonableExcuses.hintText")))
         )
 
         @button("common.continue")

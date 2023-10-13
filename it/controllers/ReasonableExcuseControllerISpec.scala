@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, ShowReasonableExcuseHintText}
 import controllers.testHelpers.AuthorisationTest
 import models.PenaltyTypeEnum
 import org.jsoup.Jsoup
@@ -31,7 +32,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
+class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
   val controller: ReasonableExcuseController = injector.instanceOf[ReasonableExcuseController]
 
   "GET /reason-for-missing-deadline" should {
@@ -143,6 +144,23 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       documentParsed.select(".govuk-radios__hint").get(0).text() shouldBe "You should only choose this if your reason is not covered by any of the other options."
     }
 
+    "the call succeeds - not show hint text when feature switch is disabled" in new UserAnswersSetup(userAnswers(Json.obj(
+      SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+      SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+      SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+      SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
+    ))) {
+      disableFeatureSwitch(ShowReasonableExcuseHintText)
+      successfulFetchReasonableExcuseResponse
+      AuthStub.authorised()
+      val result = controller.onPageLoad()(fakeRequest)
+      status(result) shouldBe Status.OK
+      val documentParsed = Jsoup.parse(contentAsString(result))
+      documentParsed.select("#value-hint").isEmpty shouldBe true
+      documentParsed.select(".govuk-radios__hint").isEmpty shouldBe true
+    }
 
     "return 500 (ISE) when the list can not be retrieved from the backend" in new UserAnswersSetup(userAnswers(Json.obj())) {
       failedFetchReasonableExcuseListResponse()
