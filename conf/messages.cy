@@ -74,7 +74,7 @@ penaltyType.latePayment.multiple = Cosbau am dalu’n hwyr
 # ----------------------------------------------------------
 reasonableExcuses.headingAndTitle = Beth oedd y rheswm dros fethu’r dyddiad cau ar gyfer TAW?
 agent.reasonableExcuses.headingAndTitle = Beth oedd y rheswm dros yr oedi?
-reasonableExcuses.hintText = If more than one reason applies, choose the one that had the most direct impact on your ability to meet the deadline.
+reasonableExcuses.hintText = Os oes mwy nag un rheswm, dewiswch yr un a gafodd yr effaith fwyaf uniongyrchol ar eich gallu i fodloni’r dyddiad cau.
 agent.reasonableExcuses.hintText = If more than one reason applies, choose the one that had the most direct impact on your client’s ability to meet the deadline.
 reasonableExcuses.bereavementReason = Profedigaeth (roedd rhywun wedi marw)
 reasonableExcuses.crimeReason = Trosedd
@@ -83,7 +83,7 @@ reasonableExcuses.healthReason = Iechyd
 reasonableExcuses.lossOfStaffReason = Colli staff hanfodol i’r broses TAW
 reasonableExcuses.technicalIssuesReason = Trafferthion technoleg
 reasonableExcuses.otherReason = Nid yw’r rheswm yn berthnasol i unrhyw un o’r categorïau eraill
-reasonableExcuses.otherReason.hintText = You should only choose this if your reason is not covered by any of the other options.
+reasonableExcuses.otherReason.hintText = Ni ddylech ddewis hyn oni bai bod eich rheswm heb ei gwmpasu gan unrhyw un o’r opsiynau eraill.
 agent.reasonableExcuses.otherReason.hintText = You should only choose this if the reason is not covered by any of the other options.
 reasonableExcuses.breakerText = neu
 reasonableExcuses.error.required = Dewiswch reswm dros fethu’r dyddiad cau ar gyfer TAW
