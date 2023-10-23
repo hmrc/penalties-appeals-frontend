@@ -17,6 +17,8 @@
 package config
 
 import base.SpecBase
+import models.AuthRequest
+import play.api.mvc.AnyContent
 import views.html.errors.ErrorTemplate
 
 class ErrorHandlerSpec extends SpecBase {

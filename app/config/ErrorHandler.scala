@@ -16,14 +16,14 @@
 
 package config
 
-import play.api.i18n.MessagesApi
+import javax.inject.{Inject, Singleton}
+import models.AuthRequest
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{Request, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.errors.ErrorTemplate
-
-import javax.inject.{Inject, Singleton}
 
 @Singleton
 class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi)(implicit appConfig: AppConfig)
@@ -31,6 +31,10 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: Mess
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html = {
     errorTemplate(pageTitle, heading, message)
+  }
+
+  override def fallbackClientErrorTemplate(implicit request: Request[_]): Html = {
+    errorTemplate(messagesApi("incompleteSessionData.headingAndTitle")(request.lang(messagesApi)), messagesApi("incompleteSessionData.headingAndTitle")(request.lang(messagesApi)), messagesApi("incompleteSessionData.p1")(request.lang(messagesApi)), linkToRestart = true)
   }
 
   def showInternalServerError(implicit request: Request[_]): Result = InternalServerError(internalServerErrorTemplate)

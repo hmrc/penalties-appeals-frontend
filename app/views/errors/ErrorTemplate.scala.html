@@ -16,10 +16,20 @@
 
 @import config.AppConfig
 
-@this(layout: Layout)
+@this(layout: Layout, link: components.link)
 
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(pageTitle: String, heading: String, message: String, linkToRestart: Boolean = false)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 @layout(pageTitle = pageTitle, backLinkEnabled = false) {
     <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
     <p class="govuk-body">@{Text(message).asHtml}</p>
+    @if(linkToRestart) {
+     <p class="govuk-body">
+       @link(
+         link = appConfig.penaltiesFrontendUrl,
+         messageKey = "incompleteSessionData.link",
+         button = false,
+         id = Some("penalties-link")
+       )
+     </p>
+    }
 }
