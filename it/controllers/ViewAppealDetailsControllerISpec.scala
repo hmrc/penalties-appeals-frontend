@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, ShowViewAppealDetailsPage}
+import config.featureSwitches.FeatureSwitching
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status
@@ -62,7 +62,6 @@ class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with Fe
       SessionKeys.dateOfCrime -> LocalDate.parse("2023-11-01"),
       SessionKeys.lateAppealReason -> "I forgot"
     ), journeyId = Some("5678"))) {
-      enableFeatureSwitch(ShowViewAppealDetailsPage)
       setFeatureDate(Some(LocalDate.of(2023, 8 ,14)))
       val request: Future[Result] = controller.onPageLoad()(fakeRequestWithPreviousId)
       await(request).header.status shouldBe Status.OK
@@ -130,7 +129,6 @@ class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with Fe
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
       SessionKeys.lateAppealReason -> "I forgot"
     ), journeyId = Some("5678"))){
-      enableFeatureSwitch(ShowViewAppealDetailsPage)
       val request: Future[Result] = controller.onPageLoad()(fakeRequest)
       await(request).header.status shouldBe Status.SEE_OTHER
       await(request).header.headers("Location") shouldBe controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData().url
@@ -154,17 +152,6 @@ class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with Fe
       request.status shouldBe Status.SEE_OTHER
     }
 
-    s"return 404 (NOT_FOUND) when the feature switch {$ShowViewAppealDetailsPage} is disabled"  in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.previouslySubmittedJourneyId -> "1234",
-      SessionKeys.reasonableExcuse -> "crime",
-      SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
-      SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
-      SessionKeys.lateAppealReason -> "I forgot"
-    ))) {
-      disableFeatureSwitch(ShowViewAppealDetailsPage)
-      val request: Future[Result] = controller.onPageLoad()(fakeRequestWithPreviousId)
-      await(request).header.status shouldBe Status.NOT_FOUND
-    }
+
   }
 }
