@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage, ShowViewAppealDetailsPage}
+import config.featureSwitches.{FeatureSwitching, ShowDigitalCommsMessage}
 import controllers.predicates.AuthPredicate
 import models.PenaltyTypeEnum
 import play.api.Configuration
@@ -65,10 +65,9 @@ class AppealConfirmationController @Inject()(
                   val (readablePeriodStart, readablePeriodEnd) = (dateToString(startDate), dateToString(endDate))
                   val isObligationAppeal: Boolean = userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)
                   val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
-                  val showViewDetailsLink = isEnabled(ShowViewAppealDetailsPage)
                   val isAgent: Boolean = request.isAgent
                   val vrn = request.vrn
-                  Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent, vrn, showViewDetailsLink))
+                  Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent, vrn))
                     .removingFromSession(SessionKeys.allKeys: _*)
                 }
               )
