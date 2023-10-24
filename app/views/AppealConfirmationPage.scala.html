@@ -22,7 +22,7 @@
         bullets: components.bullets,
         link: components.link)
 
-@(periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false, showDigitalCommsMessage: Boolean, appealType: PenaltyTypeEnum.Value, bothPenalties: String, isAgent: Boolean, vrn: String, showViewDetailsLink: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(periodStart: String, periodEnd: String, isObligationAppeal: Boolean = false, showDigitalCommsMessage: Boolean, appealType: PenaltyTypeEnum.Value, bothPenalties: String, isAgent: Boolean, vrn: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @penaltyType = @{
     (appealType, bothPenalties) match {
@@ -61,13 +61,13 @@
     <p class="govuk-body govuk-!-padding-top-4">@messages("appealConfirmation.p1")</p>
     <p class="govuk-body">@messages("appealConfirmation.p2", vrn)</p>
 
-    @if(showViewDetailsLink) {
+
         <p class ="govuk-body">
             <a class="govuk-link" href="@{controllers.routes.ViewAppealDetailsController.onPageLoad().url}" rel="noreferrer noopener" target="_blank" id="details-link">
                 @messages("appealConfirmation.appealDetailsLink") @messages("site.opensInNewTab")
             </a>
         </p>
-    }
+
 
     <h2 class="govuk-heading-m">@messages("appealConfirmation.whatHappensNext")</h2>
 

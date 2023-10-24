@@ -53,7 +53,6 @@ class FeatureSwitchingSpec extends SpecBase {
         NonJSRouting,
         ShowDigitalCommsMessage,
         ShowFullAppealAgainstTheObligation,
-        ShowViewAppealDetailsPage,
         ShowReasonableExcuseHintText
       )
     }

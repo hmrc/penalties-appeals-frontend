@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.ShowViewAppealDetailsPage
 import helpers.SessionAnswersHelper
 import models.UserRequest
 import models.appeals.QuestionAnswerRow
@@ -55,7 +54,6 @@ class ViewAppealDetailsControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
     when(mockConfig.getOptional[String](ArgumentMatchers.eq("feature.switch.time-machine-now"))(any())).thenReturn(Some("2023-08-14"))
-    when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-view-appeal-details-page"))(any())).thenReturn(true)
     when(mockSessionAnswersHelper.getSubmittedAnswers(any())(any(), any())).thenReturn(Seq(QuestionAnswerRow("Key", "Value", "")))
     when(mockSessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(any())(any(), any())).thenReturn(Seq(QuestionAnswerRow("Key2", "Value2", "")))
     val controller = new ViewAppealDetailsController(viewAppealDetailsPage, mockSessionAnswersHelper, mockSessionService, errorHandler)(mcc, mockConfig, mockAppConfig, authPredicate, ec)
@@ -98,13 +96,6 @@ class ViewAppealDetailsControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData().url
-        }
-
-        s"return 404 (NOT_FOUND) when the feature switch (${ShowViewAppealDetailsPage.name}) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockConfig.get[Boolean](ArgumentMatchers.eq("feature.switch.show-view-appeal-details-page"))(any())).thenReturn(false)
-          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-          status(result) shouldBe NOT_FOUND
         }
       }
 

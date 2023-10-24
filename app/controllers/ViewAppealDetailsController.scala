@@ -16,10 +16,10 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, ShowViewAppealDetailsPage}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.AuthPredicate
 import helpers.SessionAnswersHelper
+import config.featureSwitches.FeatureSwitching
 import models.UserRequest
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, Messages}
@@ -41,13 +41,10 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                                             val config: Configuration,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
-                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching{
 
   def onPageLoad(): Action[AnyContent] = authorise.async {
     implicit request => {
-      if (!isEnabled(ShowViewAppealDetailsPage)) {
-        Future(NotFound(errorHandler.notFoundTemplate))
-      } else {
         implicit val messages: Messages = request.messages
         request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
           logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No previously submitted journey ID was found in the session for VRN: ${request.vrn} - " +
@@ -82,7 +79,7 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
             }
           }
         )
-      }
+
     }
   }
 }
