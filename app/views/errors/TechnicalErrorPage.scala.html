@@ -18,8 +18,8 @@
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("incompleteSessionData.headingAndTitle"), backLinkEnabled = false, isAuthorised = false) {
-    <h1 class="govuk-heading-l">@messages("incompleteSessionData.headingAndTitle")</h1>
+@layout(pageTitle = messages("incompleteSessionData.headingAndTitle"), backLinkEnabled = false, isAuthorised = false, showSignOut = false) {
+    <h1 class="govuk-heading-l" id="page-heading">@messages("incompleteSessionData.headingAndTitle")</h1>
     <p class="govuk-body">@messages("incompleteSessionData.p1")</p>
     <p class="govuk-body">
         @link(

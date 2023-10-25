@@ -17,17 +17,18 @@
 package config
 
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.Results.{BadRequest, Forbidden, InternalServerError, NotFound}
+import play.api.i18n.MessagesApi
+import play.api.mvc.Results.{BadRequest, InternalServerError, NotFound, Redirect}
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
-import views.html.errors.{ErrorTemplate, TechnicalErrorPage}
+import views.html.errors.ErrorTemplate
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, technicalIssuesPage: TechnicalErrorPage, val messagesApi: MessagesApi)(implicit appConfig: AppConfig)
+class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi)(implicit appConfig: AppConfig)
     extends FrontendErrorHandler {
 
   private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
@@ -36,7 +37,7 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, technicalIssuesPage: 
     statusCode match {
       case play.mvc.Http.Status.BAD_REQUEST => Future.successful(BadRequest(badRequestTemplate(request)))
       case play.mvc.Http.Status.NOT_FOUND   => Future.successful(NotFound(notFoundTemplate(request)))
-      case play.mvc.Http.Status.FORBIDDEN   => Future.successful(Forbidden(technicalIssuesPage()(rhToRequest(request), messagesApi.preferred(request), appConfig)))
+      case play.mvc.Http.Status.FORBIDDEN   => Future(Redirect(controllers.routes.TechnicalErrorController.onPageLoad()))
       case _                                => Future.successful(Results.Status(statusCode)(fallbackClientErrorTemplate(request)))
     }
   }
