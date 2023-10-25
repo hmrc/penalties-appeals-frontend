@@ -17,13 +17,9 @@
 package controllers
 
 import base.SpecBase
-import views.html.errors.TechnicalErrorPage
-import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.FORBIDDEN
-import play.api.mvc.Result
 import play.api.test.Helpers._
-
-import scala.concurrent.Future
+import views.html.errors.TechnicalErrorPage
 
 class TechnicalErrorControllerSpec extends SpecBase {
 
