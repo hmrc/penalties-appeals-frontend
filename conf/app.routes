@@ -179,6 +179,7 @@ POST          /you-can-appeal-this-penalty                     controllers.YouCa
 GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()
 GET        /problem-with-service                                controllers.ProblemWithServiceController.onPageLoad()
 GET        /duplicate-appeal                                   controllers.DuplicateAppealController.onPageLoad()
+GET        /technical-error                                     controllers.TechnicalErrorController.onPageLoad()
 
 # Timeout pages
 GET        /timeout                                            controllers.TimeoutController.onPageLoad()

@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.AppConfig
+package controllers
 
-@this(layout: Layout)
+import base.SpecBase
+import play.api.http.Status.FORBIDDEN
+import play.api.test.Helpers._
+import views.html.errors.TechnicalErrorPage
 
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
-@layout(pageTitle = pageTitle, backLinkEnabled = false) {
-    <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
-    <p class="govuk-body">@{Text(message).asHtml}</p>
+class TechnicalErrorControllerSpec extends SpecBase {
+
+  val technicalErrorPage: TechnicalErrorPage = injector.instanceOf[TechnicalErrorPage]
+
+  val controller = new TechnicalErrorController(
+    technicalErrorPage
+  )(mcc, appConfig)
+
+  "onPageLoad" should {
+    "show the page with a 403 status code (FORBIDDEN)" in {
+      status(controller.onPageLoad()(userRequestWithCorrectKeys)) shouldBe FORBIDDEN
+    }
+  }
 }
