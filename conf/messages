@@ -632,3 +632,7 @@ viewAppealDetails.reason = Reason for missing the VAT deadline
 viewAppealDetails.warn.1 = Print this page if you want to keep it.
 viewAppealDetails.warn.2 = You will not be able to return to these appeal details later.
 viewAppealDetails.printThisPage = Print this page
+
+# Technical Error page
+# -----------------------------------------------------------
+technicalError.link = Return to VAT penalties and appeals

@@ -34,12 +34,16 @@ class TechnicalErrorPageSpec extends SpecBase with ViewBehaviours {
 
   implicit val doc: Document = asDocument(applyView())
 
+  object TechnicalErrorMessages {
+    val technicalLink = "Return to VAT penalties and appeals"
+  }
+
   "TechnicalErrorPage" should {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> heading,
       Selectors.pElementIndex(2) -> p1,
-      Selectors.link -> link
+      Selectors.link -> TechnicalErrorMessages.technicalLink
     )
 
     behave like pageWithExpectedMessages(expectedContent)
