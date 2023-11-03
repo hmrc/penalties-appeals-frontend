@@ -46,3 +46,7 @@ case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {
 case object ShowReasonableExcuseHintText extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-reasonable-excuse-hint-text"
 }
+
+case object ShowCanYouPayYourVATBillPages extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.show-can-you-pay-your-vat-bill-pages"
+}
