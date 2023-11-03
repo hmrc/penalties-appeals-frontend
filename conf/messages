@@ -643,3 +643,7 @@ paidYourVat.headingAndTitle = If you’ve paid your VAT
 paidYourVat.p1 = It can take up to 5 days for payments to show on your payment history, depending on the payment method you choose.
 paidYourVat.p2 = Once the payment clears, appeal using the link on your VAT penalties and appeals page.
 paidYourVat.link = Contact HMRC if you paid the VAT more than 5 days ago
+otherWaysToAppeal.headingAndTitle = Other ways to appeal
+otherWaysToAppeal.p1 = You can send a letter to HMRC to ask for a penalty review, even if you have not paid your VAT.
+otherWaysToAppeal.link.1 = Alternatively, you can
+otherWaysToAppeal.link.2 = appeal to the tax tribunal

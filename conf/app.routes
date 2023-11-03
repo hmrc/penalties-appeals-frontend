@@ -216,3 +216,4 @@ GET        /appeal-details                                     controllers.ViewA
 
 # Find out how to appeal
 GET        /if-youve-paid-your-VAT                             controllers.IfYouvePaidYourVATController.onPageLoad()
+GET        /other-ways-to-appeal                               controllers.OtherWaysToAppealController.onPageLoad()
