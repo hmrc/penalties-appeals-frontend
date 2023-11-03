@@ -68,8 +68,12 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
     "onPageLoad" when {
       "the user is authorised" must {
         "return 200 (OK) and the correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
+          val result: Future[Result] = controller.onPageLoad()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "no")))
           status(result) shouldBe OK
         }
 

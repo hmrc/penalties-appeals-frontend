@@ -66,6 +66,7 @@ object SessionKeys {
   val appealAfterPaymentPlanSetUp = "appealAfterPaymentPlanSetUp"
   val fileNames = "fileNames"
   val doYouWantToPayNow = "doYouWantToPayNow"
+  val willUserPay = "willUsePay" //TODO: This should be set in the Can You Pay Your VAT Bill page
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -111,6 +112,7 @@ object SessionKeys {
     firstPenaltyCommunicationDate,
     secondPenaltyCommunicationDate,
     doYouWantToPayNow,
-    appealAfterPaymentPlanSetUp
+    appealAfterPaymentPlanSetUp,
+    willUserPay
   )
 }

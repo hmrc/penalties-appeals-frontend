@@ -18,15 +18,16 @@ package controllers
 
 import base.SpecBase
 import config.featureSwitches.ShowFindOutHowToAppealJourney
+import models.session.UserAnswers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.ArgumentMatchers
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import views.html.YouCanAppealOnlinePage
 import org.mockito.Mockito.{reset, when}
-import play.api.http.Status.{FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SEE_OTHER}
-import play.api.libs.json.Json
+import play.api.http.Status.{BAD_REQUEST, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SEE_OTHER}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
@@ -37,28 +38,38 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class YouCanAppealOnlineControllerSpec extends SpecBase {
 
-  val youCanAppealOnlinePage = injector.instanceOf[YouCanAppealOnlinePage]
-  implicit val ec = ExecutionContext.Implicits.global
+  val youCanAppealOnlinePage: YouCanAppealOnlinePage = injector.instanceOf[YouCanAppealOnlinePage]
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
+    val sessionAnswers: UserAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
     reset(mockAuthConnector)
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
 
+    when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(sessionAnswers)))
+
+    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+      any(), any())
+    ).thenReturn(authResult)
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new YouCanAppealOnlineController(
       youCanAppealOnlinePage,
       errorHandler
-    )(mcc, mockAppConfig, authPredicate, dataRequiredAction, dataRetrievalAction, config, ec)
+    )(mcc, mockAppConfig, authPredicate, dataRequiredAction, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
   }
 
   "YouCanAppealOnlineAfterYouPayController" should {
     "onPageLoad" when {
       "the user is authorised" must {
         "return OK and the correct view" in new Setup(AuthTestModels.successfulAuthResult) {
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
@@ -95,6 +106,39 @@ class YouCanAppealOnlineControllerSpec extends SpecBase {
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+
+    "onSubmit" when {
+      "the user is authorised" must {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct" +
+          " - routing when a valid option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "no")))
+          status(result) shouldBe SEE_OTHER
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.doYouWantToPayNow -> "no")
+        }
+      }
+
+      "the user is unauthorised" when {
+        "return 400 (BAD_REQUEST) when a no option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "")))
+          status(result) shouldBe BAD_REQUEST
+        }
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }

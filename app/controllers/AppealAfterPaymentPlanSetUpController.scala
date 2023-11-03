@@ -51,7 +51,7 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(AppealAfterPaymentPlanSetUpPage, mode)
 
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
 
     implicit request =>
       if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
@@ -62,10 +62,13 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
         )
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
         val postAction = controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
-        Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
+        val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "no")
+        sessionService.updateAnswers(willUserPay).map { //TODO: This should be moved to the Can You Pay Your VAT Bill page when that is implemented
+          _ => Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
+        }
       }
       else {
-        errorHandler.notFoundError(request)
+        Future(errorHandler.notFoundError(request))
       }
 
   }

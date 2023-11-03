@@ -83,6 +83,8 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val timeToPayUrl: String = config.get[String]("urls.timeToPay")
 
+  lazy val payYourVAT: String = config.get[String]("urls.payYourVAT")
+
   lazy val vatOverviewUrl: String = config.get[String]("urls.vatOverview")
 
   lazy val contactFrontendServiceId: String = config.get[String]("contact-frontend.serviceId")

@@ -16,18 +16,22 @@
 
 @this(
     layout: Layout,
+    formHelper: FormWithCSRF,
     link: components.link,
     radio: components.radios,
     button: components.button,
     pageHeader: components.pageHeader
 )
 
-@(form: Form[_], radioOptions: Seq[RadioItem])(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @layout(
     pageTitle = messages("youCanAppealOnline.headingAndTitle"),
     isPageFullWidth = false,
-    backLinkEnabled = false
+    backLinkEnabled = false,
+    formHasErrors = form.errors.nonEmpty,
+    formErrors = form.errors,
+    optPageMode = Some(pageMode)
 ) {
     @pageHeader(Some(messages("youCanAppealOnline.headingAndTitle")))
 
@@ -35,14 +39,16 @@
 
     <p class="govuk-body">@messages("youCanAppealOnline.p2")</p>
 
-    @radio(
-        form = form,
-        legendContent = messages("youCanAppealOnline.radioHeading"),
-        items = radioOptions,
-        legendClasses = "govuk-fieldset__legend govuk-fieldset__legend--m",
-        legendAsPageHeading = true,
-        legendId = "radio-heading"
-    )
+    @formHelper(action = postAction) {
+        @radio(
+            form = form,
+            legendContent = messages("youCanAppealOnline.radioHeading"),
+            items = radioOptions,
+            legendClasses = "govuk-fieldset__legend govuk-fieldset__legend--m",
+            legendAsPageHeading = true,
+            legendId = "radio-heading"
+        )
 
-    @button("common.continue")
+        @button("common.continue")
+    }
 }

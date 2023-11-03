@@ -24,6 +24,8 @@ import views.behaviours.ViewBehaviours
 import views.html.YouCanAppealOnlinePage
 import viewtils.RadioOptionHelper
 import messages.YouCanAppealOnlineAfterYouPayMessages._
+import models.pages.{PageMode, YouCanAppealOnlinePage}
+import models.NormalMode
 
 class YouCanAppealOnlinePageSpec extends SpecBase with ViewBehaviours {
   "YouCanAppealOnline" should {
@@ -37,7 +39,8 @@ class YouCanAppealOnlinePageSpec extends SpecBase with ViewBehaviours {
     val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider,
       noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
     def applyView(form: Form[_]) = youCanAppealOnlinePage(form,
-      radioOptions)(implicitly, implicitly, userRequestWithCorrectKeys)
+      radioOptions, controllers.routes.YouCanAppealOnlineController.onSubmit(),
+      pageMode = PageMode(YouCanAppealOnlinePage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys)
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

@@ -18,10 +18,12 @@ package controllers
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
+import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, OK}
-import play.api.mvc.Result
+import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import utils.IntegrationSpecCommonBase
+import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class YouCanAppealOnlineControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
 
@@ -43,4 +45,28 @@ class YouCanAppealOnlineControllerISpec extends IntegrationSpecCommonBase with A
     }
   }
 
+  "POST /you-can-appeal-online-after-you-pay" when {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers()) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody("value" -> "no")
+      val request: Result = await(controller.onSubmit()(fakeRequestWithCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe routes.OtherWaysToAppealController.onPageLoad().url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.doYouWantToPayNow).get shouldBe "no"
+    }
+
+    "return 400 (BAD_REQUEST)" when {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
+        val request: Result = await(controller.onSubmit()(fakeRequest))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "the value is invalid" in new UserAnswersSetup(userAnswers()) {
+        val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
+        val request: Result = await(controller.onSubmit()(fakeRequestWithInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+    }
+
+    runControllerPredicateTests(controller.onPageLoad(), "POST", "/you-can-appeal-online-after-you-pay")
+  }
 }
