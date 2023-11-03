@@ -60,7 +60,7 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
           SessionKeys.appealAfterPaymentPlanSetUp,
           request.answers
         )
-        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForPaymentPlanSetUpPage(formProvider)
+        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
         val postAction = controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
         Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
       }
@@ -76,7 +76,7 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
       .fold(
         form => {
           val postAction = controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
-          val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForPaymentPlanSetUpPage(form)
+          val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
           Future(BadRequest(appealAfterPaymentPlanSetUpPage(form, radioOptionsToRender, postAction, pageMode(NormalMode))))
         },
         setUpPaymentPlan => {

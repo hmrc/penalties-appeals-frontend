@@ -18,7 +18,7 @@ package viewtils
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.Aliases.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
@@ -58,7 +58,7 @@ object RadioOptionHelper {
     )
   }
 
-  def yesNoRadioOptions(form: Form[_], formKey: String = "value")(implicit messages: Messages): Seq[RadioItem] = {
+  def yesNoRadioOptions(form: Form[_], formKey: String = "value", noContent: String = "common.radioOption.no", noHint: Option[String] = None)(implicit messages: Messages): Seq[RadioItem] = {
     Seq(
       RadioItem(
         value = Some("yes"),
@@ -67,8 +67,11 @@ object RadioOptionHelper {
       ),
       RadioItem(
         value = Some("no"),
-        content = Text(messages("common.radioOption.no")),
-        checked = form(formKey).value.contains("no")
+        content = Text(messages(noContent)),
+        checked = form(formKey).value.contains("no"),
+        hint = noHint.map {
+          hint => Hint(content = HtmlContent(messages(hint)))
+        }
       )
     )
   }
@@ -84,22 +87,6 @@ object RadioOptionHelper {
         value = Some("client"),
         content = Text(messages("agents.whoPlannedToSubmitVATReturn.client")),
         checked = form("value").value.contains("client")
-      )
-    )
-  }
-
-  def radioOptionsForPaymentPlanSetUpPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
-    Seq(
-      RadioItem(
-        value = Some("yes"),
-        content = Text(messages("common.radioOption.yes")),
-        checked = form("value").value.contains("yes")
-      ),
-      RadioItem(
-        value = Some("no"),
-        content = Text(messages("common.radioOption.no.2")),
-        checked = form("value").value.contains("no"),
-        hint=Some(Hint(content = Text(messages("paymentPlanSetUp.hint"))))
       )
     )
   }

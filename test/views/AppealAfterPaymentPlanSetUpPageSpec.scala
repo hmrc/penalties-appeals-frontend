@@ -41,7 +41,7 @@ class AppealAfterPaymentPlanSetUpPageSpec extends SpecBase with ViewBehaviours {
 
     }
     val formProvider = AppealAfterPaymentPlanSetUpForm.appealAfterPaymentPlanSetUpForm
-    val radioOptions = RadioOptionHelper.radioOptionsForPaymentPlanSetUpPage(formProvider)
+    val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = appealAfterPaymentPlanSetUpPage
       .apply(form, radioOptions,

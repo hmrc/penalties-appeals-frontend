@@ -13,6 +13,7 @@ common.acceptAndSend = Derbyn ac anfon
 common.radioOption.yes = Iawn
 common.radioOption.no = Na
 common.radioOption.no.2 = Na, hoffwn i wybod am y dulliau eraill o apelio
+common.radioOption.no.hint = Bydd llog yn cronni yn erbyn y TAW sydd heb ei thalu, hyd nes i chi dalu’r TAW neu drefnu cynllun talu.
 common.radioOption.unknown = Nid wyf yn gwybod
 common.penaltyYouAreAppealing = Y gosb yr ydych yn apelio yn ei herbyn yw
 common.penaltiesYouAreAppealing = Y cosbau yr ydych yn apelio yn eu herbyn yw
@@ -644,17 +645,28 @@ paidYourVat.headingAndTitle = Os ydych wedi talu’ch TAW
 paidYourVat.p1 = Gall gymryd hyd at 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddewiswch.
 paidYourVat.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
 paidYourVat.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrnod yn ôl
+
+# Other Ways To Appeal
+# -----------------------------------------------------------
 otherWaysToAppeal.headingAndTitle = Dulliau eraill o apelio
 otherWaysToAppeal.p1 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad ydych wedi cyflwyno Ffurflen TAW neu dalu’ch TAW.
 otherWaysToAppeal.link.1 = Fel arall, gallwch
 otherWaysToAppeal.link.2 = apelio ar y tribiwnlys treth
 paidYourVat.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrnod yn ôl
 
+# You Can Appeal Online After Paying
+# -----------------------------------------------------------
+youCanAppealOnline.headingAndTitle = Gallwch apelio ar-lein ar ôl i chi dalu’ch TAW
+youCanAppealOnline.p1 = Gall gymryd 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddewiswch.
+youCanAppealOnline.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
+youCanAppealOnline.radioHeading = A hoffech dalu nawr?
+common.radioOption.no.2 = Na, hoffwn i wybod am y dulliau eraill o apelio
+youCanAppealOnline.error.required = Dewiswch ‘Iawn’ os ydych am dalu nawr
+
 # Appeal After Setting up Payment Plan
 # -----------------------------------------------------------
 paymentPlanSetUp.headingAndTitle = Gallwch apelio ar-lein ar ôl i chi drefnu cynllun talu
 paymentPlanSetUp.p1 = Os caiff cynllun talu ei gytuno gan CThEF, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
 paymentPlanSetUp.legendHeadingAndTitle = A hoffech drefnu cynllun talu?
-paymentPlanSetUp.hint = Bydd llog yn cronni yn erbyn y TAW sydd heb ei thalu, hyd nes i chi dalu’r TAW neu drefnu cynllun talu.
 paymentPlanSetUp.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrnod yn ôl
 AppealAfterPaymentPlanSetUpForm.error.required = Dewiswch ‘Iawn’ os hoffech drefnu cynllun talu
