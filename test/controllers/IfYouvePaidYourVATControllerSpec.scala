@@ -35,16 +35,17 @@ class IfYouvePaidYourVATControllerSpec extends SpecBase {
   val ifYouvePaidYourVATPage: IfYouvePaidYourVATPage = injector.instanceOf[IfYouvePaidYourVATPage]
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], fsEnabled: Boolean = true) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
     reset(mockSessionService)
+    reset(mockAppConfig)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
 
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowCanYouPayYourVATBillPages))).thenReturn(fsEnabled)
+    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowCanYouPayYourVATBillPages))).thenReturn(true)
 
     val controller = new IfYouvePaidYourVATController(ifYouvePaidYourVATPage, errorHandler)(mcc, mockAppConfig,
       authPredicate, dataRequiredAction, dataRetrievalAction, config, ec)
@@ -60,10 +61,11 @@ class IfYouvePaidYourVATControllerSpec extends SpecBase {
           status(result) shouldBe OK
         }
 
-        "return 404 (NOT_FOUND) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult, false) {
+        "return 404 (NOT_FOUND) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowCanYouPayYourVATBillPages))).thenReturn(false)
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
+          status(result) shouldBe NOT_FOUND
         }
       }
 

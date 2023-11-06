@@ -38,7 +38,7 @@ class IfYouvePaidYourVATController @Inject()(ifYouvePaidYourVATPage: IfYouvePaid
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
-      if(isEnabled(ShowCanYouPayYourVATBillPages)) {
+      if(appConfig.isEnabled(ShowCanYouPayYourVATBillPages)) {
         Future(Ok(ifYouvePaidYourVATPage()))
       } else {
         errorHandler.onClientError(request, NOT_FOUND, "")
