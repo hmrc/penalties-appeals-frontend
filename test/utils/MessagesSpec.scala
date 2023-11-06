@@ -30,8 +30,10 @@ class MessagesSpec extends SpecBase {
     "common.address.3",
     "honestyDeclaration.other",
     "otherReason.uploadEvidence.details.li.2",
-    "otherReason.uploadEvidence.details.li.3",
-    "otherReason.uploadEvidence.details.li.5"
+    "paidYourVat.headingAndTitle",
+    "paidYourVat.p1",
+    "paidYourVat.p2",
+    "paidYourVat.link"
   )
 
   private val MatchIncorrectTwoSingleQuotes = """\w+'{2}\w+""".r

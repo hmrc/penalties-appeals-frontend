@@ -18,9 +18,9 @@ package messages
 
 object IfYouvePaidYourVATMessages {
 
-  val title = "If you‘ve paid your VAT - Appeal a VAT penalty - GOV.UK"
+  val title = "If you’ve paid your VAT - Appeal a VAT penalty - GOV.UK"
 
-  val heading = "If you‘ve paid your VAT"
+  val heading = "If you’ve paid your VAT"
 
   val p1 = "It can take up to 5 days for payments to show on your payment history, depending on the payment method you choose."
 
