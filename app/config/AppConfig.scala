@@ -89,6 +89,8 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val contactHMRCLinkUrl: String = config.get[String]("urls.externalHMRCLinkUrl")
 
+  lazy val contactHMRCLinkWelshUrl: String = config.get[String]("urls.externalHMRCLinkWelshUrl")
+
   def betaFeedbackBackUrl(url: String): String = RedirectUrl(platformHost ++ url).get(absoluteRedirectPolicy).encodedUrl
 
   def betaFeedbackUrl(redirectUrl: String): String = s"${config.get[String]("urls.betaFeedbackUrl")}?service=$contactFrontendServiceId&backUrl=${betaFeedbackBackUrl(redirectUrl)}"

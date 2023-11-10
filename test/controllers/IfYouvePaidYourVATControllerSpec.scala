@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.ShowCanYouPayYourVATBillPages
+import config.featureSwitches.ShowFindOutHowToAppealJourney
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -45,7 +45,7 @@ class IfYouvePaidYourVATControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowCanYouPayYourVATBillPages))).thenReturn(true)
+    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new IfYouvePaidYourVATController(ifYouvePaidYourVATPage, errorHandler)(mcc, mockAppConfig,
       authPredicate, dataRequiredAction, dataRetrievalAction, config, ec)
@@ -63,7 +63,7 @@ class IfYouvePaidYourVATControllerSpec extends SpecBase {
 
         "return 404 (NOT_FOUND) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowCanYouPayYourVATBillPages))).thenReturn(false)
+          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe NOT_FOUND
         }

@@ -637,9 +637,9 @@ viewAppealDetails.printThisPage = Argraffu’r dudalen hon
 # -----------------------------------------------------------
 technicalError.link = Yn ôl i gosbau TAW ac apeliadau
 
-# If you've paid your VAT page
+# Find out how to appeal
 # -----------------------------------------------------------
-paidYourVat.headingAndTitle = If you’ve paid your VAT
-paidYourVat.p1 = It can take up to 5 days for payments to show on your payment history, depending on the payment method you choose.
-paidYourVat.p2 = Once the payment clears, appeal using the link on your VAT penalties and appeals page.
-paidYourVat.link = Contact HMRC if you paid the VAT more than 5 days ago (opens in a new tab).
+paidYourVat.headingAndTitle = Os ydych wedi talu’ch TAW
+paidYourVat.p1 = Gall gymryd 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddewiswch.
+paidYourVat.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
+paidYourVat.link = Contact HMRC if you paid the VAT more than 5 days ago

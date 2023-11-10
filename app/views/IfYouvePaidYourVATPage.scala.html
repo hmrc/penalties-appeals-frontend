@@ -35,7 +35,7 @@
 
     <p class="govuk-body">
         @link(
-            link = appConfig.contactHMRCLinkUrl,
+            link = if(messages.lang.code.equalsIgnoreCase("en")) appConfig.contactHMRCLinkUrl else appConfig.contactHMRCLinkWelshUrl,
             messageKey = "paidYourVat.link",
             button = false,
             id = Some("hmrc-contact-link"),

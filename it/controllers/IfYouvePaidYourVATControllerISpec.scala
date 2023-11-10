@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, ShowCanYouPayYourVATBillPages}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.mvc.Result
@@ -29,13 +29,13 @@ class IfYouvePaidYourVATControllerISpec extends IntegrationSpecCommonBase with A
 
   "GET /if-youve-paid-your-VAT" should {
     "return 200 (OK) when the user is authorised and feature switch is enabled" in new UserAnswersSetup(userAnswers()) {
-      enableFeatureSwitch(ShowCanYouPayYourVATBillPages)
+      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe OK
     }
 
     "return 404 (NOT_FOUND) when the user is authorised but the feature switch is disabled" in new UserAnswersSetup(userAnswers()) {
-      disableFeatureSwitch(ShowCanYouPayYourVATBillPages)
+      disableFeatureSwitch(ShowFindOutHowToAppealJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe NOT_FOUND
     }

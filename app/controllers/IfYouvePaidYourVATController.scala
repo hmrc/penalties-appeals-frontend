@@ -17,7 +17,7 @@
 package controllers
 
 import config.{AppConfig, ErrorHandler}
-import config.featureSwitches.{FeatureSwitching, ShowCanYouPayYourVATBillPages}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import javax.inject.Inject
 import play.api.Configuration
@@ -38,7 +38,7 @@ class IfYouvePaidYourVATController @Inject()(ifYouvePaidYourVATPage: IfYouvePaid
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
-      if(appConfig.isEnabled(ShowCanYouPayYourVATBillPages)) {
+      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
         Future(Ok(ifYouvePaidYourVATPage()))
       } else {
         errorHandler.onClientError(request, NOT_FOUND, "")
