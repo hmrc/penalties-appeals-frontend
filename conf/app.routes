@@ -214,5 +214,5 @@ GET        /you-cannot-go-back-to-appeal                       controllers.YouCa
 # Print appeal information
 GET        /appeal-details                                     controllers.ViewAppealDetailsController.onPageLoad()
 
-# If you've paid your VAT
+# Find out how to appeal
 GET        /if-youve-paid-your-VAT                             controllers.IfYouvePaidYourVATController.onPageLoad()
