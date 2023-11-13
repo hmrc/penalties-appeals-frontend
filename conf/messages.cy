@@ -642,4 +642,4 @@ technicalError.link = Yn ôl i gosbau TAW ac apeliadau
 paidYourVat.headingAndTitle = Os ydych wedi talu’ch TAW
 paidYourVat.p1 = Gall gymryd hyd at 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddewiswch.
 paidYourVat.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
-paidYourVat.link = Contact HMRC if you paid the VAT more than 5 days ago
+paidYourVat.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrnod yn ôl
