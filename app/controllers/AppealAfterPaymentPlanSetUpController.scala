@@ -19,33 +19,48 @@ package controllers
 import config.{AppConfig, ErrorHandler}
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import forms.AppealAfterPaymentPlanSetUpForm.appealAfterPaymentPlanSetUpForm
+import helpers.FormProviderHelper
 import javax.inject.Inject
+import models.pages.{AppealAfterPaymentPlanSetUpPage, PageMode}
+import models._
 import play.api.Configuration
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.govukfrontend.views.Aliases.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.AppealAfterPaymentPlanSetUp
+import utils.SessionKeys
+import views.html.AppealAfterPaymentPlanSetUpPage
+import viewtils.RadioOptionHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AppealAfterPaymentPlanSetUpController @Inject()(AppealAfterPaymentPlanSetUp: AppealAfterPaymentPlanSetUpController, errorHandler: ErrorHandler)
+class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetUpPage: AppealAfterPaymentPlanSetUpPage, errorHandler: ErrorHandler)
                                                      (implicit mcc: MessagesControllerComponents,
                                              appConfig: AppConfig,
                                              authorise: AuthPredicate,
                                              dataRequired: DataRequiredAction,
                                              dataRetrieval: DataRetrievalAction,
                                              val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(AppealAfterPaymentPlanSetUpPage, mode)
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
-    val pageMode: Mode => PageMode = (mode: Mode) => PageMode(AppealAfterPaymentPlanSetUp, mode)
 
-    implicit request => {
-      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        Future(Ok(AppealAfterPaymentPlanSetUp()))
-      } else {
-        errorHandler.onClientError(request, NOT_FOUND, "")
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+
+    implicit request =>
+      if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+        val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
+          appealAfterPaymentPlanSetUpForm,
+          SessionKeys.appealAfterPaymentPlanSetUp,
+          request.answers
+        )
+        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForPaymentPlanSetUpPage(formProvider)
+        Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, pageMode(NormalMode)))
       }
-    }
-  }
+      else {
+        errorHandler.notFoundError(request)
+      }
 
+  }
 }

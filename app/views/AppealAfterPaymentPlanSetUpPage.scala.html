@@ -35,11 +35,11 @@
 
 @radios(
 form = form,
-legendContent = messages("paymentPlanSetUp.headingAndTitle"),
+legendContent = messages("paymentPlanSetUp.legendHeadingAndTitle"),
 items = radioOptions,
 legendClasses = "govuk-fieldset__legend--l",
 legendAsPageHeading = true,
-hint = Some(Html(messages("paymentPlanSetUp.hint")))
+hint = None
 )
 
 @button("common.continue")

@@ -22,11 +22,13 @@ object AppealAfterPaymentPlanSetUpMessages {
 
   val h1 = "You can appeal online after you set up a payment plan"
 
-  val p1 = "If a payment plan is agreed by HMRC, appeal by using the link on you VAT penalties and appeals page"
+  val radioTitle = "Do you want to set up a payment plan?"
+
+  val p1 = "If a payment plan is agreed by HMRC, appeal by using the link on you VAT penalties and appeals page."
 
   val radioOption1 = "Yes"
 
-  val radioOption2 = "No, tell me about the other ways to appeal"
+  val radioOption2 = "No, tell me about other ways to appeal"
 
   val radioOption2HintText = "Until you pay the VAT or set up a payment plan, interest will build up against the unpaid VAT. You might also get additional penalties."
 
