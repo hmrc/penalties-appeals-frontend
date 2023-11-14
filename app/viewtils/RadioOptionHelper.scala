@@ -86,4 +86,19 @@ object RadioOptionHelper {
       )
     )
   }
+
+  def radioOptionsForPaymentPlanSetUpPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+    Seq(
+      RadioItem(
+        value = Some("yes"),
+        content = Text(messages("common.radioOption.yes")),
+        checked = form("value").value.contains("yes")
+      ),
+      RadioItem(
+        value = Some("no"),
+        content = Text(messages("common.radioOption.no.2")),
+        checked = form("value").value.contains("no")
+      )
+    )
+  }
 }
