@@ -643,3 +643,7 @@ paidYourVat.headingAndTitle = Os ydych wedi talu’ch TAW
 paidYourVat.p1 = Gall gymryd hyd at 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddewiswch.
 paidYourVat.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
 paidYourVat.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrnod yn ôl
+otherWaysToAppeal.headingAndTitle = Dulliau eraill o apelio
+otherWaysToAppeal.p1 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad ydych wedi cyflwyno Ffurflen TAW neu dalu’ch TAW.
+otherWaysToAppeal.link.1 = Fel arall, gallwch
+otherWaysToAppeal.link.2 = apelio ar y tribiwnlys treth

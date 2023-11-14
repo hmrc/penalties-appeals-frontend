@@ -1,0 +1,58 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+    layout: Layout,
+    link: components.link,
+    pageHeader: components.pageHeader
+)
+
+@()(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+
+@layout(
+    pageTitle = messages("otherWaysToAppeal.headingAndTitle"),
+    isPageFullWidth = false,
+    backLinkEnabled = false
+) {
+    @pageHeader(Some(messages("otherWaysToAppeal.headingAndTitle")))
+
+    <p class="govuk-body">@messages("otherWaysToAppeal.p1")</p>
+    <p class="govuk-body">
+        @messages("appealByLetter.inset.1")<br>
+        @messages("common.address.1")<br>
+        @messages("common.address.2")<br>
+        @messages("common.address.3")
+    </p>
+
+    <p class="govuk-body">
+        @messages("otherWaysToAppeal.link.1") @link(
+            link = appConfig.taxTribunalLink,
+            messageKey = "otherWaysToAppeal.link.2",
+            button = false,
+            isExternal = true,
+            id = Some("tax-tribunal-link")
+        )
+    </p>
+
+    <p class="govuk-body">
+        @link(
+            link = appConfig.penaltiesFrontendUrl,
+            messageKey = if(user.isAgent) "agent.common.returnToPenalties" else "common.returnToPenalties",
+            button = false,
+            id = Some("penalties-link")
+        )
+    </p>
+}
