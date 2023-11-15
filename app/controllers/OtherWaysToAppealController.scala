@@ -19,6 +19,9 @@ package controllers
 import config.{AppConfig, ErrorHandler}
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import models.pages.{OtherWaysToAppealPage, PageMode}
+import models.{Mode, NormalMode}
+
 import javax.inject.Inject
 import play.api.Configuration
 import play.api.i18n.I18nSupport
@@ -37,10 +40,13 @@ class OtherWaysToAppealController @Inject()(otherWaysToAppealPage: OtherWaysToAp
                                             val config: Configuration,
                                             ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(OtherWaysToAppealPage, mode)
+
+
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        Future(Ok(otherWaysToAppealPage()))
+        Future(Ok(otherWaysToAppealPage(pageMode(NormalMode))))
       } else {
         errorHandler.onClientError(request, NOT_FOUND, "")
       }

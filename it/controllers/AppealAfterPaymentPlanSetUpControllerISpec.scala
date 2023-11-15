@@ -18,10 +18,12 @@ package controllers
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
+import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, OK}
-import play.api.mvc.Result
+import play.api.mvc.{AnyContent, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import utils.IntegrationSpecCommonBase
+import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class AppealAfterPaymentPlanSetUpControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
 
@@ -39,5 +41,30 @@ class AppealAfterPaymentPlanSetUpControllerISpec extends IntegrationSpecCommonBa
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe NOT_FOUND
     }
+  }
+
+  "POST /if-youve-paid-your-VAT" should {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct" in new UserAnswersSetup(userAnswers()) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "no")
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe routes.OtherWaysToAppealController.onPageLoad().url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.appealAfterPaymentPlanSetUp).get shouldBe "no"
+    }
+
+    "return 400 (BAD_REQUEST)" when {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
+        val request = await(controller.onSubmit()(fakeRequest))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "the value is invalid" in new UserAnswersSetup(userAnswers()) {
+        val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
+        val request = await(controller.onSubmit()(fakeRequestWithInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+    }
+
+    runControllerPredicateTests(controller.onSubmit(), "POST", "/appeal-after-payment-plan-setup")
   }
 }

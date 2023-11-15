@@ -20,12 +20,13 @@
     pageHeader: components.pageHeader
 )
 
-@()(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@(pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @layout(
     pageTitle = messages("otherWaysToAppeal.headingAndTitle"),
     isPageFullWidth = false,
-    backLinkEnabled = false
+    backLinkEnabled = true,
+    optPageMode = Some(pageMode)
 ) {
     @pageHeader(Some(messages("otherWaysToAppeal.headingAndTitle")))
 

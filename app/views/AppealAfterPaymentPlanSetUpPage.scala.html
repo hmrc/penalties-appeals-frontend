@@ -22,25 +22,29 @@
         pageHeader: components.pageHeader
 )
 
-@(form: Form[_], radioOptions: Seq[RadioItem], pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
-@layout(
-    pageTitle = messages("paymentPlanSetUp.headingAndTitle"),
-    isPageFullWidth = false,
-    backLinkEnabled = false
-) {
-    @pageHeader(Some(messages("paymentPlanSetUp.headingAndTitle")))
+    @layout(
+        pageTitle = messages("paymentPlanSetUp.headingAndTitle"),
+        isPageFullWidth = false,
+        backLinkEnabled = false,
+        formHasErrors = form.errors.nonEmpty,
+        formErrors = form.errors,
+        optPageMode = Some(pageMode)
+    ) {
+        @pageHeader(Some(messages("paymentPlanSetUp.headingAndTitle")))
 
-    <p class="govuk-body">@messages("paymentPlanSetUp.p1")</p>
+        <p class="govuk-body">@messages("paymentPlanSetUp.p1")</p>
 
-@radios(
-form = form,
-legendContent = messages("paymentPlanSetUp.legendHeadingAndTitle"),
-items = radioOptions,
-legendClasses = "govuk-fieldset__legend--l",
-legendAsPageHeading = true,
-hint = None
-)
-
-@button("common.continue")
-}
+        @formHelper(action = postAction) {
+            @radios(
+                form = form,
+                legendContent = messages("paymentPlanSetUp.legendHeadingAndTitle"),
+                items = radioOptions,
+                legendClasses = "govuk-fieldset__legend--l",
+                legendAsPageHeading = true,
+                hint = None
+            )
+            @button("common.continue")
+        }
+    }

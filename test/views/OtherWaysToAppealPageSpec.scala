@@ -20,6 +20,8 @@ import base.{BaseSelectors, SpecBase}
 import views.behaviours.ViewBehaviours
 import views.html.OtherWaysToAppealPage
 import messages.OtherWaysToAppealMessages._
+import models.NormalMode
+import models.pages.{AppealAfterPaymentPlanSetUpPage, OtherWaysToAppealPage, PageMode}
 
 class OtherWaysToAppealPageSpec extends SpecBase with ViewBehaviours {
 
@@ -34,7 +36,7 @@ class OtherWaysToAppealPageSpec extends SpecBase with ViewBehaviours {
     val link2 = "#penalties-link"
   }
 
-  implicit val doc = asDocument(page()(implicitly, implicitly, userRequestWithCorrectKeys))
+  implicit val doc = asDocument(page(PageMode(OtherWaysToAppealPage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys))
 
   "OtherWaysToAppealPage" should {
     val expectedContent = Seq(

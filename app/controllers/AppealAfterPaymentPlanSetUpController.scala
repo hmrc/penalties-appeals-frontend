@@ -21,13 +21,16 @@ import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.AppealAfterPaymentPlanSetUpForm.appealAfterPaymentPlanSetUpForm
 import helpers.FormProviderHelper
+
 import javax.inject.Inject
 import models.pages.{AppealAfterPaymentPlanSetUpPage, PageMode}
 import models._
+import navigation.Navigation
 import play.api.Configuration
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.govukfrontend.views.Aliases.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
@@ -38,11 +41,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetUpPage: AppealAfterPaymentPlanSetUpPage, errorHandler: ErrorHandler)
                                                      (implicit mcc: MessagesControllerComponents,
-                                             appConfig: AppConfig,
-                                             authorise: AuthPredicate,
-                                             dataRequired: DataRequiredAction,
-                                             dataRetrieval: DataRetrievalAction,
-                                             val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                                      appConfig: AppConfig,
+                                                      authorise: AuthPredicate,
+                                                      dataRequired: DataRequiredAction,
+                                                      dataRetrieval: DataRetrievalAction,
+                                                      navigation: Navigation,
+                                                      sessionService: SessionService,
+                                                      val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(AppealAfterPaymentPlanSetUpPage, mode)
 
 
@@ -56,11 +61,31 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
           request.answers
         )
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForPaymentPlanSetUpPage(formProvider)
-        Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, pageMode(NormalMode)))
+        val postAction = controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
+        Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
       }
       else {
         errorHandler.notFoundError(request)
       }
 
+  }
+
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit userRequest => {
+    appealAfterPaymentPlanSetUpForm
+      .bindFromRequest()
+      .fold(
+        form => {
+          val postAction = controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
+          val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.radioOptionsForPaymentPlanSetUpPage(form)
+          Future(BadRequest(appealAfterPaymentPlanSetUpPage(form, radioOptionsToRender, postAction, pageMode(NormalMode))))
+        },
+        setUpPaymentPlan => {
+          val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.appealAfterPaymentPlanSetUp, setUpPaymentPlan)
+          sessionService.updateAnswers(updatedAnswers).map {
+            _ => Redirect(navigation.nextPage(AppealAfterPaymentPlanSetUpPage, NormalMode, Some(setUpPaymentPlan)))
+          }
+        }
+      )
+  }
   }
 }
