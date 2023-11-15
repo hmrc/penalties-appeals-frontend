@@ -19,6 +19,7 @@ package viewtils
 import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 object RadioOptionHelper {
@@ -83,6 +84,22 @@ object RadioOptionHelper {
         value = Some("client"),
         content = Text(messages("agents.whoPlannedToSubmitVATReturn.client")),
         checked = form("value").value.contains("client")
+      )
+    )
+  }
+
+  def radioOptionsForPaymentPlanSetUpPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+    Seq(
+      RadioItem(
+        value = Some("yes"),
+        content = Text(messages("common.radioOption.yes")),
+        checked = form("value").value.contains("yes")
+      ),
+      RadioItem(
+        value = Some("no"),
+        content = Text(messages("common.radioOption.no.2")),
+        checked = form("value").value.contains("no"),
+        hint=Some(Hint(content = Text(messages("paymentPlanSetUp.hint"))))
       )
     )
   }

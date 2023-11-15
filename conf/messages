@@ -12,6 +12,7 @@ common.acceptAndContinue = Accept and continue
 common.acceptAndSend = Accept and send
 common.radioOption.yes = Yes
 common.radioOption.no = No
+common.radioOption.no.2 = No, tell me about other ways to appeal
 common.radioOption.unknown = I do not know
 common.penaltyYouAreAppealing = The penalty you are appealing is
 common.penaltiesYouAreAppealing = The penalties you are appealing are
@@ -647,3 +648,11 @@ otherWaysToAppeal.headingAndTitle = Other ways to appeal
 otherWaysToAppeal.p1 = You can send a letter to HMRC to ask for a penalty review, even if you have not paid your VAT.
 otherWaysToAppeal.link.1 = Alternatively, you can
 otherWaysToAppeal.link.2 = appeal to the tax tribunal
+
+# Appeal After Setting up Payment Plan
+# -----------------------------------------------------------
+paymentPlanSetUp.headingAndTitle = You can appeal online after you set up a payment plan
+paymentPlanSetUp.p1 = If a payment plan is agreed by HMRC, appeal by using the link on you VAT penalties and appeals page.
+paymentPlanSetUp.legendHeadingAndTitle = Do you want to set up a payment plan?
+paymentPlanSetUp.hint = Until you pay the VAT or set up a payment plan, interest will build up against the unpaid VAT. You might also get additional penalties.
+paymentPlanSetUp.link = Contact HMRC if you paid the VAT more than 5 days ago
