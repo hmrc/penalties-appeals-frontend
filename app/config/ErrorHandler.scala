@@ -47,6 +47,6 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: Mess
 
   def showInternalServerError(implicit request: Request[_]): Result = InternalServerError(internalServerErrorTemplate)
 
-  def notFoundError(implicit request: Request[_]): Result = NotFound(internalServerErrorTemplate)
+  def notFoundError(implicit request: Request[_]): Result = NotFound(notFoundTemplate)
 
 }
