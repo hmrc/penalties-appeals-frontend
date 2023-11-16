@@ -68,7 +68,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     PenaltySelectionPage -> ((_, _) => routes.AppealStartController.onPageLoad()),
     AppealSinglePenaltyPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
     AppealCoverBothPenaltiesPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
-    AppealByLetterKickOutPage -> ((_, _) => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration())
+    AppealByLetterKickOutPage -> ((_, _) => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()),
+    OtherWaysToAppealPage -> ((_, _) => routes.AppealAfterPaymentPlanSetUpController.onPageLoad())
   )
 
   def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
@@ -150,7 +151,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     AppealSinglePenaltyPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     AppealCoverBothPenaltiesPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     PenaltySelectionPage -> ((answer, _, _) => routingForPenaltySelectionPage(answer, NormalMode)),
-    WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode))
+    WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
+    AppealAfterPaymentPlanSetUpPage -> ((answer, _, _) => routingForSetUpPaymentPlanPage(answer))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, jsEnabled: Option[Boolean] = None)
@@ -282,6 +284,16 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case _ =>
         logger.debug("[Navigation][routeForYouCanAppealPenalty]: unable to get answer - reloading 'YouCanAppealPenaltyPage'")
         routes.YouCanAppealPenaltyController.onPageLoad()
+    }
+  }
+
+  def routingForSetUpPaymentPlanPage(answer: Option[String]): Call = {
+    answer match {
+      case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.timeToPayUrl)
+      case Some(ans) if ans.equalsIgnoreCase("no") => routes.OtherWaysToAppealController.onPageLoad()
+      case _ =>
+        logger.debug("[Navigation][routingForSetUpPaymentPlanPage]: unable to get answer - reloading 'YouCanAppealPenaltyPage'")
+        routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
     }
   }
 

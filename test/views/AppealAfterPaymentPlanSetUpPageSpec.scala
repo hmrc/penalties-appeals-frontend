@@ -45,6 +45,7 @@ class AppealAfterPaymentPlanSetUpPageSpec extends SpecBase with ViewBehaviours {
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = appealAfterPaymentPlanSetUpPage
       .apply(form, radioOptions,
+        controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit(),
         pageMode = PageMode(AppealAfterPaymentPlanSetUpPage, NormalMode))
 
     implicit val doc: Document = asDocument(applyView(formProvider))

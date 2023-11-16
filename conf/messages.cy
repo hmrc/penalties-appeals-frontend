@@ -657,3 +657,4 @@ paymentPlanSetUp.p1 = Os caiff cynllun talu ei gytuno gan CThEF, gwnewch eich ap
 paymentPlanSetUp.legendHeadingAndTitle = A hoffech drefnu cynllun talu?
 paymentPlanSetUp.hint = Bydd llog yn cronni yn erbyn y TAW sydd heb ei thalu, hyd nes i chi dalu’r TAW neu drefnu cynllun talu.
 paymentPlanSetUp.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrnod yn ôl
+AppealAfterPaymentPlanSetUpForm.error.required = Dewiswch ‘Iawn’ os hoffech drefnu cynllun talu

@@ -18,15 +18,18 @@ package controllers
 
 import base.SpecBase
 import config.featureSwitches.ShowFindOutHowToAppealJourney
-import org.mockito.ArgumentMatchers
+import models.session.UserAnswers
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK, SEE_OTHER}
+import play.api.http.Status._
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import utils.SessionKeys
 import views.html.AppealAfterPaymentPlanSetUpPage
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,10 +38,18 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
   val AppealAfterPaymentPlanSetUpPage: AppealAfterPaymentPlanSetUpPage = injector.instanceOf[AppealAfterPaymentPlanSetUpPage]
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
-  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
+  class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
+    val sessionAnswers: UserAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
     reset(mockAuthConnector)
     reset(mockSessionService)
     reset(mockAppConfig)
+
+    when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
+      any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
+      any(), any())
+    ).thenReturn(authResult)
+    when(mockSessionService.getUserAnswers(any()))
+      .thenReturn(Future.successful(Some(sessionAnswers)))
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -48,10 +59,11 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new AppealAfterPaymentPlanSetUpController(AppealAfterPaymentPlanSetUpPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRequiredAction, dataRetrievalAction, config, ec)
+      authPredicate, dataRequiredAction, dataRetrievalAction, mainNavigator,
+      mockSessionService, config, ec)
   }
 
-  "IfYouvePaidYourVATController" should {
+  "AppealAfterPaymentPlanSetUpController" should {
 
     "onPageLoad" when {
       "the user is authorised" must {
@@ -82,6 +94,36 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
       }
     }
 
-  }
+    "onSubmit" when {
+      "the user is authorised" must {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing when a valid option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "no")))
+          status(result) shouldBe SEE_OTHER
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.appealAfterPaymentPlanSetUp -> "no")
+        }
+      }
+      "the user is unauthorised" when {
+        "return 400 (BAD_REQUEST) when a no option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "")))
+          status(result) shouldBe BAD_REQUEST
+        }
 
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
+  }
 }

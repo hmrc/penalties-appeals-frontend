@@ -94,6 +94,7 @@ case object ViewAppealDetailsPage extends Page
 
 case object AppealAfterPaymentPlanSetUpPage extends Page
 
+case object OtherWaysToAppealPage extends Page
 
 object Page {
   val allPages: Seq[Page] = Seq(
@@ -134,7 +135,8 @@ object Page {
     WhenDidHospitalStayEndPage,
     YouCannotGoBackToAppealPage,
     ViewAppealDetailsPage,
-    AppealAfterPaymentPlanSetUpPage
+    AppealAfterPaymentPlanSetUpPage,
+    OtherWaysToAppealPage
   )
 
   def find(pageName: String): Page = allPages.find(_.toString == pageName).get

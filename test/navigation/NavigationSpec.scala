@@ -18,6 +18,7 @@ package navigation
 
 import base.SpecBase
 import config.featureSwitches.ShowFullAppealAgainstTheObligation
+import controllers.routes
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers
@@ -108,7 +109,8 @@ class NavigationSpec extends SpecBase {
           (PenaltySelectionPage, controllers.routes.AppealStartController.onPageLoad().url),
           (AppealSinglePenaltyPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url),
           (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url),
-          (AppealByLetterKickOutPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url)
+          (AppealByLetterKickOutPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
+          (OtherWaysToAppealPage, controllers.routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url)
         )
       )
 
@@ -842,6 +844,16 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.nextPage(PenaltySelectionPage, NormalMode, Some("no"))(userRequestWithCorrectKeys)
         result.url shouldBe controllers.routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(NormalMode).url
       }
+
+      s"called with $AppealAfterPaymentPlanSetUpPage - redirects to time to pay service when user selects yes" in new Setup {
+        val result: Call = mainNavigator.nextPage(AppealAfterPaymentPlanSetUpPage, NormalMode, Some("yes"))(userRequestWithCorrectKeys)
+        result.url shouldBe appConfig.timeToPayUrl
+      }
+
+      s"called with $AppealAfterPaymentPlanSetUpPage - redirects to other ways to appeal page when user selects no" in new Setup {
+        val result: Call = mainNavigator.nextPage(AppealAfterPaymentPlanSetUpPage, NormalMode, Some("no"))(userRequestWithCorrectKeys)
+        result.url shouldBe controllers.routes.OtherWaysToAppealController.onPageLoad().url
+      }
     }
   }
 
@@ -1095,6 +1107,20 @@ class NavigationSpec extends SpecBase {
       "the user selects unknown" in {
         val result: MatchError = intercept[MatchError](mainNavigator.reverseCheckingRoutes(HonestyDeclarationPage,fakeRequestConverter(correctUserAnswers)))
         result.getMessage.contains("[Navigation][reverseCheckingRoutes] - Unknown page HonestyDeclarationPage") shouldBe true
+      }
+    }
+  }
+
+  "routingForSetUpPaymentPlanPage" should {
+    "redirect to the appropriate page in normal mode" when {
+      "user answers no " in new Setup {
+        val result: Call = mainNavigator.routingForSetUpPaymentPlanPage(Some("no"))
+        result.url shouldBe routes.OtherWaysToAppealController.onPageLoad().url
+      }
+
+      "user answers yes" in new Setup {
+        val result: Call = mainNavigator.routingForSetUpPaymentPlanPage(Some("yes"))
+        result.url shouldBe appConfig.timeToPayUrl
       }
     }
   }

@@ -656,3 +656,4 @@ paymentPlanSetUp.p1 = If a payment plan is agreed by HMRC, appeal by using the l
 paymentPlanSetUp.legendHeadingAndTitle = Do you want to set up a payment plan?
 paymentPlanSetUp.hint = Until you pay the VAT or set up a payment plan, interest will build up against the unpaid VAT. You might also get additional penalties.
 paymentPlanSetUp.link = Contact HMRC if you paid the VAT more than 5 days ago
+AppealAfterPaymentPlanSetUpForm.error.required = Select yes if you want to set up a payment plan
