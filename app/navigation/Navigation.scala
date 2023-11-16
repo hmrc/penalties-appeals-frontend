@@ -292,8 +292,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.timeToPayUrl)
       case Some(ans) if ans.equalsIgnoreCase("no") => routes.OtherWaysToAppealController.onPageLoad()
       case _ =>
-        logger.debug("[Navigation][routingForSetUpPaymentPlanPage]: unable to get answer - reloading 'YouCanAppealPenaltyPage'")
-        routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+        logger.debug("[Navigation][routingForSetUpPaymentPlanPage]: unable to get answer - reloading 'AppealAfterPaymentPlanSetUpPage'")
+        routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
     }
   }
 
