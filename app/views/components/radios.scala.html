@@ -25,11 +25,12 @@
         legendClasses: String = "",
         inline: Boolean = false,
         formFieldId: String = "value",
-        legendAsPageHeading: Boolean = true
+        legendAsPageHeading: Boolean = true,
+        legendId: String = "page-heading"
 )(implicit messages: Messages)
 
 @legend = {
-    <h1 class="govuk-fieldset__heading" id ="page-heading">
+    <h1 class="govuk-fieldset__heading" id =@legendId>
         @legendContent
     </h1>
 }

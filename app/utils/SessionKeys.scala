@@ -65,6 +65,7 @@ object SessionKeys {
   val previouslySubmittedJourneyId = "previouslySubmittedJourneyId"
   val appealAfterPaymentPlanSetUp = "appealAfterPaymentPlanSetUp"
   val fileNames = "fileNames"
+  val doYouWantToPayNow = "doYouWantToPayNow"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -109,6 +110,7 @@ object SessionKeys {
     secondPenaltyAmount,
     firstPenaltyCommunicationDate,
     secondPenaltyCommunicationDate,
+    doYouWantToPayNow,
     appealAfterPaymentPlanSetUp
   )
 }
