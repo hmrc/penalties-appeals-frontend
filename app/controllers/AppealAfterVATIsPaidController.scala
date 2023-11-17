@@ -31,13 +31,13 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
-import views.html.YouCanAppealOnlinePage
+import views.html.AppealAfterVATIsPaidPage
 import viewtils.RadioOptionHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class YouCanAppealOnlineController @Inject()(page: YouCanAppealOnlinePage, errorHandler: ErrorHandler)
-                                            (implicit mcc: MessagesControllerComponents,
+class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, errorHandler: ErrorHandler)
+                                              (implicit mcc: MessagesControllerComponents,
                                                         appConfig: AppConfig,
                                                         authorise: AuthPredicate,
                                                         dataRequired: DataRequiredAction,
@@ -56,7 +56,7 @@ class YouCanAppealOnlineController @Inject()(page: YouCanAppealOnlinePage, error
           SessionKeys.doYouWantToPayNow,
           request.answers)
         val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
-        val postAction = controllers.routes.YouCanAppealOnlineController.onSubmit()
+        val postAction = controllers.routes.AppealAfterVATIsPaidController.onSubmit()
         val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
         sessionService.updateAnswers(willUserPay).map { //TODO: This should be moved to the Can You Pay Your VAT Bill page when that is implemented
           _ => Ok(page(formProvider, radioOptions, postAction, pageMode(NormalMode)))
@@ -70,14 +70,14 @@ class YouCanAppealOnlineController @Inject()(page: YouCanAppealOnlinePage, error
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit userRequest => {
     doYouWantToPayNowForm.bindFromRequest().fold(
       form => {
-        val postAction = controllers.routes.YouCanAppealOnlineController.onSubmit()
+        val postAction = controllers.routes.AppealAfterVATIsPaidController.onSubmit()
         val radioOptions = RadioOptionHelper.yesNoRadioOptions(form, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
         Future(BadRequest(page(form, radioOptions, postAction, pageMode(NormalMode))))
       },
-      youCanAppealOnline => {
-        val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.doYouWantToPayNow, youCanAppealOnline)
+      payYourVAT => {
+        val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.doYouWantToPayNow, payYourVAT)
         sessionService.updateAnswers(updatedAnswers).map {
-          _ => Redirect(navigation.nextPage(YouCanAppealOnlinePage, NormalMode, Some(youCanAppealOnline)))
+          _ => Redirect(navigation.nextPage(YouCanAppealOnlinePage, NormalMode, Some(payYourVAT)))
         }
       }
     )

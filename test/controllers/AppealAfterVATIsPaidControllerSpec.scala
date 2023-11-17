@@ -24,7 +24,7 @@ import org.jsoup.nodes.Document
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.YouCanAppealOnlinePage
+import views.html.AppealAfterVATIsPaidPage
 import org.mockito.Mockito.{reset, when}
 import play.api.http.Status.{BAD_REQUEST, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SEE_OTHER}
 import play.api.libs.json.{JsObject, Json}
@@ -36,9 +36,9 @@ import utils.SessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class YouCanAppealOnlineControllerSpec extends SpecBase {
+class AppealAfterVATIsPaidControllerSpec extends SpecBase {
 
-  val youCanAppealOnlinePage: YouCanAppealOnlinePage = injector.instanceOf[YouCanAppealOnlinePage]
+  val youCanAppealOnlinePage: AppealAfterVATIsPaidPage = injector.instanceOf[AppealAfterVATIsPaidPage]
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
@@ -57,7 +57,7 @@ class YouCanAppealOnlineControllerSpec extends SpecBase {
     ).thenReturn(authResult)
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
-    val controller = new YouCanAppealOnlineController(
+    val controller = new AppealAfterVATIsPaidController(
       youCanAppealOnlinePage,
       errorHandler
     )(mcc, mockAppConfig, authPredicate, dataRequiredAction, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)

@@ -304,7 +304,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case Some(ans) if ans.equalsIgnoreCase("no") => routes.OtherWaysToAppealController.onPageLoad()
       case _ =>
         logger.debug("[Navigation][routingForYouCanAppealOnlinePage]: unable to get answer - reloading 'YouCanAppealOnlinePage'")
-        routes.YouCanAppealOnlineController.onPageLoad()
+        routes.AppealAfterVATIsPaidController.onPageLoad()
     }
   }
 
@@ -396,7 +396,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   private def reverseRouteForOtherWaysToAppeal(userRequest: UserRequest[_]): Call = {
     if(userRequest.answers.getAnswer[String](SessionKeys.willUserPay).contains("yes")) {
-      controllers.routes.YouCanAppealOnlineController.onPageLoad()
+      controllers.routes.AppealAfterVATIsPaidController.onPageLoad()
     } else {
       controllers.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
     }

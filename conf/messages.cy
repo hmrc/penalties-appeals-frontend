@@ -656,12 +656,12 @@ paidYourVat.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrn
 
 # You Can Appeal Online After Paying
 # -----------------------------------------------------------
-youCanAppealOnline.headingAndTitle = Gallwch apelio ar-lein ar ôl i chi dalu’ch TAW
-youCanAppealOnline.p1 = Gall gymryd 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddewiswch.
-youCanAppealOnline.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
-youCanAppealOnline.radioHeading = A hoffech dalu nawr?
+payYourVAT.headingAndTitle = Gallwch apelio ar-lein ar ôl i chi dalu’ch TAW
+payYourVAT.p1 = Gall gymryd 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddewiswch.
+payYourVAT.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
+payYourVAT.radioHeading = A hoffech dalu nawr?
 common.radioOption.no.2 = Na, hoffwn i wybod am y dulliau eraill o apelio
-youCanAppealOnline.error.required = Dewiswch ‘Iawn’ os ydych am dalu nawr
+payYourVAT.error.required = Dewiswch ‘Iawn’ os ydych am dalu nawr
 
 # Appeal After Setting up Payment Plan
 # -----------------------------------------------------------

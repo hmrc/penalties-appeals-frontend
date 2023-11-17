@@ -25,9 +25,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-class YouCanAppealOnlineControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
+class AppealAfterVATIsPaidControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
 
-  val controller: YouCanAppealOnlineController = injector.instanceOf[YouCanAppealOnlineController]
+  val controller: AppealAfterVATIsPaidController = injector.instanceOf[AppealAfterVATIsPaidController]
 
   "GET /you-can-appeal-online-after-you-pay" should {
     "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {

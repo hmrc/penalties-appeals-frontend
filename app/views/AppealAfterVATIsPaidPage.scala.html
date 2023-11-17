@@ -26,23 +26,23 @@
 @(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @layout(
-    pageTitle = messages("youCanAppealOnline.headingAndTitle"),
+    pageTitle = messages("payYourVAT.headingAndTitle"),
     isPageFullWidth = false,
     backLinkEnabled = false,
     formHasErrors = form.errors.nonEmpty,
     formErrors = form.errors,
     optPageMode = Some(pageMode)
 ) {
-    @pageHeader(Some(messages("youCanAppealOnline.headingAndTitle")))
+    @pageHeader(Some(messages("payYourVAT.headingAndTitle")))
 
-    <p class="govuk-body">@messages("youCanAppealOnline.p1")</p>
+    <p class="govuk-body">@messages("payYourVAT.p1")</p>
 
-    <p class="govuk-body">@messages("youCanAppealOnline.p2")</p>
+    <p class="govuk-body">@messages("payYourVAT.p2")</p>
 
     @formHelper(action = postAction) {
         @radio(
             form = form,
-            legendContent = messages("youCanAppealOnline.radioHeading"),
+            legendContent = messages("payYourVAT.radioHeading"),
             items = radioOptions,
             legendClasses = "govuk-fieldset__legend govuk-fieldset__legend--m",
             legendAsPageHeading = true,

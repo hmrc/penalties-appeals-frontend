@@ -655,11 +655,11 @@ otherWaysToAppeal.link.2 = appeal to the tax tribunal
 
 # You Can Appeal Online After You Pay
 # -----------------------------------------------------------
-youCanAppealOnline.headingAndTitle = You can appeal online after you pay your VAT
-youCanAppealOnline.p1 = It can take up to 5 days for payments to show on your payment history, depending on the payment method you choose.
-youCanAppealOnline.p2 = Once the payment clears, appeal using the link on your VAT penalties and appeals page.
-youCanAppealOnline.radioHeading = Do you want to pay now?
-youCanAppealOnline.error.required = Select yes if you want to pay now
+payYourVAT.headingAndTitle = You can appeal online after you pay your VAT
+payYourVAT.p1 = It can take up to 5 days for payments to show on your payment history, depending on the payment method you choose.
+payYourVAT.p2 = Once the payment clears, appeal using the link on your VAT penalties and appeals page.
+payYourVAT.radioHeading = Do you want to pay now?
+payYourVAT.error.required = Select yes if you want to pay now
 
 # Appeal After Setting up Payment Plan
 # -----------------------------------------------------------
