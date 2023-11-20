@@ -24,8 +24,8 @@ object DoYouWantToPayNowForm extends Mappings {
   final val options = Seq("yes", "no")
   val doYouWantToPayNowForm: Form[String] = Form[String](
     single(
-      "value" -> text("youCanAppealOnline.error.required").verifying(
-        "youCanAppealOnline.error.required", value => options.contains(value))
+      "value" -> text("payYourVAT.error.required").verifying(
+        "payYourVAT.error.required", value => options.contains(value))
     )
   )
 }

@@ -217,6 +217,7 @@ GET        /appeal-details                                     controllers.ViewA
 # Find out how to appeal
 GET        /if-youve-paid-your-VAT                             controllers.IfYouvePaidYourVATController.onPageLoad()
 GET        /other-ways-to-appeal                               controllers.OtherWaysToAppealController.onPageLoad()
-GET        /you-can-appeal-online-after-you-pay                controllers.YouCanAppealOnlineController.onPageLoad()
+GET        /you-can-appeal-online-after-you-pay                controllers.AppealAfterVATIsPaidController.onPageLoad()
+POST       /you-can-appeal-online-after-you-pay                controllers.AppealAfterVATIsPaidController.onSubmit()
 GET        /appeal-after-payment-plan-setup                    controllers.AppealAfterPaymentPlanSetUpController.onPageLoad()
 POST       /appeal-after-payment-plan-setup                    controllers.AppealAfterPaymentPlanSetUpController.onSubmit()

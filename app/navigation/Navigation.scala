@@ -69,7 +69,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     AppealSinglePenaltyPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
     AppealCoverBothPenaltiesPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
     AppealByLetterKickOutPage -> ((_, _) => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()),
-    OtherWaysToAppealPage -> ((_, _) => routes.AppealAfterPaymentPlanSetUpController.onPageLoad())
+    OtherWaysToAppealPage -> ((request, _) => reverseRouteForOtherWaysToAppeal(request))
   )
 
   def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
@@ -152,7 +152,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     AppealCoverBothPenaltiesPage -> ((_, _, _) => routes.ReasonableExcuseController.onPageLoad()),
     PenaltySelectionPage -> ((answer, _, _) => routingForPenaltySelectionPage(answer, NormalMode)),
     WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
-    AppealAfterPaymentPlanSetUpPage -> ((answer, _, _) => routingForSetUpPaymentPlanPage(answer))
+    AppealAfterPaymentPlanSetUpPage -> ((answer, _, _) => routingForSetUpPaymentPlanPage(answer)),
+    YouCanAppealOnlinePage -> ((answer, _, _) => routingForYouCanAppealOnlinePage(answer))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, jsEnabled: Option[Boolean] = None)
@@ -297,6 +298,16 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
+  def routingForYouCanAppealOnlinePage(answer: Option[String]): Call = {
+    answer match {
+      case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.payYourVAT)
+      case Some(ans) if ans.equalsIgnoreCase("no") => routes.OtherWaysToAppealController.onPageLoad()
+      case _ =>
+        logger.debug("[Navigation][routingForYouCanAppealOnlinePage]: unable to get answer - reloading 'YouCanAppealOnlinePage'")
+        routes.AppealAfterVATIsPaidController.onPageLoad()
+    }
+  }
+
   private def reverseRouteForAppealStartPage(userRequest: UserRequest[_]): Call = {
     if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
       routes.YouCanAppealPenaltyController.onPageLoad()
@@ -380,6 +391,14 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       controllers.routes.MakingALateAppealController.onPageLoad()
     } else {
       reverseRouteForMakingALateAppealPage(userRequest, mode, jsEnabled)
+    }
+  }
+
+  private def reverseRouteForOtherWaysToAppeal(userRequest: UserRequest[_]): Call = {
+    if(userRequest.answers.getAnswer[String](SessionKeys.willUserPay).contains("yes")) {
+      controllers.routes.AppealAfterVATIsPaidController.onPageLoad()
+    } else {
+      controllers.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
     }
   }
 }

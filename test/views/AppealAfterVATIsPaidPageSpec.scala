@@ -21,14 +21,16 @@ import forms.DoYouWantToPayNowForm
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import views.behaviours.ViewBehaviours
-import views.html.YouCanAppealOnlinePage
 import viewtils.RadioOptionHelper
 import messages.YouCanAppealOnlineAfterYouPayMessages._
+import models.pages.{PageMode, YouCanAppealOnlinePage}
+import models.NormalMode
+import views.html.AppealAfterVATIsPaidPage
 
-class YouCanAppealOnlinePageSpec extends SpecBase with ViewBehaviours {
+class AppealAfterVATIsPaidPageSpec extends SpecBase with ViewBehaviours {
   "YouCanAppealOnline" should {
 
-    val youCanAppealOnlinePage = injector.instanceOf[YouCanAppealOnlinePage]
+    val youCanAppealOnlinePage = injector.instanceOf[AppealAfterVATIsPaidPage]
     object Selectors extends BaseSelectors {
       val radioHeader = "#radio-heading"
       val noHint = "#value-2-item-hint"
@@ -37,7 +39,8 @@ class YouCanAppealOnlinePageSpec extends SpecBase with ViewBehaviours {
     val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider,
       noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
     def applyView(form: Form[_]) = youCanAppealOnlinePage(form,
-      radioOptions)(implicitly, implicitly, userRequestWithCorrectKeys)
+      radioOptions, controllers.routes.AppealAfterVATIsPaidController.onSubmit(),
+      pageMode = PageMode(YouCanAppealOnlinePage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys)
 
     implicit val doc: Document = asDocument(applyView(formProvider))
 

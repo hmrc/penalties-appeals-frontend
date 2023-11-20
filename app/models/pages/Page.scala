@@ -94,6 +94,8 @@ case object ViewAppealDetailsPage extends Page
 
 case object AppealAfterPaymentPlanSetUpPage extends Page
 
+case object YouCanAppealOnlinePage extends Page
+
 case object OtherWaysToAppealPage extends Page
 
 object Page {
@@ -136,7 +138,8 @@ object Page {
     YouCannotGoBackToAppealPage,
     ViewAppealDetailsPage,
     AppealAfterPaymentPlanSetUpPage,
-    OtherWaysToAppealPage
+    OtherWaysToAppealPage,
+    YouCanAppealOnlinePage
   )
 
   def find(pageName: String): Page = allPages.find(_.toString == pageName).get

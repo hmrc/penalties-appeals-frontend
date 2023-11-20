@@ -41,9 +41,10 @@
                 form = form,
                 legendContent = messages("paymentPlanSetUp.legendHeadingAndTitle"),
                 items = radioOptions,
-                legendClasses = "govuk-fieldset__legend--l",
+                legendClasses = "govuk-fieldset__legend govuk-fieldset__legend--m",
                 legendAsPageHeading = true,
-                hint = None
+                hint = None,
+                legendId = "radio-heading"
             )
             @button("common.continue")
         }

@@ -19,39 +19,67 @@ package controllers
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
-import forms.DoYouWantToPayNowForm
+import forms.DoYouWantToPayNowForm.doYouWantToPayNowForm
 import helpers.FormProviderHelper
 import javax.inject.Inject
+import models.pages.{YouCanAppealOnlinePage, PageMode}
+import models.{Mode, NormalMode}
+import navigation.Navigation
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
-import views.html.YouCanAppealOnlinePage
+import views.html.AppealAfterVATIsPaidPage
 import viewtils.RadioOptionHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class YouCanAppealOnlineController @Inject()(page: YouCanAppealOnlinePage, errorHandler: ErrorHandler)
-                                            (implicit mcc: MessagesControllerComponents,
+class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, errorHandler: ErrorHandler)
+                                              (implicit mcc: MessagesControllerComponents,
                                                         appConfig: AppConfig,
                                                         authorise: AuthPredicate,
                                                         dataRequired: DataRequiredAction,
                                                         dataRetrieval: DataRetrievalAction,
+                                                        navigation: Navigation,
+                                                        sessionService: SessionService,
                                                         val config: Configuration,
                                                         ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+
+  val pageMode: Mode => PageMode = (mode: Mode) => PageMode(YouCanAppealOnlinePage, mode)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(DoYouWantToPayNowForm.doYouWantToPayNowForm,
+        val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(doYouWantToPayNowForm,
           SessionKeys.doYouWantToPayNow,
           request.answers)
         val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
-        Future(Ok(page(formProvider, radioOptions)))
+        val postAction = controllers.routes.AppealAfterVATIsPaidController.onSubmit()
+        val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
+        sessionService.updateAnswers(willUserPay).map { //TODO: This should be moved to the Can You Pay Your VAT Bill page when that is implemented
+          _ => Ok(page(formProvider, radioOptions, postAction, pageMode(NormalMode)))
+        }
       } else {
-        errorHandler.onClientError(request, NOT_FOUND, "")
+        Future(errorHandler.notFoundError(request))
       }
     }
   }
+
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit userRequest => {
+    doYouWantToPayNowForm.bindFromRequest().fold(
+      form => {
+        val postAction = controllers.routes.AppealAfterVATIsPaidController.onSubmit()
+        val radioOptions = RadioOptionHelper.yesNoRadioOptions(form, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
+        Future(BadRequest(page(form, radioOptions, postAction, pageMode(NormalMode))))
+      },
+      payYourVAT => {
+        val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.doYouWantToPayNow, payYourVAT)
+        sessionService.updateAnswers(updatedAnswers).map {
+          _ => Redirect(navigation.nextPage(YouCanAppealOnlinePage, NormalMode, Some(payYourVAT)))
+        }
+      }
+    )
+  }}
 }
