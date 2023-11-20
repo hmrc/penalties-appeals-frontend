@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package views
+package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
+import messages.IfYouvePaidYourVATMessages._
 import org.jsoup.nodes.Document
 import views.behaviours.ViewBehaviours
-import views.html.IfYouvePaidYourVATPage
-import messages.IfYouvePaidYourVATMessages._
+import views.html.findOutHowToAppeal.IfYouvePaidYourVATPage
 
 class IfYouvePaidYourVATPageSpec extends SpecBase with ViewBehaviours {
 

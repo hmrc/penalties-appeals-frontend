@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package views
+package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
-import views.behaviours.ViewBehaviours
-import views.html.OtherWaysToAppealPage
 import messages.OtherWaysToAppealMessages._
 import models.NormalMode
-import models.pages.{AppealAfterPaymentPlanSetUpPage, OtherWaysToAppealPage, PageMode}
+import models.pages.{OtherWaysToAppealPage, PageMode}
+import views.behaviours.ViewBehaviours
+import views.html.findOutHowToAppeal.OtherWaysToAppealPage
 
 class OtherWaysToAppealPageSpec extends SpecBase with ViewBehaviours {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import config.featureSwitches.ShowFindOutHowToAppealJourney
@@ -25,14 +25,14 @@ import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
-import views.html.OtherWaysToAppealPage
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import views.html.findOutHowToAppeal.IfYouvePaidYourVATPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class OtherWaysToAppealControllerSpec extends SpecBase {
-  val otherWaysToAppealPage: OtherWaysToAppealPage = injector.instanceOf[OtherWaysToAppealPage]
+class IfYouvePaidYourVATControllerSpec extends SpecBase {
+  val ifYouvePaidYourVATPage: IfYouvePaidYourVATPage = injector.instanceOf[IfYouvePaidYourVATPage]
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
@@ -47,21 +47,21 @@ class OtherWaysToAppealControllerSpec extends SpecBase {
 
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
-    val controller = new OtherWaysToAppealController(otherWaysToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate,
-      dataRequiredAction, dataRetrievalAction, config, ec)
+    val controller = new IfYouvePaidYourVATController(ifYouvePaidYourVATPage, errorHandler)(mcc, mockAppConfig,
+      authPredicate, dataRequiredAction, dataRetrievalAction, config, ec)
   }
 
-  "OtherWaysToAppealController" should {
+  "IfYouvePaidYourVATController" should {
 
     "onPageLoad" when {
       "the user is authorised" must {
         "return 200 (OK) and the correct view" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val result = controller.onPageLoad()(userRequestWithCorrectKeys)
+          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
 
-        "return 404 (NOT_FOUND) when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return 404 (NOT_FOUND) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
@@ -81,6 +81,7 @@ class OtherWaysToAppealControllerSpec extends SpecBase {
         }
       }
     }
+
   }
 
 }

@@ -291,20 +291,20 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   def routingForSetUpPaymentPlanPage(answer: Option[String]): Call = {
     answer match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.timeToPayUrl)
-      case Some(ans) if ans.equalsIgnoreCase("no") => routes.OtherWaysToAppealController.onPageLoad()
+      case Some(ans) if ans.equalsIgnoreCase("no") => controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad()
       case _ =>
         logger.debug("[Navigation][routingForSetUpPaymentPlanPage]: unable to get answer - reloading 'AppealAfterPaymentPlanSetUpPage'")
-        routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
+        controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
     }
   }
 
   def routingForYouCanAppealOnlinePage(answer: Option[String]): Call = {
     answer match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.payYourVAT)
-      case Some(ans) if ans.equalsIgnoreCase("no") => routes.OtherWaysToAppealController.onPageLoad()
+      case Some(ans) if ans.equalsIgnoreCase("no") => controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad()
       case _ =>
         logger.debug("[Navigation][routingForYouCanAppealOnlinePage]: unable to get answer - reloading 'YouCanAppealOnlinePage'")
-        routes.AppealAfterVATIsPaidController.onPageLoad()
+        controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad()
     }
   }
 
@@ -396,9 +396,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   private def reverseRouteForOtherWaysToAppeal(userRequest: UserRequest[_]): Call = {
     if(userRequest.answers.getAnswer[String](SessionKeys.willUserPay).contains("yes")) {
-      controllers.routes.AppealAfterVATIsPaidController.onPageLoad()
+      controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad()
     } else {
-      controllers.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
+      controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
     }
   }
 }

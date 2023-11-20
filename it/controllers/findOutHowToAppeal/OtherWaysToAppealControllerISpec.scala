@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
