@@ -17,7 +17,7 @@
 package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
-import messages.OtherWaysToAppealMessages._
+import messages.findOutHowToAppeal.OtherWaysToAppealMessages._
 import models.NormalMode
 import models.pages.{OtherWaysToAppealPage, PageMode}
 import views.behaviours.ViewBehaviours

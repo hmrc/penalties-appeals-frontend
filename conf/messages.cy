@@ -670,3 +670,13 @@ paymentPlanSetUp.p1 = Os caiff cynllun talu ei gytuno gan CThEF, gwnewch eich ap
 paymentPlanSetUp.legendHeadingAndTitle = A hoffech drefnu cynllun talu?
 paymentPlanSetUp.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrnod yn ôl
 AppealAfterPaymentPlanSetUpForm.error.required = Dewiswch ‘Iawn’ os hoffech drefnu cynllun talu
+
+# How To Appeal
+# -----------------------------------------------------------
+howToAppeal.headingAndTitle = Sut i apelio
+howToAppeal.useAppealService = Defnyddio’r gwasanaeth apelio ar-lein
+howToAppeal.p1 = Gallwch gyflwyno apêl ar-lein os yw un o’r canlynol yn wir am eich cleient:
+howToAppeal.li.1.1 = mae wedi talu’r bil TAW o £{0} ar gyfer {1} i {2}
+howToAppeal.li.1.2 = mae wedi trefnu cynllun talu er mwyn talu’r bil TAW
+howToAppeal.otherWayAppeal = Dulliau eraill o apelio
+howToAppeal.p2 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad yw’ch cleient wedi talu ei TAW.

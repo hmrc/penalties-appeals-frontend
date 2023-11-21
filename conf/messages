@@ -639,7 +639,7 @@ viewAppealDetails.printThisPage = Print this page
 # -----------------------------------------------------------
 technicalError.link = Return to VAT penalties and appeals
 
-# Find out how to appeal
+# If You've paid your VAT
 # -----------------------------------------------------------
 paidYourVat.headingAndTitle = If you’ve paid your VAT
 paidYourVat.p1 = It can take up to 5 days for payments to show on your payment history, depending on the payment method you choose.
@@ -668,3 +668,13 @@ paymentPlanSetUp.p1 = If a payment plan is agreed by HMRC, appeal by using the l
 paymentPlanSetUp.legendHeadingAndTitle = Do you want to set up a payment plan?
 paymentPlanSetUp.link = Contact HMRC if you paid the VAT more than 5 days ago
 AppealAfterPaymentPlanSetUpForm.error.required = Select yes if you want to set up a payment plan
+
+# How To Appeal
+# -----------------------------------------------------------
+howToAppeal.headingAndTitle = How to appeal
+howToAppeal.useAppealService = Using the online appeal service
+howToAppeal.p1 = You can submit an appeal online when your client has either:
+howToAppeal.li.1.1 = paid the £{0} VAT bill for {1} to {2}
+howToAppeal.li.1.2 = set up a payment plan to pay the VAT bill
+howToAppeal.otherWayAppeal = Other ways to appeal
+howToAppeal.p2 = You can send a letter to HMRC to ask for a penalty review, even if your client has not paid their VAT.

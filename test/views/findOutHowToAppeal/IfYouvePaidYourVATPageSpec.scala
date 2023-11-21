@@ -17,7 +17,7 @@
 package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
-import messages.IfYouvePaidYourVATMessages._
+import messages.findOutHowToAppeal.IfYouvePaidYourVATMessages._
 import org.jsoup.nodes.Document
 import views.behaviours.ViewBehaviours
 import views.html.findOutHowToAppeal.IfYouvePaidYourVATPage

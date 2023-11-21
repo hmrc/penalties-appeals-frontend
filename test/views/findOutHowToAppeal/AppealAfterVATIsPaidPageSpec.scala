@@ -18,7 +18,7 @@ package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
 import forms.DoYouWantToPayNowForm
-import messages.YouCanAppealOnlineAfterYouPayMessages._
+import messages.findOutHowToAppeal.YouCanAppealOnlineAfterYouPayMessages._
 import models.NormalMode
 import models.pages.{PageMode, YouCanAppealOnlinePage}
 import org.jsoup.nodes.Document

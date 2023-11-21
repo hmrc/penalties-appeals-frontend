@@ -18,7 +18,6 @@ package navigation
 
 import base.SpecBase
 import config.featureSwitches.ShowFullAppealAgainstTheObligation
-import controllers.routes
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers

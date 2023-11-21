@@ -18,7 +18,7 @@ package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
 import forms.AppealAfterPaymentPlanSetUpForm
-import messages.AppealAfterPaymentPlanSetUpMessages._
+import messages.findOutHowToAppeal.AppealAfterPaymentPlanSetUpMessages._
 import models.pages.{AppealAfterPaymentPlanSetUpPage, PageMode}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document

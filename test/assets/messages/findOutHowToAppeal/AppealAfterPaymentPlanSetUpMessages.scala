@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package messages
+package messages.findOutHowToAppeal
 
 object AppealAfterPaymentPlanSetUpMessages {
 
