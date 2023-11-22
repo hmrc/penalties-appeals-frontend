@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package views
+package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
 import forms.AppealAfterPaymentPlanSetUpForm
-import messages.AppealAfterPaymentPlanSetUpMessages._
+import messages.findOutHowToAppeal.AppealAfterPaymentPlanSetUpMessages._
 import models.pages.{AppealAfterPaymentPlanSetUpPage, PageMode}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
@@ -26,7 +26,7 @@ import play.api.data.Form
 import play.api.mvc.AnyContent
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.AppealAfterPaymentPlanSetUpPage
+import views.html.findOutHowToAppeal.AppealAfterPaymentPlanSetUpPage
 import viewtils.RadioOptionHelper
 
 class AppealAfterPaymentPlanSetUpPageSpec extends SpecBase with ViewBehaviours {
@@ -45,7 +45,7 @@ class AppealAfterPaymentPlanSetUpPageSpec extends SpecBase with ViewBehaviours {
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = appealAfterPaymentPlanSetUpPage
       .apply(form, radioOptions,
-        controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit(),
+        controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onSubmit(),
         pageMode = PageMode(AppealAfterPaymentPlanSetUpPage, NormalMode))
 
     implicit val doc: Document = asDocument(applyView(formProvider))

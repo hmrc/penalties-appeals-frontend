@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import config.featureSwitches.ShowFindOutHowToAppealJourney
@@ -25,14 +25,14 @@ import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
-import views.html.OtherWaysToAppealPage
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import views.html.findOutHowToAppeal.HowToAppealPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class OtherWaysToAppealControllerSpec extends SpecBase {
-  val otherWaysToAppealPage: OtherWaysToAppealPage = injector.instanceOf[OtherWaysToAppealPage]
+class HowToAppealControllerSpec extends SpecBase {
+  val howToAppealPage: HowToAppealPage = injector.instanceOf[HowToAppealPage]
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
@@ -47,12 +47,11 @@ class OtherWaysToAppealControllerSpec extends SpecBase {
 
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
-    val controller = new OtherWaysToAppealController(otherWaysToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate,
+    val controller = new HowToAppealController(howToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate,
       dataRequiredAction, dataRetrievalAction, config, ec)
   }
 
-  "OtherWaysToAppealController" should {
-
+  "HowToAppealController" should {
     "onPageLoad" when {
       "the user is authorised" must {
         "return 200 (OK) and the correct view" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -82,5 +81,4 @@ class OtherWaysToAppealControllerSpec extends SpecBase {
       }
     }
   }
-
 }

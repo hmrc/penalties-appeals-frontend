@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package views
+package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
 import forms.DoYouWantToPayNowForm
+import messages.findOutHowToAppeal.YouCanAppealOnlineAfterYouPayMessages._
+import models.NormalMode
+import models.pages.{PageMode, YouCanAppealOnlinePage}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import views.behaviours.ViewBehaviours
+import views.html.findOutHowToAppeal.AppealAfterVATIsPaidPage
 import viewtils.RadioOptionHelper
-import messages.YouCanAppealOnlineAfterYouPayMessages._
-import models.pages.{PageMode, YouCanAppealOnlinePage}
-import models.NormalMode
-import views.html.AppealAfterVATIsPaidPage
 
 class AppealAfterVATIsPaidPageSpec extends SpecBase with ViewBehaviours {
   "YouCanAppealOnline" should {
@@ -39,7 +39,7 @@ class AppealAfterVATIsPaidPageSpec extends SpecBase with ViewBehaviours {
     val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider,
       noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
     def applyView(form: Form[_]) = youCanAppealOnlinePage(form,
-      radioOptions, controllers.routes.AppealAfterVATIsPaidController.onSubmit(),
+      radioOptions, controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onSubmit(),
       pageMode = PageMode(YouCanAppealOnlinePage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys)
 
     implicit val doc: Document = asDocument(applyView(formProvider))

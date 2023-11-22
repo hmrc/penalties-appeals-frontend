@@ -18,7 +18,6 @@ package navigation
 
 import base.SpecBase
 import config.featureSwitches.ShowFullAppealAgainstTheObligation
-import controllers.routes
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers
@@ -110,7 +109,7 @@ class NavigationSpec extends SpecBase {
           (AppealSinglePenaltyPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url),
           (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url),
           (AppealByLetterKickOutPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
-          (OtherWaysToAppealPage, controllers.routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url)
+          (OtherWaysToAppealPage, controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url)
         )
       )
 
@@ -852,7 +851,7 @@ class NavigationSpec extends SpecBase {
 
       s"called with $AppealAfterPaymentPlanSetUpPage - redirects to other ways to appeal page when user selects no" in new Setup {
         val result: Call = mainNavigator.nextPage(AppealAfterPaymentPlanSetUpPage, NormalMode, Some("no"))(userRequestWithCorrectKeys)
-        result.url shouldBe controllers.routes.OtherWaysToAppealController.onPageLoad().url
+        result.url shouldBe controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad().url
       }
     }
   }
@@ -1115,7 +1114,7 @@ class NavigationSpec extends SpecBase {
     "redirect to the appropriate page in normal mode" when {
       "user answers no " in new Setup {
         val result: Call = mainNavigator.routingForSetUpPaymentPlanPage(Some("no"))
-        result.url shouldBe routes.OtherWaysToAppealController.onPageLoad().url
+        result.url shouldBe controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad().url
       }
 
       "user answers yes" in new Setup {

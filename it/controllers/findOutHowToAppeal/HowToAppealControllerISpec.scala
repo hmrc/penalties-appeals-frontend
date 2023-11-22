@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
@@ -23,11 +23,11 @@ import play.api.mvc.Result
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.IntegrationSpecCommonBase
 
-class OtherWaysToAppealControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
+class HowToAppealControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
 
-  val controller: OtherWaysToAppealController = injector.instanceOf[OtherWaysToAppealController]
+  val controller: HowToAppealController = injector.instanceOf[HowToAppealController]
 
-  "GET /other-ways-to-appeal" should {
+  "GET /how-to-appeal" should{
     "return 200 (OK) when the user is authorised and feature switch is enabled" in new UserAnswersSetup(userAnswers()) {
       enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
@@ -40,5 +40,4 @@ class OtherWaysToAppealControllerISpec extends IntegrationSpecCommonBase with Au
       request.header.status shouldBe NOT_FOUND
     }
   }
-
 }

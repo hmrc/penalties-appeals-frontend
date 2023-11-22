@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import config.featureSwitches.ShowFindOutHowToAppealJourney
@@ -27,7 +27,7 @@ import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.IfYouvePaidYourVATPage
+import views.html.findOutHowToAppeal.IfYouvePaidYourVATPage
 
 import scala.concurrent.{ExecutionContext, Future}
 

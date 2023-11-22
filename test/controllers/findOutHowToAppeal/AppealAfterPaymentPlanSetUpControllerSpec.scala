@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import config.featureSwitches.ShowFindOutHowToAppealJourney
 import models.session.UserAnswers
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
@@ -30,7 +30,7 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
-import views.html.AppealAfterPaymentPlanSetUpPage
+import views.html.findOutHowToAppeal.AppealAfterPaymentPlanSetUpPage
 
 import scala.concurrent.{ExecutionContext, Future}
 

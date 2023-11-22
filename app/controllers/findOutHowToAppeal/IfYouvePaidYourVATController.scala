@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
-import config.{AppConfig, ErrorHandler}
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
-import javax.inject.Inject
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.IfYouvePaidYourVATPage
+import views.html.findOutHowToAppeal.IfYouvePaidYourVATPage
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IfYouvePaidYourVATController @Inject()(ifYouvePaidYourVATPage: IfYouvePaidYourVATPage, errorHandler: ErrorHandler)

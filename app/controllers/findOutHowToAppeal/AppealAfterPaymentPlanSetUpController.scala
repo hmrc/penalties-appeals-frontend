@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
-import config.{AppConfig, ErrorHandler}
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.AppealAfterPaymentPlanSetUpForm.appealAfterPaymentPlanSetUpForm
 import helpers.FormProviderHelper
-
-import javax.inject.Inject
-import models.pages.{AppealAfterPaymentPlanSetUpPage, PageMode}
 import models._
+import models.pages.{AppealAfterPaymentPlanSetUpPage, PageMode}
 import navigation.Navigation
 import play.api.Configuration
 import play.api.data.Form
@@ -34,9 +32,10 @@ import services.SessionService
 import uk.gov.hmrc.govukfrontend.views.Aliases.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
-import views.html.AppealAfterPaymentPlanSetUpPage
+import views.html.findOutHowToAppeal.AppealAfterPaymentPlanSetUpPage
 import viewtils.RadioOptionHelper
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetUpPage: AppealAfterPaymentPlanSetUpPage, errorHandler: ErrorHandler)
@@ -61,7 +60,7 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
           request.answers
         )
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
-        val postAction = controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
+        val postAction = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
         val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "no")
         sessionService.updateAnswers(willUserPay).map { //TODO: This should be moved to the Can You Pay Your VAT Bill page when that is implemented
           _ => Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
@@ -78,7 +77,7 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
       .bindFromRequest()
       .fold(
         form => {
-          val postAction = controllers.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
+          val postAction = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
           Future(BadRequest(appealAfterPaymentPlanSetUpPage(form, radioOptionsToRender, postAction, pageMode(NormalMode))))
         },

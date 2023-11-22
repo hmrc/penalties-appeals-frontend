@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import config.featureSwitches.ShowFindOutHowToAppealJourney
 import models.session.UserAnswers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.AppealAfterVATIsPaidPage
 import org.mockito.Mockito.{reset, when}
-import play.api.http.Status.{BAD_REQUEST, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SEE_OTHER}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.SessionKeys
+import views.html.findOutHowToAppeal.AppealAfterVATIsPaidPage
 
 import scala.concurrent.{ExecutionContext, Future}
 

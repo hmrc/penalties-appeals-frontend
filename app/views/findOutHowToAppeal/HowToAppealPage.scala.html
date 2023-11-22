@@ -1,0 +1,67 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewtils.PenaltyTypeHelper
+@import utils.SessionKeys
+
+@this(
+        layout: Layout,
+        bullets: components.bullets,
+        link: components.link,
+        pageHeader: components.pageHeader
+)
+
+@(vatAmount: String, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+
+@layout(
+    pageTitle = messages("howToAppeal.headingAndTitle"),
+    isPageFullWidth = false,
+    //    backLinkEnabled = true,
+    optPageMode = Some(pageMode)
+) {
+    @pageHeader(Some(messages("howToAppeal.headingAndTitle")))
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-2">@messages("howToAppeal.useAppealService")</h2>
+    <p class="govuk-body">@messages("howToAppeal.p1")</p>
+    @bullets(
+        Seq(
+            Html(messages("howToAppeal.li.1.1", vatAmount,
+                PenaltyTypeHelper.getKeysFromSession().get(1),
+                PenaltyTypeHelper.getKeysFromSession().get.last)),
+            Html(messages("howToAppeal.li.1.2"))
+        )
+    )
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-2">@messages("howToAppeal.otherWayAppeal")</h2>
+    <p class="govuk-body">@messages("howToAppeal.p2")</p>
+    <p class="govuk-body">
+        @messages("common.address.1") <br>
+        @messages("common.address.2") <br>
+    @messages("common.address.3")
+    </p>
+    <p class="govuk-body">
+        @messages("otherWaysToAppeal.link.1") @link(
+        link = appConfig.taxTribunalLink,
+        messageKey = "otherWaysToAppeal.link.2",
+        button = false,
+        isExternal = true,
+        id = Some("tax-tribunal-link")
+    )
+    </p>
+    <p class="govuk-body">
+        <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">
+            @messages("agent.common.returnToPenalties")
+        </a>
+    </p>
+}

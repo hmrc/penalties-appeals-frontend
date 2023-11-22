@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 
-package messages
+package messages.findOutHowToAppeal
 
-object OtherWaysToAppealMessages {
+object HowToAppealMessages {
+  val title = "How to appeal - Appeal a VAT penalty - GOV.UK"
 
-  val title = "Other ways to appeal - Appeal a VAT penalty - GOV.UK"
+  val heading = "How to appeal"
 
-  val heading = "Other ways to appeal"
+  val heading2 = "Using the online appeal service"
 
-  val p1 = "You can send a letter to HMRC to ask for a penalty review, even if you have not paid your VAT."
+  val p1 = "You can submit an appeal online when your client has either:"
 
-  val p2 = "Write to: Solicitor’s Office and Legal Services HMRC BX9 1ZT"
+  val li1 = "paid the £123.45 VAT bill for 1 January 2020 to 1 January 2020"
+
+  val li2 = "set up a payment plan to pay the VAT bill"
+
+  val heading3 = "Other ways to appeal"
+
+  val p2 = "You can send a letter to HMRC to ask for a penalty review, even if your client has not paid their VAT."
+
+  val address = "Solicitor’s Office and Legal Services HMRC BX9 1ZT"
 
   val p3 = "Alternatively, you can appeal to the tax tribunal (opens in a new tab)"
 
   val link1 = "appeal to the tax tribunal (opens in a new tab)"
 
-  val link2 = "Return to your VAT penalties"
+  val link2 = "Return to your client’s VAT penalties"
 }

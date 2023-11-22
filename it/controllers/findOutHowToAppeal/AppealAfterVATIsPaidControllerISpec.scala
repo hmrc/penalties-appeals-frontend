@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
@@ -50,7 +50,7 @@ class AppealAfterVATIsPaidControllerISpec extends IntegrationSpecCommonBase with
       val fakeRequestWithCorrectBody: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody("value" -> "no")
       val request: Result = await(controller.onSubmit()(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe routes.OtherWaysToAppealController.onPageLoad().url
+      request.header.headers("Location") shouldBe controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad().url
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.doYouWantToPayNow).get shouldBe "no"
     }
 
