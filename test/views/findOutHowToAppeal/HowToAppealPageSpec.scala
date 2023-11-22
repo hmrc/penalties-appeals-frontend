@@ -37,6 +37,7 @@ class HowToAppealPageSpec extends SpecBase with ViewBehaviours {
     val address = "#main-content > div.govuk-grid-row > div > p:nth-child(8)"
     val p3 = "#main-content > div.govuk-grid-row > div > p:nth-child(9)"
     val link1 = "#tax-tribunal-link"
+    val link2 = "#penalties-link"
   }
 
   implicit val doc = asDocument(page("123.45", PageMode(HowToAppealPage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys))
@@ -54,9 +55,9 @@ class HowToAppealPageSpec extends SpecBase with ViewBehaviours {
       Selectors.address -> address,
       Selectors.p3 -> p3,
       Selectors.link1 -> link1,
+      Selectors.link2 -> link2
     )
 
-    println(doc.select("#main-content"))
     behave like pageWithExpectedMessages(expectedContent)
   }
 }

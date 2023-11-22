@@ -38,4 +38,6 @@ object HowToAppealMessages {
   val p3 = "Alternatively, you can appeal to the tax tribunal (opens in a new tab)"
 
   val link1 = "appeal to the tax tribunal (opens in a new tab)"
+
+  val link2 = "Return to your client’s VAT penalties"
 }
