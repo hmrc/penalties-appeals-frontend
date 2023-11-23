@@ -31,7 +31,7 @@ object HowToAppealMessages {
 
   val heading3 = "Other ways to appeal"
 
-  val p2 = "You can send a letter to HMRC to ask for a penalty review, even if your client has not paid their VAT."
+  val p2 = "You can send a letter to HMRC to ask for a penalty review, even if your client has not paid their VAT. Write To:"
 
   val address = "Solicitor’s Office and Legal Services HMRC BX9 1ZT"
 
