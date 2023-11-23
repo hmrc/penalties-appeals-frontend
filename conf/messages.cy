@@ -679,4 +679,4 @@ howToAppeal.p1 = Gallwch gyflwyno apêl ar-lein os yw un o’r canlynol yn wir a
 howToAppeal.li.1.1 = mae wedi talu’r bil TAW o £{0} ar gyfer {1} i {2}
 howToAppeal.li.1.2 = mae wedi trefnu cynllun talu er mwyn talu’r bil TAW
 howToAppeal.otherWayAppeal = Dulliau eraill o apelio
-howToAppeal.p2 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad yw’ch cleient wedi talu ei TAW.
+howToAppeal.p2 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad yw’ch cleient wedi talu ei TAW. Ysgrifennwch at:
