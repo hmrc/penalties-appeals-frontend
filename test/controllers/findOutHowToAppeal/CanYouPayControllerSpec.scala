@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import config.featureSwitches.ShowFindOutHowToAppealJourney
-import controllers.findOutHowToAppeal.CanYouPayController
 import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -30,8 +29,7 @@ import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import utils.SessionKeys
-import views.html.findOutHowToAppeal.{AppealAfterPaymentPlanSetUpPage, CanYouPayPage}
+import views.html.findOutHowToAppeal.CanYouPayPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -63,7 +61,7 @@ class CanYouPayControllerSpec extends SpecBase {
       authPredicate, dataRequiredAction, dataRetrievalAction, config, ec)
   }
 
-  "AppealAfterPaymentPlanSetUpController" should {
+  "CanYouPayController" should {
 
     "onPageLoad" when {
       "the user is authorised" must {
