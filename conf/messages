@@ -681,7 +681,6 @@ howToAppeal.li.1.1 = paid the £{0} VAT bill for {1} to {2}
 howToAppeal.li.1.2 = set up a payment plan to pay the VAT bill
 howToAppeal.otherWayAppeal = Other ways to appeal
 howToAppeal.p2 = You can send a letter to HMRC to ask for a penalty review, even if your client has not paid their VAT. Write to:
-howToAppeal.p2 = You can send a letter to HMRC to ask for a penalty review, even if your client has not paid their VAT.
 
 # Can you Pay
 # -----------------------------------------------------------
