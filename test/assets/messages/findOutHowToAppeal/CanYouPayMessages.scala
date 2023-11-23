@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package forms
+package messages.findOutHowToAppeal
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms.single
+object CanYouPayMessages {
 
-object CanYouPayForm extends Mappings {
-  final val options = Seq("yes", "no")
-  val canYouPayForm: Form[String] = Form[String](
-    single(
-      "value" -> text("payYourVAT.error.required").verifying(
-        "payYourVAT.error.required", value => options.contains(value))
-    )
-  )
+  val title = "Can you pay your VAT bill for this period? - Appeal a VAT penalty - GOV.UK"
+
+  val h1 = "Can you pay your VAT bill for this period?"
+
+  val radioHintText = "If you pay your VAT, it changes how you can appeal."
+
+  val radioOption1 = "Yes, I can pay £123.45 now"
+
+  val radioOption2 = "No, I do not have the money to pay today"
+
+  val radioOption3 = "I’ve already paid in full"
+
+  val submitButton = "Continue"
+
+
 }

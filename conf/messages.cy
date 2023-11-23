@@ -11,10 +11,13 @@ common.continue = Yn eich blaen
 common.acceptAndContinue = Derbyn ac yn eich blaen
 common.acceptAndSend = Derbyn ac anfon
 common.radioOption.yes = Iawn
+common.radioOption.yes.2 = Iawn, gallaf dalu £{0} nawr
 common.radioOption.no = Na
 common.radioOption.no.2 = Na, hoffwn i wybod am y dulliau eraill o apelio
+common.radioOption.no.3 = Na, nid oes gennyf yr arian ar gyfer y taliad heddiw
 common.radioOption.no.hint = Bydd llog yn cronni yn erbyn y TAW sydd heb ei thalu, hyd nes i chi dalu’r TAW neu drefnu cynllun talu.
 common.radioOption.unknown = Nid wyf yn gwybod
+common.radioOption.paid = 'Rwyf eisoes wedi talu’n llawn
 common.penaltyYouAreAppealing = Y gosb yr ydych yn apelio yn ei herbyn yw
 common.penaltiesYouAreAppealing = Y cosbau yr ydych yn apelio yn eu herbyn yw
 common.returnToPenalties = Yn ôl i’ch cosbau TAW
@@ -680,3 +683,9 @@ howToAppeal.li.1.1 = mae wedi talu’r bil TAW o £{0} ar gyfer {1} i {2}
 howToAppeal.li.1.2 = mae wedi trefnu cynllun talu er mwyn talu’r bil TAW
 howToAppeal.otherWayAppeal = Dulliau eraill o apelio
 howToAppeal.p2 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad yw’ch cleient wedi talu ei TAW. Ysgrifennwch at:
+howToAppeal.p2 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad yw’ch cleient wedi talu ei TAW.
+
+# Can you Pay
+# -----------------------------------------------------------
+canYouPay.headingAndTitle = A allwch chi dalu’ch bil TAW ar gyfer y cyfnod hwn?
+canYouPay.hint = Os byddwch chi’n talu’ch TAW, bydd hynny’n newid sut gallwch chi apelio.

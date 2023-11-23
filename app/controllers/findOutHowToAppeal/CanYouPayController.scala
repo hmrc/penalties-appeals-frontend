@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import forms.CanYouPayForm.canYouPayForm
 import forms.DoYouWantToPayNowForm
 import helpers.FormProviderHelper
 import javax.inject.Inject
+import models.{Mode, NormalMode}
+import models.pages.{CanYouPayPage, PageMode}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionKeys
-import views.html.YouCanAppealOnlinePage
+import utils.{CurrencyFormatter, SessionKeys}
 import viewtils.RadioOptionHelper
+import views.html.findOutHowToAppeal.CanYouPayPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CanYouPayController @Inject()(page: YouCanAppealOnlinePage, errorHandler: ErrorHandler)
+class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHandler)
                                             (implicit mcc: MessagesControllerComponents,
                                              appConfig: AppConfig,
                                              authorise: AuthPredicate,
@@ -40,15 +43,17 @@ class CanYouPayController @Inject()(page: YouCanAppealOnlinePage, errorHandler: 
                                              dataRetrieval: DataRetrievalAction,
                                              val config: Configuration,
                                              ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+  val pageMode: PageMode = PageMode(CanYouPayPage, NormalMode)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(DoYouWantToPayNowForm.doYouWantToPayNowForm,
-          SessionKeys.doYouWantToPayNow,
+        val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(canYouPayForm,
+          SessionKeys.canYouPay,
           request.answers)
-        val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
-        Future(Ok(page(formProvider, radioOptions)))
+        val vatAmount: BigDecimal = 123.45 //TODO Get from session
+        val radioOptions = RadioOptionHelper.radioOptionsForCanYouPayPage(formProvider, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
+        Future(Ok(page(formProvider, radioOptions, pageMode)))
       } else {
         errorHandler.onClientError(request, NOT_FOUND, "")
       }
