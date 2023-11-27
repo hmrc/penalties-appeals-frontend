@@ -48,7 +48,7 @@ class CanYouPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
       val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url
-      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.canYouPay).get shouldBe "no"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.willUserPay).get shouldBe "no"
     }
 
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct with yes" in new UserAnswersSetup(userAnswers()) {
@@ -56,7 +56,7 @@ class CanYouPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
       val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.AppealAfterVATIsPaidController.onPageLoad().url
-      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.canYouPay).get shouldBe "yes"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.willUserPay).get shouldBe "yes"
     }
 
     "return 303 (SEE_OTHER) and add the session key to the session when the body is correct with paid" in new UserAnswersSetup(userAnswers()) {
@@ -64,7 +64,7 @@ class CanYouPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
       val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers("Location") shouldBe routes.IfYouvePaidYourVATController.onPageLoad().url
-      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.canYouPay).get shouldBe "paid"
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.willUserPay).get shouldBe "paid"
     }
 
     "return 400 (BAD_REQUEST)" when {

@@ -107,7 +107,7 @@ class CanYouPayControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
             .withFormUrlEncodedBody("value" -> "no")))
           status(result) shouldBe SEE_OTHER
-          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.canYouPay -> "no")
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.willUserPay -> "no")
         }
       }
       "the user is unauthorised" when {

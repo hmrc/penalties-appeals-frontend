@@ -52,7 +52,7 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
         val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(canYouPayForm,
-          SessionKeys.canYouPay,
+          SessionKeys.willUserPay,
           request.answers)
         val vatAmount: BigDecimal = 123.45 //TODO Get from session
         val radioOptions = RadioOptionHelper.radioOptionsForCanYouPayPage(formProvider, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
@@ -77,7 +77,7 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
           Future(BadRequest(page(form, radioOptions, postAction, pageMode)))
         },
         ableToPay => {
-          val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.canYouPay, ableToPay)
+          val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.willUserPay, ableToPay)
           sessionService.updateAnswers(updatedAnswers).map {
             _ => Redirect(navigation.nextPage(CanYouPayPage, NormalMode, Some(ableToPay)))
           }
