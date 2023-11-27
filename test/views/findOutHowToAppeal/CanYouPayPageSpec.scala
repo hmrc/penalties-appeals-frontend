@@ -43,6 +43,7 @@ class CanYouPayPageSpec extends SpecBase with ViewBehaviours {
 
     def applyView(form: Form[_]): HtmlFormat.Appendable = canYouPayPage
       .apply(form, radioOptions,
+        controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit(),
         pageMode = PageMode(CanYouPayPage, NormalMode))
 
     implicit val doc: Document = asDocument(applyView(formProvider))

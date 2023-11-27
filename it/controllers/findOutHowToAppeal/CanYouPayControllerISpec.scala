@@ -29,7 +29,7 @@ class CanYouPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
 
   val controller: CanYouPayController = injector.instanceOf[CanYouPayController]
 
-  "GET /if-youve-paid-your-VAT" should {
+  "GET /can-you-pay" should {
     "return 200 (OK) when the user is authorised and feature switch is enabled" in new UserAnswersSetup(userAnswers()) {
       enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
@@ -41,6 +41,46 @@ class CanYouPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe NOT_FOUND
     }
+  }
+  "POST /can-you-pay" should {
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct with no" in new UserAnswersSetup(userAnswers()) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "no")
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.canYouPay).get shouldBe "no"
+    }
+
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct with yes" in new UserAnswersSetup(userAnswers()) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe routes.AppealAfterVATIsPaidController.onPageLoad().url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.canYouPay).get shouldBe "yes"
+    }
+
+    "return 303 (SEE_OTHER) and add the session key to the session when the body is correct with paid" in new UserAnswersSetup(userAnswers()) {
+      val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "paid")
+      val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers("Location") shouldBe routes.IfYouvePaidYourVATController.onPageLoad().url
+      await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.canYouPay).get shouldBe "paid"
+    }
+
+    "return 400 (BAD_REQUEST)" when {
+      "no body is submitted" in new UserAnswersSetup(userAnswers()) {
+        val request = await(controller.onSubmit()(fakeRequest))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+
+      "the value is invalid" in new UserAnswersSetup(userAnswers()) {
+        val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "fake_value")
+        val request = await(controller.onSubmit()(fakeRequestWithInvalidBody))
+        request.header.status shouldBe Status.BAD_REQUEST
+      }
+    }
+
+    runControllerPredicateTests(controller.onSubmit(), "POST", "/can-you-pay")
   }
 
 }

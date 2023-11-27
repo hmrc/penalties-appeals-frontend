@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.data.Forms.single
 
 object CanYouPayForm extends Mappings {
-  final val options = Seq("yes", "no")
+  final val options = Seq("yes", "no", "paid")
   val canYouPayForm: Form[String] = Form[String](
     single(
       "value" -> text("payYourVAT.error.required").verifying(

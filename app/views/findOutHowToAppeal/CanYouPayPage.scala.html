@@ -22,7 +22,7 @@
         pageHeader: components.pageHeader
 )
 
-@(form: Form[_], radioOptions: Seq[RadioItem], pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@(form: Form[_], radioOptions: Seq[RadioItem], postAction: Call, pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
     @layout(
         pageTitle = messages("canYouPay.headingAndTitle"),
@@ -34,6 +34,7 @@
     ) {
         @pageHeader()
 
+@formHelper(action = postAction) {
             @radios(
                 form = form,
                 legendContent = messages("canYouPay.headingAndTitle"),
@@ -43,5 +44,5 @@
                 hint = Some(Html(messages("canYouPay.hint")))
             )
             @button("common.continue")
-
+}
     }

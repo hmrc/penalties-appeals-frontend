@@ -29,6 +29,7 @@ import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import utils.SessionKeys
 import views.html.findOutHowToAppeal.CanYouPayPage
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,7 +59,7 @@ class CanYouPayControllerSpec extends SpecBase {
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new CanYouPayController(CanYouPayPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRequiredAction, dataRetrievalAction, config, ec)
+      authPredicate, dataRequiredAction, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
   }
 
   "CanYouPayController" should {
@@ -96,5 +97,38 @@ class CanYouPayControllerSpec extends SpecBase {
       }
     }
 
+    "onSubmit" when {
+      "the user is authorised" must {
+        "return 303 (SEE_OTHER) adding the key to the session when the body is correct " +
+          "- routing when a valid option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          when(mockSessionService.updateAnswers(answerCaptor.capture()))
+            .thenReturn(Future.successful(true))
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "no")))
+          status(result) shouldBe SEE_OTHER
+          answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.canYouPay -> "no")
+        }
+      }
+      "the user is unauthorised" when {
+        "return 400 (BAD_REQUEST) when a no option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "")))
+          status(result) shouldBe BAD_REQUEST
+        }
+
+        "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+          status(result) shouldBe FORBIDDEN
+        }
+
+        "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+          status(result) shouldBe SEE_OTHER
+        }
+      }
+    }
   }
+
+
 }

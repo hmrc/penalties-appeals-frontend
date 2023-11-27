@@ -17,7 +17,7 @@
 package viewtils
 
 import base.SpecBase
-import forms.{HasCrimeBeenReportedForm, WhatCausedYouToMissTheDeadlineForm, WhoPlannedToSubmitVATReturnAgentForm}
+import forms.{CanYouPayForm, HasCrimeBeenReportedForm, WhatCausedYouToMissTheDeadlineForm, WhoPlannedToSubmitVATReturnAgentForm}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
@@ -148,6 +148,56 @@ class RadioOptionHelperSpec extends SpecBase {
       )
 
       val result = RadioOptionHelper.radioOptionsForSubmitVATReturnPage(form)
+      result shouldBe expectedResult
+    }
+  }
+  "radioOptionsForCanYouPay" should {
+    "return the correct radio options for the CanYouPayPage - no option has been selected" in {
+      val form = CanYouPayForm.canYouPayForm
+      val expectedResult = Seq(
+        RadioItem(
+          value = Some("yes"),
+          content = Text("Yes, I can pay £125 now"),
+          checked = false
+        ),
+        RadioItem(
+          value = Some("no"),
+          content = Text("No, I do not have the money to pay today"),
+          checked = false
+        ),
+        RadioItem(
+          value = Some("paid"),
+          content = Text("I’ve already paid in full"),
+          checked = false
+        )
+      )
+
+      val result = RadioOptionHelper.radioOptionsForCanYouPayPage(form, "125")
+      result shouldBe expectedResult
+    }
+
+    "return the correct radio options for the CanYouPayPage - option has been selected" in {
+        val form = CanYouPayForm.canYouPayForm.fill("yes")
+
+      val expectedResult = Seq(
+          RadioItem(
+            value = Some("yes"),
+            content = Text("Yes, I can pay £125 now"),
+            checked = true
+          ),
+          RadioItem(
+            value = Some("no"),
+            content = Text("No, I do not have the money to pay today"),
+            checked = false
+          ),
+          RadioItem(
+            value = Some("paid"),
+            content = Text("I’ve already paid in full"),
+            checked = false
+          )
+        )
+
+      val result = RadioOptionHelper.radioOptionsForCanYouPayPage(form, "125")
       result shouldBe expectedResult
     }
   }
