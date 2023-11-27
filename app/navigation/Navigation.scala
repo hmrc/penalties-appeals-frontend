@@ -153,7 +153,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     PenaltySelectionPage -> ((answer, _, _) => routingForPenaltySelectionPage(answer, NormalMode)),
     WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     AppealAfterPaymentPlanSetUpPage -> ((answer, _, _) => routingForSetUpPaymentPlanPage(answer)),
-    YouCanAppealOnlinePage -> ((answer, _, _) => routingForYouCanAppealOnlinePage(answer))
+    YouCanAppealOnlinePage -> ((answer, _, _) => routingForYouCanAppealOnlinePage(answer)),
+    CanYouPayPage -> ((answer, _, _) => routingForCanYouPayPage(answer))
+
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, jsEnabled: Option[Boolean] = None)
@@ -305,6 +307,18 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case _ =>
         logger.debug("[Navigation][routingForYouCanAppealOnlinePage]: unable to get answer - reloading 'YouCanAppealOnlinePage'")
         controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad()
+    }
+  }
+
+  def routingForCanYouPayPage(answer: Option[String]): Call = {
+    answer match {
+      case Some(ans) if ans.equalsIgnoreCase("yes") => controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad()
+      case Some(ans) if ans.equalsIgnoreCase("no") => controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
+      case Some(ans) if ans.equalsIgnoreCase("paid") => controllers.findOutHowToAppeal.routes.IfYouvePaidYourVATController.onPageLoad()
+
+      case _ =>
+        logger.debug("[Navigation][CanYouPayPage]: unable to get answer - reloading 'CanYouPayPage'")
+        controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()
     }
   }
 

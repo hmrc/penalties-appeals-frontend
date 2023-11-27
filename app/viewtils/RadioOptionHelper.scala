@@ -76,6 +76,26 @@ object RadioOptionHelper {
     )
   }
 
+  def radioOptionsForCanYouPayPage(form: Form[_], vatAmount:String)(implicit messages: Messages): Seq[RadioItem] = {
+    Seq(
+      RadioItem(
+        value = Some("yes"),
+        content = Text(messages("common.radioOption.yes.2", vatAmount)),
+        checked = form("value").value.contains("yes")
+      ),
+      RadioItem(
+        value = Some("no"),
+        content = Text(messages("common.radioOption.no.3")),
+        checked = form("value").value.contains("no")
+      ),
+      RadioItem(
+        value = Some("paid"),
+        content = Text(messages("common.radioOption.paid")),
+        checked = form("value").value.contains("paid")
+      )
+    )
+  }
+
   def radioOptionsForSubmitVATReturnPage(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
     Seq(
       RadioItem(

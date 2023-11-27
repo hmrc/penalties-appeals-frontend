@@ -11,10 +11,13 @@ common.continue = Continue
 common.acceptAndContinue = Accept and continue
 common.acceptAndSend = Accept and send
 common.radioOption.yes = Yes
+common.radioOption.yes.2 = Yes, I can pay £{0} now
 common.radioOption.no = No
 common.radioOption.no.2 = No, tell me about other ways to appeal
+common.radioOption.no.3 = No, I do not have the money to pay today
 common.radioOption.no.hint = Until you pay the VAT or set up a payment plan, interest will build up against the unpaid VAT. You might also get additional penalties.
 common.radioOption.unknown = I do not know
+common.radioOption.paid = I’ve already paid in full
 common.penaltyYouAreAppealing = The penalty you are appealing is
 common.penaltiesYouAreAppealing = The penalties you are appealing are
 common.returnToPenalties = Return to your VAT penalties
@@ -678,3 +681,8 @@ howToAppeal.li.1.1 = paid the £{0} VAT bill for {1} to {2}
 howToAppeal.li.1.2 = set up a payment plan to pay the VAT bill
 howToAppeal.otherWayAppeal = Other ways to appeal
 howToAppeal.p2 = You can send a letter to HMRC to ask for a penalty review, even if your client has not paid their VAT. Write to:
+
+# Can you Pay
+# -----------------------------------------------------------
+canYouPay.headingAndTitle = Can you pay your VAT bill for this period?
+canYouPay.hint = If you pay your VAT, it changes how you can appeal.

@@ -222,3 +222,5 @@ POST       /you-can-appeal-online-after-you-pay                controllers.findO
 GET        /appeal-after-payment-plan-setup                    controllers.findOutHowToAppeal.AppealAfterPaymentPlanSetUpController.onPageLoad()
 POST       /appeal-after-payment-plan-setup                    controllers.findOutHowToAppeal.AppealAfterPaymentPlanSetUpController.onSubmit()
 GET        /how-to-appeal                                      controllers.findOutHowToAppeal.HowToAppealController.onPageLoad()
+GET        /can-you-pay                                        controllers.findOutHowToAppeal.CanYouPayController.onPageLoad()
+POST       /can-you-pay                                        controllers.findOutHowToAppeal.CanYouPayController.onSubmit()

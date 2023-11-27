@@ -32,6 +32,7 @@ import java.time.LocalDate
 class NavigationSpec extends SpecBase {
   val mockConfiguration: Configuration = mock(classOf[Configuration])
   override val mainNavigator: Navigation = new Navigation(mockDateTimeHelper, appConfig, isLateAppealHelper)(mockConfiguration)
+
   class Setup {
     reset(mockDateTimeHelper)
     reset(mockConfiguration)
@@ -278,7 +279,7 @@ class NavigationSpec extends SpecBase {
       }
 
       "route the user back to the CYA page if they originated on this page" in {
-        val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers, fakeRequest.withSession(SessionKeys.originatingChangePage ->  ReasonableExcuseSelectionPage.toString)))
+        val result: Call = mainNavigator.previousPage(ReasonableExcuseSelectionPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers, fakeRequest.withSession(SessionKeys.originatingChangePage -> ReasonableExcuseSelectionPage.toString)))
         result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
       }
     }
@@ -853,6 +854,19 @@ class NavigationSpec extends SpecBase {
         val result: Call = mainNavigator.nextPage(AppealAfterPaymentPlanSetUpPage, NormalMode, Some("no"))(userRequestWithCorrectKeys)
         result.url shouldBe controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad().url
       }
+      s"called with $CanYouPayPage - redirects to appeal after vat is paid page when user selects yes" in new Setup {
+        val result: Call = mainNavigator.nextPage(CanYouPayPage, NormalMode, Some("yes"))(userRequestWithCorrectKeys)
+        result.url shouldBe controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad().url
+      }
+
+      s"called with $CanYouPayPage - redirects to appeal after payment plan is setup page when user selects no" in new Setup {
+        val result: Call = mainNavigator.nextPage(CanYouPayPage, NormalMode, Some("no"))(userRequestWithCorrectKeys)
+        result.url shouldBe controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url
+      }
+      s"called with $CanYouPayPage - redirects to if you've paid your vatpage when user selects paid" in new Setup {
+        val result: Call = mainNavigator.nextPage(CanYouPayPage, NormalMode, Some("paid"))(userRequestWithCorrectKeys)
+        result.url shouldBe controllers.findOutHowToAppeal.routes.IfYouvePaidYourVATController.onPageLoad().url
+      }
     }
   }
 
@@ -1104,7 +1118,7 @@ class NavigationSpec extends SpecBase {
     }
     "throw match error when given an unknown page" when {
       "the user selects unknown" in {
-        val result: MatchError = intercept[MatchError](mainNavigator.reverseCheckingRoutes(HonestyDeclarationPage,fakeRequestConverter(correctUserAnswers)))
+        val result: MatchError = intercept[MatchError](mainNavigator.reverseCheckingRoutes(HonestyDeclarationPage, fakeRequestConverter(correctUserAnswers)))
         result.getMessage.contains("[Navigation][reverseCheckingRoutes] - Unknown page HonestyDeclarationPage") shouldBe true
       }
     }
@@ -1120,6 +1134,22 @@ class NavigationSpec extends SpecBase {
       "user answers yes" in new Setup {
         val result: Call = mainNavigator.routingForSetUpPaymentPlanPage(Some("yes"))
         result.url shouldBe appConfig.timeToPayUrl
+      }
+    }
+  }
+  "routingForCanYouPayPage" should {
+    "redirect to the appropriate page in normal mode" when {
+      "user answers yes " in new Setup {
+        val result: Call = mainNavigator.routingForCanYouPayPage(Some("yes"))
+        result.url shouldBe controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad().url
+      }
+      "user answers no " in new Setup {
+        val result: Call = mainNavigator.routingForCanYouPayPage(Some("no"))
+        result.url shouldBe controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url
+      }
+      "user answers paid " in new Setup {
+        val result: Call = mainNavigator.routingForCanYouPayPage(Some("paid"))
+        result.url shouldBe controllers.findOutHowToAppeal.routes.IfYouvePaidYourVATController.onPageLoad().url
       }
     }
   }
