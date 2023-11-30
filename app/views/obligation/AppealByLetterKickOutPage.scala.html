@@ -15,7 +15,7 @@
  *@
 
 @import config.AppConfig
-@import config.featureSwitches.ShowFindOutHowToAppealJourney
+@import config.featureSwitches.ShowFindOutHowToAppealLSPJourney
 
 @this(layout: Layout,
         bullets: components.bullets,
@@ -40,12 +40,12 @@
   @bullets(
     Seq(
       Html(messages("appealByLetter.li.1.1")),
-      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) Html(messages("appealByLetter.li.lsp.1.2")) else Html(messages("appealByLetter.li.1.2")),
-      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) Html(messages("appealByLetter.li.lsp.1.3")) else Html(messages("appealByLetter.li.1.3"))
+      if(appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney)) Html(messages("appealByLetter.li.lsp.1.2")) else Html(messages("appealByLetter.li.1.2")),
+      if(appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney)) Html(messages("appealByLetter.li.lsp.1.3")) else Html(messages("appealByLetter.li.1.3"))
     )
   )
 
-  @if(!appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+  @if(!appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney)) {
     <p class="govuk-body">@messages("appealByLetter.p2")</p>
     @bullets(
       Seq(
@@ -55,7 +55,7 @@
     )
   }
 
-  @if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+  @if(appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney)) {
     <div class="govuk-!-margin-bottom-3" id="address">
       @addressContent
     </div>

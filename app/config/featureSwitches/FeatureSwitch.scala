@@ -27,7 +27,8 @@ object FeatureSwitch {
     ShowDigitalCommsMessage,
     ShowFullAppealAgainstTheObligation,
     ShowReasonableExcuseHintText,
-    ShowFindOutHowToAppealJourney
+    ShowFindOutHowToAppealJourney,
+    ShowFindOutHowToAppealLSPJourney
   )
 }
 
@@ -49,4 +50,8 @@ case object ShowReasonableExcuseHintText extends FeatureSwitch {
 
 case object ShowFindOutHowToAppealJourney extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-find-out-how-to-appeal-journey"
+}
+
+case object ShowFindOutHowToAppealLSPJourney extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.show-find-out-how-to-appeal-lsp-journey"
 }

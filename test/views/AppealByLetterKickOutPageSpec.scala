@@ -17,7 +17,7 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
-import config.featureSwitches.ShowFindOutHowToAppealJourney
+import config.featureSwitches.ShowFindOutHowToAppealLSPJourney
 import messages.AppealByLetterKickOutMessages._
 import models.pages.{AppealByLetterKickOutPage, PageMode}
 import models.{NormalMode, UserRequest}
@@ -46,8 +46,8 @@ class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
       val addressP: Int => String = (number: Int) => s"#address > p:nth-child($number)"
     }
 
-    "when the 'ShowFindOutHowToAppealJourney' feature is enabled" should {
-      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
+    "when the 'ShowFindOutHowToAppealLSPJourney' feature is enabled" should {
+      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney))).thenReturn(true)
       "when a VAT trader is on the page" must {
         implicit val doc: Document = asDocument(applyView(userRequest = vatTraderUserLPP))
 
@@ -89,8 +89,8 @@ class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
       }
     }
 
-    "when the 'ShowFindOutHowToAppealJourney' feature is disabled" should {
-      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
+    "when the 'ShowFindOutHowToAppealLSPJourney' feature is disabled" should {
+      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney))).thenReturn(false)
       "when a VAT trader is on the page" must {
         implicit val doc: Document = asDocument(applyView(userRequest = vatTraderUserLPP))
 

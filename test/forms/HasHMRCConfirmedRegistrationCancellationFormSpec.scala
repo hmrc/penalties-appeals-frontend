@@ -17,13 +17,7 @@
 package forms
 
 import base.SpecBase
-import models.UserRequest
-import org.mockito.Mockito.mock
-import play.api.Configuration
 import play.api.data.FormError
-import play.api.mvc.AnyContent
-import play.api.test.FakeRequest
-import utils.SessionKeys
 
 class HasHMRCConfirmedRegistrationCancellationFormSpec extends FormBehaviours with SpecBase {
 

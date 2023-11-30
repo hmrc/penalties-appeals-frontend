@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
 import models.PenaltyTypeEnum
 import org.mongodb.scala.Document
 import play.api.mvc.AnyContentAsEmpty
@@ -37,7 +37,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
 
   override def afterEach(): Unit = {
     super.afterEach()
-    sys.props -= ShowFindOutHowToAppealJourney.name
+    sys.props -= ShowFindOutHowToAppealLSPJourney.name
   }
 
   "GET /initialise-appeal" should {
@@ -134,11 +134,11 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
 
   "GET /initialise-appeal-against-the-obligation" should {
     "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" +
-      s" (redirecting to 'Cancel VAT registration' page when the $ShowFindOutHowToAppealJourney is disabled)" in new Setup {
+      s" (redirecting to 'Cancel VAT registration' page when the $ShowFindOutHowToAppealLSPJourney is disabled)" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
-      disableFeatureSwitch(ShowFindOutHowToAppealJourney)
+      disableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       val result = controller.onPageLoadForObligation("1234")(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
@@ -155,11 +155,11 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
     }
 
     "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" +
-      s" (redirecting to 'Cancel VAT registration' page when the $ShowFindOutHowToAppealJourney is enabled)" in new Setup {
+      s" (redirecting to 'Cancel VAT registration' page when the $ShowFindOutHowToAppealLSPJourney is enabled)" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
+      enableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       val result = controller.onPageLoadForObligation("1234")(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER

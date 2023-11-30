@@ -17,7 +17,7 @@
 package navigation
 
 import base.SpecBase
-import config.featureSwitches.{ShowFindOutHowToAppealJourney, ShowFullAppealAgainstTheObligation}
+import config.featureSwitches.{ShowFindOutHowToAppealLSPJourney, ShowFullAppealAgainstTheObligation}
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers
@@ -281,17 +281,17 @@ class NavigationSpec extends SpecBase {
       }
 
       s"the user is on the $AppealByLetterKickOutPage" when {
-        s"the $ShowFindOutHowToAppealJourney feature switch is enabled" must {
+        s"the $ShowFindOutHowToAppealLSPJourney feature switch is enabled" must {
           "route to has HMRC confirmed registration cancelled registration page" in {
-            when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealJourney.name))(ArgumentMatchers.any())).thenReturn(true)
+            when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(ArgumentMatchers.any())).thenReturn(true)
             val result: Call = TestNavigator.previousPage(AppealByLetterKickOutPage, NormalMode, false)(userRequestWithCorrectKeys)
             result.url shouldBe controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad().url
           }
         }
 
-        s"the $ShowFindOutHowToAppealJourney feature switch is disabled" must {
+        s"the $ShowFindOutHowToAppealLSPJourney feature switch is disabled" must {
           "route to has Cancel VAT registration page" in {
-            when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealJourney.name))(ArgumentMatchers.any())).thenReturn(false)
+            when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(ArgumentMatchers.any())).thenReturn(false)
             val result: Call = TestNavigator.previousPage(AppealByLetterKickOutPage, NormalMode, false)(userRequestWithCorrectKeys)
             result.url shouldBe controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
           }
@@ -1244,16 +1244,16 @@ class NavigationSpec extends SpecBase {
 
   "reverseRouteForAppealByLetterPage" should {
     "redirect to the 'Has HMRC confirmed that the registration is cancelled?' page" when {
-      s"the $ShowFindOutHowToAppealJourney is enabled" in new Setup {
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealJourney.name))(ArgumentMatchers.any())).thenReturn(true)
+      s"the $ShowFindOutHowToAppealLSPJourney is enabled" in new Setup {
+        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(ArgumentMatchers.any())).thenReturn(true)
         val result: Call = TestNavigator.reverseRouteForAppealByLetterPage()
         result.url shouldBe controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad().url
       }
     }
 
     "redirect to the 'Has HMRC been asked to cancel the VAT registration for this business?' page" when {
-      s"the $ShowFindOutHowToAppealJourney is disabled" in new Setup {
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealJourney.name))(ArgumentMatchers.any())).thenReturn(false)
+      s"the $ShowFindOutHowToAppealLSPJourney is disabled" in new Setup {
+        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(ArgumentMatchers.any())).thenReturn(false)
         val result: Call = TestNavigator.reverseRouteForAppealByLetterPage()
         result.url shouldBe controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       }

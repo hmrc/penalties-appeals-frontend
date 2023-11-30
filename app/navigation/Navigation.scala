@@ -17,7 +17,7 @@
 package navigation
 
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney, ShowFullAppealAgainstTheObligation}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney, ShowFullAppealAgainstTheObligation}
 import controllers.routes
 import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models._
@@ -446,7 +446,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def reverseRouteForAppealByLetterPage(): Call = {
-    if(isEnabled(ShowFindOutHowToAppealJourney)) {
+    if(isEnabled(ShowFindOutHowToAppealLSPJourney)) {
       controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
     } else {
       routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()

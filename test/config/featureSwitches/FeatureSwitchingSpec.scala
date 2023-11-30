@@ -45,6 +45,7 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= ShowFullAppealAgainstTheObligation.name
     sys.props -= ShowReasonableExcuseHintText.name
+    sys.props -= ShowFindOutHowToAppealLSPJourney.name
     sys.props -= ShowFindOutHowToAppealJourney.name
   }
 
@@ -55,7 +56,8 @@ class FeatureSwitchingSpec extends SpecBase {
         ShowDigitalCommsMessage,
         ShowFullAppealAgainstTheObligation,
         ShowReasonableExcuseHintText,
-        ShowFindOutHowToAppealJourney
+        ShowFindOutHowToAppealJourney,
+        ShowFindOutHowToAppealLSPJourney
       )
     }
   }

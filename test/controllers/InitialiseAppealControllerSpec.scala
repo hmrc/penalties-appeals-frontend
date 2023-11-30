@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealJourney
+import config.featureSwitches.ShowFindOutHowToAppealLSPJourney
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
@@ -238,7 +238,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
     "call the penalties backend and handle a success response and add the keys to the session " +
       s"- redirect to Has HMRC been asked to cancel VAT registration page" +
-      s" (when the $ShowFindOutHowToAppealJourney is enabled)" in new Setup(AuthTestModels.successfulAuthResult) {
+      s" (when the $ShowFindOutHowToAppealLSPJourney is enabled)" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
@@ -256,7 +256,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         dueDate = LocalDate.of(2020, 3, 7),
         dateCommunicationSent = LocalDate.of(2020, 3, 8)
       )
-      when(mockConfig.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealJourney.name))(any())).thenReturn(true)
+      when(mockConfig.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(any())).thenReturn(true)
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
@@ -268,7 +268,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
-      s"- redirect to Cancel VAT Registration page (when the $ShowFindOutHowToAppealJourney is disabled)" in new Setup(AuthTestModels.successfulAuthResult) {
+      s"- redirect to Cancel VAT Registration page (when the $ShowFindOutHowToAppealLSPJourney is disabled)" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
@@ -286,7 +286,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
         dueDate = LocalDate.of(2020, 3, 7),
         dateCommunicationSent = LocalDate.of(2020, 3, 8)
       )
-      when(mockConfig.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealJourney.name))(any())).thenReturn(false)
+      when(mockConfig.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(any())).thenReturn(false)
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))

@@ -16,7 +16,7 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.HasBusinessAskedHMRCToCancelRegistrationForm.hasBusinessAskedHMRCToCancelRegistrationForm
@@ -54,7 +54,7 @@ class HasBusinessAskedHMRCToCancelRegistrationController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
-      if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+      if (appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney)) {
         val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(hasBusinessAskedHMRCToCancelRegistrationForm,
           SessionKeys.hasBusinessAskedHMRCToCancelRegistration,
           request.answers)
