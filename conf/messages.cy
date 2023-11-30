@@ -608,7 +608,9 @@ appealByLetter.headingAndTitle = Gallwch apelio yn erbyn y gosb hon drwy lythyr
 appealByLetter.p1 = I ofyn i CThEF adolygu’r gosb hon, anfonwch y canlynol atom:
 appealByLetter.li.1.1 = manylion o’r camau a gymerwyd i ganslo’r cofrestriad
 appealByLetter.li.1.2 = manylion o unrhyw gyswllt â CThEF ynghylch y mater hwn
+appealByLetter.li.lsp.1.2 = dyddiadau unrhyw gyswllt â CThEF ynghylch canslo’r cofrestriad
 appealByLetter.li.1.3 = unrhyw wybodaeth arall hoffech ei chynnwys er mwyn ategu apêl
+appealByLetter.li.lsp.1.3 = unrhyw fanylion eraill i ategu’ch apêl
 appealByLetter.p2 = Os bydd CThEF yn derbyn eich apêl, byddwn yn dileu:
 appealByLetter.li.2.1 = y gosb hon
 appealByLetter.li.2.2 = pob cosb arall am gyflwyno Ffurflen TAW yn hwyr neu am dalu TAW yn hwyr ar gyfer yr un cyfnod
@@ -688,3 +690,15 @@ howToAppeal.p2 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd y
 # -----------------------------------------------------------
 canYouPay.headingAndTitle = A allwch chi dalu’ch bil TAW ar gyfer y cyfnod hwn?
 canYouPay.hint = Os byddwch chi’n talu’ch TAW, bydd hynny’n newid sut gallwch chi apelio.
+
+# Has the business asked HMRC to cancel the VAT registration?
+# -----------------------------------------------------------
+hasBusinessAskedHMRCToCancelRegistration.headingAndTitle = A yw’r busnes wedi gofyn i CThEF ganslo’r cofrestriad TAW?
+hasBusinessAskedHMRCToCancelRegistration.hint = Os yw’r cofrestriad TAW wedi’i ganslo, bydd hynny’n newid sut gallwch chi apelio.
+hasBusinessAskedHMRCToCancelRegistration.error.required = Dewiswch ‘Iawn’ os yw’r busnes wedi gofyn i CThEF ganslo ei gofrestriad TAW
+
+# Has HMRC confirmed that the registration is cancelled?
+# -----------------------------------------------------------
+hasHMRCConfirmedRegistration.headingAndTitle = A yw CThEF wedi cadarnhau bod y cofrestriad wedi’i ganslo?
+hasHMRCConfirmedRegistration.hint = Dylai’r busnes barhau i godi a rhoi cyfrif am TAW hyd nes y byddwn yn cadarnhau bod y cofrestriad TAW wedi’i ganslo.
+hasHMRCConfirmedRegistration.error.required = Dewiswch ‘Iawn’ os ydych wedi cael cadarnhad bod CThEF wedi derbyn y cais i ganslo

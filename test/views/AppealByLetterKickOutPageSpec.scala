@@ -17,10 +17,13 @@
 package views
 
 import base.{BaseSelectors, SpecBase}
+import config.featureSwitches.ShowFindOutHowToAppealJourney
 import messages.AppealByLetterKickOutMessages._
 import models.pages.{AppealByLetterKickOutPage, PageMode}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.obligation.AppealByLetterKickOutPage
@@ -28,8 +31,9 @@ import views.html.obligation.AppealByLetterKickOutPage
 class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
   "AppealByLetterKickOutPage" should {
     val appealByLetter = injector.instanceOf[AppealByLetterKickOutPage]
+
     def applyView(implicit userRequest: UserRequest[_]): HtmlFormat.Appendable = {
-      appealByLetter.apply(PageMode(AppealByLetterKickOutPage, NormalMode))(userRequest, messages, appConfig)
+      appealByLetter.apply(PageMode(AppealByLetterKickOutPage, NormalMode))(userRequest, messages, mockAppConfig)
     }
 
     object Selectors extends BaseSelectors {
@@ -38,52 +42,100 @@ class AppealByLetterKickOutPageSpec extends SpecBase with ViewBehaviours {
       val bullet: (Int, Int) => String = (section: Int, number: Int) => s"#main-content > div > div > ul:nth-child($section) > li:nth-child($number)"
       val inset: Int => String = (number: Int) => s"#main-content > div > div > div > p:nth-child($number)"
       val link = "p > .govuk-link"
+
+      val addressP: Int => String = (number: Int) => s"#address > p:nth-child($number)"
     }
 
-    "when a VAT trader is on the page" must {
-      implicit val doc: Document = asDocument(applyView(userRequest = vatTraderUserLPP))
+    "when the 'ShowFindOutHowToAppealJourney' feature is enabled" should {
+      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
+      "when a VAT trader is on the page" must {
+        implicit val doc: Document = asDocument(applyView(userRequest = vatTraderUserLPP))
 
-      val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> heading,
-        Selectors.p1 -> p1,
-        Selectors.bullet(4, 1) -> bullet1,
-        Selectors.bullet(4, 2) -> bullet2,
-        Selectors.bullet(4, 3) -> bullet3,
-        Selectors.p2 -> p2,
-        Selectors.bullet(6, 1) -> bullet4,
-        Selectors.bullet(6, 2) -> bullet5,
-        Selectors.inset(1) -> inset1,
-        Selectors.inset(2) -> inset2,
-        Selectors.inset(3) -> inset3,
-        Selectors.inset(4) -> inset4,
-        Selectors.link -> link
-      )
+        val expectedContent = Seq(
+          Selectors.title -> title,
+          Selectors.h1 -> heading,
+          Selectors.p1 -> p1,
+          Selectors.bullet(4, 1) -> bullet1,
+          Selectors.bullet(4, 2) -> bullet2LSP,
+          Selectors.bullet(4, 3) -> bullet3LSP,
+          Selectors.addressP(1) -> address1,
+          Selectors.addressP(2) -> address2,
+          Selectors.addressP(3) -> address3,
+          Selectors.addressP(4) -> address4,
+          Selectors.link -> link
+        )
 
-      behave like pageWithExpectedMessages(expectedContent)(doc)
+        behave like pageWithExpectedMessages(expectedContent)(doc)
+      }
+
+      "when a agent is on the page" must {
+        implicit val doc: Document = asDocument(applyView(userRequest = agentUserLPP))
+
+        val expectedContent = Seq(
+          Selectors.title -> titleAgent,
+          Selectors.h1 -> heading,
+          Selectors.p1 -> p1,
+          Selectors.bullet(4, 1) -> bullet1,
+          Selectors.bullet(4, 2) -> bullet2LSP,
+          Selectors.bullet(4, 3) -> bullet3LSP,
+          Selectors.addressP(1) -> address1,
+          Selectors.addressP(2) -> address2,
+          Selectors.addressP(3) -> address3,
+          Selectors.addressP(4) -> address4,
+          Selectors.link -> agentLink
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)(doc)
+      }
     }
 
-    "when a agent is on the page" must {
-      implicit val doc: Document = asDocument(applyView(userRequest = agentUserLPP))
+    "when the 'ShowFindOutHowToAppealJourney' feature is disabled" should {
+      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
+      "when a VAT trader is on the page" must {
+        implicit val doc: Document = asDocument(applyView(userRequest = vatTraderUserLPP))
 
-      val expectedContent = Seq(
-        Selectors.title -> titleAgent,
-        Selectors.h1 -> heading,
-        Selectors.p1 -> p1,
-        Selectors.bullet(4, 1) -> bullet1,
-        Selectors.bullet(4, 2) -> bullet2,
-        Selectors.bullet(4, 3) -> bullet3,
-        Selectors.p2 -> p2,
-        Selectors.bullet(6, 1) -> bullet4,
-        Selectors.bullet(6, 2) -> bullet5,
-        Selectors.inset(1) -> inset1,
-        Selectors.inset(2) -> inset2,
-        Selectors.inset(3) -> inset3,
-        Selectors.inset(4) -> inset4,
-        Selectors.link -> agentLink
-      )
+        val expectedContent = Seq(
+          Selectors.title -> title,
+          Selectors.h1 -> heading,
+          Selectors.p1 -> p1,
+          Selectors.bullet(4, 1) -> bullet1,
+          Selectors.bullet(4, 2) -> bullet2,
+          Selectors.bullet(4, 3) -> bullet3,
+          Selectors.p2 -> p2,
+          Selectors.bullet(6, 1) -> bullet4,
+          Selectors.bullet(6, 2) -> bullet5,
+          Selectors.inset(1) -> address1,
+          Selectors.inset(2) -> address2,
+          Selectors.inset(3) -> address3,
+          Selectors.inset(4) -> address4,
+          Selectors.link -> link
+        )
 
-      behave like pageWithExpectedMessages(expectedContent)(doc)
+        behave like pageWithExpectedMessages(expectedContent)(doc)
+      }
+
+      "when a agent is on the page" must {
+        implicit val doc: Document = asDocument(applyView(userRequest = agentUserLPP))
+
+        val expectedContent = Seq(
+          Selectors.title -> titleAgent,
+          Selectors.h1 -> heading,
+          Selectors.p1 -> p1,
+          Selectors.bullet(4, 1) -> bullet1,
+          Selectors.bullet(4, 2) -> bullet2,
+          Selectors.bullet(4, 3) -> bullet3,
+          Selectors.p2 -> p2,
+          Selectors.bullet(6, 1) -> bullet4,
+          Selectors.bullet(6, 2) -> bullet5,
+          Selectors.inset(1) -> address1,
+          Selectors.inset(2) -> address2,
+          Selectors.inset(3) -> address3,
+          Selectors.inset(4) -> address4,
+          Selectors.link -> agentLink
+        )
+
+        behave like pageWithExpectedMessages(expectedContent)(doc)
+      }
     }
   }
 }

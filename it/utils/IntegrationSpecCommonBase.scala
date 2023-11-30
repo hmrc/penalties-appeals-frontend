@@ -46,7 +46,7 @@ import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import scala.concurrent.Future
 
 trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with
-  BeforeAndAfterAll with BeforeAndAfterEach with TestSuite with WiremockHelper {
+  BeforeAndAfterAll with BeforeAndAfterEach with WiremockHelper {
 
   lazy val injector: Injector = app.injector
 

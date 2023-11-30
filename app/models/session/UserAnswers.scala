@@ -39,6 +39,9 @@ case class UserAnswers(
     UserAnswers(journeyId, SensitiveJsObject(data.decryptedValue ++ Json.obj(key -> value)))
   }
 
+  def removeAnswer(key: String): UserAnswers = {
+    UserAnswers(journeyId, SensitiveJsObject(data.decryptedValue - key))
+  }
 }
 
 object UserAnswers {

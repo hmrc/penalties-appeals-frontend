@@ -15,49 +15,65 @@
  *@
 
 @import config.AppConfig
+@import config.featureSwitches.ShowFindOutHowToAppealJourney
 
 @this(layout: Layout,
         bullets: components.bullets,
         link: components.link,
         pageHeader: components.pageHeader,
-        govukInsetText : GovukInsetText)
+        govukInsetText: GovukInsetText)
 
 @(pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
+@addressContent = {
+  <p class="govuk-body govuk-!-margin-bottom-0">@messages("appealByLetter.inset.1")</p>
+  <p class="govuk-body govuk-!-margin-bottom-0">@messages("common.address.1")</p>
+  <p class="govuk-body govuk-!-margin-bottom-0">@messages("common.address.2")</p>
+  <p class="govuk-body govuk-!-margin-bottom-0">@messages("common.address.3")</p>
+}
+
 @layout(pageTitle = messages("appealByLetter.headingAndTitle"),
-        isPageFullWidth = false,
-        optPageMode = Some(pageMode)) {
-    @pageHeader(Some(messages("appealByLetter.headingAndTitle")))
-    <p class="govuk-body">@messages("appealByLetter.p1")</p>
-    @bullets(
-        Seq(
-            Html(messages("appealByLetter.li.1.1")),
-            Html(messages("appealByLetter.li.1.2")),
-            Html(messages("appealByLetter.li.1.3"))
-        )
+  isPageFullWidth = false,
+  optPageMode = Some(pageMode)) {
+  @pageHeader(Some(messages("appealByLetter.headingAndTitle")))
+  <p class="govuk-body">@messages("appealByLetter.p1")</p>
+  @bullets(
+    Seq(
+      Html(messages("appealByLetter.li.1.1")),
+      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) Html(messages("appealByLetter.li.lsp.1.2")) else Html(messages("appealByLetter.li.1.2")),
+      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) Html(messages("appealByLetter.li.lsp.1.3")) else Html(messages("appealByLetter.li.1.3"))
     )
+  )
+
+  @if(!appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
     <p class="govuk-body">@messages("appealByLetter.p2")</p>
     @bullets(
-        Seq(
-            Html(messages("appealByLetter.li.2.1")),
-            Html(messages("appealByLetter.li.2.2"))
-        )
+      Seq(
+        Html(messages("appealByLetter.li.2.1")),
+        Html(messages("appealByLetter.li.2.2"))
+      )
     )
+  }
 
-    <div class="govuk-inset-text">
-        <p class="govuk-body govuk-!-margin-bottom-0">@messages("appealByLetter.inset.1")</p>
-        <p class="govuk-body govuk-!-margin-bottom-0">@messages("common.address.1")</p>
-        <p class="govuk-body govuk-!-margin-bottom-0">@messages("common.address.2")</p>
-        <p class="govuk-body govuk-!-margin-bottom-0">@messages("common.address.3")</p>
+  @if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+    <div class="govuk-!-margin-bottom-3" id="address">
+      @addressContent
     </div>
+  } else {
+    <div class="govuk-inset-text">
+      @addressContent
+    </div>
+  }
 
-    <p class="govuk-body">
-        <a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}" id="penalties-link">
-            @if(userRequest.isAgent) {
-                @messages("agent.common.returnToPenalties")
-            } else {
-                @messages("common.returnToPenalties")
-            }
-        </a>
-    </p>
+  <p class="govuk-body">
+    <a class="govuk-link" href="@{
+      appConfig.penaltiesFrontendUrl
+    }" id="penalties-link">
+    @if(userRequest.isAgent) {
+      @messages("agent.common.returnToPenalties")
+    } else {
+      @messages("common.returnToPenalties")
+    }
+    </a>
+  </p>
 }

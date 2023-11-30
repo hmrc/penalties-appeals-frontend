@@ -26,7 +26,8 @@ object FeatureSwitch {
     NonJSRouting,
     ShowDigitalCommsMessage,
     ShowFullAppealAgainstTheObligation,
-    ShowReasonableExcuseHintText
+    ShowReasonableExcuseHintText,
+    ShowFindOutHowToAppealJourney
   )
 }
 
@@ -41,7 +42,6 @@ case object ShowDigitalCommsMessage extends FeatureSwitch {
 case object ShowFullAppealAgainstTheObligation extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-full-appeal-against-the-obligation-journey"
 }
-
 
 case object ShowReasonableExcuseHintText extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-reasonable-excuse-hint-text"
