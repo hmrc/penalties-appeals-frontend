@@ -64,7 +64,5 @@ class AppealAfterPaymentPlanSetUpControllerISpec extends IntegrationSpecCommonBa
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
-
-    runControllerPredicateTests(controller.onSubmit(), "POST", "/appeal-after-payment-plan-setup")
   }
 }

@@ -18,7 +18,7 @@ package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.AppealAfterPaymentPlanSetUpForm.appealAfterPaymentPlanSetUpForm
 import helpers.FormProviderHelper
 import models._
@@ -42,7 +42,6 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
                                                      (implicit mcc: MessagesControllerComponents,
                                                       appConfig: AppConfig,
                                                       authorise: AuthPredicate,
-                                                      dataRequired: DataRequiredAction,
                                                       dataRetrieval: DataRetrievalAction,
                                                       navigation: Navigation,
                                                       sessionService: SessionService,
@@ -50,7 +49,7 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(AppealAfterPaymentPlanSetUpPage, mode)
 
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval) {
 
     implicit request =>
       if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
@@ -61,18 +60,14 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
         )
         val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
         val postAction = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
-        val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "no")
-        sessionService.updateAnswers(willUserPay).map { //TODO: This should be moved to the Can You Pay Your VAT Bill page when that is implemented
-          _ => Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
-        }
+          Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
       }
       else {
-        Future(errorHandler.notFoundError(request))
+        errorHandler.notFoundError(request)
       }
-
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit userRequest => {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit userRequest => {
     appealAfterPaymentPlanSetUpForm
       .bindFromRequest()
       .fold(

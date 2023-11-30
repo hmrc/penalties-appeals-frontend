@@ -18,6 +18,8 @@ package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
 import messages.findOutHowToAppeal.IfYouvePaidYourVATMessages._
+import models.NormalMode
+import models.pages.{IfYouvePaidYourVATPage, PageMode}
 import org.jsoup.nodes.Document
 import views.behaviours.ViewBehaviours
 import views.html.findOutHowToAppeal.IfYouvePaidYourVATPage
@@ -33,7 +35,7 @@ class IfYouvePaidYourVATPageSpec extends SpecBase with ViewBehaviours {
     val link2 = "#penalties-link"
   }
 
-  implicit val doc: Document = asDocument(page()(implicitly, implicitly, userRequestWithCorrectKeys))
+  implicit val doc: Document = asDocument(page(PageMode(IfYouvePaidYourVATPage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys))
 
   "IfYouvePaidYourVATPage" should {
     val expectedContent = Seq(

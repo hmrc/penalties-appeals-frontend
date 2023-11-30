@@ -6,6 +6,7 @@
 GET        /appeal-start                                controllers.AppealStartController.onPageLoad()
 GET        /initialise-appeal                           controllers.InitialiseAppealController.onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional:Boolean)
 GET        /initialise-appeal-against-the-obligation    controllers.InitialiseAppealController.onPageLoadForObligation(penaltyId: String)
+GET        /initialise-appeal-find-out-how-to-appeal    controllers.InitialiseAppealController.onPageLoadForFindOutHowToAppeal(principalChargeReference: String, vatAmountInPence: Int, vatPeriodStartDate: String, vatPeriodEndDate:String, isCa: Boolean)
 
 #Reasonable excuse list
 GET        /reason-for-missing-deadline     controllers.ReasonableExcuseController.onPageLoad()
@@ -215,6 +216,7 @@ GET        /you-cannot-go-back-to-appeal                       controllers.YouCa
 GET        /appeal-details                                     controllers.ViewAppealDetailsController.onPageLoad()
 
 # Find out how to appeal
+GET        /start-find-out-how-to-appeal                       controllers.findOutHowToAppeal.FindOutHowToAppealStartController.startFindOutHowToAppeal()
 GET        /if-youve-paid-your-VAT                             controllers.findOutHowToAppeal.IfYouvePaidYourVATController.onPageLoad()
 GET        /other-ways-to-appeal                               controllers.findOutHowToAppeal.OtherWaysToAppealController.onPageLoad()
 GET        /you-can-appeal-online-after-you-pay                controllers.findOutHowToAppeal.AppealAfterVATIsPaidController.onPageLoad()

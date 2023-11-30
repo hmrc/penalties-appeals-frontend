@@ -48,7 +48,7 @@ class IfYouvePaidYourVATControllerSpec extends SpecBase {
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new IfYouvePaidYourVATController(ifYouvePaidYourVATPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRequiredAction, dataRetrievalAction, config, ec)
+      authPredicate, dataRetrievalAction, config, ec)
   }
 
   "IfYouvePaidYourVATController" should {

@@ -23,6 +23,9 @@ object SessionKeys {
   val dueDateOfPeriod = "periodDueDate"
   val dateCommunicationSent = "dateCommunicationSent"
   val penaltyNumber = "penaltyNumber"
+  val vatAmount = "vatAmount"
+  val principalChargeReference = "principalChargeReference"
+  val isCaLpp = "isCaLpp"
   val reasonableExcuse = "reasonableExcuse"
   val dateOfCrime = "dateOfCrime"
   val dateOfFireOrFlood = "dateOfFireOrFlood"
@@ -66,7 +69,7 @@ object SessionKeys {
   val appealAfterPaymentPlanSetUp = "appealAfterPaymentPlanSetUp"
   val fileNames = "fileNames"
   val doYouWantToPayNow = "doYouWantToPayNow"
-  val willUserPay = "willUsePay" //TODO: This should be set in the Can You Pay Your VAT Bill page
+  val willUserPay = "willUsePay"
   val hasBusinessAskedHMRCToCancelRegistration = "hasBusinessAskedHMRCToCancelRegistration"
   val hasHMRCConfirmedRegistrationCancellation = "hasHMRCConfirmedRegistrationCancellation"
 

@@ -36,8 +36,6 @@ class AppealAfterVATIsPaidControllerISpec extends IntegrationSpecCommonBase with
       request.header.status shouldBe OK
     }
 
-    runControllerPredicateTests(controller.onPageLoad(), "GET", "/you-can-appeal-online-after-you-pay")
-
     "return 404 (NOT_FOUND) when the user is auhtorised by the feature switch is disabled" in new UserAnswersSetup(userAnswers()) {
       disableFeatureSwitch(ShowFindOutHowToAppealJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
@@ -66,7 +64,5 @@ class AppealAfterVATIsPaidControllerISpec extends IntegrationSpecCommonBase with
         request.header.status shouldBe Status.BAD_REQUEST
       }
     }
-
-    runControllerPredicateTests(controller.onPageLoad(), "POST", "/you-can-appeal-online-after-you-pay")
   }
 }

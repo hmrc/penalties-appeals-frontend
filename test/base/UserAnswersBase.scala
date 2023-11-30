@@ -134,4 +134,10 @@ trait UserAnswersBase {
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.dateOfCrime -> "2022-01-01"
   ) ++ hasConfirmedDeclaration
+
+  val findOutHowToAppealLPPNonCaAnswers: JsObject = Json.obj(
+    SessionKeys.vatAmount -> BigDecimal(123.45),
+    SessionKeys.principalChargeReference -> "123456789",
+    SessionKeys.isCaLpp -> false
+  ) ++ correctLPPUserAnswers
 }

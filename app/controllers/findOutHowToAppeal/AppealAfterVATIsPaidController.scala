@@ -18,7 +18,7 @@ package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.DoYouWantToPayNowForm.doYouWantToPayNowForm
 import helpers.FormProviderHelper
 import models.pages.{PageMode, YouCanAppealOnlinePage}
@@ -40,7 +40,6 @@ class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, e
                                               (implicit mcc: MessagesControllerComponents,
                                                         appConfig: AppConfig,
                                                         authorise: AuthPredicate,
-                                                        dataRequired: DataRequiredAction,
                                                         dataRetrieval: DataRetrievalAction,
                                                         navigation: Navigation,
                                                         sessionService: SessionService,
@@ -49,7 +48,7 @@ class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, e
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(YouCanAppealOnlinePage, mode)
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
         val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(doYouWantToPayNowForm,
@@ -67,7 +66,7 @@ class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, e
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit userRequest => {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit userRequest => {
     doYouWantToPayNowForm.bindFromRequest().fold(
       form => {
         val postAction = controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onSubmit()

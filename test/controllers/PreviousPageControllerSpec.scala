@@ -42,7 +42,7 @@ class PreviousPageControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-    val controller = new PreviousPageController(mockNavigator)(mcc, authPredicate, dataRetrievalAction, dataRequiredAction)
+    val controller = new PreviousPageController(mockNavigator)(mcc, authPredicate, dataRetrievalAction)
   }
 
   "previousPage" should {

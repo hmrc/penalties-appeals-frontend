@@ -1,8 +1,8 @@
-import sbt.*
+import sbt._
 
 object AppDependencies {
 
-  val bootstrapVersion = "8.1.0"
+  val bootstrapVersion = "7.23.0"
 
   val mongoPlayVersion = "1.6.0"
 
@@ -16,7 +16,7 @@ object AppDependencies {
   val test = Seq(
     "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapVersion    % "test, it",
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % mongoPlayVersion    % "test, it",
-    "org.jsoup"               %  "jsoup"                    % "1.16.1"            % "test, it",
-    "org.mockito"             %% "mockito-scala-scalatest"  % "1.17.27"           % "it, test"
+    "org.jsoup"               %  "jsoup"                    % "1.17.1"            % "test, it",
+    "org.mockito"             %% "mockito-scala-scalatest"  % "1.17.30"           % "it, test"
   )
 }

@@ -59,7 +59,7 @@ class CanYouPayControllerSpec extends SpecBase {
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new CanYouPayController(CanYouPayPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRequiredAction, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
+      authPredicate, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
   }
 
   "CanYouPayController" should {
@@ -70,14 +70,14 @@ class CanYouPayControllerSpec extends SpecBase {
           val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
           when(mockSessionService.updateAnswers(answerCaptor.capture()))
             .thenReturn(Future.successful(true))
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
           val result: Future[Result] = controller.onPageLoad()(fakeRequestConverter(fakeRequest = fakeRequest
             .withFormUrlEncodedBody("value" -> "no")))
           status(result) shouldBe OK
         }
 
         "return 404 (NOT_FOUND) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
           when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe NOT_FOUND
@@ -112,6 +112,7 @@ class CanYouPayControllerSpec extends SpecBase {
       }
       "the user is unauthorised" when {
         "return 400 (BAD_REQUEST) when a no option is selected" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
           val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
             .withFormUrlEncodedBody("value" -> "")))
           status(result) shouldBe BAD_REQUEST

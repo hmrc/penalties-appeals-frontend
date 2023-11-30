@@ -21,18 +21,16 @@ import config.featureSwitches.ShowFindOutHowToAppealJourney
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK, SEE_OTHER}
+import play.api.http.Status.{FORBIDDEN, NOT_FOUND, SEE_OTHER}
 import play.api.mvc.Result
-import play.api.test.Helpers.{defaultAwaitTimeout, status}
+import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.findOutHowToAppeal.HowToAppealPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HowToAppealControllerSpec extends SpecBase {
-  val howToAppealPage: HowToAppealPage = injector.instanceOf[HowToAppealPage]
+class FindOutHowToAppealStartControllerSpec extends SpecBase {
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
@@ -47,34 +45,38 @@ class HowToAppealControllerSpec extends SpecBase {
 
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
-    val controller = new HowToAppealController(howToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate, dataRetrievalAction, config, ec)
+    val controller = new FindOutHowToAppealStartController(errorHandler, mockAppConfig)(mcc, authPredicate,
+      dataRetrievalAction, config, ec)
   }
 
-  "HowToAppealController" should {
-    "onPageLoad" when {
+  "FindOutHowToAppealStartController" should {
+    "startFindOutHowToAppeal" when {
       "the user is authorised" must {
-        "return 200 (OK) and the correct view" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
-          val result = controller.onPageLoad()(userRequestWithCorrectKeys)
-          status(result) shouldBe OK
+        "return 303 (SEE_OTHER) and redirect to the correct view" when {
+          "Appealing a LPP (Non CA) as a trader" in new Setup(AuthTestModels.successfulAuthResult) {
+            when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
+            val result: Future[Result] = controller.startFindOutHowToAppeal()(vatTraderLPPUserRequest)
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad().url
+          }
         }
 
         "return 404 (NOT_FOUND) when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
           when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
-          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
+          val result: Future[Result] = controller.startFindOutHowToAppeal()(vatTraderLPPUserRequest)
           status(result) shouldBe NOT_FOUND
         }
       }
 
       "the user is unauthorised" must {
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.startFindOutHowToAppeal()(fakeRequest)
           status(result) shouldBe FORBIDDEN
         }
 
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.startFindOutHowToAppeal()(fakeRequest)
           status(result) shouldBe SEE_OTHER
         }
       }

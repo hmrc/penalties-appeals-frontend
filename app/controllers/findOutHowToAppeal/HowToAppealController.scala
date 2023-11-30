@@ -18,14 +18,14 @@ package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import models.pages.{HowToAppealPage, PageMode}
 import models.NormalMode
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.CurrencyFormatter
+import utils.{CurrencyFormatter, SessionKeys}
 import views.html.findOutHowToAppeal.HowToAppealPage
 
 import javax.inject.Inject
@@ -35,7 +35,6 @@ class HowToAppealController @Inject()(howToAppealPage: HowToAppealPage, errorHan
                                      (implicit mcc: MessagesControllerComponents,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
-                                            dataRequired: DataRequiredAction,
                                             dataRetrieval: DataRetrievalAction,
                                             val config: Configuration,
                                             ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
@@ -43,10 +42,10 @@ class HowToAppealController @Inject()(howToAppealPage: HowToAppealPage, errorHan
   val pageMode: PageMode = PageMode(HowToAppealPage, NormalMode)
 
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        val vatAmount: BigDecimal = 123.45 //TODO Get from session
+        val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
         Future(Ok(howToAppealPage(CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount), pageMode)))
       } else {
         errorHandler.onClientError(request, NOT_FOUND, "")

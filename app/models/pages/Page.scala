@@ -102,6 +102,8 @@ case object HowToAppealPage extends Page
 
 case object CanYouPayPage extends Page
 
+case object IfYouvePaidYourVATPage extends Page
+
 case object HasBusinessAskedHMRCToCancelRegistrationPage extends Page
 
 case object HasHMRCConfirmedRegistrationCancellationPage extends Page
@@ -150,6 +152,7 @@ object Page {
     YouCanAppealOnlinePage,
     HowToAppealPage,
     CanYouPayPage,
+    IfYouvePaidYourVATPage,
     HasBusinessAskedHMRCToCancelRegistrationPage,
     HasHMRCConfirmedRegistrationCancellationPage
   )

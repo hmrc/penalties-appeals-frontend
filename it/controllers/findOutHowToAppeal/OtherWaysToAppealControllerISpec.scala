@@ -40,5 +40,4 @@ class OtherWaysToAppealControllerISpec extends IntegrationSpecCommonBase with Au
       request.header.status shouldBe NOT_FOUND
     }
   }
-
 }

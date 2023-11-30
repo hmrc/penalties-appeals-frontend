@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney, ShowFindOutHowToAppealJourney}
 import models.PenaltyTypeEnum
 import org.mongodb.scala.Document
 import play.api.mvc.AnyContentAsEmpty
@@ -181,6 +181,51 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
         authToken -> "1234"
       ))
       await(result).header.status shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "GET /initialise-appeal-find-out-how-to-appeal " should {
+    "redirect to the Start Find Out How To Appeal Controller" in new Setup {
+      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
+      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
+        authToken -> "1234"
+      )
+      val principalChargeReference = "123456789"
+      val vatAmountInPence = 12345
+      val vatStartDate = "2023-04-07"
+      val vatEndDate = "2023-07-06"
+      val isCa = false
+
+      val result = controller.onPageLoadForFindOutHowToAppeal(principalChargeReference, vatAmountInPence, vatStartDate, vatEndDate, isCa)(fakeRequest)
+
+      await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.FindOutHowToAppealStartController.startFindOutHowToAppeal().url
+      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.principalChargeReference).isDefined shouldBe true
+      userAnswers.getAnswer[BigDecimal](SessionKeys.vatAmount).isDefined shouldBe true
+      userAnswers.getAnswer[Boolean](SessionKeys.isCaLpp).isDefined shouldBe true
+      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
+    }
+
+    "render an NOT_FOUND when the feature switch is disabled" in new Setup {
+      disableFeatureSwitch(ShowFindOutHowToAppealJourney)
+      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
+        authToken -> "1234"
+      )
+      val principalChargeReference = "123456789"
+      val vatAmountInPence = 12345
+      val vatStartDate = "2023-04-07"
+      val vatEndDate = "2023-07-06"
+      val isCa = false
+
+      val result = controller.onPageLoadForFindOutHowToAppeal(principalChargeReference, vatAmountInPence, vatStartDate, vatEndDate, isCa)(fakeRequest)
+
+      await(result).header.status shouldBe NOT_FOUND
     }
   }
 }
