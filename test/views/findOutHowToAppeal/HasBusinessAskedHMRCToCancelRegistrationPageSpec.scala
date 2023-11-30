@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-package views
+package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
-import forms.HasHospitalStayEndedForm
-import messages.HasTheHospitalStayEndedMessages._
+import forms.HasBusinessAskedHMRCToCancelRegistrationForm
+import messages.findOutHowToAppeal.HasBusinessAskedHMRCToCancelRegistrationMessages._
 import models.NormalMode
-import models.pages.{DidHospitalStayEndPage, PageMode}
+import models.pages.{HasBusinessAskedHMRCToCancelRegistrationPage, PageMode}
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.reasonableExcuseJourneys.health.HasTheHospitalStayEndedPage
+import views.html.findOutHowToAppeal.HasBusinessAskedHMRCToCancelRegistrationPage
 import viewtils.RadioOptionHelper
 
-class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
-  "HasTheHospitalStayEndedPage" should {
+class HasBusinessAskedHMRCToCancelRegistrationPageSpec extends SpecBase with ViewBehaviours {
+  "HasBusinessAskedHMRCToCancelRegistrationPage" should {
 
-    val hasTheHospitalStayEndedPage: HasTheHospitalStayEndedPage = injector.instanceOf[HasTheHospitalStayEndedPage]
-    object Selectors extends BaseSelectors {
-      override val labelForRadioButton: Int => String = (index: Int) => if(index == 1) "label[for=hasStayEnded]" else s"label[for=hasStayEnded-$index]"
-    }
-    val formProvider: Form[String] = HasHospitalStayEndedForm.hasHospitalStayEndedForm
-    val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider, "hasStayEnded")
+    val page: HasBusinessAskedHMRCToCancelRegistrationPage = injector.instanceOf[HasBusinessAskedHMRCToCancelRegistrationPage]
+
+    object Selectors extends BaseSelectors
+
+    val formProvider: Form[String] = HasBusinessAskedHMRCToCancelRegistrationForm.hasBusinessAskedHMRCToCancelRegistrationForm
+    val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
+
     def applyView(form: Form[_]): HtmlFormat.Appendable = {
-      hasTheHospitalStayEndedPage.apply(form, radioOptions, controllers.routes.HealthReasonController.onSubmitForHasHospitalStayEnded(NormalMode),
-        pageMode = PageMode(DidHospitalStayEndPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
+      page.apply(form, radioOptions, controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onSubmit(),
+        pageMode = PageMode(HasBusinessAskedHMRCToCancelRegistrationPage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys)
     }
 
     implicit val doc: Document = asDocument(applyView(formProvider))
@@ -47,9 +48,10 @@ class HasTheHospitalStayEndedPageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> h1,
+      Selectors.hintText -> hintText,
       Selectors.labelForRadioButton(1) -> yesText,
       Selectors.labelForRadioButton(2) -> noText,
-      Selectors.button -> continue
+      Selectors.button -> submitButton
     )
 
     behave like pageWithExpectedMessages(expectedContent)

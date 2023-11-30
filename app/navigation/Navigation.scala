@@ -17,7 +17,7 @@
 package navigation
 
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, ShowFullAppealAgainstTheObligation}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney, ShowFullAppealAgainstTheObligation}
 import controllers.routes
 import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models._
@@ -68,8 +68,10 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     PenaltySelectionPage -> ((_, _) => routes.AppealStartController.onPageLoad()),
     AppealSinglePenaltyPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
     AppealCoverBothPenaltiesPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
-    AppealByLetterKickOutPage -> ((_, _) => routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()),
-    OtherWaysToAppealPage -> ((request, _) => reverseRouteForOtherWaysToAppeal(request))
+    AppealByLetterKickOutPage -> ((request, _) => reverseRouteForAppealByLetterPage()),
+    OtherWaysToAppealPage -> ((request, _) => reverseRouteForOtherWaysToAppeal(request)),
+    HasBusinessAskedHMRCToCancelRegistrationPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl)),
+    HasHMRCConfirmedRegistrationCancellationPage -> ((_, _) => controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad())
   )
 
   def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
@@ -154,8 +156,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     WhenDidHospitalStayEndPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     AppealAfterPaymentPlanSetUpPage -> ((answer, _, _) => routingForSetUpPaymentPlanPage(answer)),
     YouCanAppealOnlinePage -> ((answer, _, _) => routingForYouCanAppealOnlinePage(answer)),
-    CanYouPayPage -> ((answer, _, _) => routingForCanYouPayPage(answer))
-
+    CanYouPayPage -> ((answer, _, _) => routingForCanYouPayPage(answer)),
+    HasBusinessAskedHMRCToCancelRegistrationPage -> ((answer, _, _) => routingForHasBusinessAskedHMRCToCancelRegistrationPage(answer)),
+    HasHMRCConfirmedRegistrationCancellationPage -> ((answer, _, _) => routingForHasHMRCConfirmedRegistrationCancellationPage(answer))
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, jsEnabled: Option[Boolean] = None)
@@ -180,7 +183,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForWhoPlannedToSubmitVATReturnAgentPage(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
+  protected[navigation] def routingForWhoPlannedToSubmitVATReturnAgentPage(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
     if (answer.get.toLowerCase == "agent") {
       routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(mode)
     } else if (mode == NormalMode) {
@@ -190,7 +193,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForCancelVATRegistrationPage(answer: Option[String], request: UserRequest[_]): Call = {
+  protected[navigation] def routingForCancelVATRegistrationPage(answer: Option[String], request: UserRequest[_]): Call = {
     if (answer.get.toLowerCase == "yes") {
       if (isEnabled(ShowFullAppealAgainstTheObligation)) {
         routes.YouCanAppealPenaltyController.onPageLoad()
@@ -202,7 +205,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForPenaltySelectionPage(answer: Option[String], mode: Mode): Call = {
+  protected[navigation] def routingForPenaltySelectionPage(answer: Option[String], mode: Mode): Call = {
     if (answer.get.toLowerCase == "yes") {
       routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode)
     } else {
@@ -210,7 +213,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForHospitalStayEnded(mode: Mode, answer: Option[String], userRequest: UserRequest[_]): Call = {
+  protected[navigation] def routingForHospitalStayEnded(mode: Mode, answer: Option[String], userRequest: UserRequest[_]): Call = {
     if (answer.get.toLowerCase == "yes") {
       routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
     } else {
@@ -218,7 +221,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForHospitalStay(mode: Mode, answer: Option[String], userRequest: UserRequest[_]): Call = {
+  protected[navigation] def routingForHospitalStay(mode: Mode, answer: Option[String], userRequest: UserRequest[_]): Call = {
     (mode, answer) match {
       case (CheckMode, Some(ans)) if ans.equalsIgnoreCase("no") && userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened).isDefined =>
         routes.CheckYourAnswersController.onPageLoad()
@@ -230,7 +233,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def getNextURLBasedOnReasonableExcuse(reasonableExcuse: Option[String], mode: Mode): Call = {
+  protected[navigation] def getNextURLBasedOnReasonableExcuse(reasonableExcuse: Option[String], mode: Mode): Call = {
     reasonableExcuse.fold(
       controllers.routes.AppealAgainstObligationController.onPageLoad(mode)
     ) {
@@ -245,7 +248,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_], mode: Mode): Call = {
+  protected[navigation] def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_], mode: Mode): Call = {
     if (isLateAppealHelper.isAppealLate()(userRequest)
       && (userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)
       && userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isEmpty) {
@@ -258,7 +261,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
 
-  def routeForUploadList(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
+  protected[navigation] def routeForUploadList(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
     answer match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode)
       case Some(ans) if ans.equalsIgnoreCase("no") => routeToMakingALateAppealOrCYAPage(request, mode)
@@ -269,7 +272,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode, jsEnabled: Option[Boolean]): Call = {
+  protected[navigation] def routeForUploadEvidenceQuestion(isUploadEvidence: Option[String], request: UserRequest[_], mode: Mode, jsEnabled: Option[Boolean]): Call = {
     val isJsEnabled = jsEnabled.getOrElse(false)
     isUploadEvidence match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => routes.OtherReasonController.onPageLoadForUploadEvidence(mode, isJsEnabled)
@@ -280,7 +283,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routeForYouCanAppealPenalty(answer: Option[String]): Call = {
+  protected[navigation] def routeForYouCanAppealPenalty(answer: Option[String]): Call = {
     answer match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => routes.AppealStartController.onPageLoad()
       case Some(ans) if ans.equalsIgnoreCase("no") => Call("GET", appConfig.penaltiesFrontendUrl)
@@ -290,7 +293,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForSetUpPaymentPlanPage(answer: Option[String]): Call = {
+  protected[navigation] def routingForSetUpPaymentPlanPage(answer: Option[String]): Call = {
     answer match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.timeToPayUrl)
       case Some(ans) if ans.equalsIgnoreCase("no") => controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad()
@@ -300,7 +303,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForYouCanAppealOnlinePage(answer: Option[String]): Call = {
+  protected[navigation] def routingForYouCanAppealOnlinePage(answer: Option[String]): Call = {
     answer match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.payYourVAT)
       case Some(ans) if ans.equalsIgnoreCase("no") => controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad()
@@ -310,7 +313,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  def routingForCanYouPayPage(answer: Option[String]): Call = {
+  protected[navigation] def routingForCanYouPayPage(answer: Option[String]): Call = {
     answer match {
       case Some(ans) if ans.equalsIgnoreCase("yes") => controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad()
       case Some(ans) if ans.equalsIgnoreCase("no") => controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
@@ -322,7 +325,33 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRouteForAppealStartPage(userRequest: UserRequest[_]): Call = {
+  protected[navigation] def routingForHasBusinessAskedHMRCToCancelRegistrationPage(optAnswer: Option[String]): Call = {
+    optAnswer match {
+      case Some(answer) if answer.equalsIgnoreCase("yes") =>
+        controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
+      //TODO: change when PRM-3086 is implemented
+      case Some(answer) if answer.equalsIgnoreCase("no") => Call("GET", "/")
+      case _ =>
+        logger.debug("[Navigation][routingForHasBusinessAskedHMRCToCancelRegistrationPage]: unable to get answer " +
+          "- reloading 'HasBusinessAskedHMRCToCancelRegistrationPage'")
+        controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
+    }
+  }
+
+  protected[navigation] def routingForHasHMRCConfirmedRegistrationCancellationPage(optAnswer: Option[String]): Call = {
+    optAnswer match {
+      case Some(answer) if answer.equalsIgnoreCase("yes") =>
+        controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter()
+      //TODO: change when PRM-3086 is implemented
+      case Some(answer) if answer.equalsIgnoreCase("no") => Call("GET", "/")
+      case _ =>
+        logger.debug("[Navigation][routingForHasBusinessAskedHMRCToCancelRegistrationPage]: unable to get answer " +
+          "- reloading 'HasBusinessAskedHMRCToCancelRegistrationPage'")
+        controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
+    }
+  }
+
+  protected[navigation] def reverseRouteForAppealStartPage(userRequest: UserRequest[_]): Call = {
     if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
       routes.YouCanAppealPenaltyController.onPageLoad()
     } else {
@@ -330,7 +359,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRouteForHonestyDeclaration(userRequest: UserRequest[_]): Call = {
+  protected[navigation] def reverseRouteForHonestyDeclaration(userRequest: UserRequest[_]): Call = {
     if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
       routes.AppealStartController.onPageLoad()
     } else {
@@ -338,7 +367,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRouteForUploadEvidenceQuestion(userRequest: UserRequest[_], mode: Mode): Call = {
+  protected[navigation] def reverseRouteForUploadEvidenceQuestion(userRequest: UserRequest[_], mode: Mode): Call = {
     if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
       routes.AppealAgainstObligationController.onPageLoad(mode)
     } else {
@@ -346,7 +375,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRouteForMakingALateAppealPage(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
+  protected[navigation] def reverseRouteForMakingALateAppealPage(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
     if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
       reverseRoutingForUpload(userRequest, mode, jsEnabled)
     } else {
@@ -362,7 +391,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRoutingForHospitalStayEnded(userRequest: UserRequest[_], mode: Mode) = {
+  protected[navigation] def reverseRoutingForHospitalStayEnded(userRequest: UserRequest[_], mode: Mode) = {
     if (userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).contains("yes")) {
       routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
     } else {
@@ -370,7 +399,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRoutingForUpload(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
+  protected[navigation] def reverseRoutingForUpload(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
     if (userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).contains("yes")) {
       routes.OtherReasonController.onPageLoadForUploadEvidence(mode, jsEnabled)
     } else {
@@ -378,7 +407,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRouteForReasonableExcuseSelectionPage(userRequest: UserRequest[_], mode: Mode): Call = {
+  protected[navigation] def reverseRouteForReasonableExcuseSelectionPage(userRequest: UserRequest[_], mode: Mode): Call = {
     (userRequest.isAgent, userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission),
       userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).isDefined) match {
       case (true, true, _) if userRequest.answers.getAnswer[String](SessionKeys.whoPlannedToSubmitVATReturn).contains("agent") => {
@@ -393,7 +422,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRouteForCYAPage(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
+  protected[navigation] def reverseRouteForCYAPage(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
     val dateSentParsed: LocalDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateNow: LocalDate = dateTimeHelper.dateNow
@@ -408,11 +437,19 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  private def reverseRouteForOtherWaysToAppeal(userRequest: UserRequest[_]): Call = {
+  protected[navigation] def reverseRouteForOtherWaysToAppeal(userRequest: UserRequest[_]): Call = {
     if(userRequest.answers.getAnswer[String](SessionKeys.willUserPay).contains("yes")) {
       controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad()
     } else {
       controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()
+    }
+  }
+
+  protected[navigation] def reverseRouteForAppealByLetterPage(): Call = {
+    if(isEnabled(ShowFindOutHowToAppealLSPJourney)) {
+      controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
+    } else {
+      routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
     }
   }
 }

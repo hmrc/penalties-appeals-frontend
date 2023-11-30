@@ -45,6 +45,8 @@ class FeatureSwitchingSpec extends SpecBase {
     sys.props -= ShowDigitalCommsMessage.name
     sys.props -= ShowFullAppealAgainstTheObligation.name
     sys.props -= ShowReasonableExcuseHintText.name
+    sys.props -= ShowFindOutHowToAppealLSPJourney.name
+    sys.props -= ShowFindOutHowToAppealJourney.name
   }
 
   "listOfAllFeatureSwitches" should {
@@ -53,7 +55,9 @@ class FeatureSwitchingSpec extends SpecBase {
         NonJSRouting,
         ShowDigitalCommsMessage,
         ShowFullAppealAgainstTheObligation,
-        ShowReasonableExcuseHintText
+        ShowReasonableExcuseHintText,
+        ShowFindOutHowToAppealJourney,
+        ShowFindOutHowToAppealLSPJourney
       )
     }
   }

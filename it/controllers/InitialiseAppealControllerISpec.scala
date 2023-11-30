@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
 import models.PenaltyTypeEnum
 import org.mongodb.scala.Document
 import play.api.mvc.AnyContentAsEmpty
@@ -27,11 +28,16 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
+class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
   val controller: InitialiseAppealController = injector.instanceOf[InitialiseAppealController]
 
   class Setup {
     await(userAnswersRepository.collection.deleteMany(Document()).toFuture())
+  }
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    sys.props -= ShowFindOutHowToAppealLSPJourney.name
   }
 
   "GET /initialise-appeal" should {
@@ -127,10 +133,12 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
   }
 
   "GET /initialise-appeal-against-the-obligation" should {
-    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" in new Setup {
+    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" +
+      s" (redirecting to 'Cancel VAT registration' page when the $ShowFindOutHowToAppealLSPJourney is disabled)" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
+      disableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       val result = controller.onPageLoadForObligation("1234")(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
@@ -144,7 +152,27 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
       userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
+    }
 
+    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" +
+      s" (redirecting to 'Cancel VAT registration' page when the $ShowFindOutHowToAppealLSPJourney is enabled)" in new Setup {
+      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
+        authToken -> "1234"
+      )
+      enableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
+      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      val result = controller.onPageLoadForObligation("1234")(fakeRequest)
+      await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad().url
+      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
+      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
+      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
+      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
+      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
     }
 
     "render an ISE when the appeal data can not be retrieved" in new Setup {

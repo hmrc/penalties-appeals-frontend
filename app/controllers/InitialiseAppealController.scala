@@ -18,7 +18,7 @@ package controllers
 
 
 import config.ErrorHandler
-import config.featureSwitches.FeatureSwitching
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
 import controllers.predicates.AuthPredicate
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
@@ -66,8 +66,12 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
           Future(errorHandler.showInternalServerError)
         )(
           appealData => {
+            val redirectUrl = {
+              if(isEnabled(ShowFindOutHowToAppealLSPJourney)) findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
+              else routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+            }
             removeExistingKeysFromSessionAndRedirect(
-              routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration(), penaltyId, appealData, isAppealAgainstObligation = true
+              redirectUrl, penaltyId, appealData, isAppealAgainstObligation = true
             )
           }
         )

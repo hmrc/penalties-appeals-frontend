@@ -17,11 +17,12 @@
 package controllers
 
 import base.SpecBase
+import config.featureSwitches.ShowFindOutHowToAppealLSPJourney
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
 import models.session.UserAnswers
 import models.{AppealData, PenaltyTypeEnum}
-import org.mockito.ArgumentCaptor
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.Configuration
@@ -236,7 +237,8 @@ class InitialiseAppealControllerSpec extends SpecBase {
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
-      "- redirect to Cancel VAT Registration page" in new Setup(AuthTestModels.successfulAuthResult) {
+      s"- redirect to Has HMRC been asked to cancel VAT registration page" +
+      s" (when the $ShowFindOutHowToAppealLSPJourney is enabled)" in new Setup(AuthTestModels.successfulAuthResult) {
       val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
@@ -254,13 +256,44 @@ class InitialiseAppealControllerSpec extends SpecBase {
         dueDate = LocalDate.of(2020, 3, 7),
         dateCommunicationSent = LocalDate.of(2020, 3, 8)
       )
+      when(mockConfig.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(any())).thenReturn(true)
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
       val result: Future[Result] = controller.onPageLoadForObligation("12345")(fakeRequest)
-      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad().url
+      answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
+    }
+
+    "call the penalties backend and handle a success response and add the keys to the session " +
+      s"- redirect to Cancel VAT Registration page (when the $ShowFindOutHowToAppealLSPJourney is disabled)" in new Setup(AuthTestModels.successfulAuthResult) {
+      val answerCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      val userAnswersToReturn: UserAnswers = userAnswers(Json.obj(
+        SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+        SessionKeys.startDateOfPeriod -> LocalDate.of(2020, 1, 1),
+        SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
+        SessionKeys.penaltyNumber -> "12345",
+        SessionKeys.dueDateOfPeriod -> LocalDate.of(2020, 3, 7),
+        SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8),
+        SessionKeys.isObligationAppeal -> true
+      ))
+      val appealDataToReturn: AppealData = AppealData(
+        `type` = PenaltyTypeEnum.Late_Submission,
+        startDate = LocalDate.of(2020, 1, 1),
+        endDate = LocalDate.of(2020, 1, 31),
+        dueDate = LocalDate.of(2020, 3, 7),
+        dateCommunicationSent = LocalDate.of(2020, 3, 8)
+      )
+      when(mockConfig.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(any())).thenReturn(false)
+      when(mockSessionService.updateAnswers(answerCaptor.capture()))
+        .thenReturn(Future.successful(true))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(appealDataToReturn)))
+      val result: Future[Result] = controller.onPageLoadForObligation("12345")(fakeRequest)
+      await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
     }
 

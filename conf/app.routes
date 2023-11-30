@@ -224,3 +224,7 @@ POST       /appeal-after-payment-plan-setup                    controllers.findO
 GET        /how-to-appeal                                      controllers.findOutHowToAppeal.HowToAppealController.onPageLoad()
 GET        /can-you-pay                                        controllers.findOutHowToAppeal.CanYouPayController.onPageLoad()
 POST       /can-you-pay                                        controllers.findOutHowToAppeal.CanYouPayController.onSubmit()
+GET        /has-business-asked-hmrc-to-cancel-registration     controllers.findOutHowToAppeal.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
+POST       /has-business-asked-hmrc-to-cancel-registration     controllers.findOutHowToAppeal.HasBusinessAskedHMRCToCancelRegistrationController.onSubmit()
+GET        /has-hmrc-confirmed-cancellation                     controllers.findOutHowToAppeal.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
+POST       /has-hmrc-confirmed-cancellation                     controllers.findOutHowToAppeal.HasHMRCConfirmedRegistrationCancellationController.onSubmit()

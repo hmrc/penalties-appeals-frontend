@@ -67,6 +67,8 @@ object SessionKeys {
   val fileNames = "fileNames"
   val doYouWantToPayNow = "doYouWantToPayNow"
   val willUserPay = "willUsePay" //TODO: This should be set in the Can You Pay Your VAT Bill page
+  val hasBusinessAskedHMRCToCancelRegistration = "hasBusinessAskedHMRCToCancelRegistration"
+  val hasHMRCConfirmedRegistrationCancellation = "hasHMRCConfirmedRegistrationCancellation"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -113,6 +115,8 @@ object SessionKeys {
     secondPenaltyCommunicationDate,
     doYouWantToPayNow,
     appealAfterPaymentPlanSetUp,
-    willUserPay
+    willUserPay,
+    hasBusinessAskedHMRCToCancelRegistration,
+    hasHMRCConfirmedRegistrationCancellation
   )
 }

@@ -608,7 +608,9 @@ appealByLetter.headingAndTitle = You can appeal this penalty by letter
 appealByLetter.p1 = To ask HMRC to review this penalty, send us:
 appealByLetter.li.1.1 = details of the steps taken to cancel the VAT registration
 appealByLetter.li.1.2 = dates of any contact with HMRC on this matter
+appealByLetter.li.lsp.1.2 = dates of any contact with HMRC about the cancellation
 appealByLetter.li.1.3 = any other information you’d like to include to support an appeal
+appealByLetter.li.lsp.1.3 = any other details to support your appeal
 appealByLetter.p2 = If HMRC accepts your appeal, we will remove:
 appealByLetter.li.2.1 = this penalty
 appealByLetter.li.2.2 = all other VAT late submission or late payment penalties for the same period
@@ -686,3 +688,15 @@ howToAppeal.p2 = You can send a letter to HMRC to ask for a penalty review, even
 # -----------------------------------------------------------
 canYouPay.headingAndTitle = Can you pay your VAT bill for this period?
 canYouPay.hint = If you pay your VAT, it changes how you can appeal.
+
+# Has the business asked HMRC to cancel the VAT registration?
+# -----------------------------------------------------------
+hasBusinessAskedHMRCToCancelRegistration.headingAndTitle = Has the business asked HMRC to cancel the VAT registration?
+hasBusinessAskedHMRCToCancelRegistration.hint = If the VAT registration has been cancelled, it changes how you can appeal.
+hasBusinessAskedHMRCToCancelRegistration.error.required = Select yes if the business has asked HMRC to cancel its VAT registration
+
+# Has HMRC confirmed that the registration is cancelled?
+# -----------------------------------------------------------
+hasHMRCConfirmedRegistration.headingAndTitle = Has HMRC confirmed that the registration is cancelled?
+hasHMRCConfirmedRegistration.hint = The business should carry on charging and accounting for VAT until we confirm that the VAT registration has been cancelled.
+hasHMRCConfirmedRegistration.error.required = Select yes if you have received confirmation that HMRC has accepted the cancellation
