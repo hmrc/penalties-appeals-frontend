@@ -702,3 +702,21 @@ hasBusinessAskedHMRCToCancelRegistration.error.required = Dewiswch ‘Iawn’ os
 hasHMRCConfirmedRegistration.headingAndTitle = A yw CThEF wedi cadarnhau bod y cofrestriad wedi’i ganslo?
 hasHMRCConfirmedRegistration.hint = Dylai’r busnes barhau i godi a rhoi cyfrif am TAW hyd nes y byddwn yn cadarnhau bod y cofrestriad TAW wedi’i ganslo.
 hasHMRCConfirmedRegistration.error.required = Dewiswch ‘Iawn’ os ydych wedi cael cadarnhad bod CThEF wedi derbyn y cais i ganslo
+
+# Actions to take before you can appeal online
+# -----------------------------------------------------------
+actionsToTakeBeforeAppealingOnline.headingAndTitle = Camau i’w cymryd cyn i chi allu apelio ar-lein
+actionsToTakeBeforeAppealingOnline.li.1 = Cyflwynwch eich Ffurflen TAW ar gyfer y cyfnod o {0} i {1}.
+agent.actionsToTakeBeforeAppealingOnline.li.1 = Cyflwynwch Ffurflen TAW eich cleient ar gyfer y cyfnod o {0} i {1}.
+actionsToTakeBeforeAppealingOnline.li.2 = Arhoswch hyd at 24 awr er mwyn i’r Ffurflen TAW ymddangos ar eich cyfrif TAW.
+agent.actionsToTakeBeforeAppealingOnline.li.2 = Arhoswch hyd at 24 awr er mwyn i’r Ffurflen TAW ymddangos ar gyfrif TAW eich cleient.
+actionsToTakeBeforeAppealingOnline.li.3 = Ewch yn ôl i’r dudalen ynghylch eich cosbau ac apeliadau TAW. Bydd cysylltiad ar gyfer apelio wrth ymyl unrhyw gosbau y gallwch apelio yn eu herbyn ar-lein.
+agent.actionsToTakeBeforeAppealingOnline.li.3 = Ewch yn ôl i’r dudalen ynghylch cosbau ac apeliadau TAW eich cleient. Bydd cysylltiad ar gyfer apelio wrth ymyl unrhyw gosbau y gallwch apelio yn eu herbyn ar-lein.
+actionsToTakeBeforeAppealingOnline.details = Dulliau eraill o apelio
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p1 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad ydych wedi cyflwyno Ffurflen TAW neu dalu’ch TAW.
+agent.actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p1 = Gallwch anfon llythyr i CThEF i ofyn am adolygiad o gosb, hyd yn oed os nad yw’ch cleient wedi cyflwyno Ffurflen Dreth neu wedi talu ei TAW.
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p2 = Os gofynnwch am adolygiad drwy lythyr, ni fydd hyn yn atal llog am dalu’n hwyr rhag cronni ar eich cyfrif. Gellir codi cosbau ychwanegol arnoch hefyd.
+agent.actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p2 = Os gofynnwch am adolygiad drwy lythyr, ni fydd hyn yn atal llog am dalu’n hwyr rhag cronni ar gyfrif eich cleient. Gellir codi cosbau ychwanegol ar eich cleient hefyd.
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p3 = Ysgrifennwch at:
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p4 = Fel arall, gallwch
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.link = apelio ar y tribiwnlys treth

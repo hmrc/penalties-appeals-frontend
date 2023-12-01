@@ -32,6 +32,8 @@ class BaseSelectors {
 
   val listIndexWithElementIndex: (Int, Int) => String = (ulIndex: Int, liIndex: Int) => s"#main-content ul:nth-child($ulIndex) li:nth-child($liIndex)"
 
+  val orderedListIndexWithElementIndex: (Int, Int) => String = (ulIndex: Int, liIndex: Int) => s"#main-content ol:nth-of-type($ulIndex) li:nth-of-type($liIndex)"
+
   val button = "#main-content .govuk-button"
 
   val hintText = "#main-content .govuk-hint"

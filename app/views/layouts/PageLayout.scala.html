@@ -77,7 +77,7 @@
 
 @scripts = {
 @if(scriptsBlock.isEmpty) {
-    @customJavaScript.map {x => <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned(s"javascripts/$x")'></script> }
+    @customJavaScript.map {jsFile => <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned(s"javascripts/$jsFile")'></script> }
     <script @{CSPNonce.attr}> window.GOVUKFrontend.initAll();</script>
     <script @{CSPNonce.attr}>window.HMRCFrontend.initAll();</script>
 } else {
