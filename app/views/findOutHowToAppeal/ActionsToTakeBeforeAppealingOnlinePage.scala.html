@@ -1,0 +1,60 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewtils.PenaltyTypeHelper
+@import utils.SessionKeys
+
+@this(
+        layout: Layout,
+        bullets: components.bullets,
+        link: components.link,
+        p: components.p,
+        details: components.details,
+        pageHeader: components.pageHeader
+)
+
+@(pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+
+@layout(
+  pageTitle = messages("actionsToTakeBeforeAppealingOnline.headingAndTitle"),
+  isPageFullWidth = false,
+  backLinkEnabled = true,
+  optPageMode = Some(pageMode)
+) {
+
+  @pageHeader(Some(messages("actionsToTakeBeforeAppealingOnline.headingAndTitle")))
+
+  <ol class="govuk-list govuk-list--number govuk-list--spaced">
+    <li>@getMessage("actionsToTakeBeforeAppealingOnline.li.1", PenaltyTypeHelper.getKeysFromSession().get(1), PenaltyTypeHelper.getKeysFromSession().get.last)</li>
+    <li>@getMessage("actionsToTakeBeforeAppealingOnline.li.2")</li>
+    <li>@getMessage("actionsToTakeBeforeAppealingOnline.li.3")</li>
+  </ol>
+
+  @details("actionsToTakeBeforeAppealingOnline.details", HtmlFormat.fill(Seq(
+    p(Html(getMessage("actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p1"))),
+    p(Html(getMessage("actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p2"))),
+    p(Html(messages("actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p3")), "govuk-body govuk-!-margin-bottom-0"),
+    p(Html(messages("common.address.1")), "govuk-body govuk-!-margin-bottom-0"),
+    p(Html(messages("common.address.2")), "govuk-body govuk-!-margin-bottom-0"),
+    p(Html(messages("common.address.3"))),
+    p(HtmlFormat.fill(Seq(
+      Html(messages("actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p4")),
+      link(appConfig.appealToTaxTribunalLink, "actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.link", id = Some("appeal-by-tribunal"), isExternal = true, withFullStop = true))
+    ))
+  )))
+
+  @p(link(appConfig.penaltiesFrontendUrl, getMessage("common.returnToPenalties"), id = Some("penalties-link")))
+}

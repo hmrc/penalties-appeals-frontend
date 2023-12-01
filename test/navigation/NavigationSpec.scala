@@ -895,7 +895,7 @@ class NavigationSpec extends SpecBase {
 
       s"called with $HasBusinessAskedHMRCToCancelRegistrationPage - redirects to actions to take page when user answers no" in new Setup {
         val result: Call = TestNavigator.nextPage(HasBusinessAskedHMRCToCancelRegistrationPage, NormalMode, Some("no"))(userRequestWithCorrectKeys)
-        result.url shouldBe "/" //TODO: change when PRM-3086 is implemented
+        result.url shouldBe controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad().url
       }
 
       s"called with $HasHMRCConfirmedRegistrationCancellationPage - redirects to has Appeal by letter when user answers yes" in new Setup {
@@ -905,7 +905,7 @@ class NavigationSpec extends SpecBase {
 
       s"called with $HasHMRCConfirmedRegistrationCancellationPage - redirects to actions to take page when user answers no" in new Setup {
         val result: Call = TestNavigator.nextPage(HasHMRCConfirmedRegistrationCancellationPage, NormalMode, Some("no"))(userRequestWithCorrectKeys)
-        result.url shouldBe "/" //TODO: change when PRM-3086 is implemented
+        result.url shouldBe controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad().url
       }
     }
   }
@@ -1207,7 +1207,7 @@ class NavigationSpec extends SpecBase {
     "redirect to the 'Actions to take before you can appeal online' page" when {
       "the user answers no" in new Setup {
         val result: Call = TestNavigator.routingForHasBusinessAskedHMRCToCancelRegistrationPage(Some("no"))
-        result.url shouldBe "/" //TODO: change when PRM-3086 is implemented
+        result.url shouldBe controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad().url
       }
     }
 
@@ -1230,7 +1230,7 @@ class NavigationSpec extends SpecBase {
     "redirect to the 'Actions to take before you can appeal online' page" when {
       "the user answers no" in new Setup {
         val result: Call = TestNavigator.routingForHasHMRCConfirmedRegistrationCancellationPage(Some("no"))
-        result.url shouldBe "/" //TODO: change when PRM-3086 is implemented
+        result.url shouldBe controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad().url
       }
     }
 
@@ -1257,6 +1257,23 @@ class NavigationSpec extends SpecBase {
         val result: Call = TestNavigator.reverseRouteForAppealByLetterPage()
         result.url shouldBe controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       }
+    }
+  }
+
+  "reverseRouteForActionsToTakeBeforeAppealingOnlinePage" should {
+    "redirect to the 'Has HMRC confirmed that the registration is cancelled' page when the answer is present in the session" in new Setup {
+      val result: Call = TestNavigator.reverseRouteForActionsToTakeBeforeAppealingOnlinePage(fakeRequestConverter(Json.obj(
+        SessionKeys.hasHMRCConfirmedRegistrationCancellation -> "no",
+        SessionKeys.hasBusinessAskedHMRCToCancelRegistration -> "yes"
+      )))
+      result.url shouldBe controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad().url
+    }
+
+    "redirect to the 'Has the business asked HMRC to cancel the VAT registration' page when its the only answer present in the session" in new Setup {
+      val result: Call = TestNavigator.reverseRouteForActionsToTakeBeforeAppealingOnlinePage(fakeRequestConverter(Json.obj(
+        SessionKeys.hasBusinessAskedHMRCToCancelRegistration -> "no"
+      )))
+      result.url shouldBe controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad().url
     }
   }
 }

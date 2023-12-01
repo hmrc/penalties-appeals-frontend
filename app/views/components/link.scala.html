@@ -23,8 +23,9 @@
         isExternal: Boolean = false,
         button: Boolean = false,
         classes: String = "govuk-link",
-        hiddenContent: Option[String] = None
+        hiddenContent: Option[String] = None,
+        withFullStop: Boolean = false
 )(implicit messages: Messages)
 
 <a href="@link" class="@classes" @id.map(x => s"id=$x") @if(isExternal){target="_blank"}@if(button){role="button" data-module="govuk-button"}>
-    @messages(messageKey)@if(isExternal)(" " + messages("site.opensInNewTab"))@hiddenContent.map{content=> <span class="govuk-visually-hidden"> @content</span>}</a>
+    @messages(messageKey)@if(isExternal)(" " + messages("site.opensInNewTab"))@hiddenContent.map{content=> <span class="govuk-visually-hidden"> @content</span>}</a>@if(withFullStop){.}

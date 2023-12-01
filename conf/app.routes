@@ -230,3 +230,4 @@ GET        /has-business-asked-hmrc-to-cancel-registration     controllers.findO
 POST       /has-business-asked-hmrc-to-cancel-registration     controllers.findOutHowToAppeal.HasBusinessAskedHMRCToCancelRegistrationController.onSubmit()
 GET        /has-hmrc-confirmed-cancellation                     controllers.findOutHowToAppeal.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
 POST       /has-hmrc-confirmed-cancellation                     controllers.findOutHowToAppeal.HasHMRCConfirmedRegistrationCancellationController.onSubmit()
+GET        /actions-to-take-before-appealing-online            controllers.findOutHowToAppeal.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()

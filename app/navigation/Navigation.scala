@@ -20,8 +20,8 @@ import config.AppConfig
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney, ShowFullAppealAgainstTheObligation}
 import controllers.routes
 import helpers.{DateTimeHelper, IsLateAppealHelper}
-import models._
 import models.pages._
+import models._
 import play.api.Configuration
 import play.api.mvc.Call
 import utils.Logger.logger
@@ -68,10 +68,11 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     PenaltySelectionPage -> ((_, _) => routes.AppealStartController.onPageLoad()),
     AppealSinglePenaltyPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
     AppealCoverBothPenaltiesPage -> ((_, _) => routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)),
-    AppealByLetterKickOutPage -> ((request, _) => reverseRouteForAppealByLetterPage()),
+    AppealByLetterKickOutPage -> ((_, _) => reverseRouteForAppealByLetterPage()),
     OtherWaysToAppealPage -> ((request, _) => reverseRouteForOtherWaysToAppeal(request)),
     HasBusinessAskedHMRCToCancelRegistrationPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl)),
     HasHMRCConfirmedRegistrationCancellationPage -> ((_, _) => controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()),
+    ActionsToTakeBeforeAppealingOnlinePage -> ((request, _) => reverseRouteForActionsToTakeBeforeAppealingOnlinePage(request)),
     OtherWaysToAppealPage -> ((request, _) => reverseRouteForOtherWaysToAppeal(request)),
     CanYouPayPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl)),
     YouCanAppealOnlinePage -> ((_, _) => controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()),
@@ -335,8 +336,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     optAnswer match {
       case Some(answer) if answer.equalsIgnoreCase("yes") =>
         controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
-      //TODO: change when PRM-3086 is implemented
-      case Some(answer) if answer.equalsIgnoreCase("no") => Call("GET", "/")
+      case Some(answer) if answer.equalsIgnoreCase("no") =>
+        controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()
       case _ =>
         logger.debug("[Navigation][routingForHasBusinessAskedHMRCToCancelRegistrationPage]: unable to get answer " +
           "- reloading 'HasBusinessAskedHMRCToCancelRegistrationPage'")
@@ -348,8 +349,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     optAnswer match {
       case Some(answer) if answer.equalsIgnoreCase("yes") =>
         controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter()
-      //TODO: change when PRM-3086 is implemented
-      case Some(answer) if answer.equalsIgnoreCase("no") => Call("GET", "/")
+      case Some(answer) if answer.equalsIgnoreCase("no") =>
+        controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()
       case _ =>
         logger.debug("[Navigation][routingForHasBusinessAskedHMRCToCancelRegistrationPage]: unable to get answer " +
           "- reloading 'HasBusinessAskedHMRCToCancelRegistrationPage'")
@@ -456,6 +457,19 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
     } else {
       routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+    }
+  }
+
+  protected[navigation] def reverseRouteForActionsToTakeBeforeAppealingOnlinePage(userRequest: UserRequest[_]): Call = {
+    (userRequest.answers.getAnswer[String](SessionKeys.hasBusinessAskedHMRCToCancelRegistration),
+      userRequest.answers.getAnswer[String](SessionKeys.hasHMRCConfirmedRegistrationCancellation)) match {
+      case (_, Some(_)) => controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
+      case (Some(_), _) => controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
+      case _ => {
+        logger.debug("[Navigation][reverseRouteForActionsToTakeBeforeAppealingOnlinePage]: unable to get answer " +
+          "- reloading 'HasBusinessAskedHMRCToCancelRegistrationPage'")
+        controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
+      }
     }
   }
 }

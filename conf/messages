@@ -700,3 +700,21 @@ hasBusinessAskedHMRCToCancelRegistration.error.required = Select yes if the busi
 hasHMRCConfirmedRegistration.headingAndTitle = Has HMRC confirmed that the registration is cancelled?
 hasHMRCConfirmedRegistration.hint = The business should carry on charging and accounting for VAT until we confirm that the VAT registration has been cancelled.
 hasHMRCConfirmedRegistration.error.required = Select yes if you have received confirmation that HMRC has accepted the cancellation
+
+# Actions to take before you can appeal online
+# -----------------------------------------------------------
+actionsToTakeBeforeAppealingOnline.headingAndTitle = Actions to take before you can appeal online
+actionsToTakeBeforeAppealingOnline.li.1 = Submit your VAT Return for the period {0} to {1}.
+agent.actionsToTakeBeforeAppealingOnline.li.1 = Submit your client’s VAT Return for the period {0} to {1}.
+actionsToTakeBeforeAppealingOnline.li.2 = Wait up to 24 hours for the VAT Return to show on your VAT account.
+agent.actionsToTakeBeforeAppealingOnline.li.2 = Wait up to 24 hours for the VAT Return to show on your client’s VAT account.
+actionsToTakeBeforeAppealingOnline.li.3 = Return to your VAT penalties and appeals page. There will be an appeal link next to any penalties you can appeal online.
+agent.actionsToTakeBeforeAppealingOnline.li.3 = Return to your client’s VAT penalties and appeals page. There will be an appeal link next to any penalties you can appeal online.
+actionsToTakeBeforeAppealingOnline.details = Other ways to appeal
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p1 = You can send a letter to HMRC to ask for a penalty review, even if you have not submitted a return or paid your VAT.
+agent.actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p1 = You can send a letter to HMRC to ask for a penalty review, even if your client has not submitted a return or paid their VAT.
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p2 = Asking for a review by letter will not stop late payment interest building up on your account. You might also get additional penalties.
+agent.actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p2 = Asking for a review by letter will not stop late payment interest building up on your client’s account. They might also get additional penalties.
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p3 = Write to:
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p4 = Alternatively, you can
+actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.link = appeal to the tax tribunal
