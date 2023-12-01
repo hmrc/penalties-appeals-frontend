@@ -20,12 +20,12 @@
         pageHeader: components.pageHeader
 )
 
-@()(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@(pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @layout(
     pageTitle = messages("paidYourVat.headingAndTitle"),
     isPageFullWidth = false,
-    backLinkEnabled = false
+    optPageMode = Some(pageMode)
 ) {
     @pageHeader(Some(messages("paidYourVat.headingAndTitle")))
 

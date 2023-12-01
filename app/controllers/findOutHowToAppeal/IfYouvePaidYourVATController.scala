@@ -18,7 +18,9 @@ package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, DataRetrievalAction}
+import models.NormalMode
+import models.pages.{IfYouvePaidYourVATPage, PageMode}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,14 +34,16 @@ class IfYouvePaidYourVATController @Inject()(ifYouvePaidYourVATPage: IfYouvePaid
                                             (implicit mcc: MessagesControllerComponents,
                                              appConfig: AppConfig,
                                              authorise: AuthPredicate,
-                                             dataRequired: DataRequiredAction,
                                              dataRetrieval: DataRetrievalAction,
                                              val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  val pageMode: PageMode = PageMode(IfYouvePaidYourVATPage, NormalMode)
+
+
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        Future(Ok(ifYouvePaidYourVATPage()))
+        Future(Ok(ifYouvePaidYourVATPage(pageMode)))
       } else {
         errorHandler.onClientError(request, NOT_FOUND, "")
       }

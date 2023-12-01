@@ -60,7 +60,7 @@ class AppealAfterVATIsPaidControllerSpec extends SpecBase {
     val controller = new AppealAfterVATIsPaidController(
       youCanAppealOnlinePage,
       errorHandler
-    )(mcc, mockAppConfig, authPredicate, dataRequiredAction, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
+    )(mcc, mockAppConfig, authPredicate, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
   }
 
   "YouCanAppealOnlineAfterYouPayController" should {
@@ -82,12 +82,6 @@ class AppealAfterVATIsPaidControllerSpec extends SpecBase {
           status(result) shouldBe OK
           val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
-        }
-
-        "the user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "return 404 (NOT_FOUND) the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {

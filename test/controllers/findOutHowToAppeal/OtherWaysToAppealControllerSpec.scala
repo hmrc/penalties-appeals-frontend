@@ -47,8 +47,7 @@ class OtherWaysToAppealControllerSpec extends SpecBase {
 
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
-    val controller = new OtherWaysToAppealController(otherWaysToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate,
-      dataRequiredAction, dataRetrievalAction, config, ec)
+    val controller = new OtherWaysToAppealController(otherWaysToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate, dataRetrievalAction, config, ec)
   }
 
   "OtherWaysToAppealController" should {

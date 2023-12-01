@@ -18,7 +18,7 @@ package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.CanYouPayForm.canYouPayForm
 import helpers.FormProviderHelper
 import javax.inject.Inject
@@ -40,7 +40,6 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
                                             (implicit mcc: MessagesControllerComponents,
                                              appConfig: AppConfig,
                                              authorise: AuthPredicate,
-                                             dataRequired: DataRequiredAction,
                                              dataRetrieval: DataRetrievalAction,
                                              navigation: Navigation,
                                              sessionService: SessionService,
@@ -48,17 +47,17 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
                                              ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
   val pageMode: PageMode = PageMode(CanYouPayPage, NormalMode)
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
         val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(canYouPayForm,
           SessionKeys.willUserPay,
           request.answers)
-        val vatAmount: BigDecimal = 123.45 //TODO Get from session
+        val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
         val radioOptions = RadioOptionHelper.radioOptionsForCanYouPayPage(formProvider, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
         val postAction = controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit()
         val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
-        sessionService.updateAnswers(willUserPay).map { //TODO: This should be moved to the Can You Pay Your VAT Bill page when that is implemented
+        sessionService.updateAnswers(willUserPay).map {
           _ => Ok(page(formProvider, radioOptions, postAction, pageMode))
         }
       } else {
@@ -66,12 +65,12 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
       }
     }
   }
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async { implicit userRequest => {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit userRequest => {
     canYouPayForm
       .bindFromRequest()
       .fold(
         form => {
-          val vatAmount: BigDecimal = 123.45 //TODO Get from session
+          val vatAmount: BigDecimal = userRequest.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
           val radioOptions = RadioOptionHelper.radioOptionsForCanYouPayPage(form, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
           val postAction = controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit()
           Future(BadRequest(page(form, radioOptions, postAction, pageMode)))

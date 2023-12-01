@@ -71,7 +71,13 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     AppealByLetterKickOutPage -> ((request, _) => reverseRouteForAppealByLetterPage()),
     OtherWaysToAppealPage -> ((request, _) => reverseRouteForOtherWaysToAppeal(request)),
     HasBusinessAskedHMRCToCancelRegistrationPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl)),
-    HasHMRCConfirmedRegistrationCancellationPage -> ((_, _) => controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad())
+    HasHMRCConfirmedRegistrationCancellationPage -> ((_, _) => controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()),
+    OtherWaysToAppealPage -> ((request, _) => reverseRouteForOtherWaysToAppeal(request)),
+    CanYouPayPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl)),
+    YouCanAppealOnlinePage -> ((_, _) => controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()),
+    AppealAfterPaymentPlanSetUpPage -> ((_, _) => controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()),
+    IfYouvePaidYourVATPage -> ((_, _) => controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()),
+    HowToAppealPage -> ((_, _) => Call("GET", appConfig.penaltiesFrontendUrl))
   )
 
   def reverseCheckingRoutes(page: Page, userRequest: UserRequest[_]): Call = {
@@ -438,7 +444,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def reverseRouteForOtherWaysToAppeal(userRequest: UserRequest[_]): Call = {
-    if(userRequest.answers.getAnswer[String](SessionKeys.willUserPay).contains("yes")) {
+    if (userRequest.answers.getAnswer[String](SessionKeys.willUserPay).contains("yes")) {
       controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad()
     } else {
       controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad()

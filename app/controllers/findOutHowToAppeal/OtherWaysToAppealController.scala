@@ -18,7 +18,7 @@ package controllers.findOutHowToAppeal
 
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import models.pages.{OtherWaysToAppealPage, PageMode}
 import models.{Mode, NormalMode}
 import play.api.Configuration
@@ -34,7 +34,6 @@ class OtherWaysToAppealController @Inject()(otherWaysToAppealPage: OtherWaysToAp
                                            (implicit mcc: MessagesControllerComponents,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
-                                            dataRequired: DataRequiredAction,
                                             dataRetrieval: DataRetrievalAction,
                                             val config: Configuration,
                                             ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
@@ -42,7 +41,7 @@ class OtherWaysToAppealController @Inject()(otherWaysToAppealPage: OtherWaysToAp
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(OtherWaysToAppealPage, mode)
 
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
       if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
         Future(Ok(otherWaysToAppealPage(pageMode(NormalMode))))

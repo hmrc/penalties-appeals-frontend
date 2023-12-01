@@ -17,8 +17,8 @@
 package controllers
 
 
-import config.ErrorHandler
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
+import config.{AppConfig, ErrorHandler}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
 import controllers.predicates.AuthPredicate
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
@@ -39,11 +39,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class InitialiseAppealController @Inject()(appealService: AppealService,
                                            sessionService: SessionService,
-                                           errorHandler: ErrorHandler)
+                                           errorHandler: ErrorHandler,
+                                           appConfig: AppConfig)
                                           (implicit val mcc: MessagesControllerComponents,
-                                            authorise: AuthPredicate,
-                                            val config: Configuration,
-                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                           authorise: AuthPredicate,
+                                           val config: Configuration,
+                                           ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
@@ -75,6 +76,25 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
             )
           }
         )
+      }
+    }
+  }
+
+  def onPageLoadForFindOutHowToAppeal(principalChargeReference: String, vatAmountInPence: Int, vatPeriodStartDate: String, vatPeriodEndDate: String, isCa: Boolean): Action[AnyContent] = authorise.async {
+    implicit request => {
+      if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+        val vatAmmountBD = BigDecimal(vatAmountInPence) / 100
+
+        removeExistingKeysFromSessionAndRedirectToFindOutHowToAppeal(
+          controllers.findOutHowToAppeal.routes.FindOutHowToAppealStartController.startFindOutHowToAppeal(),
+          vatPeriodStartDate = LocalDate.parse(vatPeriodStartDate),
+          vatPeriodEndDate = LocalDate.parse(vatPeriodEndDate),
+          vatAmount = vatAmmountBD,
+          principalChargeReference = principalChargeReference,
+          isCaLpp = isCa
+        )
+      } else {
+        errorHandler.onClientError(request, NOT_FOUND, "")
       }
     }
   }
@@ -123,10 +143,42 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
       } else userAnswersWithPossibleMultiplePenaltiesData
     }
     sessionService.updateAnswers(allUserAnswers).map {
-      _ => Redirect(urlToRedirectTo)
-        .removingFromSession(SessionKeys.allKeys: _*)
-        .removingFromSession(SessionKeys.penaltiesHasSeenConfirmationPage)
-        .addingToSession((SessionKeys.journeyId, journeyId))
+      _ =>
+        Redirect(urlToRedirectTo)
+          .removingFromSession(SessionKeys.allKeys: _*)
+          .removingFromSession(SessionKeys.penaltiesHasSeenConfirmationPage)
+          .addingToSession((SessionKeys.journeyId, journeyId))
     }
+  }
+
+  private def removeExistingKeysFromSessionAndRedirectToFindOutHowToAppeal[A](urlToRedirectTo: Call,
+                                                                              vatPeriodStartDate: LocalDate,
+                                                                              vatPeriodEndDate: LocalDate,
+                                                                              vatAmount: BigDecimal,
+                                                                              principalChargeReference: String,
+                                                                              isCaLpp: Boolean)(implicit user: AuthRequest[A]): Future[Result] = {
+    logger.debug(s"[InitialiseAppealController][removeExistingKeysFromSessionAndRedirectToFindOutHowToAppeal] - Resetting appeals session: removing keys from session" +
+      s" and replacing with new keys")
+    val journeyId: String = UUID.randomUUID().toString
+    logger.debug(s"InitialiseAppealController][removeExistingKeysFromSessionAndRedirectToFindOutHowToAppeal] - Setting journeyId to: $journeyId")
+
+    val baseUserAnswers = UserAnswers(journeyId)
+      .setAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType, PenaltyTypeEnum.Late_Payment)
+      .setAnswer[LocalDate](SessionKeys.startDateOfPeriod, vatPeriodStartDate)
+      .setAnswer[LocalDate](SessionKeys.endDateOfPeriod, vatPeriodEndDate)
+      .setAnswer[String](SessionKeys.principalChargeReference, principalChargeReference)
+      .setAnswer[BigDecimal](SessionKeys.vatAmount, vatAmount)
+      .setAnswer[Boolean](SessionKeys.isCaLpp, isCaLpp)
+
+    sessionService.updateAnswers(baseUserAnswers).map {
+      _ =>
+        Redirect(urlToRedirectTo)
+          .removingFromSession(SessionKeys.allKeys: _*)
+          .removingFromSession(SessionKeys.penaltiesHasSeenConfirmationPage)
+          .addingToSession((SessionKeys.journeyId, journeyId))
+    }.recover(
+      _ =>
+        errorHandler.showInternalServerError
+    )
   }
 }

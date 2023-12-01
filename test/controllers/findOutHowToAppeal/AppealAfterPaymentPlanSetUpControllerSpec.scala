@@ -59,7 +59,7 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new AppealAfterPaymentPlanSetUpController(AppealAfterPaymentPlanSetUpPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRequiredAction, dataRetrievalAction, mainNavigator,
+      authPredicate, dataRetrievalAction, mainNavigator,
       mockSessionService, config, ec)
   }
 
