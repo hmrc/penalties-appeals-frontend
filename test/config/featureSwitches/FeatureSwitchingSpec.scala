@@ -57,7 +57,8 @@ class FeatureSwitchingSpec extends SpecBase {
         ShowFullAppealAgainstTheObligation,
         ShowReasonableExcuseHintText,
         ShowFindOutHowToAppealJourney,
-        ShowFindOutHowToAppealLSPJourney
+        ShowFindOutHowToAppealLSPJourney,
+        ShowCAFindOutHowToAppealJourney
       )
     }
   }
