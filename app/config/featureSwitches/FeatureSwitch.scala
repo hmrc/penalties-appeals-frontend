@@ -28,7 +28,8 @@ object FeatureSwitch {
     ShowFullAppealAgainstTheObligation,
     ShowReasonableExcuseHintText,
     ShowFindOutHowToAppealJourney,
-    ShowFindOutHowToAppealLSPJourney
+    ShowFindOutHowToAppealLSPJourney,
+    ShowCAFindOutHowToAppealJourney
   )
 }
 
@@ -54,4 +55,8 @@ case object ShowFindOutHowToAppealJourney extends FeatureSwitch {
 
 case object ShowFindOutHowToAppealLSPJourney extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-find-out-how-to-appeal-lsp-journey"
+}
+
+case object ShowCAFindOutHowToAppealJourney extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.show-ca-find-out-how-to-appeal-journey"
 }
