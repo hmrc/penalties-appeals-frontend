@@ -461,14 +461,17 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def reverseRouteForActionsToTakeBeforeAppealingOnlinePage(userRequest: UserRequest[_]): Call = {
+    val isCALPP = userRequest.answers.getAnswer[Boolean](SessionKeys.isCaLpp).getOrElse(false)
     (userRequest.answers.getAnswer[String](SessionKeys.hasBusinessAskedHMRCToCancelRegistration),
-      userRequest.answers.getAnswer[String](SessionKeys.hasHMRCConfirmedRegistrationCancellation)) match {
-      case (_, Some(_)) => controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
-      case (Some(_), _) => controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
+      userRequest.answers.getAnswer[String](SessionKeys.hasHMRCConfirmedRegistrationCancellation),
+      isCALPP) match {
+      case (_, Some(_), false) => controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad()
+      case (Some(_), _, false) => controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
+      case (_, _, true) => Call("GET", appConfig.penaltiesFrontendUrl)
       case _ => {
         logger.debug("[Navigation][reverseRouteForActionsToTakeBeforeAppealingOnlinePage]: unable to get answer " +
-          "- reloading 'HasBusinessAskedHMRCToCancelRegistrationPage'")
-        controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
+          "- reloading 'ActionsToTakeBeforeAppealingOnlinePage'")
+        controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()
       }
     }
   }

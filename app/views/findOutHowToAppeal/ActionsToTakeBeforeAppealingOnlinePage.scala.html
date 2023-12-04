@@ -26,7 +26,7 @@
         pageHeader: components.pageHeader
 )
 
-@(pageMode: PageMode)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@(pageMode: PageMode, isCa: Boolean = false)(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @layout(
   pageTitle = messages("actionsToTakeBeforeAppealingOnline.headingAndTitle"),
@@ -39,7 +39,12 @@
 
   <ol class="govuk-list govuk-list--number govuk-list--spaced">
     <li>@getMessage("actionsToTakeBeforeAppealingOnline.li.1", PenaltyTypeHelper.getKeysFromSession().get(1), PenaltyTypeHelper.getKeysFromSession().get.last)</li>
-    <li>@getMessage("actionsToTakeBeforeAppealingOnline.li.2")</li>
+    @if(isCa) {
+        <li>@getMessage("actionsToTakeBeforeAppealingOnline.payAnyVAT")</li>
+      }
+    <li>@if(isCa) {
+        @getMessage("actionsToTakeBeforeAppealingOnline.li.2.2")
+        } else { @getMessage("actionsToTakeBeforeAppealingOnline.li.2.1") }</li>
     <li>@getMessage("actionsToTakeBeforeAppealingOnline.li.3")</li>
   </ol>
 

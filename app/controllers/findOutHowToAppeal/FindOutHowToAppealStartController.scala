@@ -24,8 +24,9 @@ import play.api.i18n.I18nSupport
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
-
 import javax.inject.Inject
+import utils.SessionKeys
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class FindOutHowToAppealStartController @Inject()(errorHandler: ErrorHandler,
@@ -39,20 +40,27 @@ class FindOutHowToAppealStartController @Inject()(errorHandler: ErrorHandler,
   def startFindOutHowToAppeal(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
       val isAgent: Boolean = request.isAgent
-      val isCa: Boolean = false
+      val isCa: Boolean = request.answers.getAnswer[Boolean](SessionKeys.isCaLpp).getOrElse(false)
           (isAgent, isCa) match {
             case (true, false) =>
               if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
                 Future(Redirect(controllers.findOutHowToAppeal.routes.HowToAppealController.onPageLoad()))
               } else {
-                logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disbaled showing 404 (NOT_FOUND)")
+                logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disabled showing 404 (NOT_FOUND)")
                 errorHandler.onClientError(request, NOT_FOUND, "")
               }
             case (false, false) =>
               if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
                 Future(Redirect(controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()))
               } else {
-                logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disbaled showing 404 (NOT_FOUND)")
+                logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disabled showing 404 (NOT_FOUND)")
+                errorHandler.onClientError(request, NOT_FOUND, "")
+              }
+            case (_, true) =>
+              if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+                Future(Redirect(controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()))
+              } else {
+                logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disabled showing 404 (NOT_FOUND)")
                 errorHandler.onClientError(request, NOT_FOUND, "")
               }
             case _ =>

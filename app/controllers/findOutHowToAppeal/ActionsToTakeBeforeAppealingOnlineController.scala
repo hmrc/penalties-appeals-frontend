@@ -26,8 +26,8 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.findOutHowToAppeal.ActionsToTakeBeforeAppealingOnlinePage
-
 import javax.inject.Inject
+import utils.SessionKeys
 
 class ActionsToTakeBeforeAppealingOnlineController @Inject()(
                                                               page: ActionsToTakeBeforeAppealingOnlinePage,
@@ -35,16 +35,16 @@ class ActionsToTakeBeforeAppealingOnlineController @Inject()(
                                                             )(implicit mcc: MessagesControllerComponents,
                                                               appConfig: AppConfig,
                                                               authorise: AuthPredicate,
-                                                              dataRequired: DataRequiredAction,
                                                               dataRetrieval: DataRetrievalAction,
                                                               val config: Configuration) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
   val pageMode: PageMode = PageMode(ActionsToTakeBeforeAppealingOnlinePage, NormalMode)
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval) {
     implicit request => {
       if (appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney)) {
-        Ok(page(pageMode))
+        val isCA  = request.answers.getAnswer[Boolean](SessionKeys.isCaLpp).getOrElse(false)
+        Ok(page(pageMode, isCA))
       } else {
         errorHandler.notFoundError(request)
       }
