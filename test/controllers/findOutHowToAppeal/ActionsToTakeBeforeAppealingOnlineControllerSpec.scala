@@ -17,16 +17,18 @@
 package controllers.findOutHowToAppeal
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealLSPJourney
+import config.featureSwitches.{ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK, SEE_OTHER}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import utils.SessionKeys
 import views.html.findOutHowToAppeal.ActionsToTakeBeforeAppealingOnlinePage
 
 import scala.concurrent.Future
@@ -47,22 +49,39 @@ class ActionsToTakeBeforeAppealingOnlineControllerSpec extends SpecBase {
     when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney))).thenReturn(true)
 
     val controller = new ActionsToTakeBeforeAppealingOnlineController(page, errorHandler)(mcc, mockAppConfig, authPredicate,
-      dataRequiredAction, dataRetrievalAction, config)
+      dataRetrievalAction, config)
   }
 
   "ActionsToTakeBeforeAppealingOnlineController" should {
 
     "onPageLoad" when {
-      "the user is authorised" must {
+      "the user is authorised (LSP)" must {
         "return 200 (OK) and the correct view" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          val result = controller.onPageLoad()(userRequestWithCorrectKeys)
+          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
         }
 
-        "return 404 (NOT_FOUND) when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+        "return 404 (NOT_FOUND) when ShowFindOutHowToAppealLSPJourney is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney))).thenReturn(false)
+          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
+          status(result) shouldBe NOT_FOUND
+        }
+      }
+
+      "the user is authorised (LPP)" must {
+        "return 200 (OK) and the correct view when ShowFindOutHowToAppealLSPJourney is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.isCaLpp -> true)))))
+          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowCAFindOutHowToAppealJourney))).thenReturn(true)
+          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney))).thenReturn(false)
+          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
+          status(result) shouldBe OK
+        }
+
+        "return 404 (NOT_FOUND) when ShowCAFindOutHowToAppealJourney is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.isCaLpp -> true)))))
+          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowCAFindOutHowToAppealJourney))).thenReturn(false)
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe NOT_FOUND
         }

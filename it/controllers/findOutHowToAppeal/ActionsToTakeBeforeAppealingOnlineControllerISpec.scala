@@ -16,12 +16,13 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
+import config.featureSwitches.{FeatureSwitching, ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
 import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import utils.IntegrationSpecCommonBase
+import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 class ActionsToTakeBeforeAppealingOnlineControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
 
@@ -33,18 +34,29 @@ class ActionsToTakeBeforeAppealingOnlineControllerISpec extends IntegrationSpecC
   val controller: ActionsToTakeBeforeAppealingOnlineController = injector.instanceOf[ActionsToTakeBeforeAppealingOnlineController]
 
   "GET /actions-to-take-before-appealing-online" should {
-    "return 200 (OK) when the user is authorised and feature switch is enabled" in new UserAnswersSetup(userAnswers()) {
+    "return 200 (OK) when the user is authorised and ShowFindOutHowToAppealLSPJourney is enabled (LSP)" in new UserAnswersSetup(userAnswers()) {
       enableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe OK
     }
 
-    "return 404 (NOT_FOUND) when the user is authorised but the feature switch is disabled" in new UserAnswersSetup(userAnswers()) {
+    "return 200 (OK) when the user is authorised and ShowCAFindOutHowToAppealJourney is enabled (LPP)" in new UserAnswersSetup(userAnswers(Json.obj(SessionKeys.isCaLpp -> true))) {
+      disableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
+      enableFeatureSwitch(ShowCAFindOutHowToAppealJourney)
+      val request = await(controller.onPageLoad()(fakeRequest))
+      request.header.status shouldBe OK
+    }
+
+    "return 404 (NOT_FOUND) when the user is authorised but ShowFindOutHowToAppealLSPJourney is disabled" in new UserAnswersSetup(userAnswers()) {
       disableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe NOT_FOUND
     }
 
-    runControllerPredicateTests(controller.onPageLoad(), "GET", "/actions-to-take-before-appealing-online")
+    "return 404 (NOT_FOUND) when the user is authorised but ShowCAFindOutHowToAppealJourney is disabled" in new UserAnswersSetup(userAnswers(Json.obj(SessionKeys.isCaLpp -> true))) {
+      disableFeatureSwitch(ShowCAFindOutHowToAppealJourney)
+      val request: Result = await(controller.onPageLoad()(fakeRequest))
+      request.header.status shouldBe NOT_FOUND
+    }
   }
 }
