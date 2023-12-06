@@ -26,6 +26,10 @@ object ActionsToTakeBeforeAppealingOnlineMessages {
 
     val li2 = "Wait up to 24 hours for the VAT Return to show on your VAT account."
 
+    val li2LPP = "Pay any VAT you owe for the period."
+
+    val li3LPP = "Wait for the payment to clear – this can take up to 5 days depending on the payment method you choose."
+
     val li3 = "Return to your VAT penalties and appeals page. There will be an appeal link next to any penalties you can appeal online."
 
     val detailsP1 = "You can send a letter to HMRC to ask for a penalty review, even if you have not submitted a return or paid your VAT."
@@ -42,9 +46,13 @@ object ActionsToTakeBeforeAppealingOnlineMessages {
 
     def li1(start: String, end: String) = s"Submit your client’s VAT Return for the period $start to $end."
 
+    val li2LPP = "Ask your client to pay any VAT they owe for the period."
+
     val li2 = "Wait up to 24 hours for the VAT Return to show on your client’s VAT account."
 
     val li3 = "Return to your client’s VAT penalties and appeals page. There will be an appeal link next to any penalties you can appeal online."
+
+    val li3LPP = "Wait for the payment to clear – this can take up to 5 days depending on the payment method your client used."
 
     val detailsP1 = "You can send a letter to HMRC to ask for a penalty review, even if your client has not submitted a return or paid their VAT."
 
