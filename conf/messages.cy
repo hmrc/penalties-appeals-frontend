@@ -666,7 +666,7 @@ payYourVAT.p1 = Gall gymryd hyd at 5 diwrnod i daliadau ymddangos ar hanes eich 
 payYourVAT.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
 payYourVAT.radioHeading = A hoffech dalu nawr?
 common.radioOption.no.2 = Na, hoffwn i wybod am y dulliau eraill o apelio
-payYourVAT.error.required = Dewiswch ‘Iawn’ os ydych am dalu nawr
+payYourVAT.error.required = Dewiswch iawn os ydych am dalu nawr
 
 # Appeal After Setting up Payment Plan
 # -----------------------------------------------------------
@@ -674,7 +674,7 @@ paymentPlanSetUp.headingAndTitle = Gallwch apelio ar-lein ar ôl i chi drefnu cy
 paymentPlanSetUp.p1 = Os caiff cynllun talu ei gytuno gan CThEF, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
 paymentPlanSetUp.legendHeadingAndTitle = A hoffech drefnu cynllun talu?
 paymentPlanSetUp.link = Cysylltwch â CThEF os gwnaethoch dalu’r TAW fwy na 5 diwrnod yn ôl
-AppealAfterPaymentPlanSetUpForm.error.required = Dewiswch ‘Iawn’ os hoffech drefnu cynllun talu
+AppealAfterPaymentPlanSetUpForm.error.required = Dewiswch iawn os hoffech drefnu cynllun talu
 
 # How To Appeal
 # -----------------------------------------------------------
@@ -695,13 +695,13 @@ canYouPay.hint = Os byddwch chi’n talu’ch TAW, bydd hynny’n newid sut gall
 # -----------------------------------------------------------
 hasBusinessAskedHMRCToCancelRegistration.headingAndTitle = A yw’r busnes wedi gofyn i CThEF ganslo’r cofrestriad TAW?
 hasBusinessAskedHMRCToCancelRegistration.hint = Os yw’r cofrestriad TAW wedi’i ganslo, bydd hynny’n newid sut gallwch chi apelio.
-hasBusinessAskedHMRCToCancelRegistration.error.required = Dewiswch ‘Iawn’ os yw’r busnes wedi gofyn i CThEF ganslo ei gofrestriad TAW
+hasBusinessAskedHMRCToCancelRegistration.error.required = Dewiswch iawn os yw’r busnes wedi gofyn i CThEF ganslo ei gofrestriad TAW
 
 # Has HMRC confirmed that the registration is cancelled?
 # -----------------------------------------------------------
 hasHMRCConfirmedRegistration.headingAndTitle = A yw CThEF wedi cadarnhau bod y cofrestriad wedi’i ganslo?
 hasHMRCConfirmedRegistration.hint = Dylai’r busnes barhau i godi a rhoi cyfrif am TAW hyd nes y byddwn yn cadarnhau bod y cofrestriad TAW wedi’i ganslo.
-hasHMRCConfirmedRegistration.error.required = Dewiswch ‘Iawn’ os ydych wedi cael cadarnhad bod CThEF wedi derbyn y cais i ganslo
+hasHMRCConfirmedRegistration.error.required = Dewiswch iawn os ydych wedi cael cadarnhad bod CThEF wedi derbyn y cais i ganslo
 
 # Actions to take before you can appeal online
 # -----------------------------------------------------------
