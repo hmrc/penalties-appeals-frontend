@@ -18,7 +18,7 @@ package controllers
 
 
 import config.{AppConfig, ErrorHandler}
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
+import config.featureSwitches.{FeatureSwitching, ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
 import controllers.predicates.AuthPredicate
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
@@ -31,10 +31,11 @@ import services.{AppealService, SessionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.{CurrencyFormatter, SessionKeys}
-
 import java.time.LocalDate
 import java.util.UUID
+
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class InitialiseAppealController @Inject()(appealService: AppealService,
@@ -82,7 +83,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
   def onPageLoadForFindOutHowToAppeal(principalChargeReference: String, vatAmountInPence: Int, vatPeriodStartDate: String, vatPeriodEndDate: String, isCa: Boolean): Action[AnyContent] = authorise.async {
     implicit request => {
-      if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+      if (appConfig.isEnabled(ShowFindOutHowToAppealJourney) || appConfig.isEnabled(ShowCAFindOutHowToAppealJourney)) {
         val vatAmmountBD = BigDecimal(vatAmountInPence) / 100
 
         removeExistingKeysFromSessionAndRedirectToFindOutHowToAppeal(

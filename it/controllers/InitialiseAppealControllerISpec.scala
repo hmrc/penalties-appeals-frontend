@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney, ShowFindOutHowToAppealJourney}
+import config.featureSwitches.{FeatureSwitching, ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
 import models.PenaltyTypeEnum
 import org.mongodb.scala.Document
 import play.api.mvc.AnyContentAsEmpty
@@ -25,7 +25,6 @@ import play.api.test.Helpers.{await, _}
 import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
 import java.time.LocalDate
 
 class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
@@ -211,8 +210,9 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
     }
 
-    "render an NOT_FOUND when the feature switch is disabled" in new Setup {
+    "render an NOT_FOUND when both feature switches are disabled" in new Setup {
       disableFeatureSwitch(ShowFindOutHowToAppealJourney)
+      disableFeatureSwitch(ShowCAFindOutHowToAppealJourney)
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"

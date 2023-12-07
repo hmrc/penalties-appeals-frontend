@@ -17,13 +17,14 @@
 package controllers.findOutHowToAppeal
 
 import config.{AppConfig, ErrorHandler}
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
+import config.featureSwitches.{FeatureSwitching, ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealJourney}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
+
 import javax.inject.Inject
 import utils.SessionKeys
 
@@ -57,7 +58,7 @@ class FindOutHowToAppealStartController @Inject()(errorHandler: ErrorHandler,
                 errorHandler.onClientError(request, NOT_FOUND, "")
               }
             case (_, true) =>
-              if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
+              if(appConfig.isEnabled(ShowCAFindOutHowToAppealJourney)) {
                 Future(Redirect(controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()))
               } else {
                 logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disabled showing 404 (NOT_FOUND)")
