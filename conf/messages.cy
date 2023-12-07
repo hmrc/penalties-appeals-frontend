@@ -724,3 +724,9 @@ agent.actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p2 = Os gofynnwch am 
 actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p3 = Ysgrifennwch at:
 actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.p4 = Fel arall, gallwch
 actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.link = apelio ar y tribiwnlys treth
+
+# Wait For Payment To Clear
+# -----------------------------------------------------------
+waitForPaymentToClearPage.headingAndTitle = Gallwch apelio ar-lein ar ôl i’r taliad glirio
+waitForPaymentToClearPage.p1 = Gall gymryd hyd at 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddefnyddioch.
+waitForPaymentToClearPage.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
