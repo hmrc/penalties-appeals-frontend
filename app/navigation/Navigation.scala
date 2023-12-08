@@ -302,7 +302,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   protected[navigation] def routingForSetUpPaymentPlanPage(answer: Option[String]): Call = {
     answer match {
-      case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.timeToPayUrl)
+      case Some(ans) if ans.equalsIgnoreCase("yes") => controllers.findOutHowToAppeal.routes.TimeToPayController.redirect
       case Some(ans) if ans.equalsIgnoreCase("no") => controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad()
       case _ =>
         logger.debug("[Navigation][routingForSetUpPaymentPlanPage]: unable to get answer - reloading 'AppealAfterPaymentPlanSetUpPage'")

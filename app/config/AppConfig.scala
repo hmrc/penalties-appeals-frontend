@@ -81,8 +81,6 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val penaltiesFrontendUrl: String = config.get[String]("urls.penalties-frontend")
 
-  lazy val timeToPayUrl: String = config.get[String]("urls.timeToPay")
-
   lazy val payYourVAT: String = config.get[String]("urls.payYourVAT")
 
   lazy val vatOverviewUrl: String = config.get[String]("urls.vatOverview")
@@ -144,4 +142,6 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
   lazy val acceptedFileTypes: String = config.get[String]("upscan.acceptedFileTypes")
 
   lazy val maxFileUploadSize: Int = config.get[Int]("upscan.maxFileSize")
+
+  lazy val essttpBackendUrl = servicesConfig.baseUrl("essttp-backend")
 }
