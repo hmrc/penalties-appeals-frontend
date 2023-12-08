@@ -31,8 +31,11 @@
 
     <p class="govuk-body">@messages("paymentPlanProcessed.p1")</p>
 
-<a class="govuk-link" href="@{appConfig.vatOverviewUrl}" id="view-vat-account-link">
-    @messages("appealConfirmation.returnToVatVc")
-
-</a>
+<p class="govuk-body">
+    <a class="govuk-link" href="@{
+            appConfig.vatOverviewUrl
+        }" id="view-vat-account-link">
+        @messages("appealConfirmation.returnToVatVc")
+    </a>
+</p>
 }
