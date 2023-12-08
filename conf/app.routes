@@ -232,3 +232,4 @@ GET        /has-hmrc-confirmed-cancellation                     controllers.find
 POST       /has-hmrc-confirmed-cancellation                     controllers.findOutHowToAppeal.HasHMRCConfirmedRegistrationCancellationController.onSubmit()
 GET        /actions-to-take-before-appealing-online            controllers.findOutHowToAppeal.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()
 GET        /payment-complete                                   controllers.findOutHowToAppeal.WaitForPaymentToClearController.onPageLoad()
+GET        /appeal-after-payment-plan-processed               controllers.findOutHowToAppeal.AppealAfterPaymentPlanProcessedController.onPageLoad()
