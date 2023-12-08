@@ -730,3 +730,8 @@ actionsToTakeBeforeAppealingOnline.otherWaysToAppeal.link = apelio ar y tribiwnl
 waitForPaymentToClearPage.headingAndTitle = Gallwch apelio ar-lein ar ôl i’r taliad glirio
 waitForPaymentToClearPage.p1 = Gall gymryd hyd at 5 diwrnod i daliadau ymddangos ar hanes eich taliadau, yn dibynnu ar y dull talu a ddefnyddioch.
 waitForPaymentToClearPage.p2 = Unwaith i’r taliad glirio, gwnewch eich apêl gan ddefnyddio’r cysylltiad ar y dudalen ynghylch eich cosbau ac apeliadau TAW.
+
+# Appeal After Processing the Payment Plan
+# -----------------------------------------------------------
+paymentPlanProcessed.headingAndTitle = Gallwch apelio ar-lein ar ôl i ni brosesu’ch cynllun talu
+paymentPlanProcessed.p1= Gall hyn gymryd hyd at 24 awr.
