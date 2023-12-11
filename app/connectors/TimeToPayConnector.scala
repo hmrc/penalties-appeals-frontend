@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TimeToPayConnector @Inject()(http: HttpClient, appConfig: AppConfig) {
 
-  val postTTP = s"${appConfig.essttpBackendUrl}/vat/vat-penalties/journey/start"
+  val postTTP = s"${appConfig.essttpBackendUrl}/essttp-backend/vat/vat-penalties/journey/start"
 
   def setupJourney(requestModel: TimeToPayRequestModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TimeToPayResponse] = {
     http.POST(postTTP, requestModel)(TimeToPayRequestModel.writes, TimeToPayResponseReads, hc, ec)

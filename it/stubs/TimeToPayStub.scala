@@ -22,7 +22,7 @@ import play.api.http.Status
 
 object TimeToPayStub {
 
-  private val ttpUrl = "/vat/vat-penalties/journey/start"
+  private val ttpUrl = "/essttp-backend/vat/vat-penalties/journey/start"
 
   def successfulTTPCall(responseBody: String): StubMapping = {
     stubFor(
