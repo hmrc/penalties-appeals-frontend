@@ -17,8 +17,9 @@
 package connectors
 
 import base.SpecBase
+import connectors.httpParsers.BadRequest
 import connectors.httpParsers.TimeToPayHttpParser.TimeToPayResponse
-import models.ess.{TTPRequestModel, TTPResponseModel}
+import models.ess.{TimeToPayRequestModel, TimeToPayResponseModel}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -33,6 +34,9 @@ class TimeToPayConnectorSpec extends SpecBase with LogCapturing {
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   val mockHttpClient: HttpClient = mock(classOf[HttpClient])
 
+  val sampleRequestModel: TimeToPayRequestModel = TimeToPayRequestModel("http://url/return", "http://url/back")
+  val sampleTTPResponse: TimeToPayResponseModel = TimeToPayResponseModel("1234", "http://url/next")
+
   class Setup {
     reset(mockHttpClient)
     reset(mockAppConfig)
@@ -43,14 +47,26 @@ class TimeToPayConnectorSpec extends SpecBase with LogCapturing {
   }
 
   "setupJourney" should {
-    "return HTTP response back to caller" in new Setup {
-      val requestModel: TTPRequestModel = TTPRequestModel("/return-url", "/back-url")
-      when(mockHttpClient.POST[TTPRequestModel, TTPResponseModel](any(), any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(TTPResponseModel("1234", "/next-url")))
-      val result: TimeToPayResponse = await(connector.setupJourney(requestModel)(hc, ec))
-      result.isRight shouldBe true
-      result.toOption.get.nextUrl shouldBe "/next-url"
-      result.toOption.get.journeyId shouldBe "1234"
+    "return Right when parser returns right" in new Setup {
+      when(mockAppConfig.essttpBackendUrl).thenReturn("http://url/url")
+
+      when(mockHttpClient.POST[TimeToPayRequestModel, TimeToPayResponse](
+        any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(Right(sampleTTPResponse)))
+
+      val result: Future[TimeToPayResponse] = connector.setupJourney(sampleRequestModel)
+
+      await(result) shouldBe Right(sampleTTPResponse)
+    }
+
+    "return left when the parser returns left" in new Setup {
+      when(mockAppConfig.essttpBackendUrl).thenReturn("http://url/wrongurl")
+
+      when(mockHttpClient.POST[TimeToPayRequestModel, TimeToPayResponse](
+        any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(Left(BadRequest)))
+
+      val result: Future[TimeToPayResponse] = connector.setupJourney(sampleRequestModel)
+
+      await(result) shouldBe Left(BadRequest)
     }
   }
 

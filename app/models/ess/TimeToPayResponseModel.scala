@@ -18,8 +18,8 @@ package models.ess
 
 import play.api.libs.json.{Json, Reads}
 
-case class TTPResponseModel(journeyId: String, nextUrl: String)
+case class TimeToPayResponseModel(journeyId: String, nextUrl: String)
 
-object TTPResponseModel {
-  implicit val reads: Reads[TTPResponseModel] = Json.reads[TTPResponseModel]
+object TimeToPayResponseModel {
+  implicit val reads: Reads[TimeToPayResponseModel] = Json.reads[TimeToPayResponseModel]
 }

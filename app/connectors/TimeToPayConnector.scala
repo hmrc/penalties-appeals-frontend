@@ -19,7 +19,7 @@ package connectors
 import config.AppConfig
 import connectors.httpParsers.TimeToPayHttpParser.{TimeToPayResponse, TimeToPayResponseReads}
 import javax.inject.Inject
-import models.ess.TTPRequestModel
+import models.ess.TimeToPayRequestModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +28,7 @@ class TimeToPayConnector @Inject()(http: HttpClient, appConfig: AppConfig) {
 
   val postTTP = s"${appConfig.essttpBackendUrl}/vat/vat-penalties/journey/start"
 
-  def setupJourney(requestModel: TTPRequestModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TimeToPayResponse] = {
-    http.POST(postTTP, requestModel)(TTPRequestModel.writes, TimeToPayResponseReads, hc, ec)
+  def setupJourney(requestModel: TimeToPayRequestModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TimeToPayResponse] = {
+    http.POST(postTTP, requestModel)(TimeToPayRequestModel.writes, TimeToPayResponseReads, hc, ec)
   }
 }

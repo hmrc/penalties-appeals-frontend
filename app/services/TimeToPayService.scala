@@ -20,7 +20,7 @@ import config.AppConfig
 import connectors.TimeToPayConnector
 import connectors.httpParsers.ErrorResponse
 import javax.inject.Inject
-import models.ess.TTPRequestModel
+import models.ess.TimeToPayRequestModel
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +30,7 @@ class TimeToPayService @Inject()(ttpConnector: TimeToPayConnector) {
   def retrieveRedirectUrl(implicit hc: HeaderCarrier, ec: ExecutionContext, appConfig: AppConfig): Future[Either[ErrorResponse, String]] = {
     val returnUrl = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanProcessedController.onPageLoad().url
     val backUrl = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url
-    val requestModel = TTPRequestModel(returnUrl, backUrl)
+    val requestModel = TimeToPayRequestModel(returnUrl, backUrl)
 
     ttpConnector.setupJourney(requestModel).map {
       case Right(url) => Right(url.nextUrl)

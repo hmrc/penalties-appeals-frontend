@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-package models.ess
+package stubs
 
-import play.api.libs.json.{Json, OWrites}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlEqualTo}
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.Status
 
-case class TTPRequestModel(returnUrl: String, backUrl: String)
+object TimeToPayStub {
 
-object TTPRequestModel {
-  implicit val writes: OWrites[TTPRequestModel] = Json.writes[TTPRequestModel]
+  private val ttpUrl = "/vat/vat-penalties/journey/start"
+
+  def successfulTTPCall(responseBody: String): StubMapping = {
+    stubFor(
+      post(urlEqualTo(ttpUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withBody(responseBody)
+        )
+    )
+  }
 }

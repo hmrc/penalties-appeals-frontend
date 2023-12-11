@@ -16,21 +16,21 @@
 
 package connectors.httpParsers
 
-import models.ess.TTPResponseModel
+import models.ess.TimeToPayResponseModel
 import play.api.http.Status.CREATED
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.Logger.logger
 
 object TimeToPayHttpParser {
 
-  type TimeToPayResponse = Either[ErrorResponse, TTPResponseModel]
+  type TimeToPayResponse = Either[ErrorResponse, TimeToPayResponseModel]
 
   implicit object TimeToPayResponseReads extends HttpReads[TimeToPayResponse] {
     def read(method: String, url: String, response: HttpResponse): TimeToPayResponse = {
       response.status match {
         case CREATED =>
           logger.debug(s"[TimeToPayHttpParser][read] - Response body: ${response.body}")
-          Right(response.json.as[TTPResponseModel])
+          Right(response.json.as[TimeToPayResponseModel])
         case _ =>
           logger.warn(s"[TimeToPayHttpParser][read] - Unexpected error received: ${response.body}")
           Left(UnexpectedFailure(response.status, response.body))

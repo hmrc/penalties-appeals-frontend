@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import connectors.TimeToPayConnector
 import connectors.httpParsers.{TimeToPayHttpParser, UnexpectedFailure}
-import models.ess.TTPResponseModel
+import models.ess.TimeToPayResponseModel
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 import play.api.http.Status
@@ -38,7 +38,7 @@ class TimeToPayServiceSpec extends SpecBase with LogCapturing {
 
   val service = new TimeToPayService(mockTTPConnector)
 
-  val timeToPayResponseModel: TTPResponseModel = TTPResponseModel("592d4a09cdc8e04b00021459","http://localhost:1111/test")
+  val timeToPayResponseModel: TimeToPayResponseModel = TimeToPayResponseModel("592d4a09cdc8e04b00021459","http://localhost:1111/test")
 
   val timeToPayResponseJson: JsObject = Json.obj(
     "journeyId" -> "592d4a09cdc8e04b00021459",
