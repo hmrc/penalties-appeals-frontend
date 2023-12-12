@@ -51,14 +51,14 @@ class TimeToPayServiceSpec extends SpecBase with LogCapturing {
     "return a url when the call is successful" in {
       when(mockTTPConnector.setupJourney(any())(any(), any()))
         .thenReturn(Future.successful(TimeToPayHttpParser.TimeToPayResponseReads.read("", "", ttpResponse)))
-      val result = service.retrieveRedirectUrl(hc, ec, mockAppConfig)
+      val result = service.retrieveRedirectUrl(hc, ec)
       await(result) shouldBe Right(timeToPayResponseModel.nextUrl)
     }
 
     "return an error when the call is unsuccessful" in {
       when(mockTTPConnector.setupJourney(any())(any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, "something went wrong"))))
-      val result = service.retrieveRedirectUrl(hc, ec, mockAppConfig)
+      val result = service.retrieveRedirectUrl(hc, ec)
       await(result) shouldBe Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, "something went wrong"))
     }
   }

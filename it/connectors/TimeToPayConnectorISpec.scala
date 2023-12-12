@@ -16,13 +16,11 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlEqualTo, urlPathMatching}
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.ess.{TimeToPayRequestModel, TimeToPayResponseModel}
-import play.api.http.Status
+import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.libs.json.Json
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import stubs.TimeToPayStub.successfulTTPCall
+import stubs.TimeToPayStub.{successfulTTPCall, unsuccessfulTTPCall}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
 
@@ -56,6 +54,13 @@ class TimeToPayConnectorISpec extends IntegrationSpecCommonBase {
       val result = await(ttpConnector.setupJourney(requestModel))
       result.isRight shouldBe true
       result.toOption.get shouldBe responseModel
+    }
+
+    "return a Left when an unsuccessful call is made" in {
+      unsuccessfulTTPCall
+      val result = await(ttpConnector.setupJourney(requestModel))
+      result.isLeft shouldBe true
+      result.left.toOption.get.status shouldBe INTERNAL_SERVER_ERROR
     }
   }
 

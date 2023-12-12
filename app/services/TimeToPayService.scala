@@ -16,7 +16,6 @@
 
 package services
 
-import config.AppConfig
 import connectors.TimeToPayConnector
 import connectors.httpParsers.ErrorResponse
 import javax.inject.Inject
@@ -27,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TimeToPayService @Inject()(ttpConnector: TimeToPayConnector) {
 
-  def retrieveRedirectUrl(implicit hc: HeaderCarrier, ec: ExecutionContext, appConfig: AppConfig): Future[Either[ErrorResponse, String]] = {
+  def retrieveRedirectUrl(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, String]] = {
     val returnUrl = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanProcessedController.onPageLoad().url
     val backUrl = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url
     val requestModel = TimeToPayRequestModel(returnUrl, backUrl)

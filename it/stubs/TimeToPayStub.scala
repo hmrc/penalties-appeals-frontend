@@ -19,6 +19,7 @@ package stubs
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlEqualTo}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status
+import play.api.libs.json.Json
 
 object TimeToPayStub {
 
@@ -29,8 +30,22 @@ object TimeToPayStub {
       post(urlEqualTo(ttpUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.OK)
+            .withStatus(Status.CREATED)
             .withBody(responseBody)
+        )
+    )
+  }
+
+  def unsuccessfulTTPCall: StubMapping = {
+    stubFor(
+      post(urlEqualTo(ttpUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.INTERNAL_SERVER_ERROR)
+            .withBody(Json.obj(
+              "statusCode" -> 500,
+              "message" -> "There was an error"
+            ).toString())
         )
     )
   }

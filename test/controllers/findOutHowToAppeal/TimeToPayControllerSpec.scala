@@ -61,7 +61,7 @@ class TimeToPayControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-        when(mockTTPService.retrieveRedirectUrl(any, any, any)).thenReturn(Future.successful(Right("/correct-url")))
+        when(mockTTPService.retrieveRedirectUrl(any, any)).thenReturn(Future.successful(Right("/correct-url")))
         val result: Future[Result] = controller.redirect(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/correct-url")
@@ -71,7 +71,7 @@ class TimeToPayControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-        when(mockTTPService.retrieveRedirectUrl(any, any, any)).thenReturn(Future.successful(Left(NoContent)))
+        when(mockTTPService.retrieveRedirectUrl(any, any)).thenReturn(Future.successful(Left(NoContent)))
         val result: Future[Result] = controller.redirect(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -80,7 +80,7 @@ class TimeToPayControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-        when(mockTTPService.retrieveRedirectUrl(any, any, any)).thenReturn(Future.successful(Right("/correct-url")))
+        when(mockTTPService.retrieveRedirectUrl(any, any)).thenReturn(Future.successful(Right("/correct-url")))
         val result: Future[Result] = controller.redirect(fakeRequest)
         status(result) shouldBe NOT_FOUND
       }
