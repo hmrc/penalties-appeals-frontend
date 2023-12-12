@@ -165,7 +165,9 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     YouCanAppealOnlinePage -> ((answer, _, _) => routingForYouCanAppealOnlinePage(answer)),
     CanYouPayPage -> ((answer, _, _) => routingForCanYouPayPage(answer)),
     HasBusinessAskedHMRCToCancelRegistrationPage -> ((answer, _, _) => routingForHasBusinessAskedHMRCToCancelRegistrationPage(answer)),
-    HasHMRCConfirmedRegistrationCancellationPage -> ((answer, _, _) => routingForHasHMRCConfirmedRegistrationCancellationPage(answer))
+    HasHMRCConfirmedRegistrationCancellationPage -> ((answer, _, _) => routingForHasHMRCConfirmedRegistrationCancellationPage(answer)),
+    YouCanAppealOnlinePage -> ((answer, _, _) => routingForYouCanAppealOnlinePage(answer)),
+
   )
 
   def nextPage(page: Page, mode: Mode, answer: Option[String] = None, jsEnabled: Option[Boolean] = None)
@@ -312,7 +314,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   protected[navigation] def routingForYouCanAppealOnlinePage(answer: Option[String]): Call = {
     answer match {
-      case Some(ans) if ans.equalsIgnoreCase("yes") => Call("GET", appConfig.payYourVAT)
+      case Some(ans) if ans.equalsIgnoreCase("yes") => controllers.findOutHowToAppeal.routes.PayNowController.redirect
       case Some(ans) if ans.equalsIgnoreCase("no") => controllers.findOutHowToAppeal.routes.OtherWaysToAppealController.onPageLoad()
       case _ =>
         logger.debug("[Navigation][routingForYouCanAppealOnlinePage]: unable to get answer - reloading 'YouCanAppealOnlinePage'")
