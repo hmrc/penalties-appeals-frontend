@@ -16,6 +16,8 @@
 
 package controllers.findOutHowToAppeal
 
+import java.time.LocalDate
+
 import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
@@ -26,6 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.PayNowService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
+import utils.SessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +42,11 @@ class PayNowController @Inject()(mcc: MessagesControllerComponents,
 
   def redirect: Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit request =>
     if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-      payNowService.retrieveRedirectUrl.map {
+      val vrn: String = request.vrn
+      val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).get
+      val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
+      val dueDate: LocalDate = request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).getOrElse(LocalDate.now())
+      payNowService.retrieveRedirectUrl(vrn, chargeReference, vatAmount, dueDate).map {
         case Right(url) => Redirect(url)
         case Left(_) =>
           logger.warn("[PayNowController][redirect] - Unable to retrieve successful response from Pay Now service, rendering ISE")

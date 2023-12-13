@@ -19,28 +19,19 @@ package services
 
 import java.time.LocalDate
 
-import config.AppConfig
 import connectors.PayNowConnector
 import connectors.httpParsers.ErrorResponse
-import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import javax.inject.Inject
 import models.payApi.PayNowRequestModel
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.SessionKeys
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class PayNowService @Inject()(payNowConnector: PayNowConnector,
-                              authorise: AuthPredicate,
-                              dataRetrieval: DataRetrievalAction
+class PayNowService @Inject()(payNowConnector: PayNowConnector
                              ) {
 
-  def retrieveRedirectUrl(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, String]] = (authorise andThen dataRetrieval).async
-    {implicit request => {
-      val vrn: String = request.vrn
-      val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).get
-      val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
-      val dueDate: LocalDate = request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).get
+  def retrieveRedirectUrl(vrn:String, chargeReference:String, vatAmount: BigDecimal, dueDate:LocalDate)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, String]] = {
+
       val returnUrl = controllers.findOutHowToAppeal.routes.WaitForPaymentToClearController.onPageLoad().url
       val backUrl = controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad().url
       val requestModel = PayNowRequestModel(vrn, chargeReference, (vatAmount * 100).toInt, dueDate, returnUrl, backUrl)
@@ -50,7 +41,7 @@ class PayNowService @Inject()(payNowConnector: PayNowConnector,
         case Left(errorResponse) => Left(errorResponse)
       }
     }
-    }
+
 
 }
 
