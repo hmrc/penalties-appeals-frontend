@@ -28,7 +28,7 @@ import org.mongodb.scala.Document
 import org.mongodb.scala.result.DeleteResult
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, TestSuite}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -114,6 +114,7 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
     "microservice.services.auth.port" -> stubPort,
     "microservice.services.penalties.port" -> stubPort,
     "microservice.services.upscan-initiate.port" -> stubPort,
+    "microservice.services.essttp-backend.port" -> stubPort,
     "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
     "auditing.enabled" -> true,
     "auditing.consumer.baseUri.port" -> stubPort,

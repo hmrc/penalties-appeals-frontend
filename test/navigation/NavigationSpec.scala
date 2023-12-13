@@ -867,7 +867,7 @@ class NavigationSpec extends SpecBase {
 
       s"called with $AppealAfterPaymentPlanSetUpPage - redirects to time to pay service when user selects yes" in new Setup {
         val result: Call = TestNavigator.nextPage(AppealAfterPaymentPlanSetUpPage, NormalMode, Some("yes"))(userRequestWithCorrectKeys)
-        result.url shouldBe appConfig.timeToPayUrl
+        result.url shouldBe controllers.findOutHowToAppeal.routes.TimeToPayController.redirect.url
       }
 
       s"called with $AppealAfterPaymentPlanSetUpPage - redirects to other ways to appeal page when user selects no" in new Setup {
@@ -1174,7 +1174,7 @@ class NavigationSpec extends SpecBase {
 
       "user answers yes" in new Setup {
         val result: Call = TestNavigator.routingForSetUpPaymentPlanPage(Some("yes"))
-        result.url shouldBe appConfig.timeToPayUrl
+        result.url shouldBe controllers.findOutHowToAppeal.routes.TimeToPayController.redirect.url
       }
     }
   }
