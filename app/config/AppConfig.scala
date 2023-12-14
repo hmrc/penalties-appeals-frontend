@@ -149,4 +149,5 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
 
   lazy val payApiUrl = servicesConfig.baseUrl("pay-api")
+  lazy val platformPenaltiesFrontendHost = servicesConfig.getString("penalties-appeals-frontend-host")
 }

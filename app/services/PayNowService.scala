@@ -19,21 +19,24 @@ package services
 
 import java.time.LocalDate
 
+import config.AppConfig
 import connectors.PayNowConnector
 import connectors.httpParsers.ErrorResponse
 import javax.inject.Inject
 import models.payApi.PayNowRequestModel
 import uk.gov.hmrc.http.HeaderCarrier
+
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class PayNowService @Inject()(payNowConnector: PayNowConnector
+class PayNowService @Inject()(payNowConnector: PayNowConnector,
+                              appConfig: AppConfig
                              ) {
 
   def retrieveRedirectUrl(vrn:String, chargeReference:String, vatAmount: BigDecimal, dueDate:LocalDate)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, String]] = {
 
-      val returnUrl = controllers.findOutHowToAppeal.routes.WaitForPaymentToClearController.onPageLoad().url
-      val backUrl = controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad().url
+      val returnUrl = s"${appConfig.platformPenaltiesFrontendHost}${controllers.findOutHowToAppeal.routes.WaitForPaymentToClearController.onPageLoad().url}"
+      val backUrl = s"${appConfig.platformPenaltiesFrontendHost}${controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onPageLoad().url}"
       val requestModel = PayNowRequestModel(vrn, chargeReference, (vatAmount * 100).toInt, dueDate, returnUrl, backUrl)
 
       payNowConnector.setupJourney(requestModel).map {

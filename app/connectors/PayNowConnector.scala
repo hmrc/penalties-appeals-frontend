@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PayNowConnector @Inject()(http: HttpClient, appConfig: AppConfig) {
 
-  val postPayApi = s"${appConfig.payApiUrl}/view-and-change/vat/other/journey/start"
+  val postPayApi = s"${appConfig.payApiUrl}/pay-api/view-and-change/vat/other/journey/start"
 
   def setupJourney(requestModel: PayNowRequestModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PayNowResponse] = {
     http.POST(postPayApi, requestModel)(PayNowRequestModel.writes, PayNowResponseReads, hc, ec)
