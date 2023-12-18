@@ -18,7 +18,6 @@ package controllers.findOutHowToAppeal
 
 
 import base.SpecBase
-import com.github.tomakehurst.wiremock.http.Response.response
 import config.featureSwitches.ShowFindOutHowToAppealJourney
 import connectors.httpParsers.UnexpectedFailure
 import org.mockito.ArgumentMatchers.any

@@ -166,7 +166,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     CanYouPayPage -> ((answer, _, _) => routingForCanYouPayPage(answer)),
     HasBusinessAskedHMRCToCancelRegistrationPage -> ((answer, _, _) => routingForHasBusinessAskedHMRCToCancelRegistrationPage(answer)),
     HasHMRCConfirmedRegistrationCancellationPage -> ((answer, _, _) => routingForHasHMRCConfirmedRegistrationCancellationPage(answer)),
-    YouCanAppealOnlinePage -> ((answer, _, _) => routingForYouCanAppealOnlinePage(answer)),
+    YouCanAppealOnlinePage -> ((answer, _, _) => routingForYouCanAppealOnlinePage(answer))
 
   )
 
