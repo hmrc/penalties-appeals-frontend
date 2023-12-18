@@ -235,3 +235,6 @@ GET        /payment-complete                                   controllers.findO
 GET        /appeal-after-payment-plan-processed               controllers.findOutHowToAppeal.AppealAfterPaymentPlanProcessedController.onPageLoad()
 
 GET        /time-to-pay                                         controllers.findOutHowToAppeal.TimeToPayController.redirect
+
+GET        /pay-your-vat                                      controllers.findOutHowToAppeal.PayNowController.redirect
+

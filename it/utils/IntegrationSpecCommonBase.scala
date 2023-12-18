@@ -118,6 +118,7 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
     "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
     "auditing.enabled" -> true,
     "auditing.consumer.baseUri.port" -> stubPort,
+    "microservice.services.pay-api.port" -> stubPort,
     "mongodb.encryption.enabled" -> true,
     "urls.permitAllRedirectPolicy" -> true
   )
