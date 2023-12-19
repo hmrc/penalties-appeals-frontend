@@ -16,7 +16,7 @@
 
 package services.upscan
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import base.SpecBase
 import connectors.UpscanConnector
 import connectors.httpParsers.{ErrorResponse, UnexpectedFailure}

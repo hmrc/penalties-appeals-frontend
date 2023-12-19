@@ -16,8 +16,8 @@
 
 package services.upscan
 
-import akka.actor.ActorSystem
-import akka.pattern.after
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.pattern.after
 import config.{AppConfig, ErrorHandler}
 import connectors.UpscanConnector
 import connectors.httpParsers.ErrorResponse
