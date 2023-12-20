@@ -49,7 +49,7 @@ class AppealAfterVATIsPaidPageSpec extends SpecBase with ViewBehaviours {
       Selectors.h1 -> heading,
       Selectors.pElementIndex(3) -> p1,
       Selectors.pElementIndex(4) -> p2,
-      Selectors.radioHeader -> radioHeading,
+      Selectors.legend -> radioHeading,
       Selectors.labelForRadioButton(1) -> yesOption,
       Selectors.labelForRadioButton(2) -> noOption,
       Selectors.noHint -> noHint
