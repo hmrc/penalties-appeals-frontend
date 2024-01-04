@@ -46,7 +46,6 @@ object SessionKeys {
   val agentSessionVrn = "mtdVatvcClientVrn"
   val whatCausedYouToMissTheDeadline = "whatCausedYouToMissTheDeadline"
   val whenDidThePersonDie = "whenDidThePersonDie"
-  val isObligationAppeal = "isObligationAppeal"
   val cancelVATRegistration = "cancelVATRegistration"
   val otherRelevantInformation = "otherRelevantInformation"
   val journeyId = "journeyId"
@@ -72,6 +71,7 @@ object SessionKeys {
   val willUserPay = "willUsePay"
   val hasBusinessAskedHMRCToCancelRegistration = "hasBusinessAskedHMRCToCancelRegistration"
   val hasHMRCConfirmedRegistrationCancellation = "hasHMRCConfirmedRegistrationCancellation"
+  val isFindOutHowToAppeal ="isFindOutHowToAppeal"
 
   val allKeys: Seq[String] = Seq(
     appealType,
@@ -99,7 +99,7 @@ object SessionKeys {
     whoPlannedToSubmitVATReturn,
     whatCausedYouToMissTheDeadline,
     whenDidThePersonDie,
-    isObligationAppeal,
+    isFindOutHowToAppeal,
     cancelVATRegistration,
     otherRelevantInformation,
     errorCodeFromUpscan,

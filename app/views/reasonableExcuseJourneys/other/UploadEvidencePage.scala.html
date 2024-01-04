@@ -53,12 +53,9 @@
     )
 }
 @lppOrLspOrObligationDynamicText = @{
-    if((appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) && request.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
-        "otherReason.uploadEvidence.appealAgainstObligation.lpp.p2"
-    } else if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
+  if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
         "otherReason.uploadEvidence.lpp.p2"
-    } else if(appealType.contains(PenaltyTypeEnum.Late_Submission) && request.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
-        "otherReason.uploadEvidence.appealAgainstObligation.p2"
+
     } else "otherReason.uploadEvidence.p2"
 }
 

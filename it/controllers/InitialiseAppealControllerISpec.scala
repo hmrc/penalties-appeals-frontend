@@ -73,7 +73,6 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
       userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe false
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
     }
 
@@ -92,7 +91,6 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
       userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe false
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
     }
 
@@ -112,7 +110,6 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
       userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe false
       userAnswers.getAnswer[String](SessionKeys.firstPenaltyAmount).isDefined shouldBe true
       userAnswers.getAnswer[String](SessionKeys.secondPenaltyAmount).isDefined shouldBe true
       userAnswers.getAnswer[String](SessionKeys.firstPenaltyChargeReference).isDefined shouldBe true
@@ -149,7 +146,6 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
       userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
     }
 
@@ -170,7 +166,6 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
       userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
       userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
     }
 

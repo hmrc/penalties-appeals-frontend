@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import connectors.httpParsers.UnexpectedFailure
 import models.session.UserAnswers
 import models.upload._
@@ -93,7 +92,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
       mockUploadJourneyRepository,
       serviceUnavailablePage,
       mockSessionService
-    )(authPredicate, dataRequiredAction, dataRetrievalAction, checkObligationAvailabilityAction, appConfig, mockConfig, errorHandler, mcc, ec)
+    )(authPredicate, dataRequiredAction, dataRetrievalAction, appConfig, mockConfig, errorHandler, mcc, ec)
 
     when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(
       2020, 2, 1))
@@ -739,14 +738,12 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
-      s"redirect to appeal by letter page when the feature switch ($ShowFullAppealAgainstTheObligation) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-        val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
+      s"Go to appeal by letter page" in new Setup(AuthTestModels.successfulAuthResult) {
+        val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isFindOutHowToAppeal -> true)
         when(mockSessionService.getUserAnswers(any())).thenReturn(
           Future.successful(Some(userAnswers(answers))))
-        when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
         val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(userRequestWithCorrectKeys.copy(answers = userAnswers(answers)))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+        status(result) shouldBe OK
       }
     }
 
@@ -811,16 +808,6 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
           .withFormUrlEncodedBody("value" -> "no"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
-    }
-
-    s"redirect to appeal by letter page when the feature switch ($ShowFullAppealAgainstTheObligation) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-      val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
-      when(mockSessionService.getUserAnswers(any())).thenReturn(
-        Future.successful(Some(userAnswers(answers))))
-      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
-      val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequestConverter(answers))
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
     }
 
 

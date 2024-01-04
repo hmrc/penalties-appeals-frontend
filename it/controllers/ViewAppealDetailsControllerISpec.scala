@@ -104,24 +104,6 @@ class ViewAppealDetailsControllerISpec extends IntegrationSpecCommonBase with Fe
       parsedBody.select("#main-content dl > div:nth-child(10) > dd.govuk-summary-list__value").text() shouldBe "I forgot"
     }
 
-    "return 200 (OK) when the user is authorised and display correct appeal details (obligation journey)" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
-      SessionKeys.otherRelevantInformation -> "This is some relevant information",
-      SessionKeys.isUploadEvidence -> "yes"
-    ), journeyId = Some("5678"))) {
-      await(uploadRepository.updateStateOfFileUpload(journeyId = "5678", callbackModel = fileUploadModel, isInitiateCall = true))
-      val request: Future[Result] = controller.onPageLoad()(fakeRequestWithPreviousId)
-      await(request).header.status shouldBe Status.OK
-      val parsedBody: Document = Jsoup.parse(contentAsString(request))
-      metadataRowsTest(parsedBody)
-      parsedBody.select("#main-content dl > div:nth-child(5) > dt").text() shouldBe "Tell us why you want to appeal the penalty"
-      parsedBody.select("#main-content dl > div:nth-child(5) > dd.govuk-summary-list__value").text() shouldBe "This is some relevant information"
-      parsedBody.select("#main-content dl > div:nth-child(6) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
-      parsedBody.select("#main-content dl > div:nth-child(6) > dd.govuk-summary-list__value").text() shouldBe "Yes"
-      parsedBody.select("#main-content dl > div:nth-child(7) > dt").text() shouldBe "Evidence to support this appeal"
-      parsedBody.select("#main-content dl > div:nth-child(7) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
-    }
-
     "return 303 (SEE_OTHER) when user does not have 'previouslySubmittedJourneyId' session key" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",

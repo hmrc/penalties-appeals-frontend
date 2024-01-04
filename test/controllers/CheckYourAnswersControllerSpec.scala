@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 import models.UserRequest
 import org.mockito.ArgumentMatchers
@@ -59,7 +58,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     when(mockIsLateAppeal.isAppealLate()(any)).thenReturn(isLateAppeal)
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(true)
   }
 
   object Controller extends CheckYourAnswersController(
@@ -68,7 +66,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     errorHandler,
     sessionAnswersHelper,
     mockIsLateAppeal
-  )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction, checkObligationAvailabilityAction)
+  )(stubMessagesControllerComponents(), implicitly, implicitly, implicitly, authPredicate, dataRetrievalAction, dataRequiredAction)
 
   "onPageLoad" should {
     "the user is authorised" must {
@@ -129,19 +127,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         status(result) shouldBe OK
       }
 
-      "return OK and correct view - when it is an appeal against the obligation" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-        val result: Future[Result] = Controller.onPageLoad()(fakeRequest(obligationAnswers))
-        status(result) shouldBe OK
-      }
-
-      "return OK and correct view - when file is uploaded" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-        val result: Future[Result] = Controller.onPageLoad()(fakeRequest(obligationAnswers))
-        status(result) shouldBe OK
-      }
 
       "return OK and correct view - when user is agent submitting an LPP appeal" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
@@ -184,15 +169,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           redirectLocation(result).get shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         }
 
-        s"the feature switch ($ShowFullAppealAgainstTheObligation) is disabled and its an obligation appeal" in new Setup(AuthTestModels.successfulAuthResult) {
-          val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
-          when(mockSessionService.getUserAnswers(any())).thenReturn(
-            Future.successful(Some(userAnswers(answers))))
-          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
-          val result: Future[Result] = Controller.onPageLoad()(userRequestWithCorrectKeys.copy(answers = userAnswers(answers)))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
-        }
       }
     }
 
@@ -223,15 +199,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         session(result).get(SessionKeys.previouslySubmittedJourneyId).get shouldBe "1234"
       }
 
-      "redirect the user to the confirmation page on success when it's an obligation reason" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right((): Unit)))
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-        val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
-      }
 
       "redirect the user to the confirmation page on success and request to remove any previously submitted journeys" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockAppealService.submitAppeal(any())(any(), any(), any()))
@@ -255,15 +222,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
         }
-        "the obligation appeal submission fails" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-            .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-          val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
-        }
       }
 
       "redirect the user to the session data incomplete page" when {
@@ -282,71 +240,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get shouldBe controllers.routes.IncompleteSessionDataController.onPageLoad().url
         }
-      }
-
-      "redirect the user to the service unavailable page" when {
-        "the downstream service returns SERVICE_UNAVAILABLE" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-            .thenReturn(Future.successful(Left(SERVICE_UNAVAILABLE)))
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-          val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.ServiceUnavailableController.onPageLoad().url
-        }
-
-        "the downstream service returns INTERNAL_SERVER_ERROR" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-            .thenReturn(Future.successful(Left(INTERNAL_SERVER_ERROR)))
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-          val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
-        }
-
-        "the downstream service returns BAD_REQUEST" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-            .thenReturn(Future.successful(Left(BAD_REQUEST)))
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-          val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
-        }
-
-        "the downstream service returns UNPROCESSABLE_ENTITY" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-            .thenReturn(Future.successful(Left(UNPROCESSABLE_ENTITY)))
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-          val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
-        }
-      }
-
-      "redirect the user to the duplicate appeal page" when {
-        "the downstream service returns CONFLICT" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.submitAppeal(any())(any(), any(), any()))
-            .thenReturn(Future.successful(Left(CONFLICT)))
-          when(mockSessionService.getUserAnswers(any()))
-            .thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-          val result: Future[Result] = Controller.onSubmit()(fakeRequest(obligationAnswers))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.DuplicateAppealController.onPageLoad().url
-        }
-      }
-
-      s"redirect to the appeal by letter page when" +
-        s" the feature switch ($ShowFullAppealAgainstTheObligation) is disabled and its an obligation appeal" in new Setup(AuthTestModels.successfulAuthResult) {
-        val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
-        when(mockSessionService.getUserAnswers(any())).thenReturn(
-          Future.successful(Some(userAnswers(answers))))
-        when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
-        val result: Future[Result] = Controller.onSubmit()(userRequestWithCorrectKeys.copy(answers = userAnswers(answers)))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
     }
 

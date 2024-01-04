@@ -27,7 +27,7 @@ class IsLateAppealHelper @Inject()(dateTimeHelper: DateTimeHelper,
                                     appConfig: AppConfig) {
   def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
     val dateNow: LocalDate = dateTimeHelper.dateNow
-    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isEmpty){
+    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isEmpty){
       userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties) match {
         case Some("yes") => {
           val dateOfFirstComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate).get

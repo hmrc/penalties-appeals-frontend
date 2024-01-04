@@ -403,7 +403,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
     val agentSession = userRequest.session.get(SessionKeys.agentSessionVrn).isDefined
     val appealType = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
 
-    (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal), reasonableExcuse.isDefined, agentSession) match {
+    (userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal), reasonableExcuse.isDefined, agentSession) match {
       case (Some(_), _, _) => getContentForObligationAppealCheckYourAnswersPage(uploadFilenames)
       case (_, true, false) if isAllAnswerPresentForReasonableExcuse(reasonableExcuse.get) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames)
       case (_, true, true) if appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional) => getContentForReasonableExcuseCheckYourAnswersPage(reasonableExcuse.get, uploadFilenames, isLPP = true)
@@ -414,13 +414,6 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
 
   def getContentForObligationAppealCheckYourAnswersPage(fileNames: Option[String] = None)(implicit userRequest: UserRequest[_], messages: Messages): Seq[QuestionAnswerRow] = {
     val base = Seq(
-      QuestionAnswerRow(messages("otherRelevantInformation.headingAndTitle"),
-        userRequest.answers.getAnswer[String](SessionKeys.otherRelevantInformation).get,
-        changeAnswerUrl(
-          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-          OtherRelevantInformationPage
-        )
-      ),
       QuestionAnswerRow(messages("otherReason.uploadEvidence.question.headingAndTitle"),
         messages(s"common.radioOption.${userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).get}"),
         changeAnswerUrl(
@@ -453,7 +446,7 @@ class SessionAnswersHelper @Inject()(uploadJourneyRepository: UploadJourneyRepos
   }
 
   def getContentWithExistingUploadFileNames(reasonableExcuse: String)(implicit userRequest: UserRequest[_], messages: Messages): Future[Seq[QuestionAnswerRow]] = {
-    if (!reasonableExcuse.equals("other") && !userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {
+    if (!reasonableExcuse.equals("other") && !userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).contains(true)) {
       Future(getAllTheContentForCheckYourAnswersPage()(userRequest, messages))
     }
     else {

@@ -63,7 +63,7 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                     implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
                     val reasonableExcuseSpecificAnswers = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
                     val appealMetaInformation = sessionAnswersHelper.getSubmittedAnswers(getFeatureDate)
-                    if (userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined || userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).contains("other")) {
+                    if (userAnswers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isDefined || userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).contains("other")) {
                       for {
                         fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames(journeyId)
                       } yield {

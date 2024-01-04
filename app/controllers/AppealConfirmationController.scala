@@ -63,11 +63,11 @@ class AppealConfirmationController @Inject()(
                   val startDate: LocalDate = userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).get
                   val endDate: LocalDate = userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).get
                   val (readablePeriodStart, readablePeriodEnd) = (dateToString(startDate), dateToString(endDate))
-                  val isObligationAppeal: Boolean = userAnswers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)
+                  val isFindOutHowToAppeal: Boolean = userAnswers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).contains(true)
                   val showDigitalCommsMessage: Boolean = isEnabled(ShowDigitalCommsMessage)
                   val isAgent: Boolean = request.isAgent
                   val vrn = request.vrn
-                  Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isObligationAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent, vrn))
+                  Ok(appealConfirmationPage(readablePeriodStart, readablePeriodEnd, isFindOutHowToAppeal, showDigitalCommsMessage, appealType, bothPenalties, isAgent, vrn))
                     .removingFromSession(SessionKeys.allKeys: _*)
                 }
               )

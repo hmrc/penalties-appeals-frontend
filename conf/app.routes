@@ -146,12 +146,6 @@ POST       /what-caused-you-to-miss-the-deadline/change         controllers.Agen
 # Appeal Obligation - Unhappy path
 GET        /you-cannot-appeal              controllers.YouCannotAppealController.onPageLoad
 
-# Other Relevant Information page
-GET        /other-relevant-information                         controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = NormalMode)
-GET        /other-relevant-information/change                  controllers.AppealAgainstObligationController.onPageLoad(mode: Mode = CheckMode)
-POST       /other-relevant-information                         controllers.AppealAgainstObligationController.onSubmit(mode: Mode = NormalMode)
-POST       /other-relevant-information/change                  controllers.AppealAgainstObligationController.onSubmit(mode: Mode = CheckMode)
-
 # Upscan endpoints
 GET        /upscan/upload-status/:journeyId/:fileReference      controllers.UpscanController.getStatusOfFileUpload(journeyId: String, fileReference: String)
 POST       /upscan/call-to-upscan/:journeyId                   controllers.UpscanController.initiateCallToUpscan(journeyId: String)

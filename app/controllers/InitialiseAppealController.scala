@@ -140,7 +140,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
     val allUserAnswers = {
       if (isAppealAgainstObligation) {
-        userAnswersWithPossibleMultiplePenaltiesData.setAnswer[Boolean](SessionKeys.isObligationAppeal, isAppealAgainstObligation)
+        userAnswersWithPossibleMultiplePenaltiesData.setAnswer[Boolean](SessionKeys.isFindOutHowToAppeal, isAppealAgainstObligation)
       } else userAnswersWithPossibleMultiplePenaltiesData
     }
     sessionService.updateAnswers(allUserAnswers).map {

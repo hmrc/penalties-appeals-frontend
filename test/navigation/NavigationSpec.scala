@@ -17,7 +17,7 @@
 package navigation
 
 import base.SpecBase
-import config.featureSwitches.{ShowFindOutHowToAppealLSPJourney, ShowFullAppealAgainstTheObligation}
+import config.featureSwitches.ShowFindOutHowToAppealLSPJourney
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
 import org.mockito.ArgumentMatchers
@@ -36,10 +36,7 @@ class NavigationSpec extends SpecBase {
   class Setup {
     reset(mockDateTimeHelper)
     reset(mockConfiguration)
-    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 2, 1))
-    when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
-      .thenReturn(true)
-  }
+    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 2, 1))}
 
   def checkModePreviousPageTest(pagesAndUrls: Seq[(Page, String)]): Unit = {
     pagesAndUrls.foreach { pageAndExpectedUrl =>
@@ -116,23 +113,8 @@ class NavigationSpec extends SpecBase {
         )
       )
 
-      s"the user is on the $AppealStartPage" must {
-        "route the user back to the 'You can appeal this penalty' page when appealing against obligation" in {
-          val result: Call = TestNavigator.previousPage(AppealStartPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)))
-          result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
-        }
-
-        "route back to the penalties and appeals page when its not an obligation appeal" in {
-          val result: Call = TestNavigator.previousPage(AppealStartPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers))
-          result.url shouldBe "http://localhost:9180/penalties"
-        }
-      }
 
       s"the user is on the $HonestyDeclarationPage" must {
-        "route the user back to the 'Appeal a VAT penalty' page when appealing against obligation" in {
-          val result: Call = TestNavigator.previousPage(HonestyDeclarationPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)))
-          result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
-        }
 
         "route back to the reasonable excuse selection page when not appealing against obligation" in {
           val result: Call = TestNavigator.previousPage(HonestyDeclarationPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "health")))
@@ -140,17 +122,6 @@ class NavigationSpec extends SpecBase {
         }
       }
 
-      s"the user is on the $UploadEvidenceQuestionPage" must {
-        "route the user back to the 'Other relevant information' page when appealing against obligation" in {
-          val result: Call = TestNavigator.previousPage(UploadEvidenceQuestionPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)))
-          result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
-        }
-
-        "route back to the why return submitted late page when not appealing against obligation" in {
-          val result: Call = TestNavigator.previousPage(UploadEvidenceQuestionPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "health")))
-          result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(NormalMode).url
-        }
-      }
 
       s"the user is on the $MakingALateAppealPage" must {
         def makingALateAppealReverseNormalRouteTest(reason: String, expectedUrl: String, userRequest: UserRequest[_]): Unit = {
@@ -208,9 +179,6 @@ class NavigationSpec extends SpecBase {
           controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url,
           fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "other")))
 
-        makingALateAppealReverseNormalRouteTest("obligation",
-          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url,
-          fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)))
 
       }
 
@@ -515,10 +483,6 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
         reset(mockDateTimeHelper)
       }
-      s"called with $OtherRelevantInformationPage" in new Setup {
-        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse(None, CheckMode)
-        result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url
-      }
       s"called with $UploadFirstDocumentPage redirects to File Upload List Page" in new Setup {
         val result: Call = TestNavigator.nextPage(UploadFirstDocumentPage, CheckMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
         )
@@ -763,21 +727,6 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
       }
 
-      s"called with $HonestyDeclarationPage isObligation is true" in new Setup {
-
-        val result: Call = TestNavigator.nextPage(HonestyDeclarationPage, NormalMode)(fakeRequestConverter(correctUserAnswers ++ Json.obj(
-          SessionKeys.hasConfirmedDeclaration -> true
-        )))
-        result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
-      }
-
-      s"called with $EvidencePage isObligation is true" in new Setup {
-        val result: Call = TestNavigator.nextPage(EvidencePage, NormalMode)(fakeRequestConverter(correctUserAnswers ++ Json.obj(
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.isObligationAppeal -> true
-        )))
-        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
-      }
 
       s"called with $UploadFirstDocumentPage redirects to File Upload List Page" in new Setup {
         val result: Call = TestNavigator.nextPage(UploadFirstDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
@@ -1018,53 +967,37 @@ class NavigationSpec extends SpecBase {
   "getNextURLBasedOnReasonableExcuse" should {
     "in NormalMode" must {
       s"called with $WhenDidThePersonDiePage" in new Setup {
-        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse(Some("bereavement"), NormalMode)
+        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse("bereavement", NormalMode)
         result.url shouldBe controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(NormalMode).url
       }
       s"called with $WhenDidCrimeHappenPage" in new Setup {
-        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse(Some("crime"), NormalMode)
+        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse("crime", NormalMode)
         result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
       }
       s"called with $WhenDidFireOrFloodHappenPage" in new Setup {
-        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse(Some("fireOrFlood"), NormalMode)
+        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse("fireOrFlood", NormalMode)
         result.url shouldBe controllers.routes.FireOrFloodReasonController.onPageLoad(NormalMode).url
       }
       s"called with $WhenDidTechnologyIssuesBeginPage" in new Setup {
-        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse(Some("technicalIssues"), NormalMode)
+        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse("technicalIssues", NormalMode)
         result.url shouldBe controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(NormalMode).url
       }
       s"called with $WhenDidHealthIssueHappenPage" in new Setup {
-        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse(Some("health"), NormalMode)
+        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse("health", NormalMode)
         result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(NormalMode).url
       }
       s"called with $WhenDidBecomeUnablePage" in new Setup {
-        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse(Some("other"), NormalMode)
+        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse("other", NormalMode)
         result.url shouldBe controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(NormalMode).url
-      }
-      s"called with $OtherRelevantInformationPage" in new Setup {
-        val result: Call = TestNavigator.getNextURLBasedOnReasonableExcuse(None, NormalMode)
-        result.url shouldBe controllers.routes.AppealAgainstObligationController.onPageLoad(NormalMode).url
-      }
-      "called with Unknown Page" in new Setup {
-        val result: MatchError = intercept[MatchError](TestNavigator.getNextURLBasedOnReasonableExcuse(Some("unknown"), NormalMode))
-        result.getMessage.contains("[Navigation][getNextURLBasedOnReasonableExcuse] - Unknown reasonable excuse Some(unknown)") shouldBe true
       }
     }
   }
 
   "routingForCancelVATRegistrationPage" when {
 
-    "redirect to YouCanAppeal page" when {
-      "yes option selected and full journey is enabled" in new Setup {
-        val result: Call = TestNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestWithCorrectKeys)
-        result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
-      }
-    }
 
     "redirect to AppealByLetter page" when {
       "yes option selected and full journey is disabled" in new Setup {
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation.name))(ArgumentMatchers.any()))
-          .thenReturn(false)
         val result: Call = TestNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestWithCorrectKeys)
         result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }

@@ -50,7 +50,7 @@ class YouCanAppealPenaltyControllerSpec extends SpecBase {
       youCanAppealPenaltyPage,
       mainNavigator,
       mockSessionService
-    )(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction, checkObligationAvailabilityAction, ec)
+    )(mcc, appConfig, authPredicate, dataRequiredAction, dataRetrievalAction, ec)
   }
 
   "YouCanAppealPenaltyController" should {

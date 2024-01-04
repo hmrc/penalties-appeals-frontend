@@ -17,17 +17,17 @@
 package navigation
 
 import config.AppConfig
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney, ShowFullAppealAgainstTheObligation}
+import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
 import controllers.routes
 import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models.pages._
 import models._
 import play.api.Configuration
-import play.api.mvc.Call
+import play.api.mvc.{Call, Request}
 import utils.Logger.logger
 import utils.{ReasonableExcuses, SessionKeys}
-
 import java.time.LocalDate
+
 import javax.inject.Inject
 
 class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
@@ -131,7 +131,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Boolean]) => Call] = Map(
-    HonestyDeclarationPage -> ((answer, _, _) => getNextURLBasedOnReasonableExcuse(answer, NormalMode)),
+    HonestyDeclarationPage -> ((answer, request, _) => getNextURLBasedOnReasonableExcuse(answer.get, NormalMode)(request)),
     HasCrimeBeenReportedPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidCrimeHappenPage -> ((_, _, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode)),
     WhenDidFireOrFloodHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
@@ -204,11 +204,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
 
   protected[navigation] def routingForCancelVATRegistrationPage(answer: Option[String], request: UserRequest[_]): Call = {
     if (answer.get.toLowerCase == "yes") {
-      if (isEnabled(ShowFullAppealAgainstTheObligation)) {
-        routes.YouCanAppealPenaltyController.onPageLoad()
-      } else {
         routes.YouCannotAppealController.onPageLoadAppealByLetter()
-      }
+
     } else {
       routes.YouCannotAppealController.onPageLoad
     }
@@ -242,10 +239,8 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     }
   }
 
-  protected[navigation] def getNextURLBasedOnReasonableExcuse(reasonableExcuse: Option[String], mode: Mode): Call = {
-    reasonableExcuse.fold(
-      controllers.routes.AppealAgainstObligationController.onPageLoad(mode)
-    ) {
+  def getNextURLBasedOnReasonableExcuse(reasonableExcuse: String, mode: Mode)(implicit request: Request[_]): Call = {
+    reasonableExcuse match {
       case ReasonableExcuses.bereavement => controllers.routes.BereavementReasonController.onPageLoadForWhenThePersonDied(mode)
       case ReasonableExcuses.crime => controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(mode)
       case ReasonableExcuses.fireOrFlood => controllers.routes.FireOrFloodReasonController.onPageLoad(mode)
@@ -253,14 +248,14 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
       case ReasonableExcuses.technicalIssues => controllers.routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesBegan(mode)
       case ReasonableExcuses.health => controllers.routes.HealthReasonController.onPageLoadForWasHospitalStayRequired(mode)
       case ReasonableExcuses.other => controllers.routes.OtherReasonController.onPageLoadForWhenDidBecomeUnable(mode)
-      case _ => throw new MatchError(s"[Navigation][getNextURLBasedOnReasonableExcuse] - Unknown reasonable excuse $reasonableExcuse")
+
     }
   }
 
   protected[navigation] def routeToMakingALateAppealOrCYAPage(userRequest: UserRequest[_], mode: Mode): Call = {
     if (isLateAppealHelper.isAppealLate()(userRequest)
       && (userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)
-      && userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isEmpty) {
+      && userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isEmpty) {
       logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - redirect to 'Making a Late Appeal' page")
       controllers.routes.MakingALateAppealController.onPageLoad()
     } else {
@@ -361,7 +356,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def reverseRouteForAppealStartPage(userRequest: UserRequest[_]): Call = {
-    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
+    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isDefined) {
       routes.YouCanAppealPenaltyController.onPageLoad()
     } else {
       Call("GET", appConfig.penaltiesFrontendUrl)
@@ -369,7 +364,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def reverseRouteForHonestyDeclaration(userRequest: UserRequest[_]): Call = {
-    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
+    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isDefined) {
       routes.AppealStartController.onPageLoad()
     } else {
       routes.ReasonableExcuseController.onPageLoad()
@@ -377,15 +372,12 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def reverseRouteForUploadEvidenceQuestion(userRequest: UserRequest[_], mode: Mode): Call = {
-    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
-      routes.AppealAgainstObligationController.onPageLoad(mode)
-    } else {
       routes.OtherReasonController.onPageLoadForWhyReturnSubmittedLate(mode)
-    }
+
   }
 
   protected[navigation] def reverseRouteForMakingALateAppealPage(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
-    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) {
+    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isDefined) {
       reverseRoutingForUpload(userRequest, mode, jsEnabled)
     } else {
       userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get match {
@@ -437,7 +429,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
     val dateNow: LocalDate = dateTimeHelper.dateNow
     if (dateSentParsed.isBefore(dateNow.minusDays(daysResultingInLateAppeal))
       && (userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)
-      && userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isEmpty) {
+      && userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isEmpty) {
       logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
         s"Date now: $dateNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
       controllers.routes.MakingALateAppealController.onPageLoad()

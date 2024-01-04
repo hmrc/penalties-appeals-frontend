@@ -312,53 +312,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
     }
 
-    "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
-      SessionKeys.isObligationAppeal -> true,
-      SessionKeys.otherRelevantInformation -> "Lorem ipsum",
-      SessionKeys.isUploadEvidence -> "yes"
-    ))) {
-      val request = controller.onPageLoad()(fakeRequest)
-      await(request).header.status shouldBe Status.OK
-      val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(1) > dt").text() shouldBe "Tell us why you want to appeal the penalty"
-      parsedBody.select("#main-content dl > div:nth-child(1) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
-    }
 
-    "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal - with file upload" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
-      SessionKeys.isObligationAppeal -> true,
-      SessionKeys.otherRelevantInformation -> "Lorem ipsum",
-      SessionKeys.isUploadEvidence -> "yes"
-    ))) {
-      await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
-      val request = controller.onPageLoad()(fakeRequest)
-      await(request).header.status shouldBe Status.OK
-      val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(1) > dt").text() shouldBe "Tell us why you want to appeal the penalty"
-      parsedBody.select("#main-content dl > div:nth-child(1) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
-      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
-      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "Yes"
-      parsedBody.select("#main-content dl > div:nth-child(3) > dt").text() shouldBe "Evidence to support this appeal"
-      parsedBody.select("#main-content dl > div:nth-child(3) > dd.govuk-summary-list__value").text() shouldBe "file1.txt"
-    }
-
-    "return 200 (OK) when the user is authorised and has the correct keys for obligation appeal - selected no to file upload" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
-      SessionKeys.isObligationAppeal -> true,
-      SessionKeys.otherRelevantInformation -> "Lorem ipsum",
-      SessionKeys.isUploadEvidence -> "no"
-    ))) {
-
-      await(repository.updateStateOfFileUpload("1234", fileUploadModel, isInitiateCall = true))
-      val request = controller.onPageLoad()(fakeRequest)
-      await(request).header.status shouldBe Status.OK
-      val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content dl > div:nth-child(1) > dt").text() shouldBe "Tell us why you want to appeal the penalty"
-      parsedBody.select("#main-content dl > div:nth-child(1) > dd.govuk-summary-list__value").text() shouldBe "Lorem ipsum"
-      parsedBody.select("#main-content dl > div:nth-child(2) > dt").text() shouldBe "Do you want to upload evidence to support your appeal?"
-      parsedBody.select("#main-content dl > div:nth-child(2) > dd.govuk-summary-list__value").text() shouldBe "No"
-    }
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - agent" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
@@ -642,20 +596,10 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
     }
 
-    "redirect the user to the confirmation page on success for obligation appeal" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
-      SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
-    ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
-      val request = await(controller.onSubmit()(fakeRequest))
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
-    }
+
 
     "redirect the user to the service unavailable page on unmatched fault" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
       SessionKeys.isUploadEvidence -> "no"
@@ -667,7 +611,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to service unavailable page when downstream returns SERVICE_UNAVAILABLE" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
       SessionKeys.isUploadEvidence -> "yes"
@@ -679,7 +623,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to duplicate appeal page when downstream returns CONFLICT" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
       SessionKeys.isUploadEvidence -> "yes"
@@ -691,7 +635,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when downstream returns UNPROCESSABLE_ENTITY" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
       SessionKeys.isUploadEvidence -> "yes"
@@ -703,7 +647,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when the appeal fails from a payload issue" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
       SessionKeys.isUploadEvidence -> "yes"
@@ -715,7 +659,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "show an ISE when the appeal fails" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
       SessionKeys.isUploadEvidence -> "yes"
@@ -727,7 +671,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when the appeal fails from an issue with the service" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isObligationAppeal -> true,
+      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.otherRelevantInformation -> "some text",
       SessionKeys.isUploadEvidence -> "yes"
