@@ -39,7 +39,7 @@ class CancelVATRegistrationControllerISpec extends IntegrationSpecCommonBase wit
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmitForCancelVATRegistration()(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe routes.YouCanAppealPenaltyController.onPageLoad().url
+      request.header.headers("Location") shouldBe routes.YouCannotAppealController.onPageLoadAppealByLetter.url
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.cancelVATRegistration).get shouldBe "yes"
     }
 
