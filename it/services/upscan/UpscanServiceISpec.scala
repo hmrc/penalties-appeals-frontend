@@ -27,8 +27,10 @@ import repositories.UploadJourneyRepository
 import stubs.UpscanStub.{failedInitiateCall, successfulInitiateCall}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
-
 import java.time.LocalDateTime
+
+import controllers.routes
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -84,7 +86,8 @@ class UpscanServiceISpec extends IntegrationSpecCommonBase {
     "return an ISE" when {
       "there is no upload details in Mongo" in new Setup {
         val result = service.waitForStatus("J1234", "file1", System.nanoTime() + 1000000000L, NormalMode, false, blockToDoNothing)(FakeRequest(), implicitly)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
 

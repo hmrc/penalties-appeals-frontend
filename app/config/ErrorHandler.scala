@@ -37,6 +37,7 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: Mess
       case play.mvc.Http.Status.BAD_REQUEST => Future.successful(BadRequest(badRequestTemplate(request)))
       case play.mvc.Http.Status.NOT_FOUND   => Future.successful(NotFound(notFoundTemplate(request)))
       case play.mvc.Http.Status.FORBIDDEN   => Future(Redirect(controllers.routes.TechnicalErrorController.onPageLoad()))
+      case play.mvc.Http.Status.INTERNAL_SERVER_ERROR => Future(showInternalServerError(request))
       case _                                => Future.successful(Results.Status(statusCode)(fallbackClientErrorTemplate(request)))
     }
   }
@@ -45,7 +46,7 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: Mess
     errorTemplate(pageTitle, heading, message)
   }
 
-  def showInternalServerError(implicit request: Request[_]): Result = InternalServerError(internalServerErrorTemplate)
+  def showInternalServerError(implicit request: Request[_]): Result = Redirect(controllers.routes.InternalServerErrorController.onPageLoad())
 
   def notFoundError(implicit request: Request[_]): Result = NotFound(notFoundTemplate)
 

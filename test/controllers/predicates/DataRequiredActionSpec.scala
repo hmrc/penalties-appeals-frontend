@@ -25,8 +25,10 @@ import play.api.mvc.{Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.SessionKeys
-
 import java.time.LocalDate
+
+import controllers.routes
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRequiredActionSpec extends SpecBase {
@@ -49,7 +51,8 @@ class DataRequiredActionSpec extends SpecBase {
           request = requestWithNoSessionKeys)
 
       val result = await(fakeController.onPageLoad())
-      result.header.status shouldBe INTERNAL_SERVER_ERROR
+      result.header.status shouldBe SEE_OTHER
+      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
     s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when some of the data is missing as part of the session" in {
@@ -67,7 +70,8 @@ class DataRequiredActionSpec extends SpecBase {
         request = requestWithPartSessionKeys)
 
       val result = await(fakeController.onPageLoad())
-      result.header.status shouldBe INTERNAL_SERVER_ERROR
+      result.header.status shouldBe SEE_OTHER
+      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
     "redirect to the appeal has already been submitted page" when {

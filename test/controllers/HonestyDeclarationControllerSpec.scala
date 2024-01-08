@@ -79,13 +79,15 @@ class HonestyDeclarationControllerSpec extends SpecBase {
       "the user hasn't selected an option on the reasonable excuse page" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
 
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
 
@@ -136,13 +138,15 @@ class HonestyDeclarationControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
 
         val result: Future[Result] = controller.onSubmit()(userRequestWithCorrectKeys)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
 
       "the user does not have the required keys in the session" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onSubmit()(fakeRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
 

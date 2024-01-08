@@ -17,11 +17,12 @@
 package controllers.findOutHowToAppeal
 
 import connectors.TimeToPayConnector
+import controllers.routes
 import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.test.Helpers.{LOCATION, await, defaultAwaitTimeout}
 import services.TimeToPayService
 import stubs.TimeToPayStub.{successfulTTPCall, unsuccessfulTTPCall}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -48,7 +49,8 @@ class TimeToPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
     "return an error when a call is unsuccessful" in {
       unsuccessfulTTPCall
       val result = await(controller.redirect()(fakeRequest))
-      result.header.status shouldBe INTERNAL_SERVER_ERROR
+      result.header.status shouldBe SEE_OTHER
+      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
   }
 }

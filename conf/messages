@@ -630,6 +630,10 @@ viewAppealDetails.printThisPage = Print this page
 # -----------------------------------------------------------
 technicalError.link = Return to VAT penalties and appeals
 
+# Internal Server Error page
+# -----------------------------------------------------------
+internalServerError.link = Return to VAT penalties
+
 # If You've paid your VAT
 # -----------------------------------------------------------
 paidYourVat.headingAndTitle = If you’ve paid your VAT

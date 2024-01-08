@@ -79,7 +79,8 @@ class MakingALateAppealControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
 

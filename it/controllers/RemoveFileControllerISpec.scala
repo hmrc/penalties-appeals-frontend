@@ -54,7 +54,8 @@ class RemoveFileControllerISpec extends IntegrationSpecCommonBase with Authorisa
 
     "render ISE when the file reference does not exist" in new Setup(userAnswers) {
       val result = await(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode)(fakeRequest))
-      result.header.status shouldBe INTERNAL_SERVER_ERROR
+      result.header.status shouldBe SEE_OTHER
+      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
     runControllerPredicateTests(controller.onPageLoad(fileReference = "ref1", isJsEnabled = true, mode = NormalMode), "GET", "/remove-file/ref1?isJsEnabled=true")

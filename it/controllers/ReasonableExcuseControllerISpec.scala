@@ -169,7 +169,8 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
         SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe SEE_OTHER
+      request.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
     runControllerPredicateTests(controller.onPageLoad(), "GET", "/reason-for-missing-deadline")
@@ -214,7 +215,8 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
         SessionKeys.journeyId -> "1234"
       )
       val request = await(controller.onSubmit()(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe SEE_OTHER
+      request.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
     runControllerPredicateTests(controller.onSubmit(), "POST", "/reason-for-missing-deadline")

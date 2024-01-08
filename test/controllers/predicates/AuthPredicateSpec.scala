@@ -16,6 +16,7 @@
 
 package controllers.predicates
 
+import controllers.routes
 import models.AuthRequest
 import play.api.http.Status
 import play.api.mvc.Results.Ok
@@ -97,7 +98,8 @@ class AuthPredicateSpec extends AuthMocks {
       "the affinity group of the user can not be determined" in {
         mockNoAffinityGroup()
         val result = target(fakeRequest)
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
 
       "the user has no active session" in {

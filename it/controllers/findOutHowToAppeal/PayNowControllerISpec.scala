@@ -22,7 +22,7 @@ import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.test.Helpers.{LOCATION, await, defaultAwaitTimeout}
 import stubs.PayNowStub.{successfulPayNowCall, unsuccessfulPayNowCall}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{IntegrationSpecCommonBase, SessionKeys}
@@ -53,7 +53,8 @@ class PayNowControllerISpec extends IntegrationSpecCommonBase with Authorisation
     "return an error when a call is unsuccessful" in {
       unsuccessfulPayNowCall
       val result = await(controller.redirect()(fakeRequest))
-      result.header.status shouldBe INTERNAL_SERVER_ERROR
+      result.header.status shouldBe SEE_OTHER
+      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
   }
 }

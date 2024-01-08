@@ -630,6 +630,10 @@ viewAppealDetails.printThisPage = Argraffu’r dudalen hon
 # -----------------------------------------------------------
 technicalError.link = Yn ôl i gosbau TAW ac apeliadau
 
+# Internal Server Error page
+# -----------------------------------------------------------
+internalServerError.link = Yn ôl i gosbau TAW
+
 # Find out how to appeal
 # -----------------------------------------------------------
 paidYourVat.headingAndTitle = Os ydych wedi talu’ch TAW
