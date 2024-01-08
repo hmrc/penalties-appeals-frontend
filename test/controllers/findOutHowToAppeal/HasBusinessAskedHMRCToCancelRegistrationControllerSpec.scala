@@ -17,11 +17,10 @@
 package controllers.findOutHowToAppeal
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealLSPJourney
 import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import org.mockito.ArgumentCaptor
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
@@ -53,8 +52,6 @@ class HasBusinessAskedHMRCToCancelRegistrationControllerSpec extends SpecBase {
     when(mockSessionService.getUserAnswers(any()))
       .thenReturn(Future.successful(Some(sessionAnswers)))
 
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney))).thenReturn(true)
-
     val controller = new HasBusinessAskedHMRCToCancelRegistrationController(page, errorHandler)(mcc, mockAppConfig,
       authPredicate, dataRequiredAction, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
   }
@@ -68,13 +65,6 @@ class HasBusinessAskedHMRCToCancelRegistrationControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
         status(result) shouldBe OK
-      }
-
-      "return 404 (NOT_FOUND) when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney))).thenReturn(false)
-        val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-        status(result) shouldBe NOT_FOUND
       }
     }
 

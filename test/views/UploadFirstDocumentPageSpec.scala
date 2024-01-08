@@ -23,9 +23,7 @@ import models.pages.{PageMode, UploadFirstDocumentPage}
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
-import play.api.libs.json.Json
 import play.twirl.api.HtmlFormat
-import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
 

@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.DoYouWantToPayNowForm.doYouWantToPayNowForm
@@ -38,30 +37,26 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, errorHandler: ErrorHandler)
                                               (implicit mcc: MessagesControllerComponents,
-                                                        appConfig: AppConfig,
-                                                        authorise: AuthPredicate,
-                                                        dataRetrieval: DataRetrievalAction,
-                                                        navigation: Navigation,
-                                                        sessionService: SessionService,
-                                                        val config: Configuration,
-                                                        ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                               appConfig: AppConfig,
+                                               authorise: AuthPredicate,
+                                               dataRetrieval: DataRetrievalAction,
+                                               navigation: Navigation,
+                                               sessionService: SessionService,
+                                               val config: Configuration,
+                                               ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(YouCanAppealOnlinePage, mode)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
-      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(doYouWantToPayNowForm,
-          SessionKeys.doYouWantToPayNow,
-          request.answers)
-        val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
-        val postAction = controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onSubmit()
-        val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
-        sessionService.updateAnswers(willUserPay).map { //TODO: This should be moved to the Can You Pay Your VAT Bill page when that is implemented
-          _ => Ok(page(formProvider, radioOptions, postAction, pageMode(NormalMode)))
-        }
-      } else {
-        Future(errorHandler.notFoundError(request))
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(doYouWantToPayNowForm,
+        SessionKeys.doYouWantToPayNow,
+        request.answers)
+      val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
+      val postAction = controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onSubmit()
+      val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
+      sessionService.updateAnswers(willUserPay).map { //TODO: This should be moved to the Can You Pay Your VAT Bill page when that is implemented
+        _ => Ok(page(formProvider, radioOptions, postAction, pageMode(NormalMode)))
       }
     }
   }
@@ -80,5 +75,6 @@ class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, e
         }
       }
     )
-  }}
+  }
+  }
 }

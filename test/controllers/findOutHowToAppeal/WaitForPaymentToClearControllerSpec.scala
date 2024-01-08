@@ -17,11 +17,9 @@
 package controllers.findOutHowToAppeal
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealJourney
 import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import org.mockito.ArgumentMatchers
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
@@ -56,8 +54,6 @@ class WaitForPaymentToClearControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
-
     val controller = new WaitForPaymentToClearController(WaitForPaymentToClearPage, errorHandler)(mcc, mockAppConfig,
       authPredicate, dataRetrievalAction, config)
   }
@@ -74,14 +70,6 @@ class WaitForPaymentToClearControllerSpec extends SpecBase {
 
         "return 404 (NOT_FOUND) when not an Non CA Appeal" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.isCaLpp -> true)))))
-          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
-          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-          status(result) shouldBe NOT_FOUND
-        }
-
-        "return 404 (NOT_FOUND) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe NOT_FOUND
         }

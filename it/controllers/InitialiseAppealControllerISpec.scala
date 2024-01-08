@@ -16,7 +16,6 @@
 
 package controllers
 
-import config.featureSwitches.{FeatureSwitching, ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
 import models.PenaltyTypeEnum
 import org.mongodb.scala.Document
 import play.api.mvc.AnyContentAsEmpty
@@ -27,16 +26,11 @@ import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 import java.time.LocalDate
 
-class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
   val controller: InitialiseAppealController = injector.instanceOf[InitialiseAppealController]
 
   class Setup {
     await(userAnswersRepository.collection.deleteMany(Document()).toFuture())
-  }
-
-  override def afterEach(): Unit = {
-    super.afterEach()
-    sys.props -= ShowFindOutHowToAppealLSPJourney.name
   }
 
   "GET /initialise-appeal" should {
@@ -130,33 +124,12 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
 
   "GET /initialise-appeal-against-the-obligation" should {
     "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" +
-      s" (redirecting to 'Cancel VAT registration' page when the $ShowFindOutHowToAppealLSPJourney is disabled)" in new Setup {
+      s" (redirecting to 'Cancel VAT registration' page" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
-      disableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoadForObligation("1234")(fakeRequest)
-      await(result).header.status shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-      val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
-      userAnswers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[String](SessionKeys.penaltyNumber).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined shouldBe true
-      userAnswers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).isDefined shouldBe true
-      await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
-    }
-
-    "call the service to validate the penalty ID and redirect to the Cancel VAT Registration page when data is returned" +
-      s" (redirecting to 'Cancel VAT registration' page when the $ShowFindOutHowToAppealLSPJourney is enabled)" in new Setup {
-      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
-        authToken -> "1234"
-      )
-      enableFeatureSwitch(ShowFindOutHowToAppealLSPJourney)
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoadForObligation("1234")(fakeRequest)
+      val result = controller.onPageLoadForFindOutHowToAppealLSP("1234")(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad().url
       val userAnswers = await(userAnswersRepository.collection.find(Document()).toFuture()).head
@@ -171,7 +144,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
 
     "render an ISE when the appeal data can not be retrieved" in new Setup {
       failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      val result = controller.onPageLoadForObligation("1234")(FakeRequest().withSession(
+      val result = controller.onPageLoadForFindOutHowToAppealLSP("1234")(FakeRequest().withSession(
         authToken -> "1234"
       ))
       await(result).header.status shouldBe INTERNAL_SERVER_ERROR
@@ -180,7 +153,6 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
 
   "GET /initialise-appeal-find-out-how-to-appeal " should {
     "redirect to the Start Find Out How To Appeal Controller" in new Setup {
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
@@ -191,7 +163,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
       val vatEndDate = "2023-07-06"
       val isCa = false
 
-      val result = controller.onPageLoadForFindOutHowToAppeal(principalChargeReference, vatAmountInPence, vatStartDate, vatEndDate, isCa)(fakeRequest)
+      val result = controller.onPageLoadForFindOutHowToAppealLPP(principalChargeReference, vatAmountInPence, vatStartDate, vatEndDate, isCa)(fakeRequest)
 
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.FindOutHowToAppealStartController.startFindOutHowToAppeal().url
@@ -203,24 +175,6 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase with Fea
       userAnswers.getAnswer[BigDecimal](SessionKeys.vatAmount).isDefined shouldBe true
       userAnswers.getAnswer[Boolean](SessionKeys.isCaLpp).isDefined shouldBe true
       await(result).session.get(SessionKeys.journeyId).isDefined shouldBe true
-    }
-
-    "render an NOT_FOUND when both feature switches are disabled" in new Setup {
-      disableFeatureSwitch(ShowFindOutHowToAppealJourney)
-      disableFeatureSwitch(ShowCAFindOutHowToAppealJourney)
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
-      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
-        authToken -> "1234"
-      )
-      val principalChargeReference = "123456789"
-      val vatAmountInPence = 12345
-      val vatStartDate = "2023-04-07"
-      val vatEndDate = "2023-07-06"
-      val isCa = false
-
-      val result = controller.onPageLoadForFindOutHowToAppeal(principalChargeReference, vatAmountInPence, vatStartDate, vatEndDate, isCa)(fakeRequest)
-
-      await(result).header.status shouldBe NOT_FOUND
     }
   }
 }

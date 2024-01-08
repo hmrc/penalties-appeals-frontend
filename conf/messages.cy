@@ -55,9 +55,7 @@ appealStart.h2 = Cyn i chi ddechrau
 appealStart.p4 = Bydd angen y canlynol arnoch:
 appealStart.li.2.1 = rheswm dros gyflwyno’r Ffurflen TAW yn hwyr (mae CThEF yn galw hyn yn ‘esgus rhesymol’)
 appealStart.lpp.li.2.1 = rheswm dros dalu’r TAW yn hwyr (mae CThEF yn galw hyn yn ‘esgus rhesymol’)
-appealStart.obligation.li.2.1 = manylion am unrhyw ohebiaeth â CThEF am ganslo’r cofrestriad TAW
 appealStart.li.2.2 = y dyddiadau y mae eich rheswm yn ymwneud â hwy
-appealStart.obligation.li.2.2 = unrhyw wybodaeth ychwanegol i gefnogi’ch apêl (dewisol)
 appealStart.li.2.3 = manylion am y rheswm nad oeddech wedi apelio’n gynt
 appealStart.reasonableExcuses.externalGuidanceLinkText = Darllenwch yr arweiniad am esgusodion rhesymol
 appealStart.p5 = Mewn rhai achosion, byddwn yn gofyn a ydych eisiau uwchlwytho tystiolaeth er mwyn ategu’r apêl
@@ -98,7 +96,6 @@ reasonableExcuses.error.required = Dewiswch reswm dros fethu’r dyddiad cau ar 
 honestyDeclaration.headingAndTitle = Datganiad gonestrwydd
 honestyDeclaration.p1 = Rwy’n cadarnhau’r canlynol:
 honestyDeclaration.li.1.1 = oherwydd {0},
-honestyDeclaration.obligation.li.1 = gofynnwyd i CThEF ganslo’r cofrestriad TAW
 honestyDeclaration.li.1.2 = nid oeddwn yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
 agent.honestyDeclaration.li.1.2 = nid oedd yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
 agent.honestyDeclaration.li.1.2.myClient = nid oedd fy nghleient yn gallu cyflwyno’r Ffurflen TAW a oedd yn ddyledus ar {0}
@@ -112,8 +109,6 @@ agent.honestyDeclaration.li.2.extra = nid oedd neb arall ar gael i roi’r wybod
 honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar fy rhan
 agent.honestyDeclaration.lpp.li.2 = nid oedd neb arall ar gael i dalu ar ei ran
 honestyDeclaration.lossOfStaff.lpp.li.2 = nid oedd neb arall ar gael i wneud y taliad
-honestyDeclaration.obligation.li.2 = rwyf o’r farn nad oedd Ffurflen TAW yn ddyledus ar gyfer y cyfnod o {0} i {1}
-honestyDeclaration.obligation.lpp.li.2 = nid oedd TAW yn ddyledus ar gyfer y cyfnod o {0} i {1}
 honestyDeclaration.li.3 = byddaf yn rhoi gwybodaeth onest a chywir yn yr apêl hon
 honestyDeclaration.li.extra.lossOfStaff = nid oedd yr aelod o staff wedi dychwelyd i’r gwaith ac nid oedd neb wedi dod i gymryd ei le cyn y dyddiad dyledus
 honestyDeclaration.li.extra.health = roedd amseriad y broblem iechyd yn annisgwyl
@@ -488,15 +483,6 @@ agents.whatCausedYouToMissTheDeadline.error.invalid = Rhowch wybod i ni beth oed
 otherRelevantInformation.headingAndTitle = Rhowch wybod i ni pam yr ydych am apelio yn erbyn y gosb
 otherRelevantInformation.hintText = Dylech gynnwys manylion am unrhyw ohebiaeth â CThEF am ganslo’r cofrestriad TAW.
 otherRelevantInformation.error.required = Nodwch y rhesymau pam eich bod am apelio yn erbyn y gosb
-
-# You can appeal this penalty
-# ----------------------------------------------------------
-youCanAppealThisPenalty.headingAndTitle = Gallwch apelio yn erbyn y gosb hon ar-lein
-youCanAppealThisPenalty.p1 = Os bydd CThEF yn adolygu’r gosb hon ac yn derbyn eich apêl, byddwn yn dileu:
-youCanAppealThisPenalty.li.1 = y gosb hon
-youCanAppealThisPenalty.li.2 = pob cosb arall am gyflwyno neu dalu’n hwyr ar gyfer yr un cyfnod
-youCanAppealThisPenalty.p2 = A hoffech apelio yn erbyn y gosb hon?
-youCanAppealThisPenalty.error.required = Dewiswch iawn os hoffech apelio yn erbyn y gosb hon
 
 # Error message for characters more than 5000 in text area
 # ----------------------------------------------------------

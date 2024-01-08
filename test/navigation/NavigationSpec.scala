@@ -17,10 +17,8 @@
 package navigation
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealLSPJourney
 import models.pages._
 import models.{CheckMode, NormalMode, PenaltyTypeEnum, UserRequest}
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.Configuration
 import play.api.libs.json.Json
@@ -31,12 +29,14 @@ import java.time.LocalDate
 
 class NavigationSpec extends SpecBase {
   val mockConfiguration: Configuration = mock(classOf[Configuration])
+
   object TestNavigator extends Navigation(mockDateTimeHelper, appConfig, isLateAppealHelper)(mockConfiguration)
 
   class Setup {
     reset(mockDateTimeHelper)
     reset(mockConfiguration)
-    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 2, 1))}
+    when(mockDateTimeHelper.dateNow).thenReturn(LocalDate.of(2020, 2, 1))
+  }
 
   def checkModePreviousPageTest(pagesAndUrls: Seq[(Page, String)]): Unit = {
     pagesAndUrls.foreach { pageAndExpectedUrl =>
@@ -81,8 +81,8 @@ class NavigationSpec extends SpecBase {
       normalModePreviousPageTest(
         Seq(
           (CancelVATRegistrationPage, "http://localhost:9180/penalties"),
-          (YouCannotAppealPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
-          (YouCanAppealThisPenaltyPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
+          (YouCannotAppealPage, controllers.findOutHowToAppeal.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
+          (YouCanAppealThisPenaltyPage, controllers.findOutHowToAppeal.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
           (OtherRelevantInformationPage, controllers.routes.HonestyDeclarationController.onPageLoad().url),
           (FileListPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url),
           (UploadFirstDocumentPage, controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(NormalMode).url),
@@ -106,17 +106,15 @@ class NavigationSpec extends SpecBase {
           (PenaltySelectionPage, controllers.routes.AppealStartController.onPageLoad().url),
           (AppealSinglePenaltyPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url),
           (AppealCoverBothPenaltiesPage, controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url),
-          (AppealByLetterKickOutPage, controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url),
+          (AppealByLetterKickOutPage, controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad().url),
           (OtherWaysToAppealPage, controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onPageLoad().url),
           (HasBusinessAskedHMRCToCancelRegistrationPage, "http://localhost:9180/penalties"),
           (HasHMRCConfirmedRegistrationCancellationPage, controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad().url)
         )
       )
 
-
       s"the user is on the $HonestyDeclarationPage" must {
-
-        "route back to the reasonable excuse selection page when not appealing against obligation" in {
+        "route back to the reasonable excuse selection page" in {
           val result: Call = TestNavigator.previousPage(HonestyDeclarationPage, NormalMode, false)(fakeRequestConverter(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "health")))
           result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
         }
@@ -249,20 +247,9 @@ class NavigationSpec extends SpecBase {
       }
 
       s"the user is on the $AppealByLetterKickOutPage" when {
-        s"the $ShowFindOutHowToAppealLSPJourney feature switch is enabled" must {
-          "route to has HMRC confirmed registration cancelled registration page" in {
-            when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(ArgumentMatchers.any())).thenReturn(true)
-            val result: Call = TestNavigator.previousPage(AppealByLetterKickOutPage, NormalMode, false)(userRequestWithCorrectKeys)
-            result.url shouldBe controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad().url
-          }
-        }
-
-        s"the $ShowFindOutHowToAppealLSPJourney feature switch is disabled" must {
-          "route to has Cancel VAT registration page" in {
-            when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(ArgumentMatchers.any())).thenReturn(false)
-            val result: Call = TestNavigator.previousPage(AppealByLetterKickOutPage, NormalMode, false)(userRequestWithCorrectKeys)
-            result.url shouldBe controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
-          }
+        "route to has HMRC confirmed registration cancelled registration page" in {
+          val result: Call = TestNavigator.previousPage(AppealByLetterKickOutPage, NormalMode, false)(userRequestWithCorrectKeys)
+          result.url shouldBe controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad().url
         }
       }
 
@@ -782,18 +769,6 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.MakingALateAppealController.onPageLoad().url
       }
 
-      s"called with $YouCanAppealThisPenaltyPage - user answer yes (route to appeal start page - obligation)" in new Setup {
-        val result: Call = TestNavigator.nextPage(YouCanAppealThisPenaltyPage, NormalMode, Some("yes"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("obligation")
-        )
-        result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
-      }
-
-      s"called with $YouCanAppealThisPenaltyPage - user answer no (route to penalties and appeals page)" in new Setup {
-        val result: Call = TestNavigator.nextPage(YouCanAppealThisPenaltyPage, NormalMode, Some("no"))(fakeRequestWithCorrectKeysAndReasonableExcuseSet("obligation")
-        )
-        result.url shouldBe "http://localhost:9180/penalties"
-      }
-
       s"called with $AppealSinglePenaltyPage" in new Setup {
         val result: Call = TestNavigator.nextPage(AppealSinglePenaltyPage, NormalMode, None)(userRequestWithCorrectKeys)
         result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
@@ -849,7 +824,7 @@ class NavigationSpec extends SpecBase {
 
       s"called with $HasHMRCConfirmedRegistrationCancellationPage - redirects to has Appeal by letter when user answers yes" in new Setup {
         val result: Call = TestNavigator.nextPage(HasHMRCConfirmedRegistrationCancellationPage, NormalMode, Some("yes"))(userRequestWithCorrectKeys)
-        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+        result.url shouldBe controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
 
       s"called with $HasHMRCConfirmedRegistrationCancellationPage - redirects to actions to take page when user answers no" in new Setup {
@@ -999,34 +974,17 @@ class NavigationSpec extends SpecBase {
     "redirect to AppealByLetter page" when {
       "yes option selected and full journey is disabled" in new Setup {
         val result: Call = TestNavigator.routingForCancelVATRegistrationPage(Some("yes"), userRequestWithCorrectKeys)
-        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+        result.url shouldBe controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
     }
 
     "redirect to YouCannotAppeal page" when {
       "no option selected" in new Setup {
         val result: Call = TestNavigator.routingForCancelVATRegistrationPage(Some("no"), userRequestWithCorrectKeys)
-        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoad.url
+        result.url shouldBe controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoad.url
       }
     }
 
-  }
-
-  "routeForYouCanAppealPenalty" should {
-    "redirect to the appeal start page when the user selects yes" in new Setup {
-      val result: Call = TestNavigator.routeForYouCanAppealPenalty(Some("yes"))
-      result.url shouldBe controllers.routes.AppealStartController.onPageLoad().url
-    }
-
-    "redirect to the penalties and appeals page when the user selects no" in new Setup {
-      val result: Call = TestNavigator.routeForYouCanAppealPenalty(Some("no"))
-      result.url shouldBe appConfig.penaltiesFrontendUrl
-    }
-
-    "reload the page when the matching fails" in new Setup {
-      val result: Call = TestNavigator.routeForYouCanAppealPenalty(Some("blah"))
-      result.url shouldBe controllers.routes.YouCanAppealPenaltyController.onPageLoad().url
-    }
   }
 
   "routeForUploadEvidenceQuestion" should {
@@ -1156,7 +1114,7 @@ class NavigationSpec extends SpecBase {
     "redirect to the 'Appeal by letter' page" when {
       "the user answers yes" in new Setup {
         val result: Call = TestNavigator.routingForHasHMRCConfirmedRegistrationCancellationPage(Some("yes"))
-        result.url shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+        result.url shouldBe controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       }
     }
 
@@ -1171,24 +1129,6 @@ class NavigationSpec extends SpecBase {
       "there is no answer or the answer is not valid" in new Setup {
         val result: Call = TestNavigator.routingForHasHMRCConfirmedRegistrationCancellationPage(None)
         result.url shouldBe controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad().url
-      }
-    }
-  }
-
-  "reverseRouteForAppealByLetterPage" should {
-    "redirect to the 'Has HMRC confirmed that the registration is cancelled?' page" when {
-      s"the $ShowFindOutHowToAppealLSPJourney is enabled" in new Setup {
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(ArgumentMatchers.any())).thenReturn(true)
-        val result: Call = TestNavigator.reverseRouteForAppealByLetterPage()
-        result.url shouldBe controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onPageLoad().url
-      }
-    }
-
-    "redirect to the 'Has HMRC been asked to cancel the VAT registration for this business?' page" when {
-      s"the $ShowFindOutHowToAppealLSPJourney is disabled" in new Setup {
-        when(mockConfiguration.get[Boolean](ArgumentMatchers.eq(ShowFindOutHowToAppealLSPJourney.name))(ArgumentMatchers.any())).thenReturn(false)
-        val result: Call = TestNavigator.reverseRouteForAppealByLetterPage()
-        result.url shouldBe controllers.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
       }
     }
   }

@@ -24,25 +24,20 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class IsLateAppealHelper @Inject()(dateTimeHelper: DateTimeHelper,
-                                    appConfig: AppConfig) {
+                                   appConfig: AppConfig) {
   def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
     val dateNow: LocalDate = dateTimeHelper.dateNow
-    if (userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isEmpty){
-      userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties) match {
-        case Some("yes") => {
-          val dateOfFirstComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate).get
-          val dateOfSecondComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.secondPenaltyCommunicationDate).get
-          dateOfFirstComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal)) ||
-            dateOfSecondComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
-        }
-        case _ => {
-          val dateOfComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
-          dateOfComms.isBefore(
-            dateNow.minusDays(
-              appConfig.daysRequiredForLateAppeal))
-        }
-      }    } else {
-      false
+    userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties) match {
+      case Some("yes") =>
+        val dateOfFirstComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate).get
+        val dateOfSecondComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.secondPenaltyCommunicationDate).get
+        dateOfFirstComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal)) ||
+          dateOfSecondComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
+      case _ =>
+        val dateOfComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
+        dateOfComms.isBefore(
+          dateNow.minusDays(
+            appConfig.daysRequiredForLateAppeal))
     }
   }
 }

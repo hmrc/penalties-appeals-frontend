@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.AppealAfterPaymentPlanSetUpForm.appealAfterPaymentPlanSetUpForm
@@ -45,26 +44,21 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
                                                       dataRetrieval: DataRetrievalAction,
                                                       navigation: Navigation,
                                                       sessionService: SessionService,
-                                                      val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                                      val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(AppealAfterPaymentPlanSetUpPage, mode)
 
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval) {
 
     implicit request =>
-      if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
-          appealAfterPaymentPlanSetUpForm,
-          SessionKeys.appealAfterPaymentPlanSetUp,
-          request.answers
-        )
-        val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
-        val postAction = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
-          Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
-      }
-      else {
-        errorHandler.notFoundError(request)
-      }
+      val formProvider: Form[String] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
+        appealAfterPaymentPlanSetUpForm,
+        SessionKeys.appealAfterPaymentPlanSetUp,
+        request.answers
+      )
+      val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
+      val postAction = controllers.findOutHowToAppeal.routes.AppealAfterPaymentPlanSetUpController.onSubmit()
+      Ok(appealAfterPaymentPlanSetUpPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit userRequest => {

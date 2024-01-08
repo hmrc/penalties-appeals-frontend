@@ -25,7 +25,6 @@ import org.jsoup.nodes.Document
 import play.api.libs.json.Json
 import play.twirl.api.HtmlFormat
 import testUtils.UploadData
-import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.UploadEvidencePage
 

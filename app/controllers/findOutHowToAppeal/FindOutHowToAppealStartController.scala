@@ -17,7 +17,6 @@
 package controllers.findOutHowToAppeal
 
 import config.{AppConfig, ErrorHandler}
-import config.featureSwitches.{FeatureSwitching, ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealJourney}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
@@ -36,38 +35,23 @@ class FindOutHowToAppealStartController @Inject()(errorHandler: ErrorHandler,
                                                   authorise: AuthPredicate,
                                                   dataRetrieval: DataRetrievalAction,
                                                   val config: Configuration,
-                                                  ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                                  ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def startFindOutHowToAppeal(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
       val isAgent: Boolean = request.isAgent
       val isCa: Boolean = request.answers.getAnswer[Boolean](SessionKeys.isCaLpp).getOrElse(false)
-          (isAgent, isCa) match {
-            case (true, false) =>
-              if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-                Future(Redirect(controllers.findOutHowToAppeal.routes.HowToAppealController.onPageLoad()))
-              } else {
-                logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disabled showing 404 (NOT_FOUND)")
-                errorHandler.onClientError(request, NOT_FOUND, "")
-              }
-            case (false, false) =>
-              if (appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-                Future(Redirect(controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()))
-              } else {
-                logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disabled showing 404 (NOT_FOUND)")
-                errorHandler.onClientError(request, NOT_FOUND, "")
-              }
-            case (_, true) =>
-              if(appConfig.isEnabled(ShowCAFindOutHowToAppealJourney)) {
-                Future(Redirect(controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()))
-              } else {
-                logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - FS Disabled showing 404 (NOT_FOUND)")
-                errorHandler.onClientError(request, NOT_FOUND, "")
-              }
-            case _ =>
-              logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - CA LPP detected showing 404 (NOT_FOUND)")
-              errorHandler.onClientError(request, NOT_FOUND, "") //TODO handle Central Assessment
-          }
+      (isAgent, isCa) match {
+        case (true, false) =>
+          Future(Redirect(controllers.findOutHowToAppeal.routes.HowToAppealController.onPageLoad()))
+        case (false, false) =>
+          Future(Redirect(controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()))
+        case (_, true) =>
+          Future(Redirect(controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()))
+        case _ =>
+          logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - CA LPP detected showing 404 (NOT_FOUND)")
+          errorHandler.onClientError(request, NOT_FOUND, "")
       }
     }
+  }
 }

@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.findOutHowToAppeal.YouCannotAppealController
 import controllers.testHelpers.AuthorisationTest
 import play.api.test.Helpers._
 import utils.IntegrationSpecCommonBase

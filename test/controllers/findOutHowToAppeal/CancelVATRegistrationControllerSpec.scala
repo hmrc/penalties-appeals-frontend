@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import models.session.UserAnswers

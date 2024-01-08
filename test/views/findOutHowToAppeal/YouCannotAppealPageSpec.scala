@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views
+package views.findOutHowToAppeal
 
 import base.{BaseSelectors, SpecBase}
 import messages.YouCannotAppealMessages._
@@ -23,7 +23,7 @@ import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.obligation.YouCannotAppealPage
+import views.html.findOutHowToAppeal.YouCannotAppealPage
 import viewtils.YouCannotAppealHelper
 
 class YouCannotAppealPageSpec extends SpecBase with ViewBehaviours {

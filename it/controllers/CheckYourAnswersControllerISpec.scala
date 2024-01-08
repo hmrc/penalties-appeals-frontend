@@ -599,10 +599,11 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
 
     "redirect the user to the service unavailable page on unmatched fault" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "no"
+      SessionKeys.whyReturnSubmittedLate -> "some-text",
+      SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+      SessionKeys.isUploadEvidence -> "no",
+      SessionKeys.reasonableExcuse -> "other"
     ))) {
       PenaltiesStub.failedAppealSubmissionWithFault(isLPP = false, "1234")
       val request = controller.onSubmit()(fakeRequest)
@@ -611,10 +612,11 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to service unavailable page when downstream returns SERVICE_UNAVAILABLE" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
+      SessionKeys.whyReturnSubmittedLate -> "some-text",
+      SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+      SessionKeys.isUploadEvidence -> "no",
+      SessionKeys.reasonableExcuse -> "other"
     ))) {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(SERVICE_UNAVAILABLE))
       val request = controller.onSubmit()(fakeRequest)
@@ -623,10 +625,11 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to duplicate appeal page when downstream returns CONFLICT" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
+      SessionKeys.whyReturnSubmittedLate -> "some-text",
+      SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+      SessionKeys.isUploadEvidence -> "no",
+      SessionKeys.reasonableExcuse -> "other"
     ))) {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(CONFLICT))
       val request = controller.onSubmit()(fakeRequest)
@@ -635,10 +638,11 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when downstream returns UNPROCESSABLE_ENTITY" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
+      SessionKeys.whyReturnSubmittedLate -> "some-text",
+      SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+      SessionKeys.isUploadEvidence -> "no",
+      SessionKeys.reasonableExcuse -> "other"
     ))) {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(UNPROCESSABLE_ENTITY))
       val request = controller.onSubmit()(fakeRequest)
@@ -647,10 +651,11 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when the appeal fails from a payload issue" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
+      SessionKeys.whyReturnSubmittedLate -> "some-text",
+      SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+      SessionKeys.isUploadEvidence -> "no",
+      SessionKeys.reasonableExcuse -> "other"
     ))) {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(BAD_REQUEST))
       val request = await(controller.onSubmit()(fakeRequest))
@@ -659,10 +664,11 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "show an ISE when the appeal fails" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
+      SessionKeys.whyReturnSubmittedLate -> "some-text",
+      SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+      SessionKeys.isUploadEvidence -> "no",
+      SessionKeys.reasonableExcuse -> "other"
     ))) {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
@@ -671,10 +677,11 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the ProblemWithService page when the appeal fails from an issue with the service" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.isFindOutHowToAppeal -> true,
       SessionKeys.hasConfirmedDeclaration -> true,
-      SessionKeys.otherRelevantInformation -> "some text",
-      SessionKeys.isUploadEvidence -> "yes"
+      SessionKeys.whyReturnSubmittedLate -> "some-text",
+      SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
+      SessionKeys.isUploadEvidence -> "no",
+      SessionKeys.reasonableExcuse -> "other"
     ))) {
       PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(INTERNAL_SERVER_ERROR))
       val request = await(controller.onSubmit()(fakeRequest))

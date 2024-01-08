@@ -16,17 +16,16 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status
-import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.http.Status.OK
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-class CanYouPayControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
+class CanYouPayControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
 
   val controller: CanYouPayController = injector.instanceOf[CanYouPayController]
 
@@ -36,19 +35,8 @@ class CanYouPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
       SessionKeys.principalChargeReference -> "123456789",
       SessionKeys.isCaLpp -> false
     ))) {
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe OK
-    }
-
-    "return 404 (NOT_FOUND) when the user is authorised but the feature switch is disabled" in new UserAnswersSetup(userAnswers(Json.obj(
-      SessionKeys.vatAmount -> BigDecimal(123.45),
-      SessionKeys.principalChargeReference -> "123456789",
-      SessionKeys.isCaLpp -> false
-    ))) {
-      disableFeatureSwitch(ShowFindOutHowToAppealJourney)
-      val request: Result = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe NOT_FOUND
     }
   }
 

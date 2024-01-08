@@ -19,7 +19,7 @@ package connectors
 import base.SpecBase
 import connectors.httpParsers.AppealSubmissionHTTPParser.AppealSubmissionResponse
 import connectors.httpParsers.MultiplePenaltiesHttpParser.MultiplePenaltiesResponse
-import connectors.httpParsers.{NoContent, UnexpectedFailure}
+import connectors.httpParsers.{BadRequest, NoContent, UnexpectedFailure}
 import models.appeals._
 import models.appeals.submission._
 import org.mockito.ArgumentMatchers
@@ -264,7 +264,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
       result.isLeft shouldBe true
-      result.left.getOrElse("foo") shouldBe NoContent
+      result.left.getOrElse(BadRequest) shouldBe NoContent
     }
 
     s"return Left when $NOT_FOUND is returned from the call" in new Setup {
@@ -275,7 +275,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
       result.isLeft shouldBe true
-      result.left.getOrElse("foo") shouldBe UnexpectedFailure(NOT_FOUND, s"Unexpected response, status $NOT_FOUND returned")
+      result.left.getOrElse(BadRequest) shouldBe UnexpectedFailure(NOT_FOUND, s"Unexpected response, status $NOT_FOUND returned")
     }
 
     s"return Left when $INTERNAL_SERVER_ERROR is returned from the call" in new Setup {
@@ -286,7 +286,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
 
       val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
       result.isLeft shouldBe true
-      result.left.getOrElse("foo") shouldBe UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned")
+      result.left.getOrElse(BadRequest) shouldBe UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned")
     }
   }
 

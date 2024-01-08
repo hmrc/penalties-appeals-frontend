@@ -25,10 +25,7 @@ object FeatureSwitch {
   val listOfAllFeatureSwitches: List[FeatureSwitch] = List(
     NonJSRouting,
     ShowDigitalCommsMessage,
-    ShowReasonableExcuseHintText,
-    ShowFindOutHowToAppealJourney,
-    ShowFindOutHowToAppealLSPJourney,
-    ShowCAFindOutHowToAppealJourney
+    ShowReasonableExcuseHintText
   )
 }
 
@@ -42,16 +39,4 @@ case object ShowDigitalCommsMessage extends FeatureSwitch {
 
 case object ShowReasonableExcuseHintText extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-reasonable-excuse-hint-text"
-}
-
-case object ShowFindOutHowToAppealJourney extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.show-find-out-how-to-appeal-journey"
-}
-
-case object ShowFindOutHowToAppealLSPJourney extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.show-find-out-how-to-appeal-lsp-journey"
-}
-
-case object ShowCAFindOutHowToAppealJourney extends FeatureSwitch {
-  override val name: String = s"${FeatureSwitch.prefix}.show-ca-find-out-how-to-appeal-journey"
 }

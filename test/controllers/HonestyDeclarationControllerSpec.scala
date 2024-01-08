@@ -22,9 +22,9 @@ import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import org.mockito.ArgumentCaptor
 import play.api.Configuration
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel

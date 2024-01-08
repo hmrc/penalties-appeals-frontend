@@ -19,7 +19,7 @@ package connectors
 import java.time.LocalDate
 
 import models.payApi.{PayNowRequestModel, PayNowResponseModel}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.test.Helpers.{await, defaultAwaitTimeout, INTERNAL_SERVER_ERROR}
 import stubs.PayNowStub.{successfulPayNowCall, unsuccessfulPayNowCall}
 import uk.gov.hmrc.http.HeaderCarrier

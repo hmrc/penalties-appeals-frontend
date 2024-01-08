@@ -37,7 +37,7 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
                            reasonText: String,
                            dueDate: String, startDate: String, endDate: String,
                            extraBullets: Seq[String] = Seq.empty, userRequest: UserRequest[_] = vatTraderLSPUserRequest, isObligation: Boolean = false): HtmlFormat.Appendable = {
-      honestyDeclarationPage.apply(reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation,
+      honestyDeclarationPage.apply(reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets,
         pageMode = PageMode(HonestyDeclarationPage, NormalMode))(implicitly, implicitly, userRequest)
     }
 
@@ -45,8 +45,8 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       "1 January 2022", "1 January 2021", "31 January 2021"))
 
     def applyAgentView(reasonableExcuse: String, reasonText: String, dueDate: String, startDate: String, endDate: String, extraBullets: Seq[String] = Seq.empty,
-                       userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys, isObligation: Boolean = false): HtmlFormat.Appendable = {
-      honestyDeclarationPage.apply(reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, isObligation, pageMode = PageMode(HonestyDeclarationPage, NormalMode))(implicitly, implicitly, userRequest)
+                       userRequest: UserRequest[_] = agentUserAgentSubmitButClientWasLateSessionKeys): HtmlFormat.Appendable = {
+      honestyDeclarationPage.apply(reasonableExcuse, reasonText, dueDate, startDate, endDate, extraBullets, pageMode = PageMode(HonestyDeclarationPage, NormalMode))(implicitly, implicitly, userRequest)
     }
 
     implicit val agentDoc: Document = asDocument(applyAgentView( "technicalIssues", "of agent context reason",
@@ -65,23 +65,6 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
       )
 
       behave like pageWithExpectedMessages(expectedContent)(agentDoc)
-
-      "it is an appeal against an obligation and agent missed the deadline" must {
-        implicit val doc: Document = asDocument(applyAgentView("obligation","",
-          "1 January 2022", "1 January 2021", "31 January 2021", isObligation = true))
-
-        val expectedContent = Seq(
-          Selectors.title -> titleAgent,
-          Selectors.h1 -> h1,
-          Selectors.pElementIndex(3) -> p1,
-          Selectors.listIndexWithElementIndex(4, 1) -> li1Obligation,
-          Selectors.listIndexWithElementIndex(4, 2) -> li2Obligation("1 January 2021", "31 January 2021"),
-          Selectors.listIndexWithElementIndex(4, 3) -> li3,
-          Selectors.button -> acceptAndContinueButton
-        )
-
-        behave like pageWithExpectedMessages(expectedContent)(doc)
-      }
 
       "display the correct variation" when {
 
@@ -513,24 +496,6 @@ class HonestyDeclarationPageSpec extends SpecBase with ViewBehaviours {
           Selectors.pElementIndex(3) -> p1,
           Selectors.listIndexWithElementIndex(4, 1) -> li1Lpp(messages("honestyDeclaration.crime"), "1 January 2022"),
           Selectors.listIndexWithElementIndex(4, 2) -> li2Lpp,
-          Selectors.listIndexWithElementIndex(4, 3) -> li3,
-          Selectors.button -> acceptAndContinueButton
-        )
-
-        behave like pageWithExpectedMessages(expectedContent)(doc)
-      }
-
-      "it is an appeal against an obligation" must {
-        implicit val doc: Document = asDocument(applyVATTraderView("other", "",
-          "1 January 2022", "1 January 2021", "31 January 2021",
-          Seq(), isObligation = true))
-
-        val expectedContent = Seq(
-          Selectors.title -> title,
-          Selectors.h1 -> h1,
-          Selectors.pElementIndex(3) -> p1,
-          Selectors.listIndexWithElementIndex(4, 1) -> li1Obligation,
-          Selectors.listIndexWithElementIndex(4, 2) -> li2Obligation("1 January 2021", "31 January 2021"),
           Selectors.listIndexWithElementIndex(4, 3) -> li3,
           Selectors.button -> acceptAndContinueButton
         )

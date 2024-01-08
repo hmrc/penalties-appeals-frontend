@@ -17,11 +17,9 @@
 package controllers.findOutHowToAppeal
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealJourney
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK, SEE_OTHER}
+import play.api.http.Status.{FORBIDDEN, OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
@@ -45,8 +43,6 @@ class IfYouvePaidYourVATControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
-
     val controller = new IfYouvePaidYourVATController(ifYouvePaidYourVATPage, errorHandler)(mcc, mockAppConfig,
       authPredicate, dataRetrievalAction, config, ec)
   }
@@ -59,13 +55,6 @@ class IfYouvePaidYourVATControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
           val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
-        }
-
-        "return 404 (NOT_FOUND) when the feature switch is enabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
-          val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-          status(result) shouldBe NOT_FOUND
         }
       }
 
@@ -81,7 +70,5 @@ class IfYouvePaidYourVATControllerSpec extends SpecBase {
         }
       }
     }
-
   }
-
 }

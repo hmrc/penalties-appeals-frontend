@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.HasHMRCConfirmedRegistrationCancellationForm.hasHMRCConfirmedRegistrationCancellationForm
@@ -47,22 +46,18 @@ class HasHMRCConfirmedRegistrationCancellationController @Inject()(
                                                                     navigation: Navigation,
                                                                     sessionService: SessionService,
                                                                     val config: Configuration,
-                                                                    ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                                                    ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: PageMode = PageMode(HasHMRCConfirmedRegistrationCancellationPage, NormalMode)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
-      if (appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney)) {
         val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(hasHMRCConfirmedRegistrationCancellationForm,
           SessionKeys.hasHMRCConfirmedRegistrationCancellation,
           request.answers)
         val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
         val postAction = controllers.findOutHowToAppeal.routes.HasHMRCConfirmedRegistrationCancellationController.onSubmit()
         Ok(page(formProvider, radioOptions, postAction, pageMode))
-      } else {
-        errorHandler.notFoundError(request)
-      }
     }
   }
 

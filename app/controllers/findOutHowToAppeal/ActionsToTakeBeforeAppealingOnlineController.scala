@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import javax.inject.Inject
@@ -36,19 +35,14 @@ class ActionsToTakeBeforeAppealingOnlineController @Inject()(
                                                               appConfig: AppConfig,
                                                               authorise: AuthPredicate,
                                                               dataRetrieval: DataRetrievalAction,
-                                                              val config: Configuration) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                                              val config: Configuration) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: PageMode = PageMode(ActionsToTakeBeforeAppealingOnlinePage, NormalMode)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval) {
     implicit request => {
       val isCA  = request.answers.getAnswer[Boolean](SessionKeys.isCaLpp).getOrElse(false)
-      if ((appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney) && !isCA) || (appConfig.isEnabled(ShowCAFindOutHowToAppealJourney) && isCA)) {
         Ok(page(pageMode, isCA))
-      } else {
-        errorHandler.notFoundError(request)
-      }
     }
   }
-
 }

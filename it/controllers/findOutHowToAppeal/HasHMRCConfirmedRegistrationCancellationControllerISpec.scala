@@ -45,7 +45,7 @@ class HasHMRCConfirmedRegistrationCancellationControllerISpec extends Integratio
         .withFormUrlEncodedBody("value" -> "yes")
       val request = await(controller.onSubmit()(fakeRequestWithCorrectKeysAndCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers("Location") shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
+      request.header.headers("Location") shouldBe controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
       await(userAnswersRepository.getUserAnswer("1234")).get.getAnswer[String](SessionKeys.hasHMRCConfirmedRegistrationCancellation).get shouldBe "yes"
     }
 

@@ -256,8 +256,6 @@ class SessionAnswersHelperSpec extends SpecBase {
         sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequest, implicitly)
       case "all" =>
         sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(fileNames)(fakeRequest, implicitly)
-      case "obligation" =>
-        sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(fileNames)(fakeRequest, implicitly)
     }
   }
 

@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import models.PenaltyTypeEnum
 import models.session.UserAnswers
 import org.mongodb.scala.Document
@@ -26,7 +25,7 @@ import utils.{IntegrationSpecCommonBase, SessionKeys}
 
 import java.time.LocalDate
 
-class FindOutHowToAppealStartControllerISpec extends IntegrationSpecCommonBase with FeatureSwitching {
+class FindOutHowToAppealStartControllerISpec extends IntegrationSpecCommonBase {
   val controller: FindOutHowToAppealStartController = injector.instanceOf[FindOutHowToAppealStartController]
   def lppUserAnswers (answers: JsObject = Json.obj(), journeyId: Option[String] = None): UserAnswers = UserAnswers(journeyId.getOrElse("1234"), Json.obj(
     SessionKeys.penaltyNumber -> "1234",
@@ -46,22 +45,10 @@ class FindOutHowToAppealStartControllerISpec extends IntegrationSpecCommonBase w
       SessionKeys.principalChargeReference -> "123456789",
       SessionKeys.isCaLpp -> false
     ))) {
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
-      
+
       val result = controller.startFindOutHowToAppeal()(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad().url
-    }
-
-    "show NOT_FOUND when FS is disabled" in new UserAnswersSetup(lppUserAnswers(Json.obj(
-      SessionKeys.vatAmount -> BigDecimal(123.45),
-      SessionKeys.principalChargeReference -> "123456789",
-      SessionKeys.isCaLpp -> false
-    ))) {
-      disableFeatureSwitch(ShowFindOutHowToAppealJourney)
-
-      val result = controller.startFindOutHowToAppeal()(fakeRequest)
-      await(result).header.status shouldBe NOT_FOUND
     }
   }
 }

@@ -5,8 +5,8 @@
 #Initialise appeal and start page
 GET        /appeal-start                                controllers.AppealStartController.onPageLoad()
 GET        /initialise-appeal                           controllers.InitialiseAppealController.onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional:Boolean)
-GET        /initialise-appeal-against-the-obligation    controllers.InitialiseAppealController.onPageLoadForObligation(penaltyId: String)
-GET        /initialise-appeal-find-out-how-to-appeal    controllers.InitialiseAppealController.onPageLoadForFindOutHowToAppeal(principalChargeReference: String, vatAmountInPence: Int, vatPeriodStartDate: String, vatPeriodEndDate:String, isCa: Boolean)
+GET        /initialise-appeal-against-the-obligation    controllers.InitialiseAppealController.onPageLoadForFindOutHowToAppealLSP(penaltyId: String)
+GET        /initialise-appeal-find-out-how-to-appeal    controllers.InitialiseAppealController.onPageLoadForFindOutHowToAppealLPP(principalChargeReference: String, vatAmountInPence: Int, vatPeriodStartDate: String, vatPeriodEndDate:String, isCa: Boolean)
 
 #Reasonable excuse list
 GET        /reason-for-missing-deadline     controllers.ReasonableExcuseController.onPageLoad()
@@ -121,8 +121,8 @@ POST       /who-planned-to-submit-vat-return                  controllers.Agents
 POST       /who-planned-to-submit-vat-return/change           controllers.AgentsController.onSubmitForWhoPlannedToSubmitVATReturn(mode: Mode = CheckMode)
 
 # Cancel VAT Registration
-GET        /cancel-vat-registration              controllers.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
-POST       /cancel-vat-registration              controllers.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
+GET        /cancel-vat-registration              controllers.findOutHowToAppeal.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+POST       /cancel-vat-registration              controllers.findOutHowToAppeal.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
 
 
 # Check Your Answers page
@@ -144,7 +144,7 @@ POST       /what-caused-you-to-miss-the-deadline                controllers.Agen
 POST       /what-caused-you-to-miss-the-deadline/change         controllers.AgentsController.onSubmitForWhatCausedYouToMissTheDeadline(mode: Mode = CheckMode)
 
 # Appeal Obligation - Unhappy path
-GET        /you-cannot-appeal              controllers.YouCannotAppealController.onPageLoad
+GET        /you-cannot-appeal              controllers.findOutHowToAppeal.YouCannotAppealController.onPageLoad
 
 # Upscan endpoints
 GET        /upscan/upload-status/:journeyId/:fileReference      controllers.UpscanController.getStatusOfFileUpload(journeyId: String, fileReference: String)
@@ -165,10 +165,6 @@ GET           /upscan/file-verification/additional/failed        controllers.Ups
 GET           /upscan/file-verification/additional/change/failed        controllers.UpscanController.preUpscanCheckFailed(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode)
 GET           /upscan/file-verification/additional/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = NormalMode, isJsEnabled: Boolean)
 GET           /upscan/file-verification/additional/change/success       controllers.UpscanController.fileVerification(isAddingAnotherDocument: Boolean = true, mode: Mode = CheckMode, isJsEnabled: Boolean)
-
-# You can appeal this penalty page
-GET           /you-can-appeal-this-penalty                     controllers.YouCanAppealPenaltyController.onPageLoad()
-POST          /you-can-appeal-this-penalty                     controllers.YouCanAppealPenaltyController.onSubmit()
 
 # Error pages
 GET        /service-unavailable                                controllers.ServiceUnavailableController.onPageLoad()
@@ -201,7 +197,7 @@ GET        /incomplete-answers                                 controllers.Incom
 GET        /invalid-session                                    controllers.IncompleteSessionDataController.onPageLoadWithNoJourneyData()
 
 # Appeal by letter
-GET        /appeal-by-letter                                   controllers.YouCannotAppealController.onPageLoadAppealByLetter()
+GET        /appeal-by-letter                                   controllers.findOutHowToAppeal.YouCannotAppealController.onPageLoadAppealByLetter()
 
 # You cannot go back to appeal
 GET        /you-cannot-go-back-to-appeal                       controllers.YouCannotGoBackToAppealController.onPageLoad()

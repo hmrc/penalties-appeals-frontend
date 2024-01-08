@@ -49,10 +49,8 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
         s"Due date of period = ${userRequest.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod)}, \n" +
         s"Is find out how to appeal = ${userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal)}, \n" +
         s"Date communication sent of period = ${userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent)}, \n")
-      val isObligationAppeal = userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isDefined
       Future.successful(Ok(appealStartPage(
         isAppealLate(),
-        isObligationAppeal,
         PageMode(AppealStartPage, NormalMode)
       )))
     }

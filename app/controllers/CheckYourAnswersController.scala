@@ -59,18 +59,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         Future(Redirect(controllers.routes.MakingALateAppealController.onPageLoad()))
       } else {
         userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
-          if (userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
-            for {
-              fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames(userRequest.session.get(SessionKeys.journeyId).get)
-            } yield {
-              val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
-              Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
-            }
-          } else {
             logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
             Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
-          }
         })(
           reasonableExcuse => {
             if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
@@ -95,12 +85,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
-        if(userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal).contains(true)) {
-          handleAppealSubmission("obligation")
-        } else {
           logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
           Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
-        }
       })(
         reasonableExcuse => {
           if (sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
