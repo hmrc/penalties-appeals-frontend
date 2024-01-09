@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
@@ -59,7 +59,7 @@ class CancelVATRegistrationController @Inject()(
           userRequest.answers
         )
       val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(formProvider)
-      val postAction = controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
+      val postAction = controllers.findOutHowToAppeal.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
       Ok(cancelVATRegistrationPage(formProvider, radioOptionsToRender, postAction, pageMode(NormalMode)))
     }
   }
@@ -69,7 +69,7 @@ class CancelVATRegistrationController @Inject()(
       .bindFromRequest()
       .fold(
         form => {
-          val postAction = controllers.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
+          val postAction = controllers.findOutHowToAppeal.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
           Future(BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction, pageMode(NormalMode))))
         },

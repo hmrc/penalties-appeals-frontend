@@ -116,13 +116,6 @@ trait UserAnswersBase {
     SessionKeys.whenDidThePersonDie -> "2021-01-01"
   ) ++ hasConfirmedDeclaration
 
-  val obligationAnswers: JsObject = Json.obj(
-    SessionKeys.isObligationAppeal -> true,
-    SessionKeys.otherRelevantInformation -> "This is some relevant information",
-    SessionKeys.journeyId -> "4321",
-    SessionKeys.isUploadEvidence -> "yes"
-  ) ++ correctUserAnswers
-
   val agentLPPAnswers: JsObject = Json.obj(
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment.toString,
     SessionKeys.agentSessionVrn -> "VRN1234",

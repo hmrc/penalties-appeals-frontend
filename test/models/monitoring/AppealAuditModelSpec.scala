@@ -168,16 +168,6 @@ class AppealAuditModelSpec extends SpecBase {
       ))
     )
 
-    val obligationAppealInformation: ObligationAppealInformation = ObligationAppealInformation(
-      reasonableExcuse = "obligation", honestyDeclaration = true, statement = Some("this is another reason"),
-      supportingEvidence = None, None, None, Some(Seq(uploadJourneyModel, uploadJourneyModel2))
-    )
-    val obligationAppealInformationWithEvidence = obligationAppealInformation.copy(
-      supportingEvidence = Some(Evidence(
-        noOfUploadedFiles = 1
-      ))
-    )
-
     val seqOfUploads: Seq[UploadJourney] = Seq(
       UploadJourney(
         reference = "ref1",
@@ -217,8 +207,6 @@ class AppealAuditModelSpec extends SpecBase {
     val lppTechnicalIssuesModel = AppealAuditModel(appealSubmission(technicalIssuesAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
     val lppOtherModel = AppealAuditModel(appealSubmission(otherAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
     val lppOtherModelWithEvidence = AppealAuditModel(appealSubmission(otherAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), "REV-1234", "PENALTY1234")
-    val lppObligationModel = AppealAuditModel(appealSubmission(obligationAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
-    val lppObligationWithEvidenceModel = AppealAuditModel(appealSubmission(obligationAppealInformationWithEvidence), AuditPenaltyTypeEnum.FirstLPP, correlationId, Some(seqOfUploads), "REV-1234", "PENALTY1234")
     val lppAgentBereavementModel = AppealAuditModel(appealAgentSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
     val lppBereavementLateAppealModel = AppealAuditModel(appealSubmission(bereavementLateAppealInformation), AuditPenaltyTypeEnum.FirstLPP, correlationId, None, "REV-1234", "PENALTY1234")
     val lspBereavementModel = AppealAuditModel(appealSubmission(bereavementAppealInformation), AuditPenaltyTypeEnum.LSP, correlationId, None, "REV-1234", "PENALTY1234")
@@ -368,46 +356,6 @@ class AppealAuditModelSpec extends SpecBase {
             )
           ),
           "lateAppeal" -> false
-        )
-      )
-    }
-
-    "output the correct details for a lpp obligation submission with correlationID" in {
-      lppObligationModel.detail shouldBe baseAuditLPP ++ Json.obj(
-        "appealInformation" -> Json.obj(
-          "type" -> "obligation",
-          "statement" -> "this is another reason",
-          "noOfUploadedFiles" -> "0"
-        ),
-        "caseId" -> "REV-1234",
-        "penaltyNumber" -> "PENALTY1234"
-      )
-    }
-
-    "output the correct details for a lpp obligation submission with evidence with correlationID" in {
-      lppObligationWithEvidenceModel.detail shouldBe baseAuditLPP ++ Json.obj(
-        "appealInformation" -> Json.obj(
-          "type" -> "obligation",
-          "statement" -> "this is another reason",
-          "noOfUploadedFiles" -> "2",
-          "uploadedFiles" -> Json.arr(
-            Json.obj(
-              "upscanReference" -> "ref1",
-              "uploadTimestamp" -> "2018-04-24T09:30:00",
-              "fileName" -> "file1.txt",
-              "checksum" -> "check12345678",
-              "fileMimeType" -> "text/plain",
-              "downloadUrl" -> "download.file"
-            ),
-            Json.obj(
-              "upscanReference" -> "ref2",
-              "uploadTimestamp" -> "2018-04-24T09:30:00",
-              "fileName" -> "file2.txt",
-              "checksum" -> "check12345678",
-              "fileMimeType" -> "text/plain",
-              "downloadUrl" -> "download.file"
-            )
-          )
         )
       )
     }

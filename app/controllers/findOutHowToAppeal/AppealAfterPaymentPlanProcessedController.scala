@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import javax.inject.Inject
@@ -32,22 +31,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AppealAfterPaymentPlanProcessedController @Inject()(appealAfterPaymentPlanProcessedPage: AppealAfterPaymentPlanProcessedPage, errorHandler: ErrorHandler)
                                                          (implicit mcc: MessagesControllerComponents,
-                                             appConfig: AppConfig,
-                                             authorise: AuthPredicate,
-                                             dataRetrieval: DataRetrievalAction,
-                                             val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                                          appConfig: AppConfig,
+                                                          authorise: AuthPredicate,
+                                                          dataRetrieval: DataRetrievalAction,
+                                                          val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: PageMode = PageMode(AppealAfterPaymentPlanProcessedPage, NormalMode)
 
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
-      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        Future(Ok(appealAfterPaymentPlanProcessedPage(pageMode)))
-      } else {
-        errorHandler.onClientError(request, NOT_FOUND, "")
-      }
+      Future(Ok(appealAfterPaymentPlanProcessedPage(pageMode)))
     }
   }
-
 }

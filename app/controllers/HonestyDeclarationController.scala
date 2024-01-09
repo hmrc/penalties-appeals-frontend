@@ -18,7 +18,7 @@ package controllers
 
 import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import helpers.HonestyDeclarationHelper
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import models.monitoring.AuditPenaltyTypeEnum.{FirstLPP, LSP, SecondLPP}
@@ -53,14 +53,13 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
                                              authorise: AuthPredicate,
                                              dataRequired: DataRequiredAction,
                                              dataRetrieval: DataRetrievalAction,
-                                             checkObligationAvailability: CheckObligationAvailabilityAction,
                                              executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
       tryToGetExcuseDatesAndObligationFromSession(
         {
-          (reasonableExcuse, dueDate, startDate, endDate, isObligation) => {
+          (reasonableExcuse, dueDate, startDate, endDate) => {
             val (friendlyDueDate, friendlyStartDate, friendlyEndDate) =
               (ImplicitDateFormatter.dateToString(dueDate),
                 ImplicitDateFormatter.dateToString(startDate),
@@ -69,21 +68,21 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
             val extraBullets: Seq[String] = HonestyDeclarationHelper.getExtraText(reasonableExcuse)
             auditStartOfAppealJourney()
             Future(Ok(honestDeclarationPage(reasonableExcuse, reasonText,
-              friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, isObligation, PageMode(HonestyDeclarationPage, NormalMode))))
+              friendlyDueDate, friendlyStartDate, friendlyEndDate, extraBullets, PageMode(HonestyDeclarationPage, NormalMode))))
           }
         }
       )
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit request => {
       tryToGetExcuseDatesAndObligationFromSession({
-        (reasonableExcuse, _, _, _, isObligation) => {
+        (reasonableExcuse, _, _, _) => {
           logger.debug(s"[HonestyDeclarationController][onSubmit] - Adding 'true' to session for key: ${SessionKeys.hasConfirmedDeclaration}")
           val updatedAnswers = request.answers.setAnswer[Boolean](SessionKeys.hasConfirmedDeclaration, true)
           sessionService.updateAnswers(updatedAnswers).map {
-            _ => Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, if(!isObligation) Some(reasonableExcuse) else None))
+            _ => Redirect(navigation.nextPage(HonestyDeclarationPage, NormalMode, Some(reasonableExcuse)))
           }
         }
       }
@@ -91,15 +90,13 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
     }
   }
 
-  private def tryToGetExcuseDatesAndObligationFromSession(fOnSuccess: (String, LocalDate, LocalDate, LocalDate, Boolean) =>
+  private def tryToGetExcuseDatesAndObligationFromSession(fOnSuccess: (String, LocalDate, LocalDate, LocalDate) =>
     Future[Result])(implicit request: UserRequest[_]): Future[Result] = {
     (request.answers.getAnswer[String](SessionKeys.reasonableExcuse), request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod),
-      request.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod), request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod),
-      request.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined) match {
-      case (Some(reasonableExcuse), Some(dueDate), Some(startDate), Some(endDate), isObligation: Boolean) =>
-        fOnSuccess(reasonableExcuse, dueDate, startDate, endDate, isObligation)
-      case (None, Some(dueDate), Some(startDate), Some(endDate), isObligation: Boolean) if isObligation =>
-        fOnSuccess("obligation", dueDate, startDate, endDate, isObligation)
+      request.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod), request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod)) match {
+      case (Some(reasonableExcuse), Some(dueDate), Some(startDate), Some(endDate)) =>
+        fOnSuccess(reasonableExcuse, dueDate, startDate, endDate)
+
       case _ =>
         logger.error(s"[HonestyDeclarationController][tryToGetExcuseAndDueDateFromSession] - One or more session key was not in session. \n" +
           s"Reasonable excuse defined? ${request.answers.getAnswer[String](SessionKeys.reasonableExcuse).isDefined} \n" +

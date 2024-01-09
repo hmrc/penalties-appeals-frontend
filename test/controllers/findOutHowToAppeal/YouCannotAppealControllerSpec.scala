@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import org.mockito.ArgumentMatchers.any
@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import views.html.obligation.{AppealByLetterKickOutPage, YouCannotAppealPage}
+import views.html.findOutHowToAppeal.{AppealByLetterKickOutPage, YouCannotAppealPage}
 import viewtils.YouCannotAppealHelper
 
 import scala.concurrent.Future

@@ -188,57 +188,6 @@ class AppealSubmissionSpec extends SpecBase {
       |""".stripMargin
   )
 
-  val obligationAppealInformationJson: JsValue = Json.parse(
-    """
-      |{
-      |   "reasonableExcuse": "obligation",
-      |   "honestyDeclaration": true,
-      |   "statement": "This is a statement.",
-      |   "supportingEvidence":{
-      |     "noOfUploadedFiles": 2
-      |   },
-      |   "uploadedFiles":[
-      |     {
-      |     "reference": "ref1",
-      |     "fileStatus": "READY",
-      |     "downloadUrl": "download.file/url",
-      |     "uploadDetails": {
-      |         "fileName": "file1.txt",
-      |         "fileMimeType": "text/plain",
-      |         "uploadTimestamp": "2018-01-01T01:01:00",
-      |         "checksum": "check1234",
-      |         "size": 2
-      |       },
-      |       "lastUpdated": "2021-02-02T02:02:00"
-      |     },
-      |     {
-      |       "reference": "ref2",
-      |       "fileStatus": "READY",
-      |       "downloadUrl": "download.file/url",
-      |       "uploadDetails": {
-      |         "fileName": "file1.txt",
-      |         "fileMimeType": "text/plain",
-      |         "uploadTimestamp": "2018-01-01T01:01:00",
-      |         "checksum": "check1234",
-      |         "size": 2
-      |       },
-      |       "lastUpdated": "2021-04-04T04:04:00"
-      |     }
-      |    ]
-      |}
-      |""".stripMargin
-  )
-
-  val obligationAppealInformationJsonNoEvidence: JsValue = Json.parse(
-    """
-      |{
-      |   "reasonableExcuse": "obligation",
-      |   "honestyDeclaration": true,
-      |   "statement": "This is a statement."
-      |}
-      |""".stripMargin
-  )
-
   val uploadJourneyModel: UploadJourney = callbackModel.copy(reference = "ref1", lastUpdated = LocalDateTime.of(2021, 2, 2, 2, 2))
   val uploadJourneyModel2: UploadJourney = callbackModel.copy(reference = "ref2", lastUpdated = LocalDateTime.of(2021, 4, 4, 4, 4))
 
@@ -406,33 +355,6 @@ class AppealSubmissionSpec extends SpecBase {
         )
         val result = AppealSubmission.parseAppealInformationToJson(model)
         result shouldBe otherAppealInformationJsonNoEvidence
-      }
-    }
-
-    "for obligation" must {
-      "parse the appeal information model into a JsObject" in {
-        val model = ObligationAppealInformation(
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
-          statement = Some("This is a statement."),
-          supportingEvidence = Some(Evidence(
-            noOfUploadedFiles = 2)),
-          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
-        )
-        val result = AppealSubmission.parseAppealInformationToJson(model)
-        result shouldBe obligationAppealInformationJson
-      }
-
-      "parse the appeal information model into a JsObject - when no evidence is provided" in {
-        val model = ObligationAppealInformation(
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
-          statement = Some("This is a statement."),
-          supportingEvidence = None,
-          uploadedFiles = None
-        )
-        val result = AppealSubmission.parseAppealInformationToJson(model)
-        result shouldBe obligationAppealInformationJsonNoEvidence
       }
     }
   }
@@ -715,7 +637,7 @@ class AppealSubmissionSpec extends SpecBase {
       }
     }
 
-    "for technical issues" must   {
+    "for technical issues" must {
       "have the startDateOfEvent and endDate of event" in {
         val userAnswers = UserAnswers("1234", Json.obj(
           SessionKeys.reasonableExcuse -> "technicalIssues",
@@ -1013,75 +935,6 @@ class AppealSubmissionSpec extends SpecBase {
       }
     }
 
-    "for obligation" must {
-      "parse the session keys to a model" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
-          SessionKeys.otherRelevantInformation -> "This is a reason.",
-          SessionKeys.isObligationAppeal -> true,
-          SessionKeys.isUploadEvidence -> "yes"
-        ) ++ correctUserAnswers)
-        val fakeRequestForObligationJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
-
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false,
-          None, Some(Seq(uploadJourneyModel, uploadJourneyModel2)))(fakeRequestForObligationJourney)
-        result.appealSubmittedBy shouldBe "customer"
-        result.appealInformation shouldBe ObligationAppealInformation(
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
-          statement = Some("This is a reason."),
-          supportingEvidence = Some(Evidence(noOfUploadedFiles = 2)),
-          uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
-        )
-      }
-
-      "parse the session keys to a model - remove supportingEvidence object when no files have been uploaded" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
-          SessionKeys.otherRelevantInformation -> "This is a reason.",
-          SessionKeys.isObligationAppeal -> true,
-          SessionKeys.isUploadEvidence -> "yes"
-        ) ++ correctUserAnswers)
-        val fakeRequestForObligationJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
-
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false,
-          None, Some(Seq()))(fakeRequestForObligationJourney)
-        result.appealSubmittedBy shouldBe "customer"
-        result.appealInformation shouldBe ObligationAppealInformation(
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
-          statement = Some("This is a reason."),
-          supportingEvidence = None,
-          uploadedFiles = Some(Seq())
-        )
-      }
-
-      "parse the session keys to a model - no evidence" in {
-        val userAnswers = UserAnswers("1234", Json.obj(
-          SessionKeys.reasonableExcuse -> "",
-          SessionKeys.hasConfirmedDeclaration -> true,
-          SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
-          SessionKeys.otherRelevantInformation -> "This is a reason.",
-          SessionKeys.isUploadEvidence -> "no"
-        ) ++ correctUserAnswers)
-        val fakeRequestForObligationJourney = UserRequest("123456789", answers = userAnswers)(fakeRequestConverter(correctUserAnswers))
-
-        val result = AppealSubmission.constructModelBasedOnReasonableExcuse("obligation", isLateAppeal = false,
-          None, None)(fakeRequestForObligationJourney)
-        result.appealSubmittedBy shouldBe "customer"
-        result.appealInformation shouldBe ObligationAppealInformation(
-          reasonableExcuse = "obligation",
-          honestyDeclaration = true,
-          statement = Some("This is a reason."),
-          supportingEvidence = None,
-          uploadedFiles = None
-        )
-      }
-    }
   }
 
   "writes" should {
@@ -1091,7 +944,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
           isLPP = false,
           appealSubmittedBy = "customer",
           agentDetails = None,
@@ -1132,7 +985,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
           isLPP = true,
           appealSubmittedBy = "customer",
           agentDetails = None,
@@ -1177,7 +1030,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
           isLPP = true,
           appealSubmittedBy = "customer",
           agentDetails = None,
@@ -1221,7 +1074,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
           isLPP = true,
           appealSubmittedBy = "customer",
           agentDetails = None,
@@ -1264,7 +1117,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
           isLPP = true,
           appealSubmittedBy = "customer",
           agentDetails = None,
@@ -1311,7 +1164,7 @@ class AppealSubmissionSpec extends SpecBase {
             sourceSystem = "MDTP",
             taxRegime = "VAT",
             customerReferenceNo = "VRN1234567890",
-            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
             isLPP = true,
             appealSubmittedBy = "customer",
             agentDetails = None,
@@ -1358,7 +1211,7 @@ class AppealSubmissionSpec extends SpecBase {
             sourceSystem = "MDTP",
             taxRegime = "VAT",
             customerReferenceNo = "VRN1234567890",
-            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
             isLPP = true,
             appealSubmittedBy = "customer",
             agentDetails = None,
@@ -1405,7 +1258,7 @@ class AppealSubmissionSpec extends SpecBase {
             sourceSystem = "MDTP",
             taxRegime = "VAT",
             customerReferenceNo = "VRN1234567890",
-            dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+            dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
             isLPP = true,
             appealSubmittedBy = "customer",
             agentDetails = None,
@@ -1454,7 +1307,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
           isLPP = true,
           appealSubmittedBy = "customer",
           agentDetails = None,
@@ -1532,7 +1385,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
           isLPP = true,
           appealSubmittedBy = "customer",
           agentDetails = None,
@@ -1577,7 +1430,7 @@ class AppealSubmissionSpec extends SpecBase {
           sourceSystem = "MDTP",
           taxRegime = "VAT",
           customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
+          dateOfAppeal = LocalDateTime.of(2020, 1, 1, 0, 0, 0),
           isLPP = true,
           appealSubmittedBy = "customer",
           agentDetails = None,
@@ -1649,113 +1502,6 @@ class AppealSubmissionSpec extends SpecBase {
 
         val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
         result shouldBe jsonRepresentingModel
-      }
-    }
-
-    "for obligation" must {
-      "write the model to JSON" in {
-        val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          sourceSystem = "MDTP",
-          taxRegime = "VAT",
-          customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
-          isLPP = true,
-          appealSubmittedBy = "customer",
-          agentDetails = None,
-          appealInformation = ObligationAppealInformation(
-            reasonableExcuse = "obligation",
-            honestyDeclaration = true,
-            statement = Some("This was the reason"),
-            supportingEvidence = Some(Evidence(
-              noOfUploadedFiles = 2
-            )),
-            uploadedFiles = Some(Seq(uploadJourneyModel, uploadJourneyModel2))
-          )
-        )
-
-        val jsonRepresentModel: JsValue = Json.obj(
-          "sourceSystem" -> "MDTP",
-          "taxRegime" -> "VAT",
-          "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
-          "isLPP" -> true,
-          "appealSubmittedBy" -> "customer",
-          "appealInformation" -> Json.obj(
-            "reasonableExcuse" -> "obligation",
-            "honestyDeclaration" -> true,
-            "statement" -> "This was the reason",
-            "supportingEvidence" -> Json.obj(
-              "noOfUploadedFiles" -> 2
-            ),
-            "uploadedFiles" -> Seq(
-              Json.obj(
-                "reference" -> "ref1",
-                "fileStatus" -> "READY",
-                "downloadUrl" -> "download.file/url",
-                "uploadDetails" -> Json.obj(
-                  "fileName" -> "file1.txt",
-                  "fileMimeType" -> "text/plain",
-                  "uploadTimestamp" -> "2018-01-01T01:01:00",
-                  "checksum" -> "check1234",
-                  "size" -> 2
-                ),
-                "lastUpdated" -> "2021-02-02T02:02:00"
-              ),
-              Json.obj(
-                "reference" -> "ref2",
-                "fileStatus" -> "READY",
-                "downloadUrl" -> "download.file/url",
-                "uploadDetails" -> Json.obj(
-                  "fileName" -> "file1.txt",
-                  "fileMimeType" -> "text/plain",
-                  "uploadTimestamp" -> "2018-01-01T01:01:00",
-                  "checksum" -> "check1234",
-                  "size" -> 2
-                ),
-                "lastUpdated" -> "2021-04-04T04:04:00"
-              )
-            )
-          )
-        )
-
-        val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
-        result shouldBe jsonRepresentModel
-      }
-
-      "write the model to JSON - no evidence" in {
-        val modelToConvertToJson: AppealSubmission = AppealSubmission(
-          sourceSystem = "MDTP",
-          taxRegime = "VAT",
-          customerReferenceNo = "VRN1234567890",
-          dateOfAppeal = LocalDateTime.of(2020,1,1,0,0,0),
-          isLPP = true,
-          appealSubmittedBy = "customer",
-          agentDetails = None,
-          appealInformation = ObligationAppealInformation(
-            reasonableExcuse = "obligation",
-            honestyDeclaration = true,
-            statement = Some("This was the reason"),
-            supportingEvidence = None,
-            uploadedFiles = None
-          )
-        )
-
-        val jsonRepresentModel: JsValue = Json.obj(
-          "sourceSystem" -> "MDTP",
-          "taxRegime" -> "VAT",
-          "customerReferenceNo" -> "VRN1234567890",
-          "dateOfAppeal" -> "2020-01-01T00:00:00",
-          "isLPP" -> true,
-          "appealSubmittedBy" -> "customer",
-          "appealInformation" -> Json.obj(
-            "reasonableExcuse" -> "obligation",
-            "honestyDeclaration" -> true,
-            "statement" -> "This was the reason"
-          )
-        )
-
-        val result = Json.toJson(modelToConvertToJson)(AppealSubmission.writes)
-        result shouldBe jsonRepresentModel
       }
     }
   }

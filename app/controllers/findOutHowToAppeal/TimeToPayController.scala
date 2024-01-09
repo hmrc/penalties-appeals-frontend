@@ -16,38 +16,32 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
-import config.{AppConfig, ErrorHandler}
+import config.ErrorHandler
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import javax.inject.Inject
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.TimeToPayService
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class TimeToPayController @Inject()(mcc: MessagesControllerComponents,
                                     timeToPayService: TimeToPayService,
                                     errorHandler: ErrorHandler)
                                    (implicit ec: ExecutionContext,
-                                    appConfig: AppConfig, authorise: AuthPredicate,
+                                    authorise: AuthPredicate,
                                     dataRetrieval: DataRetrievalAction,
-                                    val config: Configuration) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                    val config: Configuration) extends FrontendController(mcc) with I18nSupport {
 
   def redirect: Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit request =>
-    if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-      timeToPayService.retrieveRedirectUrl.map {
-        case Right(url) => Redirect(url)
-        case Left(_) =>
-          logger.warn("[TimeToPayController][redirect] - Unable to retrieve successful response from TTP service, rendering ISE")
-          errorHandler.showInternalServerError(request)
-      }
-    } else {
-      Future(errorHandler.notFoundError(request))
+    timeToPayService.retrieveRedirectUrl.map {
+      case Right(url) => Redirect(url)
+      case Left(_) =>
+        logger.warn("[TimeToPayController][redirect] - Unable to retrieve successful response from TTP service, rendering ISE")
+        errorHandler.showInternalServerError(request)
     }
   }
 }

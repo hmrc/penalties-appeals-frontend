@@ -18,8 +18,7 @@ package controllers.findOutHowToAppeal
 
 import java.time.LocalDate
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
-import config.{AppConfig, ErrorHandler}
+import config.ErrorHandler
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import javax.inject.Inject
 import play.api.Configuration
@@ -30,30 +29,26 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class PayNowController @Inject()(mcc: MessagesControllerComponents,
                                  payNowService: PayNowService,
                                  errorHandler: ErrorHandler)
                                 (implicit ec: ExecutionContext,
-                                 appConfig: AppConfig, authorise: AuthPredicate,
+                                 authorise: AuthPredicate,
                                  dataRetrieval: DataRetrievalAction,
-                                 val config: Configuration) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                 val config: Configuration) extends FrontendController(mcc) with I18nSupport {
 
   def redirect: Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit request =>
-    if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-      val vrn: String = request.vrn
-      val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).get
-      val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
-      val dueDate: LocalDate = request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).getOrElse(LocalDate.now())
-      payNowService.retrieveRedirectUrl(vrn, chargeReference, vatAmount, dueDate).map {
-        case Right(url) => Redirect(url)
-        case Left(_) =>
-          logger.warn("[PayNowController][redirect] - Unable to retrieve successful response from Pay Now service, rendering ISE")
-          errorHandler.showInternalServerError(request)
-      }
-    } else {
-      Future(errorHandler.notFoundError(request))
+    val vrn: String = request.vrn
+    val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).get
+    val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
+    val dueDate: LocalDate = request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).getOrElse(LocalDate.now())
+    payNowService.retrieveRedirectUrl(vrn, chargeReference, vatAmount, dueDate).map {
+      case Right(url) => Redirect(url)
+      case Left(_) =>
+        logger.warn("[PayNowController][redirect] - Unable to retrieve successful response from Pay Now service, rendering ISE")
+        errorHandler.showInternalServerError(request)
     }
   }
 }

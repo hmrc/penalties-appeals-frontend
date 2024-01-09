@@ -16,28 +16,20 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
-import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.IntegrationSpecCommonBase
 
-class IfYouvePaidYourVATControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
+class IfYouvePaidYourVATControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
 
   val controller: IfYouvePaidYourVATController = injector.instanceOf[IfYouvePaidYourVATController]
 
   "GET /if-youve-paid-your-VAT" should {
-    "return 200 (OK) when the user is authorised and feature switch is enabled" in new UserAnswersSetup(userAnswers()) {
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
+    "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe OK
-    }
-
-    "return 404 (NOT_FOUND) when the user is authorised but the feature switch is disabled" in new UserAnswersSetup(userAnswers()) {
-      disableFeatureSwitch(ShowFindOutHowToAppealJourney)
-      val request: Result = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe NOT_FOUND
     }
   }
 }

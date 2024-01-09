@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import messages.AppealSinglePenaltyMessages._
 import models.NormalMode
 import models.pages.{AppealSinglePenaltyPage, PageMode}
+import org.jsoup.nodes.Document
 import views.behaviours.ViewBehaviours
 import views.html.AppealSinglePenaltyPage
 
@@ -28,7 +29,7 @@ class AppealSinglePenaltyPageSpec extends SpecBase with ViewBehaviours {
   val page: AppealSinglePenaltyPage = injector.instanceOf[AppealSinglePenaltyPage]
   object Selectors extends BaseSelectors
 
-  implicit val document = asDocument(page(PageMode(AppealSinglePenaltyPage, NormalMode), controllers.routes.AppealStartController.onPageLoad().url, "4.20", true)(userRequestWithCorrectKeys, implicitly, implicitly))
+  implicit val document: Document = asDocument(page(PageMode(AppealSinglePenaltyPage, NormalMode), controllers.routes.AppealStartController.onPageLoad().url, "4.20", true)(userRequestWithCorrectKeys, implicitly, implicitly))
 
   val expectedContent = Seq(
     Selectors.title -> title,

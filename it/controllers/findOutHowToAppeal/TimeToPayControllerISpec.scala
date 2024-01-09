@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import connectors.TimeToPayConnector
 import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
@@ -28,7 +27,7 @@ import stubs.TimeToPayStub.{successfulTTPCall, unsuccessfulTTPCall}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationSpecCommonBase
 
-class TimeToPayControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
+class TimeToPayControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: TimeToPayController = injector.instanceOf[TimeToPayController]
   val service: TimeToPayService = injector.instanceOf[TimeToPayService]
   val connector: TimeToPayConnector = injector.instanceOf[TimeToPayConnector]
@@ -40,7 +39,6 @@ class TimeToPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
         "journeyId" -> "1234",
         "nextUrl" -> "http://url/next-url"
       ).toString()
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       successfulTTPCall(responseBody)
       val result: Result = await(controller.redirect()(fakeRequest))
       result.header.status shouldBe SEE_OTHER
@@ -48,7 +46,6 @@ class TimeToPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
     }
 
     "return an error when a call is unsuccessful" in {
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       unsuccessfulTTPCall
       val result = await(controller.redirect()(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR

@@ -17,13 +17,12 @@
 package controllers.findOutHowToAppeal
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealJourney
 import connectors.httpParsers.NoContent
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
 import play.api.Configuration
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, SEE_OTHER}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
 import services.TimeToPayService
@@ -40,7 +39,7 @@ class TimeToPayControllerSpec extends SpecBase {
   val mockTTPService: TimeToPayService = mock(classOf[TimeToPayService])
   val mockConfig: Configuration = mock(classOf[Configuration])
 
-  class Setup(featureSwitch: Boolean = true) {
+  class Setup {
     reset(mockAuthConnector)
     reset(mockSessionService)
     reset(mockTTPService)
@@ -50,9 +49,8 @@ class TimeToPayControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(AuthTestModels.successfulAuthResult)
 
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(featureSwitch)
 
-    val controller = new TimeToPayController(mcc, mockTTPService, errorHandler)(ec, mockAppConfig, authPredicate, dataRetrievalAction, mockConfig)
+    val controller = new TimeToPayController(mcc, mockTTPService, errorHandler)(ec, authPredicate, dataRetrievalAction, mockConfig)
   }
 
   "redirect" should {
@@ -74,15 +72,6 @@ class TimeToPayControllerSpec extends SpecBase {
         when(mockTTPService.retrieveRedirectUrl(any, any)).thenReturn(Future.successful(Left(NoContent)))
         val result: Future[Result] = controller.redirect(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
-
-      "return 404 (NOT_FOUND) when the feature switch is off" in new Setup(false) {
-        when(mockSessionService.getUserAnswers(any()))
-          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-        when(mockTTPService.retrieveRedirectUrl(any, any)).thenReturn(Future.successful(Right("/correct-url")))
-        val result: Future[Result] = controller.redirect(fakeRequest)
-        status(result) shouldBe NOT_FOUND
       }
     }
   }

@@ -21,6 +21,7 @@ import forms.PenaltySelectionForm
 import messages.PenaltySelectionMessages._
 import models.NormalMode
 import models.pages.{PageMode, PenaltySelectionPage}
+import org.jsoup.nodes.Document
 import play.api.data.Form
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import views.behaviours.ViewBehaviours
@@ -34,7 +35,7 @@ class PenaltySelectionPageSpec extends SpecBase with ViewBehaviours {
   val yesNoOptions: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
   object Selectors extends BaseSelectors
 
-  implicit val document = asDocument(page(form, yesNoOptions, "50.12", "526.10", PageMode(PenaltySelectionPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly))
+  implicit val document: Document = asDocument(page(form, yesNoOptions, "50.12", "526.10", PageMode(PenaltySelectionPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly))
 
   "when trader is on the page" must {
     val expectedContent = Seq(

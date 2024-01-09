@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import models.pages.{HowToAppealPage, PageMode}
@@ -33,23 +32,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HowToAppealController @Inject()(howToAppealPage: HowToAppealPage, errorHandler: ErrorHandler)
                                      (implicit mcc: MessagesControllerComponents,
-                                            appConfig: AppConfig,
-                                            authorise: AuthPredicate,
-                                            dataRetrieval: DataRetrievalAction,
-                                            val config: Configuration,
-                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                      appConfig: AppConfig,
+                                      authorise: AuthPredicate,
+                                      dataRetrieval: DataRetrievalAction,
+                                      val config: Configuration,
+                                      ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: PageMode = PageMode(HowToAppealPage, NormalMode)
 
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
-      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
-        Future(Ok(howToAppealPage(CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount), pageMode)))
-      } else {
-        errorHandler.onClientError(request, NOT_FOUND, "")
-      }
+      val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
+      Future(Ok(howToAppealPage(CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount), pageMode)))
     }
   }
 }

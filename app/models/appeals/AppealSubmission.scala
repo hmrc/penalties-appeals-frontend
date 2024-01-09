@@ -50,7 +50,6 @@ object AppealSubmission {
         payload.asInstanceOf[TechnicalIssuesAppealInformation])(TechnicalIssuesAppealInformation.technicalIssuesAppealWrites)
       case "health" => Json.toJson(payload.asInstanceOf[HealthAppealInformation])(HealthAppealInformation.healthAppealWrites)
       case "other" => Json.toJson(payload.asInstanceOf[OtherAppealInformation])(OtherAppealInformation.otherAppealInformationWrites)
-      case "obligation" => Json.toJson(payload.asInstanceOf[ObligationAppealInformation])(ObligationAppealInformation.obligationAppealInformationWrites)
     }
   }
 
@@ -80,113 +79,102 @@ object AppealSubmission {
     reasonableExcuse match {
       case "bereavement" =>
         baseAppealSubmission(BereavementAppealInformation(
-            reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidThePersonDie).get.atStartOfDay(),
-            statement = None,
-            lateAppeal = isLateAppeal,
-            lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
-            isClientResponsibleForSubmission = isClientResponsibleForSubmission,
-            isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
-          )
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+          startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidThePersonDie).get.atStartOfDay(),
+          statement = None,
+          lateAppeal = isLateAppeal,
+          lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
+          isClientResponsibleForSubmission = isClientResponsibleForSubmission,
+          isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
+        )
         )
 
       case "crime" =>
         baseAppealSubmission(CrimeAppealInformation(
-            reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfCrime).get.atStartOfDay(),
-            reportedIssueToPolice = userRequest.answers.getAnswer[String](SessionKeys.hasCrimeBeenReportedToPolice).get,
-            statement = None,
-            lateAppeal = isLateAppeal,
-            lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
-            isClientResponsibleForSubmission = isClientResponsibleForSubmission,
-            isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
-          )
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+          startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfCrime).get.atStartOfDay(),
+          reportedIssueToPolice = userRequest.answers.getAnswer[String](SessionKeys.hasCrimeBeenReportedToPolice).get,
+          statement = None,
+          lateAppeal = isLateAppeal,
+          lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
+          isClientResponsibleForSubmission = isClientResponsibleForSubmission,
+          isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
+        )
         )
 
       case "fireOrFlood" =>
         baseAppealSubmission(FireOrFloodAppealInformation(
-            reasonableExcuse = "fireandflood", //API spec outlines this - the frontend says 'fire or flood' (11/10/23)
-            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get.atStartOfDay(),
-            statement = None,
-            lateAppeal = isLateAppeal,
-            lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
-            isClientResponsibleForSubmission = isClientResponsibleForSubmission,
-            isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
-          )
+          reasonableExcuse = "fireandflood", //API spec outlines this - the frontend says 'fire or flood' (11/10/23)
+          honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+          startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateOfFireOrFlood).get.atStartOfDay(),
+          statement = None,
+          lateAppeal = isLateAppeal,
+          lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
+          isClientResponsibleForSubmission = isClientResponsibleForSubmission,
+          isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
+        )
         )
 
       case "lossOfStaff" =>
         baseAppealSubmission(LossOfStaffAppealInformation(
-            reasonableExcuse = "lossOfEssentialStaff",
-            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness).get.atStartOfDay(),
-            statement = None,
-            lateAppeal = isLateAppeal,
-            lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
-            isClientResponsibleForSubmission = isClientResponsibleForSubmission,
-            isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
-          )
+          reasonableExcuse = "lossOfEssentialStaff",
+          honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+          startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenPersonLeftTheBusiness).get.atStartOfDay(),
+          statement = None,
+          lateAppeal = isLateAppeal,
+          lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
+          isClientResponsibleForSubmission = isClientResponsibleForSubmission,
+          isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
+        )
         )
 
       case "technicalIssues" =>
         baseAppealSubmission(TechnicalIssuesAppealInformation(
-            reasonableExcuse = "technicalIssue",
-            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).get.atStartOfDay(),
-            endDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get.atStartOfDay().plusSeconds(1).truncatedTo(ChronoUnit.SECONDS),
-            statement = None,
-            lateAppeal = isLateAppeal,
-            lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
-            isClientResponsibleForSubmission = isClientResponsibleForSubmission,
-            isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
-          )
+          reasonableExcuse = "technicalIssue",
+          honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+          startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).get.atStartOfDay(),
+          endDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesEnd).get.atStartOfDay().plusSeconds(1).truncatedTo(ChronoUnit.SECONDS),
+          statement = None,
+          lateAppeal = isLateAppeal,
+          lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
+          isClientResponsibleForSubmission = isClientResponsibleForSubmission,
+          isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
+        )
         )
 
       case "health" =>
         val isHospitalStay = userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).get == "yes"
         val isOngoingHospitalStay = userRequest.answers.getAnswer[String](SessionKeys.hasHealthEventEnded).contains("no")
         baseAppealSubmission(HealthAppealInformation(
-            reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            hospitalStayInvolved = isHospitalStay,
-            startDateOfEvent = (if (isHospitalStay) userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted) else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened)).map(_.atStartOfDay()),
-            endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).map(_.atStartOfDay().plusSeconds(1).truncatedTo(ChronoUnit.SECONDS)),
-            eventOngoing = isOngoingHospitalStay,
-            statement = None,
-            lateAppeal = isLateAppeal,
-            lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
-            isClientResponsibleForSubmission = isClientResponsibleForSubmission,
-            isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
-          )
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+          hospitalStayInvolved = isHospitalStay,
+          startDateOfEvent = (if (isHospitalStay) userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted) else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueHappened)).map(_.atStartOfDay()),
+          endDateOfEvent = if (isOngoingHospitalStay) None else userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueEnded).map(_.atStartOfDay().plusSeconds(1).truncatedTo(ChronoUnit.SECONDS)),
+          eventOngoing = isOngoingHospitalStay,
+          statement = None,
+          lateAppeal = isLateAppeal,
+          lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
+          isClientResponsibleForSubmission = isClientResponsibleForSubmission,
+          isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission
+        )
         )
 
       case "other" =>
         baseAppealSubmission(OtherAppealInformation(
-            reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidBecomeUnable).get.atStartOfDay(),
-            statement = userRequest.answers.getAnswer[String](SessionKeys.whyReturnSubmittedLate),
-            supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => if (files.isEmpty) None else Some(Evidence(files.size))),
-            lateAppeal = isLateAppeal,
-            lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
-            isClientResponsibleForSubmission = isClientResponsibleForSubmission,
-            isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission,
-            uploadedFiles = if (uploadedFiles.isDefined) uploadedFiles else None
-          )
+          reasonableExcuse = reasonableExcuse,
+          honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
+          startDateOfEvent = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidBecomeUnable).get.atStartOfDay(),
+          statement = userRequest.answers.getAnswer[String](SessionKeys.whyReturnSubmittedLate),
+          supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => if (files.isEmpty) None else Some(Evidence(files.size))),
+          lateAppeal = isLateAppeal,
+          lateAppealReason = if (isLateAppeal) userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason) else None,
+          isClientResponsibleForSubmission = isClientResponsibleForSubmission,
+          isClientResponsibleForLateSubmission = isClientResponsibleForLateSubmission,
+          uploadedFiles = if (uploadedFiles.isDefined) uploadedFiles else None
         )
-      case "obligation" =>
-        baseAppealSubmission(ObligationAppealInformation(
-            reasonableExcuse = reasonableExcuse,
-            honestyDeclaration = userRequest.answers.getAnswer[Boolean](SessionKeys.hasConfirmedDeclaration).get,
-            statement = userRequest.answers.getAnswer[String](SessionKeys.otherRelevantInformation),
-            supportingEvidence = uploadedFiles.fold[Option[Evidence]](None)(files => if (files.isEmpty) None else Some(Evidence(files.size))),
-            isClientResponsibleForSubmission = None,
-            isClientResponsibleForLateSubmission = None,
-            uploadedFiles = if (uploadedFiles.isDefined) uploadedFiles else None
-          )
         )
     }
   }

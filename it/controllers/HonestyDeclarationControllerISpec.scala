@@ -63,22 +63,6 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase with A
       parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("I was unable to submit the VAT Return due on ")
     }
 
-    "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the user is appealing an obligation" in new UserAnswersSetup(userAnswers(
-      answers = Json.obj(
-        SessionKeys.isObligationAppeal -> true,
-        SessionKeys.reasonableExcuse -> "obligation",
-        SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
-        SessionKeys.whatCausedYouToMissTheDeadline -> "client"
-      )
-    )) {
-      val request = controller.onPageLoad()(fakeRequest)
-      await(request).header.status shouldBe Status.OK
-      val parsedBody = Jsoup.parse(contentAsString(request))
-      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("HMRC has been asked to cancel the VAT registration")
-      parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith("I believe there was no VAT Return due for the period")
-    }
-
-    runControllerPredicateTests(controller.onPageLoad(), "GET", "/honesty-declaration")
 
     "when an agent is authorised and has the correct keys" must {
       "return 200 (OK) and the correct message - show agent context messages" in new UserAnswersSetup(userAnswers(
@@ -95,19 +79,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecCommonBase with A
         val parsedBody = Jsoup.parse(contentAsString(request))
         parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text should startWith("because my client was affected by a crime")
       }
-
-      "return 200 (OK) when the user is authorised and has the correct keys - and show the correct text when the agent is appealing an obligation" in new UserAnswersSetup(userAnswers(
-        answers = Json.obj(
-          SessionKeys.isObligationAppeal -> true
-        )
-      )) {
-        val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
-        val request = controller.onPageLoad()(fakeRequestWithCorrectKeys)
-        await(request).header.status shouldBe Status.OK
-        val parsedBody = Jsoup.parse(contentAsString(request))
-        parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(1)").text() should startWith("HMRC has been asked to cancel the VAT registration")
-        parsedBody.select("#main-content .govuk-list--bullet > li:nth-child(2)").text() should startWith("I believe there was no VAT Return due for the period")
-      }
+      
     }
   }
 

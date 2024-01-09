@@ -69,13 +69,6 @@ class ViewAppealDetailsControllerSpec extends SpecBase {
           status(result) shouldBe OK
         }
 
-        "return 200 (OK) and the correct view (obligation journey)" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(obligationAnswers))))
-          when(mockSessionAnswersHelper.getPreviousUploadsFileNames(any())).thenReturn(Future.successful("file.txt, file2.txt"))
-          val result: Future[Result] = controller.onPageLoad()(userRequest)
-          status(result) shouldBe OK
-          verify(mockSessionAnswersHelper, times(1)).getPreviousUploadsFileNames(any())
-        }
 
         "return 200 (OK) and the correct view (other journey)" in new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(otherAnswers))))

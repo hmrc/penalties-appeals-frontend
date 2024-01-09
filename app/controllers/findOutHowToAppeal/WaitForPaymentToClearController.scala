@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import models.NormalMode
@@ -32,11 +31,11 @@ import javax.inject.Inject
 
 class WaitForPaymentToClearController @Inject()(page: WaitForPaymentToClearPage,
                                                 errorHandler: ErrorHandler
-                                                   )(implicit mcc: MessagesControllerComponents,
-                                                     appConfig: AppConfig,
-                                                     authorise: AuthPredicate,
-                                                     dataRetrieval: DataRetrievalAction,
-                                                     val config: Configuration) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                               )(implicit mcc: MessagesControllerComponents,
+                                                 appConfig: AppConfig,
+                                                 authorise: AuthPredicate,
+                                                 dataRetrieval: DataRetrievalAction,
+                                                 val config: Configuration) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: PageMode = PageMode(WaitForPaymentToClearPage, NormalMode)
 
@@ -44,8 +43,7 @@ class WaitForPaymentToClearController @Inject()(page: WaitForPaymentToClearPage,
     implicit request => {
       val isCA = request.answers.getAnswer[Boolean](SessionKeys.isCaLpp).getOrElse(false)
 
-
-      if (appConfig.isEnabled(ShowFindOutHowToAppealJourney) && !isCA) {
+      if (!isCA) {
         Ok(page(pageMode))
       } else {
         errorHandler.notFoundError(request)

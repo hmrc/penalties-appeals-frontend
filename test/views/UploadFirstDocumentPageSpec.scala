@@ -23,9 +23,7 @@ import models.pages.{PageMode, UploadFirstDocumentPage}
 import models.upload.{UploadFormTemplateRequest, UpscanInitiateResponseModel}
 import models.{NormalMode, UserRequest}
 import org.jsoup.nodes.Document
-import play.api.libs.json.Json
 import play.twirl.api.HtmlFormat
-import utils.SessionKeys
 import views.behaviours.ViewBehaviours
 import views.html.reasonableExcuseJourneys.other.noJs.UploadFirstDocumentPage
 
@@ -107,58 +105,6 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
       behave like pageWithExpectedMessages(expectedContent)(lppDoc)
     }
 
-    "display appeal against the obligation page when the appeal is for LSP" must {
-      implicit val doc: Document = asDocument(applyView(fakeRequestConverter(correctUserAnswers ++ Json.obj(
-        SessionKeys.isObligationAppeal -> true))))
-
-      val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> h1,
-        Selectors.pElementIndex(3) -> p1,
-        Selectors.pElementIndex(4) -> p2AppealAgainstObligation,
-        Selectors.pElementIndex(5) -> p4,
-        Selectors.pElementIndex(6) -> p5,
-        Selectors.detailsHeading -> detailsHeading,
-        Selectors.detailsContentP1 -> detailsP1,
-        Selectors.detailsContentLi(1) -> detailsLi1,
-        Selectors.detailsContentLi(2) -> detailsLi2,
-        Selectors.detailsContentLi(3) -> detailsLi3,
-        Selectors.detailsContentLi(4) -> detailsLi4,
-        Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.uploadButton -> uploadButton,
-        Selectors.skipFileUploadButton -> skipFileUploadButton
-      )
-
-      behave like pageWithExpectedMessages(expectedContent)
-    }
-
-    "display appeal against the obligation page when the appeal is for LPP" must {
-      implicit val doc: Document = asDocument(applyView(fakeRequestConverter(correctLPPUserAnswers ++ Json.obj(
-        SessionKeys.isObligationAppeal -> true
-      ))))
-
-      val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> h1,
-        Selectors.pElementIndex(3) -> p1,
-        Selectors.pElementIndex(4) -> p2LPPAppealAgainstObligation,
-        Selectors.pElementIndex(5) -> p4,
-        Selectors.pElementIndex(6) -> p5,
-        Selectors.detailsHeading -> detailsHeading,
-        Selectors.detailsContentP1 -> detailsP1,
-        Selectors.detailsContentLi(1) -> detailsLi1,
-        Selectors.detailsContentLi(2) -> detailsLi2,
-        Selectors.detailsContentLi(3) -> detailsLi3,
-        Selectors.detailsContentLi(4) -> detailsLi4,
-        Selectors.detailsContentLi(5) -> detailsLi5,
-        Selectors.chooseYourFirstFile -> chooseYourFirstFile,
-        Selectors.uploadButton -> uploadButton,
-        Selectors.skipFileUploadButton -> skipFileUploadButton
-      )
-
-      behave like pageWithExpectedMessages(expectedContent)
-    }
 
     "link to the next page in the journey when the user skips file upload" in {
       implicit val doc: Document = asDocument(applyView(fakeRequestConverter(correctLPPUserAnswers)))

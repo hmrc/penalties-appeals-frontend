@@ -256,8 +256,6 @@ class SessionAnswersHelperSpec extends SpecBase {
         sessionAnswersHelper.getContentForAgentsCheckYourAnswersPage()(fakeRequest, implicitly)
       case "all" =>
         sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(fileNames)(fakeRequest, implicitly)
-      case "obligation" =>
-        sessionAnswersHelper.getContentForObligationAppealCheckYourAnswersPage(fileNames)(fakeRequest, implicitly)
     }
   }
 
@@ -1107,40 +1105,6 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
     }
     "agent session is not present" when {
-      "the appeal is against the obligation" must {
-        "show the obligation variation of the page" in {
-          val result = checkYourAnswers(obligationAnswers, "other", None, None, function = "all", fileNames = Some("file.txt"))
-
-          result.head.key shouldBe "Tell us why you want to appeal the penalty"
-          result.head.value shouldBe "This is some relevant information"
-          result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-            OtherRelevantInformationPage.toString
-          ).url
-          result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
-          result(1).value shouldBe "Yes"
-          result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-            UploadEvidenceQuestionPage.toString
-          ).url
-          result(2).key shouldBe "Evidence to support this appeal"
-          result(2).value shouldBe "file.txt"
-          result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
-        }
-
-        "show the obligation variation of the page - 'hide' the files uploaded if user selected no to uploading files" in {
-          val result = checkYourAnswers(obligationAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"),
-            "other", None, None, function = "all", fileNames = Some("file.txt"))
-
-          result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
-          result(1).value shouldBe "No"
-          result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-            controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-            UploadEvidenceQuestionPage.toString
-          ).url
-          result.size shouldBe 2
-        }
-      }
 
       "return getAllTheContentForCheckYourAnswersPage as list of getContentForReasonableExcuseCheckYourAnswersPage only" in {
         val resultReasonableExcuses = checkYourAnswers(techIssuesAnswers, "technicalIssues", None, None, function = "generic")
@@ -1148,66 +1112,6 @@ class SessionAnswersHelperSpec extends SpecBase {
 
         resultReasonableExcuses shouldBe resultAllContent
 
-      }
-    }
-  }
-
-  "getContentForObligationAppealCheckYourAnswersPage" should {
-    def checkYourAnswers(answers: JsObject, fileName: Option[String]): Seq[QuestionAnswerRow] =
-      determineFunction("obligation", reasonableExcuse = None, answers, fileNames = fileName)
-    "when no evidence file uploaded" should {
-      "return rows of answers" in {
-        val result = checkYourAnswers(obligationAnswers, None)
-
-        result.head.key shouldBe "Tell us why you want to appeal the penalty"
-        result.head.value shouldBe "This is some relevant information"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-          OtherRelevantInformationPage.toString
-        ).url
-        result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
-        result(1).value shouldBe "Yes"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-          UploadEvidenceQuestionPage.toString
-        ).url
-        result(2).key shouldBe "Evidence to support this appeal"
-        result(2).value shouldBe "Not provided"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
-      }
-
-      "return rows of answers - without uploaded files row" in {
-        val result = checkYourAnswers(obligationAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"), None)
-
-        result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
-        result(1).value shouldBe "No"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-          UploadEvidenceQuestionPage.toString
-        ).url
-        result.size shouldBe 2
-      }
-    }
-
-    "when evidence file is uploaded" should {
-      "return rows of answers" in {
-        val result = checkYourAnswers(obligationAnswers, Some("some-file-name.txt"))
-
-        result(2).key shouldBe "Evidence to support this appeal"
-        result(2).value shouldBe "some-file-name.txt"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
-      }
-
-      "the user has selected no to uploaded files - 'hide' the row" in {
-        val result = checkYourAnswers(obligationAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"), Some("some-file-name.txt"))
-
-        result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
-        result(1).value shouldBe "No"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-          UploadEvidenceQuestionPage.toString
-        ).url
-        result.size shouldBe 2
       }
     }
   }
@@ -1271,45 +1175,6 @@ class SessionAnswersHelperSpec extends SpecBase {
       }
     }
 
-    "when there's an Obligation Appeal Journey (that requires a file upload call) " should {
-      "return the rows for CYA page " in {
-        val result = await(fileNameHelper(obligationAnswers, "other"))
-
-        result.head.key shouldBe "Tell us why you want to appeal the penalty"
-        result.head.value shouldBe "This is some relevant information"
-        result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-          OtherRelevantInformationPage.toString
-        ).url
-        result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
-        result(1).value shouldBe "Yes"
-        result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-          controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-          UploadEvidenceQuestionPage.toString
-        ).url
-        result(2).key shouldBe "Evidence to support this appeal"
-        result(2).value shouldBe "file1.txt"
-        result(2).url shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadEvidence(CheckMode, isJsEnabled = false).url
-      }
-    }
-
-    "when the user has files uploaded - but changed their mind - 'hide' the files uploaded" in {
-      val result = await(fileNameHelper(obligationAnswers ++ Json.obj(SessionKeys.isUploadEvidence -> "no"), "other"))
-
-      result.head.key shouldBe "Tell us why you want to appeal the penalty"
-      result.head.value shouldBe "This is some relevant information"
-      result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-        controllers.routes.AppealAgainstObligationController.onPageLoad(CheckMode).url,
-        OtherRelevantInformationPage.toString
-      ).url
-      result(1).key shouldBe "Do you want to upload evidence to support your appeal?"
-      result(1).value shouldBe "No"
-      result(1).url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
-        controllers.routes.OtherReasonController.onPageLoadForUploadEvidenceQuestion(CheckMode).url,
-        UploadEvidenceQuestionPage.toString
-      ).url
-      result.size shouldBe 2
-    }
 
     "when reason is 'bereavement' (that doesn't require a file upload call)" should {
       "return the rows for CYA page " in {

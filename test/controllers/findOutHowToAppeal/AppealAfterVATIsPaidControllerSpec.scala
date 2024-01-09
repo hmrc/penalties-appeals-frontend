@@ -17,13 +17,12 @@
 package controllers.findOutHowToAppeal
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealJourney
 import models.session.UserAnswers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import org.mockito.ArgumentCaptor
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
@@ -55,7 +54,6 @@ class AppealAfterVATIsPaidControllerSpec extends SpecBase {
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new AppealAfterVATIsPaidController(
       youCanAppealOnlinePage,
@@ -82,13 +80,6 @@ class AppealAfterVATIsPaidControllerSpec extends SpecBase {
           status(result) shouldBe OK
           val documentParsed: Document = Jsoup.parse(contentAsString(result))
           documentParsed.select("#value-2").get(0).hasAttr("checked") shouldBe true
-        }
-
-        "return 404 (NOT_FOUND) the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-          status(result) shouldBe NOT_FOUND
         }
       }
 

@@ -18,7 +18,6 @@ package controllers
 
 
 import config.{AppConfig, ErrorHandler}
-import config.featureSwitches.{FeatureSwitching, ShowCAFindOutHowToAppealJourney, ShowFindOutHowToAppealJourney, ShowFindOutHowToAppealLSPJourney}
 import controllers.predicates.AuthPredicate
 import models.PenaltyTypeEnum._
 import models.appeals.MultiplePenaltiesData
@@ -45,7 +44,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
                                           (implicit val mcc: MessagesControllerComponents,
                                            authorise: AuthPredicate,
                                            val config: Configuration,
-                                           ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                           ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
@@ -61,7 +60,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
   }
 
-  def onPageLoadForObligation(penaltyId: String): Action[AnyContent] = authorise.async {
+  def onPageLoadForFindOutHowToAppealLSP(penaltyId: String): Action[AnyContent] = authorise.async {
     implicit user => {
       appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP = false, isAdditional = false).flatMap {
         _.fold(
@@ -69,8 +68,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
         )(
           appealData => {
             val redirectUrl = {
-              if(isEnabled(ShowFindOutHowToAppealLSPJourney)) findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
-              else routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+              findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad()
             }
             removeExistingKeysFromSessionAndRedirect(
               redirectUrl, penaltyId, appealData, isAppealAgainstObligation = true
@@ -81,22 +79,18 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
   }
 
-  def onPageLoadForFindOutHowToAppeal(principalChargeReference: String, vatAmountInPence: Int, vatPeriodStartDate: String, vatPeriodEndDate: String, isCa: Boolean): Action[AnyContent] = authorise.async {
+  def onPageLoadForFindOutHowToAppealLPP(principalChargeReference: String, vatAmountInPence: Int, vatPeriodStartDate: String, vatPeriodEndDate: String, isCa: Boolean): Action[AnyContent] = authorise.async {
     implicit request => {
-      if (appConfig.isEnabled(ShowFindOutHowToAppealJourney) || appConfig.isEnabled(ShowCAFindOutHowToAppealJourney)) {
-        val vatAmmountBD = BigDecimal(vatAmountInPence) / 100
+      val vatAmmountBD = BigDecimal(vatAmountInPence) / 100
 
-        removeExistingKeysFromSessionAndRedirectToFindOutHowToAppeal(
-          controllers.findOutHowToAppeal.routes.FindOutHowToAppealStartController.startFindOutHowToAppeal(),
-          vatPeriodStartDate = LocalDate.parse(vatPeriodStartDate),
-          vatPeriodEndDate = LocalDate.parse(vatPeriodEndDate),
-          vatAmount = vatAmmountBD,
-          principalChargeReference = principalChargeReference,
-          isCaLpp = isCa
-        )
-      } else {
-        errorHandler.onClientError(request, NOT_FOUND, "")
-      }
+      removeExistingKeysFromSessionAndRedirectToFindOutHowToAppeal(
+        controllers.findOutHowToAppeal.routes.FindOutHowToAppealStartController.startFindOutHowToAppeal(),
+        vatPeriodStartDate = LocalDate.parse(vatPeriodStartDate),
+        vatPeriodEndDate = LocalDate.parse(vatPeriodEndDate),
+        vatAmount = vatAmmountBD,
+        principalChargeReference = principalChargeReference,
+        isCaLpp = isCa
+      )
     }
   }
 
@@ -140,7 +134,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
     val allUserAnswers = {
       if (isAppealAgainstObligation) {
-        userAnswersWithPossibleMultiplePenaltiesData.setAnswer[Boolean](SessionKeys.isObligationAppeal, isAppealAgainstObligation)
+        userAnswersWithPossibleMultiplePenaltiesData.setAnswer[Boolean](SessionKeys.isFindOutHowToAppeal, isAppealAgainstObligation)
       } else userAnswersWithPossibleMultiplePenaltiesData
     }
     sessionService.updateAnswers(allUserAnswers).map {

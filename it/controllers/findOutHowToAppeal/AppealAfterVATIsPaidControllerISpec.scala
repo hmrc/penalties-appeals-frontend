@@ -16,30 +16,22 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status
-import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.http.Status.OK
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-class AppealAfterVATIsPaidControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
+class AppealAfterVATIsPaidControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
 
   val controller: AppealAfterVATIsPaidController = injector.instanceOf[AppealAfterVATIsPaidController]
 
   "GET /you-can-appeal-online-after-you-pay" should {
     "return 200 (OK) when the user is authorised" in new UserAnswersSetup(userAnswers()) {
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       val request: Result = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe OK
-    }
-
-    "return 404 (NOT_FOUND) when the user is auhtorised by the feature switch is disabled" in new UserAnswersSetup(userAnswers()) {
-      disableFeatureSwitch(ShowFindOutHowToAppealJourney)
-      val request: Result = await(controller.onPageLoad()(fakeRequest))
-      request.header.status shouldBe NOT_FOUND
     }
   }
 

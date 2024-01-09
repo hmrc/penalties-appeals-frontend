@@ -19,7 +19,7 @@ package base
 import java.time.{LocalDate, LocalDateTime}
 
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityActionImpl, DataRequiredActionImpl, DataRetrievalActionImpl}
+import controllers.predicates.{AuthPredicate, DataRequiredActionImpl, DataRetrievalActionImpl}
 import crypto.CryptoProvider
 import helpers.{DateTimeHelper, IsLateAppealHelper}
 import models.session.UserAnswers
@@ -91,8 +91,6 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
   val mockUploadJourneyRepository: UploadJourneyRepository = mock(classOf[UploadJourneyRepository])
 
   lazy val dataRequiredAction: DataRequiredActionImpl = injector.instanceOf[DataRequiredActionImpl]
-
-  lazy val checkObligationAvailabilityAction: CheckObligationAvailabilityActionImpl = new CheckObligationAvailabilityActionImpl(mockAppConfig)
 
   lazy val dataRetrievalAction: DataRetrievalActionImpl = new DataRetrievalActionImpl(mockSessionService, errorHandler)
 

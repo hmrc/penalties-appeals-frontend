@@ -23,13 +23,14 @@
         link: components.link,
         pageHeader: components.pageHeader)
 
-@(isLate: Boolean, isObligationAppeal: Boolean, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(isLate: Boolean, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
-@appealType = @{userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
+@appealType = @{
+    userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
+}
+
 @nextPageUrl = @{
-    if(isObligationAppeal){
-        routes.HonestyDeclarationController.onPageLoad().url
-    } else if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined && !appealType.contains(PenaltyTypeEnum.Late_Payment) && !appealType.contains(PenaltyTypeEnum.Additional)) {
+    if(userRequest.session.get(SessionKeys.agentSessionVrn).isDefined && !appealType.contains(PenaltyTypeEnum.Late_Payment) && !appealType.contains(PenaltyTypeEnum.Additional)) {
         routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
     } else if(userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyChargeReference).isDefined) {
         routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode).url
@@ -46,8 +47,8 @@
 }
 
 @layout(pageTitle = messages("service.name"),
-        isPageFullWidth = false,
-        optPageMode = Some(pageMode)
+    isPageFullWidth = false,
+    optPageMode = Some(pageMode)
 ) {
     @pageHeader(Some(messages("service.name")))
     <p class="govuk-body">@messages("appealStart.p1")</p>
@@ -62,12 +63,7 @@
     <h2 class="govuk-heading-m govuk-!-margin-bottom-2">@messages("appealStart.h2")</h2>
     <p class="govuk-body">@messages("appealStart.p4")</p>
     @bullets(
-        if(isObligationAppeal) {
-            Seq(
-                Html(messages("appealStart.obligation.li.2.1")),
-                Html(messages("appealStart.obligation.li.2.2"))
-            )
-        } else if(isLate) {
+        if(isLate) {
             baseBulletPoints.:+(
                 Html(messages("appealStart.li.2.3"))
             )
@@ -76,13 +72,11 @@
         }
     )
 
-    @if(!isObligationAppeal) {
-        <p class="govuk-body">
-          @link(appConfig.reasonableExcusesGuidanceLinkUrl, "appealStart.reasonableExcuses.externalGuidanceLinkText", id = Some("external-guidance-link"), isExternal = true, classes = "govuk-link")
-        </p>
-        <p class="govuk-body">@messages("appealStart.p5")</p>
-        <p class="govuk-body">@messages("appealStart.p6")</p>
-    }
+    <p class="govuk-body">
+    @link(appConfig.reasonableExcusesGuidanceLinkUrl, "appealStart.reasonableExcuses.externalGuidanceLinkText", id = Some("external-guidance-link"), isExternal = true, classes = "govuk-link")
+    </p>
+    <p class="govuk-body">@messages("appealStart.p5")</p>
+    <p class="govuk-body">@messages("appealStart.p6")</p>
 
     @link(nextPageUrl, "common.continue", button = true, classes = "govuk-button")
 }

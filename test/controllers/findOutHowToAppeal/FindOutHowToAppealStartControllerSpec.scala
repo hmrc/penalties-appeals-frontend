@@ -17,11 +17,9 @@
 package controllers.findOutHowToAppeal
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealJourney
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.http.Status.{FORBIDDEN, NOT_FOUND, SEE_OTHER}
+import play.api.http.Status.{FORBIDDEN, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
 import testUtils.AuthTestModels
@@ -43,7 +41,6 @@ class FindOutHowToAppealStartControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(true)
 
     val controller = new FindOutHowToAppealStartController(errorHandler, mockAppConfig)(mcc, authPredicate,
       dataRetrievalAction, config, ec)
@@ -59,13 +56,6 @@ class FindOutHowToAppealStartControllerSpec extends SpecBase {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad().url
           }
-        }
-
-        "return 404 (NOT_FOUND) when the feature switch is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
-          when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(false)
-          val result: Future[Result] = controller.startFindOutHowToAppeal()(vatTraderLPPUserRequest)
-          status(result) shouldBe NOT_FOUND
         }
       }
 

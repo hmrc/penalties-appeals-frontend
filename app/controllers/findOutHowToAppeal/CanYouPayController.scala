@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.CanYouPayForm.canYouPayForm
@@ -37,34 +36,31 @@ import views.html.findOutHowToAppeal.CanYouPayPage
 import scala.concurrent.{ExecutionContext, Future}
 
 class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHandler)
-                                            (implicit mcc: MessagesControllerComponents,
-                                             appConfig: AppConfig,
-                                             authorise: AuthPredicate,
-                                             dataRetrieval: DataRetrievalAction,
-                                             navigation: Navigation,
-                                             sessionService: SessionService,
-                                             val config: Configuration,
-                                             ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                   (implicit mcc: MessagesControllerComponents,
+                                    appConfig: AppConfig,
+                                    authorise: AuthPredicate,
+                                    dataRetrieval: DataRetrievalAction,
+                                    navigation: Navigation,
+                                    sessionService: SessionService,
+                                    val config: Configuration,
+                                    ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
   val pageMode: PageMode = PageMode(CanYouPayPage, NormalMode)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
-      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(canYouPayForm,
-          SessionKeys.willUserPay,
-          request.answers)
-        val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
-        val radioOptions = RadioOptionHelper.radioOptionsForCanYouPayPage(formProvider, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
-        val postAction = controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit()
-        val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
-        sessionService.updateAnswers(willUserPay).map {
-          _ => Ok(page(formProvider, radioOptions, postAction, pageMode))
-        }
-      } else {
-        errorHandler.onClientError(request, NOT_FOUND, "")
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(canYouPayForm,
+        SessionKeys.willUserPay,
+        request.answers)
+      val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
+      val radioOptions = RadioOptionHelper.radioOptionsForCanYouPayPage(formProvider, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
+      val postAction = controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit()
+      val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
+      sessionService.updateAnswers(willUserPay).map {
+        _ => Ok(page(formProvider, radioOptions, postAction, pageMode))
       }
     }
   }
+
   def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit userRequest => {
     canYouPayForm
       .bindFromRequest()

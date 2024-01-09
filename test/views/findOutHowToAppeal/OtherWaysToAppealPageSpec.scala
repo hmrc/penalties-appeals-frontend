@@ -20,6 +20,7 @@ import base.{BaseSelectors, SpecBase}
 import messages.findOutHowToAppeal.OtherWaysToAppealMessages._
 import models.NormalMode
 import models.pages.{OtherWaysToAppealPage, PageMode}
+import org.jsoup.nodes.Document
 import views.behaviours.ViewBehaviours
 import views.html.findOutHowToAppeal.OtherWaysToAppealPage
 
@@ -36,7 +37,7 @@ class OtherWaysToAppealPageSpec extends SpecBase with ViewBehaviours {
     val link2 = "#penalties-link"
   }
 
-  implicit val doc = asDocument(page(PageMode(OtherWaysToAppealPage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys))
+  implicit val doc: Document = asDocument(page(PageMode(OtherWaysToAppealPage, NormalMode))(implicitly, implicitly, userRequestWithCorrectKeys))
 
   "OtherWaysToAppealPage" should {
     val expectedContent = Seq(

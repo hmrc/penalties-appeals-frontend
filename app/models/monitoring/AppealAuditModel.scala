@@ -129,29 +129,6 @@ case class AppealAuditModel(appealSubmission: AppealSubmission, penaltyType: Aud
           "lateAppeal" -> appealInfo.lateAppeal,
           "lateAppealReason" -> (if(appealInfo.lateAppeal) appealInfo.lateAppealReason else None)
         )
-      case obligation if obligation.isInstanceOf[ObligationAppealInformation] =>
-        val appealInfo = obligation.asInstanceOf[ObligationAppealInformation]
-        jsonObjNoNulls(
-          "type" -> appealInfo.reasonableExcuse,
-          "statement" -> appealInfo.statement,
-          "noOfUploadedFiles" -> s"${optUploads.map(_.size).getOrElse(0)}",
-          "uploadedFiles" -> {
-            if(optUploads.isDefined) {
-              optUploads.get.map {
-                upload => {
-                  Json.obj(
-                    "upscanReference" -> upload.reference,
-                    "uploadTimestamp" -> upload.uploadDetails.get.uploadTimestamp,
-                    "fileName" -> upload.uploadDetails.get.fileName,
-                    "checksum" -> upload.uploadDetails.get.checksum,
-                    "fileMimeType" -> upload.uploadDetails.get.fileMimeType,
-                    "downloadUrl" -> upload.downloadUrl.get
-                  )
-                }
-              }
-            } else None
-          }
-      )
       case _ => throw new MatchError(s"[AppealAuditModel][appealInformationJsonObj] - Unknown appeal information ${appealSubmission.appealInformation}")
     }
   }

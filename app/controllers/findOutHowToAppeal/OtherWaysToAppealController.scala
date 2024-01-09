@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import models.pages.{OtherWaysToAppealPage, PageMode}
@@ -36,18 +35,14 @@ class OtherWaysToAppealController @Inject()(otherWaysToAppealPage: OtherWaysToAp
                                             authorise: AuthPredicate,
                                             dataRetrieval: DataRetrievalAction,
                                             val config: Configuration,
-                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(OtherWaysToAppealPage, mode)
 
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
-      if(appConfig.isEnabled(ShowFindOutHowToAppealJourney)) {
-        Future(Ok(otherWaysToAppealPage(pageMode(NormalMode))))
-      } else {
-        errorHandler.onClientError(request, NOT_FOUND, "")
-      }
+      Future(Ok(otherWaysToAppealPage(pageMode(NormalMode))))
     }
   }
 }

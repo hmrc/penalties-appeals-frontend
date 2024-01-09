@@ -17,15 +17,14 @@
 package controllers
 
 import base.SpecBase
-import config.featureSwitches.ShowFullAppealAgainstTheObligation
 import models.PenaltyTypeEnum
 import models.PenaltyTypeEnum.{Additional, Late_Payment, Late_Submission}
 import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import org.mockito.ArgumentCaptor
 import play.api.Configuration
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.monitoring.JsonAuditModel
@@ -50,7 +49,6 @@ class HonestyDeclarationControllerSpec extends SpecBase {
     reset(mockAppConfig)
     reset(mockAuditService)
     reset(mockConfig)
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(true)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -63,7 +61,7 @@ class HonestyDeclarationControllerSpec extends SpecBase {
       mainNavigator,
       mockAuditService,
       mockSessionService,
-    )(mcc, appConfig, config, authPredicate, dataRequiredAction, dataRetrievalAction, checkObligationAvailabilityAction, ec)
+    )(mcc, appConfig, config, authPredicate, dataRequiredAction, dataRetrievalAction, ec)
   }
 
   "onPageLoad" should {
@@ -76,15 +74,6 @@ class HonestyDeclarationControllerSpec extends SpecBase {
       }
     }
 
-    s"redirect to appeal by letter page when the feature switch ($ShowFullAppealAgainstTheObligation) is disabled" in new Setup(AuthTestModels.successfulAuthResult) {
-      val answers: JsObject = correctUserAnswers ++ Json.obj(SessionKeys.isObligationAppeal -> true)
-      when(mockSessionService.getUserAnswers(any())).thenReturn(
-        Future.successful(Some(userAnswers(answers))))
-      when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFullAppealAgainstTheObligation))).thenReturn(false)
-      val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys.copy(answers = userAnswers(answers)))
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe controllers.routes.YouCannotAppealController.onPageLoadAppealByLetter().url
-    }
 
     "return 500" when {
       "the user hasn't selected an option on the reasonable excuse page" in new Setup(AuthTestModels.successfulAuthResult) {

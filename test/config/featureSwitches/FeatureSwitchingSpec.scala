@@ -34,7 +34,6 @@ class FeatureSwitchingSpec extends SpecBase {
     }
     sys.props -= NonJSRouting.name
     sys.props -= ShowDigitalCommsMessage.name
-    sys.props -= ShowFullAppealAgainstTheObligation.name
     sys.props -= ShowReasonableExcuseHintText.name
     sys.props -= featureSwitching.TIME_MACHINE_NOW
   }
@@ -43,10 +42,7 @@ class FeatureSwitchingSpec extends SpecBase {
     super.afterAll()
     sys.props -= NonJSRouting.name
     sys.props -= ShowDigitalCommsMessage.name
-    sys.props -= ShowFullAppealAgainstTheObligation.name
     sys.props -= ShowReasonableExcuseHintText.name
-    sys.props -= ShowFindOutHowToAppealLSPJourney.name
-    sys.props -= ShowFindOutHowToAppealJourney.name
   }
 
   "listOfAllFeatureSwitches" should {
@@ -54,11 +50,7 @@ class FeatureSwitchingSpec extends SpecBase {
       FeatureSwitch.listOfAllFeatureSwitches shouldBe List(
         NonJSRouting,
         ShowDigitalCommsMessage,
-        ShowFullAppealAgainstTheObligation,
         ShowReasonableExcuseHintText,
-        ShowFindOutHowToAppealJourney,
-        ShowFindOutHowToAppealLSPJourney,
-        ShowCAFindOutHowToAppealJourney
       )
     }
   }

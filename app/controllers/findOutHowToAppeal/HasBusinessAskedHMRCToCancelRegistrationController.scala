@@ -16,7 +16,6 @@
 
 package controllers.findOutHowToAppeal
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealLSPJourney}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import forms.HasBusinessAskedHMRCToCancelRegistrationForm.hasBusinessAskedHMRCToCancelRegistrationForm
@@ -41,29 +40,25 @@ class HasBusinessAskedHMRCToCancelRegistrationController @Inject()(
                                                                     page: HasBusinessAskedHMRCToCancelRegistrationPage,
                                                                     errorHandler: ErrorHandler
                                                                   )(implicit mcc: MessagesControllerComponents,
-                                                                   appConfig: AppConfig,
-                                                                   authorise: AuthPredicate,
-                                                                   dataRequired: DataRequiredAction,
-                                                                   dataRetrieval: DataRetrievalAction,
-                                                                   navigation: Navigation,
-                                                                   sessionService: SessionService,
-                                                                   val config: Configuration,
-                                                                   ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching {
+                                                                    appConfig: AppConfig,
+                                                                    authorise: AuthPredicate,
+                                                                    dataRequired: DataRequiredAction,
+                                                                    dataRetrieval: DataRetrievalAction,
+                                                                    navigation: Navigation,
+                                                                    sessionService: SessionService,
+                                                                    val config: Configuration,
+                                                                    ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: PageMode = PageMode(HasBusinessAskedHMRCToCancelRegistrationPage, NormalMode)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
-      if (appConfig.isEnabled(ShowFindOutHowToAppealLSPJourney)) {
-        val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(hasBusinessAskedHMRCToCancelRegistrationForm,
-          SessionKeys.hasBusinessAskedHMRCToCancelRegistration,
-          request.answers)
-        val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
-        val postAction = controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onSubmit()
-        Ok(page(formProvider, radioOptions, postAction, pageMode))
-      } else {
-        errorHandler.notFoundError(request)
-      }
+      val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(hasBusinessAskedHMRCToCancelRegistrationForm,
+        SessionKeys.hasBusinessAskedHMRCToCancelRegistration,
+        request.answers)
+      val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
+      val postAction = controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onSubmit()
+      Ok(page(formProvider, radioOptions, postAction, pageMode))
     }
   }
 
@@ -86,7 +81,7 @@ class HasBusinessAskedHMRCToCancelRegistrationController @Inject()(
   }
 
   private def updateAnswers(existingUserAnswers: UserAnswers, answer: String) = {
-    if(answer == "yes") {
+    if (answer == "yes") {
       existingUserAnswers
         .setAnswer[String](SessionKeys.hasBusinessAskedHMRCToCancelRegistration, answer)
     } else {

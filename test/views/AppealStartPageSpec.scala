@@ -33,7 +33,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date" must {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -63,7 +63,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     s"it has been more than ${appConfig.daysRequiredForLateAppeal} days since the due date" must {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -94,7 +94,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal is for a LPP" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, pageMode = PageMode(AppealStartPage, NormalMode))(
         userRequestLPPWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
@@ -125,37 +125,8 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       }
     }
 
-    "the appeal is against an obligation" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true, pageMode = PageMode(AppealStartPage, NormalMode))(
-        userRequestWithCorrectKeys, implicitly, implicitly
-      )
-
-      implicit val doc: Document = asDocument(applyView())
-
-      val expectedContent = Seq(
-        Selectors.title -> title,
-        Selectors.h1 -> h1,
-        Selectors.pElementIndex(3) -> p1,
-        Selectors.listIndexWithElementIndex(4, 1) -> li1,
-        Selectors.listIndexWithElementIndex(4, 2) -> li2,
-        Selectors.pElementIndex(5) -> p2,
-        Selectors.pElementIndex(6) -> p3,
-        Selectors.h2 -> h2,
-        Selectors.pElementIndex(8) -> p4,
-        Selectors.listIndexWithElementIndex(9, 1) -> li3Obl,
-        Selectors.listIndexWithElementIndex(9, 2) -> li4Obl,
-        Selectors.button -> button
-      )
-
-      behave like pageWithExpectedMessages(expectedContent)
-
-      "NOT have a link to external guidance" in {
-        doc.select(Selectors.externalGuidanceLink).isEmpty shouldBe true
-      }
-    }
-
     "the appeal is triggered by an agent and is not a LPP - have a link to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         agentUserLSP, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
@@ -163,17 +134,8 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       doc.select("#main-content a").get(1).attr("href") shouldBe "/penalties-appeals/who-planned-to-submit-vat-return"
     }
 
-    "the appeal is an obligation appeal - have a link to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = true, pageMode = PageMode(AppealStartPage, NormalMode))(
-        userRequestLPPWithCorrectKeys, implicitly, implicitly)
-
-      implicit val doc: Document = asDocument(applyView())
-
-      doc.select("#main-content a").attr("href") shouldBe "/penalties-appeals/honesty-declaration"
-    }
-
     "the appeal does not match the special cases - have a link to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, isObligationAppeal = false, pageMode = PageMode(AppealStartPage, NormalMode))(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, pageMode = PageMode(AppealStartPage, NormalMode))(
        userRequestLPPWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())

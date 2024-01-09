@@ -18,7 +18,6 @@ package controllers.findOutHowToAppeal
 
 import java.time.LocalDate
 
-import config.featureSwitches.{FeatureSwitching, ShowFindOutHowToAppealJourney}
 import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.libs.json.Json
@@ -28,7 +27,7 @@ import stubs.PayNowStub.{successfulPayNowCall, unsuccessfulPayNowCall}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
-class PayNowControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest with FeatureSwitching {
+class PayNowControllerISpec extends IntegrationSpecCommonBase with AuthorisationTest {
   val controller: PayNowController = injector.instanceOf[PayNowController]
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -45,7 +44,6 @@ class PayNowControllerISpec extends IntegrationSpecCommonBase with Authorisation
         "journeyId" -> "1234",
         "nextUrl" -> "http://url/next-url"
       ).toString()
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       successfulPayNowCall(responseBody)
       val result: Result = await(controller.redirect()(fakeRequest))
       result.header.status shouldBe SEE_OTHER
@@ -53,7 +51,6 @@ class PayNowControllerISpec extends IntegrationSpecCommonBase with Authorisation
     }
 
     "return an error when a call is unsuccessful" in {
-      enableFeatureSwitch(ShowFindOutHowToAppealJourney)
       unsuccessfulPayNowCall
       val result = await(controller.redirect()(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR

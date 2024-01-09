@@ -16,29 +16,16 @@
 
 package services
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
-import com.github.tomakehurst.wiremock.client.WireMock._
-import models.session.UserAnswers
-import models.upload.{UploadDetails, UploadJourney, UploadStatusEnum}
-import models.{PenaltyTypeEnum, UserRequest}
-import org.mongodb.scala.bson.collection.immutable.Document
-import org.scalatest.concurrent.Eventually.eventually
-import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.AnyContent
-import play.api.test.FakeRequest
+import play.api.libs.json.Json
+
 import play.api.test.Helpers._
-import repositories.UploadJourneyRepository
 import stubs.PayNowStub.{successfulPayNowCall, unsuccessfulPayNowCall}
-import stubs.PenaltiesStub._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
-import utils.Logger.logger
-import utils.{IntegrationSpecCommonBase, SessionKeys}
+import utils.IntegrationSpecCommonBase
 
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters._
-
 
 class PayNowServiceISpec extends IntegrationSpecCommonBase {
   val service = injector.instanceOf[PayNowService]

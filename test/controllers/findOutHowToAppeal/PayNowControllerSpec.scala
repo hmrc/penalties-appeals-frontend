@@ -18,7 +18,6 @@ package controllers.findOutHowToAppeal
 
 
 import base.SpecBase
-import config.featureSwitches.ShowFindOutHowToAppealJourney
 import connectors.httpParsers.UnexpectedFailure
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
@@ -52,40 +51,30 @@ class PayNowControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(AuthTestModels.successfulAuthResult)
 
-    when(mockAppConfig.isEnabled(ArgumentMatchers.eq(ShowFindOutHowToAppealJourney))).thenReturn(featureSwitch)
 
-    val controller = new PayNowController(mcc, mockPayNowService, errorHandler)(ec, mockAppConfig, authPredicate, dataRetrievalAction, mockConfig)
+    val controller = new PayNowController(mcc, mockPayNowService, errorHandler)(ec, authPredicate, dataRetrievalAction, mockConfig)
   }
 
   "redirect" should {
-  "the user is authorised" must {
-  "return 303 (SEE_OTHER) when the feature switch is on" in new Setup {
-  when(mockSessionService.getUserAnswers(any()))
-  .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
-  when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-  when(mockPayNowService.retrieveRedirectUrl(any, any, any, any)(any, any)).thenReturn(Future.successful(Right("/correct-url")))
-  val result: Future[Result] = controller.redirect(fakeRequest)
-  status(result) shouldBe SEE_OTHER
-  redirectLocation(result) shouldBe Some("/correct-url")
-}
+    "the user is authorised" must {
+      "return 303 (SEE_OTHER) when the feature switch is on" in new Setup {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
+        when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
+        when(mockPayNowService.retrieveRedirectUrl(any, any, any, any)(any, any)).thenReturn(Future.successful(Right("/correct-url")))
+        val result: Future[Result] = controller.redirect(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/correct-url")
+      }
 
-  "return 500 (ISE) when service returns an error" in new Setup {
-  when(mockSessionService.getUserAnswers(any()))
-  .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
-  when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-  when(mockPayNowService.retrieveRedirectUrl(any, any, any, any)(any, any)).thenReturn(Future.successful(Left(UnexpectedFailure(500, "/correct-url"))))
-  val result: Future[Result] = controller.redirect(fakeRequest)
-  status(result) shouldBe INTERNAL_SERVER_ERROR
-}
-
-  "return 404 (NOT_FOUND) when the feature switch is off" in new Setup(false) {
-  when(mockSessionService.getUserAnswers(any()))
-  .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
-  when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
-  when(mockPayNowService.retrieveRedirectUrl(any, any, any, any)(any, any)).thenReturn(Future.successful(Right("/correct-url")))
-  val result: Future[Result] = controller.redirect(fakeRequest)
-  status(result) shouldBe NOT_FOUND
-}
-}
-}
+      "return 500 (ISE) when service returns an error" in new Setup {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
+        when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
+        when(mockPayNowService.retrieveRedirectUrl(any, any, any, any)(any, any)).thenReturn(Future.successful(Left(UnexpectedFailure(500, "/correct-url"))))
+        val result: Future[Result] = controller.redirect(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
 }

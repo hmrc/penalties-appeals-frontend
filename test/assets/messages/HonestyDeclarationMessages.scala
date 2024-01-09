@@ -35,8 +35,6 @@ object HonestyDeclarationMessages {
 
   val li1AgentOtherLPP: String => String = (dueDate: String) => s"my client was unable to pay the VAT bill due on $dueDate"
 
-  val li1Obligation = "HMRC has been asked to cancel the VAT registration"
-
   val li1AgentText: (String, String) => String = (reasonText: String, dueDate: String) => s"because $reasonText," +
     s" they were unable to submit the VAT Return due on $dueDate"
 
@@ -62,9 +60,6 @@ object HonestyDeclarationMessages {
   val li2LossOfStaffLPP = "no one else was available to make the payment"
 
   val liLppTechIssues = "the technical failure was not due to lack of funds"
-
-  val li2Obligation: (String, String) => String = (startDate: String, endDate: String) =>
-    s"I believe there was no VAT Return due for the period $startDate to $endDate"
 
   val li3 = "I will provide honest and accurate information in this appeal"
 

@@ -18,7 +18,7 @@ package controllers
 
 import config.featureSwitches.FeatureSwitching
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, CheckObligationAvailabilityAction, DataRequiredAction, DataRetrievalAction}
+import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import helpers.{IsLateAppealHelper, SessionAnswersHelper}
 import models.pages.{CheckYourAnswersPage, PageMode}
 import models.{Mode, NormalMode, UserRequest}
@@ -48,30 +48,19 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
                                            appConfig: AppConfig,
                                            authorise: AuthPredicate,
                                            dataRetrieval: DataRetrievalAction,
-                                           dataRequired: DataRequiredAction,
-                                           checkObligationAvailability: CheckObligationAvailabilityAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter with FeatureSwitching {
+                                           dataRequired: DataRequiredAction) extends FrontendController(mcc) with I18nSupport with ImplicitDateFormatter with FeatureSwitching {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(CheckYourAnswersPage, mode)
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
+  def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       if(isLateAppealHelper.isAppealLate() && userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty){
         logger.warn("[CheckYourAnswersController][onPageLoad] User tried skipping late appeal page, redirecting back to late appeal page")
         Future(Redirect(controllers.routes.MakingALateAppealController.onPageLoad()))
       } else {
         userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
-          if (userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).isDefined && sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
-            logger.debug(s"[CheckYourAnswersController][onPageLoad] Loading check your answers page for appealing against obligation")
-            for {
-              fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames(userRequest.session.get(SessionKeys.journeyId).get)
-            } yield {
-              val answersFromSession = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
-              Ok(checkYourAnswersPage(answersFromSession, pageMode(NormalMode))).removingFromSession(SessionKeys.originatingChangePage)
-            }
-          } else {
             logger.error("[CheckYourAnswersController][onPageLoad] User hasn't selected reasonable excuse option - no key in session")
             Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
-          }
         })(
           reasonableExcuse => {
             if (sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage().nonEmpty) {
@@ -93,15 +82,11 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired andThen checkObligationAvailability).async {
+  def onSubmit(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
       userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).fold({
-        if(userRequest.answers.getAnswer[Boolean](SessionKeys.isObligationAppeal).contains(true)) {
-          handleAppealSubmission("obligation")
-        } else {
           logger.error("[CheckYourAnswersController][onSubmit] No reasonable excuse selection found in session")
           Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoad()))
-        }
       })(
         reasonableExcuse => {
           if (sessionAnswersHelper.isAllAnswerPresentForReasonableExcuse(reasonableExcuse)) {
