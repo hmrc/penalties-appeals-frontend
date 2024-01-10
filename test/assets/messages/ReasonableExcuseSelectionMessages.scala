@@ -42,7 +42,7 @@ object ReasonableExcuseSelectionMessages {
 
   val radioOption5 = "Loss of staff essential to the VAT process"
 
-  val radioOption6 = "Technology issues"
+  val radioOption6 = "Technology issues – including problems with software, hardware or connecting to HMRC"
 
   val breakerText = "or"
 

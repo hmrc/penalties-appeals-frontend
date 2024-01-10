@@ -367,7 +367,7 @@ class SessionAnswersHelperSpec extends SpecBase {
         val result = checkYourAnswers("technicalIssues", techIssuesAnswers)
 
         result.head.key shouldBe "Reason for missing the VAT deadline"
-        result.head.value shouldBe "Technology issues"
+        result.head.value shouldBe "Technology issues – including problems with software, hardware or connecting to HMRC"
         result.head.url shouldBe controllers.routes.CheckYourAnswersController.changeAnswer(
           controllers.routes.ReasonableExcuseController.onPageLoad().url,
           ReasonableExcuseSelectionPage.toString
