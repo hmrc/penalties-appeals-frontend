@@ -89,7 +89,8 @@ class CrimeReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoadForWhenCrimeHappened(NormalMode)(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
         }
       }
 
@@ -216,7 +217,8 @@ class CrimeReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoadForHasCrimeBeenReported(NormalMode)(fakeRequest)
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
         }
       }
 
@@ -297,7 +299,8 @@ class CrimeReasonControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onSubmitForHasCrimeBeenReported(NormalMode)(fakeRequest.withFormUrlEncodedBody(
             "value" -> "no"
           ))
-          status(result) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
         }
 
       }

@@ -26,29 +26,32 @@ import play.api.test.Helpers._
 import stubs.AuthStub
 import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
-
 import java.time.LocalDate
+
+import controllers.routes
 
 trait AuthorisationTest {
   _: IntegrationSpecCommonBase =>
   def runControllerPredicateTests(result: => Action[AnyContent], method: String, url: String): Unit = {
-    "return 500 (ISE) when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(UserAnswers("1234", Json.obj())) {
+    "redirect to Internal Server Error Page when the user is authorised but the session does not contain the correct keys" in new UserAnswersSetup(UserAnswers("1234", Json.obj())) {
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest(method, url).withSession(
         authToken -> "1234",
         SessionKeys.journeyId -> "1234"
       )
       val request = await(result.apply(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
-    "return 500 (ISE) when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(UserAnswers("1234", Json.obj(
+    "redirect to Internal Server Error Page when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(UserAnswers("1234", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
     ))) {
       val request = await(result.apply(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe Status.SEE_OTHER
+      request.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {

@@ -329,7 +329,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
 
     "return 500 (ISE) when the user is authorised but the session does not have the start date" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe SEE_OTHER
+      request.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
     runControllerPredicateTests(controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode), "GET", "/when-did-hospital-stay-end")
@@ -371,7 +372,8 @@ class HealthReasonControllerISpec extends IntegrationSpecCommonBase with Authori
 
     "return 500 (ISE) when the user is authorised but the session does not have a start date" in new UserAnswersSetup(userAnswers()) {
       val request = await(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode)(fakeRequest))
-      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      request.header.status shouldBe SEE_OTHER
+      request.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
 
     runControllerPredicateTests(controller.onSubmitForWhenDidHospitalStayEnd(NormalMode), "POST", "/when-did-hospital-stay-end")

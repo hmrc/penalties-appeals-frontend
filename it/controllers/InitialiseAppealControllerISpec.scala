@@ -118,7 +118,8 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onPageLoad("1234", isLPP = false, isAdditional = false)(FakeRequest().withSession(
         authToken -> "1234"
       ))
-      await(result).header.status shouldBe INTERNAL_SERVER_ERROR
+      await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
   }
 
@@ -147,7 +148,8 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       val result = controller.onPageLoadForFindOutHowToAppealLSP("1234")(FakeRequest().withSession(
         authToken -> "1234"
       ))
-      await(result).header.status shouldBe INTERNAL_SERVER_ERROR
+      await(result).header.status shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
     }
   }
 

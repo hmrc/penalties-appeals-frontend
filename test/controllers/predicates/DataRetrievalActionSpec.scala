@@ -17,6 +17,7 @@
 package controllers.predicates
 
 import base.SpecBase
+import controllers.routes
 import models.AuthRequest
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -90,7 +91,8 @@ class DataRetrievalActionSpec extends SpecBase {
             errorHandler
           ))
         val result = fakeController.onPageLoad()
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
   }

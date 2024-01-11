@@ -18,6 +18,7 @@ package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import connectors.httpParsers.NoContent
+import controllers.routes
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
@@ -71,7 +72,8 @@ class TimeToPayControllerSpec extends SpecBase {
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
         when(mockTTPService.retrieveRedirectUrl(any, any)).thenReturn(Future.successful(Left(NoContent)))
         val result: Future[Result] = controller.redirect(fakeRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
   }

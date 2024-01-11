@@ -116,7 +116,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
 
       "the call fails to retrieve the reasonable excuse list" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -128,7 +129,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
           ))
 
         val result: Future[Result] = controller.onPageLoad()(userRequestWithCorrectKeys)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
 
@@ -218,7 +220,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody("value" -> "bereavement"))
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
 
       "the call fails to retrieve the reasonable excuse list" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -230,7 +233,8 @@ class ReasonableExcuseControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         val result: Future[Result] = controller.onSubmit()(
           fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "bereavement")))
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
 

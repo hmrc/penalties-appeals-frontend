@@ -33,8 +33,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
 import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys
-
 import java.time.{Instant, LocalDateTime}
+
+import controllers.routes
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -86,7 +88,8 @@ class UpscanServiceSpec extends SpecBase with LogCapturing {
           .thenReturn(Future.successful(None))
         val result: Future[Result] = service.waitForStatus(
           "J1234", "File1234", 100000000L, NormalMode, isAddingAnotherDocument = false, blockToDoNothing)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
       }
     }
 
