@@ -248,7 +248,8 @@ class InitialiseAppealControllerSpec extends SpecBase {
         SessionKeys.endDateOfPeriod -> LocalDate.of(2020, 1, 31),
         SessionKeys.penaltyNumber -> "12345",
         SessionKeys.dueDateOfPeriod -> LocalDate.of(2020, 3, 7),
-        SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8)
+        SessionKeys.dateCommunicationSent -> LocalDate.of(2020, 3, 8),
+        SessionKeys.isFindOutHowToAppeal -> true
       ))
       val appealDataToReturn: AppealData = AppealData(
         `type` = PenaltyTypeEnum.Late_Submission,

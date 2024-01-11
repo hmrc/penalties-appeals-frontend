@@ -54,7 +54,7 @@ class PayNowControllerISpec extends IntegrationSpecCommonBase with Authorisation
       unsuccessfulPayNowCall
       val result = await(controller.redirect()(fakeRequest))
       result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+      result.header.headers(LOCATION) shouldBe controllers.routes.InternalServerErrorController.onPageLoad().url
     }
   }
 }
