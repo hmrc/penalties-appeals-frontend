@@ -25,7 +25,6 @@
         hmrcTimeoutDialog: HmrcTimeoutDialog,
         header: components.Header,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-        phaseBanner: components.phaseBanner,
         govukBackLink: GovukBackLink,
         hmrcStandardFooter: HmrcStandardFooter,
         languageSelect: views.html.LanguageSelect
@@ -44,7 +43,6 @@
     isAuthorised: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
-    @phaseBanner("beta")
     @if(appConfig.welshLanguageSupportEnabled) {@languageSelect()}
 
     @if(backLinkEnabled) {
