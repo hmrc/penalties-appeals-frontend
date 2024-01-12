@@ -76,8 +76,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val result: Result = await(controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest))
-      result.header.status shouldBe SEE_OTHER
-      redirectLocation(Future(result)).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+      result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +
@@ -235,8 +234,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val result: Result = await(controller.onPageLoadForFindOutHowToAppealLSP("12345")(fakeRequest))
-      result.header.status shouldBe SEE_OTHER
-      redirectLocation(Future(result)).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+      result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "call the penalties backend and handle a success response and add the keys to the session " +

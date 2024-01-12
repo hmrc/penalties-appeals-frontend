@@ -68,8 +68,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.successful(None))
         val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "show ISE when a name retrieval fails" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -77,8 +76,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         when(mockUpscanService.getFileNameForJourney(any(), any())(any())).thenReturn(Future.failed(new Exception("something went wrong :(")))
         val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(userRequestWithCorrectKeys)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
@@ -161,8 +159,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
               val result = await(controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(
                 fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "yes"))))
                logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_REMOVAL_FAILURE_UPSCAN.toString)) shouldBe true
-              result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+              result.header.status shouldBe INTERNAL_SERVER_ERROR
             }
           }
         }
@@ -176,8 +173,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
               val result = await(controller.onSubmit(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(
                 fakeRequestConverter(correctUserAnswers, fakeRequest.withFormUrlEncodedBody("value" -> "what"))))
               logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_NAME_RETRIEVAL_FAILURE_UPSCAN.toString)) shouldBe true
-              result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+              result.header.status shouldBe INTERNAL_SERVER_ERROR
             }
           }
         }
@@ -187,8 +183,7 @@ class RemoveFileControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad(fileReference = "12345abc-678df", isJsEnabled = true, mode = NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
     }

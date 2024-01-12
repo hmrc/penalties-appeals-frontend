@@ -51,8 +51,7 @@ class DataRequiredActionSpec extends SpecBase {
           request = requestWithNoSessionKeys)
 
       val result = await(fakeController.onPageLoad())
-      result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+      result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when some of the data is missing as part of the session" in {
@@ -70,8 +69,7 @@ class DataRequiredActionSpec extends SpecBase {
         request = requestWithPartSessionKeys)
 
       val result = await(fakeController.onPageLoad())
-      result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+      result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
     "redirect to the appeal has already been submitted page" when {

@@ -171,7 +171,6 @@ GET        /service-unavailable                                controllers.Servi
 GET        /problem-with-service                                controllers.ProblemWithServiceController.onPageLoad()
 GET        /duplicate-appeal                                   controllers.DuplicateAppealController.onPageLoad()
 GET        /technical-error                                     controllers.TechnicalErrorController.onPageLoad()
-GET        /technical-difficulties                             controllers.InternalServerErrorController.onPageLoad()
 
 # Timeout pages
 GET        /timeout                                            controllers.TimeoutController.onPageLoad()

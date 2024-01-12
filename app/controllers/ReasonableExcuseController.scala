@@ -103,7 +103,7 @@ class ReasonableExcuseController @Inject()(
       _.fold[Either[Future[Result], Seq[ReasonableExcuse]]]({
         logger.error("[ReasonableExcuseController][onPageLoad] - Received a None response from the appeal service when " +
           "trying to retrieve reasonable excuses - rendering ISE")
-        Left(Future(errorHandler.showInternalServerError))
+        Left(Future(errorHandler.showInternalServerError()))
       })(Right(_))
     }
   }

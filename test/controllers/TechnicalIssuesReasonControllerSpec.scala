@@ -81,8 +81,7 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForWhenTechnologyIssuesBegan(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
@@ -127,16 +126,14 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "user hasn't entered the start date for the technical issues" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
         val result: Future[Result] = controller.onPageLoadForWhenTechnologyIssuesEnded(NormalMode)(userRequestWithCorrectKeys)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
@@ -352,8 +349,7 @@ class TechnicalIssuesReasonControllerSpec extends SpecBase {
               "date.month" -> "1",
               "date.year" -> "2021"
             )))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
     }

@@ -84,7 +84,7 @@ class UpscanService @Inject()(uploadJourneyRepository: UploadJourneyRepository,
     uploadJourneyRepository.getStatusOfFileUpload(journeyId, fileReference).flatMap {
       _.fold({
         logger.error(s"[UpscanService][waitForStatus] - No upload found for journey: $journeyId and file: $fileReference")
-        Future(errorHandler.showInternalServerError)
+        Future(errorHandler.showInternalServerError())
       })(
         uploadStatus => {
           logger.info(s"[UpscanService][waitForStatus] - Running status check for upload for journey: $journeyId and file: $fileReference")

@@ -112,7 +112,7 @@ class AgentsController @Inject()(navigation: Navigation,
               }
             case _ =>
               logger.debug("[AgentsController][onSubmitForWhoPlannedToSubmitVATReturn]- Something went wrong with 'vatReturnSubmittedBy'")
-              Future(errorHandler.showInternalServerError)
+              Future(errorHandler.showInternalServerError(Some(userRequest)))
           }
         }
       )

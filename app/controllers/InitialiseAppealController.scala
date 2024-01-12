@@ -53,7 +53,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
         multiPenaltyData <- if (isLPP) appealService.validateMultiplePenaltyDataForEnrolmentKey(penaltyId) else Future.successful(None)
         result <- if (appealData.isDefined) {
           removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData.get, multiPenaltyData, isAppealAgainstObligation = false)
-        } else Future(errorHandler.showInternalServerError)
+        } else Future(errorHandler.showInternalServerError())
       } yield {
         result
       }
@@ -64,7 +64,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     implicit user => {
       appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP = false, isAdditional = false).flatMap {
         _.fold(
-          Future(errorHandler.showInternalServerError)
+          Future(errorHandler.showInternalServerError())
         )(
           appealData => {
             val redirectUrl = {
@@ -173,7 +173,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
           .addingToSession((SessionKeys.journeyId, journeyId))
     }.recover(
       _ =>
-        errorHandler.showInternalServerError
+        errorHandler.showInternalServerError()
     )
   }
 }

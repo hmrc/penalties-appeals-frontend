@@ -88,8 +88,7 @@ class UpscanServiceSpec extends SpecBase with LogCapturing {
           .thenReturn(Future.successful(None))
         val result: Future[Result] = service.waitForStatus(
           "J1234", "File1234", 100000000L, NormalMode, isAddingAnotherDocument = false, blockToDoNothing)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 

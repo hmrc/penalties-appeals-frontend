@@ -50,7 +50,7 @@ class DataRetrievalActionImpl @Inject()(sessionService: SessionService,
         }.recover {
           case e => {
             logger.error(s"[DataRetrievalActionImpl][refine] - Failed to query mongo for session data with message: ${e.getMessage}")
-            Left(errorHandler.showInternalServerError(request))
+            Left(errorHandler.showInternalServerError()(request))
           }
         }
       }

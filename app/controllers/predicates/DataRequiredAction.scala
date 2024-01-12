@@ -57,7 +57,7 @@ class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val 
             request.answers.getAnswer[String](SessionKeys.dateCommunicationSent),
             request.session.get(SessionKeys.journeyId))
         }")
-        Future.successful(Left(errorHandler.showInternalServerError(request)))
+        Future.successful(Left(errorHandler.showInternalServerError(Some(request))(request)))
     }
   }
 }

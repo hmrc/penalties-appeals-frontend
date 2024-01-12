@@ -17,17 +17,18 @@
 package config
 
 import javax.inject.{Inject, Singleton}
+import models.UserRequest
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.{BadRequest, InternalServerError, NotFound, Redirect}
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
-import views.html.errors.ErrorTemplate
+import views.html.errors.{ErrorTemplate, InternalServerErrorPage, InternalServerErrorGenericPage}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi)(implicit appConfig: AppConfig, ec: ExecutionContext)
+class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, iseCustom: InternalServerErrorPage, iseGeneric: InternalServerErrorGenericPage)(implicit appConfig: AppConfig, ec: ExecutionContext)
     extends FrontendErrorHandler {
 
   private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
@@ -37,7 +38,7 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: Mess
       case play.mvc.Http.Status.BAD_REQUEST => Future.successful(BadRequest(badRequestTemplate(request)))
       case play.mvc.Http.Status.NOT_FOUND   => Future.successful(NotFound(notFoundTemplate(request)))
       case play.mvc.Http.Status.FORBIDDEN   => Future(Redirect(controllers.routes.TechnicalErrorController.onPageLoad()))
-      case play.mvc.Http.Status.INTERNAL_SERVER_ERROR => Future(showInternalServerError(request))
+      case play.mvc.Http.Status.INTERNAL_SERVER_ERROR => Future(showInternalServerError()(request))
       case _                                => Future.successful(Results.Status(statusCode)(fallbackClientErrorTemplate(request)))
     }
   }
@@ -46,7 +47,14 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: Mess
     errorTemplate(pageTitle, heading, message)
   }
 
-  def showInternalServerError(implicit request: Request[_]): Result = Redirect(controllers.routes.InternalServerErrorController.onPageLoad())
+  def showInternalServerError(userOptional: Option[UserRequest[_]] = None)(implicit request: Request[_]): Result = {
+    if (userOptional.isDefined) {
+      implicit val user: UserRequest[_] = userOptional.get
+      InternalServerError(iseCustom())
+    } else {
+      InternalServerError(iseGeneric())
+    }
+  }
 
   def notFoundError(implicit request: Request[_]): Result = NotFound(notFoundTemplate)
 

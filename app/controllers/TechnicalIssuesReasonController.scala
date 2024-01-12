@@ -75,7 +75,7 @@ class TechnicalIssuesReasonController @Inject()(technicalIssuesDatePage: Technol
   def onPageLoadForWhenTechnologyIssuesEnded(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
       val techIssuesBegin = userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin)
-      techIssuesBegin.fold(errorHandler.showInternalServerError)(
+      techIssuesBegin.fold(errorHandler.showInternalServerError(Some(userRequest)))(
         startDate => {
           val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
             WhenDidTechnologyIssuesEndForm.whenDidTechnologyIssuesEndForm(startDate),
@@ -91,7 +91,7 @@ class TechnicalIssuesReasonController @Inject()(technicalIssuesDatePage: Technol
 
   def onSubmitForWhenTechnologyIssuesEnded(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired).async {
     implicit userRequest => {
-      userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).fold(Future(errorHandler.showInternalServerError))(
+      userRequest.answers.getAnswer[LocalDate](SessionKeys.whenDidTechnologyIssuesBegin).fold(Future(errorHandler.showInternalServerError(Some(userRequest))))(
         startDate => {
           val postAction = controllers.routes.TechnicalIssuesReasonController.onSubmitForWhenTechnologyIssuesEnded(mode)
           WhenDidTechnologyIssuesEndForm.whenDidTechnologyIssuesEndForm(startDate).bindFromRequest().fold(

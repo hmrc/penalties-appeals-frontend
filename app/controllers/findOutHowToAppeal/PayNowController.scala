@@ -48,7 +48,7 @@ class PayNowController @Inject()(mcc: MessagesControllerComponents,
       case Right(url) => Redirect(url)
       case Left(_) =>
         logger.warn("[PayNowController][redirect] - Unable to retrieve successful response from Pay Now service, rendering ISE")
-        errorHandler.showInternalServerError(request)
+        errorHandler.showInternalServerError(Some(request))
     }
   }
 }

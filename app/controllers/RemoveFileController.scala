@@ -63,7 +63,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
               case e => {
                 PagerDutyHelper.log("RemoveFileController onSubmit", FILE_REMOVAL_FAILURE_UPSCAN)
                 logger.error(s"[RemoveFileController][onSubmit] - Could not remove file from user journey - error: ${e.getMessage}")
-                errorHandler.showInternalServerError
+                errorHandler.showInternalServerError(Some(request))
               }
             }
           } else {
@@ -86,7 +86,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
       else controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)
     }
     upscanService.getFileNameForJourney(journeyId, fileReference).map {
-      _.fold(errorHandler.showInternalServerError)(nameOfFile => {
+      _.fold(errorHandler.showInternalServerError(Some(userRequest)))(nameOfFile => {
         statusOnSuccess(
           removeFilePage(
             form = form,
@@ -101,7 +101,7 @@ class RemoveFileController @Inject()(upscanService: UpscanService,
       case e => {
         PagerDutyHelper.log("RemoveFileController onPageLoad", FILE_NAME_RETRIEVAL_FAILURE_UPSCAN)
         logger.error(s"[RemoveFileController][onPageLoad] - Failed to retrieve file name for file removal with error: ${e.getMessage}")
-        errorHandler.showInternalServerError
+        errorHandler.showInternalServerError(Some(userRequest))
       }
     }
   }

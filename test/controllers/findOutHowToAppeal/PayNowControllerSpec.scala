@@ -74,8 +74,7 @@ class PayNowControllerSpec extends SpecBase {
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
         when(mockPayNowService.retrieveRedirectUrl(any, any, any, any)(any, any)).thenReturn(Future.successful(Left(UnexpectedFailure(500, "/correct-url"))))
         val result: Future[Result] = controller.redirect(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
   }
