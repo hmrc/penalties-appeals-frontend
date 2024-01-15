@@ -359,8 +359,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with Authoris
     "return an ISE when the form fails to bind" in new Setup(userAnswers()) {
       val result = controller.removeFileUpload(NormalMode)(fakeRequest
         .withFormUrlEncodedBody("file" -> "file1"))
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+      status(result) shouldBe INTERNAL_SERVER_ERROR
     }
 
     "redirect to the first document upload page when there is no uploads left" in new Setup(userAnswers()) {
@@ -386,8 +385,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with Authoris
     "show an ISE" when {
       "the repository doesn't have a status for this file under this journey" in new Setup(userAnswers()) {
         val result: Future[Result] = controller.onSubmitForUploadTakingLongerThanExpected(NormalMode)(fakeRequest.withSession(SessionKeys.fileReference -> "file1"))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 

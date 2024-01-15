@@ -73,8 +73,7 @@ class CancelVATRegistrationControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoadForCancelVATRegistration()(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe controllers.routes.InternalServerErrorController.onPageLoad().url
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "return OK and correct view (pre-populated option when present in session)" in new Setup(

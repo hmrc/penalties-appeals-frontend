@@ -107,7 +107,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersPage: CheckYourAnswer
         case SERVICE_UNAVAILABLE => Future(Redirect(controllers.routes.ServiceUnavailableController.onPageLoad()))
         case INTERNAL_SERVER_ERROR | BAD_REQUEST | UNPROCESSABLE_ENTITY => Future(Redirect(controllers.routes.ProblemWithServiceController.onPageLoad()))
         case CONFLICT => Future(Redirect(controllers.routes.DuplicateAppealController.onPageLoad()))
-        case _ => Future(errorHandler.showInternalServerError)
+        case _ => Future(errorHandler.showInternalServerError(Some(userRequest)))
       },
       _ => {
         // Remove any previous appeal data from Mongo + file uploads (if they exist) - fire and forget

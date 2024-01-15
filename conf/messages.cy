@@ -632,7 +632,9 @@ technicalError.link = Yn ôl i gosbau TAW ac apeliadau
 
 # Internal Server Error page
 # -----------------------------------------------------------
-internalServerError.link = Yn ôl i gosbau TAW
+internalServerError.link.generic = Yn ôl i gosbau TAW.
+internalServerError.link = Bwrw golwg dros eich cyfrif TAW
+agent.internalServerError.link = Bwrw golwg ar gyfrif TAW eich cleient
 
 # Find out how to appeal
 # -----------------------------------------------------------

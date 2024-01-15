@@ -98,8 +98,7 @@ class AuthPredicateSpec extends AuthMocks {
       "the affinity group of the user can not be determined" in {
         mockNoAffinityGroup()
         val result = target(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "the user has no active session" in {

@@ -49,8 +49,7 @@ class TimeToPayControllerISpec extends IntegrationSpecCommonBase with Authorisat
     "return an error when a call is unsuccessful" in {
       unsuccessfulTTPCall
       val result = await(controller.redirect()(fakeRequest))
-      result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+      result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
   }
 }

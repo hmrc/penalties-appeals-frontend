@@ -86,8 +86,7 @@ class FireOrFloodReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
       }

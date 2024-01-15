@@ -270,8 +270,7 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     "show an ISE" when {
       "the repository doesn't have a status for this file under this journey" in new Setup {
         val result: Future[Result] = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 

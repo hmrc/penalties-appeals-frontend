@@ -175,7 +175,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
       userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted).fold({
         logger.error("[HealthReasonController][onSubmitForWhenDidHospitalStayEnd] - Tried to load the hospital stay end page but no" +
           " date for when hospital stay began was in the session - showing ISE")
-        errorHandler.showInternalServerError
+        errorHandler.showInternalServerError(Some(userRequest))
       })(
         healthIssueStartDate => {
           val formProvider: Form[LocalDate] = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsDate(
@@ -197,7 +197,7 @@ class HealthReasonController @Inject()(navigation: Navigation,
         userRequest.answers.getAnswer[LocalDate](SessionKeys.whenHealthIssueStarted).fold({
           logger.error("[HealthReasonController][onSubmitForWhenDidHospitalStayEnd] - Tried to submit the hospital stay end page but no" +
             " date for when hospital stay began was in the session - showing ISE")
-          Future(errorHandler.showInternalServerError)
+          Future(errorHandler.showInternalServerError(Some(userRequest)))
         })(
           healthIssueStartDate => {
             WhenDidHospitalStayEndForm.whenDidHospitalStayEndForm(healthIssueStartDate).bindFromRequest().fold(

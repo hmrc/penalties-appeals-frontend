@@ -89,8 +89,7 @@ class HealthReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoadForWasHospitalStayRequired(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
 
@@ -174,8 +173,7 @@ class HealthReasonControllerSpec extends SpecBase {
         val result: Future[Result] = controller.onSubmitForWasHospitalStayRequired(NormalMode)(fakeRequest.withFormUrlEncodedBody(
           "value" -> "no"
         ))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "the user is unauthorised" when {
@@ -218,8 +216,7 @@ class HealthReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoadForWhenHealthReasonHappened(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
 
@@ -319,8 +316,7 @@ class HealthReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoadForWhenDidHospitalStayBegin(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
 
@@ -404,8 +400,7 @@ class HealthReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onSubmitForWhenDidHospitalStayBegin(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> "no"))
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
       }
@@ -448,8 +443,7 @@ class HealthReasonControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForHasHospitalStayEnded(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "the user is unauthorised" when {
@@ -635,8 +629,7 @@ class HealthReasonControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
           val result: Future[Result] = controller.onPageLoadForWhenDidHospitalStayEnd(NormalMode)(fakeRequest)
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
 
@@ -759,8 +752,7 @@ class HealthReasonControllerSpec extends SpecBase {
                 "date.month" -> "2",
                 "date.year" -> "2021"
               )))
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+            status(result) shouldBe INTERNAL_SERVER_ERROR
           }
         }
       }

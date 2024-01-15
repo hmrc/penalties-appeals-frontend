@@ -39,8 +39,7 @@ trait AuthorisationTest {
         SessionKeys.journeyId -> "1234"
       )
       val request = await(result.apply(fakeRequestWithNoKeys))
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "redirect to Internal Server Error Page when the user is authorised but the session does not contain ALL correct keys" in new UserAnswersSetup(UserAnswers("1234", Json.obj(
@@ -50,8 +49,7 @@ trait AuthorisationTest {
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
     ))) {
       val request = await(result.apply(fakeRequest))
-      request.header.status shouldBe Status.SEE_OTHER
-      request.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+      request.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 303 (SEE_OTHER) when the user is not authorised" in {

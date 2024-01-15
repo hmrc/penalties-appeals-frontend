@@ -91,8 +91,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
@@ -193,8 +192,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
@@ -229,8 +227,7 @@ class PenaltySelectionControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForAppealCoverBothPenalties(NormalMode)(userRequestWithCorrectKeys)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 

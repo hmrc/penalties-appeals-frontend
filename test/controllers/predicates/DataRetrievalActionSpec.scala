@@ -91,8 +91,7 @@ class DataRetrievalActionSpec extends SpecBase {
             errorHandler
           ))
         val result = fakeController.onPageLoad()
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
   }

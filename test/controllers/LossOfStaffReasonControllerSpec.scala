@@ -83,8 +83,7 @@ class LossOfStaffReasonControllerSpec extends SpecBase {
       "user does not have the correct session keys" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
     }

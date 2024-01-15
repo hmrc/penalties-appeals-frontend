@@ -283,7 +283,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
         error => {
           logger.error("[OtherReasonController][removeFileUpload] - Tried to remove file but fileReference was not in the request")
           logger.debug(s"[OtherReasonController][removeFileUpload] - Form errors: ${error.errors}")
-          Future(errorHandler.showInternalServerError)
+          Future(errorHandler.showInternalServerError(Some(userRequest)))
         },
         fileReference => {
           upscanService.removeFileFromJourney(journeyId, fileReference).flatMap(_ => {

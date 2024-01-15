@@ -210,7 +210,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
         errors => {
           PagerDutyHelper.log("fileVerification", FILE_VERIFICATION_FAILURE_UPSCAN)
           logger.error(s"[UpscanController][fileVerification] - Could not bind form based on request with errors: ${errors.errors}")
-          Future(errorHandler.showInternalServerError)
+          Future(errorHandler.showInternalServerError())
         },
         upload => {
           val timeoutForCheckingStatus = System.nanoTime() + (appConfig.upscanStatusCheckTimeout * 1000000000L)

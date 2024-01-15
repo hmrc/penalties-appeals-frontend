@@ -123,8 +123,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForWhenDidBecomeUnable(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "the user is unauthorised" when {
@@ -736,8 +735,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForUploadEvidenceQuestion(NormalMode)(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       s"Go to appeal by letter page" in new Setup(AuthTestModels.successfulAuthResult) {
@@ -808,8 +806,7 @@ class OtherReasonControllerSpec extends SpecBase with LogCapturing {
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onSubmitForUploadEvidenceQuestion(NormalMode)(fakeRequest
           .withFormUrlEncodedBody("value" -> "no"))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get shouldBe routes.InternalServerErrorController.onPageLoad().url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
 

@@ -103,7 +103,7 @@ class HonestyDeclarationController @Inject()(honestDeclarationPage: HonestyDecla
           s"Due date defined? ${request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).isDefined} \n" +
           s"Start date defined? ${request.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod)} \n" +
           s"End date defined? ${request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod)} \n")
-        Future(errorHandler.showInternalServerError)
+        Future(errorHandler.showInternalServerError(Some(request)))
     }
   }
 

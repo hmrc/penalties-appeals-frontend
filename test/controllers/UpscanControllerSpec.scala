@@ -348,8 +348,7 @@ class UpscanControllerSpec extends SpecBase with LogCapturing with FeatureSwitch
               val result = await(controller.fileVerification(isAddingAnotherDocument = false, NormalMode,
                 isJsEnabled = false)(FakeRequest("GET", "/upscan/file-verification/success?key1=file1")))
               logs.exists(_.getMessage.contains(PagerDutyKeys.FILE_VERIFICATION_FAILURE_UPSCAN.toString)) shouldBe true
-              result.header.status shouldBe SEE_OTHER
-              result.header.headers(LOCATION) shouldBe routes.InternalServerErrorController.onPageLoad().url
+              result.header.status shouldBe INTERNAL_SERVER_ERROR
             }
           }
         }

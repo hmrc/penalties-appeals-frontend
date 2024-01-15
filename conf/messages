@@ -632,7 +632,9 @@ technicalError.link = Return to VAT penalties and appeals
 
 # Internal Server Error page
 # -----------------------------------------------------------
-internalServerError.link = Return to VAT penalties
+internalServerError.link.generic = Return to VAT penalties
+internalServerError.link = Return to your VAT penalties
+agent.internalServerError.link = Return to your client’s VAT penalties
 
 # If You've paid your VAT
 # -----------------------------------------------------------
