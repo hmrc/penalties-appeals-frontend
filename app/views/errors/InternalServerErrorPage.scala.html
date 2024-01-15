@@ -21,5 +21,11 @@
 @layout(pageTitle = messages("global.error.InternalServerError500.title"), backLinkEnabled = false, isAuthorised = false, showSignOut = false) {
 <h1 class="govuk-heading-l" id="page-heading">@messages("global.error.InternalServerError500.heading")</h1>
 <p class="govuk-body">@messages("global.error.InternalServerError500.message")</p>
-<p class="govuk-body"><a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}">@getMessage("internalServerError.link")</a></p>
+<p class="govuk-body"><a class="govuk-link" href="@{appConfig.penaltiesFrontendUrl}">
+ @if(user.isAgent) {
+  @messages("agent.internalServerError.link")
+ } else {
+  @messages("internalServerError.link")
+ }
+</a></p>
 }

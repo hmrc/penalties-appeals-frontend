@@ -23,7 +23,7 @@ import play.api.mvc.Results.{BadRequest, InternalServerError, NotFound, Redirect
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
-import views.html.errors.{ErrorTemplate, InternalServerErrorPage, InternalServerErrorGenericPage}
+import views.html.errors.{ErrorTemplate, InternalServerErrorGenericPage, InternalServerErrorPage}
 
 import scala.concurrent.{ExecutionContext, Future}
 
