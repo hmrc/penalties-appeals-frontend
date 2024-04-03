@@ -44,4 +44,6 @@ class BaseSelectors {
 
   val legend = ".govuk-fieldset__legend"
 
+  val webChatLink = "#web-chat-link"
+
 }

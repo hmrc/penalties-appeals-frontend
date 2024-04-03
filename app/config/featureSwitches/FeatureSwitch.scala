@@ -25,7 +25,8 @@ object FeatureSwitch {
   val listOfAllFeatureSwitches: List[FeatureSwitch] = List(
     NonJSRouting,
     ShowDigitalCommsMessage,
-    ShowReasonableExcuseHintText
+    ShowReasonableExcuseHintText,
+    ShowWebChatLink
   )
 }
 
@@ -39,4 +40,8 @@ case object ShowDigitalCommsMessage extends FeatureSwitch {
 
 case object ShowReasonableExcuseHintText extends FeatureSwitch {
   override val name: String = s"${FeatureSwitch.prefix}.show-reasonable-excuse-hint-text"
+}
+
+case object ShowWebChatLink extends FeatureSwitch {
+  override val name: String = s"${FeatureSwitch.prefix}.show-web-chat-link"
 }

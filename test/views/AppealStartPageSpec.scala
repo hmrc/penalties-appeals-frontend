@@ -33,7 +33,8 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date" must {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, showWebChatLink = false,
+      pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -62,8 +63,41 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       }
     }
 
+    s"it has been less than ${appConfig.daysRequiredForLateAppeal} days since the due date and show web chat link" must {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, showWebChatLink = true,
+        pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1,
+        Selectors.listIndexWithElementIndex(4, 2) -> li2,
+        Selectors.pElementIndex(5) -> p2,
+        Selectors.pElementIndex(6) -> p3,
+        Selectors.h2 -> h2,
+        Selectors.pElementIndex(8) -> p4,
+        Selectors.listIndexWithElementIndex(9, 1) -> li3,
+        Selectors.listIndexWithElementIndex(9, 2) -> li4,
+        Selectors.externalGuidanceLink -> externalGuidanceLink,
+        Selectors.pElementIndex(11) -> p5,
+        Selectors.pElementIndex(12) -> p6,
+        Selectors.button -> button,
+        Selectors.webChatLink -> webChatLink
+
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+
+      "have a link to external guidance" in {
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
+      }
+    }
+
     s"it has been more than ${appConfig.daysRequiredForLateAppeal} days since the due date" must {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, showWebChatLink = false, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
 
@@ -93,8 +127,40 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       }
     }
 
+    s"it has been more than ${appConfig.daysRequiredForLateAppeal} days since the due date and show web chat link" must {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, showWebChatLink = true, pageMode = PageMode(AppealStartPage, NormalMode))(userRequestWithCorrectKeys, implicitly, implicitly)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1,
+        Selectors.listIndexWithElementIndex(4, 2) -> li2,
+        Selectors.pElementIndex(5) -> p2,
+        Selectors.pElementIndex(6) -> p3,
+        Selectors.h2 -> h2,
+        Selectors.pElementIndex(8) -> p4,
+        Selectors.listIndexWithElementIndex(9, 1) -> li3,
+        Selectors.listIndexWithElementIndex(9, 2) -> li4,
+        Selectors.listIndexWithElementIndex(9, 3) -> li5,
+        Selectors.externalGuidanceLink -> externalGuidanceLink,
+        Selectors.pElementIndex(11) -> p5,
+        Selectors.pElementIndex(12) -> p6,
+        Selectors.button -> button,
+        Selectors.webChatLink -> webChatLink
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+
+      "have a link to external guidance" in {
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
+      }
+    }
+
     "the appeal is for a LPP" when {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, pageMode = PageMode(AppealStartPage, NormalMode))(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, showWebChatLink = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         userRequestLPPWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
@@ -125,8 +191,41 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
       }
     }
 
+    "the appeal is for a LPP and show web chat link" when {
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = true, showWebChatLink = true, pageMode = PageMode(AppealStartPage, NormalMode))(
+        userRequestLPPWithCorrectKeys, implicitly, implicitly)
+
+      implicit val doc: Document = asDocument(applyView())
+
+      val expectedContent = Seq(
+        Selectors.title -> title,
+        Selectors.h1 -> h1,
+        Selectors.pElementIndex(3) -> p1,
+        Selectors.listIndexWithElementIndex(4, 1) -> li1,
+        Selectors.listIndexWithElementIndex(4, 2) -> li2,
+        Selectors.pElementIndex(5) -> p2,
+        Selectors.pElementIndex(6) -> p3,
+        Selectors.h2 -> h2,
+        Selectors.pElementIndex(8) -> p4,
+        Selectors.listIndexWithElementIndex(9, 1) -> li3Lpp,
+        Selectors.listIndexWithElementIndex(9, 2) -> li4,
+        Selectors.listIndexWithElementIndex(9, 3) -> li5,
+        Selectors.externalGuidanceLink -> externalGuidanceLink,
+        Selectors.pElementIndex(11) -> p5,
+        Selectors.pElementIndex(12) -> p6,
+        Selectors.button -> button,
+        Selectors.webChatLink -> webChatLink
+      )
+
+      behave like pageWithExpectedMessages(expectedContent)
+
+      "have a link to external guidance" in {
+        doc.select(Selectors.externalGuidanceLink).attr("href") shouldBe "https://www.gov.uk/tax-appeals/reasonable-excuses"
+      }
+    }
+
     "the appeal is triggered by an agent and is not a LPP - have a link to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, pageMode = PageMode(AppealStartPage, NormalMode))(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, showWebChatLink = false, pageMode = PageMode(AppealStartPage, NormalMode))(
         agentUserLSP, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())
@@ -135,7 +234,7 @@ class AppealStartPageSpec extends SpecBase with ViewBehaviours {
     }
 
     "the appeal does not match the special cases - have a link to the correct page" in {
-      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, pageMode = PageMode(AppealStartPage, NormalMode))(
+      def applyView(): HtmlFormat.Appendable = appealStartPage.apply(isLate = false, showWebChatLink = false, pageMode = PageMode(AppealStartPage, NormalMode))(
        userRequestLPPWithCorrectKeys, implicitly, implicitly)
 
       implicit val doc: Document = asDocument(applyView())

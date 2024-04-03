@@ -54,4 +54,7 @@ object AppealStartMessages {
   val p6 = "We only need the information we ask for. You do not need to provide additional details unless we ask you for them."
 
   val button = "Continue"
+
+  val webChatLink = "Ask HMRC (opens in a new tab)"
+
 }

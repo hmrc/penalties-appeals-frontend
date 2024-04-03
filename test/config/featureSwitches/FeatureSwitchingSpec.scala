@@ -51,6 +51,7 @@ class FeatureSwitchingSpec extends SpecBase {
         NonJSRouting,
         ShowDigitalCommsMessage,
         ShowReasonableExcuseHintText,
+        ShowWebChatLink
       )
     }
   }

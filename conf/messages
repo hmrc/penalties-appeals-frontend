@@ -58,6 +58,7 @@ appealStart.lpp.li.2.1 = a reason why the VAT payment was late (HMRC calls this 
 appealStart.li.2.2 = the dates the reason related to
 appealStart.li.2.3 = details of why you did not appeal sooner
 appealStart.reasonableExcuses.externalGuidanceLinkText = Read the guidance about reasonable excuses
+appealStart.webChat.linkText = Ask HMRC
 appealStart.p5 = In some cases, we’ll ask if you want to upload evidence to support the appeal.
 appealStart.p6 = We only need the information we ask for. You do not need to provide additional details unless we ask you for them.
 
