@@ -58,6 +58,7 @@ appealStart.lpp.li.2.1 = rheswm dros dalu’r TAW yn hwyr (mae CThEF yn galw hyn
 appealStart.li.2.2 = y dyddiadau y mae eich rheswm yn ymwneud â hwy
 appealStart.li.2.3 = manylion am y rheswm nad oeddech wedi apelio’n gynt
 appealStart.reasonableExcuses.externalGuidanceLinkText = Darllenwch yr arweiniad am esgusodion rhesymol
+appealStart.webChat.linkText = Gofyn i CThEF
 appealStart.p5 = Mewn rhai achosion, byddwn yn gofyn a ydych eisiau uwchlwytho tystiolaeth er mwyn ategu’r apêl
 appealStart.p6 = Dim ond yr wybodaeth yr ydym wedi gofyn amdani sydd angen arnom. Nid oes angen i chi roi manylion ychwanegol oni bai ein bod yn gofyn amdanynt.
 

@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import config.featureSwitches.FeatureSwitching
+import config.featureSwitches.{FeatureSwitching, ShowWebChatLink}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
 import models.pages.{AppealStartPage, PageMode}
 import models.{NormalMode, PenaltyTypeEnum, UserRequest}
@@ -28,9 +28,10 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 import views.html.AppealStartPage
-
 import java.time.LocalDate
+
 import javax.inject.Inject
+
 import scala.concurrent.Future
 
 class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit mcc: MessagesControllerComponents,
@@ -49,8 +50,11 @@ class AppealStartController @Inject()(appealStartPage: AppealStartPage)(implicit
         s"Due date of period = ${userRequest.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod)}, \n" +
         s"Is find out how to appeal = ${userRequest.answers.getAnswer[Boolean](SessionKeys.isFindOutHowToAppeal)}, \n" +
         s"Date communication sent of period = ${userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent)}, \n")
+      val showWebChatLink: Boolean = isEnabled(ShowWebChatLink)
+
       Future.successful(Ok(appealStartPage(
         isAppealLate(),
+        showWebChatLink,
         PageMode(AppealStartPage, NormalMode)
       )))
     }

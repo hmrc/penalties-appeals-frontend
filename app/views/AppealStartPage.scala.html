@@ -23,7 +23,7 @@
         link: components.link,
         pageHeader: components.pageHeader)
 
-@(isLate: Boolean, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
+@(isLate: Boolean, showWebChatLink: Boolean, pageMode: PageMode)(implicit userRequest: UserRequest[_], messages: Messages, appConfig: AppConfig)
 
 @appealType = @{
     userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
@@ -79,4 +79,9 @@
     <p class="govuk-body">@messages("appealStart.p6")</p>
 
     @link(nextPageUrl, "common.continue", button = true, classes = "govuk-button")
+@if(showWebChatLink){
+<p class="govuk-body">
+    @link(appConfig.externalWebChatUrl, "appealStart.webChat.linkText", id = Some("web-chat-link"), isExternal = true, classes = "govuk-link")
+</p>
+}
 }
