@@ -21,6 +21,7 @@ import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.AppealAfterPaymentPlanSetUpForm.appealAfterPaymentPlanSetUpForm
 import helpers.FormProviderHelper
 import models._
+import models.monitoring.AppealAfterPaymentPlanSetupAudit
 import models.pages.{AppealAfterPaymentPlanSetUpPage, PageMode}
 import navigation.Navigation
 import play.api.Configuration
@@ -28,7 +29,9 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
+import services.monitoring.AuditService
 import uk.gov.hmrc.govukfrontend.views.Aliases.RadioItem
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
 import views.html.findOutHowToAppeal.AppealAfterPaymentPlanSetUpPage
@@ -43,6 +46,7 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
                                                       authorise: AuthPredicate,
                                                       dataRetrieval: DataRetrievalAction,
                                                       navigation: Navigation,
+                                                      auditService: AuditService,
                                                       sessionService: SessionService,
                                                       val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(AppealAfterPaymentPlanSetUpPage, mode)
@@ -72,11 +76,20 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
         },
         setUpPaymentPlan => {
           val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.appealAfterPaymentPlanSetUp, setUpPaymentPlan)
+          auditRadioOptionsForAfterPaymentPlanSetup(setUpPaymentPlan)
           sessionService.updateAnswers(updatedAnswers).map {
             _ => Redirect(navigation.nextPage(AppealAfterPaymentPlanSetUpPage, NormalMode, Some(setUpPaymentPlan)))
           }
         }
       )
   }
+  }
+
+  def auditRadioOptionsForAfterPaymentPlanSetup(userWentToSetUpTTP : String)(implicit hc: HeaderCarrier, request: UserRequest[_]): Unit = {
+    val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).getOrElse("")
+    val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).getOrElse(0);
+    val amountTobePaidinPence : String = (vatAmount*100).toString
+    val auditModel = AppealAfterPaymentPlanSetupAudit(amountTobePaidinPence, chargeReference, userWentToSetUpTTP)
+    auditService.audit(auditModel);
   }
 }

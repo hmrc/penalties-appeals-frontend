@@ -19,15 +19,18 @@ package controllers.findOutHowToAppeal
 import base.SpecBase
 import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.mockito.ArgumentCaptor
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
+import services.monitoring.JsonAuditModel
+import services.monitoring.AuditService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionKeys
 import views.html.findOutHowToAppeal.AppealAfterPaymentPlanSetUpPage
 
@@ -36,12 +39,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
   val AppealAfterPaymentPlanSetUpPage: AppealAfterPaymentPlanSetUpPage = injector.instanceOf[AppealAfterPaymentPlanSetUpPage]
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+  val auditService: AuditService = injector.instanceOf[AuditService]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
     val sessionAnswers: UserAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
     reset(mockAuthConnector)
     reset(mockSessionService)
     reset(mockAppConfig)
+    reset(mockAuditService)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -56,7 +61,7 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     val controller = new AppealAfterPaymentPlanSetUpController(AppealAfterPaymentPlanSetUpPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRetrievalAction, mainNavigator,
+      authPredicate, dataRetrievalAction, mainNavigator, mockAuditService,
       mockSessionService, config, ec)
   }
 
@@ -116,6 +121,51 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
         "return 303 (SEE_OTHER) when user can not be authorised" in new Setup(AuthTestModels.failedAuthResultUnauthorised) {
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
           status(result) shouldBe SEE_OTHER
+        }
+      }
+      "auditDidTheUserGoOffToPay" should {
+
+        "send an audit with UserWentToPayNow = yes" when {
+          def auditTestDidPay(userWentToSetUpTTP: String): Unit = {
+            "The user goes to pay their vat return" in new Setup(AuthTestModels.successfulAuthResult){
+              val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
+              val auditDetails: JsValue = Json.obj(
+                "taxIdentifier" -> "123456789",
+                "identifierType" -> "VRN",
+                "chargeReference" -> "123456789",
+                "amountTobePaidinPence" -> "10000",
+                "canUserPay" -> "yes",
+                "userWentToSetUpTTP" -> "yes"
+              )
+              controller.auditRadioOptionsForAfterPaymentPlanSetup(userWentToSetUpTTP)(HeaderCarrier(), userRequestAfterPaymentPlanSetupWithCorrectKeys)
+              verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
+                any[ExecutionContext], any())
+              auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-did-pay"
+              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealDidTheUserGoOffToPay"
+              auditCapture.getValue.detail shouldBe auditDetails
+            }
+          }
+          def auditTestDidNotPay(userWentToSetUpTTP: String): Unit = {
+            "The user does not go to pay their vat return" in new Setup(AuthTestModels.successfulAuthResult){
+              val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
+              val auditDetails: JsValue = Json.obj(
+                "taxIdentifier" -> "123456789",
+                "identifierType" -> "VRN",
+                "chargeReference" -> "123456789",
+                "amountTobePaidinPence" -> "10000",
+                "canUserPay" -> "yes",
+                "userWentToSetUpTTP" -> "no"
+              )
+              controller.auditRadioOptionsForAfterPaymentPlanSetup(userWentToSetUpTTP)(HeaderCarrier(), userRequestAfterPaymentPlanSetupWithCorrectKeys)
+              verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
+                any[ExecutionContext], any())
+              auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-did-pay"
+              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealDidTheUserGoOffToPay"
+              auditCapture.getValue.detail shouldBe auditDetails
+            }
+          }
+          auditTestDidPay("yes")
+          auditTestDidNotPay("no")
         }
       }
     }
