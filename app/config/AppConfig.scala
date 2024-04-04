@@ -49,7 +49,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val penaltiesServiceBaseUrl: String = servicesConfig.baseUrl("penalties")
 
-  lazy val webChatBaseUrl: String = servicesConfig.baseUrl("digital-engagement-platform-frontend")
+  lazy val webChatBaseUrl: String = config.get[String]("webChat.baseUrl")
 
   def appealLSPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String): String = {
     s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
@@ -92,7 +92,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
   lazy val contactFrontendServiceId: String = config.get[String]("contact-frontend.serviceId")
 
   lazy val reasonableExcusesGuidanceLinkUrl: String = config.get[String]("urls.reasonableExcusesGuidanceLinkUrl")
-  lazy val externalWebChatUrl: String = s"$webChatBaseUrl/ask-hmrc/chat/vat-online"
+  lazy val externalWebChatUrl: String = webChatBaseUrl + config.get[String]("webChat.url")
 
   lazy val contactHMRCLinkUrl: String = config.get[String]("urls.externalHMRCLinkUrl")
 
