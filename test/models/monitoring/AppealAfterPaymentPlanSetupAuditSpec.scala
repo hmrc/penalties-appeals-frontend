@@ -41,7 +41,7 @@ class AppealAfterPaymentPlanSetupAuditSpec extends SpecBase {
         "identifierType" -> "VRN",
         "chargeReference" -> "123456789",
         "amountTobePaidinPence" -> "10000",
-        "canUserPay" -> "yes",
+        "canUserPay" -> "no",
         "userWentToSetUpTTP" -> "yes"
       )
     }
@@ -55,7 +55,7 @@ class AppealAfterPaymentPlanSetupAuditSpec extends SpecBase {
         "identifierType" -> "VRN",
         "chargeReference" -> "123456789",
         "amountTobePaidinPence" -> "10000",
-        "canUserPay" -> "yes",
+        "canUserPay" -> "no",
         "userWentToSetUpTTP" -> "no"
       )
     }

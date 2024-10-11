@@ -26,7 +26,6 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import services.monitoring.JsonAuditModel
-import services.monitoring.AuditService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
@@ -39,7 +38,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
   val AppealAfterPaymentPlanSetUpPage: AppealAfterPaymentPlanSetUpPage = injector.instanceOf[AppealAfterPaymentPlanSetUpPage]
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
-  val auditService: AuditService = injector.instanceOf[AuditService]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
     val sessionAnswers: UserAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
@@ -123,10 +121,10 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
         }
       }
-      "auditDidTheUserGoOffToPay" should {
+      "auditRadioOptionsForAfterPaymentPlanSetup" should {
 
-        "send an audit with UserWentToPayNow = yes" when {
-          def auditTestDidPay(userWentToSetUpTTP: String): Unit = {
+        "send an audit with userWentToSetUpTTP = yes" when {
+          def auditTestDidPaymentSetUpPlan(userWentToSetUpTTP: String): Unit = {
             "The user goes to pay their vat return" in new Setup(AuthTestModels.successfulAuthResult){
               val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
               val auditDetails: JsValue = Json.obj(
@@ -134,18 +132,18 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
                 "identifierType" -> "VRN",
                 "chargeReference" -> "123456789",
                 "amountTobePaidinPence" -> "10000",
-                "canUserPay" -> "yes",
+                "canUserPay" -> "no",
                 "userWentToSetUpTTP" -> "yes"
               )
               controller.auditRadioOptionsForAfterPaymentPlanSetup(userWentToSetUpTTP)(HeaderCarrier(), userRequestAfterPaymentPlanSetupWithCorrectKeys)
               verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
                 any[ExecutionContext], any())
-              auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-did-pay"
-              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealDidTheUserGoOffToPay"
+              auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-set-up-ttp"
+              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealSetUpTimeToPay"
               auditCapture.getValue.detail shouldBe auditDetails
             }
           }
-          def auditTestDidNotPay(userWentToSetUpTTP: String): Unit = {
+          def auditTestDidNotPaymentSetUpPlan(userWentToSetUpTTP: String): Unit = {
             "The user does not go to pay their vat return" in new Setup(AuthTestModels.successfulAuthResult){
               val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
               val auditDetails: JsValue = Json.obj(
@@ -153,19 +151,19 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
                 "identifierType" -> "VRN",
                 "chargeReference" -> "123456789",
                 "amountTobePaidinPence" -> "10000",
-                "canUserPay" -> "yes",
+                "canUserPay" -> "no",
                 "userWentToSetUpTTP" -> "no"
               )
               controller.auditRadioOptionsForAfterPaymentPlanSetup(userWentToSetUpTTP)(HeaderCarrier(), userRequestAfterPaymentPlanSetupWithCorrectKeys)
               verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
                 any[ExecutionContext], any())
-              auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-did-pay"
-              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealDidTheUserGoOffToPay"
+              auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-set-up-ttp"
+              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealSetUpTimeToPay"
               auditCapture.getValue.detail shouldBe auditDetails
             }
           }
-          auditTestDidPay("yes")
-          auditTestDidNotPay("no")
+          auditTestDidPaymentSetUpPlan("yes")
+          auditTestDidNotPaymentSetUpPlan("no")
         }
       }
     }
