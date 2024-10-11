@@ -19,12 +19,13 @@ package controllers.findOutHowToAppeal
 import base.SpecBase
 import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, verify, when}
 import org.mockito.ArgumentCaptor
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
+import services.monitoring.AuditService
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
@@ -36,12 +37,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class CanYouPayControllerSpec extends SpecBase {
   val CanYouPayPage: CanYouPayPage = injector.instanceOf[CanYouPayPage]
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+  val auditService: AuditService = injector.instanceOf[AuditService]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]], extraSessionData: JsObject = Json.obj()) {
     val sessionAnswers: UserAnswers = userAnswers(correctUserAnswers ++ extraSessionData)
     reset(mockAuthConnector)
     reset(mockSessionService)
     reset(mockAppConfig)
+    reset(auditService)
 
     when(mockAuthConnector.authorise[~[Option[AffinityGroup], Enrolments]](
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
@@ -56,7 +59,7 @@ class CanYouPayControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     val controller = new CanYouPayController(CanYouPayPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
+      authPredicate, dataRetrievalAction, mainNavigator, auditService , mockSessionService, config, ec)
   }
 
   "CanYouPayController" should {
@@ -98,6 +101,7 @@ class CanYouPayControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("value" -> "no")))
           status(result) shouldBe SEE_OTHER
           answerCaptor.getValue.data.decryptedValue shouldBe correctUserAnswers ++ Json.obj(SessionKeys.willUserPay -> "no")
+          verify(auditService).audit(any())(any(), any(), any())
         }
       }
       "the user is unauthorised" when {
