@@ -133,4 +133,9 @@ trait UserAnswersBase {
     SessionKeys.principalChargeReference -> "123456789",
     SessionKeys.isCaLpp -> false
   ) ++ correctLPPUserAnswers
+
+  val appealAfterVatIsPaidAnswers: JsObject = Json.obj(
+    SessionKeys.principalChargeReference -> "123456789",
+    SessionKeys.vatAmount -> BigDecimal(100)
+  )
 }

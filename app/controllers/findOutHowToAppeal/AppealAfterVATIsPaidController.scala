@@ -20,22 +20,25 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.DoYouWantToPayNowForm.doYouWantToPayNowForm
 import helpers.FormProviderHelper
+import models.monitoring.PenaltyAppealDidYouGoOffToPayModel
 import models.pages.{PageMode, YouCanAppealOnlinePage}
-import models.{Mode, NormalMode}
+import models.{Mode, NormalMode, UserRequest}
 import navigation.Navigation
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionKeys
 import views.html.findOutHowToAppeal.AppealAfterVATIsPaidPage
 import viewtils.RadioOptionHelper
+import services.monitoring.AuditService
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, errorHandler: ErrorHandler)
+class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, auditService: AuditService, errorHandler: ErrorHandler)
                                               (implicit mcc: MessagesControllerComponents,
                                                appConfig: AppConfig,
                                                authorise: AuthPredicate,
@@ -70,11 +73,20 @@ class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, e
       },
       payYourVAT => {
         val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.doYouWantToPayNow, payYourVAT)
+        auditDidTheUserGoOffToPay(payYourVAT)
         sessionService.updateAnswers(updatedAnswers).map {
           _ => Redirect(navigation.nextPage(YouCanAppealOnlinePage, NormalMode, Some(payYourVAT)))
         }
       }
     )
   }
+  }
+
+  def auditDidTheUserGoOffToPay(didUserGoToPayNow: String)(implicit hc: HeaderCarrier, request: UserRequest[_]): Unit = {
+    val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).getOrElse(0)
+    val amountTobePaidinPence : String = (vatAmount * 100).toString
+    val chargeReference : String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).getOrElse("")
+    val auditModel = PenaltyAppealDidYouGoOffToPayModel(amountTobePaidinPence, chargeReference, didUserGoToPayNow)
+    auditService.audit(auditModel)
   }
 }
