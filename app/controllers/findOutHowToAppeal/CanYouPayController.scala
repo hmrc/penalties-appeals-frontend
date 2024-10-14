@@ -20,14 +20,18 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import forms.CanYouPayForm.canYouPayForm
 import helpers.FormProviderHelper
+import models.monitoring.PenaltyAppealPaidInFullAudit
+
 import javax.inject.Inject
 import navigation.Navigation
-import models.NormalMode
+import models.{NormalMode, UserRequest}
 import models.pages.{CanYouPayPage, PageMode}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
+import services.monitoring.AuditService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{CurrencyFormatter, SessionKeys}
 import viewtils.RadioOptionHelper
@@ -40,6 +44,7 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
                                     appConfig: AppConfig,
                                     authorise: AuthPredicate,
                                     dataRetrieval: DataRetrievalAction,
+                                    auditService: AuditService,
                                     navigation: Navigation,
                                     sessionService: SessionService,
                                     val config: Configuration,
@@ -73,11 +78,21 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
         },
         ableToPay => {
           val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.willUserPay, ableToPay)
+          if (ableToPay == "paid") { // Audit only for paid status
+            auditDidTheUserAlreadyPay()
+          }
           sessionService.updateAnswers(updatedAnswers).map {
             _ => Redirect(navigation.nextPage(CanYouPayPage, NormalMode, Some(ableToPay)))
           }
         }
       )
   }
+  }
+  def auditDidTheUserAlreadyPay()(implicit hc: HeaderCarrier, request: UserRequest[_]): Unit = {
+    val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).getOrElse(0)
+    val amountTobePaidInPence: String = (vatAmount * 100).toString
+    val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).getOrElse("")
+    val auditModel = PenaltyAppealPaidInFullAudit(amountTobePaidInPence, chargeReference)
+    auditService.audit(auditModel)
   }
 }
