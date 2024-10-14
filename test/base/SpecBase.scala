@@ -139,6 +139,9 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
       SessionKeys.hasConfirmedDeclaration -> "true"
     ))
 
+  val userRequestAfterPaymentPlanSetupWithCorrectKeys: UserRequest[AnyContent] =
+    UserRequest(vrn, answers = userAnswers(appealAfterPaymentPlanSetupAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
+
   implicit lazy val authPredicate: AuthPredicate = new AuthPredicate(
     messagesApi,
     mcc,

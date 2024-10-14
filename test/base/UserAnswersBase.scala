@@ -143,4 +143,9 @@ trait UserAnswersBase {
     SessionKeys.principalChargeReference -> "123456789",
     SessionKeys.vatAmount -> BigDecimal(100)
   )
+
+  val appealAfterPaymentPlanSetupAnswers: JsObject = Json.obj(
+    SessionKeys.principalChargeReference -> "123456789",
+    SessionKeys.vatAmount -> BigDecimal(100)
+  )
 }
