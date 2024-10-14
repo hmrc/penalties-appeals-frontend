@@ -19,15 +19,17 @@ package controllers.findOutHowToAppeal
 import base.SpecBase
 import models.session.UserAnswers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.mockito.ArgumentCaptor
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
+import services.monitoring.JsonAuditModel
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionKeys
 import views.html.findOutHowToAppeal.CanYouPayPage
 
@@ -56,7 +58,7 @@ class CanYouPayControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     val controller = new CanYouPayController(CanYouPayPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRetrievalAction, mainNavigator, mockSessionService, config, ec)
+      authPredicate, dataRetrievalAction, mockAuditService, mainNavigator, mockSessionService, config, ec)
   }
 
   "CanYouPayController" should {
@@ -119,7 +121,28 @@ class CanYouPayControllerSpec extends SpecBase {
         }
       }
     }
+    "auditDidTheUserAlreadyPay" should {
+      "send an audit when user is fully paid" when {
+        def auditTesDidTheUserAlreadyPay(): Unit = {
+          "The user goes to pay their vat return" in new Setup(AuthTestModels.successfulAuthResult){
+            val auditCapture: ArgumentCaptor[JsonAuditModel] = ArgumentCaptor.forClass(classOf[JsonAuditModel])
+            val auditDetails: JsValue = Json.obj(
+              "taxIdentifier" -> "123456789",
+              "identifierType" -> "VRN",
+              "chargeReference" -> "123456789",
+              "amountTobePaidinPence" -> "10000",
+              "canUserPay" -> "already-paid"
+            )
+            controller.auditDidTheUserAlreadyPay()(HeaderCarrier(), userRequestAfterVatIsFullyPaidWithCorrectKeys)
+            verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
+              any[ExecutionContext], any())
+            auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-already-paid"
+            auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealAlreadyPaid"
+            auditCapture.getValue.detail shouldBe auditDetails
+          }
+        }
+        auditTesDidTheUserAlreadyPay()
+      }
+    }
   }
-
-
 }

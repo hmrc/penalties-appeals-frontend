@@ -125,6 +125,9 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
   val fakeRequestWithCorrectKeysAndReasonableExcuseSet: String => UserRequest[AnyContent] = (reasonableExcuse: String) =>
     UserRequest(vrn, answers = UserAnswers("1234", correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> reasonableExcuse)))(fakeRequest)
 
+  val userRequestAfterVatIsFullyPaidWithCorrectKeys: UserRequest[AnyContent] =
+    UserRequest(vrn, answers = userAnswers(appealAfterVatIsFullyPaidAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
+
   val fakeRequestWithCorrectKeysAndHonestyDeclarationSet: UserRequest[AnyContent] = fakeRequestConverter(Json.obj(
       SessionKeys.penaltyNumber -> "123456789",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
