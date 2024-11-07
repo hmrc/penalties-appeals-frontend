@@ -26,7 +26,7 @@ class PenaltyAppealDidYouGoOffToPayModelSpec extends SpecBase {
   val sampleAuditModel: PenaltyAppealDidYouGoOffToPayModel = PenaltyAppealDidYouGoOffToPayModel("10000", "123456789", "yes")(userRequest)
 
   "have the correct auditType" in {
-    sampleAuditModel.auditType shouldBe "PenaltyFindOutHowTOAppealDidTheUserGoOffToPay"
+    sampleAuditModel.auditType shouldBe "PenaltyFindOutHowToAppealDidTheUserGoOffToPay"
   }
 
   "have the correct transactionName" in {
@@ -40,7 +40,7 @@ class PenaltyAppealDidYouGoOffToPayModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "chargeReference" -> "123456789",
-        "amountTobePaidinPence" -> "10000",
+        "amountToBePaidInPence" -> "10000",
         "canUserPay" -> "yes",
         "userWentToPayNow" -> "yes"
       )
@@ -54,7 +54,7 @@ class PenaltyAppealDidYouGoOffToPayModelSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "chargeReference" -> "123456789",
-        "amountTobePaidinPence" -> "10000",
+        "amountToBePaidInPence" -> "10000",
         "canUserPay" -> "yes",
         "userWentToPayNow" -> "no"
       )

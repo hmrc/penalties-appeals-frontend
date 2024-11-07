@@ -131,7 +131,7 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
                 "taxIdentifier" -> "123456789",
                 "identifierType" -> "VRN",
                 "chargeReference" -> "123456789",
-                "amountTobePaidinPence" -> "10000",
+                "amountToBePaidInPence" -> "10000",
                 "canUserPay" -> "no",
                 "userWentToSetUpTTP" -> "yes"
               )
@@ -139,7 +139,7 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
               verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
                 any[ExecutionContext], any())
               auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-set-up-ttp"
-              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealSetUpTimeToPay"
+              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowToAppealSetUpTimeToPay"
               auditCapture.getValue.detail shouldBe auditDetails
             }
           }
@@ -150,7 +150,7 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
                 "taxIdentifier" -> "123456789",
                 "identifierType" -> "VRN",
                 "chargeReference" -> "123456789",
-                "amountTobePaidinPence" -> "10000",
+                "amountToBePaidInPence" -> "10000",
                 "canUserPay" -> "no",
                 "userWentToSetUpTTP" -> "no"
               )
@@ -158,7 +158,7 @@ class AppealAfterPaymentPlanSetUpControllerSpec extends SpecBase {
               verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
                 any[ExecutionContext], any())
               auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-set-up-ttp"
-              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealSetUpTimeToPay"
+              auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowToAppealSetUpTimeToPay"
               auditCapture.getValue.detail shouldBe auditDetails
             }
           }

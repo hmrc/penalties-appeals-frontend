@@ -26,7 +26,7 @@ class AppealAfterPaymentPlanSetupAuditSpec extends SpecBase {
   val sampleAuditModel: AppealAfterPaymentPlanSetupAudit = AppealAfterPaymentPlanSetupAudit("10000", "123456789", "yes")(userRequest)
 
   "have the correct auditType" in {
-    sampleAuditModel.auditType shouldBe "PenaltyFindOutHowTOAppealSetUpTimeToPay"
+    sampleAuditModel.auditType shouldBe "PenaltyFindOutHowToAppealSetUpTimeToPay"
   }
 
   "have the correct transactionName" in {
@@ -40,7 +40,7 @@ class AppealAfterPaymentPlanSetupAuditSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "chargeReference" -> "123456789",
-        "amountTobePaidinPence" -> "10000",
+        "amountToBePaidInPence" -> "10000",
         "canUserPay" -> "no",
         "userWentToSetUpTTP" -> "yes"
       )
@@ -54,7 +54,7 @@ class AppealAfterPaymentPlanSetupAuditSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "chargeReference" -> "123456789",
-        "amountTobePaidinPence" -> "10000",
+        "amountToBePaidInPence" -> "10000",
         "canUserPay" -> "no",
         "userWentToSetUpTTP" -> "no"
       )
