@@ -90,9 +90,9 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
   }
   def auditDidTheUserAlreadyPay()(implicit hc: HeaderCarrier, request: UserRequest[_]): Unit = {
     val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).getOrElse(0)
-    val amountTobePaidInPence: String = (vatAmount * 100).toString
+    val amountToBePaidInPence: String = (vatAmount * 100).toString
     val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).getOrElse("")
-    val auditModel = PenaltyAppealPaidInFullAudit(amountTobePaidInPence, chargeReference)
+    val auditModel = PenaltyAppealPaidInFullAudit(amountToBePaidInPence, chargeReference)
     auditService.audit(auditModel)
   }
 }

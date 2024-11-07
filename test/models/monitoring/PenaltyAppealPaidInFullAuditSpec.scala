@@ -26,7 +26,7 @@ class PenaltyAppealPaidInFullAuditSpec extends SpecBase {
   val sampleAuditModel: PenaltyAppealPaidInFullAudit = PenaltyAppealPaidInFullAudit("10000", "123456789")(userRequest)
 
   "have the correct auditType" in {
-    sampleAuditModel.auditType shouldBe "PenaltyFindOutHowTOAppealAlreadyPaid"
+    sampleAuditModel.auditType shouldBe "PenaltyFindOutHowToAppealAlreadyPaid"
   }
 
   "have the correct transactionName" in {
@@ -40,7 +40,7 @@ class PenaltyAppealPaidInFullAuditSpec extends SpecBase {
         "taxIdentifier" -> "123456789",
         "identifierType" -> "VRN",
         "chargeReference" -> "123456789",
-        "amountTobePaidinPence" -> "10000",
+        "amountToBePaidInPence" -> "10000",
         "canUserPay" -> "already-paid"
       )
     }

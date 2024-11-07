@@ -143,7 +143,7 @@ class AppealAfterVATIsPaidControllerSpec extends SpecBase {
               "taxIdentifier" -> "123456789",
               "identifierType" -> "VRN",
               "chargeReference" -> "123456789",
-              "amountTobePaidinPence" -> "10000",
+              "amountToBePaidInPence" -> "10000",
               "canUserPay" -> "yes",
               "userWentToPayNow" -> "yes"
             )
@@ -151,7 +151,7 @@ class AppealAfterVATIsPaidControllerSpec extends SpecBase {
             verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
               any[ExecutionContext], any())
             auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-did-pay"
-            auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealDidTheUserGoOffToPay"
+            auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowToAppealDidTheUserGoOffToPay"
             auditCapture.getValue.detail shouldBe auditDetails
           }
         }
@@ -162,7 +162,7 @@ class AppealAfterVATIsPaidControllerSpec extends SpecBase {
               "taxIdentifier" -> "123456789",
               "identifierType" -> "VRN",
               "chargeReference" -> "123456789",
-              "amountTobePaidinPence" -> "10000",
+              "amountToBePaidInPence" -> "10000",
               "canUserPay" -> "yes",
               "userWentToPayNow" -> "no"
             )
@@ -170,7 +170,7 @@ class AppealAfterVATIsPaidControllerSpec extends SpecBase {
             verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
               any[ExecutionContext], any())
             auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-did-pay"
-            auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealDidTheUserGoOffToPay"
+            auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowToAppealDidTheUserGoOffToPay"
             auditCapture.getValue.detail shouldBe auditDetails
           }
         }

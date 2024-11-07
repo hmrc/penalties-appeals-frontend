@@ -130,14 +130,14 @@ class CanYouPayControllerSpec extends SpecBase {
               "taxIdentifier" -> "123456789",
               "identifierType" -> "VRN",
               "chargeReference" -> "123456789",
-              "amountTobePaidinPence" -> "10000",
+              "amountToBePaidInPence" -> "10000",
               "canUserPay" -> "already-paid"
             )
             controller.auditDidTheUserAlreadyPay()(HeaderCarrier(), userRequestAfterVatIsFullyPaidWithCorrectKeys)
             verify(mockAuditService, times(1)).audit(auditCapture.capture())(any[HeaderCarrier](),
               any[ExecutionContext], any())
             auditCapture.getValue.transactionName shouldBe "penalties-find-out-how-to-appeal-already-paid"
-            auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowTOAppealAlreadyPaid"
+            auditCapture.getValue.auditType shouldBe "PenaltyFindOutHowToAppealAlreadyPaid"
             auditCapture.getValue.detail shouldBe auditDetails
           }
         }

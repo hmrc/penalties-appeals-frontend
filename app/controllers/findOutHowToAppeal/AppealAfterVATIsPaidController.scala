@@ -84,9 +84,9 @@ class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, a
 
   def auditDidTheUserGoOffToPay(didUserGoToPayNow: String)(implicit hc: HeaderCarrier, request: UserRequest[_]): Unit = {
     val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).getOrElse(0)
-    val amountTobePaidinPence : String = (vatAmount * 100).toString
+    val amountToBePaidInPence : String = (vatAmount * 100).toString
     val chargeReference : String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).getOrElse("")
-    val auditModel = PenaltyAppealDidYouGoOffToPayModel(amountTobePaidinPence, chargeReference, didUserGoToPayNow)
+    val auditModel = PenaltyAppealDidYouGoOffToPayModel(amountToBePaidInPence, chargeReference, didUserGoToPayNow)
     auditService.audit(auditModel)
   }
 }
