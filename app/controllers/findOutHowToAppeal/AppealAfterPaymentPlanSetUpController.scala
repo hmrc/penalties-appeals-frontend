@@ -88,8 +88,8 @@ class AppealAfterPaymentPlanSetUpController @Inject()(appealAfterPaymentPlanSetU
   def auditRadioOptionsForAfterPaymentPlanSetup(userWentToSetUpTTP : String)(implicit hc: HeaderCarrier, request: UserRequest[_]): Unit = {
     val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).getOrElse("")
     val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).getOrElse(0);
-    val amountTobePaidinPence : String = (vatAmount*100).toString
-    val auditModel = AppealAfterPaymentPlanSetupAudit(amountTobePaidinPence, chargeReference, userWentToSetUpTTP)
+    val amountToBePaidInPence : String = (vatAmount*100).toString
+    val auditModel = AppealAfterPaymentPlanSetupAudit(amountToBePaidInPence, chargeReference, userWentToSetUpTTP)
     auditService.audit(auditModel);
   }
 }

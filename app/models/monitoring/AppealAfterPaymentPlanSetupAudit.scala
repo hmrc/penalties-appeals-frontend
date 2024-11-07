@@ -21,7 +21,7 @@ import play.api.libs.json.JsValue
 import services.monitoring.JsonAuditModel
 import utils.JsonUtils
 
-case class AppealAfterPaymentPlanSetupAudit(amountTobePaidinPence: String, chargeReference: String, userWentToSetUpTTP : String)
+case class AppealAfterPaymentPlanSetupAudit(amountToBePaidInPence: String, chargeReference: String, userWentToSetUpTTP : String)
                                            (implicit request: UserRequest[_]) extends JsonAuditModel with JsonUtils {
   override val auditType: String = "PenaltyFindOutHowToAppealSetUpTimeToPay"
   override val transactionName: String = "penalties-find-out-how-to-appeal-set-up-ttp"
@@ -29,7 +29,7 @@ case class AppealAfterPaymentPlanSetupAudit(amountTobePaidinPence: String, charg
     "taxIdentifier" -> request.vrn,
     "identifierType" -> "VRN",
     "chargeReference" -> chargeReference,
-    "amountToBePaidInPence" -> amountTobePaidinPence,
+    "amountToBePaidInPence" -> amountToBePaidInPence,
     "canUserPay" -> "no",
     "userWentToSetUpTTP" -> userWentToSetUpTTP
   )
