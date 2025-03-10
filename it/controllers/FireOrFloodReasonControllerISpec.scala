@@ -75,7 +75,7 @@ class FireOrFloodReasonControllerISpec extends IntegrationSpecCommonBase with Fe
         val fakeRequestWithCorrectKeysAndInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
-          "date.year" -> "2025"
+          "date.year" -> "2035"
         )
         val request = await(controller.onSubmit(NormalMode)(fakeRequestWithCorrectKeysAndInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST

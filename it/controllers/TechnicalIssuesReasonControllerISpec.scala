@@ -83,7 +83,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
-          "date.year" -> "2025"
+          "date.year" -> "2035"
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
@@ -94,7 +94,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "02",
           "date.month" -> "01",
-          "date.year" -> "2022"
+          "date.year" -> "2032"
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesBegan(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe BAD_REQUEST
@@ -212,7 +212,7 @@ class TechnicalIssuesReasonControllerISpec extends IntegrationSpecCommonBase wit
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
-          "date.year" -> "2025"
+          "date.year" -> "2035"
         )
         val request = await(controller.onSubmitForWhenTechnologyIssuesEnded(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe Status.BAD_REQUEST
