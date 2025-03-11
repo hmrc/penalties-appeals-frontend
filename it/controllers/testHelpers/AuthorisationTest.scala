@@ -28,8 +28,6 @@ import uk.gov.hmrc.http.SessionKeys.authToken
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 import java.time.LocalDate
 
-import controllers.routes
-
 trait AuthorisationTest {
   _: IntegrationSpecCommonBase =>
   def runControllerPredicateTests(result: => Action[AnyContent], method: String, url: String): Unit = {
