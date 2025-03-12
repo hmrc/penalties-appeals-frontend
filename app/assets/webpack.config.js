@@ -1,6 +1,9 @@
 const path = require('path');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
-module.exports = function (env) {
+module.exports = function (env = {}) {
+    const entry = env.entry ? Object.values(env.entry) : [];  // Ensure env.entry is not undefined or null
+
     return {
         mode: 'production',
         optimization: {
@@ -9,12 +12,12 @@ module.exports = function (env) {
         },
         watch: false,
         devtool: 'source-map',
-        entry: Object.values(env.entry),
+        entry: entry,
         resolve: {
             extensions: ['.js'],
             alias: {
                 'node_modules': path.join(__dirname, 'node_modules'),
-                'webjars': env.webjars.path
+                'webjars': env.webjars ? env.webjars.path : '',  // Ensure env.webjars is available
             }
         },
         module: {
@@ -25,22 +28,19 @@ module.exports = function (env) {
                     use: {
                         loader: 'babel-loader',
                         options: {
-                            presets: [
-                                '@babel/preset-env'
-                            ],
-                            plugins: [
-                                '@babel/plugin-proposal-class-properties'
-                            ]
+                            presets: ['@babel/preset-env'],
+                            plugins: ['@babel/plugin-proposal-class-properties']
                         }
                     }
-                },
-                {
-                    test: /\.js$/,
-                    exclude: /node_modules|legacy/,
-                    loader: 'eslint-loader'
                 }
             ]
         },
-        output: env.output
+        plugins: [
+            new ESLintPlugin({
+                extensions: ['js'],
+                exclude: ['node_modules', 'legacy']
+            })
+        ],
+        output: env.output || {}  // Provide a fallback for output
     };
 };
