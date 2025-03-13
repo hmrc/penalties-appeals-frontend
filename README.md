@@ -10,13 +10,13 @@ Features:
 
 ## Running the service locally
 
-Pre-requisite: Install Service Manager, MongoDB(4.2) and Node v16.14.2.
+Pre-requisite: Install Service Manager, MongoDB(4.2) and Node v18.20.5.
 
  Start all the dependent services excepting the penalties_appeals_frontend in the following two steps 
 
- `sm --start PENALTIES_ALL`
+ `sm2 --start PENALTIES_ALL`
 
- `sm --stop PENALTIES_APPEALS_FRONTEND`
+ `sm2 --stop PENALTIES_APPEALS_FRONTEND`
 
 Now to run the penalties_appeals_frontend service 
 
