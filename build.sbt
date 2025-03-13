@@ -6,7 +6,7 @@ val appName = "penalties-appeals-frontend"
 
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtWeb)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtWeb)
   .settings(
     majorVersion                     := 0,
     scalaVersion                     := "2.13.12",

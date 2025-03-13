@@ -83,7 +83,7 @@ class OtherReasonControllerISpec extends IntegrationSpecCommonBase with Authoris
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
-          "date.year" -> "2025"
+          "date.year" -> "2035"
         )
         val result = await(controller.onSubmitForWhenDidBecomeUnable(NormalMode)(fakeRequestWithInvalidBody))
         result.header.status shouldBe BAD_REQUEST

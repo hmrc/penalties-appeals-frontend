@@ -100,7 +100,7 @@ class LossOfStaffReasonControllerISpec extends IntegrationSpecCommonBase with Au
         val fakeRequestWithInvalidBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody(
           "date.day" -> "08",
           "date.month" -> "02",
-          "date.year" -> "2025"
+          "date.year" -> "2035"
         )
         val request = await(controller.onSubmit(NormalMode)(fakeRequestWithInvalidBody))
         request.header.status shouldBe BAD_REQUEST

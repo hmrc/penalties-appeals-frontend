@@ -22,7 +22,7 @@ import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import play.api.test.Helpers.{LOCATION, await, defaultAwaitTimeout}
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import services.TimeToPayService
 import stubs.TimeToPayStub.{successfulTTPCall, unsuccessfulTTPCall}
 import uk.gov.hmrc.http.HeaderCarrier
