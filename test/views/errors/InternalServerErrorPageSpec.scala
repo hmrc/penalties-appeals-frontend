@@ -25,8 +25,8 @@ import messages.ISECustomMessages._
 
 class InternalServerErrorPageSpec extends SpecBase with ViewBehaviours with ViewUtils {
 
-  val iseCustomPage = injector.instanceOf[InternalServerErrorPage]
-  val iseCustomGenericPage = injector.instanceOf[InternalServerErrorGenericPage]
+  val iseCustomPage: InternalServerErrorPage = injector.instanceOf[InternalServerErrorPage]
+  val iseCustomGenericPage: InternalServerErrorGenericPage = injector.instanceOf[InternalServerErrorGenericPage]
 
   object Selector extends BaseSelectors {
     val link = "#main-content p:nth-child(3) a"
@@ -40,7 +40,7 @@ class InternalServerErrorPageSpec extends SpecBase with ViewBehaviours with View
       "the user is a trader" must {
         def applyView() = {
           iseCustomPage.apply()(
-            implicitly, implicitly, implicitly, vatTraderUserLSP
+            implicitly, implicitly, vatTraderUserLSP
           )
         }
 
@@ -59,7 +59,7 @@ class InternalServerErrorPageSpec extends SpecBase with ViewBehaviours with View
       "the user is a agent" must {
         def applyView() = {
           iseCustomPage.apply()(
-            implicitly, implicitly, implicitly, agentUserLSP
+            implicitly, implicitly, agentUserLSP
           )
         }
 

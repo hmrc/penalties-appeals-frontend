@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.errors.{ErrorTemplate, InternalServerErrorGenericPage, InternalServerErrorPage}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.implicitConversions
 
 @Singleton
 class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, iseCustom: InternalServerErrorPage, iseGeneric: InternalServerErrorGenericPage)(implicit appConfig: AppConfig, ec: ExecutionContext)

@@ -17,7 +17,6 @@
 package controllers.findOutHowToAppeal
 
 import connectors.TimeToPayConnector
-import controllers.routes
 import controllers.testHelpers.AuthorisationTest
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.libs.json.Json

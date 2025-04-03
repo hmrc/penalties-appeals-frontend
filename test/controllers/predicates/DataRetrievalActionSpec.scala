@@ -17,7 +17,6 @@
 package controllers.predicates
 
 import base.SpecBase
-import controllers.routes
 import models.AuthRequest
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
