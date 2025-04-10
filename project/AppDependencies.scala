@@ -4,7 +4,7 @@ object AppDependencies {
 
   val bootstrapVersion = "8.6.0"
 
-  val mongoPlayVersion = "1.9.0"
+  val mongoPlayVersion = "2.6.0"
 
   val compile = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-frontend-play-30"     % bootstrapVersion,

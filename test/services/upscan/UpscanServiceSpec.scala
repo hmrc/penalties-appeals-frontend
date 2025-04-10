@@ -35,8 +35,6 @@ import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys
 import java.time.{Instant, LocalDateTime}
 
-import controllers.routes
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

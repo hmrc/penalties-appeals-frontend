@@ -19,7 +19,6 @@ package controllers.findOutHowToAppeal
 
 import base.SpecBase
 import connectors.httpParsers.UnexpectedFailure
-import controllers.routes
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, reset, when}
 import org.mockito.ArgumentMatchers

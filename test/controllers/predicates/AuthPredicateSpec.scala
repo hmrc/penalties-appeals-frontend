@@ -16,7 +16,6 @@
 
 package controllers.predicates
 
-import controllers.routes
 import models.AuthRequest
 import play.api.http.Status
 import play.api.mvc.Results.Ok

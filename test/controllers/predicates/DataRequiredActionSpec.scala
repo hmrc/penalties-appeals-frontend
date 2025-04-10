@@ -27,8 +27,6 @@ import play.api.test.Helpers._
 import utils.SessionKeys
 import java.time.LocalDate
 
-import controllers.routes
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRequiredActionSpec extends SpecBase {

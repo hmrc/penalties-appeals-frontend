@@ -16,7 +16,7 @@
 
 @this(layout: Layout)
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: UserRequest[_])
+@()(implicit messages: Messages, appConfig: AppConfig, user: UserRequest[_])
 
 @layout(pageTitle = messages("global.error.InternalServerError500.title"), backLinkEnabled = false, isAuthorised = false, showSignOut = false) {
 <h1 class="govuk-heading-l" id="page-heading">@messages("global.error.InternalServerError500.heading")</h1>
