@@ -72,7 +72,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
 
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(SessionKeys.journeyId -> "1234")
+  implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(SessionKeys.journeyId -> "1234", SessionKeys.regime -> "HMRC-MTD-VAT")
 
   implicit val messages: Messages = messagesApi.preferred(fakeRequest)
 
@@ -111,7 +111,7 @@ trait SpecBase extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with B
   def userAnswers(answers: JsObject): UserAnswers = UserAnswers("1234", answers)
 
   val userRequestWithCorrectKeys: UserRequest[AnyContent] =
-    UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))
+    UserRequest(vrn, answers = userAnswers(correctUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234", SessionKeys.regime -> "HMRC-MTD-VAT"))
 
   val userRequestLPPWithCorrectKeys: UserRequest[AnyContent] =
     UserRequest(vrn, answers = userAnswers(correctLPPUserAnswers))(fakeRequest.withSession(SessionKeys.journeyId -> "1234"))

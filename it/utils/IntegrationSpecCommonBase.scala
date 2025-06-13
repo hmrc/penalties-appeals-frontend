@@ -54,7 +54,8 @@ trait IntegrationSpecCommonBase extends AnyWordSpec with Matchers with GuiceOneS
 
   val fakeRequest: FakeRequest[AnyContent] = FakeRequest("POST", "/").withSession(
     authToken -> "1234",
-    SessionKeys.journeyId -> "1234"
+    SessionKeys.journeyId -> "1234",
+    SessionKeys.regime -> "HMRC-MTD-VAT"
   )
 
   val fileUploadModel: UploadJourney = UploadJourney(

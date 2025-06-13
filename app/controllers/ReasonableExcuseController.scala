@@ -99,7 +99,8 @@ class ReasonableExcuseController @Inject()(
 
   private def attemptToRetrieveReasonableExcuseList()(implicit hc: HeaderCarrier,
                                                       request: Request[_]): Future[Either[Future[Result], Seq[ReasonableExcuse]]] = {
-    appealService.getReasonableExcuseListAndParse().map {
+    val regime: String = request.session.get(SessionKeys.regime).get
+    appealService.getReasonableExcuseListAndParse(regime).map {
       _.fold[Either[Future[Result], Seq[ReasonableExcuse]]]({
         logger.error("[ReasonableExcuseController][onPageLoad] - Received a None response from the appeal service when " +
           "trying to retrieve reasonable excuses - rendering ISE")

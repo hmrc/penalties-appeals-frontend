@@ -26,6 +26,9 @@ trait UserAnswersBase {
 
   val correctUserAnswers: JsObject = Json.obj(
     SessionKeys.penaltyNumber -> "123",
+    SessionKeys.regime -> "HMRC-MTD-VAT",
+    SessionKeys.idType -> "VRN",
+    SessionKeys.id -> "123456789",
     SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
     SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
     SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),

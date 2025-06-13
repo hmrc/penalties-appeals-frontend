@@ -86,7 +86,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
         "has penalty info in session)" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
+        when(mockAppealService.getReasonableExcuseListAndParse(any())(any(), any()))
           .thenReturn(Future.successful(
             Some(seqOfReasonableExcuses)
           ))
@@ -99,7 +99,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
         new Setup(AuthTestModels.successfulAuthResult) {
           when(mockSessionService.getUserAnswers(any()))
             .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(SessionKeys.reasonableExcuse -> "bereavement")))))
-          when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
+          when(mockAppealService.getReasonableExcuseListAndParse(any())(any(), any()))
             .thenReturn(Future.successful(
               Some(seqOfReasonableExcuses)
             ))
@@ -122,7 +122,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
       "the call fails to retrieve the reasonable excuse list" in new Setup(AuthTestModels.successfulAuthResult) {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers))))
-        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
+        when(mockAppealService.getReasonableExcuseListAndParse(any())(any(), any()))
           .thenReturn(Future.successful(
             None
           ))
@@ -168,7 +168,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
     "user submits the form" when {
       "the validation is performed against possible values - redirect on success and set the session key value" in
         new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
+          when(mockAppealService.getReasonableExcuseListAndParse(any())(any(), any()))
             .thenReturn(Future.successful(
               Some(seqOfReasonableExcuses)
             ))
@@ -186,7 +186,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
 
       "the validation is performed against possible values - value does not appear in reasonable excuse list" in
         new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
+          when(mockAppealService.getReasonableExcuseListAndParse(any())(any(), any()))
             .thenReturn(Future.successful(
               Some(seqOfReasonableExcuses)
             ))
@@ -199,7 +199,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
 
       "the validation is performed against an empty value - value is an empty string" in
         new Setup(AuthTestModels.successfulAuthResult) {
-          when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
+          when(mockAppealService.getReasonableExcuseListAndParse(any())(any(), any()))
             .thenReturn(Future.successful(
               Some(seqOfReasonableExcuses)
             ))
@@ -222,7 +222,7 @@ class ReasonableExcuseControllerSpec extends SpecBase {
       }
 
       "the call fails to retrieve the reasonable excuse list" in new Setup(AuthTestModels.successfulAuthResult) {
-        when(mockAppealService.getReasonableExcuseListAndParse()(any(), any()))
+        when(mockAppealService.getReasonableExcuseListAndParse(any())(any(), any()))
           .thenReturn(Future.successful(
             None
           ))

@@ -141,32 +141,32 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
 
   "getAppealUrlBasedOnPenaltyType" should {
     "return the correct URL when the appeal is for a LPP" in new Setup {
-      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any()))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any(), any()))
         .thenReturn("http://url/url")
-      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any()))
         .thenReturn("http://wrongurl/wrongurl")
 
-      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = true, isAdditional = false)
+      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT", "VRN", "XXXXXX", isLPP = true, isAdditional = false)
       result shouldBe "http://url/url"
     }
 
     "return the correct URL when the appeal is for a LPP Additional" in new Setup {
-      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any()))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any(), any()))
         .thenReturn("http://url/url")
-      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any()))
         .thenReturn("http://wrongurl/wrongurl")
 
-      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = true, isAdditional = true)
+      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT", "VRN", "XXXXXX", isLPP = true, isAdditional = true)
       result shouldBe "http://url/url"
     }
 
     "return the correct URL when the appeal is for a LSP" in new Setup {
-      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any()))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any(), any()))
         .thenReturn("http://wrongurl/wrongurl")
-      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "XXXXXX", isLPP = false, isAdditional = false)
+      val result: String = connector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT", "VRN", "XXXXXX", isLPP = false, isAdditional = false)
       result shouldBe "http://url/url"
     }
   }
@@ -175,10 +175,10 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return $Some $JsValue when the connector call succeeds" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJson.toString())))
-      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false))
       result.isDefined shouldBe true
       result.get.toString() shouldBe appealDataAsJson.toString()
     }
@@ -186,10 +186,10 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return $Some $JsValue when the connector call succeeds for LPP" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJsonLPP.toString())))
-      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any()))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = false))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, isAdditional = false))
       result.isDefined shouldBe true
       result.get.toString() shouldBe appealDataAsJsonLPP.toString()
     }
@@ -197,10 +197,10 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return $Some $JsValue when the connector call succeeds for LPP - Additional" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, appealDataAsJsonLPPAdditional.toString())))
-      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any()))
+      when(mockAppConfig.appealLPPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = true, isAdditional = true))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, isAdditional = true))
       result.isDefined shouldBe true
       result.get.toString() shouldBe appealDataAsJsonLPPAdditional.toString()
     }
@@ -208,21 +208,21 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return $None when the connector returns NOT_FOUND (${Status.NOT_FOUND})" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
-      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+      val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false))
       result.isDefined shouldBe false
     }
 
     s"return $None when the connector returns an unknown status e.g. ISE (${Status.IM_A_TEAPOT})" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.IM_A_TEAPOT, "")))
-      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any()))
         .thenReturn("http://url/url")
       withCaptureOfLoggingFrom(logger) {
         logs => {
-          val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+          val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false))
           logs.exists(_.getMessage.contains(PagerDutyKeys.RECEIVED_4XX_FROM_PENALTIES.toString)) shouldBe true
           result.isDefined shouldBe false
         }
@@ -232,11 +232,11 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return $None when the connector returns an exception" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.failed(new Exception("Some exception mesage.")))
-      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any()))
+      when(mockAppConfig.appealLSPDataForPenaltyAndEnrolmentKey(any(), any(), any(), any()))
         .thenReturn("http://url/url")
       withCaptureOfLoggingFrom(logger) {
         logs => {
-          val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "123456789", isLPP = false, isAdditional = false))
+          val result: Option[JsValue] = await(connector.getAppealsDataForPenalty("12345", "HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false))
           logs.exists(_.getMessage.contains(PagerDutyKeys.UNKNOWN_EXCEPTION_CALLING_PENALTIES.toString)) shouldBe true
           result.isDefined shouldBe false
         }
@@ -248,10 +248,10 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return Right with the correct model when the connector call succeeds" in new Setup {
       when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Right(multiplePenaltiesModel)))
-      when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
+      when(mockAppConfig.multiplePenaltyDataUrl(any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT", "VRN", "123456789"))
       result.isRight shouldBe true
       result shouldBe Right(multiplePenaltiesModel)
     }
@@ -259,10 +259,10 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return Left when $NO_CONTENT is returned from the call" in new Setup {
       when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Left(NoContent)))
-      when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
+      when(mockAppConfig.multiplePenaltyDataUrl(any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT", "VRN","123456789"))
       result.isLeft shouldBe true
       result.left.getOrElse(BadRequest) shouldBe NoContent
     }
@@ -270,10 +270,10 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return Left when $NOT_FOUND is returned from the call" in new Setup {
       when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(Status.NOT_FOUND, s"Unexpected response, status $NOT_FOUND returned"))))
-      when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
+      when(mockAppConfig.multiplePenaltyDataUrl(any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT", "VRN", "123456789"))
       result.isLeft shouldBe true
       result.left.getOrElse(BadRequest) shouldBe UnexpectedFailure(NOT_FOUND, s"Unexpected response, status $NOT_FOUND returned")
     }
@@ -281,10 +281,10 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return Left when $INTERNAL_SERVER_ERROR is returned from the call" in new Setup {
       when(mockHttpClient.GET[MultiplePenaltiesResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(Status.INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned"))))
-      when(mockAppConfig.multiplePenaltyDataUrl(any(), any()))
+      when(mockAppConfig.multiplePenaltyDataUrl(any(), any(), any(), any()))
         .thenReturn("http://url/url")
 
-      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
+      val result: MultiplePenaltiesResponse = await(connector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT", "VRN", "123456789"))
       result.isLeft shouldBe true
       result.left.getOrElse(BadRequest) shouldBe UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned")
     }
@@ -294,9 +294,9 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     "return OK and a response JSON" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.OK, reasonableExcusesAsJson.toString())))
-      when(mockAppConfig.reasonableExcuseFetchUrl)
+      when(mockAppConfig.reasonableExcuseFetchUrl(any()))
         .thenReturn("http://url/url")
-      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
+      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses("HMRC-MTD-VAT"))
       result.isDefined shouldBe true
       result.get shouldBe reasonableExcusesAsJson
     }
@@ -304,20 +304,20 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return $None when a 404 is returned from the call" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.NOT_FOUND, "")))
-      when(mockAppConfig.reasonableExcuseFetchUrl)
+      when(mockAppConfig.reasonableExcuseFetchUrl(any()))
         .thenReturn("http://url/url")
-      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
+      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses("HMRC-MTD-VAT"))
       result.isDefined shouldBe false
     }
 
     s"return $None when a 500 is returned from the call" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.INTERNAL_SERVER_ERROR, "")))
-      when(mockAppConfig.reasonableExcuseFetchUrl)
+      when(mockAppConfig.reasonableExcuseFetchUrl(any()))
         .thenReturn("http://url/url")
       withCaptureOfLoggingFrom(logger) {
         logs => {
-          val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
+          val result: Option[JsValue] = await(connector.getListOfReasonableExcuses("HMRC-MTD-VAT"))
           logs.exists(_.getMessage.contains(PagerDutyKeys.UNKNOWN_EXCEPTION_CALLING_PENALTIES.toString)) shouldBe true
           result.isDefined shouldBe false
         }
@@ -327,9 +327,9 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     s"return $None when an unknown response  is returned from the call" in new Setup {
       when(mockHttpClient.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(Status.IM_A_TEAPOT, "")))
-      when(mockAppConfig.reasonableExcuseFetchUrl)
+      when(mockAppConfig.reasonableExcuseFetchUrl(any()))
         .thenReturn("http://url/url")
-      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses())
+      val result: Option[JsValue] = await(connector.getListOfReasonableExcuses("HMRC-MTD-VAT"))
       result.isDefined shouldBe false
     }
   }
@@ -339,7 +339,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
       when(mockHttpClient.POST[AppealSubmission, AppealSubmissionResponse](any(), any(), any())(any(),
         any(), ArgumentMatchers.eq(hc.copy(authorization = None, otherHeaders = hc.otherHeaders)), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
-      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any()))
+      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any(), any(), any()))
         .thenReturn("http://url/url?enrolmentKey=HMRC-MTD-VAT~VRN~123456789")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
@@ -349,7 +349,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
           lateAppealReason = None, isClientResponsibleForSubmission = None, isClientResponsibleForLateSubmission = None
         )
       )
-      val result: AppealSubmissionResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
+      val result: AppealSubmissionResponse = await(connector.submitAppeal(appealSubmissionModel, "HMRC-MTD-VAT", "VRN", "0123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
       result.isRight shouldBe true
       result.toOption.get.status shouldBe OK
     }
@@ -357,7 +357,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
     "return an ISE when something unexpected goes wrong" in new Setup {
       when(mockHttpClient.POST[AppealSubmission, AppealSubmissionResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Exception("something went wrong.")))
-      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any()))
+      when(mockAppConfig.submitAppealUrl(any(), any(), any(), any(), any(), any(), any()))
         .thenReturn("http://url/url")
       val appealSubmissionModel: AppealSubmission = AppealSubmission(
         sourceSystem = "MDTP", taxRegime = "VAT", customerReferenceNo = "VRN1234567890", dateOfAppeal = LocalDateTime.of(
@@ -368,7 +368,7 @@ class PenaltiesConnectorSpec extends SpecBase with LogCapturing {
         )
       )
       val result: AppealSubmissionResponse = await(connector.submitAppeal(appealSubmissionModel,
-        "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
+        "HMRC-MTD-VAT", "VRN", "0123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = false))
       result.isLeft shouldBe true
       result.left.toOption.get.body shouldBe "An issue occurred whilst appealing a penalty with error: something went wrong."
       result.left.toOption.get.status shouldBe INTERNAL_SERVER_ERROR

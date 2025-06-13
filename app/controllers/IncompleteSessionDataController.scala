@@ -39,10 +39,13 @@ class IncompleteSessionDataController @Inject()(incompleteSessionDataPage: Incom
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit request => {
+      val regime = request.answers.getAnswer[String](SessionKeys.regime).get
+      val idType = request.answers.getAnswer[String](SessionKeys.idType).get
+      val id = request.answers.getAnswer[String](SessionKeys.id).get
       val penaltyId = request.answers.getAnswer[String](SessionKeys.penaltyNumber).get
       val isLPP = request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(Late_Payment)
       val isAdditional = request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).contains(Additional)
-      BadRequest(incompleteSessionDataPage(penaltyId, isLPP, isAdditional))
+      BadRequest(incompleteSessionDataPage(regime, idType, id, penaltyId, isLPP, isAdditional))
     }
   }
 

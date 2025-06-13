@@ -49,9 +49,9 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               userAnswersRepository: UserAnswersRepository,
                               uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
-  def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
+  def validatePenaltyIdForEnrolmentKey(penaltyId: String, regime: String, idType: String, id: String, isLPP: Boolean, isAdditional: Boolean)
                                       (implicit user: AuthRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
-    penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
+    penaltiesConnector.getAppealsDataForPenalty(penaltyId, regime, idType, id, isLPP, isAdditional).map {
       _.fold[Option[AppealData]]({
         logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Found no appeal data for penalty ID: $penaltyId")
         None
@@ -70,13 +70,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
-  def validateMultiplePenaltyDataForEnrolmentKey(penaltyId: String)
+  def validateMultiplePenaltyDataForEnrolmentKey(penaltyId: String, regime: String, idType: String, id: String )
                                                 (implicit user: AuthRequest[_],
                                                  hc: HeaderCarrier,
                                                  ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
-    val enrolmentKey = EnrolmentKeys.constructMTDVATEnrolmentKey(user.vrn)
     for {
-      multiplePenaltiesResponse <- penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, enrolmentKey)
+      multiplePenaltiesResponse <- penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, regime, idType, id)
     } yield {
       multiplePenaltiesResponse match {
         case Right(model) =>
@@ -89,8 +88,8 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
-  def getReasonableExcuseListAndParse()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[ReasonableExcuse]]] = {
-    penaltiesConnector.getListOfReasonableExcuses().map {
+  def getReasonableExcuseListAndParse(regime: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[ReasonableExcuse]]] = {
+    penaltiesConnector.getListOfReasonableExcuses(regime).map {
       _.fold[Option[Seq[ReasonableExcuse]]]({
         logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Found no reasonable excuses")
         None
@@ -110,19 +109,21 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
   }
 
   def submitAppeal(reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
-    val enrolmentKey = constructMTDVATEnrolmentKey(userRequest.vrn)
+    val regime = userRequest.answers.getAnswer[String](SessionKeys.regime).get
+    val idType = userRequest.answers.getAnswer[String](SessionKeys.idType).get
+    val id = userRequest.answers.getAnswer[String](SessionKeys.id).get
     val appealType = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)
     val isLPP = appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)
     val agentReferenceNo = userRequest.arn
     val userHasUploadedFiles = userRequest.answers.getAnswer[String](SessionKeys.isUploadEvidence).contains("yes")
     if (!userRequest.answers.getAnswer[String](SessionKeys.appealType).contains(PenaltyTypeEnum.Late_Submission.toString) && userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties).contains("yes")) {
-      multipleAppeal(enrolmentKey, appealType, isLPP, agentReferenceNo, userHasUploadedFiles, reasonableExcuse)
+      multipleAppeal(regime, idType, id, appealType, isLPP, agentReferenceNo, userHasUploadedFiles, reasonableExcuse)
     } else {
-      singleAppeal(enrolmentKey, appealType, isLPP, agentReferenceNo, userHasUploadedFiles, reasonableExcuse)
+      singleAppeal(regime, idType, id, appealType, isLPP, agentReferenceNo, userHasUploadedFiles, reasonableExcuse)
     }
   }
 
-  private def singleAppeal(enrolmentKey: String, appealType: Option[PenaltyTypeEnum.Value], isLPP: Boolean,
+  private def singleAppeal(regime: String, idType: String, id: String, appealType: Option[PenaltyTypeEnum.Value], isLPP: Boolean,
                            agentReferenceNo: Option[String], userHasUploadedFiles: Boolean,
                            reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
     for {
@@ -134,7 +135,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate(), agentReferenceNo, uploads)
       penaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.penaltyNumber).get
       response <- {
-        penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, penaltyNumber, correlationId, isMultiAppeal = false)
+        penaltiesConnector.submitAppeal(modelFromRequest, regime, idType, id, isLPP, penaltyNumber, correlationId, isMultiAppeal = false)
       }
     } yield {
       response.fold(
@@ -158,7 +159,7 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
       Left(INTERNAL_SERVER_ERROR)
   }
 
-  private def multipleAppeal(enrolmentKey: String, appealType: Option[PenaltyTypeEnum.Value], isLPP: Boolean,
+  private def multipleAppeal(regime: String, idType: String, id: String, appealType: Option[PenaltyTypeEnum.Value], isLPP: Boolean,
                              agentReferenceNo: Option[String], userHasUploadedFiles: Boolean,
                              reasonableExcuse: String)(implicit userRequest: UserRequest[_], ec: ExecutionContext, hc: HeaderCarrier): Future[Either[Int, Unit]] = {
     for {
@@ -171,8 +172,8 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
         .constructModelBasedOnReasonableExcuse(reasonableExcuse, isAppealLate(), agentReferenceNo, uploads)
       firstPenaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyChargeReference).get
       secondPenaltyNumber = userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyChargeReference).get
-      firstResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, firstPenaltyNumber, firstCorrelationId, isMultiAppeal = true)
-      secondResponse <- penaltiesConnector.submitAppeal(modelFromRequest, enrolmentKey, isLPP, secondPenaltyNumber, secondCorrelationId, isMultiAppeal = true)
+      firstResponse <- penaltiesConnector.submitAppeal(modelFromRequest, regime, idType, id, isLPP, firstPenaltyNumber, firstCorrelationId, isMultiAppeal = true)
+      secondResponse <- penaltiesConnector.submitAppeal(modelFromRequest, regime, idType, id, isLPP, secondPenaltyNumber, secondCorrelationId, isMultiAppeal = true)
       vrn = userRequest.vrn
       dateFrom = userRequest.answers.getAnswer[String](SessionKeys.startDateOfPeriod).get
       dateTo = userRequest.answers.getAnswer[String](SessionKeys.endDateOfPeriod).get

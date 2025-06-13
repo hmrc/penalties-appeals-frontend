@@ -52,7 +52,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       any(), any[Retrieval[~[Option[AffinityGroup], Enrolments]]]())(
       any(), any())
     ).thenReturn(authResult)
-    when(mockAppealsService.validateMultiplePenaltyDataForEnrolmentKey(any())(any(), any(), any()))
+    when(mockAppealsService.validateMultiplePenaltyDataForEnrolmentKey(any(), any(), any(), any())(any(), any(), any()))
       .thenReturn(Future.successful(expectedContent))
     val controller = new InitialiseAppealController(
       mockAppealsService,
@@ -73,9 +73,9 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      val result: Result = await(controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest))
+      val result: Result = await(controller.onPageLoad("12345", "HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false)(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
@@ -99,9 +99,9 @@ class InitialiseAppealControllerSpec extends SpecBase {
       )
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoad("12345", isLPP = false, isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad("12345", "HMRC-MTD-VAT", "VRN", "123456789" ,isLPP = false, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
@@ -127,9 +127,9 @@ class InitialiseAppealControllerSpec extends SpecBase {
       )
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = false)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad("12345","HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, isAdditional = false)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
@@ -155,9 +155,9 @@ class InitialiseAppealControllerSpec extends SpecBase {
       )
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = true)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad("12345", "HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
@@ -183,10 +183,10 @@ class InitialiseAppealControllerSpec extends SpecBase {
       )
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
 
-      val result: Future[Result] = controller.onPageLoad("12345", isLPP = false, isAdditional = true)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad("12345","HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
@@ -218,10 +218,10 @@ class InitialiseAppealControllerSpec extends SpecBase {
       )
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
 
-      val result: Future[Result] = controller.onPageLoad("12345", isLPP = true, isAdditional = true)(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad("12345","HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, isAdditional = true)(fakeRequest)
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
       await(result).header.status shouldBe SEE_OTHER
       answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
@@ -231,9 +231,9 @@ class InitialiseAppealControllerSpec extends SpecBase {
 
   "onPageLoadForFindOutHowToAppealLSP" should {
     "call the penalties backend and handle a failed response" in new Setup(AuthTestModels.successfulAuthResult) {
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      val result: Result = await(controller.onPageLoadForFindOutHowToAppealLSP("12345")(fakeRequest))
+      val result: Result = await(controller.onPageLoadForFindOutHowToAppealLSP("12345", "HMRC-MTD-VAT", "VRN", "123456789")(fakeRequest))
       result.header.status shouldBe INTERNAL_SERVER_ERROR
     }
 
@@ -258,9 +258,9 @@ class InitialiseAppealControllerSpec extends SpecBase {
       )
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
-      val result: Future[Result] = controller.onPageLoadForFindOutHowToAppealLSP("12345")(fakeRequest)
+      val result: Future[Result] = controller.onPageLoadForFindOutHowToAppealLSP("12345", "HMRC-MTD-VAT", "VRN", "123456789")(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad().url
       answerCaptor.getValue.data.decryptedValue shouldBe userAnswersToReturn.data.decryptedValue
@@ -305,7 +305,7 @@ class InitialiseAppealControllerSpec extends SpecBase {
       )
       when(mockSessionService.updateAnswers(answerCaptor.capture()))
         .thenReturn(Future.successful(true))
-      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any())(any(), any(), any()))
+      when(mockAppealsService.validatePenaltyIdForEnrolmentKey(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(appealDataToReturn)))
       val result: Future[Result] = controller.onPageLoadForFindOutHowToAppealLPP(principalChargeReference, vatAmountInPence, vatStartDate, vatEndDate, isCa)(fakeRequest)
       redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.FindOutHowToAppealStartController.startFindOutHowToAppeal().url

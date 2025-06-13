@@ -38,13 +38,14 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
   "GET /reason-for-missing-deadline" should {
     "return 200 (OK) when the user is authorised and the reasonable excuses can be fetched" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       val request = await(controller.onPageLoad()(fakeRequest))
       request.header.status shouldBe Status.OK
     }
@@ -59,7 +60,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
       SessionKeys.whoPlannedToSubmitVATReturn -> "client"
     ))) {
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       AuthStub.agentAuthorised()
       val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
       val result = controller.onPageLoad()(agentFakeRequest)
@@ -79,7 +80,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
       SessionKeys.whatCausedYouToMissTheDeadline -> "agent"
     ))) {
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       AuthStub.agentAuthorised()
       val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
       val result = controller.onPageLoad()(agentFakeRequest)
@@ -99,7 +100,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       SessionKeys.whoPlannedToSubmitVATReturn -> "agent",
       SessionKeys.whatCausedYouToMissTheDeadline -> "client"
     ))) {
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       AuthStub.agentAuthorised()
       val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
       val result = controller.onPageLoad()(agentFakeRequest)
@@ -117,7 +118,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       AuthStub.agentAuthorised()
       val agentFakeRequest: FakeRequest[AnyContent] = fakeRequest.withSession(SessionKeys.agentSessionVrn -> "VRN1234")
       val result = controller.onPageLoad()(agentFakeRequest)
@@ -135,7 +136,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       AuthStub.authorised()
       val result = controller.onPageLoad()(fakeRequest)
       status(result) shouldBe Status.OK
@@ -153,7 +154,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
       disableFeatureSwitch(ShowReasonableExcuseHintText)
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       AuthStub.authorised()
       val result = controller.onPageLoad()(fakeRequest)
       status(result) shouldBe Status.OK
@@ -163,10 +164,11 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
     }
 
     "return 500 (ISE) when the list can not be retrieved from the backend" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      failedFetchReasonableExcuseListResponse()
+      failedFetchReasonableExcuseListResponse("HMRC-MTD-VAT")
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("GET", "/reason-for-missing-deadline").withSession(
         authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
+        SessionKeys.journeyId -> "1234",
+        SessionKeys.regime -> "HMRC-MTD-VAT"
       )
       val request = await(controller.onPageLoad()(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR
@@ -184,7 +186,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "type1")
       val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
       request.header.status shouldBe Status.SEE_OTHER
@@ -200,7 +202,7 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
       SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
       SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08")
     ))) {
-      successfulFetchReasonableExcuseResponse
+      successfulFetchReasonableExcuseResponse("HMRC-MTD-VAT")
       val fakeRequestWithCorrectBody: FakeRequest[AnyContent] = fakeRequest.withFormUrlEncodedBody("value" -> "this_is_fake")
 
       val request = await(controller.onSubmit()(fakeRequestWithCorrectBody))
@@ -208,10 +210,11 @@ class ReasonableExcuseControllerISpec extends IntegrationSpecCommonBase with Aut
     }
 
     "return 500 (ISE) when the list can not be retrieved from the backend" in new UserAnswersSetup(userAnswers(Json.obj())) {
-      failedFetchReasonableExcuseListResponse()
+      failedFetchReasonableExcuseListResponse("HMRC-MTD-VAT")
       val fakeRequestWithNoKeys: FakeRequest[AnyContent] = FakeRequest("POST", "/reason-for-missing-deadline").withSession(
         authToken -> "1234",
-        SessionKeys.journeyId -> "1234"
+        SessionKeys.journeyId -> "1234",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
       )
       val request = await(controller.onSubmit()(fakeRequestWithNoKeys))
       request.header.status shouldBe INTERNAL_SERVER_ERROR

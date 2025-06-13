@@ -48,6 +48,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   "GET /check-your-answers" should {
     "return 200 (OK) when the user is authorised and has the correct keys in session for crime" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01"),
@@ -64,6 +67,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for loss of staff" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "lossOfStaff",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01"),
       SessionKeys.lateAppealReason -> "I forgot"
@@ -77,6 +83,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for technical issues" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "technicalIssues",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
       SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02"),
@@ -93,6 +102,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "fireOrFlood",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01"),
       SessionKeys.lateAppealReason -> "I forgot"
@@ -103,6 +115,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for crime - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.lateAppealReason -> "Lorem ipsum",
@@ -117,6 +132,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for fire or flood - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "fireOrFlood",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.lateAppealReason -> "Lorem ipsum",
       SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
@@ -130,6 +148,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for loss of staff - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "lossOfStaff",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.lateAppealReason -> "Lorem ipsum",
@@ -144,6 +165,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for technical issues - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "technicalIssues",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.lateAppealReason -> "Lorem ipsum",
       SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
@@ -160,6 +184,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "no file upload - no late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
@@ -177,6 +204,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "file upload - no late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
@@ -195,6 +225,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "multiple file upload - no late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
@@ -231,6 +264,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "no file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.dateCommunicationSent -> LocalDate.parse("2020-02-08"),
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
@@ -250,6 +286,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
@@ -271,6 +310,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "user selected to not upload a file but already has uploaded files - do not show the 'Evidence to support this appeal' row" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
@@ -289,6 +331,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "return 200 (OK) when the user is authorised and has the correct keys in session for bereavement" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
     ))) {
@@ -301,6 +346,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "return 200 (OK) when the user is authorised and has the correct keys in session for bereavement - for a late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.lateAppealReason -> "Lorem ipsum",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
@@ -317,6 +365,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "return 200 (OK) when the user is authorised and has the correct keys in session for LPP - agent" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2021-01-01")
     ))) {
@@ -332,6 +383,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.secondPenaltyCommunicationDate -> LocalDate.now().plusDays(1),
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2021-01-01"),
       SessionKeys.doYouWantToAppealBothPenalties -> "yes"
@@ -355,6 +409,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "return 303 (SEE_OTHER) when the user has selected a reasonable excuse option but hasn't completed the journey" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.dateCommunicationSent -> LocalDate.now().plusDays(1),
       SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
     ))) {
@@ -373,6 +430,9 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   "POST /check-your-answers" should {
     "redirect the user to the confirmation page keeping the data in Mongo (expires via TTL)" in new UserAnswersSetup(UserAnswers("testjourney", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2023-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2023-01-31"),
@@ -383,7 +443,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest.withSession(SessionKeys.journeyId -> "testjourney")))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -392,11 +452,14 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for crime" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -404,10 +467,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for fire or flood" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "fireOrFlood",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -415,10 +481,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for loss of staff" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "lossOfStaff",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -426,11 +495,14 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for technical issues" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "technicalIssues",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
       SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -439,11 +511,14 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the confirmation page on success for health" when {
       "there is no hospital stay" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.reasonableExcuse -> "health",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.wasHospitalStayRequired -> "no",
         SessionKeys.whenHealthIssueHappened -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -451,12 +526,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "there is a ongoing hospital stay" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.reasonableExcuse -> "health",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.wasHospitalStayRequired -> "yes",
         SessionKeys.hasHealthEventEnded -> "no",
         SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -464,13 +542,16 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "there has been a hospital stay that has ended" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.reasonableExcuse -> "health",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.wasHospitalStayRequired -> "yes",
         SessionKeys.hasHealthEventEnded -> "yes",
         SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
         SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-02")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -481,12 +562,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
     "redirect the user to the confirmation page on success for other" when {
       "the user hasn't uploaded a file" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -494,12 +578,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "the user has uploaded a file" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -507,13 +594,16 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "no file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.lateAppealReason -> "This is a reason for late appeal",
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -521,13 +611,16 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
       "file upload - late appeal" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.lateAppealReason -> "This is a reason for late appeal",
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -536,13 +629,16 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "for LPP" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.lateAppealReason -> "This is a reason for late appeal",
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -551,13 +647,16 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "for LPP - agent" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.lateAppealReason -> "This is a reason for late appeal",
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest.withSession(
           SessionKeys.agentSessionVrn -> "VRN1234"
         )
@@ -569,13 +668,16 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       "for LPP2 - agent" in new UserAnswersSetup(userAnswers(Json.obj(
         SessionKeys.appealType -> PenaltyTypeEnum.Additional,
         SessionKeys.reasonableExcuse -> "other",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.hasConfirmedDeclaration -> true,
         SessionKeys.whyReturnSubmittedLate -> "This is a reason",
         SessionKeys.lateAppealReason -> "This is a reason for late appeal",
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
+        PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest.withSession(
           SessionKeys.agentSessionVrn -> "VRN1234"
         )
@@ -587,10 +689,13 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the confirmation page on success for bereavement" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -600,12 +705,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect the user to the service unavailable page on unmatched fault" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.whyReturnSubmittedLate -> "some-text",
       SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmissionWithFault(isLPP = false, "1234")
+      PenaltiesStub.failedAppealSubmissionWithFault("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
       val request = controller.onSubmit()(fakeRequest)
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -613,12 +721,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to service unavailable page when downstream returns SERVICE_UNAVAILABLE" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.whyReturnSubmittedLate -> "some-text",
       SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(SERVICE_UNAVAILABLE))
+      PenaltiesStub.failedAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234", status = Some(SERVICE_UNAVAILABLE))
       val request = controller.onSubmit()(fakeRequest)
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.ServiceUnavailableController.onPageLoad().url
@@ -626,12 +737,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to duplicate appeal page when downstream returns CONFLICT" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.whyReturnSubmittedLate -> "some-text",
       SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(CONFLICT))
+      PenaltiesStub.failedAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234", status = Some(CONFLICT))
       val request = controller.onSubmit()(fakeRequest)
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.DuplicateAppealController.onPageLoad().url
@@ -639,12 +753,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to the ProblemWithService page when downstream returns UNPROCESSABLE_ENTITY" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.whyReturnSubmittedLate -> "some-text",
       SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(UNPROCESSABLE_ENTITY))
+      PenaltiesStub.failedAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234", status = Some(UNPROCESSABLE_ENTITY))
       val request = controller.onSubmit()(fakeRequest)
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -652,12 +769,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to the ProblemWithService page when the appeal fails from a payload issue" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.whyReturnSubmittedLate -> "some-text",
       SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(BAD_REQUEST))
+      PenaltiesStub.failedAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234", status = Some(BAD_REQUEST))
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -665,12 +785,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "show an ISE when the appeal fails" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.whyReturnSubmittedLate -> "some-text",
       SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.failedAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -678,12 +801,15 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
 
     "redirect to the ProblemWithService page when the appeal fails from an issue with the service" in new UserAnswersSetup(userAnswers(Json.obj(
       SessionKeys.hasConfirmedDeclaration -> true,
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.whyReturnSubmittedLate -> "some-text",
       SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(INTERNAL_SERVER_ERROR))
+      PenaltiesStub.failedAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234", status = Some(INTERNAL_SERVER_ERROR))
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url

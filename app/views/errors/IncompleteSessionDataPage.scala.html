@@ -20,7 +20,7 @@
         pageHeader: components.pageHeader
 )
 
-@(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)(implicit messages: Messages, appConfig: AppConfig, request: UserRequest[_])
+@(penaltyId: String, regime: String, idType: String, id: String, isLPP: Boolean, isAdditional: Boolean)(implicit messages: Messages, appConfig: AppConfig, request: UserRequest[_])
 
 @layout(
   pageTitle = messages("incompleteSessionData.headingAndTitle"),
@@ -33,7 +33,7 @@
 
   <p class="govuk-body">
     @link(
-      link = controllers.routes.InitialiseAppealController.onPageLoad(penaltyId, isLPP, isAdditional).url,
+      link = controllers.routes.InitialiseAppealController.onPageLoad(penaltyId, regime, idType, id, isLPP, isAdditional).url,
       messageKey = "incompleteSessionData.link",
       button = false
     )

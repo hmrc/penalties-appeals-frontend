@@ -30,7 +30,7 @@ class IncompleteSessionDataPageSpec extends SpecBase with ViewBehaviours {
     val link = "#main-content > div > div > p:nth-child(4) > a"
   }
 
-  def applyView(): Html = incompleteSessionDataPage("123456789", isLPP = false, isAdditional = false)(implicitly, implicitly, userRequestWithCorrectKeys)
+  def applyView(): Html = incompleteSessionDataPage("123456789", "HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false)(implicitly, implicitly, userRequestWithCorrectKeys)
 
   implicit val doc: Document = asDocument(applyView())
 

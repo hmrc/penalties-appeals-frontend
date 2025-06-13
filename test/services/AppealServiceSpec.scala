@@ -49,6 +49,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   val fakeRequestForCrimeJourney: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
     SessionKeys.reasonableExcuse -> "crime",
+    SessionKeys.regime -> "HMRC-MTD-VAT",
+    SessionKeys.idType -> "VRN",
+    SessionKeys.id -> "123456789",
     SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.hasConfirmedDeclaration -> true,
@@ -60,6 +63,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   val fakeRequestForCrimeJourneyMultiple: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
     SessionKeys.reasonableExcuse -> "crime",
+    SessionKeys.regime -> "HMRC-MTD-VAT",
+    SessionKeys.idType -> "VRN",
+    SessionKeys.id -> "123456789",
     SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
     SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
     SessionKeys.hasConfirmedDeclaration -> true,
@@ -75,6 +81,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   val fakeRequestForOtherJourney: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
     SessionKeys.reasonableExcuse -> "other",
+    SessionKeys.regime -> "HMRC-MTD-VAT",
+    SessionKeys.idType -> "VRN",
+    SessionKeys.id -> "123456789",
     SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
     SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
@@ -87,6 +96,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   val fakeRequestForOtherJourneyDeclinedUploads: UserRequest[AnyContent] = UserRequest("123456789", answers = userAnswers(Json.obj(
     SessionKeys.reasonableExcuse -> "other",
+    SessionKeys.regime -> "HMRC-MTD-VAT",
+    SessionKeys.idType -> "VRN",
+    SessionKeys.id -> "123456789",
     SessionKeys.hasConfirmedDeclaration -> true,
     SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01"),
     SessionKeys.dateCommunicationSent -> LocalDate.parse("2021-12-01"),
@@ -156,48 +168,48 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   "validatePenaltyIdForEnrolmentKey" should {
     "return None when the connector returns None" in new Setup {
-      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234","HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
     "return None when the connectors returns Json that cannot be parsed to a model" in new Setup {
-      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234","HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
     "return Some when the connector returns Json that is parsable to a model" in new Setup {
 
-      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJson)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234","HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, isAdditional = false)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
 
     "return Some when the connector returns Json that is parsable to a model for LPP" in new Setup {
 
-      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPP)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = false)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234","HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, isAdditional = false)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
 
     "return Some when the connector returns Json that is parsable to a model for LPP - Additional penalty" in new Setup {
-      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPPAdditional)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234","HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, isAdditional = true)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
@@ -205,28 +217,28 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   "validateMultiplePenaltyDataForEnrolmentKey" should {
     "return None when the connector returns a left with an UnexpectedFailure" in new Setup {
-      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
+      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned"))))
 
-      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123", "HMRC-MTD-VAT", "VRN", "123456789")(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
     "return None when the connector returns returns InvalidJson that cannot be parsed to a model" in new Setup {
-      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
+      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(InvalidJson)))
 
-      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123", "HMRC-MTD-VAT", "VRN", "123456789")(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
 
     "return Some when the connector returns Json that can be parsed to a model" in new Setup {
-      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
+      when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(multiplePenaltiesModel)))
 
-      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123", "HMRC-MTD-VAT", "VRN", "123456789")(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
@@ -254,12 +266,12 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
           |}
           |""".stripMargin
       )
-      when(mockPenaltiesConnector.getListOfReasonableExcuses()(any(), any()))
+      when(mockPenaltiesConnector.getListOfReasonableExcuses(any())(any(), any()))
         .thenReturn(Future.successful(
           Some(jsonRepresentingSeqOfReasonableExcuses)
         ))
 
-      val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse())
+      val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse("HMRC-MTD-VAT"))
       result.isDefined shouldBe true
       result.get shouldBe Seq(
         ReasonableExcuse(
@@ -302,20 +314,20 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
             |}
             |""".stripMargin
         )
-        when(mockPenaltiesConnector.getListOfReasonableExcuses()(any(), any()))
+        when(mockPenaltiesConnector.getListOfReasonableExcuses(any())(any(), any()))
           .thenReturn(Future.successful(
             Some(jsonRepresentingInvalidSeqOfReasonableExcuses)
           ))
 
-        val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse())
+        val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse("HMRC-MTD-VAT"))
         result.isDefined shouldBe false
       }
 
       "the connector call fails" in new Setup {
-        when(mockPenaltiesConnector.getListOfReasonableExcuses()(any(), any()))
+        when(mockPenaltiesConnector.getListOfReasonableExcuses(any())(any(), any()))
           .thenReturn(Future.successful(None))
 
-        val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse())
+        val result: Option[Seq[ReasonableExcuse]] = await(service.getReasonableExcuseListAndParse("HMRC-MTD-VAT"))
         result.isDefined shouldBe false
       }
     }
@@ -323,7 +335,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
   "submitAppeal" should {
     "parse the session keys into a model and return true when the connector call is successful and audit the response" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -335,7 +347,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
     "parse the session keys into a model and return true when the connector call is successful and audit the response" +
       " - for appealing multiple penalties" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -363,7 +375,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         failureDetails = None,
         lastUpdated = LocalDateTime.now()
       )
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(Some(Seq(uploadInReadyState))))
@@ -393,7 +405,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
         failureDetails = None,
         lastUpdated = LocalDateTime.now()
       )
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(Some(Seq(uploadInFailedState))))
@@ -406,9 +418,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     }
 
     "succeed if one of 2 appeal submissions fail and log a PD (LPP1 fails)" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, "Some issue with submission"))))
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any() ,ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -425,9 +437,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     }
 
     "succeed if one of 2 appeal submissions fail and log a PD (LPP2 fails)" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any() ,ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, "Some issue with submission"))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -443,9 +455,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     }
 
     "succeed if an error occurs during file notification storage and the other submission fails and log a PD (LPP1 docs fail, LPP2 fails submission)" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator")))))
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any() ,ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, "Some issue with submission"))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -462,9 +474,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     }
 
     "succeed if an error occurs during file notification storage and the other submission succeeds and log a PD (LPP2 docs fail, LPP1 successful submission)" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any() ,ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1235"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1235) but received 500 response from file notification orchestrator")))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -481,9 +493,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     }
 
     "succeed if an error occurs during file notification storage and the other submission fails and log a PD (LPP2 docs fail, LPP1 fails submission)" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, "Some issue with submission"))))
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any() ,ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator")))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -500,9 +512,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
     }
 
     "succeed if an error occurs during file notification storage for both submissions and log a PD" in new Setup {
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1234) but received 500 response from file notification orchestrator")))))
-      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+      when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any() ,ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1235"), MULTI_STATUS, error = Some("Appeal submitted (case ID: REV-1235) but received 500 response from file notification orchestrator")))))
       when(mockUploadJourneyRepository.getUploadsForJourney(any()))
         .thenReturn(Future.successful(None))
@@ -519,7 +531,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
 
     "return Left" when {
       "the connector returns a non-200 response" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(Left(UnexpectedFailure(BAD_GATEWAY, ""))))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
@@ -528,9 +540,9 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       }
 
       "the connector returns a non-200 response for multiple submissions" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456789"), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(Left(UnexpectedFailure(BAD_GATEWAY, ""))))
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), ArgumentMatchers.eq("123456788"), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(Left(UnexpectedFailure(BAD_GATEWAY, ""))))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
@@ -539,7 +551,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       }
 
       "the connector throws an exception" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.failed(new Exception("I failed.")))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.successful(None))
@@ -548,7 +560,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       }
 
       "the repository throws and exception" in new Setup {
-        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any())(any(), any()))
+        when(mockPenaltiesConnector.submitAppeal(any(), any(), any(), any(), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(Right(AppealSubmissionResponseModel(Some("REV-1234"), OK))))
         when(mockUploadJourneyRepository.getUploadsForJourney(any()))
           .thenReturn(Future.failed(new Exception("I failed.")))

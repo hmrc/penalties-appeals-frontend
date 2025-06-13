@@ -68,7 +68,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     def appealSubmissionTestForReasonableExcuse(reasonableExcuse: String, userRequest: UserRequest[_], extraDetailsForTestName: Option[String] = None): Unit = {
       s"return Right when the connector call succeeds for $reasonableExcuse ${extraDetailsForTestName.getOrElse("")}" in {
-        successfulAppealSubmission(isLPP = false, "1234")
+        successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234")
         val result = await(appealService.submitAppeal(reasonableExcuse)(userRequest, implicitly, implicitly))
         eventually {
           findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
@@ -79,6 +79,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     val baseUserAnswers = Json.obj(
       SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -90,12 +93,18 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "lossOfStaff", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "lossOfStaff",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
     )))
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "crime", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "crime",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
@@ -103,6 +112,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "technicalIssues", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "technicalIssues",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
       SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
@@ -110,18 +122,27 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "fireOrFlood", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "fireOrFlood",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
     )))
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "bereavement", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "bereavement",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
     )))
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "other", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "other",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whyReturnSubmittedLate -> "this is information",
       SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
@@ -129,6 +150,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "health", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "health",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.wasHospitalStayRequired -> "no",
       SessionKeys.whenHealthIssueHappened -> LocalDate.parse("2022-01-01")
@@ -136,6 +160,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "health", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "health",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.wasHospitalStayRequired -> "yes",
       SessionKeys.hasHealthEventEnded -> "no",
@@ -144,6 +171,9 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     appealSubmissionTestForReasonableExcuse(reasonableExcuse = "health", userRequest(baseUserAnswers ++ Json.obj(
       SessionKeys.reasonableExcuse -> "health",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.wasHospitalStayRequired -> "yes",
       SessionKeys.hasHealthEventEnded -> "yes",
@@ -152,10 +182,13 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     )), extraDetailsForTestName = Some("- hospital stay ended"))
 
     "return Right when the connector call succeeds for other - user selects no to uploading files (some files already uploaded)" in {
-      successfulAppealSubmission(isLPP = false, "1234")
+      successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = false, "1234")
       await(uploadJourneyRepository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -174,9 +207,12 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     }
 
     "return Right when the connector call succeeds for LPP" in {
-      successfulAppealSubmission(isLPP = true, "1234")
+      successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -196,10 +232,13 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   }
 
   "return Right when appealing two penalties at the same time (and they both succeed)" in {
-    successfulAppealSubmission(isLPP = true, "1234")
-    successfulAppealSubmission(isLPP = true, "5678")
+    successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, "1234")
+    successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789", isLPP = true, "5678")
     val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -221,10 +260,13 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   }
 
   "return Right when one the of multiple appeal submissions fails (logging a PD)" in {
-    failedAppealSubmission(isLPP = true, "1234")
-    successfulAppealSubmission(isLPP = true, "5678")
+    failedAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "1234")
+    successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "5678")
     val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
@@ -250,10 +292,13 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   }
 
   "return Right when one of the multiple appeal submissions fails because of a fault (logging a PD)" in {
-    failedAppealSubmissionWithFault(isLPP = true, "1234")
-    successfulAppealSubmission(isLPP = true, "5678")
+    failedAppealSubmissionWithFault("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "1234")
+    successfulAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "5678")
     val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
+      SessionKeys.regime -> "HMRC-MTD-VAT",
+      SessionKeys.idType -> "VRN",
+      SessionKeys.id -> "123456789",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
       SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
       SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-31"),
@@ -280,9 +325,12 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
   "return Left" when {
     "the connector returns a fault" in {
-      failedAppealSubmissionWithFault(isLPP = false, "1234")
+      failedAppealSubmissionWithFault("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -298,9 +346,12 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     }
 
     "the connector returns an unknown status code" in {
-      failedAppealSubmission(isLPP = false, "1234")
+      failedAppealSubmission("HMRC-MTD-VAT", "VRN", "123456789",isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
@@ -316,16 +367,23 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     }
 
     "not all keys are present in the session" in {
-      val userRequest = UserRequest("123456789", answers = UserAnswers("", Json.obj()))(FakeRequest("POST", "/check-your-answers"))
+      val userRequest = UserRequest("123456789", answers = UserAnswers("", Json.obj(
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
+      )))(FakeRequest("POST", "/check-your-answers"))
       val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
       result shouldBe Left(INTERNAL_SERVER_ERROR)
     }
 
     "both of multiple appeal submissions fails" in {
-      failedAppealSubmissionWithFault(isLPP = true, "1234")
-      failedAppealSubmissionWithFault(isLPP = true, "5678")
+      failedAppealSubmissionWithFault("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "1234")
+      failedAppealSubmissionWithFault("HMRC-MTD-VAT", "VRN", "123456789",isLPP = true, "5678")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
+        SessionKeys.regime -> "HMRC-MTD-VAT",
+        SessionKeys.idType -> "VRN",
+        SessionKeys.id -> "123456789",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
         SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
         SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
