@@ -46,11 +46,11 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
                                            val config: Configuration,
                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
-  def onPageLoad(penaltyId: String, regime: String, idType: String, id: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
+  def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
       for {
-        appealData <- appealService.validatePenaltyIdForEnrolmentKey(penaltyId, regime, idType, id, isLPP, isAdditional)
-        multiPenaltyData <- if (isLPP) appealService.validateMultiplePenaltyDataForEnrolmentKey(penaltyId, regime, idType, id) else Future.successful(None)
+        appealData <- appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional)
+        multiPenaltyData <- if (isLPP) appealService.validateMultiplePenaltyDataForEnrolmentKey(penaltyId) else Future.successful(None)
         result <- if (appealData.isDefined) {
           removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData.get, multiPenaltyData, isAppealAgainstObligation = false)
         } else Future(errorHandler.showInternalServerError())
@@ -60,9 +60,9 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
     }
   }
 
-  def onPageLoadForFindOutHowToAppealLSP(penaltyId: String, regime: String, idType: String, id: String): Action[AnyContent] = authorise.async {
+  def onPageLoadForFindOutHowToAppealLSP(penaltyId: String): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, regime, idType, id, isLPP = false, isAdditional = false).flatMap {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP = false, isAdditional = false).flatMap {
         _.fold(
           Future(errorHandler.showInternalServerError())
         )(

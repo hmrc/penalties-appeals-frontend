@@ -26,8 +26,8 @@ import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}
 import utils.Logger.logger
+import utils.PagerDutyHelper
 import utils.PagerDutyHelper.PagerDutyKeys._
-import utils.{EnrolmentKeys, PagerDutyHelper}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,22 +35,22 @@ import scala.concurrent.{ExecutionContext, Future}
 class PenaltiesConnector @Inject()(httpClient: HttpClient,
                                    appConfig: AppConfig) {
 
-  def getAppealUrlBasedOnPenaltyType(penaltyId: String, regime: String, idType: String, id: String, isLPP: Boolean, isAdditional: Boolean): String = {
+  def getAppealUrlBasedOnPenaltyType(penaltyId: String, vrn: String, isLPP: Boolean, isAdditional: Boolean): String = {
     if (isLPP) {
-      appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, regime, idType, id, isAdditional)
-    } else appConfig.appealLSPDataForPenaltyAndEnrolmentKey(penaltyId, regime, idType, id)
+      appConfig.appealLPPDataForPenaltyAndEnrolmentKey(penaltyId, vrn, isAdditional)
+    } else appConfig.appealLSPDataForPenaltyAndEnrolmentKey(penaltyId, vrn)
   }
 
-  def getAppealsDataForPenalty(penaltyId: String, regime: String, idType: String, id: String, isLPP: Boolean, isAdditional: Boolean)
+  def getAppealsDataForPenalty(penaltyId: String, vrn: String, isLPP: Boolean, isAdditional: Boolean)
                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getAppealsDataForPenalty] -"
     httpClient.GET[HttpResponse](
-      getAppealUrlBasedOnPenaltyType(penaltyId, regime, idType, id, isLPP, isAdditional)
+      getAppealUrlBasedOnPenaltyType(penaltyId, vrn, isLPP, isAdditional)
     ).map {
       response =>
         response.status match {
           case OK =>
-            logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with ID: $penaltyId $id")
+            logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with penalty ID '$penaltyId' and VRN '$vrn'")
             Some(response.json)
           case NOT_FOUND =>
             logger.info(s"$startOfLogMsg Returned 404 from Penalties backend - with body: ${response.body}")
@@ -68,17 +68,17 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     }
   }
 
-  def getMultiplePenaltiesForPrincipleCharge(penaltyId: String, regime: String, idType: String, id: String)
+  def getMultiplePenaltiesForPrincipleCharge(penaltyId: String, vrn: String)
                                                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MultiplePenaltiesResponse] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getMultiplePenaltiesForPrincipleCharge] -"
-    logger.debug(s"$startOfLogMsg Calling penalties backend with $penaltyId $regime $idType and $id")
-    httpClient.GET[MultiplePenaltiesResponse](appConfig.multiplePenaltyDataUrl(penaltyId,regime, idType, id))(MultiplePenaltiesResponseReads, hc, ec)
+    logger.debug(s"$startOfLogMsg Calling penalties backend with penalty ID '$penaltyId' and VRN '$vrn''")
+    httpClient.GET[MultiplePenaltiesResponse](appConfig.multiplePenaltyDataUrl(penaltyId,vrn))(MultiplePenaltiesResponseReads, hc, ec)
   }
 
-  def getListOfReasonableExcuses(regime: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
+  def getListOfReasonableExcuses()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getListOfReasonableExcuses] -"
     httpClient.GET[HttpResponse](
-      appConfig.reasonableExcuseFetchUrl(regime)
+      appConfig.reasonableExcuseFetchUrl()
     ).map(
       response => Some(response.json)
     ).recover {
@@ -96,17 +96,16 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
     }
   }
 
-  def submitAppeal(appealSubmission: AppealSubmission, regime: String, idType: String, id: String, isLPP: Boolean,
+  def submitAppeal(appealSubmission: AppealSubmission, vrn: String, isLPP: Boolean,
                    penaltyNumber: String, correlationId: String, isMultiAppeal: Boolean)
                   (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[AppealSubmissionResponse] = {
     logger.debug(s"[PenaltiesConnector][submitAppeal] - Submitting appeal model send to backend: ${Json.toJson(appealSubmission)}")
     httpClient.POST[AppealSubmission, AppealSubmissionResponse](
-      appConfig.submitAppealUrl(regime, idType, id, isLPP, penaltyNumber, correlationId, isMultiAppeal), appealSubmission
+      appConfig.submitAppealUrl(vrn, isLPP, penaltyNumber, correlationId, isMultiAppeal), appealSubmission
     ).recover {
-      case e => {
+      case e =>
         logger.error(s"[PenaltiesConnector][submitAppeal] - An issue occurred whilst submitting appeal to penalties backend, error message: ${e.getMessage}")
         Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, s"An issue occurred whilst appealing a penalty with error: ${e.getMessage}"))
-      }
     }
   }
 }
