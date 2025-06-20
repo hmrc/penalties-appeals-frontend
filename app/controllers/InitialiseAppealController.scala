@@ -49,8 +49,8 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
   def onPageLoad(penaltyId: String, isLPP: Boolean, isAdditional: Boolean): Action[AnyContent] = authorise.async {
     implicit user => {
       for {
-        appealData <- appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional)
-        multiPenaltyData <- if (isLPP) appealService.validateMultiplePenaltyDataForEnrolmentKey(penaltyId) else Future.successful(None)
+        appealData <- appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP, isAdditional, user.vrn)
+        multiPenaltyData <- if (isLPP) appealService.validateMultiplePenaltyDataForEnrolmentKey(penaltyId, user.vrn) else Future.successful(None)
         result <- if (appealData.isDefined) {
           removeExistingKeysFromSessionAndRedirect(routes.AppealStartController.onPageLoad(), penaltyId, appealData.get, multiPenaltyData, isAppealAgainstObligation = false)
         } else Future(errorHandler.showInternalServerError())
@@ -62,7 +62,7 @@ class InitialiseAppealController @Inject()(appealService: AppealService,
 
   def onPageLoadForFindOutHowToAppealLSP(penaltyId: String): Action[AnyContent] = authorise.async {
     implicit user => {
-      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP = false, isAdditional = false).flatMap {
+      appealService.validatePenaltyIdForEnrolmentKey(penaltyId, isLPP = false, isAdditional = false, user.vrn).flatMap {
         _.fold(
           Future(errorHandler.showInternalServerError())
         )(

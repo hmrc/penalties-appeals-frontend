@@ -51,21 +51,21 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val webChatBaseUrl: String = config.get[String]("webChat.baseUrl")
 
-  def appealLSPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-submissions?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+  def appealLSPDataForPenaltyAndEnrolmentKey(penaltyId: String, vrn: String): String = {
+    s"$penaltiesServiceBaseUrl/penalties/VATC/appeals-data/late-submissions/VRN/$vrn?penaltyId=$penaltyId"
   }
 
-  def appealLPPDataForPenaltyAndEnrolmentKey(penaltyId: String, enrolmentKey: String, isAdditional: Boolean): String = {
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/late-payments?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey&isAdditional=$isAdditional"
+  def appealLPPDataForPenaltyAndEnrolmentKey(penaltyId: String, vrn: String, isAdditional: Boolean): String = {
+    s"$penaltiesServiceBaseUrl/penalties/VATC/appeals-data/late-payments/VRN/$vrn?penaltyId=$penaltyId&isAdditional=$isAdditional"
   }
 
-  def submitAppealUrl(enrolmentKey: String, isLPP: Boolean, penaltyNumber: String, correlationId: String, isMultiAppeal: Boolean): String =
-    penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.submitUrl") + s"?enrolmentKey=$enrolmentKey&isLPP=$isLPP&penaltyNumber=$penaltyNumber&correlationId=$correlationId&isMultiAppeal=$isMultiAppeal"
+  def submitAppealUrl(vrn: String, isLPP: Boolean, penaltyNumber: String, correlationId: String, isMultiAppeal: Boolean): String =
+    s"$penaltiesServiceBaseUrl/penalties/VATC/appeals/submit-appeal/VRN/$vrn?isLPP=$isLPP&penaltyNumber=$penaltyNumber&correlationId=$correlationId&isMultiAppeal=$isMultiAppeal"
 
-  def multiplePenaltyDataUrl(penaltyId: String, enrolmentKey: String): String =
-    s"$penaltiesServiceBaseUrl/penalties/appeals-data/multiple-penalties?penaltyId=$penaltyId&enrolmentKey=$enrolmentKey"
+  def multiplePenaltyDataUrl(penaltyId: String, vrn: String): String =
+    s"$penaltiesServiceBaseUrl/penalties/VATC/appeals-data/multiple-penalties/VRN/$vrn?penaltyId=$penaltyId"
 
-  lazy val reasonableExcuseFetchUrl: String = penaltiesServiceBaseUrl + config.get[String]("reasonableExcuse.fetchUrl")
+  def reasonableExcuseFetchUrl(): String = s"$penaltiesServiceBaseUrl/penalties/VATC/appeals-data/reasonable-excuses"
 
   lazy val signInContinueBaseUrl: String = config.get[String]("signIn.continueBaseUrl")
 
