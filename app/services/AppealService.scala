@@ -34,7 +34,7 @@ import services.monitoring.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys
-import utils.{EnrolmentKeys, SessionKeys, UUIDGenerator}
+import utils.{SessionKeys, UUIDGenerator}
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -48,9 +48,9 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
                               userAnswersRepository: UserAnswersRepository,
                               uploadJourneyRepository: UploadJourneyRepository)(implicit val config: Configuration) extends FeatureSwitching {
 
-  def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean, vrn: String)
+  def validatePenaltyIdForEnrolmentKey(penaltyId: String, isLPP: Boolean, isAdditional: Boolean)
                                       (implicit user: AuthRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppealData]] = {
-    penaltiesConnector.getAppealsDataForPenalty(penaltyId, vrn, isLPP, isAdditional).map {
+    penaltiesConnector.getAppealsDataForPenalty(penaltyId, user.vrn, isLPP, isAdditional).map {
       _.fold[Option[AppealData]]({
         logger.warn(s"[AppealService][validatePenaltyIdForEnrolmentKey] - Found no appeal data for penalty ID: $penaltyId")
         None
@@ -69,12 +69,12 @@ class AppealService @Inject()(penaltiesConnector: PenaltiesConnector,
     }
   }
 
-  def validateMultiplePenaltyDataForEnrolmentKey(penaltyId: String, vrn: String)
+  def validateMultiplePenaltyDataForEnrolmentKey(penaltyId: String)
                                                 (implicit user: AuthRequest[_],
                                                  hc: HeaderCarrier,
                                                  ec: ExecutionContext): Future[Option[MultiplePenaltiesData]] = {
     for {
-      multiplePenaltiesResponse <- penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, vrn)
+      multiplePenaltiesResponse <- penaltiesConnector.getMultiplePenaltiesForPrincipleCharge(penaltyId, user.vrn)
     } yield {
       multiplePenaltiesResponse match {
         case Right(model) =>

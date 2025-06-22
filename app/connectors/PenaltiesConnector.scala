@@ -26,8 +26,8 @@ import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException}
 import utils.Logger.logger
+import utils.PagerDutyHelper
 import utils.PagerDutyHelper.PagerDutyKeys._
-import utils.{EnrolmentKeys, PagerDutyHelper}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,7 +50,7 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
       response =>
         response.status match {
           case OK =>
-            logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with ID: $penaltyId and VRN $vrn")
+            logger.debug(s"$startOfLogMsg OK response returned from Penalties backend for penalty with ID: $penaltyId and VRN: $vrn")
             Some(response.json)
           case NOT_FOUND =>
             logger.info(s"$startOfLogMsg Returned 404 from Penalties backend - with body: ${response.body}")
@@ -71,14 +71,14 @@ class PenaltiesConnector @Inject()(httpClient: HttpClient,
   def getMultiplePenaltiesForPrincipleCharge(penaltyId: String, vrn: String)
                                                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MultiplePenaltiesResponse] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getMultiplePenaltiesForPrincipleCharge] -"
-    logger.debug(s"$startOfLogMsg Calling penalties backend with $penaltyId and $vrn")
+    logger.debug(s"$startOfLogMsg Calling penalties backend with penalty ID: $penaltyId and VRN: $vrn")
     httpClient.GET[MultiplePenaltiesResponse](appConfig.multiplePenaltyDataUrl(penaltyId,vrn))(MultiplePenaltiesResponseReads, hc, ec)
   }
 
   def getListOfReasonableExcuses()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[JsValue]] = {
     val startOfLogMsg: String = "[PenaltiesConnector][getListOfReasonableExcuses] -"
     httpClient.GET[HttpResponse](
-      appConfig.reasonableExcuseFetchUrl()
+      appConfig.reasonableExcuseFetchUrl
     ).map(
       response => Some(response.json)
     ).recover {

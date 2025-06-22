@@ -43,7 +43,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AppealServiceSpec extends SpecBase with LogCapturing {
   val mockPenaltiesConnector: PenaltiesConnector = mock(classOf[PenaltiesConnector])
   val mockUUIDGenerator: UUIDGenerator = mock(classOf[UUIDGenerator])
-  val testVrn = "123456789"
+
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   val mockUserAnswersRepository: UserAnswersRepository = mock(classOf[UserAnswersRepository])
@@ -160,7 +160,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false, testVrn)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
@@ -169,7 +169,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(Json.parse("{}"))))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false, testVrn)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
@@ -179,7 +179,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJson)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false, testVrn)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = false, isAdditional = false)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
@@ -189,7 +189,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPP)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = false, testVrn)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = false)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
@@ -198,7 +198,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.getAppealsDataForPenalty(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(appealDataAsJsonLPPAdditional)))
 
-      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true, testVrn)(
+      val result: Future[Option[AppealData]] = service.validatePenaltyIdForEnrolmentKey("1234", isLPP = true, isAdditional = true)(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }
@@ -209,7 +209,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(UnexpectedFailure(INTERNAL_SERVER_ERROR, s"Unexpected response, status $INTERNAL_SERVER_ERROR returned"))))
 
-      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123", testVrn)(
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
@@ -218,7 +218,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(InvalidJson)))
 
-      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123", testVrn)(
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe false
     }
@@ -227,7 +227,7 @@ class AppealServiceSpec extends SpecBase with LogCapturing {
       when(mockPenaltiesConnector.getMultiplePenaltiesForPrincipleCharge(any(), any())(any(), any()))
         .thenReturn(Future.successful(Right(multiplePenaltiesModel)))
 
-      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123", testVrn)(
+      val result: Future[Option[MultiplePenaltiesData]] = service.validateMultiplePenaltyDataForEnrolmentKey("123")(
         new AuthRequest[AnyContent]("123456789"), implicitly, implicitly)
       await(result).isDefined shouldBe true
     }

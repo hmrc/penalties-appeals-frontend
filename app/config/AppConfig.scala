@@ -65,7 +65,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
   def multiplePenaltyDataUrl(penaltyId: String, vrn: String): String =
     s"$penaltiesServiceBaseUrl/penalties/VATC/appeals-data/multiple-penalties/VRN/$vrn?penaltyId=$penaltyId"
 
-  def reasonableExcuseFetchUrl(): String = s"$penaltiesServiceBaseUrl/penalties/VATC/appeals-data/reasonable-excuses"
+  lazy val reasonableExcuseFetchUrl: String = s"$penaltiesServiceBaseUrl/penalties/VATC/appeals-data/reasonable-excuses"
 
   lazy val signInContinueBaseUrl: String = config.get[String]("signIn.continueBaseUrl")
 
