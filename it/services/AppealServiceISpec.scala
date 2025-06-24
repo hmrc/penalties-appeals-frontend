@@ -45,6 +45,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   val appealService: AppealService = injector.instanceOf[AppealService]
   val correlationId: String = "correlationId"
   val sampleDate: LocalDateTime = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+  val testVrn = "123456789"
 
   val uploadAsReady: UploadJourney = UploadJourney(
     reference = "ref1",
@@ -68,7 +69,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
     def appealSubmissionTestForReasonableExcuse(reasonableExcuse: String, userRequest: UserRequest[_], extraDetailsForTestName: Option[String] = None): Unit = {
       s"return Right when the connector call succeeds for $reasonableExcuse ${extraDetailsForTestName.getOrElse("")}" in {
-        successfulAppealSubmission(isLPP = false, "1234")
+        successfulAppealSubmission(testVrn, isLPP = false, "1234")
         val result = await(appealService.submitAppeal(reasonableExcuse)(userRequest, implicitly, implicitly))
         eventually {
           findAll(postRequestedFor(urlMatching("/write/audit"))).asScala.exists(_.getBodyAsString.contains("PenaltyAppealSubmitted")) shouldBe true
@@ -152,7 +153,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     )), extraDetailsForTestName = Some("- hospital stay ended"))
 
     "return Right when the connector call succeeds for other - user selects no to uploading files (some files already uploaded)" in {
-      successfulAppealSubmission(isLPP = false, "1234")
+      successfulAppealSubmission(testVrn, isLPP = false, "1234")
       await(uploadJourneyRepository.updateStateOfFileUpload("1234", uploadAsReady, isInitiateCall = true))
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
@@ -174,7 +175,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     }
 
     "return Right when the connector call succeeds for LPP" in {
-      successfulAppealSubmission(isLPP = true, "1234")
+      successfulAppealSubmission(testVrn, isLPP = true, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
@@ -196,8 +197,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   }
 
   "return Right when appealing two penalties at the same time (and they both succeed)" in {
-    successfulAppealSubmission(isLPP = true, "1234")
-    successfulAppealSubmission(isLPP = true, "5678")
+    successfulAppealSubmission(testVrn, isLPP = true, "1234")
+    successfulAppealSubmission(testVrn, isLPP = true, "5678")
     val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
@@ -221,8 +222,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   }
 
   "return Right when one the of multiple appeal submissions fails (logging a PD)" in {
-    failedAppealSubmission(isLPP = true, "1234")
-    successfulAppealSubmission(isLPP = true, "5678")
+    failedAppealSubmission(testVrn, isLPP = true, "1234")
+    successfulAppealSubmission(testVrn, isLPP = true, "5678")
     val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
@@ -250,8 +251,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   }
 
   "return Right when one of the multiple appeal submissions fails because of a fault (logging a PD)" in {
-    failedAppealSubmissionWithFault(isLPP = true, "1234")
-    successfulAppealSubmission(isLPP = true, "5678")
+    failedAppealSubmissionWithFault(testVrn, isLPP = true, "1234")
+    successfulAppealSubmission(testVrn, isLPP = true, "5678")
     val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
       SessionKeys.penaltyNumber -> "1234",
       SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
@@ -280,7 +281,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
 
   "return Left" when {
     "the connector returns a fault" in {
-      failedAppealSubmissionWithFault(isLPP = false, "1234")
+      failedAppealSubmissionWithFault(testVrn, isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
@@ -298,7 +299,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     }
 
     "the connector returns an unknown status code" in {
-      failedAppealSubmission(isLPP = false, "1234")
+      failedAppealSubmission(testVrn, isLPP = false, "1234")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
@@ -322,8 +323,8 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
     }
 
     "both of multiple appeal submissions fails" in {
-      failedAppealSubmissionWithFault(isLPP = true, "1234")
-      failedAppealSubmissionWithFault(isLPP = true, "5678")
+      failedAppealSubmissionWithFault(testVrn, isLPP = true, "1234")
+      failedAppealSubmissionWithFault(testVrn, isLPP = true, "5678")
       val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
         SessionKeys.penaltyNumber -> "1234",
         SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,

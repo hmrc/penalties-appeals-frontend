@@ -38,7 +38,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      successfulGetAppealDataResponse("1234", "123456789")
       val result = controller.onPageLoad("1234", isLPP = false, isAdditional = false)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
@@ -56,7 +56,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true)
+      successfulGetAppealDataResponse("1234", "123456789", isLPP = true)
       val result = controller.onPageLoad("1234", isLPP = true, isAdditional = false)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
@@ -74,7 +74,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
+      successfulGetAppealDataResponse("1234", "123456789", isLPP = true, isAdditional = true)
       val result = controller.onPageLoad("1234", isLPP = true, isAdditional = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
@@ -92,8 +92,8 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
-      successfulGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789")
+      successfulGetAppealDataResponse("1234", "123456789", isLPP = true, isAdditional = true)
+      successfulGetMultiplePenalties("1234", "123456789")
       val result = controller.onPageLoad("1234", isLPP = true, isAdditional = true)(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe routes.AppealStartController.onPageLoad().url
@@ -114,7 +114,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "render an ISE when the appeal data can not be retrieved" in new Setup {
-      failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      failedGetAppealDataResponse("1234", "123456789")
       val result = controller.onPageLoad("1234", isLPP = false, isAdditional = false)(FakeRequest().withSession(
         authToken -> "1234"
       ))
@@ -128,7 +128,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      successfulGetAppealDataResponse("1234", "123456789")
       val result = controller.onPageLoadForFindOutHowToAppealLSP("1234")(fakeRequest)
       await(result).header.status shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onPageLoad().url
@@ -143,7 +143,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "render an ISE when the appeal data can not be retrieved" in new Setup {
-      failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      failedGetAppealDataResponse("1234", "123456789")
       val result = controller.onPageLoadForFindOutHowToAppealLSP("1234")(FakeRequest().withSession(
         authToken -> "1234"
       ))
@@ -153,7 +153,7 @@ class InitialiseAppealControllerISpec extends IntegrationSpecCommonBase {
 
   "GET /initialise-appeal-find-out-how-to-appeal " should {
     "redirect to the Start Find Out How To Appeal Controller" in new Setup {
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      successfulGetAppealDataResponse("1234", "123456789")
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
         authToken -> "1234"
       )

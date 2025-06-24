@@ -39,6 +39,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
   val repository: UploadJourneyRepository = injector.instanceOf[UploadJourneyRepository]
   val correlationId: String = "correlationId"
   implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+  val testVrn ="123456789"
 
   override def beforeEach(): Unit = {
     await(repository.collection.deleteMany(Document()).toFuture())
@@ -383,7 +384,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest.withSession(SessionKeys.journeyId -> "testjourney")))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -396,7 +397,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.hasCrimeBeenReportedToPolice -> "yes",
       SessionKeys.dateOfCrime -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -407,7 +408,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.dateOfFireOrFlood -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -418,7 +419,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -430,7 +431,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.whenDidTechnologyIssuesBegin -> LocalDate.parse("2022-01-01"),
       SessionKeys.whenDidTechnologyIssuesEnd -> LocalDate.parse("2022-01-02")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -443,7 +444,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.wasHospitalStayRequired -> "no",
         SessionKeys.whenHealthIssueHappened -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -456,7 +457,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.hasHealthEventEnded -> "no",
         SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -470,7 +471,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.whenHealthIssueStarted -> LocalDate.parse("2022-01-01"),
         SessionKeys.whenHealthIssueEnded -> LocalDate.parse("2022-01-02")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -486,7 +487,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -499,7 +500,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -513,7 +514,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -527,7 +528,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -542,7 +543,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = true, "1234")
         val request = await(controller.onSubmit()(fakeRequest))
         request.header.status shouldBe Status.SEE_OTHER
         request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -557,7 +558,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest.withSession(
           SessionKeys.agentSessionVrn -> "VRN1234"
         )
@@ -575,7 +576,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
         SessionKeys.isUploadEvidence -> "yes",
         SessionKeys.whenDidBecomeUnable -> LocalDate.parse("2022-01-01")
       ))) {
-        PenaltiesStub.successfulAppealSubmission(isLPP = true, "1234")
+        PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = true, "1234")
         val fakeRequestWithCorrectKeys: FakeRequest[AnyContent] = fakeRequest.withSession(
           SessionKeys.agentSessionVrn -> "VRN1234"
         )
@@ -590,7 +591,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.hasConfirmedDeclaration -> true,
       SessionKeys.whenDidThePersonDie -> LocalDate.parse("2022-01-01")
     ))) {
-      PenaltiesStub.successfulAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.successfulAppealSubmission(testVrn, isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe Status.SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.AppealConfirmationController.onPageLoad().url
@@ -605,7 +606,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmissionWithFault(isLPP = false, "1234")
+      PenaltiesStub.failedAppealSubmissionWithFault(testVrn, isLPP = false, "1234")
       val request = controller.onSubmit()(fakeRequest)
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -618,7 +619,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(SERVICE_UNAVAILABLE))
+      PenaltiesStub.failedAppealSubmission(testVrn, isLPP = false, "1234", status = Some(SERVICE_UNAVAILABLE))
       val request = controller.onSubmit()(fakeRequest)
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.ServiceUnavailableController.onPageLoad().url
@@ -631,7 +632,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(CONFLICT))
+      PenaltiesStub.failedAppealSubmission(testVrn, isLPP = false, "1234", status = Some(CONFLICT))
       val request = controller.onSubmit()(fakeRequest)
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.DuplicateAppealController.onPageLoad().url
@@ -644,7 +645,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(UNPROCESSABLE_ENTITY))
+      PenaltiesStub.failedAppealSubmission(testVrn, isLPP = false, "1234", status = Some(UNPROCESSABLE_ENTITY))
       val request = controller.onSubmit()(fakeRequest)
       status(request) shouldBe SEE_OTHER
       redirectLocation(request).get shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -657,7 +658,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(BAD_REQUEST))
+      PenaltiesStub.failedAppealSubmission(testVrn, isLPP = false, "1234", status = Some(BAD_REQUEST))
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -670,7 +671,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234")
+      PenaltiesStub.failedAppealSubmission(testVrn, isLPP = false, "1234")
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url
@@ -683,7 +684,7 @@ class CheckYourAnswersControllerISpec extends IntegrationSpecCommonBase {
       SessionKeys.isUploadEvidence -> "no",
       SessionKeys.reasonableExcuse -> "other"
     ))) {
-      PenaltiesStub.failedAppealSubmission(isLPP = false, "1234", status = Some(INTERNAL_SERVER_ERROR))
+      PenaltiesStub.failedAppealSubmission(testVrn, isLPP = false, "1234", status = Some(INTERNAL_SERVER_ERROR))
       val request = await(controller.onSubmit()(fakeRequest))
       request.header.status shouldBe SEE_OTHER
       request.header.headers(LOCATION) shouldBe controllers.routes.ProblemWithServiceController.onPageLoad().url

@@ -34,34 +34,35 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val penaltiesConnector: PenaltiesConnector = injector.instanceOf[PenaltiesConnector]
   val correlationId: String = "correlationId"
+  val testVrn = "123456789"
 
   "getAppealUrlBasedOnPenaltyType" should {
     "return the correct url for LPP" in {
       val expectedResult =
-        "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=false"
-      val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = false)
+        "http://localhost:11111/penalties/VATC/appeals-data/late-payments/VRN/123456789?penaltyId=1234&isAdditional=false"
+      val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "123456789", isLPP = true, isAdditional = false)
       actualResult shouldBe expectedResult
     }
     
     "return the correct url for LPP Additional" in {
       val expectedResult =
-        "http://localhost:11111/penalties/appeals-data/late-payments?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789&isAdditional=true"
-      val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = true, isAdditional = true)
+        "http://localhost:11111/penalties/VATC/appeals-data/late-payments/VRN/123456789?penaltyId=1234&isAdditional=true"
+      val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "123456789", isLPP = true, isAdditional = true)
       actualResult shouldBe expectedResult
     }
 
 
     "return the correct url for LSP" in {
       val expectedResult =
-        "http://localhost:11111/penalties/appeals-data/late-submissions?penaltyId=1234&enrolmentKey=HMRC-MTD-VAT~VRN~HMRC-MTD-VAT~VRN~123456789"
-      val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "HMRC-MTD-VAT~VRN~123456789", isLPP = false, isAdditional = false)
+        "http://localhost:11111/penalties/VATC/appeals-data/late-submissions/VRN/123456789?penaltyId=1234"
+      val actualResult = penaltiesConnector.getAppealUrlBasedOnPenaltyType("1234", "123456789", isLPP = false, isAdditional = false)
       actualResult shouldBe expectedResult
     }
   }
 
   "getAppealsDataForPenalty" should {
     s"return $Some and the $JsValue returned by the call when the call is successful" in {
-      successfulGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789")
+      successfulGetAppealDataResponse("1234", "123456789")
       val sampleJsonToPassBack: JsValue = Json.obj(
         "type" -> PenaltyTypeEnum.Late_Submission,
         "startDate" -> LocalDate.of(2020, 1, 1).toString,
@@ -76,19 +77,19 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
     s"return $None" when {
       "the call returns 404" in {
-        failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", status = Status.NOT_FOUND)
+        failedGetAppealDataResponse("1234", "123456789", status = Status.NOT_FOUND)
         val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false, isAdditional = false))
         result.isDefined shouldBe false
       }
 
       "the call returns some unknown response" in {
-        failedGetAppealDataResponse("1234", "HMRC-MTD-VAT~VRN~123456789", status = Status.IM_A_TEAPOT)
+        failedGetAppealDataResponse("1234", "123456789", status = Status.IM_A_TEAPOT)
         val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false, isAdditional = false))
         result.isDefined shouldBe false
       }
 
       "the call fails completely with no response" in {
-        failedCall("1234", "HMRC-MTD-VAT~VRN~123456789")
+        failedCall("1234", "123456789")
         val result = await(penaltiesConnector.getAppealsDataForPenalty("1234", "123456789", isLPP = false, isAdditional = false))
         result.isDefined shouldBe false
       }
@@ -97,7 +98,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
   "getMultiplePenaltiesForPrincipleCharge" should {
     s"return Right with the parsed model when the call is successful" in {
-      successfulGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789")
+      successfulGetMultiplePenalties("1234", "123456789")
       val expectedResponse: MultiplePenaltiesData = MultiplePenaltiesData(
         firstPenaltyChargeReference = "123456789",
         firstPenaltyAmount = 101.01,
@@ -106,27 +107,27 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
         firstPenaltyCommunicationDate = LocalDate.parse("2023-04-06"),
         secondPenaltyCommunicationDate = LocalDate.parse("2023-04-07")
       )
-      val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
+      val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
       result.isRight shouldBe true
       result shouldBe Right(expectedResponse)
     }
 
     "return Left" when {
       s"only a single penalty is found for the principle charge and ${Status.NO_CONTENT} is returned" in {
-        failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.NO_CONTENT)
-        val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
+        failedGetMultiplePenalties("1234", "123456789", Status.NO_CONTENT)
+        val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
         result.isLeft shouldBe true
       }
 
       s"${Status.NOT_FOUND} is returned" in {
-        failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.NOT_FOUND)
-        val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
+        failedGetMultiplePenalties("1234", "123456789", Status.NOT_FOUND)
+        val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
         result.isLeft shouldBe true
       }
 
       s"${Status.INTERNAL_SERVER_ERROR} is returned" in {
-        failedGetMultiplePenalties("1234", "HMRC-MTD-VAT~VRN~123456789", Status.INTERNAL_SERVER_ERROR)
-        val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "HMRC-MTD-VAT~VRN~123456789"))
+        failedGetMultiplePenalties("1234", "123456789", Status.INTERNAL_SERVER_ERROR)
+        val result = await(penaltiesConnector.getMultiplePenaltiesForPrincipleCharge("1234", "123456789"))
         result.isLeft shouldBe true
       }
     }
@@ -186,7 +187,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
 
   "submitAppeal" should {
     "return the response of the call" in {
-      successfulAppealSubmission(isLPP = false, penaltyNumber = "123456789")
+      successfulAppealSubmission(testVrn, isLPP = false, penaltyNumber = "123456789")
       val model = AppealSubmission(
         sourceSystem = "MDTP",
         taxRegime = "VAT",
@@ -207,13 +208,13 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           isClientResponsibleForLateSubmission = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = false, "123456789", correlationId, isMultiAppeal = true))
+      val result = await(penaltiesConnector.submitAppeal(model, testVrn, isLPP = false, "123456789", correlationId, isMultiAppeal = true))
       result.isRight shouldBe true
       result.toOption.get.status shouldBe OK
     }
 
     "return the response of the call for LPP" in {
-      successfulAppealSubmission(isLPP = true, penaltyNumber = "123456789")
+      successfulAppealSubmission(testVrn, isLPP = true, penaltyNumber = "123456789")
       val model = AppealSubmission(
         sourceSystem = "MDTP",
         taxRegime = "VAT",
@@ -234,13 +235,13 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           isClientResponsibleForLateSubmission = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
+      val result = await(penaltiesConnector.submitAppeal(model, "123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
       result.isRight shouldBe true
       result.toOption.get.status shouldBe OK
     }
 
     "return ISE if an exception occurs" in {
-      failedAppealSubmissionWithFault(isLPP = true, penaltyNumber = "123456789")
+      failedAppealSubmissionWithFault(testVrn, isLPP = true, penaltyNumber = "123456789")
       val model = AppealSubmission(
         sourceSystem = "MDTP",
         taxRegime = "VAT",
@@ -261,7 +262,7 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
           isClientResponsibleForLateSubmission = None
         )
       )
-      val result = await(penaltiesConnector.submitAppeal(model, "HMRC-MTD-VAT~VRN~123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
+      val result = await(penaltiesConnector.submitAppeal(model, "123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
       result.isLeft shouldBe true
       result.left.toOption.get.status shouldBe INTERNAL_SERVER_ERROR
       result.left.toOption.get.body shouldBe "An issue occurred whilst appealing a penalty with error: Connection reset"
