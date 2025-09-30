@@ -55,9 +55,10 @@
     <h2 class="govuk-heading-m" id="declaration">@messages("checkYourAnswers.declaration.h2")</h2>
     @warningText(Html(messages("checkYourAnswers.declaration.text")), componentClasses = "govuk-!-margin-bottom-4")
 
-    @formHelper(action = controllers.routes.CheckYourAnswersController.onSubmit()) {
+    @formHelper(action = controllers.routes.CheckYourAnswersController.onSubmit(), Symbol("data-prevent-multiple-submit") -> "true") {
         @button("common.acceptAndSend")
     }
 
     <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("javascripts/backLinkCYA.js")'></script>
+    <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("javascripts/preventMultipleSubmission.js")'></script>
 }

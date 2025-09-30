@@ -87,5 +87,10 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
     "the accept and send button should have the 'data-prevent-double-click' attribute" in {
       doc.select(Selectors.button).attr("data-prevent-double-click") shouldBe "true"
     }
+
+    "the accept and send button should be disabled" in {
+      doc.forms().get(0).attr("data-prevent-multiple-submit") shouldBe "true"
+    }
+
   }
 }
