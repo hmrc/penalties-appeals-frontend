@@ -28,6 +28,7 @@ import utils.SessionKeys
 import views.html.findOutHowToAppeal.WaitForPaymentToClearPage
 
 import javax.inject.Inject
+import scala.concurrent.Future
 
 class WaitForPaymentToClearController @Inject()(page: WaitForPaymentToClearPage,
                                                 errorHandler: ErrorHandler
@@ -39,12 +40,12 @@ class WaitForPaymentToClearController @Inject()(page: WaitForPaymentToClearPage,
 
   val pageMode: PageMode = PageMode(WaitForPaymentToClearPage, NormalMode)
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval) {
+  def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
       val isCA = request.answers.getAnswer[Boolean](SessionKeys.isCaLpp).getOrElse(false)
 
       if (!isCA) {
-        Ok(page(pageMode))
+       Future.successful(Ok(page(pageMode)))
       } else {
         errorHandler.notFoundError(request)
       }
