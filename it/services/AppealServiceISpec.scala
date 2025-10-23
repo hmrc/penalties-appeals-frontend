@@ -273,7 +273,7 @@ class AppealServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
         val result = await(appealService.submitAppeal("crime")(userRequest, implicitly, implicitly))
         result shouldBe Right((): Unit)
         logs.exists(_.getMessage.contains("MULTI_APPEAL_FAILURE Multiple appeal covering 2020-01-01-2020-01-31 for user with VRN 123456789 failed. ")) shouldBe true
-        logs.exists(_.getMessage.contains("LPP1 appeal was not submitted successfully, Reason given An issue occurred whilst appealing a penalty with error: Connection reset. Correlation ID for LPP1:")) shouldBe true
+        logs.exists(_.getMessage.contains("LPP1 appeal was not submitted successfully, Reason given An issue occurred whilst appealing a penalty with error: Connection reset by peer. Correlation ID for LPP1:")) shouldBe true
         logs.exists(_.getMessage.contains("LPP2 appeal was submitted successfully, case ID is Some(PR-1234). Correlation ID for LPP2:")) shouldBe true
       }
     }

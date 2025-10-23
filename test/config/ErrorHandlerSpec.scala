@@ -18,6 +18,8 @@ package config
 
 import base.SpecBase
 import views.html.errors.ErrorTemplate
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 class ErrorHandlerSpec extends SpecBase {
   val errorTemplate: ErrorTemplate = injector.instanceOf[ErrorTemplate]
@@ -26,7 +28,7 @@ class ErrorHandlerSpec extends SpecBase {
     "return HTML for the standard error template" in {
       lazy val expectedResult = errorTemplate.apply("Error!", "Something went wrong!", "We are unable to process this request.")
       lazy val actualResult = errorHandler.standardErrorTemplate("Error!", "Something went wrong!", "We are unable to process this request.")
-      actualResult shouldBe expectedResult
+      Await.result(actualResult, 5.seconds) shouldBe expectedResult
     }
   }
 }
