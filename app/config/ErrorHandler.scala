@@ -29,23 +29,24 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.language.implicitConversions
 
 @Singleton
-class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, iseCustom: InternalServerErrorPage, iseGeneric: InternalServerErrorGenericPage)(implicit appConfig: AppConfig, ec: ExecutionContext)
+class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, iseCustom: InternalServerErrorPage, iseGeneric: InternalServerErrorGenericPage)(implicit appConfig: AppConfig, val ec: ExecutionContext)
     extends FrontendErrorHandler {
 
   private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     statusCode match {
-      case play.mvc.Http.Status.BAD_REQUEST => Future.successful(BadRequest(badRequestTemplate(request)))
-      case play.mvc.Http.Status.NOT_FOUND   => Future.successful(NotFound(notFoundTemplate(request)))
+      case play.mvc.Http.Status.BAD_REQUEST => badRequestTemplate(request).map(html => BadRequest(html))
+      case play.mvc.Http.Status.NOT_FOUND   => notFoundTemplate(request).map(html => NotFound(html))
       case play.mvc.Http.Status.FORBIDDEN   => Future(Redirect(controllers.routes.TechnicalErrorController.onPageLoad()))
       case play.mvc.Http.Status.INTERNAL_SERVER_ERROR => Future(showInternalServerError()(request))
-      case _                                => Future.successful(Results.Status(statusCode)(fallbackClientErrorTemplate(request)))
+      case _                                => fallbackClientErrorTemplate(request).map(html => Results.Status(statusCode)(html))
     }
   }
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html = {
-    errorTemplate(pageTitle, heading, message)
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader): Future[Html] = {
+    implicit val req: Request[_] = request.asInstanceOf[Request[_]]
+    Future.successful(errorTemplate(pageTitle, heading, message))
   }
 
   def showInternalServerError(userOptional: Option[UserRequest[_]] = None)(implicit request: Request[_]): Result = {
@@ -57,6 +58,7 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: Mess
     }
   }
 
-  def notFoundError(implicit request: Request[_]): Result = NotFound(notFoundTemplate)
-
+  def notFoundError(implicit request: Request[_]): Future[Result] = {
+    notFoundTemplate(request).map(html => NotFound(html))
+  }
 }

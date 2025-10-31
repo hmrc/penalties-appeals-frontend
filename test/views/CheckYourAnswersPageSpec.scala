@@ -46,7 +46,7 @@ class CheckYourAnswersPageSpec extends SpecBase with ViewBehaviours {
 
       val declarationText = "#main-content .govuk-warning-text__text"
 
-      val declarationWarningHiddenText = "#main-content .govuk-warning-text__assistive"
+      val declarationWarningHiddenText = "#main-content .govuk-warning-text .govuk-visually-hidden"
     }
 
     def applyView(): HtmlFormat.Appendable = checkYourAnswers.apply(

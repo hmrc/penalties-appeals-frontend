@@ -17,10 +17,10 @@
 package messages
 
 object ISECustomMessages {
-  val title = "Sorry, we are experiencing technical difficulties - 500 - Appeal a VAT penalty - GOV.UK"
-  val agentTitle = "Sorry, we are experiencing technical difficulties - 500 - Agent - Appeal a VAT penalty - GOV.UK"
-  val heading = "Sorry, we’re experiencing technical difficulties"
-  val p = "Please try again in a few minutes."
+  val title = "Sorry, there is a problem with the service - Appeal a VAT penalty - GOV.UK"
+  val agentTitle = "Sorry, there is a problem with the service - Agent - Appeal a VAT penalty - GOV.UK"
+  val heading = "Sorry, there is a problem with the service"
+  val p = "Try again later."
   val link = "Return to your VAT penalties"
   val agentLink = "Return to your client’s VAT penalties"
   val linkGeneric = "Return to VAT penalties"

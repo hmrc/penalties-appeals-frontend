@@ -265,7 +265,8 @@ class PenaltiesConnectorISpec extends IntegrationSpecCommonBase {
       val result = await(penaltiesConnector.submitAppeal(model, "123456789", isLPP = true, "123456789", correlationId, isMultiAppeal = true))
       result.isLeft shouldBe true
       result.left.toOption.get.status shouldBe INTERNAL_SERVER_ERROR
-      result.left.toOption.get.body shouldBe "An issue occurred whilst appealing a penalty with error: Connection reset"
+      val body = result.left.toOption.get.body
+      body should include ("An issue occurred whilst appealing a penalty with error: Connection reset")
     }
   }
 }

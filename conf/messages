@@ -727,3 +727,4 @@ waitForPaymentToClearPage.p2 = Once the payment clears, appeal using the link on
 # -----------------------------------------------------------
 paymentPlanProcessed.headingAndTitle = You can appeal online when we’ve processed your payment plan
 paymentPlanProcessed.p1= This can take up to 24 hours.
+
