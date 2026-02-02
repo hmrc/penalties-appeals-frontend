@@ -22,23 +22,13 @@ object UploadAnotherDocumentMessages {
 
   val h1 = "Add another file"
 
-  val p1 = "You can upload up to 5 files."
-
-  val p2 = "Each file must be smaller than 6MB."
+  val p1 = "You can upload up to 5 files. Each file must be smaller than 6mb."
 
   val detailsHeading = "Types of file you can upload"
 
-  val detailsP1 = "These file types are allowed:"
+  val detailsP1 = "Accepted file formats:"
 
-  val detailsLi1 = "image (.jpg, .jpeg, .png or .tiff)"
-
-  val detailsLi2 = "PDF (.pdf)"
-
-  val detailsLi3 = "email (.txt or .msg)"
-
-  val detailsLi4 = "Microsoft (Word, Excel or PowerPoint)"
-
-  val detailsLi5 = "Open Document Format (ODF)"
+  val detailsLi1 = "jpg, png, tiff, pdf, txt, msg, Word (docx), Excel (xlsx), PowerPoint (pptx), or Open Document Format (odf)."
 
   val chooseYourFirstFile = "Choose your first file"
 

@@ -71,7 +71,8 @@ export class MultiFileUpload {
             uploadedOneFile: form.dataset.multiFileUploadOneFileUploaded,
             newUploadRow: form.dataset.multiFileUploadNewUploadRow,
             fileRemoved: form.dataset.multiFileUploadFileRemoved,
-            errorPrefix: form.dataset.multiFileUploadErrorPrefix
+            errorPrefix: form.dataset.multiFileUploadErrorPrefix,
+            invalidFileName: form.dataset.multiFileUploadInvalidFileName
         };
 
         this.cacheTemplates();
@@ -85,6 +86,7 @@ export class MultiFileUpload {
         this.addAnotherBtn = this.container.querySelector(`.${this.classes.addAnother}`);
         this.formStatus = this.container.querySelector(`.${this.classes.formStatus}`);
         this.submitBtn = this.container.querySelector(`.${this.classes.submitBtn}`);
+        this.continueBtn = this.container.querySelector('button[type="submit"]');
         this.errorSummary = this.parseHtml(this.errorSummaryTpl, {});
         this.errorSummaryList = this.errorSummary.querySelector(`.${this.classes.errorSummaryList}`);
         this.notifications = this.container.querySelector(`.${this.classes.notifications}`);
@@ -123,6 +125,10 @@ export class MultiFileUpload {
         this.removeError(file.id);
 
         if (!file.files.length) {
+            return;
+        }
+        if (!this.validateFileName(file)) {
+            file.value = ''; // reset invalid file
             return;
         }
         item.querySelector(`.${this.classes.fileName}`).style.display = null;
@@ -439,6 +445,7 @@ export class MultiFileUpload {
             errorSummaryRow: errorSummaryRow
         };
         this.updateErrorSummaryVisibility();
+        this.updateButtonVisibility();
         document.querySelector('.govuk-error-summary').focus();
     }
 
@@ -482,8 +489,9 @@ export class MultiFileUpload {
         const input = document.getElementById(inputId);
         const inputContainer = this.getContainer(input);
         const label = this.getLabel(inputContainer);
-        const file = this.getFileFromItem(inputContainer);
-        const ref = file.dataset.multiFileUploadFileRef;
+        const item = this.getItemFromFile(input);
+        const file = item ? this.getFileFromItem(item) : null;
+        const ref =  file && file.dataset.multiFileUploadFileRef ? file.dataset.multiFileUploadFileRef : inputId;
         const errorMessage = this.parseHtml(this.errorMessageTpl, {
             fileRef: ref,
             errorMessage: message
@@ -793,6 +801,32 @@ export class MultiFileUpload {
         const itemCount = this.getItems().length;
         this.toggleRemoveButtons();
         this.toggleAddButton(itemCount < this.config.maxFiles);
+
+        const hasErrors =
+            this.container.querySelectorAll('.govuk-error-message').length > 0 ||
+            this.container.querySelectorAll('.govuk-error-summary').length > 0;
+
+        if (hasErrors) {
+            this.addAnotherBtn.style.pointerEvents = 'none';
+            this.addAnotherBtn.style.opacity = '0.4';
+            this.addAnotherBtn.setAttribute('aria-disabled', 'true');
+        } else {
+            this.addAnotherBtn.style.pointerEvents = '';
+            this.addAnotherBtn.style.opacity = '';
+            this.addAnotherBtn.removeAttribute('aria-disabled');
+        }
+
+        if (this.continueBtn) {
+            if (hasErrors || this.isInProgress()) {
+                this.continueBtn.style.pointerEvents = 'none';
+                this.continueBtn.style.opacity = '0.4';
+                this.continueBtn.setAttribute('aria-disabled', 'true');
+            } else {
+                this.continueBtn.style.pointerEvents = '';
+                this.continueBtn.style.opacity = '';
+                this.continueBtn.removeAttribute('aria-disabled');
+            }
+        }
     }
 
     /** F63 */
@@ -895,6 +929,23 @@ export class MultiFileUpload {
         fileHeading.innerHTML = fileLabel.innerHTML;
         fileContainer.insertBefore(fileHeading, fileLabel);
         fileLabel.remove();
+    }
+
+    /** F82 */
+    validateFileName(file) {
+        const fileName = this.getFileName(file);
+        if (!fileName) {
+            return true;
+        }
+        const validFileNameRegex = /^[A-Za-z0-9._-]+$/;
+        if (!validFileNameRegex.test(fileName)) {
+            this.addError(
+                file.id,
+                this.messages.invalidFileName
+            );
+            return false;
+        }
+        return true;
     }
 }
 

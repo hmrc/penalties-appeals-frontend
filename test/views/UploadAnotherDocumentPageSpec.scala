@@ -34,13 +34,13 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
   object Selectors extends BaseSelectors {
     val detailsHeading = ".govuk-details__summary-text"
 
-    val detailsContentP1 = ".govuk-details__text > p:nth-child(1)"
+    val detailsContentP1 = ".govuk-inset-text > p:nth-child(1)"
 
-    val detailsContentP2 = ".govuk-details__text > p:nth-child(3)"
+    val detailsContentP2 = ".govuk-inset-text > p:nth-child(3)"
 
-    val detailsContentP3 = ".govuk-details__text > p:nth-child(4)"
+    val detailsContentP3 = ".govuk-inset-text > p:nth-child(4)"
 
-    val detailsContentLi: Int => String = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
+    val detailsContentLi: Int => String = (index: Int) => s".govuk-inset-text > p:nth-child($index)"
 
     val chooseYourNextFile = "#file-upload-form-group > label"
 
@@ -70,14 +70,8 @@ class UploadAnotherDocumentPageSpec extends SpecBase with ViewBehaviours{
       Selectors.title -> title,
       Selectors.h1 -> h1,
       Selectors.pElementIndex(3) -> p1,
-      Selectors.pElementIndex(4) -> p2,
-      Selectors.detailsHeading -> detailsHeading,
       Selectors.detailsContentP1 -> detailsP1,
-      Selectors.detailsContentLi(1) -> detailsLi1,
-      Selectors.detailsContentLi(2) -> detailsLi2,
-      Selectors.detailsContentLi(3) -> detailsLi3,
-      Selectors.detailsContentLi(4) -> detailsLi4,
-      Selectors.detailsContentLi(5) -> detailsLi5,
+      Selectors.detailsContentLi(2) -> detailsLi1,
       Selectors.chooseYourNextFile -> chooseYourNextFile,
       Selectors.uploadButton -> uploadButton,
       Selectors.skipFileUploadButton -> skipFileUploadButton

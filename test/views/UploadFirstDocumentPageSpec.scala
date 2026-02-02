@@ -33,9 +33,9 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors {
       val detailsHeading = ".govuk-details__summary-text"
 
-      val detailsContentP1 = ".govuk-details__text > p:nth-child(1)"
+      val detailsContentP1 = ".govuk-inset-text > p:nth-child(1)"
 
-      val detailsContentLi: Int => String = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
+      val detailsContentLi: Int => String = (index: Int) => s".govuk-inset-text > p:nth-child($index)"
 
       val uploadButton = "#file-upload-form .govuk-button"
 
@@ -62,17 +62,10 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> h1,
-      Selectors.pElementIndex(3) -> p1,
-      Selectors.pElementIndex(4) -> p2,
-      Selectors.pElementIndex(5) -> p4,
-      Selectors.pElementIndex(6) -> p5,
-      Selectors.detailsHeading -> detailsHeading,
+      Selectors.pElementIndex(3) -> s"$p1 $p2",
+      Selectors.pElementIndex(4) -> p5,
       Selectors.detailsContentP1 -> detailsP1,
-      Selectors.detailsContentLi(1) -> detailsLi1,
-      Selectors.detailsContentLi(2) -> detailsLi2,
-      Selectors.detailsContentLi(3) -> detailsLi3,
-      Selectors.detailsContentLi(4) -> detailsLi4,
-      Selectors.detailsContentLi(5) -> detailsLi5,
+      Selectors.detailsContentLi(2) -> detailsLi1,
       Selectors.chooseYourFirstFile -> chooseYourFirstFile,
       Selectors.uploadButton -> uploadButton,
       Selectors.skipFileUploadButton -> skipFileUploadButton
@@ -86,17 +79,10 @@ class UploadFirstDocumentPageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
-        Selectors.pElementIndex(3) -> p1,
-        Selectors.pElementIndex(4) -> p2Lpp,
-        Selectors.pElementIndex(5) -> p4,
-        Selectors.pElementIndex(6) -> p5,
-        Selectors.detailsHeading -> detailsHeading,
+        Selectors.pElementIndex(3) -> s"$p1 $p2Lpp",
+        Selectors.pElementIndex(4) -> p5,
         Selectors.detailsContentP1 -> detailsP1,
-        Selectors.detailsContentLi(1) -> detailsLi1,
-        Selectors.detailsContentLi(2) -> detailsLi2,
-        Selectors.detailsContentLi(3) -> detailsLi3,
-        Selectors.detailsContentLi(4) -> detailsLi4,
-        Selectors.detailsContentLi(5) -> detailsLi5,
+        Selectors.detailsContentLi(2) -> detailsLi1,
         Selectors.chooseYourFirstFile -> chooseYourFirstFile,
         Selectors.uploadButton -> uploadButton,
         Selectors.skipFileUploadButton -> skipFileUploadButton

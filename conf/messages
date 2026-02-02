@@ -319,18 +319,13 @@ otherReason.uploadEvidence.p2 = Evidence might include documents or letters that
 otherReason.uploadEvidence.lpp.p2 = Evidence might include documents or letters that show why the VAT bill was paid late.
 otherReason.uploadEvidence.appealAgainstObligation.p2 = Evidence might include documents or letters that show why the business did not need to submit a return.
 otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might include documents or letters that show why the business did not need to submit a return and pay VAT.
-otherReason.uploadEvidence.p4 = You can upload up to 5 files.
-otherReason.uploadEvidence.p5 = Each file must be smaller than 6MB.
+otherReason.uploadEvidence.p4 = You can upload up to 5 files. Each file must be smaller than 6mb.
 otherReason.uploadEvidence.details.heading = Types of file you can upload
-otherReason.uploadEvidence.details.p1 = These file types are allowed:
-otherReason.uploadEvidence.details.li.1 = image (.jpg, .jpeg, .png or .tiff)
-otherReason.uploadEvidence.details.li.2 = PDF (.pdf)
-otherReason.uploadEvidence.details.li.3 = email (.txt or .msg)
-otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel or PowerPoint)
-otherReason.uploadEvidence.details.li.5 = Open Document Format (ODF)
+otherReason.uploadEvidence.details.p1 = Accepted file formats:
+otherReason.uploadEvidence.details.li.1 = jpg, png, tiff, pdf, txt, msg, Word (docx), Excel (xlsx), PowerPoint (pptx), or Open Document Format (odf).
 otherReason.uploadEvidence.file = File
 otherReason.uploadEvidence.addAnother = Add another file
-otherReason.uploadEvidence.status.uploaded = Ready to Submit
+otherReason.uploadEvidence.status.uploaded = Uploaded
 otherReason.uploadEvidence.status.pending = Pending
 otherReason.uploadEvidence.button.remove = Remove
 otherReason.uploadEvidence.button.remove.hiddenText = file {0}
@@ -385,6 +380,7 @@ upscan.fileNotSpecified = Select a file.
 upscan.numberOfUploadedFiles = You have successfully uploaded {0} files
 upscan.uploadedOneFile = You have successfully uploaded {0} file
 upscan.addedNewRow = You have added a new row for file upload
+upscan.invalidFileName = Filenames must only contain letters, numbers, hyphens (-), underscores (_) and full stops. Spaces in filenames are not accepted.
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------

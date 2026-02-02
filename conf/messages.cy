@@ -319,18 +319,13 @@ otherReason.uploadEvidence.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau 
 otherReason.uploadEvidence.lpp.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam y talwyd y bil TAW yn hwyr.
 otherReason.uploadEvidence.appealAgainstObligation.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam nad oedd angen i’r busnes gyflwyno Ffurflen TAW.
 otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Gall tystiolaeth gynnwys dogfennau neu lythyrau sy’n dangos pam nad oedd angen i’r busnes gyflwyno Ffurflen TAW a thalu TAW.
-otherReason.uploadEvidence.p4 = Gallwch uwchlwytho hyd at 5 ffeil.
-otherReason.uploadEvidence.p5 = Mae’n rhaid i bob ffeil fod yn llai na 6MB.
+otherReason.uploadEvidence.p4 = Gallwch uwchlwytho hyd at 5 ffeil. Mae’n rhaid i bob ffeil fod yn llai na 6mb.
 otherReason.uploadEvidence.details.heading = Mathau o ffeiliau y gallwch eu huwchlwytho
-otherReason.uploadEvidence.details.p1 = Caniateir y mathau hyn o ffeiliau:
-otherReason.uploadEvidence.details.li.1 = delwedd (.jpg, .jpeg, .png neu .tiff)
-otherReason.uploadEvidence.details.li.2 = PDF (.pdf)
-otherReason.uploadEvidence.details.li.3 = e-bost (.txt neu .msg)
-otherReason.uploadEvidence.details.li.4 = Microsoft (Word, Excel neu PowerPoint)
-otherReason.uploadEvidence.details.li.5 = Fformat Dogfen Agored (ODF)
+otherReason.uploadEvidence.details.p1 = Fformatau ffeil derbyniol:
+otherReason.uploadEvidence.details.li.1 =  jpg, png, tiff, pdf, txt, msg, Word (docx), Excel (xlsx), PowerPoint (pptx), neu Open Document Format (odf).
 otherReason.uploadEvidence.file = Ffeil
 otherReason.uploadEvidence.addAnother = Ychwanegu ffeil arall
-otherReason.uploadEvidence.status.uploaded = BAROD I’W CHYFLWYNO
+otherReason.uploadEvidence.status.uploaded = Wedi uwchlwytho
 otherReason.uploadEvidence.status.pending = Ar y gweill
 otherReason.uploadEvidence.button.remove = Tynnu
 otherReason.uploadEvidence.button.remove.hiddenText = ffeil {0}
@@ -385,6 +380,7 @@ upscan.fileNotSpecified = Dewiswch ffeil.
 upscan.numberOfUploadedFiles = Rydych wedi uwchlwytho {0} yn llwyddiannus
 upscan.uploadedOneFile = Rydych wedi uwchlwytho {0} ffeil yn llwyddiannus
 upscan.addedNewRow = Rydych wedi ychwanegu rhes newydd ar gyfer uwchlwytho ffeil
+upscan.invalidFileName = Dim ond llythrennau, rhifau, cysylltnodau (-), tanlinellau (_) ac atalnodau llawn y dylai enwau ffeiliau eu cynnwys. Ni dderbynnir bylchau mewn enwau ffeiliau.
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------
