@@ -34,15 +34,7 @@
 
 @detailsContent = {
         @p(Html(messages("otherReason.uploadEvidence.details.p1")))
-        @bullets(
-                Seq(
-                        Html(messages("otherReason.uploadEvidence.details.li.1")),
-                        Html(messages("otherReason.uploadEvidence.details.li.2")),
-                        Html(messages("otherReason.uploadEvidence.details.li.3")),
-                        Html(messages("otherReason.uploadEvidence.details.li.4")),
-                        Html(messages("otherReason.uploadEvidence.details.li.5"))
-                )
-        )
+        @p(Html(messages("otherReason.uploadEvidence.details.li.1")))
 }
 
 @layout(pageTitle = messages("otherReason.uploadAnotherDocument.noJs.headingAndTitle"),
@@ -52,8 +44,10 @@
         optPageMode = Some(pageMode)) {
     @pageHeader(Some(messages("otherReason.uploadAnotherDocument.noJs.headingAndTitle")))
     <p class="govuk-body">@messages("otherReason.uploadEvidence.p4")</p>
-    <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
-    @details("otherReason.uploadEvidence.details.heading", detailsContent)
+
+    <div class="govuk-inset-text">
+        @detailsContent
+    </div>
 
     <form method="POST" action="@upscanResponse.uploadRequest.href" id="file-upload-form" enctype="multipart/form-data">
         @for(field <- upscanResponse.uploadRequest.fields) {

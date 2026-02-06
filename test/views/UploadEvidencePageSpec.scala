@@ -35,9 +35,9 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     object Selectors extends BaseSelectors {
       val detailsHeading = ".govuk-details__summary-text"
 
-      val detailsContentP1 = ".govuk-details__text > p:nth-child(1)"
+      val detailsContentP1 = ".govuk-inset-text > p:nth-child(1)"
 
-      val detailsContentLi: Int => String = (index: Int) => s".govuk-details__text > ul > li:nth-child($index)"
+      val detailsContentLi: Int => String = (index: Int) => s".govuk-inset-text > p:nth-child($index)"
 
       val addAnotherButton = ".multi-file-upload__add-another"
 
@@ -86,17 +86,10 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
     val expectedContent = Seq(
       Selectors.title -> title,
       Selectors.h1 -> h1,
-      Selectors.pElementIndex(1) -> p1,
-      Selectors.pElementIndex(2) -> p2,
-      Selectors.pElementIndex(3) -> p4,
-      Selectors.pElementIndex(4) -> p5,
-      Selectors.detailsHeading -> detailsHeading,
+      Selectors.pElementIndex(1) -> s"$p1 $p2",
+      Selectors.pElementIndex(2) -> p4,
       Selectors.detailsContentP1 -> detailsP1,
-      Selectors.detailsContentLi(1) -> detailsLi1,
-      Selectors.detailsContentLi(2) -> detailsLi2,
-      Selectors.detailsContentLi(3) -> detailsLi3,
-      Selectors.detailsContentLi(4) -> detailsLi4,
-      Selectors.detailsContentLi(5) -> detailsLi5,
+      Selectors.detailsContentLi(2) -> detailsLi1,
       Selectors.addAnotherButton -> addAnotherButton,
       Selectors.continueButton -> continueButton,
       Selectors.skipButton -> skipButton
@@ -114,17 +107,10 @@ class UploadEvidencePageSpec extends SpecBase with ViewBehaviours {
       val expectedContent = Seq(
         Selectors.title -> title,
         Selectors.h1 -> h1,
-        Selectors.pElementIndex(1) -> p1,
-        Selectors.pElementIndex(2) -> p2Lpp,
-        Selectors.pElementIndex(3) -> p4,
-        Selectors.pElementIndex(4) -> p5,
-        Selectors.detailsHeading -> detailsHeading,
+        Selectors.pElementIndex(1) -> s"$p1 $p2Lpp",
+        Selectors.pElementIndex(2) -> p4,
         Selectors.detailsContentP1 -> detailsP1,
-        Selectors.detailsContentLi(1) -> detailsLi1,
-        Selectors.detailsContentLi(2) -> detailsLi2,
-        Selectors.detailsContentLi(3) -> detailsLi3,
-        Selectors.detailsContentLi(4) -> detailsLi4,
-        Selectors.detailsContentLi(5) -> detailsLi5,
+        Selectors.detailsContentLi(2) -> detailsLi1,
         Selectors.addAnotherButton -> addAnotherButton,
         Selectors.continueButton -> continueButton
       )

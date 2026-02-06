@@ -39,6 +39,7 @@ object UpscanMessageHelper {
       case "EntityTooSmall" => getJsOrNonJsFailureMessage("fileEmpty", isJsEnabled)
       case "EntityTooLarge" => getJsOrNonJsFailureMessage("fileTooLarge", isJsEnabled)
       case "400" | "InvalidArgument" => "upscan.fileNotSpecified"
+      case "InvalidFileName" => "upscan.invalidFileName"
       case _ => getJsOrNonJsFailureMessage("unableToUpload", isJsEnabled)
     }
   }

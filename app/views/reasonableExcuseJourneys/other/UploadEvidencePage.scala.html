@@ -42,15 +42,7 @@
 @appealType = @{request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType)}
 @detailsContent = {
     @p(Html(messages("otherReason.uploadEvidence.details.p1")))
-    @bullets(
-        Seq(
-            Html(messages("otherReason.uploadEvidence.details.li.1")),
-            Html(messages("otherReason.uploadEvidence.details.li.2")),
-            Html(messages("otherReason.uploadEvidence.details.li.3")),
-            Html(messages("otherReason.uploadEvidence.details.li.4")),
-            Html(messages("otherReason.uploadEvidence.details.li.5"))
-        )
-    )
+    @p(Html(messages("otherReason.uploadEvidence.details.li.1")))
 }
 @lppOrLspOrObligationDynamicText = @{
   if(appealType.contains(PenaltyTypeEnum.Late_Payment) || appealType.contains(PenaltyTypeEnum.Additional)) {
@@ -84,15 +76,15 @@
         (Symbol("data-multi-file-upload-one-file-uploaded"), messages("upscan.uploadedOneFile", "{numberOfFiles}")),
         (Symbol("data-multi-file-upload-file-removed"), messages("upscan.fileRemoved", "{fileNumber}", "{fileName}")),
         (Symbol("data-multi-file-upload-error-prefix"), messages("error.prefix")),
-        (Symbol("data-multi-file-upload-file-uploaded"), messages("upscan.fileUploaded", "{fileNumber}", "{fileName}"))) {
+        (Symbol("data-multi-file-upload-file-uploaded"), messages("upscan.fileUploaded", "{fileNumber}", "{fileName}")),
+        (Symbol("data-multi-file-upload-invalid-file-name"), messages("upscan.invalidFileName"))) {
 
-            <p class="govuk-body">@messages("otherReason.uploadEvidence.p1")</p>
-            <p class="govuk-body">@messages(lppOrLspOrObligationDynamicText)</p>
+            <p class="govuk-body">@messages("otherReason.uploadEvidence.p1") @messages(lppOrLspOrObligationDynamicText)</p>
             <p class="govuk-body">@messages("otherReason.uploadEvidence.p4")</p>
-            <p class="govuk-body">@messages("otherReason.uploadEvidence.p5")</p>
 
-            @details("otherReason.uploadEvidence.details.heading", detailsContent)
-            <div class="govuk-inset-text hidden" aria-hidden="true"></div>
+            <div class="govuk-inset-text">
+                @detailsContent
+            </div>
             <ul class="multi-file-upload__item-list"></ul>
 
             <button type="button" class="multi-file-upload__add-another govuk-button govuk-button--secondary">@messages("otherReason.uploadEvidence.addAnother")</button>
@@ -109,7 +101,7 @@
             <script type="text/x-template" id="error-manager-summary-item-tpl">@errorManager.summaryItem()</script>
             <script type="text/x-template" id="error-manager-message-tpl">@errorManager.message(messages)</script>
 
-            <div class="govuk-button-group">
+            <div class="multi-file-upload__continue-btn govuk-button-group">
                     @button("common.continue")
                     @link(postAction.url, "fileUpload.skipFileUpload.button.text", id = Some("skip-file-upload"), button = true, classes = "govuk-button govuk-button--secondary")
             </div>
