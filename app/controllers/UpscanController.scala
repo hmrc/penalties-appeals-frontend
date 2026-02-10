@@ -24,7 +24,7 @@ import models.Mode
 import models.upload._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc._
 import repositories.UploadJourneyRepository
 import services.upscan.UpscanService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -41,6 +41,12 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                                 (implicit appConfig: AppConfig,
                                  errorHandler: ErrorHandler,
                                  mcc: MessagesControllerComponents, ec: ExecutionContext) extends FrontendController(mcc) {
+
+  private val validFileNameRegex =
+    "^[A-Za-z0-9][A-Za-z0-9 ._()-]*\\.[A-Za-z0-9]{1,10}$"
+
+  private def isValidFileName(name: String): Boolean =
+    name.matches(validFileNameRegex)
 
   def getStatusOfFileUpload(journeyId: String, fileReference: String): Action[AnyContent] = Action.async {
     implicit request => {
@@ -214,27 +220,61 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
         },
         upload => {
           val timeoutForCheckingStatus = System.nanoTime() + (appConfig.upscanStatusCheckTimeout * 1000000000L)
+          val journeyId = request.session.get(SessionKeys.journeyId).get
           service.waitForStatus(request.session.get(SessionKeys.journeyId).get, upload.key, timeoutForCheckingStatus, mode, isAddingAnotherDocument, {
             (optFailureDetails, errorMessage) => {
               if (errorMessage.isDefined) {
                 val failureReason = UpscanMessageHelper.getLocalisedFailureMessageForFailure(optFailureDetails.get.failureReason, isJsEnabled)
                 if (isAddingAnotherDocument) {
-                  logger.debug("[UpscanController][fileVerification] - user is uploading another document - routing user back to uploading another document with errors")
+                  logger.debug("[UpscanController][fileVerification] - user is uploading another document - " +
+                    "routing user back to uploading another document with errors")
                   Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 } else {
-                  logger.debug("[UpscanController][fileVerification] - user is uploading first document - routing user back to uploading first document with errors")
+                  logger.debug("[UpscanController][fileVerification] - user is uploading first document - " +
+                    "routing user back to uploading first document with errors")
                   Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
                     .addingToSession(SessionKeys.failureMessageFromUpscan -> failureReason))
                 }
               } else {
-                logger.debug("[UpscanController][fileVerification] - file upload succeeded - rendering upload list page")
-                Future(Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode)))
+                handleFileValidation(upload, journeyId, isAddingAnotherDocument, mode)
               }
             }
           })
         }
       )
+    }
+  }
+
+  private def handleFileValidation(upload: S3UploadSuccess, journeyId: String,
+                                   isAddingAnotherDocument: Boolean, mode: Mode)(implicit request: Request[_]): Future[Result] = {
+    service.getFileNameForJourney(journeyId, upload.key).flatMap {
+      case Some(fileName) if !isValidFileName(fileName) =>
+        val failureMessage = "upscan.invalidFileName"
+        val failedModel = UploadJourney(reference = upload.key, fileStatus = UploadStatusEnum.FAILED,
+          failureDetails = Some(FailureDetails(failureReason = FailureReasonEnum.REJECTED,
+            message = failureMessage)))
+
+        repository.updateStateOfFileUpload(journeyId, failedModel).map { _ =>
+          if (isAddingAnotherDocument) {
+            Redirect(controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(mode))
+              .addingToSession(SessionKeys.failureMessageFromUpscan -> failureMessage)
+          } else {
+            Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+              .addingToSession(SessionKeys.failureMessageFromUpscan -> failureMessage)
+          }
+        }
+      case Some(_) =>
+        logger.debug("[UpscanController][fileVerification] - file upload succeeded - rendering upload list page")
+        Future.successful(
+          Redirect(controllers.routes.OtherReasonController.onPageLoadForUploadComplete(mode))
+        )
+      case None =>
+        val failureMessage = "upscan.fileNotSpecified"
+        Future.successful(
+          Redirect(controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(mode))
+            .addingToSession(SessionKeys.failureMessageFromUpscan -> failureMessage)
+        )
     }
   }
 }

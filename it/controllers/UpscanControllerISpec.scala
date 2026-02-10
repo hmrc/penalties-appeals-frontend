@@ -28,6 +28,7 @@ import repositories.UploadJourneyRepository
 import stubs.UpscanStub._
 import utils.{IntegrationSpecCommonBase, SessionKeys}
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class UpscanControllerISpec extends IntegrationSpecCommonBase {
@@ -298,7 +299,19 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
     }
 
     "redirect to the successful upload page when there is no error from Upscan" in new Setup {
-      await(repository.updateStateOfFileUpload("J1234", UploadJourney("file1", UploadStatusEnum.READY), isInitiateCall = true))
+      await(repository.updateStateOfFileUpload("J1234", UploadJourney(
+        reference = "file1",
+        fileStatus = UploadStatusEnum.READY,
+        uploadDetails = Some(
+          UploadDetails(
+            fileName = "myValidFile.pdf",
+            fileMimeType = "application/pdf",
+            uploadTimestamp = LocalDateTime.now(),
+            checksum = "abc123",
+            size = 1234
+          )
+        )
+      ), isInitiateCall = true))
       val result: Future[Result] = controller.fileVerification(false, NormalMode, false)(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234"))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForUploadComplete(NormalMode).url
@@ -310,6 +323,63 @@ class UpscanControllerISpec extends IntegrationSpecCommonBase {
       status(result) shouldBe SEE_OTHER
       await(result).session(FakeRequest("GET", "/file-verification/failed?key=file1").withSession(SessionKeys.journeyId -> "J1234")).get(SessionKeys.failureMessageFromUpscan) -> "upscan.invalidMimeType"
       redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForAnotherFileUpload(NormalMode).url
+    }
+
+    "redirect back to the upload page when the filename contains special characters" in new Setup {
+      await(
+        repository.updateStateOfFileUpload(
+          "J1234",
+          UploadJourney(
+            reference = "file1",
+            fileStatus = UploadStatusEnum.READY,
+            uploadDetails = Some(
+              UploadDetails(
+                fileName = "invalid$file.pdf",
+                fileMimeType = "application/pdf",
+                uploadTimestamp = LocalDateTime.now(),
+                checksum = "abc123",
+                size = 1234
+              )
+            )
+          ),
+          isInitiateCall = true
+        )
+      )
+
+      val result: Future[Result] =
+        controller.fileVerification(false, NormalMode, false)(
+          FakeRequest("GET", "/file-verification/success?key=file1")
+            .withSession(SessionKeys.journeyId -> "J1234")
+        )
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+
+      session(result).get(SessionKeys.failureMessageFromUpscan) shouldBe Some("upscan.invalidFileName")
+    }
+
+    "redirect back when fileName is missing from the uploadDetails" in new Setup {
+      await(
+        repository.updateStateOfFileUpload(
+          "J1234",
+          UploadJourney(
+            reference = "file1",
+            fileStatus = UploadStatusEnum.READY,
+            uploadDetails = None
+          ),
+          isInitiateCall = true
+        )
+      )
+
+      val result: Future[Result] =
+        controller.fileVerification(false, NormalMode, false)(
+          FakeRequest("GET", "/file-verification/success?key=file1")
+            .withSession(SessionKeys.journeyId -> "J1234")
+        )
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get shouldBe controllers.routes.OtherReasonController.onPageLoadForFirstFileUpload(NormalMode).url
+      session(result).get(SessionKeys.failureMessageFromUpscan) shouldBe Some("upscan.fileNotSpecified")
     }
   }
 }
