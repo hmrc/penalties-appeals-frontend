@@ -42,8 +42,7 @@ class UpscanController @Inject()(repository: UploadJourneyRepository,
                                  errorHandler: ErrorHandler,
                                  mcc: MessagesControllerComponents, ec: ExecutionContext) extends FrontendController(mcc) {
 
-  private val validFileNameRegex =
-    "^[A-Za-z0-9][A-Za-z0-9 ._()-]*\\.[A-Za-z0-9]{1,10}$"
+  private val validFileNameRegex = "^[A-Za-z0-9._-]+$"
 
   private def isValidFileName(name: String): Boolean =
     name.matches(validFileNameRegex)
