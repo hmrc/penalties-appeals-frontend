@@ -18,14 +18,13 @@ package controllers.predicates
 
 import base.SpecBase
 import models.UserRequest
-import play.api.http.Status
+import models.session.UserAnswers
 import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.SessionKeys
-import java.time.LocalDate
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,67 +33,71 @@ class DataRequiredActionSpec extends SpecBase {
 
   val testAction: Request[_] => Future[Result] = _ => Future.successful(Ok(""))
 
-  class Harness(requiredAction: DataRequiredAction, request: UserRequest[_] = UserRequest("123456789",
-    active = true, None, userAnswers(correctUserAnswers))(fakeRequest)) {
-      def onPageLoad(): Future[Result] = requiredAction.invokeBlock(request, testAction)
+  class Harness(requiredAction: DataRequiredAction,
+                request: UserRequest[_] = UserRequest("123456789", active = true, None, userAnswers(correctUserAnswers))(fakeRequest)) {
+    def onPageLoad(): Future[Result] = requiredAction.invokeBlock(request, testAction)
   }
 
+  private def buildRequestWithAnswersAndSessionData(userAnswers: UserAnswers, sessionData: (String, String)*): UserRequest[_] =
+    UserRequest("123456789", answers = userAnswers)(FakeRequest("GET", "/").withSession(sessionData: _*))
+
+  private def buildControllerWithRequest(request: UserRequest[_]): Harness = new Harness(
+    requiredAction = new DataRequiredActionImpl(errorHandler),
+    request = request
+  )
+
   "refine" should {
-    s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when all of the data is missing as part of the session" in {
-        val requestWithNoSessionKeys = UserRequest("123456789", answers = userAnswers(Json.obj()))
-        val fakeController = new Harness(
-          requiredAction = new DataRequiredActionImpl(
-            errorHandler
-          ),
-          request = requestWithNoSessionKeys)
-
-      val result = await(fakeController.onPageLoad())
-      result.header.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    s"show an ISE (${Status.INTERNAL_SERVER_ERROR}) when some of the data is missing as part of the session" in {
-      val requestWithPartSessionKeys = UserRequest("123456789", answers = userAnswers(
-        Json.obj(
-          SessionKeys.penaltyNumber -> "123",
-          SessionKeys.appealType -> "this is an appeal",
-          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01")
+    "return a success with user request" when {
+      "the user has a journeyId and the UserAnswers contain all the required fields" in {
+        val requestWithConfirmationSessionKeys = buildRequestWithAnswersAndSessionData(
+          userAnswers(correctUserAnswers),
+          sessionData = SessionKeys.journeyId -> "1234"
         )
-      ))
-      val fakeController = new Harness(
-        requiredAction = new DataRequiredActionImpl(
-          errorHandler
-        ),
-        request = requestWithPartSessionKeys)
+        val controller = buildControllerWithRequest(requestWithConfirmationSessionKeys)
 
-      val result = await(fakeController.onPageLoad())
-      result.header.status shouldBe INTERNAL_SERVER_ERROR
+        val result = await(controller.onPageLoad())
+
+        result.header.status shouldBe OK
+      }
     }
 
-    "redirect to the appeal has already been submitted page" when {
-      "the user has seen the appeal confirmation page" in {
-        val requestWithConfirmationSessionKeys = UserRequest("123456789", answers = userAnswers(correctUserAnswers)
-        )(FakeRequest("GET", "/").withSession(SessionKeys.penaltiesHasSeenConfirmationPage -> "true", SessionKeys.journeyId -> "1234"))
-        val fakeController = new Harness(
-          requiredAction = new DataRequiredActionImpl(
-            errorHandler
-          ),
-          request = requestWithConfirmationSessionKeys)
+    "redirect to the YouCannotGoBackToAppeal page" when {
+      "the user has a journeyId and has seen the appeal confirmation page so 'penaltiesHasSeenConfirmationPage' is defined in session" in {
+        val requestWithConfirmationSessionKeys = buildRequestWithAnswersAndSessionData(
+          userAnswers(correctUserAnswers),
+          sessionData = SessionKeys.penaltiesHasSeenConfirmationPage -> "true",
+          SessionKeys.journeyId -> "1234"
+        )
 
-        val result = await(fakeController.onPageLoad())
+        val result = await(buildControllerWithRequest(requestWithConfirmationSessionKeys).onPageLoad())
+
         result.header.status shouldBe SEE_OTHER
         result.header.headers(LOCATION) shouldBe controllers.routes.YouCannotGoBackToAppealController.onPageLoad().url
       }
     }
 
-    "run the block when all of the correct data is present in the session" in {
-      val fakeController = new Harness(
-        requiredAction = new DataRequiredActionImpl(
-          errorHandler
-        ),
-        request = userRequestWithCorrectKeys)
+    "return an InternalServerError" when {
+      "required UserAnswers fields are missing" in {
+        val requestWithMissingAnswers = buildRequestWithAnswersAndSessionData(
+          userAnswers(Json.obj()),
+          sessionData = SessionKeys.journeyId -> "1234"
+        )
 
-      val result = await(fakeController.onPageLoad())
-      result.header.status shouldBe OK
+        val result = await(buildControllerWithRequest(requestWithMissingAnswers).onPageLoad())
+
+        result.header.status shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "sessionId is missing" in {
+        val requestWithMissingAnswers = buildRequestWithAnswersAndSessionData(
+          userAnswers(correctUserAnswers)
+        )
+
+        val result = await(buildControllerWithRequest(requestWithMissingAnswers).onPageLoad())
+
+        result.header.status shouldBe INTERNAL_SERVER_ERROR
+      }
     }
   }
+
 }

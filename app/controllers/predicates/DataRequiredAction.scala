@@ -29,35 +29,33 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait DataRequiredAction extends ActionRefiner[UserRequest, UserRequest]
 
-class DataRequiredActionImpl @Inject()(errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
+class DataRequiredActionImpl @Inject() (errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
 
   override protected def refine[A](request: UserRequest[A]): Future[Either[Result, UserRequest[A]]] = {
-    (request.answers.getAnswer[String](SessionKeys.penaltyNumber),
-      request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType),
-      request.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod),
-      request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod),
-      request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod),
-      request.answers.getAnswer[String](SessionKeys.dateCommunicationSent),
-      request.session.get(SessionKeys.journeyId),
-      request.session.get(SessionKeys.penaltiesHasSeenConfirmationPage)) match {
-      case (_, _, _, _, _, _, Some(_), Some(_)) =>
-        logger.info("[DataRequiredAction] - User has 'penaltiesHasSeenConfirmationPage' session key in session, routing to 'You cannot go back to appeal details page'")
-        Future.successful(Left(Redirect(controllers.routes.YouCannotGoBackToAppealController.onPageLoad())))
-      case (Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), _) =>
-        Future.successful(Right(request))
-      case _ =>
-        logger.error("[DataRequiredAction][refine] - Some data was missing from the session - rendering ISE")
-        logger.debug(s"[DataRequiredAction][refine] - Required data from session: ${
-          Seq(
-            request.answers.getAnswer[String](SessionKeys.penaltyNumber),
-            request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType),
-            request.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod),
-            request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod),
-            request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod),
-            request.answers.getAnswer[String](SessionKeys.dateCommunicationSent),
-            request.session.get(SessionKeys.journeyId))
-        }")
-        Future.successful(Left(errorHandler.showInternalServerError(Some(request))(request)))
+    val penaltyNumber     = (SessionKeys.penaltyNumber, request.answers.getAnswer[String](SessionKeys.penaltyNumber))
+    val appealType        = (SessionKeys.appealType, request.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType))
+    val startDateOfPeriod = (SessionKeys.startDateOfPeriod, request.answers.getAnswer[LocalDate](SessionKeys.startDateOfPeriod))
+    val endDateOfPeriod   = (SessionKeys.endDateOfPeriod, request.answers.getAnswer[LocalDate](SessionKeys.endDateOfPeriod))
+    val dueDateOfPeriod   = (SessionKeys.dueDateOfPeriod, request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod))
+    val journeyId         = (SessionKeys.journeyId, request.session.get(SessionKeys.journeyId))
+    val penaltiesHasSeenConfirmationPage =
+      (SessionKeys.penaltiesHasSeenConfirmationPage, request.session.get(SessionKeys.penaltiesHasSeenConfirmationPage))
+
+    val requiredFieldsWithKeys: Seq[(_, Option[_])] =
+      Seq(penaltyNumber, appealType, startDateOfPeriod, endDateOfPeriod, dueDateOfPeriod, journeyId)
+
+    if (penaltiesHasSeenConfirmationPage._2.isDefined && journeyId._2.isDefined) {
+      logger.info(
+        "[DataRequiredAction][refine] - User has 'penaltiesHasSeenConfirmationPage' session key in session, routing to 'You cannot go back to appeal details page'")
+      Future.successful(Left(Redirect(controllers.routes.YouCannotGoBackToAppealController.onPageLoad())))
+    } else if (requiredFieldsWithKeys.map(_._2).forall(_.isDefined)) {
+      Future.successful(Right(request))
+    } else {
+      val missingRequiredFields: Seq[String] = requiredFieldsWithKeys.filterNot(_._2.isDefined).map(_._1.toString)
+      logger.error(
+        "[DataRequiredAction][refine] - Required data was missing from the session - rendering ISE. " +
+          s"Missing data fields: ${missingRequiredFields.mkString(", ")}")
+      Future.successful(Left(errorHandler.showInternalServerError(Some(request))(request)))
     }
   }
 }
