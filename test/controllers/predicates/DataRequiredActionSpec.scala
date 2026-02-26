@@ -19,12 +19,12 @@ package controllers.predicates
 import base.SpecBase
 import models.UserRequest
 import models.session.UserAnswers
-import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.SessionKeys
+import utils.SessionKeys._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -76,19 +76,24 @@ class DataRequiredActionSpec extends SpecBase {
       }
     }
 
+    val requiredUserAnswerFields = Seq(penaltyNumber, appealType, startDateOfPeriod, endDateOfPeriod, dueDateOfPeriod)
+
     "return an InternalServerError" when {
-      "required UserAnswers fields are missing" in {
-        val requestWithMissingAnswers = buildRequestWithAnswersAndSessionData(
-          userAnswers(Json.obj()),
-          sessionData = SessionKeys.journeyId -> "1234"
-        )
+      requiredUserAnswerFields.foreach { field =>
+        s"missing required UserAnswers field: '$field'" in {
+          val userAnswersWithMissingField = correctUserAnswers - field
+          val requestWithMissingAnswer = buildRequestWithAnswersAndSessionData(
+            userAnswers(userAnswersWithMissingField),
+            sessionData = SessionKeys.journeyId -> "1234"
+          )
 
-        val result = await(buildControllerWithRequest(requestWithMissingAnswers).onPageLoad())
+          val result = await(buildControllerWithRequest(requestWithMissingAnswer).onPageLoad())
 
-        result.header.status shouldBe INTERNAL_SERVER_ERROR
+          result.header.status shouldBe INTERNAL_SERVER_ERROR
+        }
       }
 
-      "sessionId is missing" in {
+      "journeyId is missing" in {
         val requestWithMissingAnswers = buildRequestWithAnswersAndSessionData(
           userAnswers(correctUserAnswers)
         )
