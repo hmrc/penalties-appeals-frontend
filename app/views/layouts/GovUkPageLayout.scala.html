@@ -37,7 +37,7 @@
         isFullWidth: Boolean = false,
         formHasErrors: Boolean = false,
         errors: Seq[FormError] = Seq.empty
-)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @headerDefault = {
 @headerBlock.getOrElse {
