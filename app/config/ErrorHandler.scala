@@ -45,7 +45,7 @@ class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: Mess
   }
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader): Future[Html] = {
-    implicit val req: Request[_] = request.asInstanceOf[Request[_]]
+    implicit val req: Request[_] = rhToRequest(request)
     Future.successful(errorTemplate(pageTitle, heading, message))
   }
 
