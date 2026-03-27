@@ -322,7 +322,7 @@ otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Gall tystiolaeth gyn
 otherReason.uploadEvidence.p4 = Gallwch uwchlwytho hyd at 5 ffeil. Mae’n rhaid i bob ffeil fod yn llai na 6mb.
 otherReason.uploadEvidence.details.heading = Mathau o ffeiliau y gallwch eu huwchlwytho
 otherReason.uploadEvidence.details.p1 = Fformatau ffeil derbyniol:
-otherReason.uploadEvidence.details.li.1 =  jpg, png, tiff, pdf, txt, msg, Word (docx), Excel (xlsx), PowerPoint (pptx), neu Open Document Format (odf).
+otherReason.uploadEvidence.details.li.1 =  jpg, png, tiff, pdf, txt, Word (docx), Excel (xlsx), PowerPoint (pptx), neu Open Document Format (odf).
 otherReason.uploadEvidence.file = Ffeil
 otherReason.uploadEvidence.addAnother = Ychwanegu ffeil arall
 otherReason.uploadEvidence.status.uploaded = Wedi uwchlwytho
@@ -368,7 +368,7 @@ otherReason.uploadAnotherDocument.noJs.headingAndTitle = Ychwanegu ffeil arall
 
 # Upscan failure messages
 # ----------------------------------------------------------
-upscan.invalidMimeType = Mae’n rhaid i ffeil {0} fod yn ffeil JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.invalidMimeType = Mae’n rhaid i ffeil {0} fod yn ffeil JPG, PNG, TIFF, PDF, TXT, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
 upscan.fileTooLarge = Rhaid i ffeil {0} fod yn llai na 6MB. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
 upscan.fileEmpty = Mae ffeil {0} yn wag. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
 upscan.fileHasVirus = Mae ffeil {0} yn cynnwys feirws. Ewch ati i ddileu’r ffeil a rhoi cynnig arall arni.
@@ -384,7 +384,7 @@ upscan.invalidFileName = Dim ond llythrennau, rhifau, cysylltnodau (-), tanlinel
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------
-upscan.noJs.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
+upscan.noJs.invalidMimeType = Mae’n rhaid i’r ffeil dan sylw fod yn JPG, PNG, TIFF, PDF, TXT, Word, Excel, Powerpoint neu Fformat Dogfen Agored (ODF)
 upscan.noJs.fileTooLarge = Mae’n rhaid i’r ffeil dan sylw fod yn llai na 6 MB. Dewiswch ffeil arall.
 upscan.noJs.fileEmpty = Mae’r ffeil dan sylw yn wag. Dewiswch ffeil arall.
 upscan.noJs.fileHasVirus = Mae feirws yn y ffeil dan sylw. Dewiswch ffeil arall.
