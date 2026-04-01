@@ -322,7 +322,7 @@ otherReason.uploadEvidence.appealAgainstObligation.lpp.p2 = Evidence might inclu
 otherReason.uploadEvidence.p4 = You can upload up to 5 files. Each file must be smaller than 6mb.
 otherReason.uploadEvidence.details.heading = Types of file you can upload
 otherReason.uploadEvidence.details.p1 = Accepted file formats:
-otherReason.uploadEvidence.details.li.1 = jpg, png, tiff, pdf, txt, msg, Word (docx), Excel (xlsx), PowerPoint (pptx), or Open Document Format (odf).
+otherReason.uploadEvidence.details.li.1 = jpg, png, tiff, pdf, txt, Word (docx), Excel (xlsx), PowerPoint (pptx), or Open Document Format (odf).
 otherReason.uploadEvidence.file = File
 otherReason.uploadEvidence.addAnother = Add another file
 otherReason.uploadEvidence.status.uploaded = Uploaded
@@ -368,7 +368,7 @@ otherReason.uploadAnotherDocument.noJs.headingAndTitle = Add another file
 
 # Upscan failure messages
 # ----------------------------------------------------------
-upscan.invalidMimeType = File {0} must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF)
+upscan.invalidMimeType = File {0} must be a JPG, PNG, TIFF, PDF, TXT, Word, Excel, Powerpoint or Open Document Format (ODF)
 upscan.fileTooLarge = File {0} must be smaller than 6MB. Choose another file.
 upscan.fileEmpty = File {0} is empty. Choose another file.
 upscan.fileHasVirus = File {0} contains a virus. Choose another file.
@@ -384,7 +384,7 @@ upscan.invalidFileName = Filenames must only contain letters, numbers, hyphens (
 
 # Upscan failure messages (NO JS)
 # ----------------------------------------------------------
-upscan.noJs.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, MSG, Word, Excel, Powerpoint or Open Document Format (ODF). Choose another file.
+upscan.noJs.invalidMimeType = The selected file must be a JPG, PNG, TIFF, PDF, TXT, Word, Excel, Powerpoint or Open Document Format (ODF). Choose another file.
 upscan.noJs.fileTooLarge = The selected file must be smaller than 6MB. Choose another file.
 upscan.noJs.fileEmpty = The selected file is empty. Choose another file.
 upscan.noJs.fileHasVirus = The selected file contains a virus. Choose another file.

@@ -28,7 +28,7 @@ object UploadAnotherDocumentMessages {
 
   val detailsP1 = "Accepted file formats:"
 
-  val detailsLi1 = "jpg, png, tiff, pdf, txt, msg, Word (docx), Excel (xlsx), PowerPoint (pptx), or Open Document Format (odf)."
+  val detailsLi1 = "jpg, png, tiff, pdf, txt, Word (docx), Excel (xlsx), PowerPoint (pptx), or Open Document Format (odf)."
 
   val chooseYourFirstFile = "Choose your first file"
 
