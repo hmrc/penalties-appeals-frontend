@@ -24,6 +24,7 @@ import org.mockito.Mockito.{mock, reset, when}
 import org.mockito.ArgumentMatchers
 import play.api.Configuration
 import play.api.http.Status._
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
 import services.PayNowService
@@ -31,6 +32,7 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.SessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -73,6 +75,28 @@ class PayNowControllerSpec extends SpecBase {
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
         when(mockPayNowService.retrieveRedirectUrl(any, any, any, any)(any, any)).thenReturn(Future.successful(Left(UnexpectedFailure(500, "/correct-url"))))
         val result: Future[Result] = controller.redirect(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "return 500 (ISE) when the charge reference is missing from session" in new Setup {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
+            SessionKeys.vatAmount -> BigDecimal(123.45)
+          )))))
+
+        val result: Future[Result] = controller.redirect(fakeRequest)
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "return 500 (ISE) when the VAT amount is missing from session" in new Setup {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctUserAnswers ++ Json.obj(
+            SessionKeys.principalChargeReference -> "123456789"
+          )))))
+
+        val result: Future[Result] = controller.redirect(fakeRequest)
+
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
