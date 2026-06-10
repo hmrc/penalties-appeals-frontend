@@ -15,57 +15,49 @@
  *@
 
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 
 @this(
-        govukTemplate: GovukTemplate,
-        govukHeader: GovukHeader,
-        govukFooter: GovukFooter,
-        techincalIssuesHelper: HmrcReportTechnicalIssueHelper,
-        errorSummary: components.errorSummary
+    govukTemplate: GovukTemplate,
+    hmrcStandardHeader: HmrcStandardHeader,
+    techincalIssuesHelper: HmrcReportTechnicalIssueHelper,
+    errorSummary: components.errorSummary
 )
 
 @(
         pageTitle: Option[String] = None,
         headBlock: Option[Html] = None,
-        customScripts: Option[String] = None,
         headerBlock: Option[Html] = None,
         beforeContentBlock: Option[Html] = None,
-        footerBlock: Option[Html] = None,
-        footerItems: Seq[FooterItem] = Seq.empty,
+        footerBlock: Html,
         bodyEndBlock: Option[Html] = None,
         scriptsBlock: Option[Html] = None,
         isFullWidth: Boolean = false,
         formHasErrors: Boolean = false,
         errors: Seq[FormError] = Seq.empty
-)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @headerDefault = {
-@headerBlock.getOrElse {
-    @govukHeader(Header(
-        homepageUrl = Some(messages("service.homePageUrl")),
-        serviceName = Some(messages("service.name")),
-        serviceUrl = Some(messages("service.homePageUrl")),
-        containerClasses = Some("govuk-width-container")))
-}
+    @headerBlock.getOrElse {
+        @hmrcStandardHeader(
+            serviceName = Some(messages("service.name")),
+            serviceUrl = Some(messages("service.homePageUrl")),
+        )
+    }
 }
 
 @title = @{
- if(formHasErrors && pageTitle.isDefined) {
+    if(formHasErrors && pageTitle.isDefined) {
         Some(messages("error.prefix") + " " + pageTitle.get)
     } else {
         pageTitle
     }
 }
 
-@footerDefault = {
-@footerBlock.getOrElse {
-    @govukFooter(new Footer(meta = Some(Meta(items = Some(footerItems)))))
-}
-}
-
 @bodyEndDefault = {
-@bodyEndBlock
-@scriptsBlock
+    @bodyEndBlock
+    @scriptsBlock
 }
 
 @mainContentDefault = {
@@ -95,7 +87,7 @@
     headBlock = headBlock,
     headerBlock = headerDefault,
     beforeContentBlock = beforeContentBlock,
-    footerBlock = footerDefault,
+    footerBlock = footerBlock,
     mainClasses = Some("govuk-main-wrapper--auto-spacing"),
     bodyEndBlock = Some(bodyEndDefault),
     htmlLang = Some(messages.lang.code)

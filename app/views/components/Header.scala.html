@@ -14,19 +14,16 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.{HmrcHeader, Header => headerComponent}
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 
-@this(hmrcHeader: HmrcHeader)
+@this(hmrcStandardHeader: HmrcStandardHeader)
 
-@(showSignOut: Boolean = true, isAuthorised: Boolean)(implicit messages: Messages)
+@(showSignOut: Boolean = true, isAuthorised: Boolean)(implicit messages: Messages, request: RequestHeader)
 
-@hmrcHeader(headerComponent(
-    homepageUrl = "https://www.gov.uk/",
-    serviceUrl = controllers.routes.AppealStartController.onPageLoad().url,
-    serviceName = Some(messages("service.name")),
-    containerClasses = "govuk-width-container",
-    navigation = None,
-    signOutHref = if(showSignOut) Some(controllers.routes.SignOutController.signOut(isAuthorised).url) else None,
-    language = if(messages.lang.code.equalsIgnoreCase("en")) En else Cy
-))
+@hmrcStandardHeader(
+ serviceName = Some(messages("service.name")),
+ serviceUrl = Some(controllers.routes.AppealStartController.onPageLoad().url),
+ signOutUrl = if(showSignOut) Some(controllers.routes.SignOutController.signOut(isAuthorised).url) else None
+)
