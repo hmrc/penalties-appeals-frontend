@@ -25,5 +25,6 @@
 @hmrcStandardHeader(
  serviceName = Some(messages("service.name")),
  serviceUrl = Some(controllers.routes.AppealStartController.onPageLoad().url),
- signOutUrl = if(showSignOut) Some(controllers.routes.SignOutController.signOut(isAuthorised).url) else None
+ signOutUrl = if(showSignOut) Some(controllers.routes.SignOutController.signOut(isAuthorised).url) else None,
+ isWelshTranslationAvailable = true
 )

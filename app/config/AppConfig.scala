@@ -153,4 +153,7 @@ class AppConfig @Inject()(val config: Configuration, servicesConfig: ServicesCon
 
   lazy val payApiUrl = servicesConfig.baseUrl("pay-api")
   lazy val platformPenaltiesFrontendHost = servicesConfig.getString("penalties-appeals-frontend-host")
+
+  lazy val isServiceNavigationEnabled: Boolean = config.getOptional[Boolean]("play-frontend-hmrc.forceServiceNavigation").getOrElse(false)
+
 }

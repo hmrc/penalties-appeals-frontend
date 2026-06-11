@@ -43,7 +43,7 @@
     isAuthorised: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
-    @if(appConfig.welshLanguageSupportEnabled) {@languageSelect()}
+    @if(appConfig.welshLanguageSupportEnabled && !appConfig.isServiceNavigationEnabled) {@languageSelect()}
 
     @if(backLinkEnabled) {
         @govukBackLink(BackLink(href = customBackLink.fold(controllers.routes.PreviousPageController.previousPage(optPageMode.get.page.toString, optPageMode.get.mode, false).url)(identity),
