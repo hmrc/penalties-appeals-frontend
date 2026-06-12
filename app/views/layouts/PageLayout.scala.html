@@ -21,13 +21,13 @@
 @import views.html.layouts.GovUkPageLayout
 
 @this(
-        govukLayout: GovUkPageLayout,
-        hmrcTimeoutDialog: HmrcTimeoutDialog,
-        header: components.Header,
-        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-        govukBackLink: GovukBackLink,
-        hmrcStandardFooter: HmrcStandardFooter,
-        languageSelect: views.html.LanguageSelect
+    govukLayout: GovUkPageLayout,
+    hmrcTimeoutDialog: HmrcTimeoutDialog,
+    header: components.Header,
+    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+    govukBackLink: GovukBackLink,
+    hmrcStandardFooter: HmrcStandardFooter,
+    languageSelect: views.html.LanguageSelect
 )
 @(
     pageTitle: String,
@@ -43,7 +43,7 @@
     isAuthorised: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @beforeContentBlock = {
-    @if(appConfig.welshLanguageSupportEnabled) {@languageSelect()}
+    @if(appConfig.welshLanguageSupportEnabled && !appConfig.isServiceNavigationEnabled) {@languageSelect()}
 
     @if(backLinkEnabled) {
         @govukBackLink(BackLink(href = customBackLink.fold(controllers.routes.PreviousPageController.previousPage(optPageMode.get.page.toString, optPageMode.get.mode, false).url)(identity),
@@ -52,35 +52,39 @@
 }
 
 @headBlock = {
-<!--[if lte IE 8]><script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("javascripts/html5shiv.min.js")'></script><![endif]-->
-<!--[if lte IE 8]><link href='@controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
-<!--[if gt IE 8]><!--><link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="all" rel="stylesheet" type="text/css" /><!--<![endif]-->
-<script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("lib/govuk-frontend/dist/govuk/all.bundle.js")'></script>
-<script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-        @if(showSignOut) {
-            @hmrcTimeoutDialog(TimeoutDialog(
-                language = Some(messages.lang.code),
-                timeout = Some(appConfig.timeoutPeriod),
-                countdown = Some(appConfig.timeoutCountdown),
-                signOutUrl = Some(routes.SignOutController.signOut(isAuthorised).url),
-                timeoutUrl = Some(routes.TimeoutController.onPageLoad().url),
-                keepAliveUrl = Some("#"),
-                signOutButtonText = Some(messages("base.signOut"))
-            ))
-        }
+    <!--[if lte IE 8]><script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("javascripts/html5shiv.min.js")'></script><![endif]-->
+    <!--[if lte IE 8]><link href='@controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
+    <!--[if gt IE 8]><!--><link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="all" rel="stylesheet" type="text/css" /><!--<![endif]-->
+    <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("lib/govuk-frontend/dist/govuk/all.bundle.js")'></script>
+    <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
+    @if(showSignOut) {
+        @hmrcTimeoutDialog(TimeoutDialog(
+            language = Some(messages.lang.code),
+            timeout = Some(appConfig.timeoutPeriod),
+            countdown = Some(appConfig.timeoutCountdown),
+            signOutUrl = Some(routes.SignOutController.signOut(isAuthorised).url),
+            timeoutUrl = Some(routes.TimeoutController.onPageLoad().url),
+            keepAliveUrl = Some("#"),
+            signOutButtonText = Some(messages("base.signOut"))
+        ))
+    }
 
     @hmrcTrackingConsentSnippet()
-
 }
 
 @scripts = {
-@if(scriptsBlock.isEmpty) {
-    @customJavaScript.map {jsFile => <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned(s"javascripts/$jsFile")'></script> }
-    <script @{CSPNonce.attr}> window.GOVUKFrontend.initAll();</script>
-    <script @{CSPNonce.attr}>window.HMRCFrontend.initAll();</script>
-} else {
-    @scriptsBlock.get
-}}
+    @if(scriptsBlock.isEmpty) {
+        @customJavaScript.map {jsFile => <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned(s"javascripts/$jsFile")'></script> }
+        <script @{CSPNonce.attr}>window.GOVUKFrontend.initAll();</script>
+        <script @{CSPNonce.attr}>window.HMRCFrontend.initAll();</script>
+    } else {
+        @scriptsBlock.get
+    }
+}
+
+@footerDefault = {
+    @hmrcStandardFooter()
+}
 
 @govukLayout(
     pageTitle = Some(getPageTitle(pageTitle, messages("service.name"))),
@@ -88,7 +92,7 @@
     headerBlock = Some(header(showSignOut, isAuthorised)),
     scriptsBlock = Some(scripts),
     beforeContentBlock = Some(beforeContentBlock),
-    footerBlock = Some(hmrcStandardFooter()),
+    footerBlock = footerDefault,
     isFullWidth = isPageFullWidth,
     formHasErrors = formHasErrors,
     errors = formErrors
