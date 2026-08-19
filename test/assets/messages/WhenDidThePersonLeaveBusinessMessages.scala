@@ -24,7 +24,7 @@ object WhenDidThePersonLeaveBusinessMessages {
 
   val descriptiveText = "This means someone essential to the tax process leaving at short notice, whether they planned to return or not."
 
-  val hintText = "For example, 12&nbsp3&nbsp2018"
+  val hintText = "For example, 12 3 2018"
 
   val dayEntry = "Day"
 
