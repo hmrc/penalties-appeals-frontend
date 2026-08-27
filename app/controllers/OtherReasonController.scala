@@ -270,7 +270,7 @@ class OtherReasonController @Inject()(whenDidBecomeUnablePage: WhenDidBecomeUnab
           }
         },
         nextFileUpload => {
-          Future(Redirect(navigation.nextPage(FileListPage, mode, Some(nextFileUpload))))
+          Future.successful(Redirect(navigation.nextPage(FileListPage, mode, Some(nextFileUpload))))
         }
       )
     }
