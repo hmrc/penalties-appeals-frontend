@@ -64,7 +64,8 @@ class PenaltySelectionControllerSpec extends SpecBase {
     appealCoverBothPenaltiesPage,
     appealSinglePenaltyPage,
     mockNavigator,
-    mockSessionService)(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction, dataRetrievalAction, ec)
+    mockSessionService,
+    errorHandler)(stubMessagesControllerComponents(), implicitly, authPredicate, dataRequiredAction, dataRetrievalAction, ec)
 
   "onPageLoadForPenaltySelection" should {
     "return 200" when {
@@ -91,6 +92,13 @@ class PenaltySelectionControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "the user has the required keys but is missing the penalty amounts in the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers))))
+        val result: Future[Result] = controller.onPageLoadForPenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -150,6 +158,15 @@ class PenaltySelectionControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("value" -> "")))
         status(result) shouldBe BAD_REQUEST
       }
+
+      "return a 500 (INTERNAL SERVER ERROR) when no option has been selected and the penalty amounts are missing from the session" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers))))
+        val result: Future[Result] = controller.onSubmitForPenaltySelection(NormalMode)(
+          fakeRequestConverter(correctLPPUserAnswers, fakeRequest
+            .withFormUrlEncodedBody("value" -> "")))
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
     }
 
     "the user is unauthorised" when {
@@ -192,6 +209,20 @@ class PenaltySelectionControllerSpec extends SpecBase {
         when(mockSessionService.getUserAnswers(any()))
           .thenReturn(Future.successful(Some(userAnswers(Json.obj()))))
         val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "the user has the required keys but is missing the relevant penalty amount in the session - first LPP" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctLPPUserAnswers))))
+        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(userRequestWithCorrectKeys)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "the user has the required keys but is missing the relevant penalty amount in the session - second LPP" in new Setup(AuthTestModels.successfulAuthResult) {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(correctAdditionalLPPUserAnswers))))
+        val result: Future[Result] = controller.onPageLoadForSinglePenaltySelection(NormalMode)(userRequestWithCorrectKeys)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }

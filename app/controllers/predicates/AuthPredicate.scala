@@ -79,13 +79,12 @@ class AuthPredicate @Inject()(override val messagesApi: MessagesApi,
 
   private[predicates] def checkVatEnrolment[A](allEnrolments: Enrolments, block: AuthRequest[A] => Future[Result])(implicit request: Request[A]) = {
     val logMsgStart: String = "[AuthPredicate][checkVatEnrolment]"
-    val extractedMTDVATEnrolment: Option[String] = AuthRequest.extractFirstMTDVatEnrolment(allEnrolments)
-    if (extractedMTDVATEnrolment.isDefined) {
-      val user: AuthRequest[A] = AuthRequest(extractedMTDVATEnrolment.get)
-      block(user)
-    } else {
-      logger.debug(s"$logMsgStart - User does not have an activated HMRC-MTD-VAT enrolment. User had these enrolments: ${allEnrolments.enrolments}")
-      Future(Forbidden(unauthorisedView()))
+    AuthRequest.extractFirstMTDVatEnrolment(allEnrolments) match {
+      case Some(vrn) =>
+        block(AuthRequest(vrn))
+      case None =>
+        logger.debug(s"$logMsgStart - User does not have an activated HMRC-MTD-VAT enrolment. User had these enrolments: ${allEnrolments.enrolments}")
+        Future.successful(Forbidden(unauthorisedView()))
     }
   }
 

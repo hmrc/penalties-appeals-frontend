@@ -130,7 +130,7 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   )
 
   lazy val normalRoutes: Map[Page, (Option[String], UserRequest[_], Option[Boolean]) => Call] = Map(
-    HonestyDeclarationPage -> ((answer, _, _) => getNextURLBasedOnReasonableExcuse(answer.get, NormalMode)),
+    HonestyDeclarationPage -> ((answer, _, _) => routingForHonestyDeclarationPage(answer, NormalMode)),
     HasCrimeBeenReportedPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
     WhenDidCrimeHappenPage -> ((_, _, _) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode)),
     WhenDidFireOrFloodHappenPage -> ((_, request, _) => routeToMakingALateAppealOrCYAPage(request, NormalMode)),
@@ -191,37 +191,52 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def routingForWhoPlannedToSubmitVATReturnAgentPage(answer: Option[String], request: UserRequest[_], mode: Mode): Call = {
-    if (answer.get.toLowerCase == "agent") {
-      routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(mode)
-    } else if (mode == NormalMode) {
-      routes.ReasonableExcuseController.onPageLoad()
-    } else {
-      routeToMakingALateAppealOrCYAPage(request, mode)
+    answer.map(_.toLowerCase) match {
+      case Some("agent") => routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(mode)
+      case Some(_) if mode == NormalMode => routes.ReasonableExcuseController.onPageLoad()
+      case Some(_) => routeToMakingALateAppealOrCYAPage(request, mode)
+      case None =>
+        logger.debug("[Navigation][routingForWhoPlannedToSubmitVATReturnAgentPage]: unable to get answer - reloading 'WhoPlannedToSubmitVATReturnAgentPage'")
+        routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(mode)
     }
   }
 
   protected[navigation] def routingForCancelVATRegistrationPage(answer: Option[String], request: UserRequest[_]): Call = {
-    if (answer.get.toLowerCase == "yes") {
-      controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoadAppealByLetter()
+    answer.map(_.toLowerCase) match {
+      case Some("yes") => controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoadAppealByLetter()
+      case Some(_) => controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoad
+      case None =>
+        logger.debug("[Navigation][routingForCancelVATRegistrationPage]: unable to get answer - reloading 'CancelVATRegistrationPage'")
+        controllers.findOutHowToAppeal.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration()
+    }
+  }
 
-    } else {
-      controllers.findOutHowToAppeal.routes.YouCannotAppealController.onPageLoad
+  protected[navigation] def routingForHonestyDeclarationPage(answer: Option[String], mode: Mode): Call = {
+    answer match {
+      case Some(reasonableExcuse) => getNextURLBasedOnReasonableExcuse(reasonableExcuse, mode)
+      case None =>
+        logger.debug("[Navigation][routingForHonestyDeclarationPage]: unable to get answer - reloading 'HonestyDeclarationPage'")
+        routes.HonestyDeclarationController.onPageLoad()
     }
   }
 
   protected[navigation] def routingForPenaltySelectionPage(answer: Option[String], mode: Mode): Call = {
-    if (answer.get.toLowerCase == "yes") {
-      routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode)
-    } else {
-      routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode)
+    answer.map(_.toLowerCase) match {
+      case Some("yes") => routes.PenaltySelectionController.onPageLoadForAppealCoverBothPenalties(mode)
+      case Some(_) => routes.PenaltySelectionController.onPageLoadForSinglePenaltySelection(mode)
+      case None =>
+        logger.debug("[Navigation][routingForPenaltySelectionPage]: unable to get answer - reloading 'PenaltySelectionPage'")
+        routes.PenaltySelectionController.onPageLoadForPenaltySelection(mode)
     }
   }
 
   protected[navigation] def routingForHospitalStayEnded(mode: Mode, answer: Option[String], userRequest: UserRequest[_]): Call = {
-    if (answer.get.toLowerCase == "yes") {
-      routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
-    } else {
-      routeToMakingALateAppealOrCYAPage(userRequest, mode)
+    answer.map(_.toLowerCase) match {
+      case Some("yes") => routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(mode)
+      case Some(_) => routeToMakingALateAppealOrCYAPage(userRequest, mode)
+      case None =>
+        logger.debug("[Navigation][routingForHospitalStayEnded]: unable to get answer - reloading 'DidHospitalStayEndPage'")
+        routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(mode)
     }
   }
 
@@ -342,14 +357,17 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def reverseRouteForMakingALateAppealPage(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
-      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).get match {
-        case "bereavement" => routes.BereavementReasonController.onPageLoadForWhenThePersonDied(mode)
-        case "crime" => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(mode)
-        case "fireOrFlood" => routes.FireOrFloodReasonController.onPageLoad(mode)
-        case "health" => if (userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).contains("yes")) reverseRoutingForHospitalStayEnded(userRequest, mode) else routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
-        case "lossOfStaff" => routes.LossOfStaffReasonController.onPageLoad(mode)
-        case "technicalIssues" => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(mode)
-        case "other" => reverseRoutingForUpload(userRequest, mode, jsEnabled)
+      userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse) match {
+        case Some(ReasonableExcuses.bereavement) => routes.BereavementReasonController.onPageLoadForWhenThePersonDied(mode)
+        case Some(ReasonableExcuses.crime) => routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(mode)
+        case Some(ReasonableExcuses.fireOrFlood) => routes.FireOrFloodReasonController.onPageLoad(mode)
+        case Some(ReasonableExcuses.health) => if (userRequest.answers.getAnswer[String](SessionKeys.wasHospitalStayRequired).contains("yes")) reverseRoutingForHospitalStayEnded(userRequest, mode) else routes.HealthReasonController.onPageLoadForWhenHealthReasonHappened(mode)
+        case Some(ReasonableExcuses.lossOfStaff) => routes.LossOfStaffReasonController.onPageLoad(mode)
+        case Some(ReasonableExcuses.technicalIssues) => routes.TechnicalIssuesReasonController.onPageLoadForWhenTechnologyIssuesEnded(mode)
+        case Some(ReasonableExcuses.other) => reverseRoutingForUpload(userRequest, mode, jsEnabled)
+        case _ =>
+          logger.debug("[Navigation][reverseRouteForMakingALateAppealPage]: unable to get answer - reloading 'ReasonableExcuseSelectionPage'")
+          routes.ReasonableExcuseController.onPageLoad()
     }
   }
 
@@ -385,16 +403,16 @@ class Navigation @Inject()(dateTimeHelper: DateTimeHelper,
   }
 
   protected[navigation] def reverseRouteForCYAPage(userRequest: UserRequest[_], mode: Mode, jsEnabled: Boolean): Call = {
-    val dateSentParsed: LocalDate = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
     val daysResultingInLateAppeal: Int = appConfig.daysRequiredForLateAppeal
     val dateNow: LocalDate = dateTimeHelper.dateNow
-    if (dateSentParsed.isBefore(dateNow.minusDays(daysResultingInLateAppeal))
-      && (userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty || mode == NormalMode)) {
-      logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
-        s"Date now: $dateNow :: Date communication sent: $dateSentParsed - redirect to 'Making a Late Appeal' page")
-      controllers.routes.MakingALateAppealController.onPageLoad()
-    } else {
-      reverseRouteForMakingALateAppealPage(userRequest, mode, jsEnabled)
+    userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent) match {
+      case Some(dateCommunicationSent) if dateCommunicationSent.isBefore(dateNow.minusDays(daysResultingInLateAppeal)) &&
+        (userRequest.answers.getAnswer[String](SessionKeys.lateAppealReason).isEmpty || mode == NormalMode) =>
+        logger.debug(s"[Navigation][routeToMakingALateAppealOrCYAPage] - " +
+          s"Date now: $dateNow :: Date communication sent: $dateCommunicationSent - redirect to 'Making a Late Appeal' page")
+        controllers.routes.MakingALateAppealController.onPageLoad()
+      case _ =>
+        reverseRouteForMakingALateAppealPage(userRequest, mode, jsEnabled)
     }
   }
 

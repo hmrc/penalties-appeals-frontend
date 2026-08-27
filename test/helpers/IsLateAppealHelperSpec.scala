@@ -120,6 +120,37 @@ class IsLateAppealHelperSpec extends SpecBase {
         result shouldBe false
       }
 
+      "user is submitting a single appeal and the communication date is missing from the session" in {
+        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+          SessionKeys.penaltyNumber -> "1234",
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Submission,
+          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+          SessionKeys.reasonableExcuse -> "lossOfStaff",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenPersonLeftTheBusiness -> LocalDate.parse("2022-01-01")
+        )))(fakeRequest)
+        val result = helper.isAppealLate()(userRequest)
+        result shouldBe false
+      }
+
+      "user is submitting two appeals and both communication dates are missing from the session" in {
+        val userRequest = UserRequest("123456789", answers = UserAnswers("1234", Json.obj(
+          SessionKeys.penaltyNumber -> "1234",
+          SessionKeys.appealType -> PenaltyTypeEnum.Late_Payment,
+          SessionKeys.startDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.endDateOfPeriod -> LocalDate.parse("2020-01-01"),
+          SessionKeys.dueDateOfPeriod -> LocalDate.parse("2020-02-07"),
+          SessionKeys.reasonableExcuse -> "bereavement",
+          SessionKeys.hasConfirmedDeclaration -> true,
+          SessionKeys.whenDidThePersonDie -> LocalDate.parse("2021-01-01"),
+          SessionKeys.doYouWantToAppealBothPenalties -> "yes"
+        )))(fakeRequest)
+        val result = helper.isAppealLate()(userRequest)
+        result shouldBe false
+      }
+
     }
   }
 

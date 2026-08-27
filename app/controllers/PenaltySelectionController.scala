@@ -16,17 +16,19 @@
 
 package controllers
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRequiredAction, DataRetrievalAction}
+import controllers.PenaltySelectionController.{MissingSessionAnswer, PenaltySelectionError}
 import forms.PenaltySelectionForm
 import helpers.FormProviderHelper
 import models.pages._
-import models.{Mode, PenaltyTypeEnum}
+import models.{Mode, PenaltyTypeEnum, UserRequest}
 import navigation.Navigation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 import utils.SessionKeys
 import views.html.{AppealCoverBothPenaltiesPage, AppealSinglePenaltyPage, PenaltySelectionPage}
 import viewtils.RadioOptionHelper
@@ -38,7 +40,8 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
                                            appealCoverBothPenaltiesPage: AppealCoverBothPenaltiesPage,
                                            appealSinglePenaltyPage: AppealSinglePenaltyPage,
                                            navigation: Navigation,
-                                           sessionService: SessionService)
+                                           sessionService: SessionService,
+                                           errorHandler: ErrorHandler)
                                           (implicit mcc: MessagesControllerComponents,
                                            appConfig: AppConfig,
                                            authorise: AuthPredicate,
@@ -48,6 +51,20 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
 
   val pageMode: (Page, Mode) => PageMode = (page: Page, mode: Mode) => PageMode(page, mode)
 
+  private def penaltyAmounts(implicit userRequest: UserRequest[_]): Either[PenaltySelectionError, (String, String)] =
+    for {
+      firstPenalty  <- userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).toRight(MissingSessionAnswer(SessionKeys.firstPenaltyAmount))
+      secondPenalty <- userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).toRight(MissingSessionAnswer(SessionKeys.secondPenaltyAmount))
+    } yield (firstPenalty, secondPenalty)
+
+  private def singlePenaltyDetails(implicit userRequest: UserRequest[_]): Either[PenaltySelectionError, (Boolean, String)] =
+    for {
+      appealType    <- userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).toRight(MissingSessionAnswer(SessionKeys.appealType))
+      isLPP2         = appealType == PenaltyTypeEnum.Additional
+      amountKey      = if (isLPP2) SessionKeys.secondPenaltyAmount else SessionKeys.firstPenaltyAmount
+      penaltyAmount <- userRequest.answers.getAnswer[String](amountKey).toRight(MissingSessionAnswer(amountKey))
+    } yield (isLPP2, penaltyAmount)
+
   def onPageLoadForPenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(
@@ -56,9 +73,13 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
         userRequest.answers
       )
       val radioOptions = RadioOptionHelper.yesNoRadioOptions(formProvider)
-      val firstPenalty = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get
-      val secondPenalty = userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).get
-      Ok(penaltySelectionPage(formProvider, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode)))
+      penaltyAmounts match {
+        case Right((firstPenalty, secondPenalty)) =>
+          Ok(penaltySelectionPage(formProvider, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode)))
+        case Left(error) =>
+          logger.error(s"[PenaltySelectionController][onPageLoadForPenaltySelection] - ${error.message}")
+          errorHandler.showInternalServerError(Some(userRequest))
+      }
     }
   }
 
@@ -67,9 +88,13 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
       PenaltySelectionForm.doYouWantToAppealBothPenalties.bindFromRequest().fold(
         errors => {
           val radioOptions = RadioOptionHelper.yesNoRadioOptions(errors)
-          val firstPenalty = userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get
-          val secondPenalty = userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).get
-          Future(BadRequest(penaltySelectionPage(errors, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode))))
+          penaltyAmounts match {
+            case Right((firstPenalty, secondPenalty)) =>
+              Future.successful(BadRequest(penaltySelectionPage(errors, radioOptions, firstPenalty, secondPenalty, pageMode(PenaltySelectionPage, mode))))
+            case Left(error) =>
+              logger.error(s"[PenaltySelectionController][onSubmitForPenaltySelection] - ${error.message}")
+              Future.successful(errorHandler.showInternalServerError(Some(userRequest)))
+          }
         },
         answer => {
           val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.doYouWantToAppealBothPenalties, answer)
@@ -83,14 +108,14 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
 
   def onPageLoadForSinglePenaltySelection(mode: Mode): Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
     implicit userRequest => {
-      val nextPageUrl: String = navigation.nextPage(AppealSinglePenaltyPage, mode).url
-      val originalAppealPenalty = userRequest.answers.getAnswer[PenaltyTypeEnum.Value](SessionKeys.appealType).get
-      val isLPP2 = originalAppealPenalty.equals(PenaltyTypeEnum.Additional)
-      val penaltyAmount = {
-        if (isLPP2) userRequest.answers.getAnswer[String](SessionKeys.secondPenaltyAmount).get
-        else userRequest.answers.getAnswer[String](SessionKeys.firstPenaltyAmount).get
+      singlePenaltyDetails match {
+        case Right((isLPP2, penaltyAmount)) =>
+          val nextPageUrl: String = navigation.nextPage(AppealSinglePenaltyPage, mode).url
+          Ok(appealSinglePenaltyPage(pageMode(AppealSinglePenaltyPage, mode), nextPageUrl, penaltyAmount, isLPP2))
+        case Left(error) =>
+          logger.error(s"[PenaltySelectionController][onPageLoadForSinglePenaltySelection] - ${error.message}")
+          errorHandler.showInternalServerError(Some(userRequest))
       }
-      Ok(appealSinglePenaltyPage(pageMode(AppealSinglePenaltyPage, mode), nextPageUrl, penaltyAmount, isLPP2))
     }
   }
 
@@ -99,5 +124,15 @@ class PenaltySelectionController @Inject()(penaltySelectionPage: PenaltySelectio
       val nextPageUrl: String = navigation.nextPage(AppealCoverBothPenaltiesPage, mode).url
       Ok(appealCoverBothPenaltiesPage(pageMode(AppealCoverBothPenaltiesPage, mode), nextPageUrl))
     }
+  }
+}
+
+object PenaltySelectionController {
+  sealed trait PenaltySelectionError {
+    def message: String
+  }
+
+  final case class MissingSessionAnswer(key: String) extends PenaltySelectionError {
+    def message: String = s"Required session answer missing for key: $key"
   }
 }
