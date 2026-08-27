@@ -22,7 +22,7 @@ import helpers.SessionAnswersHelper
 import config.featureSwitches.FeatureSwitching
 import models.UserRequest
 import play.api.Configuration
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -44,41 +44,40 @@ class ViewAppealDetailsController @Inject()(viewAppealDetailsPage: ViewAppealDet
                                             ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with FeatureSwitching{
 
   def onPageLoad(): Action[AnyContent] = authorise.async {
-    implicit request => {
-        implicit val messages: Messages = request.messages
-        request.session.get(SessionKeys.previouslySubmittedJourneyId).fold({
+    implicit request =>
+      request.session.get(SessionKeys.previouslySubmittedJourneyId) match {
+        case None =>
           logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No previously submitted journey ID was found in the session for VRN: ${request.vrn} - " +
             s"redirecting to incomplete session data page")
-          Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
-        })(
-          journeyId => {
-            sessionService.getUserAnswers(journeyId).flatMap {
-              optUserAnswers => {
-                optUserAnswers.fold[Future[Result]]({
-                  logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No submitted user answers were found in the session for VRN: ${request.vrn} with previously submitted journey ID $journeyId - " +
-                    s"redirecting to incomplete session data page")
-                  Future(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
-                })(
-                  userAnswers => {
-                    implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
-                    val reasonableExcuseSpecificAnswers = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
-                    val appealMetaInformation = sessionAnswersHelper.getSubmittedAnswers(getFeatureDate)
-                    if (userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).contains("other")) {
-                      for {
-                        fileNames <- sessionAnswersHelper.getPreviousUploadsFileNames(journeyId)
-                      } yield {
-                        val answersFromSession = appealMetaInformation ++ sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(if (fileNames.isEmpty) None else Some(fileNames))
-                        Ok(viewAppealDetailsPage(answersFromSession))
-                      }
-                    } else {
-                      Future(Ok(viewAppealDetailsPage(appealMetaInformation ++ reasonableExcuseSpecificAnswers)))
-                    }
-                  }
-                )
-              }
-            }
+          Future.successful(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
+
+        case Some(journeyId) =>
+          sessionService.getUserAnswers(journeyId).flatMap {
+            case None =>
+              logger.warn(s"[ViewAppealDetailsController][onPageLoad] - No submitted user answers were found in the session for VRN: ${request.vrn} with previously submitted journey ID $journeyId - " +
+                s"redirecting to incomplete session data page")
+              Future.successful(Redirect(controllers.routes.IncompleteSessionDataController.onPageLoadWithNoJourneyData()))
+
+            case Some(userAnswers) =>
+              implicit val userRequest: UserRequest[AnyContent] = UserRequest(request.vrn, request.active, request.arn, userAnswers)(request)
+              renderAppealDetails(journeyId)
           }
-        )
+      }
+  }
+
+  private def renderAppealDetails(journeyId: String)(implicit userRequest: UserRequest[AnyContent]): Future[Result] = {
+    val appealMetaInformation = sessionAnswersHelper.getSubmittedAnswers(getFeatureDate)
+    val isOtherReason = userRequest.answers.getAnswer[String](SessionKeys.reasonableExcuse).contains("other")
+
+    if (isOtherReason) {
+      sessionAnswersHelper.getPreviousUploadsFileNames(journeyId).map { fileNames =>
+        val maybeFileNames = Some(fileNames).filter(_.nonEmpty)
+        val answersFromSession = appealMetaInformation ++ sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage(maybeFileNames)
+        Ok(viewAppealDetailsPage(answersFromSession))
+      }
+    } else {
+      val reasonableExcuseSpecificAnswers = sessionAnswersHelper.getAllTheContentForCheckYourAnswersPage()
+      Future.successful(Ok(viewAppealDetailsPage(appealMetaInformation ++ reasonableExcuseSpecificAnswers)))
     }
   }
 }
