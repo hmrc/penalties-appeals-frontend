@@ -27,22 +27,21 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.findOutHowToAppeal.OtherWaysToAppealPage
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class OtherWaysToAppealController @Inject()(otherWaysToAppealPage: OtherWaysToAppealPage, errorHandler: ErrorHandler)
                                            (implicit mcc: MessagesControllerComponents,
                                             appConfig: AppConfig,
                                             authorise: AuthPredicate,
                                             dataRetrieval: DataRetrievalAction,
-                                            val config: Configuration,
-                                            ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                            val config: Configuration) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: Mode => PageMode = (mode: Mode) => PageMode(OtherWaysToAppealPage, mode)
 
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
-      Future(Ok(otherWaysToAppealPage(pageMode(NormalMode))))
+      Future.successful(Ok(otherWaysToAppealPage(pageMode(NormalMode))))
     }
   }
 }

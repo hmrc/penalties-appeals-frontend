@@ -19,19 +19,19 @@ package controllers.findOutHowToAppeal
 import base.SpecBase
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import play.api.http.Status.{FORBIDDEN, OK, SEE_OTHER}
+import play.api.http.Status.{FORBIDDEN, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import utils.SessionKeys
 import views.html.findOutHowToAppeal.HowToAppealPage
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class HowToAppealControllerSpec extends SpecBase {
   val howToAppealPage: HowToAppealPage = injector.instanceOf[HowToAppealPage]
-  val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -43,7 +43,7 @@ class HowToAppealControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-    val controller = new HowToAppealController(howToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate, dataRetrievalAction, config, ec)
+    val controller = new HowToAppealController(howToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate, dataRetrievalAction, config)
   }
 
   "HowToAppealController" should {
@@ -53,6 +53,13 @@ class HowToAppealControllerSpec extends SpecBase {
           when(mockSessionService.getUserAnswers(any())).thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
           val result = controller.onPageLoad()(userRequestWithCorrectKeys)
           status(result) shouldBe OK
+        }
+
+        "return 500 (ISE) when the VAT amount is missing" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers - SessionKeys.vatAmount))))
+          val result = controller.onPageLoad()(fakeRequest)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
 

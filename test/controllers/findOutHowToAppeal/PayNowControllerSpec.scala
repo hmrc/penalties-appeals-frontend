@@ -31,6 +31,7 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.SessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -72,6 +73,20 @@ class PayNowControllerSpec extends SpecBase {
           .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers))))
         when(mockConfig.get[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(true)
         when(mockPayNowService.retrieveRedirectUrl(any, any, any, any)(any, any)).thenReturn(Future.successful(Left(UnexpectedFailure(500, "/correct-url"))))
+        val result: Future[Result] = controller.redirect(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "return 500 (ISE) when the charge reference is missing" in new Setup {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers - SessionKeys.principalChargeReference))))
+        val result: Future[Result] = controller.redirect(fakeRequest)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "return 500 (ISE) when the VAT amount is missing" in new Setup {
+        when(mockSessionService.getUserAnswers(any()))
+          .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers - SessionKeys.vatAmount))))
         val result: Future[Result] = controller.redirect(fakeRequest)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }

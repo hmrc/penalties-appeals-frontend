@@ -69,7 +69,7 @@ class AppealAfterVATIsPaidController @Inject()(page: AppealAfterVATIsPaidPage, a
       form => {
         val postAction = controllers.findOutHowToAppeal.routes.AppealAfterVATIsPaidController.onSubmit()
         val radioOptions = RadioOptionHelper.yesNoRadioOptions(form, noContent = "common.radioOption.no.2", noHint = Some("common.radioOption.no.hint"))
-        Future(BadRequest(page(form, radioOptions, postAction, pageMode(NormalMode))))
+        Future.successful(BadRequest(page(form, radioOptions, postAction, pageMode(NormalMode))))
       },
       payYourVAT => {
         val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.doYouWantToPayNow, payYourVAT)

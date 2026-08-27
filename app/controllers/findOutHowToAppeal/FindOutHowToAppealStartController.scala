@@ -27,15 +27,14 @@ import utils.Logger.logger
 import javax.inject.Inject
 import utils.SessionKeys
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class FindOutHowToAppealStartController @Inject()(errorHandler: ErrorHandler,
                                                   appConfig: AppConfig)
                                                  (implicit val mcc: MessagesControllerComponents,
                                                   authorise: AuthPredicate,
                                                   dataRetrieval: DataRetrievalAction,
-                                                  val config: Configuration,
-                                                  ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                                  val config: Configuration) extends FrontendController(mcc) with I18nSupport {
 
   def startFindOutHowToAppeal(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
@@ -43,11 +42,11 @@ class FindOutHowToAppealStartController @Inject()(errorHandler: ErrorHandler,
       val isCa: Boolean = request.answers.getAnswer[Boolean](SessionKeys.isCaLpp).getOrElse(false)
       (isAgent, isCa) match {
         case (true, false) =>
-          Future(Redirect(controllers.findOutHowToAppeal.routes.HowToAppealController.onPageLoad()))
+          Future.successful(Redirect(controllers.findOutHowToAppeal.routes.HowToAppealController.onPageLoad()))
         case (false, false) =>
-          Future(Redirect(controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()))
+          Future.successful(Redirect(controllers.findOutHowToAppeal.routes.CanYouPayController.onPageLoad()))
         case (_, true) =>
-          Future(Redirect(controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()))
+          Future.successful(Redirect(controllers.findOutHowToAppeal.routes.ActionsToTakeBeforeAppealingOnlineController.onPageLoad()))
         case _ =>
           logger.debug("[FindOutHowToAppealStartController][startFindOutHowToAppeal] - CA LPP detected showing 404 (NOT_FOUND)")
           errorHandler.onClientError(request, NOT_FOUND, "")

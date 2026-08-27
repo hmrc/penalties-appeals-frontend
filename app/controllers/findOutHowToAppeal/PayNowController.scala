@@ -21,15 +21,29 @@ import java.time.LocalDate
 import config.ErrorHandler
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import javax.inject.Inject
+import models.UserRequest
 import play.api.Configuration
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.PayNowService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logger.logger
 import utils.SessionKeys
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
+
+object PayNowController {
+  private final case class PayNowJourneyData(vrn: String, chargeReference: String, vatAmount: BigDecimal, dueDate: LocalDate)
+
+  sealed trait PayNowError {
+    def message: String
+  }
+
+  final case class MissingSessionValue(sessionKey: String) extends PayNowError {
+    override val message: String =
+      s"[PayNowController][redirect] - Missing required session value for $sessionKey"
+  }
+}
 
 class PayNowController @Inject()(mcc: MessagesControllerComponents,
                                  payNowService: PayNowService,
@@ -40,15 +54,34 @@ class PayNowController @Inject()(mcc: MessagesControllerComponents,
                                  val config: Configuration) extends FrontendController(mcc) with I18nSupport {
 
   def redirect: Action[AnyContent] = (authorise andThen dataRetrieval).async { implicit request =>
-    val vrn: String = request.vrn
-    val chargeReference: String = request.answers.getAnswer[String](SessionKeys.principalChargeReference).get
-    val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
-    val dueDate: LocalDate = request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).getOrElse(LocalDate.now())
-    payNowService.retrieveRedirectUrl(vrn, chargeReference, vatAmount, dueDate).map {
-      case Right(url) => Redirect(url)
-      case Left(_) =>
-        logger.warn("[PayNowController][redirect] - Unable to retrieve successful response from Pay Now service, rendering ISE")
-        errorHandler.showInternalServerError(Some(request))
+    payNowJourneyData match {
+      case Right(data) =>
+        payNowService.retrieveRedirectUrl(data.vrn, data.chargeReference, data.vatAmount, data.dueDate).map {
+          case Right(url) => Redirect(url)
+          case Left(_) =>
+            logger.warn("[PayNowController][redirect] - Unable to retrieve successful response from Pay Now service, rendering ISE")
+            errorHandler.showInternalServerError(Some(request))
+        }
+      case Left(error) =>
+        renderMissingSessionValue(error)
     }
+  }
+
+  private def payNowJourneyData(implicit request: UserRequest[_]): Either[PayNowController.PayNowError, PayNowController.PayNowJourneyData] = {
+    for {
+      chargeReference <- request.answers
+        .getAnswer[String](SessionKeys.principalChargeReference)
+        .toRight(PayNowController.MissingSessionValue(SessionKeys.principalChargeReference))
+      vatAmount <- request.answers
+        .getAnswer[BigDecimal](SessionKeys.vatAmount)
+        .toRight(PayNowController.MissingSessionValue(SessionKeys.vatAmount))
+      dueDate = request.answers.getAnswer[LocalDate](SessionKeys.dueDateOfPeriod).getOrElse(LocalDate.now())
+    } yield PayNowController.PayNowJourneyData(request.vrn, chargeReference, vatAmount, dueDate)
+  }
+
+  private def renderMissingSessionValue(error: PayNowController.PayNowError)
+                                       (implicit request: UserRequest[_]): Future[Result] = {
+    logger.warn(error.message)
+    Future.successful(errorHandler.showInternalServerError(Some(request)))
   }
 }
