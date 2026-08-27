@@ -19,32 +19,60 @@ package controllers.findOutHowToAppeal
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, DataRetrievalAction}
 import models.pages.{HowToAppealPage, PageMode}
-import models.NormalMode
+import models.{NormalMode, UserRequest}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 import utils.{CurrencyFormatter, SessionKeys}
 import views.html.findOutHowToAppeal.HowToAppealPage
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
+
+object HowToAppealController {
+  sealed trait HowToAppealError {
+    def message: String
+  }
+
+  final case class MissingSessionAnswer(sessionKey: String) extends HowToAppealError {
+    val message: String = s"[HowToAppealController] - Missing required session answer: $sessionKey"
+  }
+}
 
 class HowToAppealController @Inject()(howToAppealPage: HowToAppealPage, errorHandler: ErrorHandler)
                                      (implicit mcc: MessagesControllerComponents,
                                       appConfig: AppConfig,
                                       authorise: AuthPredicate,
                                       dataRetrieval: DataRetrievalAction,
-                                      val config: Configuration,
-                                      ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                      val config: Configuration) extends FrontendController(mcc) with I18nSupport {
+  import HowToAppealController._
 
   val pageMode: PageMode = PageMode(HowToAppealPage, NormalMode)
 
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
-      val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
-      Future(Ok(howToAppealPage(CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount), pageMode)))
+      renderHowToAppealPage match {
+        case Left(error) => Future.successful(renderError(error))
+        case Right(result) => Future.successful(result)
+      }
     }
+  }
+
+  private def renderHowToAppealPage(implicit request: UserRequest[_]): Either[HowToAppealError, Result] = {
+    vatAmount.map { amount =>
+      Ok(howToAppealPage(CurrencyFormatter.parseBigDecimalToFriendlyValue(amount), pageMode))
+    }
+  }
+
+  private def vatAmount(implicit request: UserRequest[_]): Either[HowToAppealError, BigDecimal] = {
+    request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).toRight(MissingSessionAnswer(SessionKeys.vatAmount))
+  }
+
+  private def renderError(error: HowToAppealError)(implicit request: UserRequest[_]): Result = {
+    logger.error(error.message)
+    errorHandler.showInternalServerError(Some(request))
   }
 }
