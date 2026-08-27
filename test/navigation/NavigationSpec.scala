@@ -714,6 +714,13 @@ class NavigationSpec extends SpecBase {
         result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForWhenCrimeHappened(NormalMode).url
       }
 
+      s"called with $HonestyDeclarationPage and no answer - reload the honesty declaration page" in new Setup {
+        val result: Call = TestNavigator.nextPage(HonestyDeclarationPage, NormalMode, None)(fakeRequestConverter(correctUserAnswers ++ Json.obj(
+          SessionKeys.hasConfirmedDeclaration -> true
+        )))
+        result.url shouldBe controllers.routes.HonestyDeclarationController.onPageLoad().url
+      }
+
 
       s"called with $UploadFirstDocumentPage redirects to File Upload List Page" in new Setup {
         val result: Call = TestNavigator.nextPage(UploadFirstDocumentPage, NormalMode)(fakeRequestWithCorrectKeysAndReasonableExcuseSet("other")
@@ -985,6 +992,13 @@ class NavigationSpec extends SpecBase {
       }
     }
 
+    "redirect back to the CancelVATRegistrationPage" when {
+      "there is no answer in the session" in new Setup {
+        val result: Call = TestNavigator.routingForCancelVATRegistrationPage(None, userRequestWithCorrectKeys)
+        result.url shouldBe controllers.findOutHowToAppeal.routes.CancelVATRegistrationController.onPageLoadForCancelVATRegistration().url
+      }
+    }
+
   }
 
   "routeForUploadEvidenceQuestion" should {
@@ -1052,6 +1066,86 @@ class NavigationSpec extends SpecBase {
       "the user selects unknown" in {
         val result: MatchError = intercept[MatchError](TestNavigator.reverseCheckingRoutes(HonestyDeclarationPage, fakeRequestConverter(correctUserAnswers)))
         result.getMessage.contains("[Navigation][reverseCheckingRoutes] - Unknown page HonestyDeclarationPage") shouldBe true
+      }
+    }
+
+    "redirect back to the PenaltySelectionPage" when {
+      "there is no answer in the session" in new Setup {
+        val result: Call = TestNavigator.routingForPenaltySelectionPage(None, NormalMode)
+        result shouldBe controllers.routes.PenaltySelectionController.onPageLoadForPenaltySelection(NormalMode)
+      }
+    }
+  }
+
+  "routingForWhoPlannedToSubmitVATReturnAgentPage" should {
+    "redirect to the 'what caused you to miss the deadline' page" when {
+      "the user selects agent" in new Setup {
+        val result: Call = TestNavigator.routingForWhoPlannedToSubmitVATReturnAgentPage(Some("agent"), userRequestWithCorrectKeys, NormalMode)
+        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhatCausedYouToMissTheDeadline(NormalMode).url
+      }
+    }
+
+    "redirect to the reasonable excuse page in normal mode" when {
+      "the user selects client" in new Setup {
+        val result: Call = TestNavigator.routingForWhoPlannedToSubmitVATReturnAgentPage(Some("client"), userRequestWithCorrectKeys, NormalMode)
+        result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      }
+    }
+
+    "redirect back to the WhoPlannedToSubmitVATReturnAgentPage" when {
+      "there is no answer in the session" in new Setup {
+        val result: Call = TestNavigator.routingForWhoPlannedToSubmitVATReturnAgentPage(None, userRequestWithCorrectKeys, NormalMode)
+        result.url shouldBe controllers.routes.AgentsController.onPageLoadForWhoPlannedToSubmitVATReturn(NormalMode).url
+      }
+    }
+  }
+
+  "routingForHospitalStayEnded" should {
+    "redirect to the WhenDidHospitalStayEndPage" when {
+      "the user answers yes" in new Setup {
+        val result: Call = TestNavigator.routingForHospitalStayEnded(NormalMode, Some("yes"), userRequestWithCorrectKeys)
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForWhenDidHospitalStayEnd(NormalMode).url
+      }
+    }
+
+    "route to CYA/making a late appeal page" when {
+      "the user answers no" in new Setup {
+        val result: Call = TestNavigator.routingForHospitalStayEnded(NormalMode, Some("no"), userRequestWithCorrectKeys)
+        result.url shouldBe controllers.routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
+
+    "redirect back to the DidHospitalStayEndPage" when {
+      "there is no answer in the session" in new Setup {
+        val result: Call = TestNavigator.routingForHospitalStayEnded(NormalMode, None, userRequestWithCorrectKeys)
+        result.url shouldBe controllers.routes.HealthReasonController.onPageLoadForHasHospitalStayEnded(NormalMode).url
+      }
+    }
+  }
+
+  "reverseRouteForMakingALateAppealPage" should {
+    "redirect back to the ReasonableExcuseSelectionPage" when {
+      "there is no reasonable excuse answer in the session" in new Setup {
+        val result: Call = TestNavigator.reverseRouteForMakingALateAppealPage(fakeRequestConverter(correctUserAnswers), NormalMode, jsEnabled = false)
+        result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      }
+
+      "the reasonable excuse answer in the session is not recognised" in new Setup {
+        val result: Call = TestNavigator.reverseRouteForMakingALateAppealPage(fakeRequestConverter(correctUserAnswers ++ Json.obj(
+          SessionKeys.reasonableExcuse -> "notARealReason"
+        )), NormalMode, jsEnabled = false)
+        result.url shouldBe controllers.routes.ReasonableExcuseController.onPageLoad().url
+      }
+    }
+  }
+
+  "reverseRouteForCYAPage" should {
+    "not treat the appeal as late" when {
+      "there is no date communication sent answer in the session" in new Setup {
+        val result: Call = TestNavigator.reverseRouteForCYAPage(fakeRequestConverter(correctUserAnswers ++ Json.obj(
+          SessionKeys.reasonableExcuse -> "crime"
+        ) - SessionKeys.dateCommunicationSent), NormalMode, jsEnabled = false)
+        result.url shouldBe controllers.routes.CrimeReasonController.onPageLoadForHasCrimeBeenReported(NormalMode).url
       }
     }
   }

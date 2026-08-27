@@ -27,17 +27,17 @@ class IsLateAppealHelper @Inject()(dateTimeHelper: DateTimeHelper,
                                    appConfig: AppConfig) {
   def isAppealLate()(implicit userRequest: UserRequest[_]): Boolean = {
     val dateNow: LocalDate = dateTimeHelper.dateNow
+    val lateAppealCutOff: LocalDate = dateNow.minusDays(appConfig.daysRequiredForLateAppeal)
+
+    def isCommunicationDateLate(key: String): Boolean =
+      userRequest.answers.getAnswer[LocalDate](key).exists(_.isBefore(lateAppealCutOff))
+
     userRequest.answers.getAnswer[String](SessionKeys.doYouWantToAppealBothPenalties) match {
       case Some("yes") =>
-        val dateOfFirstComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.firstPenaltyCommunicationDate).get
-        val dateOfSecondComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.secondPenaltyCommunicationDate).get
-        dateOfFirstComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal)) ||
-          dateOfSecondComms.isBefore(dateNow.minusDays(appConfig.daysRequiredForLateAppeal))
+        isCommunicationDateLate(SessionKeys.firstPenaltyCommunicationDate) ||
+          isCommunicationDateLate(SessionKeys.secondPenaltyCommunicationDate)
       case _ =>
-        val dateOfComms = userRequest.answers.getAnswer[LocalDate](SessionKeys.dateCommunicationSent).get
-        dateOfComms.isBefore(
-          dateNow.minusDays(
-            appConfig.daysRequiredForLateAppeal))
+        isCommunicationDateLate(SessionKeys.dateCommunicationSent)
     }
   }
 }
