@@ -27,11 +27,10 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import views.html.findOutHowToAppeal.AppealAfterPaymentPlanProcessedPage
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class AppealAfterPaymentPlanProcessedControllerSpec extends SpecBase {
   val appealAfterPaymentPlanProcessedPage: AppealAfterPaymentPlanProcessedPage = injector.instanceOf[AppealAfterPaymentPlanProcessedPage]
-  val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -44,7 +43,7 @@ class AppealAfterPaymentPlanProcessedControllerSpec extends SpecBase {
     ).thenReturn(authResult)
 
     val controller = new AppealAfterPaymentPlanProcessedController(appealAfterPaymentPlanProcessedPage, errorHandler)(mcc, mockAppConfig,
-      authPredicate, dataRetrievalAction, config, ec)
+      authPredicate, dataRetrievalAction, config)
   }
 
   "IfYouvePaidYourVATController" should {

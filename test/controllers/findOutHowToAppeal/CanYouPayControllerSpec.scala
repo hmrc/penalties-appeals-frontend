@@ -74,6 +74,14 @@ class CanYouPayControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("value" -> "no")))
           status(result) shouldBe OK
         }
+
+        "return 500 (ISE) when the VAT amount is missing" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers - SessionKeys.vatAmount))))
+          val result: Future[Result] = controller.onPageLoad()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "no")))
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
       }
 
       "the user is unauthorised" must {
@@ -108,6 +116,14 @@ class CanYouPayControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
             .withFormUrlEncodedBody("value" -> "")))
           status(result) shouldBe BAD_REQUEST
+        }
+
+        "return 500 (ISE) when the VAT amount is missing and the form has errors" in new Setup(AuthTestModels.successfulAuthResult) {
+          when(mockSessionService.getUserAnswers(any()))
+            .thenReturn(Future.successful(Some(userAnswers(findOutHowToAppealLPPNonCaAnswers - SessionKeys.vatAmount))))
+          val result: Future[Result] = controller.onSubmit()(fakeRequestConverter(fakeRequest = fakeRequest
+            .withFormUrlEncodedBody("value" -> "")))
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "return 403 (FORBIDDEN) when user has no enrolments" in new Setup(AuthTestModels.failedAuthResultNoEnrolments) {

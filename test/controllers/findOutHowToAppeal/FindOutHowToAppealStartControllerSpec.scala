@@ -26,10 +26,9 @@ import testUtils.AuthTestModels
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class FindOutHowToAppealStartControllerSpec extends SpecBase {
-  val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -43,7 +42,7 @@ class FindOutHowToAppealStartControllerSpec extends SpecBase {
 
 
     val controller = new FindOutHowToAppealStartController(errorHandler, mockAppConfig)(mcc, authPredicate,
-      dataRetrievalAction, config, ec)
+      dataRetrievalAction, config)
   }
 
   "FindOutHowToAppealStartController" should {

@@ -27,11 +27,10 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import views.html.findOutHowToAppeal.OtherWaysToAppealPage
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class OtherWaysToAppealControllerSpec extends SpecBase {
   val otherWaysToAppealPage: OtherWaysToAppealPage = injector.instanceOf[OtherWaysToAppealPage]
-  val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   class Setup(authResult: Future[~[Option[AffinityGroup], Enrolments]]) {
     reset(mockAuthConnector)
@@ -43,7 +42,7 @@ class OtherWaysToAppealControllerSpec extends SpecBase {
       any(), any())
     ).thenReturn(authResult)
 
-    val controller = new OtherWaysToAppealController(otherWaysToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate, dataRetrievalAction, config, ec)
+    val controller = new OtherWaysToAppealController(otherWaysToAppealPage, errorHandler)(mcc, mockAppConfig, authPredicate, dataRetrievalAction, config)
   }
 
   "OtherWaysToAppealController" should {

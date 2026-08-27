@@ -27,17 +27,31 @@ import navigation.Navigation
 import models.{NormalMode, UserRequest}
 import models.pages.{CanYouPayPage, PageMode}
 import play.api.Configuration
+import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SessionService
 import services.monitoring.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.govukfrontend.views.Aliases.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logger.logger
 import utils.{CurrencyFormatter, SessionKeys}
 import viewtils.RadioOptionHelper
 import views.html.findOutHowToAppeal.CanYouPayPage
 
 import scala.concurrent.{ExecutionContext, Future}
+
+object CanYouPayController {
+  sealed trait CanYouPayError {
+    def message: String
+  }
+
+  final case class MissingSessionValue(sessionKey: String) extends CanYouPayError {
+    override val message: String =
+      s"[CanYouPayController][pageRadioOptions] - Missing required session value for $sessionKey"
+  }
+}
 
 class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHandler)
                                    (implicit mcc: MessagesControllerComponents,
@@ -56,12 +70,15 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
       val formProvider = FormProviderHelper.getSessionKeyAndAttemptToFillAnswerAsString(canYouPayForm,
         SessionKeys.willUserPay,
         request.answers)
-      val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
-      val radioOptions = RadioOptionHelper.radioOptionsForCanYouPayPage(formProvider, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
-      val postAction = controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit()
-      val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
-      sessionService.updateAnswers(willUserPay).map {
-        _ => Ok(page(formProvider, radioOptions, postAction, pageMode))
+      pageRadioOptions(formProvider) match {
+        case Right(radioOptions) =>
+          val postAction = controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit()
+          val willUserPay = request.answers.setAnswer[String](SessionKeys.willUserPay, "yes")
+          sessionService.updateAnswers(willUserPay).map {
+            _ => Ok(page(formProvider, radioOptions, postAction, pageMode))
+          }
+        case Left(error) =>
+          renderMissingSessionValue(error)
       }
     }
   }
@@ -71,10 +88,13 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
       .bindFromRequest()
       .fold(
         form => {
-          val vatAmount: BigDecimal = userRequest.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).get
-          val radioOptions = RadioOptionHelper.radioOptionsForCanYouPayPage(form, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
-          val postAction = controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit()
-          Future(BadRequest(page(form, radioOptions, postAction, pageMode)))
+          pageRadioOptions(form) match {
+            case Right(radioOptions) =>
+              val postAction = controllers.findOutHowToAppeal.routes.CanYouPayController.onSubmit()
+              Future.successful(BadRequest(page(form, radioOptions, postAction, pageMode)))
+            case Left(error) =>
+              renderMissingSessionValue(error)
+          }
         },
         ableToPay => {
           val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.willUserPay, ableToPay)
@@ -88,6 +108,22 @@ class CanYouPayController @Inject()(page: CanYouPayPage, errorHandler: ErrorHand
       )
   }
   }
+
+  private def pageRadioOptions(form: Form[String])(implicit request: UserRequest[_]): Either[CanYouPayController.CanYouPayError, Seq[RadioItem]] = {
+    request.answers
+      .getAnswer[BigDecimal](SessionKeys.vatAmount)
+      .toRight(CanYouPayController.MissingSessionValue(SessionKeys.vatAmount))
+      .map { vatAmount =>
+        RadioOptionHelper.radioOptionsForCanYouPayPage(form, CurrencyFormatter.parseBigDecimalToFriendlyValue(vatAmount))
+      }
+  }
+
+  private def renderMissingSessionValue(error: CanYouPayController.CanYouPayError)
+                                       (implicit request: UserRequest[_]): Future[Result] = {
+    logger.warn(error.message)
+    Future.successful(errorHandler.showInternalServerError(Some(request)))
+  }
+
   def auditDidTheUserAlreadyPay()(implicit hc: HeaderCarrier, request: UserRequest[_]): Unit = {
     val vatAmount: BigDecimal = request.answers.getAnswer[BigDecimal](SessionKeys.vatAmount).getOrElse(0)
     val amountToBePaidInPence: String = (vatAmount * 100).toString

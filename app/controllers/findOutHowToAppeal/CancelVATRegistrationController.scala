@@ -71,7 +71,7 @@ class CancelVATRegistrationController @Inject()(
         form => {
           val postAction = controllers.findOutHowToAppeal.routes.CancelVATRegistrationController.onSubmitForCancelVATRegistration()
           val radioOptionsToRender: Seq[RadioItem] = RadioOptionHelper.yesNoRadioOptions(form)
-          Future(BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction, pageMode(NormalMode))))
+          Future.successful(BadRequest(cancelVATRegistrationPage(form, radioOptionsToRender, postAction, pageMode(NormalMode))))
         },
         cancelVATRegistration => {
           val updatedAnswers = userRequest.answers.setAnswer[String](SessionKeys.cancelVATRegistration, cancelVATRegistration)

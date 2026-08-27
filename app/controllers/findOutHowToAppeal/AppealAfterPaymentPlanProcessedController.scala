@@ -27,21 +27,21 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.findOutHowToAppeal.AppealAfterPaymentPlanProcessedPage
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class AppealAfterPaymentPlanProcessedController @Inject()(appealAfterPaymentPlanProcessedPage: AppealAfterPaymentPlanProcessedPage, errorHandler: ErrorHandler)
                                                          (implicit mcc: MessagesControllerComponents,
                                                           appConfig: AppConfig,
                                                           authorise: AuthPredicate,
                                                           dataRetrieval: DataRetrievalAction,
-                                                          val config: Configuration, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                                          val config: Configuration) extends FrontendController(mcc) with I18nSupport {
 
   val pageMode: PageMode = PageMode(AppealAfterPaymentPlanProcessedPage, NormalMode)
 
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen dataRetrieval).async {
     implicit request => {
-      Future(Ok(appealAfterPaymentPlanProcessedPage(pageMode)))
+      Future.successful(Ok(appealAfterPaymentPlanProcessedPage(pageMode)))
     }
   }
 }

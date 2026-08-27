@@ -68,7 +68,7 @@ class HasBusinessAskedHMRCToCancelRegistrationController @Inject()(
         form => {
           val radioOptions = RadioOptionHelper.yesNoRadioOptions(form)
           val postAction = controllers.findOutHowToAppeal.routes.HasBusinessAskedHMRCToCancelRegistrationController.onSubmit()
-          Future(BadRequest(page(form, radioOptions, postAction, pageMode)))
+          Future.successful(BadRequest(page(form, radioOptions, postAction, pageMode)))
         },
         answer => {
           val updatedAnswers = updateAnswers(userRequest.answers, answer)
