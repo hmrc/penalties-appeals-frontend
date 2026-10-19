@@ -37,3 +37,7 @@ body:not(.js-enabled) {
            height: 0;
        }
  }
+
+.govuk-fieldset__legend.govuk-visually-hidden {
+  white-space: wrap !important
+}

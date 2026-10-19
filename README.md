@@ -22,7 +22,15 @@ Now to run the penalties_appeals_frontend service
 
  `./run.sh`
 
+or
+
+`sbt run`
+
 The service when started listens on port 9181
+
+It is accessed via the penalties-frontend service
+
+http://localhost:9180/penalties
 
 ## Testing
 
