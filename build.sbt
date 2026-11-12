@@ -1,16 +1,16 @@
 import play.sbt.routes.RoutesKeys
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
+import uk.gov.hmrc.DefaultBuildSettings
 
 val appName = "penalties-appeals-frontend"
 
+ThisBuild / majorVersion := 0
+ThisBuild / scalaVersion := "2.13.18"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtWeb)
   .settings(
-    majorVersion                     := 0,
-    scalaVersion                     := "2.13.18",
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     TwirlKeys.templateImports ++= Seq(
       "play.twirl.api.HtmlFormat",
       "config.AppConfig",
@@ -36,9 +36,16 @@ lazy val microservice = Project(appName, file("."))
       ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;" +
       ".*ControllerConfiguration;.*LanguageSwitchController;.*testonly.*;.*layouts.*;",
     ScoverageKeys.coverageMinimumStmtTotal := 90,
-    ScoverageKeys.coverageFailOnMinimum := false,
-    ScoverageKeys.coverageHighlighting := true,
-    PlayKeys.playDefaultPort := 9181
+    ScoverageKeys.coverageFailOnMinimum    := false,
+    ScoverageKeys.coverageHighlighting     := true,
+    PlayKeys.playDefaultPort               := 9181
   )
-  .configs(IntegrationTest)
-  .settings(integrationTestSettings(): _*)
+
+lazy val it = project
+  .dependsOn(microservice % "test->test")
+  .settings(DefaultBuildSettings.itSettings())
+  .settings(
+    libraryDependencies ++= AppDependencies.itTest,
+    Test / unmanagedSourceDirectories   := Seq(baseDirectory.value / "test"),
+    Test / unmanagedResourceDirectories := Seq(baseDirectory.value / "test" / "resources")
+  )
